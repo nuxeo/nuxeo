@@ -81,6 +81,15 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
         assertEquals(2, SCRIPT_CNT);
     }
 
+    @Test
+    public void testShallowFiltering() throws Exception {
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
+                "test-ShallowFilteringPostCommitListeners.xml");
+        DocumentModel doc = session.createDocumentModel("/", "empty", "Document");
+        doc = session.createDocument(doc);
+        session.save();
+    }
+
     protected void waitForAsyncExec() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }

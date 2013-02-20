@@ -23,6 +23,7 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
@@ -46,7 +47,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * Light weight {@link DocumentModel} implementation Only holds
  * {@link DocumentRef}, RepositoryName, name, path and context data. Used to
  * reduce memory footprint of {@link Event} stacked in {@link EventBundle}.
- * 
+ *
  * @author Thierry Delprat
  */
 public class ShallowDocumentModel implements DocumentModel {
@@ -70,6 +71,12 @@ public class ShallowDocumentModel implements DocumentModel {
     private final ScopedMap contextData;
 
     private final Set<String> facets;
+
+    public static class NotShallowedException extends ClientRuntimeException {
+
+        private static final long serialVersionUID = 1L;
+
+    }
 
     public ShallowDocumentModel(DocumentModel doc) {
         id = doc.getId();
@@ -141,49 +148,49 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public void copyContent(DocumentModel sourceDoc) throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void copyContextData(DocumentModel otherDocument) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean followTransition(String transition) throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public ACP getACP() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void accept(PropertyVisitor visitor, Object arg)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public <T> T getAdapter(Class<T> itf) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public <T> T getAdapter(Class<T> itf, boolean refreshCache) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Collection<String> getAllowedStateTransitions()
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getCacheKey() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
@@ -201,7 +208,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public CoreSession getCoreSession() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
@@ -214,22 +221,22 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public String getCurrentLifeCycleState() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public DataModel getDataModel(String schema) throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public DataModelMap getDataModels() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Collection<DataModel> getDataModelsCollection() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
@@ -239,97 +246,97 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public Set<String> getDeclaredFacets() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String[] getSchemas() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String[] getDeclaredSchemas() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public DocumentType getDocumentType() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getLifeCyclePolicy() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getLock() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public DocumentPart getPart(String schema) throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public DocumentPart[] getParts() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Map<String, Object> getProperties(String schemaName)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Property getProperty(String xpath) throws PropertyException,
             ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Object getProperty(String schemaName, String name)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Serializable getPropertyValue(String xpath)
             throws PropertyException, ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getSessionId() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getSourceId() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public <T extends Serializable> T getSystemProp(String systemProperty,
             Class<T> type) throws ClientException, DocumentException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getTitle() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getVersionLabel() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getCheckinComment() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
@@ -339,52 +346,52 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public boolean hasSchema(String schema) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean addFacet(String facet) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean removeFacet(String facet) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean isDownloadable() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean isLifeCycleLoaded() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean isLocked() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean isProxy() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean isImmutable() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean isDirty() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public boolean isVersionable() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
@@ -399,90 +406,90 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public void prefetchCurrentLifecycleState(String lifecycle) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void prefetchLifeCyclePolicy(String lifeCyclePolicy) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void putContextData(String key, Serializable value) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void putContextData(ScopeType scope, String key, Serializable value) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void refresh() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void refresh(int refreshFlags, String[] schemas)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void reset() {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void setACP(ACP acp, boolean overwrite) throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void setLock(String key) throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Lock setLock() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Lock getLockInfo() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public Lock removeLock() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void setPathInfo(String parentPath, String name) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void setProperties(String schemaName, Map<String, Object> data)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void setProperty(String schemaName, String name, Object value)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void setPropertyValue(String xpath, Serializable value) {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void unlock() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
@@ -500,23 +507,23 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public boolean isCheckedOut() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public void checkOut() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public DocumentRef checkIn(VersioningOption option, String checkinComment)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override
     public String getVersionSeriesId() throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new NotShallowedException();
     }
 
     @Override

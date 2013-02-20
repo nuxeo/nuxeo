@@ -65,7 +65,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     private static final Log log = LogFactory.getLog(ReconnectedEventBundleImpl.class);
 
-    public ReconnectedEventBundleImpl() {
+    protected ReconnectedEventBundleImpl() {
     }
 
     public ReconnectedEventBundleImpl(EventBundle sourceEventBundle) {
