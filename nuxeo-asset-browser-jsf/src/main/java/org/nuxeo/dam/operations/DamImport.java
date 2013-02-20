@@ -61,7 +61,7 @@ public class DamImport {
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
         AssetLibrary assetLibrary = damService.getAssetLibrary();
-        ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[]{ 1 });
+        ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
         return fileManager.createDocumentFromBlob(session, blob,
                 assetLibrary.getPath(), overwrite, blob.getFilename());
     }
@@ -72,7 +72,7 @@ public class DamImport {
         for (Blob blob : blobs) {
             result.add(run(blob));
         }
-        ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[]{ result.size() });
+        ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { result.size() });
         return result;
     }
 

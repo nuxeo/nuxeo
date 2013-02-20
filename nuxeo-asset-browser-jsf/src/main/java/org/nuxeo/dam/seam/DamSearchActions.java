@@ -25,8 +25,6 @@ import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_RE
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +39,6 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.json.JSONException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,8 +50,6 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
-import org.nuxeo.ecm.platform.contentview.seam.ContentViewRestActions;
-import org.nuxeo.ecm.platform.forms.layout.io.Base64;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
@@ -87,8 +82,6 @@ public class DamSearchActions implements Serializable {
     public static final String PAGE_SIZE_PARAMETER = "pageSize";
 
     public static final String CONTENT_VIEW_STATE_PARAMETER = "state";
-
-    public static final String ENCODED_VALUES_ENCODING = "UTF-8";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -210,9 +203,8 @@ public class DamSearchActions implements Serializable {
         updateCurrentDocument(pageProvider);
     }
 
-    @SuppressWarnings("unchecked")
     public void setState(String state) throws ClientException,
-            JSONException, UnsupportedEncodingException {
+            UnsupportedEncodingException {
         Long finalPageSize = null;
         if (!StringUtils.isBlank(pageSize)) {
             try {
@@ -283,7 +275,7 @@ public class DamSearchActions implements Serializable {
         if (doc != null) {
             return new DocumentViewImpl(new DocumentLocationImpl(
                     documentManager.getRepositoryName(), new PathRef(
-                    doc.getPathAsString())));
+                            doc.getPathAsString())));
         } else {
             return new DocumentViewImpl(new DocumentLocationImpl(
                     documentManager.getRepositoryName(), null));
