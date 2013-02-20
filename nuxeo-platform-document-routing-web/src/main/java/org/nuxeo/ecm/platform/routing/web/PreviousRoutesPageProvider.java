@@ -344,8 +344,8 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
     }
 
     public void refresh() {
-        super.refresh();
         setCurrentPageOffset(0);
+        super.refresh();
     }
 
     @SuppressWarnings("unchecked")
