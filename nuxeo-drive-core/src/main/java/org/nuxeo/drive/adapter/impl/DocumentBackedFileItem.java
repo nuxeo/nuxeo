@@ -68,9 +68,11 @@ public class DocumentBackedFileItem extends
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
-        // Update doc properties
+        /* Update doc properties */
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
+        // Handle versioning
+        versionIfNeeded(doc, session);
         BlobHolder bh = getBlobHolder(doc);
         Blob blob = getBlob(bh);
         blob.setFilename(name);
@@ -78,7 +80,7 @@ public class DocumentBackedFileItem extends
         updateDocTitleIfNeeded(doc, name);
         doc = session.saveDocument(doc);
         session.save();
-        // Update FileSystemItem attributes
+        /* Update FileSystemItem attributes */
         this.name = name;
         updateDownloadURL();
         updateLastModificationDate(doc);
