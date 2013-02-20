@@ -239,7 +239,7 @@ public class TestDefaultFileSystemItemFactory {
 
         // Deleted file with explicit "includeDeleted" => adaptable as a
         // FileSystemItem
-        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(file));
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(custom, true));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom, true);
         assertNotNull(fsItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
