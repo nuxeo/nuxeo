@@ -30,6 +30,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -95,6 +96,20 @@ public abstract class AbstractPage {
     public HeaderLinksSubPage getHeaderLinks() {
         assertNotNull(userServicesForm);
         return asPage(HeaderLinksSubPage.class);
+    }
+
+    /**
+     * Returns the fancy box content web element
+     *
+     * @since 5.7
+     */
+    public WebElement getFancyBoxContent() {
+        // make sure the fancybox content is loaded
+        WebElement fancyBox = findElementWithTimeout(By.id("fancybox-content"));
+        WebDriverWait wait = new WebDriverWait(driver,
+                AbstractTest.LOAD_TIMEOUT_SECONDS);
+        wait.until(ExpectedConditions.visibilityOf(fancyBox));
+        return fancyBox;
     }
 
     /**

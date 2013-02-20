@@ -34,8 +34,6 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents
@@ -77,10 +75,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      */
     public <T> T getDocumentCreatePage(String docType, Class<T> pageClassToProxy) {
         newButton.click();
-        // make sure the fancybox content is loaded
-        WebElement fancyBox = findElementWithTimeout(By.id("fancybox-content"));
-        WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.visibilityOf(fancyBox));
+        WebElement fancyBox = getFancyBoxContent();
         // find the link to doc type that needs to be created
         WebElement link = fancyBox.findElement(By.linkText(docType));
         assertNotNull(link);
