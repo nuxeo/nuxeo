@@ -154,6 +154,11 @@
     </resource>
     <!-- Fancybox -->
     <resource name="jquery.fancybox.js">
+      <!-- useful for debug -->
+      <!--
+        <path>scripts/jquery/jquery.fancybox.js</path>
+        <shrinkable>false</shrinkable>
+      -->
       <path>scripts/jquery/jquery.fancybox.pack.js</path>
     </resource>
     <resource name="jquery.fancybox.style.css">
@@ -179,7 +184,7 @@
     <resource name="mustache.js">
       <path>scripts/mustache/mustache.js</path>
     </resource>
-    <!--  Simple Access Key helper -->
+    <!-- Simple Access Key helper -->
     <resource name="accessKey.js">
       <path>scripts/accessKey.js</path>
     </resource>
@@ -281,7 +286,8 @@
       </logo>
       <presetsList>
         <presets category="border" src="themes/palettes/default-borders.properties" />
-        <presets category="background" src="themes/palettes/default-backgrounds.properties" />
+        <presets category="background"
+          src="themes/palettes/default-backgrounds.properties" />
         <presets category="font" src="themes/palettes/default-fonts.properties" />
         <presets category="color" src="themes/palettes/default-colors.properties" />
       </presetsList>
@@ -311,7 +317,8 @@
       </logo>
       <presetsList append="true">
         <presets category="border" src="themes/palettes/rainbow-borders.properties" />
-        <presets category="background" src="themes/palettes/rainbow-backgrounds.properties" />
+        <presets category="background"
+          src="themes/palettes/rainbow-backgrounds.properties" />
         <presets category="font" src="themes/palettes/rainbow-fonts.properties" />
         <presets category="color" src="themes/palettes/rainbow-colors.properties" />
       </presetsList>
@@ -332,7 +339,8 @@
 
   </extension>
 
-  <!-- Register style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
+  <!-- Register style resources (contain indirect references to flavor names, i.e.
+    "__FLAVOR__") -->
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <!-- Global styles -->
     <style name="breadcrumb">

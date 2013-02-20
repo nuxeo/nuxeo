@@ -74,16 +74,21 @@
 
     <!-- generic actions -->
 
-    <action id="newDocument"
-      link="javascript:Richfaces.showModalPanel('selectDocTypePanel');" label="action.new.document"
-      icon="/icons/action_add.gif">
-      <category>SUBVIEW_UPPER_LIST_HREF</category>
+    <action id="newDocument" label="action.new.document" icon="/icons/action_add.gif"
+      type="fancybox">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <properties>
+        <property name="include">/select_document_type.xhtml</property>
+      </properties>
       <filter-id>create</filter-id>
     </action>
 
-    <action id="newFile" link="javascript:Richfaces.showModalPanel('importFile');"
-      label="action.new.file" icon="/icons/action_add_file.gif">
-      <category>SUBVIEW_UPPER_LIST_HREF</category>
+    <action id="newFile" label="action.new.file" icon="/icons/action_add_file.gif"
+      type="fancybox">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <properties>
+        <property name="include">/create_file.xhtml</property>
+      </properties>
       <filter-id>importFile</filter-id>
     </action>
 
@@ -137,7 +142,7 @@
     </action>
 
     <action id="print" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
-      order="100" label="label.print" icon="/icons/printer.gif"  accesskey="p">
+      order="100" label="label.print" icon="/icons/printer.gif" accesskey="p">
       <category>DOCUMENT_UPPER_ACTION_BLANK_TARGET</category>
     </action>
 
@@ -149,7 +154,8 @@
     </action>
 
     <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
-      order="22" label="action.view.modification" icon="/icons/file.gif" accessKey="e">
+      order="22" label="action.view.modification" icon="/icons/file.gif"
+      accessKey="e">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
@@ -534,8 +540,8 @@
     </action>
 
     <action id="EDIT_CURRENT_DOCUMENT_AND_STAY" enabled="false"
-      link="#{documentActions.updateDocument(currentDocument, true)}"
-      order="10" label="command.save.and.stay">
+      link="#{documentActions.updateDocument(currentDocument, true)}" order="10"
+      label="command.save.and.stay">
       <category>EDIT_DOCUMENT_FORM</category>
     </action>
 
