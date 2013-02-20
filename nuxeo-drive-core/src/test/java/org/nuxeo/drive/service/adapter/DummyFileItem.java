@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.service.adapter;
 
+import java.util.HashMap;
+
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -32,12 +34,12 @@ public class DummyFileItem extends DocumentBackedFileItem {
 
     public DummyFileItem(String factoryName, DocumentModel doc)
             throws ClientException {
-        super(factoryName, doc);
+        super(factoryName, doc, new HashMap<String, String>());
     }
 
     public DummyFileItem(String factoryName, String parentId, DocumentModel doc)
             throws ClientException {
-        super(factoryName, parentId, doc);
+        super(factoryName, parentId, doc, new HashMap<String, String>());
     }
 
     @Override

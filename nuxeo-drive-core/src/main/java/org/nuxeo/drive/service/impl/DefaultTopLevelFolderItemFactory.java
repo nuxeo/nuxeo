@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service.impl;
 
 import java.security.Principal;
+import java.util.Map;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
@@ -33,6 +34,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DefaultTopLevelFolderItemFactory implements
         TopLevelFolderItemFactory {
+
+    protected Map<String, String> parameters;
 
     /**
      * Prevent from instantiating class as it should only be done by
@@ -56,14 +59,25 @@ public class DefaultTopLevelFolderItemFactory implements
 
     /*--------------------------- FileSystemItemFactory --------------------------------*/
     @Override
+    public String getName() {
+        return getClass().getName();
+    }
+
+    @Override
     public void setName(String name) {
         throw new UnsupportedOperationException(
                 "Cannot set the name of a TopLevelFolderItemFactory.");
     }
 
     @Override
-    public String getName() {
-        return getClass().getName();
+    public boolean isFileSystemItem(DocumentModel doc) throws ClientException {
+        return isFileSystemItem(doc, false);
+    }
+
+    @Override
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
+            throws ClientException {
+        return false;
     }
 
     @Override
@@ -115,6 +129,26 @@ public class DefaultTopLevelFolderItemFactory implements
                     "Cannot get the file system item for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
         }
         return getTopLevelFolderItem(principal.getName());
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    @Override
+    public String getParameter(String name) {
+        return parameters.get(name);
+    }
+
+    @Override
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
     }
 
 }

@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
@@ -46,6 +47,8 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -118,8 +121,6 @@ public class TestDefaultFileSystemItemFactory {
         principal = session.getPrincipal();
         rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + session.getRootDocument().getId();
-        // Set versioning delay to 1 second
-        nuxeoDriveManager.setVersioningDelay(1);
 
         // File
         file = session.createDocumentModel("/", "aFile", "File");
@@ -161,9 +162,16 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors().get(
-                "defaultFileSystemItemFactory").getFactory();
+        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
         assertTrue(defaultFileSystemItemFactory instanceof DefaultFileSystemItemFactory);
+
+        // Set versioning delay to 1 second
+        defaultFileSystemItemFactory.setParameter(
+                DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM, "1");
+        assertEquals("1",
+                defaultFileSystemItemFactory.getParameter("versioningDelay"));
+        assertEquals("MINOR",
+                defaultFileSystemItemFactory.getParameter("versioningOption"));
     }
 
     @Test
@@ -173,6 +181,7 @@ public class TestDefaultFileSystemItemFactory {
         // Check downloadable FileSystemItems
         // ------------------------------------------------------
         // File
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(file));
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -187,6 +196,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
 
         // Note
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(note));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -201,6 +211,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
 
         // Custom doc type with the "file" schema
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(custom));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -217,25 +228,45 @@ public class TestDefaultFileSystemItemFactory {
         // File without a blob => not adaptable as a FileSystemItem
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNull(fsItem);
 
         // Deleted file => not adaptable as a FileSystemItem
         custom.followTransition("delete");
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(custom));
         assertNull(defaultFileSystemItemFactory.getFileSystemItem(custom));
 
         // Deleted file with explicit "includeDeleted" => adaptable as a
         // FileSystemItem
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(custom, true));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom, true);
         assertNotNull(fsItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
                 fsItem.getId());
         assertEquals("Bonnie's file.odt", fsItem.getName());
 
+        // Version
+        DocumentRef versionRef = session.checkIn(note.getRef(),
+                VersioningOption.MINOR, null);
+        DocumentModel version = session.getDocument(versionRef);
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(version));
+
+        // Proxy
+        DocumentModel proxy = session.createProxy(note.getRef(),
+                folder.getRef());
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(proxy));
+
+        // HiddenInNavigation
+        note.addFacet("HiddenInNavigation");
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(note));
+        note.removeFacet("HiddenInNavigation");
+
         // ------------------------------------------------------
         // Check folderish FileSystemItems
         // ------------------------------------------------------
         // Folder
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(folder));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
@@ -251,6 +282,7 @@ public class TestDefaultFileSystemItemFactory {
 
         // FolderishFile => adaptable as a FolderItem since the default
         // FileSystemItem factory gives precedence to the Folderish facet
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(folderishFile));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folderishFile);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
@@ -263,8 +295,9 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Administrator", fsItem.getCreator());
 
         // ------------------------------------------------------
-        // Check not adaptable as a FileSystemItem
+        // Check not downloadable nor folderish
         // ------------------------------------------------------
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(notAFileSystemItem));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(notAFileSystemItem);
         assertNull(fsItem);
 
@@ -436,13 +469,22 @@ public class TestDefaultFileSystemItemFactory {
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         assertTrue(fileItem.getCanUpdate());
 
+        // ------------------------------------------------------------
+        // DocumentBackedFileItem#getVersioningDelay
+        // and DocumentBackedFileItem#getVersioningOption
+        // ------------------------------------------------------------
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertEquals(1,
+                ((DocumentBackedFileItem) fileItem).getVersioningDelay());
+        assertEquals(VersioningOption.MINOR,
+                ((DocumentBackedFileItem) fileItem).getVersioningOption());
+
         // ------------------------------------------------------
         // FileItem#getBlob and FileItem#setBlob
         // ------------------------------------------------------
         // #getBlob
-        // Re-fetch file with Administrator session
-        file = session.getDocument(file.getRef());
-        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         Blob fileItemBlob = fileItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
