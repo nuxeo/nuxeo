@@ -83,7 +83,7 @@
           gadgets.container.addGadget(gadget);
           createdGadgets.push(gadget);
           var id = $(this).attr('id');
-          if (id.length == 0) {
+          if (id == undefined || id.length == 0) {
             id = generateId();
             $(this).attr('id', id);
           }
