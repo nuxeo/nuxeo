@@ -20,7 +20,9 @@ package org.nuxeo.ecm.platform.groups.audit.seam;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
@@ -39,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.AclNameShortner;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
@@ -117,6 +120,7 @@ public class ExcelExportRightsActionBean implements Serializable {
 
         Runnable todo = new RunnableAclAudit(documentManager, auditRoot,
                 tmpFile) {
+            @Override
             public void onAuditDone() {
                 ComponentUtils.downloadFile(context, OUTPUT_FILE, tmpFile);
             }
@@ -136,6 +140,7 @@ public class ExcelExportRightsActionBean implements Serializable {
         // Work to do and publishing
         final Work work = new Work(workName);
         new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
+            @Override
             public void onAuditDone() {
                 IResultPublisher publisher = new PublishAsDocument(getOutputFile(), workName, repository, auditRoot);
                 try {
@@ -172,6 +177,7 @@ public class ExcelExportRightsActionBean implements Serializable {
         // Work to do and publishing
         final Work work = new Work(workName);
         new RunnableAclAudit(documentManager, auditRoot, work, tmpFile){
+            @Override
             public void onAuditDone() {
                 // content to send
                 FileBlob fb = new FileBlob(getOutputFile(), "application/xls");
@@ -195,4 +201,18 @@ public class ExcelExportRightsActionBean implements Serializable {
         String message = resourcesAccessor.getMessages().get("message.audit.acl.started");
         facesMessages.add(StatusMessage.Severity.INFO, message);
     }
+
+    /* */
+
+    protected Set<String> existingPermissions = new HashSet<String>();
+
+    {
+        AclNameShortner names = new AclNameShortner();
+        existingPermissions.addAll(names.getFullNames());
+    }
+
+    public Set<String> getExistingPermissions(){
+        return existingPermissions;
+    }
+
 }

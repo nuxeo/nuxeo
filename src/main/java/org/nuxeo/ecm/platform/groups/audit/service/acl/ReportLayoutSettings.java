@@ -58,7 +58,10 @@ public class ReportLayoutSettings {
 
     protected int zoomRatioDenominator = 1;
 
+    // TODO move to a DataFetch parameter class
     protected int pageSize = 1000; // -1 for no paging
+
+    protected boolean showFullPath = false;
 
     public int getUserHeaderHeight() {
         return userHeaderHeight;

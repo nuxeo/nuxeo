@@ -82,6 +82,7 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
         // --------------------
         final Work work = new Work("test-work");
         new RunnableAclAudit(session, root, work, testFile){
+            @Override
             public void onAuditDone() {
                 log.info("audit done");
             }

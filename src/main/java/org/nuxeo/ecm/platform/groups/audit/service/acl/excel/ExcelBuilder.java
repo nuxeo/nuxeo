@@ -285,6 +285,7 @@ public class ExcelBuilder implements IExcelBuilder {
     /* BUILDER METHODS */
 
     /** Return a new cell style instance for the choosen workbook {@link Type}. */
+    @Override
     public CellStyle newCellStyle() {
         return workbook.createCellStyle();
     }

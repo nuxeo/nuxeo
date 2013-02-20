@@ -69,6 +69,7 @@ public class Work extends AbstractWork implements ITimeoutable {
     }
 
     /** Override to fix transaction timeout. */
+    @Override
     protected boolean startTransaction() {
         if (isTransactional() && !isTransactionStarted) {
             isTransactionStarted = TransactionHelper.startTransaction(getTimeout());
@@ -120,6 +121,7 @@ public class Work extends AbstractWork implements ITimeoutable {
         }
     }
 
+    @Override
     public int getTimeout() {
         return timeout;
     }

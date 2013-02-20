@@ -257,6 +257,7 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
             for (int i = 0; i < acls.size(); i++) {
                 boolean isFirst = false;// (i == 0);
                 boolean isLast = false;// (i == last);
+
                 Pair<String, Boolean> ace = acls.get(i);
                 String permission = ace.a;
                 boolean accept = ace.b;

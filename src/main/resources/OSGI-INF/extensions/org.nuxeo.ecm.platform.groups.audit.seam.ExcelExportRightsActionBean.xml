@@ -11,5 +11,18 @@
       <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
       <filter-id>only_for_manager</filter-id>
     </action>
+
+    <!-- <action
+      id="acl_audit_configure"
+      order="20"
+      label="parameters"
+      type="fancybox"
+      icon="/icons/acl-export-icon.png">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>only_for_manager</filter-id>
+      <properties>
+        <property name="include">/incl/acl_audit_configure.xhtml</property>
+      </properties>
+    </action>  -->
   </extension>
 </component>

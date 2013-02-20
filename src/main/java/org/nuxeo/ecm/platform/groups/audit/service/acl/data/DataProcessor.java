@@ -184,6 +184,7 @@ public class DataProcessor implements IDataProcessor {
     /* RESULTS */
 
     /** Ranked so that appear like a tree. */
+    @Override
     public Collection<DocumentSummary> getAllDocuments() {
         return allDocuments;
     }

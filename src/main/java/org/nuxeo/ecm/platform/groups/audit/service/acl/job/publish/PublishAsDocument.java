@@ -14,7 +14,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.groups.audit.seam.ExcelExportRightsActionBean;
 
 /** Publish a file in the repository as a child of an existing document. */
 public class PublishAsDocument implements IResultPublisher {

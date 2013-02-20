@@ -115,6 +115,9 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         layout.spanMode = SpanMode.COLUMN_OVERFLOW_ON_NEXT_SHEETS;
         layout.zoomRatioDenominator = 2;
         layout.zoomRatioNumerator = 1;
+        layout.showFullPath = true;
+
+        // data fetch setting
         layout.pageSize = 1000;
 
         return layout;
@@ -180,13 +183,14 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     @Override
     public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted) throws ClientException{
+            boolean unrestricted) throws ClientException {
         renderAudit(session, doc, unrestricted, null);
     }
 
     @Override
     public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted, final ITimeoutable work) throws ClientException {
+            boolean unrestricted, final ITimeoutable work)
+            throws ClientException {
         if (!unrestricted) {
             analyzeAndRender(session, doc, work);
         } else {
@@ -201,8 +205,8 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         }
     }
 
-    protected void analyzeAndRender(CoreSession session, final DocumentModel doc, ITimeoutable work)
-            throws ClientException {
+    protected void analyzeAndRender(CoreSession session,
+            final DocumentModel doc, ITimeoutable work) throws ClientException {
         log.debug("start processing data");
         data.analyze(session, doc, work);
 
@@ -214,7 +218,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     protected void render(IDataProcessor data) throws ClientException {
         int minDepth = data.getDocumentTreeMinDepth();
         int maxDepth = data.getDocumentTreeMaxDepth();
-        int colStart = maxDepth + 1;
+        int colStart = maxDepth + (layoutSettings.showFullPath ? 1 : 0);
 
         mainSheetId = excel.getCurrentSheetId();
         legendSheetId = excel.newSheet(excel.getCurrentSheetId() + 1, "Legend");
@@ -249,7 +253,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         Font f = excel.newFont();
         f.setColor(HSSFColor.GREY_50_PERCENT.index);
         grayTextStyle.setFont(f);
-        //grayTextStyle.set
+        // grayTextStyle.set
     }
 
     /** Perform various general tasks, such as setting the current sheet zoom. */
@@ -293,10 +297,13 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
             renderFilename(summary.getTitle(), summary.getDepth() - minDepth,
                     summary.isAclLockInheritance());
 
-            excel.setCell(treeLineCursor, maxDepth-minDepth+1, summary.getPath());
+            if (layoutSettings.showFullPath)
+                excel.setCell(treeLineCursor, maxDepth - minDepth + 1,
+                        summary.getPath());
 
-            if(summary.getAclInheritedByUser()!=null)
-                renderAcl(summary.getAclByUser(), summary.getAclInheritedByUser());
+            if (summary.getAclInheritedByUser() != null)
+                renderAcl(summary.getAclByUser(),
+                        summary.getAclInheritedByUser());
             else
                 renderAcl(summary.getAclByUser());
             treeLineCursor++;
@@ -317,11 +324,11 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /** Render a row with all ACL of a given input file. */
     protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls)
             throws ClientException {
-        renderAcl(userAcls, (CellStyle)null);
+        renderAcl(userAcls, (CellStyle) null);
     }
 
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls, CellStyle style)
-            throws ClientException {
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls,
+            CellStyle style) throws ClientException {
         for (String user : userAcls.keySet()) {
             int column = layout.getUserColumn(user);
             String info = formatAcl(userAcls.get(user));
@@ -338,7 +345,8 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
      * <li>Mixed acl (local and inherited) are rendered with default font.
      * </ul>
      */
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> localAcls, Multimap<String, Pair<String, Boolean>> inheritedAcls)
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> localAcls,
+            Multimap<String, Pair<String, Boolean>> inheritedAcls)
             throws ClientException {
         Set<String> users = new HashSet<String>();
         users.addAll(localAcls.keySet());
@@ -349,16 +357,17 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
             String localAclsString = formatAcl(localAcls.get(user));
             String inheritedAclsString = formatAcl(inheritedAcls.get(user));
 
-            if("".equals(localAclsString) && "".equals(inheritedAclsString)){ }
-            else if(!"".equals(localAclsString) && !"".equals(inheritedAclsString)){
+            if ("".equals(localAclsString) && "".equals(inheritedAclsString)) {
+            } else if (!"".equals(localAclsString)
+                    && !"".equals(inheritedAclsString)) {
                 String info = localAclsString + "," + inheritedAclsString;
                 excel.setCell(treeLineCursor, column, info);
-            }
-            else if(!"".equals(localAclsString) && "".equals(inheritedAclsString)){
+            } else if (!"".equals(localAclsString)
+                    && "".equals(inheritedAclsString)) {
                 String info = localAclsString;
                 excel.setCell(treeLineCursor, column, info);
-            }
-            else if("".equals(localAclsString) && !"".equals(inheritedAclsString)){
+            } else if ("".equals(localAclsString)
+                    && !"".equals(inheritedAclsString)) {
                 String info = inheritedAclsString;
                 excel.setCell(treeLineCursor, column, info, grayTextStyle);
             }

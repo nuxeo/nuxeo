@@ -40,6 +40,7 @@ public class ExcelBuilderMultiSheet extends ExcelBuilder {
         this.multiSheetMode = multiSheetMode;
     }
 
+    @Override
     protected Cell getOrCreateCell(int i, int j) {
         if (multiSheetMode)
             j = autoSelectSheet(j);
@@ -51,6 +52,7 @@ public class ExcelBuilderMultiSheet extends ExcelBuilder {
      *
      * {@inheritDoc}
      */
+    @Override
     protected boolean validateCellIndex(int row, int column, String content) {
         if (multiSheetMode) {
             if (row >= MAX_ROW) {

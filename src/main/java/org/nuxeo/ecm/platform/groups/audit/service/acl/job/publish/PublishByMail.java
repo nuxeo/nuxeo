@@ -1,6 +1,5 @@
 package org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 
@@ -44,14 +43,15 @@ public class PublishByMail implements IResultPublisher {
 
     protected String defaultFrom;
 
-    public PublishByMail(FileBlob fb, String to,
-            String defaultFrom, String repository) {
+    public PublishByMail(FileBlob fb, String to, String defaultFrom,
+            String repository) {
         this.file = fb;
         this.repository = repository;
         this.to = to;
         this.defaultFrom = defaultFrom;
     }
 
+    @Override
     public void publish() throws ClientException {
         reconnectAndSendMail();
     }
@@ -93,7 +93,7 @@ public class PublishByMail implements IResultPublisher {
 
             String[] str = { "file:content" };
             params.set("files", new StringList(str));
-         // TODO: see SendMail test case where we can directly pass a blob
+            // TODO: see SendMail test case where we can directly pass a blob
 
             logMailerConfiguration();
 
@@ -129,12 +129,14 @@ public class PublishByMail implements IResultPublisher {
         return document;
     }
 
-    protected void logMailerConfiguration(){
+    protected void logMailerConfiguration() {
         Mailer m = SendMail.COMPOSER.getMailer();
-        log.info("mail.smtp.auth:"+m.getConfiguration().get("mail.smtp.auth"));
-        log.info("mail.smtp.starttls.enable:"+m.getConfiguration().get("mail.smtp.starttls.enable"));
-        log.info("mail.smtp.host:"+m.getConfiguration().get("mail.smtp.host"));
-        log.info("mail.smtp.user:"+m.getConfiguration().get("mail.smtp.user"));
-        log.info("mail.smtp.password:"+m.getConfiguration().get("mail.smtp.password"));
+        log.info("mail.smtp.auth:" + m.getConfiguration().get("mail.smtp.auth"));
+        log.info("mail.smtp.starttls.enable:"
+                + m.getConfiguration().get("mail.smtp.starttls.enable"));
+        log.info("mail.smtp.host:" + m.getConfiguration().get("mail.smtp.host"));
+        log.info("mail.smtp.user:" + m.getConfiguration().get("mail.smtp.user"));
+        log.info("mail.smtp.password:"
+                + m.getConfiguration().get("mail.smtp.password"));
     }
 }
