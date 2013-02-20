@@ -84,7 +84,8 @@ Needed parameters:
             </c:if>
             <c:if test="#{not useMultipartForm}">
               <a4j:form id="#{demoLayout.name}_view_form"
-                ajaxSubmit="true">
+                ajaxSubmit="true"
+                onsubmit="removeAllTinyMCEEditors(); return true;">
                 <nxl:layout value="#{layoutDemoDocument}" mode="view"
                   name="#{demoLayout.name}" />
               </a4j:form>
@@ -131,7 +132,8 @@ Needed parameters:
             </c:if>
             <c:if test="#{not useMultipartForm}">
               <a4j:form id="#{demoLayout.name}_view_form"
-                ajaxSubmit="true">
+                ajaxSubmit="true"
+                onsubmit="removeAllTinyMCEEditors(); return true;">
                 <table class="dataOutput">
                   <c:forEach var="row" items="#{layoutDemoDocuments.entries}"
                     varStatus="layoutListingStatus">
