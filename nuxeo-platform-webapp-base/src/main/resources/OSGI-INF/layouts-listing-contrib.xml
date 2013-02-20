@@ -1292,6 +1292,7 @@
       <properties mode="any">
         <property name="showListingHeader">true</property>
         <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
       </properties>
       <columns>
         <column>
@@ -1581,6 +1582,9 @@
     </layout>
 
     <layout name="document_listing_compact_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
         <template mode="csv">
@@ -1620,6 +1624,9 @@
     </layout>
 
     <layout name="document_listing_ajax_compact_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
@@ -1661,6 +1668,9 @@
     </layout>
 
     <layout name="document_virtual_navigation_listing_ajax_compact_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
@@ -1702,6 +1712,9 @@
     </layout>
 
     <layout name="document_listing_icon_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
       <templates>
         <template mode="any">/layouts/layout_listing_template.xhtml</template>
         <template mode="csv">
@@ -1731,6 +1744,9 @@
     </layout>
 
     <layout name="document_listing_ajax_icon_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml
@@ -1762,6 +1778,9 @@
     </layout>
 
     <layout name="document_virtual_navigation_listing_ajax_icon_2_columns">
+      <properties mode="any">
+        <property name="display">table_2_columns</property>
+      </properties>
       <templates>
         <template mode="any">
           /layouts/layout_listing_ajax_template.xhtml

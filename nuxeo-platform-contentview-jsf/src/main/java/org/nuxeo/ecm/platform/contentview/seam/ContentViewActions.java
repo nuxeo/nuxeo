@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.contentview.seam;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -32,6 +33,9 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
+import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 
 /**
  * Handles cache and refresh for named content views.
@@ -45,6 +49,9 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 public class ContentViewActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @In(create = true)
+    protected ContentViewRestActions contentViewRestActions;
 
     @In(create = true)
     protected ContentViewService contentViewService;
@@ -208,6 +215,25 @@ public class ContentViewActions implements Serializable {
                     currentPage, params);
         }
         return cView;
+    }
+
+    /**
+     * Restore a content view from the given parameters.
+     * <p>
+     * The content view is put in a cache map so that it's not rebuilt at each
+     * call. It is rebuilt when its cache key changes (if defined).
+     *
+     * @since 5.7
+     */
+    public ContentView restoreContentView(String contentViewName,
+            Long currentPage, Long pageSize, List<SortInfo> sortInfos,
+            String jsonContentViewState) throws UnsupportedEncodingException,
+            ClientException {
+        ContentView cv = contentViewRestActions.restoreContentView(
+                contentViewName, currentPage, pageSize, sortInfos,
+                jsonContentViewState);
+        cache.add(cv);
+        return cv;
     }
 
     /**

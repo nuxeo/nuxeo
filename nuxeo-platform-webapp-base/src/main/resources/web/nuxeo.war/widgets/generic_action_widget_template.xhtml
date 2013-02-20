@@ -35,7 +35,6 @@
 
                 <div class="widgetPanel actionsWidgetPanel #{widgetProperty_styleClass}">
                   <ui:decorate template="/incl/action/action_template.xhtml">
-                    <ui:define name="after_action_template_content" />
                     <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                   </ui:decorate>
                 </div>
@@ -43,10 +42,7 @@
               </ui:define>
             </ui:decorate>
 
-            <ui:decorate template="/incl/action/action_template.xhtml">
-              <ui:define name="action_template_content" />
-              <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-            </ui:decorate>
+            <ui:include src="/incl/action/action_template.xhtml" />
 
           </nxu:valueHolder>
         </nxu:set>

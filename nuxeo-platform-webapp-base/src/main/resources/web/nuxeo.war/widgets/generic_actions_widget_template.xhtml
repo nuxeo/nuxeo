@@ -49,7 +49,6 @@
                           end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
                           step="1">
                           <ui:decorate template="/incl/action/action_template.xhtml">
-                            <ui:define name="after_action_template_content" />
                             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                           </ui:decorate>
                         </c:forEach>
@@ -64,7 +63,6 @@
                           step="1">
                           <li class="#{nxu:test(widgetProperty_selectedExpression, 'selected', '')}">
                             <ui:decorate template="/incl/action/action_template.xhtml">
-                              <ui:define name="after_action_template_content" />
                               <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                             </ui:decorate>
                           </li>
@@ -81,7 +79,6 @@
                         step="1">
                         <div class="widgetPanel actionsWidgetPanel">
                           <ui:decorate template="/incl/action/action_template.xhtml">
-                            <ui:define name="after_action_template_content" />
                             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                           </ui:decorate>
                         </div>
@@ -98,9 +95,7 @@
                           <c:forEach var="action" begin="#{widgetProperty_maxActionsNumber}"
                             end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
                             <li>
-                              <ui:decorate template="/incl/action/generic_action_template.xhtml">
-                                <ui:define name="after_action_template_content" />
-                              </ui:decorate>
+                              <ui:decorate template="/incl/action/generic_action_template.xhtml" />
                             </li>
                           </c:forEach>
                         </ul>
@@ -129,10 +124,7 @@
         </a4j:outputPanel>
 
         <c:forEach var="action" items="#{widgetProperty_actions}">
-          <ui:decorate template="/incl/action/action_template.xhtml">
-            <ui:define name="action_template_content" />
-            <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-          </ui:decorate>
+          <ui:include src="/incl/action/generic_after_action_template.xhtml" />
         </c:forEach>
 
       </nxu:valueHolder>

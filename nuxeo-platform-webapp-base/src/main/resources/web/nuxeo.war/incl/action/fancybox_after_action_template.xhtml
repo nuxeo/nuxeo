@@ -1,0 +1,54 @@
+<ui:composition
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<nxu:set var="fancyboxId"
+  value="#{idPrefix}#{action.id}"
+  cache="true">
+
+<nxu:set var="include"
+  value="#{action.properties.include}"
+  resolveTwice="true" cache="true">
+<nxu:set var="iframe"
+  value="#{action.properties.iframe}"
+  resolveTwice="true" cache="true">
+
+  <a4j:outputPanel id="#{fancyboxId}_ajax_panel">
+
+    <nxu:set var="fancyboxFormId"
+      value="#{fancyboxId}_form"
+      cache="true">
+    <nxu:set
+      var="actionClicked"
+      value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
+      cache="true">
+
+      <c:if test="#{actionClicked}">
+        <script>
+          jQuery(document).ready(function() {
+            openFancyBox('##{fancyboxId}_box');
+          });
+        </script>
+        <div style="display:none">
+          <div id="#{fancyboxId}_box">
+            <ui:include src="#{include}" />
+          </div>
+        </div>
+      </c:if>
+
+    </nxu:set>
+    </nxu:set>
+
+  </a4j:outputPanel>
+
+</nxu:set>
+</nxu:set>
+
+</nxu:set>
+
+</ui:composition>

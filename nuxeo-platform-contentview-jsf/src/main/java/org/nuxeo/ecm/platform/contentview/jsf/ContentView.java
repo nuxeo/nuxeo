@@ -55,6 +55,14 @@ public interface ContentView extends Serializable {
     public static final String CONTENT_VIEW_PAGE_CHANGED_EVENT = "contentViewPageChanged";
 
     /**
+     * Seam event to be fired when the content view's page provider has
+     * refreshed
+     *
+     * @since 5.7
+     */
+    public static final String CONTENT_VIEW_REFRESH_EVENT = "contentViewRefresh";
+
+    /**
      * Seam event to be fired when the page size of the content view has changed
      *
      * @since 5.7
