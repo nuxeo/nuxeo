@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
+import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.runtime.api.Framework;
@@ -49,6 +50,9 @@ public class AuditEventLogger implements PostCommitFilteringEventListener {
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
+        if (!(events instanceof ReconnectedEventBundle)) {
+            throw new AssertionError("Not a reconnected event bundle : " + events.getClass().getName());
+        }
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger != null) {
             try {
