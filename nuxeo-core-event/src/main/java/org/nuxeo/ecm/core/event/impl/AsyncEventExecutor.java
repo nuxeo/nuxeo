@@ -72,26 +72,48 @@ public class AsyncEventExecutor {
         return workManager.awaitCompletion(timeoutMillis, TimeUnit.MILLISECONDS);
     }
 
-    public void run(List<EventListenerDescriptor> listeners, EventBundle bundle) {
-        for (EventListenerDescriptor listener : listeners) {
-            EventBundle filtered = new EventBundleImpl();
-            for (Event event : bundle) {
-                if (listener.getEvents() != null
-                        && !listener.acceptEvent(event.getName())) {
+    public void run(final List<EventListenerDescriptor> listeners, final EventBundle  bundle) {
+        EventBundle source = bundle;
+        try {
+            for (EventListenerDescriptor listener : listeners) {
+                EventBundle filtered;
+                try {
+                    filtered = filterBundle(source, listener);
+                } catch (ShallowDocumentModel.NotShallowedException e) {
+                    source = new ReconnectedEventBundleImpl(bundle);
+                    filtered = filterBundle(source, listener);
+                }
+                if (filtered.isEmpty()) {
                     continue;
                 }
-                PostCommitEventListener pcl = listener.asPostCommitListener();
-                if (pcl instanceof PostCommitFilteringEventListener
-                        && !((PostCommitFilteringEventListener) pcl).acceptEvent(event)) {
-                    continue;
-                }
-                filtered.push(event);
+                getWorkManager().schedule(new ListenerWork(listener, filtered));
             }
-            if (filtered.isEmpty()) {
+        } finally {
+            if (source instanceof ReconnectedEventBundleImpl && source != bundle)  {
+                ((ReconnectedEventBundleImpl) source).disconnect();
+            }
+        }
+    }
+
+    private EventBundle filterBundle(EventBundle source,
+            EventListenerDescriptor listener) {
+        EventBundle filtered = new EventBundleImpl();
+        for (Event event : source) {
+            if (listener.getEvents() != null
+                    && !listener.acceptEvent(event.getName())) {
                 continue;
             }
-            getWorkManager().schedule(new ListenerWork(listener, filtered));
+            PostCommitEventListener pcl = listener.asPostCommitListener();
+            if (pcl instanceof PostCommitFilteringEventListener
+                    && !((PostCommitFilteringEventListener) pcl).acceptEvent(event)) {
+                continue;
+            }
+            if (!(event instanceof ShallowEvent)) {
+                event = ShallowEvent.create(event);
+            }
+            filtered.push(event);
         }
+        return filtered;
     }
 
     public int getUnfinishedCount() {
