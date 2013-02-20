@@ -34,11 +34,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
@@ -113,7 +112,7 @@ public class TestDefaultFileSystemItemFactory {
 
     protected DocumentModel notAFileSystemItem;
 
-    protected FileSystemItemFactory defaultFileSystemItemFactory;
+    protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 
     @Before
     public void createTestDocs() throws Exception {
@@ -162,16 +161,15 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
-        assertTrue(defaultFileSystemItemFactory instanceof DefaultFileSystemItemFactory);
+        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
+        assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
 
         // Set versioning delay to 1 second
-        defaultFileSystemItemFactory.setParameter(
-                DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM, "1");
-        assertEquals("1",
-                defaultFileSystemItemFactory.getParameter("versioningDelay"));
-        assertEquals("MINOR",
-                defaultFileSystemItemFactory.getParameter("versioningOption"));
+        defaultFileSystemItemFactory.setVersioningDelay(1.0);
+        assertEquals(1.0, defaultFileSystemItemFactory.getVersioningDelay(),
+                .01);
+        assertEquals(VersioningOption.MINOR,
+                defaultFileSystemItemFactory.getVersioningOption());
     }
 
     @Test
@@ -469,21 +467,12 @@ public class TestDefaultFileSystemItemFactory {
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         assertTrue(fileItem.getCanUpdate());
 
-        // ------------------------------------------------------------
-        // DocumentBackedFileItem#getVersioningDelay
-        // and DocumentBackedFileItem#getVersioningOption
-        // ------------------------------------------------------------
-        // Re-fetch file with Administrator session
-        file = session.getDocument(file.getRef());
-        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-        assertEquals(1,
-                ((DocumentBackedFileItem) fileItem).getVersioningDelay());
-        assertEquals(VersioningOption.MINOR,
-                ((DocumentBackedFileItem) fileItem).getVersioningOption());
-
         // ------------------------------------------------------
         // FileItem#getBlob and FileItem#setBlob
         // ------------------------------------------------------
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         // #getBlob
         Blob fileItemBlob = fileItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());

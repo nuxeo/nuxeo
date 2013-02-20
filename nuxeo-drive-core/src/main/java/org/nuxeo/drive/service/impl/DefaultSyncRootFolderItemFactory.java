@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service.impl;
 
 import java.security.Principal;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Antoine Taillefer
  */
 public class DefaultSyncRootFolderItemFactory extends
-        DefaultFileSystemItemFactory {
+        AbstractFileSystemItemFactory {
 
     private static final Log log = LogFactory.getLog(DefaultSyncRootFolderItemFactory.class);
 
@@ -48,6 +49,28 @@ public class DefaultSyncRootFolderItemFactory extends
      * {@link FileSystemItemFactoryDescriptor#getFactory()}.
      */
     protected DefaultSyncRootFolderItemFactory() {
+    }
+
+    /*--------------------------- AbstractFileSystemItemFactory -------------*/
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        String userName = doc.getCoreSession().getPrincipal().getName();
+        return getFileSystemItem(
+                doc,
+                getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getSyncRootParentFolderItemId(
+                        userName), includeDeleted);
+    }
+
+    @Override
+    public void handleParameters(Map<String, String> parameters) {
+        // Nothing to do as no parameters are contributed to the factory
+        if (!parameters.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Parameter map is not empty whereas no parameters are contributed to the factory.");
+        }
+        log.debug(String.format("Factory %s has no parameters to handle.",
+                getName()));
     }
 
     /**
@@ -117,28 +140,12 @@ public class DefaultSyncRootFolderItemFactory extends
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
-        String userName = doc.getCoreSession().getPrincipal().getName();
-        return getFileSystemItem(
-                doc,
-                getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getSyncRootParentFolderItemId(
-                        userName), includeDeleted);
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
-            boolean includeDeleted) throws ClientException {
-        // If the doc is not adaptable as a FileSystemItem return null
-        if (!isFileSystemItem(doc, includeDeleted)) {
-            log.debug(String.format(
-                    "Document %s cannot be adapted as a FileSystemItem => returning null.",
-                    doc.getId()));
-            return null;
-        }
+    protected FileSystemItem adaptDocument(DocumentModel doc,
+            boolean forceParentId, String parentId) throws ClientException {
         return new DefaultSyncRootFolderItem(name, parentId, doc);
     }
 
+    /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
         return Framework.getLocalService(FileSystemItemAdapterService.class);
     }

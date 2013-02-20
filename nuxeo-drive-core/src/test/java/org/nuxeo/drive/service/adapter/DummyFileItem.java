@@ -16,10 +16,9 @@
  */
 package org.nuxeo.drive.service.adapter;
 
-import java.util.HashMap;
-
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -32,14 +31,14 @@ public class DummyFileItem extends DocumentBackedFileItem {
 
     private static final long serialVersionUID = 1L;
 
-    public DummyFileItem(String factoryName, DocumentModel doc)
-            throws ClientException {
-        super(factoryName, doc, new HashMap<String, String>());
+    public DummyFileItem(VersioningFileSystemItemFactory factory,
+            DocumentModel doc) throws ClientException {
+        super(factory, doc);
     }
 
-    public DummyFileItem(String factoryName, String parentId, DocumentModel doc)
-            throws ClientException {
-        super(factoryName, parentId, doc, new HashMap<String, String>());
+    public DummyFileItem(VersioningFileSystemItemFactory factory,
+            String parentId, DocumentModel doc) throws ClientException {
+        super(factory, parentId, doc);
     }
 
     @Override

@@ -84,7 +84,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
             IllegalAccessException {
         FileSystemItemFactory factory = factoryClass.newInstance();
         factory.setName(name);
-        factory.setParameters(parameters);
+        factory.handleParameters(parameters);
         return factory;
     }
 
