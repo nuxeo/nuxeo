@@ -23,7 +23,6 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
@@ -72,7 +71,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private final Set<String> facets;
 
-    public static class NotShallowedException extends ClientRuntimeException {
+    public static class NotShallowedException extends UnsupportedOperationException  {
 
         private static final long serialVersionUID = 1L;
 
