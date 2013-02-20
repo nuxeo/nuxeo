@@ -95,7 +95,7 @@ public class AsyncEventExecutor {
         }
     }
 
-    private EventBundle filterBundle(EventBundle source,
+    protected EventBundle filterBundle(EventBundle source,
             EventListenerDescriptor listener) {
         EventBundle filtered = new EventBundleImpl();
         for (Event event : source) {
