@@ -43,6 +43,16 @@
       </operation>
     </chain>
 
+    <chain id="changeSourceOnProjectLifeCycle">
+      <operation id="Context.FetchDocument" />
+      <operation id="Document.SetProperty">
+        <param type="string" name="xpath">dc:source</param>
+        <param type="serializable" name="value">
+          Filtered lifecycle state
+        </param>
+      </operation>
+    </chain>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
@@ -80,6 +90,14 @@
       </filters>
     </handler>
 
+    <handler chainId="changeSourceOnProjectLifeCycle" postCommit="true">
+      <event>documentCreated</event>
+      <filters>
+        <condition>Document.lifeCycle == "project"</condition>
+      </filters>
+    </handler>
+
   </extension>
+
 
 </component>

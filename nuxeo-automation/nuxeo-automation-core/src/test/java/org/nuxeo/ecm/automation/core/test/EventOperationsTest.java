@@ -16,8 +16,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,6 +31,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
 
@@ -50,6 +51,9 @@ public class EventOperationsTest {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    RuntimeHarness harness;
 
     @Before
     public void initRepo() throws Exception {
@@ -76,9 +80,6 @@ public class EventOperationsTest {
      */
     @Test
     public void testCreateNoteWhenFolderCreated() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-
         // now create a new folder inside src
         DocumentModel folder = session.createDocumentModel("/src", "myfolder",
                 "Folder");
@@ -100,9 +101,6 @@ public class EventOperationsTest {
      */
     @Test
     public void testCreateNoteWhenFolderCreatedInPostCommit() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-
         // now create a new folder inside src
         DocumentModel folder = session.createDocumentModel("/src", "myfolder",
                 "Folder");
@@ -125,10 +123,7 @@ public class EventOperationsTest {
 
     @Test
     public void testCreateNoteWhenExpressionNOK() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-
-        DocumentModel file = session.createDocumentModel("/src", "myfile",
+       DocumentModel file = session.createDocumentModel("/src", "myfile",
                 "File");
         file.setPropertyValue("dc:title", "MyFile");
         assertEquals("MyFile", file.getPropertyValue("dc:title"));
@@ -139,16 +134,22 @@ public class EventOperationsTest {
 
     @Test
     public void testCreateNoteWhenConditionOK() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-
-        DocumentModel folder = session.createDocumentModel("/src", "myws",
+       DocumentModel folder = session.createDocumentModel("/src", "myws",
                 "Workspace");
         folder.setPropertyValue("dc:title", "My workspace");
         assertEquals("My workspace", folder.getPropertyValue("dc:title"));
         folder = session.createDocument(folder);
         assertEquals("Modified with true condition",
                 folder.getPropertyValue("dc:title"));
+        session.save();
+
     }
 
+    @Test
+    public void testShadowedFiltering() throws ClientException {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        session.save();
+        DocumentModel doc = session.getDocument(src.getRef());
+        assertEquals("Filtered lifecycle state", doc.getPropertyValue("dc:source"));
+    }
 }
