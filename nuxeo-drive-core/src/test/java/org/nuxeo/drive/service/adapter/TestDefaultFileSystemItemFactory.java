@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -180,6 +181,7 @@ public class TestDefaultFileSystemItemFactory {
         // Check downloadable FileSystemItems
         // ------------------------------------------------------
         // File
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(file));
         FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -194,6 +196,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
 
         // Note
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(note));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -208,6 +211,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Content of Bob's note.", fileItemBlob.getString());
 
         // Custom doc type with the "file" schema
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(custom));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FileItem);
@@ -224,25 +228,45 @@ public class TestDefaultFileSystemItemFactory {
         // File without a blob => not adaptable as a FileSystemItem
         file.setPropertyValue("file:content", null);
         file = session.saveDocument(file);
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
         assertNull(fsItem);
 
         // Deleted file => not adaptable as a FileSystemItem
         custom.followTransition("delete");
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(custom));
         assertNull(defaultFileSystemItemFactory.getFileSystemItem(custom));
 
         // Deleted file with explicit "includeDeleted" => adaptable as a
         // FileSystemItem
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(file));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(custom, true);
         assertNotNull(fsItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + custom.getId(),
                 fsItem.getId());
         assertEquals("Bonnie's file.odt", fsItem.getName());
 
+        // Version
+        DocumentRef versionRef = session.checkIn(note.getRef(),
+                VersioningOption.MINOR, null);
+        DocumentModel version = session.getDocument(versionRef);
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(version));
+
+        // Proxy
+        DocumentModel proxy = session.createProxy(note.getRef(),
+                folder.getRef());
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(proxy));
+
+        // HiddenInNavigation
+        note.addFacet("HiddenInNavigation");
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(note));
+        note.removeFacet("HiddenInNavigation");
+
         // ------------------------------------------------------
         // Check folderish FileSystemItems
         // ------------------------------------------------------
         // Folder
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(folder));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folder);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
@@ -258,6 +282,7 @@ public class TestDefaultFileSystemItemFactory {
 
         // FolderishFile => adaptable as a FolderItem since the default
         // FileSystemItem factory gives precedence to the Folderish facet
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(folderishFile));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(folderishFile);
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof FolderItem);
@@ -270,8 +295,9 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Administrator", fsItem.getCreator());
 
         // ------------------------------------------------------
-        // Check not adaptable as a FileSystemItem
+        // Check not downloadable nor folderish
         // ------------------------------------------------------
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(notAFileSystemItem));
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(notAFileSystemItem);
         assertNull(fsItem);
 

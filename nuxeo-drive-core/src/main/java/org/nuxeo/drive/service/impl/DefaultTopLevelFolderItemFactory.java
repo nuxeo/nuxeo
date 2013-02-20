@@ -70,23 +70,14 @@ public class DefaultTopLevelFolderItemFactory implements
     }
 
     @Override
-    public Map<String, String> getParameters() {
-        return parameters;
+    public boolean isFileSystemItem(DocumentModel doc) throws ClientException {
+        return isFileSystemItem(doc, false);
     }
 
     @Override
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
-    @Override
-    public String getParameter(String name) {
-        return parameters.get(name);
-    }
-
-    @Override
-    public void setParameter(String name, String value) {
-        parameters.put(name, value);
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
+            throws ClientException {
+        return false;
     }
 
     @Override
@@ -138,6 +129,26 @@ public class DefaultTopLevelFolderItemFactory implements
                     "Cannot get the file system item for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
         }
         return getTopLevelFolderItem(principal.getName());
+    }
+
+    @Override
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    @Override
+    public String getParameter(String name) {
+        return parameters.get(name);
+    }
+
+    @Override
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
     }
 
 }

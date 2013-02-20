@@ -260,10 +260,13 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertEquals(
                 "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory",
                 defaultTopLevelFolderItemFactory.getName());
+        // #isFileSystemItem(DocumentModel doc)
+        DocumentModel fakeDoc = new DocumentModelImpl("File");
+        assertFalse(defaultTopLevelFolderItemFactory.isFileSystemItem(fakeDoc));
+
         // #getFileSystemItem(DocumentModel doc)
         try {
-            defaultTopLevelFolderItemFactory.getFileSystemItem(new DocumentModelImpl(
-                    "File"));
+            defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc);
             fail("Should be unsupported.");
         } catch (UnsupportedOperationException e) {
             assertEquals(
@@ -272,8 +275,8 @@ public class TestDefaultTopLevelFolderItemFactory {
         }
         // #getFileSystemItem(DocumentModel doc, String parentId)
         try {
-            defaultTopLevelFolderItemFactory.getFileSystemItem(
-                    new DocumentModelImpl("File"), "testParentId");
+            defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc,
+                    "testParentId");
             fail("Should be unsupported.");
         } catch (UnsupportedOperationException e) {
             assertEquals(
@@ -305,7 +308,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertNull(topLevelFolderItem.getParentId());
         assertEquals("Nuxeo Drive", topLevelFolderItem.getName());
         try {
-            defaultTopLevelFolderItemFactory.getFileSystemItemById("otestId",
+            defaultTopLevelFolderItemFactory.getFileSystemItemById("testId",
                     session.getPrincipal());
             fail("Should be unsupported.");
         } catch (UnsupportedOperationException e) {
