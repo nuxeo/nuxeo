@@ -42,8 +42,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
+	<td>click</td>
 	<td>htmltextWidgetLayout_edit_form:htmltextWidgetLayout_edit_form_submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>htmltextWidgetLayout_edit_form:nxl_htmltextWidgetLayout:nxw_htmltextWidget_message</td>
 	<td></td>
 </tr>
 <tr>
@@ -52,10 +57,16 @@
 	<td>Value is required</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//a[@id='htmltextWidgetLayout_edit_form:nxl_htmltextWidgetLayout:nxw_htmltextWidget_bold']/span[1]</td>
+	<td>waitForFrameToLoad</td>
+	<td>id=htmltextWidgetLayout_edit_form:nxl_htmltextWidgetLayout:nxw_htmltextWidget_ifr</td>
 	<td></td>
 </tr>
+<tr>
+	<td>click</td>
+	<td>css=span.mceIcon.mce_bold</td>
+	<td></td>
+</tr>
+<!-- broken since NXP- 5578-->
 <tr>
 	<td>typeKeys</td>
 	<td>tinymce</td>
@@ -63,7 +74,7 @@
 </tr>
 <tr>
 	<td>click</td>
-	<td>//a[@id='htmltextWidgetLayout_edit_form:nxl_htmltextWidgetLayout:nxw_htmltextWidget_bold']/span[1]</td>
+	<td>css=span.mceIcon.mce_bold</td>
 	<td></td>
 </tr>
 <tr>
@@ -72,8 +83,13 @@
 	<td>content</td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>htmltextWidgetLayout_edit_form:htmltextWidgetLayout_edit_form_submitButton</td>
+	<td>click</td>
+	<td>id=htmltextWidgetLayout_edit_form:htmltextWidgetLayout_edit_form_submitButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForFrameToLoad</td>
+	<td>id=htmltextWidgetLayout_edit_form:nxl_htmltextWidgetLayout:nxw_htmltextWidget_ifr</td>
 	<td></td>
 </tr>
 <tr>
@@ -101,7 +117,6 @@
 	<td>htmltextWidgetLayout_view_form:nxl_htmltextWidgetLayout_1:nxw_htmltextWidget_1</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>
