@@ -366,7 +366,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public boolean isLifeCycleLoaded() {
-        throw new NotShallowedException();
+        return false;
     }
 
     @Override

@@ -579,7 +579,7 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public boolean isLifeCycleLoaded() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
