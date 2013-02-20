@@ -476,8 +476,8 @@ public class TestDefaultFileSystemItemFactory {
         // Re-fetch file with Administrator session
         file = session.getDocument(file.getRef());
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-        assertEquals(1,
-                ((DocumentBackedFileItem) fileItem).getVersioningDelay());
+        assertEquals(1.0,
+                ((DocumentBackedFileItem) fileItem).getVersioningDelay(), .01);
         assertEquals(VersioningOption.MINOR,
                 ((DocumentBackedFileItem) fileItem).getVersioningOption());
 

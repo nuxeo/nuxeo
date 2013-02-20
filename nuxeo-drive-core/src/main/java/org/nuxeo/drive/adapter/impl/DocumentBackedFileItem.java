@@ -57,7 +57,7 @@ public class DocumentBackedFileItem extends
     protected boolean canUpdate;
 
     // Versioning delay in seconds, default value: 1 hour
-    protected long versioningDelay = 3600;
+    protected double versioningDelay = 3600;
 
     // Versioning option, default value: MINOR
     protected VersioningOption versioningOption = VersioningOption.MINOR;
@@ -152,7 +152,7 @@ public class DocumentBackedFileItem extends
 
     /*--------------------- DocumentBackedFileItem -----------------*/
     @JsonIgnore
-    public long getVersioningDelay() {
+    public double getVersioningDelay() {
         return versioningDelay;
     }
 
@@ -178,7 +178,7 @@ public class DocumentBackedFileItem extends
         if (params != null) {
             String versioningDelayParam = params.get(DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM);
             if (!StringUtils.isEmpty(versioningDelayParam)) {
-                versioningDelay = Long.parseLong(versioningDelayParam);
+                versioningDelay = Double.parseDouble(versioningDelayParam);
             }
             String versioningOptionParam = params.get(DefaultFileSystemItemFactory.VERSIONING_OPTION_PARAM);
             if (!StringUtils.isEmpty(versioningOptionParam)) {
@@ -279,7 +279,7 @@ public class DocumentBackedFileItem extends
         }
         long lastModified = System.currentTimeMillis()
                 - getLastModificationDate().getTimeInMillis();
-        long versioningDelayMillis = versioningDelay * 1000;
+        long versioningDelayMillis = (long) versioningDelay * 1000;
         if (lastModified > versioningDelayMillis) {
             log.debug(String.format(
                     "Last modification was done %d milliseconds ago, this is more than the versioning delay %d milliseconds => will create a version of the document.",
