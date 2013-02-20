@@ -335,8 +335,8 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     }
 
     public void refresh() {
-        super.refresh();
         setCurrentPageOffset(0);
+        super.refresh();
     }
 
     @SuppressWarnings("unchecked")
