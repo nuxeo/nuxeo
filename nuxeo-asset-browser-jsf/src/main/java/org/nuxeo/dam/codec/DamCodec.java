@@ -42,7 +42,7 @@ public class DamCodec extends DocumentPathCodec {
     }
 
     /**
-     * Never handle document views: this codec is useless on post requests
+     * Never handle document views: this codec is useless on post requests.
      */
     @Override
     public boolean handleDocumentView(DocumentView docView) {
