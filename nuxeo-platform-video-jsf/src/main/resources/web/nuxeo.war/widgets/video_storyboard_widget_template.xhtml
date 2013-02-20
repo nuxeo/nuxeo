@@ -11,10 +11,10 @@
 
   <c:if test="#{value.hasFacet('Video')}">
 
-  <h3 class="summaryTitle">#{messages[widget.label]}</h3>
-
-  <c:if test="#{not empty label}">
-    <h3 class="summaryTitle">#{messages[label]}</h3>
+  <c:if test="#{!empty widget.label and widget.handlingLabels}">
+    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+      <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+    </ui:include>
   </c:if>
 
   <ui:repeat var="item" value="#{storyboardActions.getItems(value)}">
