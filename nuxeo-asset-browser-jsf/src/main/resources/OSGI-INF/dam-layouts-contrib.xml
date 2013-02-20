@@ -184,10 +184,9 @@
       <handlingLabels>true</handlingLabels>
       <subWidgets>
         <widget name="videoStoryboard" type="video_storyboard">
-          <labels>
-            <label mode="any"></label>
-          </labels>
-          <translated>false</translated>
+          <controls mode="any">
+            <control name="handlingLabels">false</control>
+          </controls>
         </widget>
       </subWidgets>
       <properties widgetMode="any">
