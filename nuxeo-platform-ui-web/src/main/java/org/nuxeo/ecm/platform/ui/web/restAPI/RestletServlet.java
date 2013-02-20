@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService;
 import org.nuxeo.ecm.platform.ui.web.restAPI.service.RestletPluginDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.restlet.Filter;
 import org.restlet.Restlet;
 import org.restlet.Route;
@@ -122,7 +123,30 @@ public class RestletServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        converter.service(req, res);
+        boolean tx = TransactionHelper.startTransaction();
+        try {
+            converter.service(req, res);
+        } catch (ServletException e) {
+            if (tx) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            throw e;
+        } catch (IOException e) {
+            if (tx) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            throw e;
+        } finally {
+            if (tx) {
+                if (TransactionHelper.isTransactionActive()) {
+                    // SeamRestletFilter might have done an early commit to
+                    // avoid race condition on the core session on restlets
+                    // who rely upon the conversation lock to fetch it
+                    // thread-safely
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+        }
     }
 
 }
