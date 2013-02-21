@@ -41,13 +41,6 @@ public class DefaultTopLevelFolderItemFactory implements
 
     protected String name;
 
-    /**
-     * Prevent from instantiating class as it should only be done by
-     * {@link TopLevelFolderItemFactoryDescriptor#getFactory()}.
-     */
-    protected DefaultTopLevelFolderItemFactory() {
-    }
-
     /*--------------------------- TopLevelFolderItemFactory -----------------*/
     @Override
     public FolderItem getTopLevelFolderItem(String userName)

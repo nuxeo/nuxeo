@@ -56,13 +56,6 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
     // Versioning option, default value: MINOR
     protected VersioningOption versioningOption = VersioningOption.MINOR;
 
-    /**
-     * Prevent from instantiating class as it should only be done by
-     * {@link FileSystemItemFactoryDescriptor#getFactory()}.
-     */
-    protected DefaultFileSystemItemFactory() {
-    }
-
     /*--------------------------- AbstractFileSystemItemFactory -------------------------*/
     @Override
     public void handleParameters(Map<String, String> parameters) {

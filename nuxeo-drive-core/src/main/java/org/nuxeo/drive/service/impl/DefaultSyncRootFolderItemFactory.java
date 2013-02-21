@@ -44,13 +44,6 @@ public class DefaultSyncRootFolderItemFactory extends
 
     private static final Log log = LogFactory.getLog(DefaultSyncRootFolderItemFactory.class);
 
-    /**
-     * Prevent from instantiating class as it should only be done by
-     * {@link FileSystemItemFactoryDescriptor#getFactory()}.
-     */
-    protected DefaultSyncRootFolderItemFactory() {
-    }
-
     /*--------------------------- AbstractFileSystemItemFactory -------------*/
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
