@@ -24,11 +24,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetVersioningOptions;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,14 +54,14 @@ public class TestSetVersioningOptions {
     @Inject
     protected HttpAutomationClient automationClient;
 
-    protected FileSystemItemFactory defaultFileSystemItemFactory;
+    protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 
     protected Session clientSession;
 
     @Before
     public void init() throws Exception {
 
-        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
+        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
         assertNotNull(defaultFileSystemItemFactory);
 
         // Get an Automation client session as Administrator
@@ -72,26 +73,26 @@ public class TestSetVersioningOptions {
     public void testSetVersioningOptions() throws Exception {
 
         // Default values
-        assertEquals("3600",
-                defaultFileSystemItemFactory.getParameter("versioningDelay"));
-        assertEquals("MINOR",
-                defaultFileSystemItemFactory.getParameter("versioningOption"));
+        assertEquals(3600.0, defaultFileSystemItemFactory.getVersioningDelay(),
+                .01);
+        assertEquals(VersioningOption.MINOR,
+                defaultFileSystemItemFactory.getVersioningOption());
 
         // Set delay to 2 seconds
         clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set(
                 "delay", "2").execute();
-        assertEquals("2",
-                defaultFileSystemItemFactory.getParameter("versioningDelay"));
-        assertEquals("MINOR",
-                defaultFileSystemItemFactory.getParameter("versioningOption"));
+        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(),
+                .01);
+        assertEquals(VersioningOption.MINOR,
+                defaultFileSystemItemFactory.getVersioningOption());
 
         // Set option to MAJOR
         clientSession.newRequest(NuxeoDriveSetVersioningOptions.ID).set(
                 "option", "MAJOR").execute();
-        assertEquals("2",
-                defaultFileSystemItemFactory.getParameter("versioningDelay"));
-        assertEquals("MAJOR",
-                defaultFileSystemItemFactory.getParameter("versioningOption"));
+        assertEquals(2.0, defaultFileSystemItemFactory.getVersioningDelay(),
+                .01);
+        assertEquals(VersioningOption.MAJOR,
+                defaultFileSystemItemFactory.getVersioningOption());
 
     }
 

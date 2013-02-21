@@ -16,9 +16,7 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.StringWriter;
-
-import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.plexus.util.StringUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -29,7 +27,6 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,26 +43,29 @@ public class NuxeoDriveCreateFile {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "id")
-    protected String id;
+    @Param(name = "parentId")
+    protected String parentId;
+
+    @Param(name = "name")
+    protected String name;
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        // The filename transfered by the multipart encoding is not preserved
+        // correctly if there is non ascii characters in it.
+        if (StringUtils.isNotBlank(name)) {
+            blob.setFilename(name);
+        }
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
-        FileItem fileItem = fileSystemItemManager.createFile(id, blob,
+        FileItem fileItem = fileSystemItemManager.createFile(parentId, blob,
                 ctx.getPrincipal());
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
         NuxeoDriveOperationHelper.commitTransaction();
-
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, fileItem);
-        return StreamingBlob.createFromString(writer.toString(),
-                "application/json");
+        return NuxeoDriveOperationHelper.asJSONBlob(fileItem);
     }
 
 }

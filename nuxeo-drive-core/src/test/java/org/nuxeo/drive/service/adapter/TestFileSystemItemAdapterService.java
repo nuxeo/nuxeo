@@ -36,6 +36,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultSyncRootFolderItemFactory;
 import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -136,8 +138,6 @@ public class TestFileSystemItemAdapterService {
         assertEquals("DriveSynchronized", desc.getFacet());
         FileSystemItemFactory factory = desc.getFactory();
         assertTrue(factory instanceof DefaultSyncRootFolderItemFactory);
-        assertNotNull(factory.getParameters());
-        assertTrue(factory.getParameters().isEmpty());
 
         desc = fileSystemItemFactoryDescs.get("dummyDocTypeFactory");
         assertNotNull(desc);
@@ -148,8 +148,14 @@ public class TestFileSystemItemAdapterService {
         assertNull(desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DummyFileItemFactory);
-        assertEquals("2", factory.getParameter("versioningDelay"));
-        assertEquals("MINOR", factory.getParameter("versioningOption"));
+        assertTrue(factory instanceof VersioningFileSystemItemFactory);
+        assertEquals(
+                2.0,
+                ((VersioningFileSystemItemFactory) factory).getVersioningDelay(),
+                .01);
+        assertEquals(
+                VersioningOption.MINOR,
+                ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
         desc = fileSystemItemFactoryDescs.get("dummyFacetFactory");
         assertNotNull(desc);
@@ -160,8 +166,6 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Folderish", desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DummyFolderItemFactory);
-        assertNotNull(factory.getParameters());
-        assertTrue(factory.getParameters().isEmpty());
 
         desc = fileSystemItemFactoryDescs.get("defaultFileSystemItemFactory");
         assertNotNull(desc);
@@ -172,8 +176,14 @@ public class TestFileSystemItemAdapterService {
         assertNull(desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DefaultFileSystemItemFactory);
-        assertEquals("3600", factory.getParameter("versioningDelay"));
-        assertEquals("MINOR", factory.getParameter("versioningOption"));
+        assertTrue(factory instanceof VersioningFileSystemItemFactory);
+        assertEquals(
+                3600.0,
+                ((VersioningFileSystemItemFactory) factory).getVersioningDelay(),
+                .01);
+        assertEquals(
+                VersioningOption.MINOR,
+                ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
         // ------------------------------------------------------
         // Check ordered file system item factories
@@ -352,8 +362,6 @@ public class TestFileSystemItemAdapterService {
         assertEquals("DriveSynchronized", desc.getFacet());
         FileSystemItemFactory factory = desc.getFactory();
         assertTrue(factory instanceof DefaultSyncRootFolderItemFactory);
-        assertNotNull(factory.getParameters());
-        assertTrue(factory.getParameters().isEmpty());
 
         desc = fileSystemItemFactoryDescs.get("dummyFacetFactory");
         assertNotNull(desc);
@@ -364,8 +372,6 @@ public class TestFileSystemItemAdapterService {
         assertEquals("Folderish", desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DefaultFileSystemItemFactory);
-        assertNotNull(factory.getParameters());
-        assertTrue(factory.getParameters().isEmpty());
 
         desc = fileSystemItemFactoryDescs.get("dummyDocTypeFactory");
         assertNotNull(desc);
@@ -376,8 +382,14 @@ public class TestFileSystemItemAdapterService {
         assertNull(desc.getFacet());
         factory = desc.getFactory();
         assertTrue(factory instanceof DefaultFileSystemItemFactory);
-        assertEquals("60", factory.getParameter("versioningDelay"));
-        assertEquals("MAJOR", factory.getParameter("versioningOption"));
+        assertTrue(factory instanceof VersioningFileSystemItemFactory);
+        assertEquals(
+                60.0,
+                ((VersioningFileSystemItemFactory) factory).getVersioningDelay(),
+                .01);
+        assertEquals(
+                VersioningOption.MAJOR,
+                ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
         // ------------------------------------------------------
         // Check ordered file system item factories

@@ -16,23 +16,16 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -46,8 +39,6 @@ public class DocumentBackedFileItem extends
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(DocumentBackedFileItem.class);
-
     protected String downloadURL;
 
     protected String digestAlgorithm;
@@ -56,23 +47,18 @@ public class DocumentBackedFileItem extends
 
     protected boolean canUpdate;
 
-    // Versioning delay in seconds, default value: 1 hour
-    protected long versioningDelay = 3600;
+    protected VersioningFileSystemItemFactory factory;
 
-    // Versioning option, default value: MINOR
-    protected VersioningOption versioningOption = VersioningOption.MINOR;
-
-    public DocumentBackedFileItem(String factoryName, DocumentModel doc,
-            Map<String, String> params) throws ClientException {
-        super(factoryName, doc);
-        initialize(doc, params);
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
+            DocumentModel doc) throws ClientException {
+        super(factory.getName(), doc);
+        initialize(factory, doc);
     }
 
-    public DocumentBackedFileItem(String factoryName, String parentId,
-            DocumentModel doc, Map<String, String> params)
-            throws ClientException {
-        super(factoryName, parentId, doc);
-        initialize(doc, params);
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
+            String parentId, DocumentModel doc) throws ClientException {
+        super(factory.getName(), parentId, doc);
+        initialize(factory, doc);
     }
 
     protected DocumentBackedFileItem() {
@@ -82,9 +68,11 @@ public class DocumentBackedFileItem extends
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) throws ClientException {
-        // Update doc properties
+        /* Update doc properties */
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
+        // Handle versioning
+        versionIfNeeded(doc, session);
         BlobHolder bh = getBlobHolder(doc);
         Blob blob = getBlob(bh);
         blob.setFilename(name);
@@ -92,7 +80,7 @@ public class DocumentBackedFileItem extends
         updateDocTitleIfNeeded(doc, name);
         doc = session.saveDocument(doc);
         session.save();
-        // Update FileSystemItem attributes
+        /* Update FileSystemItem attributes */
         this.name = name;
         updateDownloadURL();
         updateLastModificationDate(doc);
@@ -150,20 +138,10 @@ public class DocumentBackedFileItem extends
         updateDigest(doc);
     }
 
-    /*--------------------- DocumentBackedFileItem -----------------*/
-    @JsonIgnore
-    public long getVersioningDelay() {
-        return versioningDelay;
-    }
-
-    @JsonIgnore
-    public VersioningOption getVersioningOption() {
-        return versioningOption;
-    }
-
     /*--------------------- Protected -----------------*/
-    protected void initialize(DocumentModel doc, Map<String, String> params)
-            throws ClientException {
+    protected void initialize(VersioningFileSystemItemFactory factory,
+            DocumentModel doc) throws ClientException {
+        this.factory = factory;
         this.name = getFileName(doc);
         this.folder = false;
         updateDownloadURL();
@@ -175,16 +153,6 @@ public class DocumentBackedFileItem extends
             this.digestAlgorithm = null;
         }
         this.canUpdate = this.canRename;
-        if (params != null) {
-            String versioningDelayParam = params.get(DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM);
-            if (!StringUtils.isEmpty(versioningDelayParam)) {
-                versioningDelay = Long.parseLong(versioningDelayParam);
-            }
-            String versioningOptionParam = params.get(DefaultFileSystemItemFactory.VERSIONING_OPTION_PARAM);
-            if (!StringUtils.isEmpty(versioningOptionParam)) {
-                versioningOption = VersioningOption.valueOf(versioningOptionParam);
-            }
-        }
     }
 
     protected BlobHolder getBlobHolder(DocumentModel doc)
@@ -249,47 +217,11 @@ public class DocumentBackedFileItem extends
 
     protected void versionIfNeeded(DocumentModel doc, CoreSession session)
             throws ClientException {
-        if (needsVersioning(doc)) {
+        if (factory.needsVersioning(doc)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION,
-                    versioningOption);
+                    factory.getVersioningOption());
             session.saveDocument(doc);
         }
-    }
-
-    /**
-     * Need to version the doc if the current contributor is different from the
-     * last contributor or if the last modification was done more than
-     * {@link #versioningDelay} seconds ago.
-     */
-    protected boolean needsVersioning(DocumentModel doc)
-            throws PropertyException, ClientException {
-        //
-        String lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
-        boolean contributorChanged = !principal.getName().equals(
-                lastContributor);
-        if (contributorChanged) {
-            log.debug(String.format(
-                    "Contributor %s is different from the last contributor %s => will create a version of the document.",
-                    principal.getName(), lastContributor));
-            return true;
-        }
-        if (getLastModificationDate() == null) {
-            log.debug("Last modification date is null => will not create a version of the document.");
-            return true;
-        }
-        long lastModified = System.currentTimeMillis()
-                - getLastModificationDate().getTimeInMillis();
-        long versioningDelayMillis = versioningDelay * 1000;
-        if (lastModified > versioningDelayMillis) {
-            log.debug(String.format(
-                    "Last modification was done %d milliseconds ago, this is more than the versioning delay %d milliseconds => will create a version of the document.",
-                    lastModified, versioningDelayMillis));
-            return true;
-        }
-        log.debug(String.format(
-                "Contributor %s is the last contributor and last modification was done %d milliseconds ago, this is less than the versioning delay %d milliseconds => will not create a version of the document.",
-                principal.getName(), lastModified, versioningDelayMillis));
-        return false;
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {

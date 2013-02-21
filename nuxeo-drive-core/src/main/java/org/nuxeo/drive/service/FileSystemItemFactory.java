@@ -20,13 +20,12 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * TODO: Extract abstract class
- *
  * Interface for the classes contributed to the {@code fileSystemItemFactory}
  * extension point of the {@link FileSystemItemAdapterService}.
  * <p>
@@ -34,9 +33,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * given {@link FileSystemItem} id.
  *
  * @author Antoine Taillefer
+ * @see AbstractFileSystemItemFactory
  * @see DefaultFileSystemItemFactory
+ * @see VersioningFileSystemItemFactory
+ * @see TopLevelFolderItemFactory
  */
 public interface FileSystemItemFactory {
+
+    /**
+     * Gets the factory unique name.
+     */
+    String getName();
 
     /**
      * Sets the factory unique name.
@@ -44,9 +51,10 @@ public interface FileSystemItemFactory {
     void setName(String name);
 
     /**
-     * Gets the factory unique name.
+     * Handles the factory parameters contributed through the
+     * {@code fileSystemItemFactory} contribution.
      */
-    String getName();
+    void handleParameters(Map<String, String> parameters);
 
     /**
      * Returns true if the given {@link DocumentModel} is adaptable as a
@@ -136,25 +144,5 @@ public interface FileSystemItemFactory {
      */
     FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException;
-
-    /**
-     * Gets the factory parameters.
-     */
-    Map<String, String> getParameters();
-
-    /**
-     * Sets the factory parameters.
-     */
-    void setParameters(Map<String, String> parameters);
-
-    /**
-     * Gets the factory parameter with the given name.
-     */
-    String getParameter(String name);
-
-    /**
-     * Sets the factory parameter with the given name to the given value.
-     */
-    void setParameter(String name, String value);
 
 }

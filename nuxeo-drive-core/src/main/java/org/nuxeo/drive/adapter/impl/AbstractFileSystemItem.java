@@ -87,6 +87,14 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     /*--------------------- FileSystemItem ---------------------*/
+    public abstract void rename(String name) throws ClientException;
+
+    public abstract void delete() throws ClientException;
+
+    public abstract boolean canMove(FolderItem dest) throws ClientException;
+
+    public abstract FileSystemItem move(FolderItem dest) throws ClientException;
+
     @Override
     public String getId() {
         return id;
@@ -136,14 +144,6 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     public boolean getCanDelete() {
         return canDelete;
     }
-
-    public abstract void rename(String name) throws ClientException;
-
-    public abstract void delete() throws ClientException;
-
-    public abstract boolean canMove(FolderItem dest) throws ClientException;
-
-    public abstract FileSystemItem move(FolderItem dest) throws ClientException;
 
     /*---------- Needed for JSON serialization ----------*/
     public String getUserName() {

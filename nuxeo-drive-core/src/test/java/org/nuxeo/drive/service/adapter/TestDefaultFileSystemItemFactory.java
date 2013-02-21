@@ -34,11 +34,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
@@ -113,7 +112,7 @@ public class TestDefaultFileSystemItemFactory {
 
     protected DocumentModel notAFileSystemItem;
 
-    protected FileSystemItemFactory defaultFileSystemItemFactory;
+    protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 
     @Before
     public void createTestDocs() throws Exception {
@@ -162,16 +161,15 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
 
         // Get default file system item factory
-        defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
-        assertTrue(defaultFileSystemItemFactory instanceof DefaultFileSystemItemFactory);
+        defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
+        assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
 
         // Set versioning delay to 1 second
-        defaultFileSystemItemFactory.setParameter(
-                DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM, "1");
-        assertEquals("1",
-                defaultFileSystemItemFactory.getParameter("versioningDelay"));
-        assertEquals("MINOR",
-                defaultFileSystemItemFactory.getParameter("versioningOption"));
+        defaultFileSystemItemFactory.setVersioningDelay(1.0);
+        assertEquals(1.0, defaultFileSystemItemFactory.getVersioningDelay(),
+                .01);
+        assertEquals(VersioningOption.MINOR,
+                defaultFileSystemItemFactory.getVersioningOption());
     }
 
     @Test
@@ -469,29 +467,22 @@ public class TestDefaultFileSystemItemFactory {
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         assertTrue(fileItem.getCanUpdate());
 
-        // ------------------------------------------------------------
-        // DocumentBackedFileItem#getVersioningDelay
-        // and DocumentBackedFileItem#getVersioningOption
-        // ------------------------------------------------------------
         // Re-fetch file with Administrator session
         file = session.getDocument(file.getRef());
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-        assertEquals(1,
-                ((DocumentBackedFileItem) fileItem).getVersioningDelay());
-        assertEquals(VersioningOption.MINOR,
-                ((DocumentBackedFileItem) fileItem).getVersioningOption());
 
         // ------------------------------------------------------
-        // FileItem#getBlob and FileItem#setBlob
+        // FileItem#getBlob
         // ------------------------------------------------------
-        // #getBlob
         Blob fileItemBlob = fileItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
         // Check versioning
         assertVersion("0.0", file);
 
-        // #setBlob
+        // ------------------------------------------------------
+        // FileItem#setBlob and versioning
+        // ------------------------------------------------------
         Blob newBlob = new StringBlob("This is a new file.");
         newBlob.setFilename("New blob.txt");
         fileItem.setBlob(newBlob);
@@ -536,6 +527,53 @@ public class TestDefaultFileSystemItemFactory {
         lastFileVersion = fileVersions.get(1);
         versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
         assertEquals("File name modified.txt", versionedBlob.getFilename());
+
+        // ------------------------------------------------------
+        // DocumentBackedFileItem#rename and versioning
+        // ------------------------------------------------------
+        // Save document to trigger the DublinCoreListener and update
+        // dc:lastContributor to "Administrator"
+        session.saveDocument(file);
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        fileItem.rename("Renamed file.txt");
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue("file:content");
+        assertEquals("Renamed file.txt", updatedBlob.getFilename());
+        // Check versioning => should not be versioned since same contributor
+        // and last modification was done before the versioning delay
+        assertVersion("0.2", file);
+
+        // Wait for versioning delay: 1s
+        Thread.sleep(1000);
+        fileItem.rename("Renamed again.txt");
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue("file:content");
+        assertEquals("Renamed again.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since last modification was
+        // done after the versioning delay
+        assertVersion("0.3", file);
+        fileVersions = session.getVersions(file.getRef());
+        assertEquals(3, fileVersions.size());
+        lastFileVersion = fileVersions.get(2);
+        updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+        assertEquals("Renamed file.txt", updatedBlob.getFilename());
+
+        // Update file with another contributor
+        file = joeSession.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        fileItem.rename("File renamed by Joe.txt");
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue("file:content");
+        assertEquals("File renamed by Joe.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since updated by a different
+        // contributor
+        assertVersion("0.4", file);
+        fileVersions = session.getVersions(file.getRef());
+        assertEquals(4, fileVersions.size());
+        lastFileVersion = fileVersions.get(3);
+        updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+        assertEquals("Renamed again.txt", updatedBlob.getFilename());
 
         CoreInstance.getInstance().close(joeSession);
         resetPermissions(rootDoc, "joe");

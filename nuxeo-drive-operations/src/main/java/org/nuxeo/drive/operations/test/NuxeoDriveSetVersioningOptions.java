@@ -17,13 +17,14 @@
 package org.nuxeo.drive.operations.test;
 
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,16 +51,12 @@ public class NuxeoDriveSetVersioningOptions {
     public void run() throws Exception {
 
         FileSystemItemAdapterService fileSystemItemAdapterService = Framework.getLocalService(FileSystemItemAdapterService.class);
-        FileSystemItemFactory defaultFileSystemItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
+        VersioningFileSystemItemFactory defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
         if (delay != null) {
-            defaultFileSystemItemFactory.setParameter(
-                    DefaultFileSystemItemFactory.VERSIONING_DELAY_PARAM, delay);
+            defaultFileSystemItemFactory.setVersioningDelay(Double.parseDouble(delay));
         }
         if (option != null) {
-            defaultFileSystemItemFactory.setParameter(
-                    DefaultFileSystemItemFactory.VERSIONING_OPTION_PARAM,
-                    option);
+            defaultFileSystemItemFactory.setVersioningOption(VersioningOption.valueOf(option));
         }
     }
-
 }
