@@ -479,12 +479,25 @@ public abstract class NuxeoLauncher {
         // pb = pb.redirectErrorStream(true);
         log.debug("Server command: " + pb.command());
         nuxeoProcess = pb.start();
-        logProcessStreams(nuxeoProcess, logProcessOutput);
         Thread.sleep(1000);
-        if (getPid() != null) {
-            log.warn("Server started with process ID " + pid + ".");
-        } else {
-            log.warn("Sent server start command but could not get process ID.");
+        boolean processExited = false;
+        // Check if process exited early
+        try {
+            int exitValue = nuxeoProcess.exitValue();
+            if (exitValue != 0) {
+                log.error(String.format("Server start failed (%d).", exitValue));
+            }
+            processExited = true;
+        } catch (IllegalThreadStateException e) {
+            // Normal case
+        }
+        logProcessStreams(nuxeoProcess, processExited || logProcessOutput);
+        if (!processExited) {
+            if (getPid() != null) {
+                log.warn("Server started with process ID " + pid + ".");
+            } else {
+                log.warn("Sent server start command but could not get process ID.");
+            }
         }
     }
 
