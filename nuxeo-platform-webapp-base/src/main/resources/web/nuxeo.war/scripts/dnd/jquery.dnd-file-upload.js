@@ -231,6 +231,7 @@
         load(xhr, opts);
       } else {
         log("Upload failed, status: " + xhr.status);
+      }
     }
   }
 
