@@ -16,10 +16,8 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.StringWriter;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -30,7 +28,6 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -56,11 +53,7 @@ public class NuxeoDriveGetChildren {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         List<FileSystemItem> children = fileSystemItemManager.getChildren(id,
                 ctx.getPrincipal());
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, children);
-        return StreamingBlob.createFromString(writer.toString(),
-                "application/json");
+        return NuxeoDriveOperationHelper.asJSONBlob(children);
     }
 
 }

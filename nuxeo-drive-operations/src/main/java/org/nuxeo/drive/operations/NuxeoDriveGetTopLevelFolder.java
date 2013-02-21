@@ -16,7 +16,6 @@
  */
 package org.nuxeo.drive.operations;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -25,7 +24,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,9 +44,7 @@ public class NuxeoDriveGetTopLevelFolder {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(ctx.getPrincipal());
-        ObjectMapper mapper = new ObjectMapper();
-        return StreamingBlob.createFromString(
-                mapper.writeValueAsString(topLevelFolder), "application/json");
+        return NuxeoDriveOperationHelper.asJSONBlob(topLevelFolder);
     }
 
 }
