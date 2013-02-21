@@ -56,13 +56,47 @@
     point="widgets">
 
     <!-- Grid layout widgets -->
-    <widget name="damPanelLeft" type="currentDocumentActionsWithForms">
+    <widget name="damPanelLeft" type="container">
+      <properties widgetMode="view">
+        <property name="display">block_top</property>
+        <property name="hideSubLabels">true</property>
+        <property name="ajaxPanelId">damPanelLeft</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>damSearchForm</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="damPanelCenter" type="container">
+      <properties widgetMode="view">
+        <property name="display">block_top</property>
+        <property name="hideSubLabels">true</property>
+        <property name="ajaxPanelId">damPanelCenter</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>damSearchResults</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="damPanelRight" type="container">
+      <properties widgetMode="view">
+        <property name="display">block_top</property>
+        <property name="hideSubLabels">true</property>
+        <property name="ajaxPanelId">damPanelRight</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>damAssetView</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <!-- Main actions widgets -->
+    <widget name="damSearchForm" type="currentDocumentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_LEFT</property>
       </properties>
     </widget>
 
-    <widget name="damPanelCenter" type="currentDocumentActions">
+    <widget name="damSearchResults" type="currentDocumentActions">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_CENTER</property>
       </properties>
@@ -71,7 +105,7 @@
       </controls>
     </widget>
 
-    <widget name="damPanelRight" type="currentDocumentActions">
+    <widget name="damAssetView" type="currentDocumentActions">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_RIGHT</property>
       </properties>
@@ -606,10 +640,9 @@
       <rows>
         <row>
           <properties mode="any">
-            <!-- TODO: add styles at this level -->
-            <property name="nxl_gridStyleClass_0">gridStyle2</property>
-            <property name="nxl_gridStyleClass_1">gridStyle6</property>
-            <property name="nxl_gridStyleClass_2">gridStyle4</property>
+            <property name="nxl_gridStyleClass_0">gridStyle2 nxDamSearchForm</property>
+            <property name="nxl_gridStyleClass_1">gridStyle6 nxDamSearchResults</property>
+            <property name="nxl_gridStyleClass_2">gridStyle4 nxDamAssetView</property>
           </properties>
           <widget>damPanelLeft</widget>
           <widget>damPanelCenter</widget>
