@@ -776,6 +776,7 @@ public class TestFileSystemItemOperations {
         resetPermissions(rootDoc, "joe");
         resetPermissions(syncRoot1, "joe");
         resetPermissions(syncRoot2, "joe");
+        deleteUser("joe");
     }
 
     @Test
