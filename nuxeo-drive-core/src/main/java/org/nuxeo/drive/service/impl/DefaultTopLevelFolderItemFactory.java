@@ -39,6 +39,8 @@ public class DefaultTopLevelFolderItemFactory implements
 
     private static final Log log = LogFactory.getLog(DefaultTopLevelFolderItemFactory.class);
 
+    protected String name;
+
     /**
      * Prevent from instantiating class as it should only be done by
      * {@link TopLevelFolderItemFactoryDescriptor#getFactory()}.
@@ -46,7 +48,7 @@ public class DefaultTopLevelFolderItemFactory implements
     protected DefaultTopLevelFolderItemFactory() {
     }
 
-    /*--------------------------- TopLevelFolderItemFactory ----------------------------*/
+    /*--------------------------- TopLevelFolderItemFactory -----------------*/
     @Override
     public FolderItem getTopLevelFolderItem(String userName)
             throws ClientException {
@@ -59,16 +61,15 @@ public class DefaultTopLevelFolderItemFactory implements
         return getTopLevelFolderItem(userName).getId();
     }
 
-    /*--------------------------- FileSystemItemFactory --------------------------------*/
+    /*--------------------------- FileSystemItemFactory ---------------------*/
     @Override
     public String getName() {
-        return getClass().getName();
+        return name;
     }
 
     @Override
     public void setName(String name) {
-        throw new UnsupportedOperationException(
-                "Cannot set the name of a TopLevelFolderItemFactory.");
+        this.name = name;
     }
 
     @Override
@@ -103,7 +104,9 @@ public class DefaultTopLevelFolderItemFactory implements
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
+                String.format(
+                        "Cannot get the file system item for a given document from factory %s.",
+                        getName()));
     }
 
     @Override
@@ -116,7 +119,9 @@ public class DefaultTopLevelFolderItemFactory implements
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
             boolean includeDeleted) throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
+                String.format(
+                        "Cannot get the file system item for a given document from factory %s.",
+                        getName()));
     }
 
     @Override
@@ -129,7 +134,9 @@ public class DefaultTopLevelFolderItemFactory implements
             throws ClientException {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(
-                    "Cannot check if a file system item with a given id exists for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
+                    String.format(
+                            "Cannot check if a file system item exists for an id that cannot be handled from factory %s.",
+                            getName()));
         }
         return true;
     }
@@ -139,7 +146,9 @@ public class DefaultTopLevelFolderItemFactory implements
             throws ClientException {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(
-                    "Cannot get the file system item for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
+                    String.format(
+                            "Cannot get the file system item for an id that cannot be handled from factory %s.",
+                            getName()));
         }
         return getTopLevelFolderItem(principal.getName());
     }
