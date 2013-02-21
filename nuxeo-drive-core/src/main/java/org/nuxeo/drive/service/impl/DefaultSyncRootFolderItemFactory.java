@@ -94,6 +94,7 @@ public class DefaultSyncRootFolderItemFactory extends
             log.debug(String.format(
                     "Document %s is not Folderish, it cannot be adapted as a FileSystemItem.",
                     doc.getId()));
+            return false;
         }
         // Check version
         if (doc.isVersion()) {
