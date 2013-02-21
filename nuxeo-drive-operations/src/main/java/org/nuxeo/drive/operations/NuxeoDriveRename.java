@@ -56,7 +56,7 @@ public class NuxeoDriveRename {
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
-        NuxeoDriveOperationHelper.commitTransaction();
+        NuxeoDriveOperationHelper.commitAndReopenTransaction();
         return NuxeoDriveOperationHelper.asJSONBlob(fsItem);
     }
 
