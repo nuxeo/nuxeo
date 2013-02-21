@@ -104,7 +104,9 @@ public class DefaultTopLevelFolderItemFactory implements
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
+                String.format(
+                        "Cannot get the file system item for a given document from factory %s.",
+                        getName()));
     }
 
     @Override
@@ -117,7 +119,9 @@ public class DefaultTopLevelFolderItemFactory implements
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
             boolean includeDeleted) throws ClientException {
         throw new UnsupportedOperationException(
-                "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.");
+                String.format(
+                        "Cannot get the file system item for a given document from factory %s.",
+                        getName()));
     }
 
     @Override
@@ -130,7 +134,9 @@ public class DefaultTopLevelFolderItemFactory implements
             throws ClientException {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(
-                    "Cannot check if a file system item with a given id exists for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
+                    String.format(
+                            "Cannot check if a file system item exists for an id that cannot be handled from factory %s.",
+                            getName()));
         }
         return true;
     }
@@ -140,7 +146,9 @@ public class DefaultTopLevelFolderItemFactory implements
             throws ClientException {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(
-                    "Cannot get the file system item for an id different than the top level folder item one from a TopLevelFolderItemFactory.");
+                    String.format(
+                            "Cannot get the file system item for an id that cannot be handled from factory %s.",
+                            getName()));
         }
         return getTopLevelFolderItem(principal.getName());
     }
