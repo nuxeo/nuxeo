@@ -181,7 +181,10 @@
 
       // add listeners
       upload.addEventListener("progress", function(event) {progress(event,opts)}, false);
-      upload.addEventListener("load", function(event) {load(event,opts)}, false);
+      // The "load" event doesn't work correctly on WebKit (Chrome, Safari),
+      // it fires too early, before the server has returned its response.
+      // upload.addEventListener("load", function(event) {load(event,opts)}, false);
+      xhr.onreadystatechange = function() {readyStateChange(xhr, opts)};
 
       // propagate callback
       upload.uploadFiles = uploadFiles;
@@ -222,20 +225,30 @@
     sendingRequestsInProgress=false;
   }
 
-  function load(event, opts) {
-    log(event);
+  function readyStateChange(xhr, opts) {
+    if (xhr.readyState == 4) {
+      if (xhr.status == 200) {
+        load(xhr, opts);
+      } else {
+        log("Upload failed, status: " + xhr.status);
+      }
+    }
+  }
+
+  function load(xhr, opts) {
     var now = new Date().getTime();
-    var timeDiff = now - event.target.downloadStartTime;
-    opts.handler.uploadFinished(event.target.fileIndex, event.target.fileObj, timeDiff);
-    log("finished loading of file " + event.target.fileIndex);
+    var upload = xhr.upload;
+    var timeDiff = now - upload.downloadStartTime;
+    opts.handler.uploadFinished(upload.fileIndex, upload.fileObj, timeDiff);
+    log("finished loading of file " + upload.fileIndex);
     nbUploadInprogress--;
     if (!sendingRequestsInProgress && uploadStack.length>0) {
       // restart upload
       log("restart upload");
-      event.target.uploadFiles(opts)
+      upload.uploadFiles(opts)
     }
     else if (nbUploadInprogress==0) {
-      opts.handler.batchFinished(event.target.batchId);
+      opts.handler.batchFinished(upload.batchId);
     }
   }
 
