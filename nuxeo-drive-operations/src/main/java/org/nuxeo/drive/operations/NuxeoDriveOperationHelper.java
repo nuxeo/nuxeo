@@ -16,11 +16,17 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.io.IOException;
+
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -54,6 +60,14 @@ public final class NuxeoDriveOperationHelper {
                 }
             }
         }
+    }
+
+    public static Blob asJSONBlob(Object value) throws JsonGenerationException,
+            JsonMappingException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(value);
+        return StreamingBlob.createFromByteArray(json.getBytes("UTF-8"),
+                "application/json");
     }
 
 }

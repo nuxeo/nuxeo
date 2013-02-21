@@ -389,7 +389,7 @@ public class TestFileSystemItemOperations {
     public void testCreateFolder() throws Exception {
 
         Blob newFolderJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveCreateFolder.ID).set("id",
+                NuxeoDriveCreateFolder.ID).set("parentId",
                 SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).set(
                 "name", "newFolder").execute();
         assertNotNull(newFolderJSON);
@@ -427,9 +427,9 @@ public class TestFileSystemItemOperations {
         StringBlob blob = new StringBlob("This is the content of a new file.");
         blob.setFileName("New file.odt");
         Blob newFileJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveCreateFile.ID).set("id",
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId()).setInput(
-                blob).execute();
+                NuxeoDriveCreateFile.ID).set("parentId",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId()).set(
+                "name", blob.getFileName()).setInput(blob).execute();
         assertNotNull(newFileJSON);
 
         DocumentBackedFileItem newFile = mapper.readValue(

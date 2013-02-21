@@ -16,11 +16,9 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.StringWriter;
 import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
@@ -32,7 +30,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,11 +60,7 @@ public class NuxeoDriveGetChangeSummary {
         Map<String, Set<IdRef>> lastActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary docChangeSummary = driveManager.getChangeSummary(
                 ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, docChangeSummary);
-        return StreamingBlob.createFromString(writer.toString(),
-                "application/json");
+        return NuxeoDriveOperationHelper.asJSONBlob(docChangeSummary);
     }
 
 }
