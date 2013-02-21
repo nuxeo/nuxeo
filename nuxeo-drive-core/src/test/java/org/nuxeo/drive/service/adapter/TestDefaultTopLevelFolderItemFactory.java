@@ -205,14 +205,9 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertEquals("syncRoot1", firstRootAsFsItem.getName());
         assertTrue(firstRootAsFsItem.isFolder());
         assertEquals("Administrator", firstRootAsFsItem.getCreator());
-        assertFalse(firstRootAsFsItem.getCanRename());
-        try {
-            firstRootAsFsItem.rename("newName");
-            fail("Should not be able to rename a synchronization root folder item.");
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot rename a synchronization root folder item.",
-                    e.getMessage());
-        }
+        assertTrue(firstRootAsFsItem.getCanRename());
+        firstRootAsFsItem.rename("newName");
+        assertEquals("newName", firstRootAsFsItem.getName());
         assertTrue(firstRootAsFsItem instanceof FolderItem);
         FolderItem firstRootAsFolderItem = (FolderItem) firstRootAsFsItem;
         List<FileSystemItem> childFsItemChildren = firstRootAsFolderItem.getChildren();
