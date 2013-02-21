@@ -758,8 +758,7 @@ public class TestFileSystemItemOperations {
         // syncRoot2 is not registered as a sync root for joe
         assertEquals("false", canMoveFSItem);
 
-        nuxeoDriveManager.registerSynchronizationRoot("joe",
-                syncRoot2, session);
+        nuxeoDriveManager.registerSynchronizationRoot("joe", syncRoot2, session);
         session.save();
         canMoveFSItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveCanMove.ID).set("srcId",
