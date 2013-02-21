@@ -14,6 +14,7 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -197,6 +198,15 @@ public class TestBlob extends NXRuntimeTestCase {
         // after StreamingBlob deserialization, the source of a StreamingBlob
         // is either a StreamSource of a ByteArraySourcce
         assertFalse(blob2.src instanceof FileSource);
+    }
+
+    @Test
+    public void testStreamingFromString() throws Exception {
+        String nonAsciiString = "String with non ASCII chars: \u00e9";
+        Blob blob = StreamingBlob.createFromString(nonAsciiString);
+        assertEquals(nonAsciiString, blob.getString());
+        assertEquals(blob.getByteArray().length, blob.getLength());
+        assertArrayEquals(nonAsciiString.getBytes("utf-8"), blob.getByteArray());
     }
 
     @Test
