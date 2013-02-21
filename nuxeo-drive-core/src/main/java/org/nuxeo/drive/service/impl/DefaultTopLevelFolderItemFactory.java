@@ -39,6 +39,8 @@ public class DefaultTopLevelFolderItemFactory implements
 
     private static final Log log = LogFactory.getLog(DefaultTopLevelFolderItemFactory.class);
 
+    protected String name;
+
     /**
      * Prevent from instantiating class as it should only be done by
      * {@link TopLevelFolderItemFactoryDescriptor#getFactory()}.
@@ -46,7 +48,7 @@ public class DefaultTopLevelFolderItemFactory implements
     protected DefaultTopLevelFolderItemFactory() {
     }
 
-    /*--------------------------- TopLevelFolderItemFactory ----------------------------*/
+    /*--------------------------- TopLevelFolderItemFactory -----------------*/
     @Override
     public FolderItem getTopLevelFolderItem(String userName)
             throws ClientException {
@@ -59,16 +61,15 @@ public class DefaultTopLevelFolderItemFactory implements
         return getTopLevelFolderItem(userName).getId();
     }
 
-    /*--------------------------- FileSystemItemFactory --------------------------------*/
+    /*--------------------------- FileSystemItemFactory ---------------------*/
     @Override
     public String getName() {
-        return getClass().getName();
+        return name;
     }
 
     @Override
     public void setName(String name) {
-        throw new UnsupportedOperationException(
-                "Cannot set the name of a TopLevelFolderItemFactory.");
+        this.name = name;
     }
 
     @Override

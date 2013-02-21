@@ -243,18 +243,14 @@ public class TestDefaultTopLevelFolderItemFactory {
     @Test
     public void testFileSystemItemFactory() throws ClientException {
 
-        // #setName(String name)
-        try {
-            defaultTopLevelFolderItemFactory.setName("testName");
-            fail("Should be unsupported.");
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot set the name of a TopLevelFolderItemFactory.",
-                    e.getMessage());
-        }
         // #getName()
         assertEquals(
                 "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory",
                 defaultTopLevelFolderItemFactory.getName());
+        // #setName(String name)
+        defaultTopLevelFolderItemFactory.setName("testName");
+        assertEquals("testName", defaultTopLevelFolderItemFactory.getName());
+        defaultTopLevelFolderItemFactory.setName("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory");
         // #isFileSystemItem(DocumentModel doc)
         DocumentModel fakeDoc = new DocumentModelImpl("File");
         assertFalse(defaultTopLevelFolderItemFactory.isFileSystemItem(fakeDoc));
