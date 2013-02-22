@@ -27,11 +27,20 @@
       <path>nxthemes/html/scripts/prototype.js</path>
     </resource>
 
-    <!-- JQuery 1.2.3 -->
+    <!-- JQuery 1.8.3 -->
     <resource name="jquery.js">
       <path>nxthemes/html/scripts/jquery.js</path>
     </resource>
-
+    
+     <!-- JQuery UI 1.10.1-->
+    <resource name="jquery.ui.js">
+      <path>nxthemes/html/scripts/jquery-ui.min.js</path>
+    </resource>
+    
+         <!-- JQuery UI CSS 1.10.1-->
+    <resource name="jquery.ui.css">
+      <path>nxthemes/html/styles/jquery-ui-1.10.1.custom.min.css</path>
+    </resource>
 
     <!-- Keyboard shortcuts http://www.openjs.com/scripts/events/keyboard_shortcuts/shortcut.js -->
     <resource name="shortcut.js">
