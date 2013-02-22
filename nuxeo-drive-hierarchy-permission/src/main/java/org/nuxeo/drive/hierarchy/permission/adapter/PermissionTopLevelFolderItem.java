@@ -26,7 +26,9 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -76,8 +78,11 @@ public class PermissionTopLevelFolderItem extends DefaultTopLevelFolderItem {
 
         // Add user workspace
         UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-        DocumentModel userWorkspace = userWorkspaceService.getUserPersonalWorkspace(
-                userName, null);
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        // TODO: handle multiple repositories
+        CoreSession session = getSession(repositoryManager.getDefaultRepository().getName());
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                session, null);
         if (userWorkspace == null) {
             log.warn(String.format(
                     "No personal workspace found for user %s, not adding it to the top level folder children.",
