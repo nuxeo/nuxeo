@@ -28,6 +28,18 @@ import org.apache.poi.ss.usermodel.Cell;
 public class ExcelBuilderMultiSheet extends ExcelBuilder {
     protected boolean multiSheetMode = false;
 
+    public ExcelBuilderMultiSheet() {
+        super();
+    }
+
+    public ExcelBuilderMultiSheet(Type type, String firstSheet) {
+        super(type, firstSheet);
+    }
+
+    public ExcelBuilderMultiSheet(Type type) {
+        super(type);
+    }
+
     public boolean isMultiSheetColumns() {
         return multiSheetMode;
     }

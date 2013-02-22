@@ -42,9 +42,11 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ByteColor;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilderMultiSheet;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder.Type;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsAllContent;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutable;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.utils.MessageAccessor;
 
 import com.google.common.collect.Multimap;
 
@@ -74,6 +76,13 @@ import com.google.common.collect.Multimap;
 public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     protected static Log log = LogFactory.getLog(AclExcelLayoutBuilder.class);
 
+    protected static final String PROPERTY_MAIN_SHEET_NAME = "message.acl.audit.xl.mainsheet";
+
+    protected static final String PROPERTY_LEGEND_SHEET_NAME = "message.acl.audit.xl.legend";
+
+    protected static final String PROPERTY_LEGEND_LOCK_INHERITANCE = "message.acl.audit.xl.legend.lockInheritance";
+    protected static final String PROPERTY_LEGEND_PERM_DENIED = "message.acl.audit.xl.legend.denied";
+
     protected IExcelBuilder excel = new ExcelBuilder();
 
     protected static int CELL_WIDTH_UNIT = 256;
@@ -101,6 +110,13 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     protected int legendSheetId;
 
+    protected String mainSheetName;
+
+    protected String legendSheetName;
+
+    protected String legendLockInheritance = "Permission inheritance locked";
+    protected String legendPermissionDenied = "Permission denied";
+
     public static ReportLayoutSettings defaultLayout() {
         ReportLayoutSettings layout = new ReportLayoutSettings();
         layout.userHeaderHeight = 1000;
@@ -115,7 +131,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         layout.spanMode = SpanMode.COLUMN_OVERFLOW_ON_NEXT_SHEETS;
         layout.zoomRatioDenominator = 2;
         layout.zoomRatioNumerator = 1;
-        layout.showFullPath = true;
+        layout.showFullPath = false;
 
         // data fetch setting
         layout.pageSize = 1000;
@@ -147,9 +163,9 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         this.layoutSettings = layout;
 
         if (SpanMode.NONE.equals(layout.spanMode))
-            excel = new ExcelBuilder();
+            excel = new ExcelBuilder(Type.XLS, "Permissions"); // missing context, no I18N
         else if (SpanMode.COLUMN_OVERFLOW_ON_NEXT_SHEETS.equals(layout.spanMode)) {
-            excel = new ExcelBuilderMultiSheet();
+            excel = new ExcelBuilderMultiSheet(Type.XLS, "Permissions"); // missing context, no I18N
             ((ExcelBuilderMultiSheet) excel).setMultiSheetColumns(true);
         } else
             throw new IllegalArgumentException("layout span mode unknown: "
@@ -210,10 +226,19 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         log.debug("start processing data");
         data.analyze(session, doc, work);
 
+        configure(session);
         render(data);
     }
 
     /* EXCEL RENDERING */
+
+    protected void configure(CoreSession session) throws ClientException {
+        //mainSheetName = MessageAccessor.get(session, PROPERTY_MAIN_SHEET_NAME);
+        legendSheetName = MessageAccessor.get(session,
+                PROPERTY_LEGEND_SHEET_NAME);
+        legendLockInheritance = MessageAccessor.get(session, PROPERTY_LEGEND_LOCK_INHERITANCE);
+        legendPermissionDenied = MessageAccessor.get(session, PROPERTY_LEGEND_PERM_DENIED);
+    }
 
     protected void render(IDataProcessor data) throws ClientException {
         int minDepth = data.getDocumentTreeMinDepth();
@@ -221,7 +246,8 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         int colStart = maxDepth + (layoutSettings.showFullPath ? 1 : 0);
 
         mainSheetId = excel.getCurrentSheetId();
-        legendSheetId = excel.newSheet(excel.getCurrentSheetId() + 1, "Legend");
+        legendSheetId = excel.newSheet(excel.getCurrentSheetId() + 1,
+                legendSheetName);
 
         renderInit();
         renderHeader(colStart, data.getUserAndGroups(), data.getPermissions());
@@ -383,6 +409,10 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         int col = STATUS_COL;
         int off = renderLegendErrorMessage(row, col, status, message);
         off = renderLegendAcl(off + 1, 0);
+        off++;
+        excel.setCell(off, col, "", lockInheritanceStyle);
+        excel.setCell(off, col+1, legendLockInheritance);
+        off++;
     }
 
     protected int renderLegendErrorMessage(int row, int col,

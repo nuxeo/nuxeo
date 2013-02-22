@@ -110,6 +110,10 @@ public class ExcelBuilder implements IExcelBuilder {
     }
 
     public ExcelBuilder(Type type) {
+        this(type, "default");
+    }
+
+    public ExcelBuilder(Type type, String firstSheet) {
         this.type = type;
         if (Type.XLS.equals(type))
             this.workbook = new HSSFWorkbook();

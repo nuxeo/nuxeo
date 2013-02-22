@@ -12,11 +12,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author Martin Pernollet <mpernollet@nuxeo.com>
  */
 public class Work extends AbstractWork implements ITimeoutable {
-    public static String PROPERTY_ACL_AUDIT_TIMEOUT = "nuxeo.audit.acl.timeout";
+    public static final String PROPERTY_ACL_AUDIT_TIMEOUT = "nuxeo.audit.acl.timeout";
 
-    public static int DEFAULT_TIMEOUT = 1200; // 20 min
+    public static final int DEFAULT_TIMEOUT = 1200; // 20 min
 
-    public static int UNDEFINED_TIMEOUT = -1;
+    public static final int UNDEFINED_TIMEOUT = -1;
 
     protected Runnable runnable;
 

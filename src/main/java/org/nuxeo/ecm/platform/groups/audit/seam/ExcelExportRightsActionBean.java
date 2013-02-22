@@ -56,7 +56,6 @@ import org.nuxeo.runtime.api.Framework;
 @Name("excelExportRightsAction")
 @Scope(ScopeType.EVENT)
 public class ExcelExportRightsActionBean implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(ExcelExportRightsActionBean.class);
@@ -79,7 +78,10 @@ public class ExcelExportRightsActionBean implements Serializable {
     @In(create = true, required = false)
     protected NuxeoPrincipal currentNuxeoPrincipal;
 
-    protected static String OUTPUT_FILE = "rights.xls";
+    protected static String OUTPUT_FILE_NAME = "permissions";
+    protected static String OUTPUT_FILE_EXT = ".xls";
+    private static final String WORK_NAME = "Permission Audit for ";
+
 
     public String doGet() {
         try {
@@ -122,7 +124,7 @@ public class ExcelExportRightsActionBean implements Serializable {
                 tmpFile) {
             @Override
             public void onAuditDone() {
-                ComponentUtils.downloadFile(context, OUTPUT_FILE, tmpFile);
+                ComponentUtils.downloadFile(context, OUTPUT_FILE_NAME + OUTPUT_FILE_EXT, tmpFile);
             }
         };
         todo.run();
@@ -135,7 +137,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     protected void buildAndSaveAsChildDocument(final File tmpFile) throws ClientException {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
         final String repository = documentManager.getRepositoryName();
-        final String workName = "ACL Audit for " + auditRoot.getPathAsString();
+        final String workName = WORK_NAME + auditRoot.getPathAsString();
 
         // Work to do and publishing
         final Work work = new Work(workName);
@@ -166,8 +168,8 @@ public class ExcelExportRightsActionBean implements Serializable {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
         final String repository = documentManager.getRepositoryName();
         final String to = currentNuxeoPrincipal.getEmail();
-        final String defaultFrom = "default@from.com";
-        final String workName = "ACL Audit for " + auditRoot.getPathAsString();
+        final String defaultFrom = "noreply@nuxeo.com";
+        final String workName = WORK_NAME + auditRoot.getPathAsString();
 
         if(StringUtils.isBlank(to)){
             facesMessages.add(StatusMessage.Severity.ERROR, "Your email is missing from your profile.");
@@ -181,7 +183,7 @@ public class ExcelExportRightsActionBean implements Serializable {
             public void onAuditDone() {
                 // content to send
                 FileBlob fb = new FileBlob(getOutputFile(), "application/xls");
-                fb.setFilename(getOutputFile().getName());
+                fb.setFilename(OUTPUT_FILE_NAME + OUTPUT_FILE_EXT);
 
                 // do publish
                 IResultPublisher publisher = new PublishByMail(fb, to, defaultFrom, repository);
@@ -198,7 +200,7 @@ public class ExcelExportRightsActionBean implements Serializable {
         wm.schedule(work);
 
         // Shows information about work, and output
-        String message = resourcesAccessor.getMessages().get("message.audit.acl.started");
+        String message = resourcesAccessor.getMessages().get("message.acl.audit.started");
         facesMessages.add(StatusMessage.Severity.INFO, message);
     }
 

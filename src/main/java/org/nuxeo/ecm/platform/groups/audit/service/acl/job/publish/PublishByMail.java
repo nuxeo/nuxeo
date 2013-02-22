@@ -20,14 +20,19 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.utils.MessageAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 public class PublishByMail implements IResultPublisher {
     private static final Log log = LogFactory.getLog(PublishByMail.class);
 
-    public static final String PROPERTY_MAILFROM = "noreply@nuxeo.com";
-
     public static final String PROPERTY_ACLAUDIT_SENDMAIL_CHAIN = "ACL.Audit.SendMail";
+
+    public static final String PROPERTY_MAILFROM = "mail.from";
+
+    public static final String PROPERTY_MAIL_SUBJECT = "message.acl.audit.mail.title";
+
+    public static final String PROPERTY_MAIL_BODY = "message.acl.audit.mail.body";
 
     public static String FROM = "noreply@nuxeo.com";
 
@@ -72,32 +77,33 @@ public class PublishByMail implements IResultPublisher {
     protected void doCallOperationSendMail(CoreSession session,
             DocumentModel docToSend, String to, String defaultFrom)
             throws ClientException {
+        String title = MessageAccessor.get(session, PROPERTY_MAIL_SUBJECT);
+        String body = MessageAccessor.get(session, PROPERTY_MAIL_BODY);
         String from = Framework.getProperty(PROPERTY_MAILFROM, defaultFrom);
+
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(docToSend);
 
         try {
             OperationChain chain = new OperationChain(
                     PROPERTY_ACLAUDIT_SENDMAIL_CHAIN);
-            OperationParameters params = chain.add(SendMail.ID);// findParameters(chain,
-                                                                // SendMail.ID);
+            OperationParameters params = chain.add(SendMail.ID);
             if (params == null) {
                 log.error("failed to retrieve operation " + SendMail.ID
                         + " in chain " + chain);
                 return;
             }
+
+            // configure email
             params.set("from", from);
             params.set("to", to);
-            params.set("message", "ACL Audit report");
-            params.set("subject", "ACL Audit report");
-
+            params.set("subject", title);
+            params.set("message", body);
             String[] str = { "file:content" };
             params.set("files", new StringList(str));
             // TODO: see SendMail test case where we can directly pass a blob
 
-            logMailerConfiguration();
-
-            // chain.g
+            // do send mail
             log.debug("Automation run " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN
                     + " for " + to);
             automation.run(ctx, chain);
