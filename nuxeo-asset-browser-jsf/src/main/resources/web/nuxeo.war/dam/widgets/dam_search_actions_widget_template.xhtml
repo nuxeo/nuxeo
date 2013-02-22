@@ -8,14 +8,14 @@
     value="#{damSearchActions.currentContentViewName}">
 
     <a4j:commandLink action="#{damSearchActions.clearSearch()}" immediate="true"
-      reRender="nxw_damPanelLeft_1_panel,nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
+      reRender="nxw_damSearchForm_2_panel,nxw_damSearchResults_2_panel,nxw_damAssetView_2_panel"
       eventsQueue="damSearchQueue">
       <h:outputText value="#{messages['command.faceted.search.clear']}" />
     </a4j:commandLink>
     <a4j:commandButton
       value="#{messages['command.faceted.search.go']}"
       actionListener="#{damSearchActions.refreshAndRewind()}"
-      reRender="nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
+      reRender="nxw_damSearchResults_2_panel,nxw_damAssetView_2_panel"
       eventsQueue="damSearchQueue"
       styleClass="button" />
 

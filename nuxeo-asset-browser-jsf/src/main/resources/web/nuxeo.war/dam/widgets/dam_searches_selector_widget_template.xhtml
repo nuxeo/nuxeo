@@ -14,7 +14,7 @@
         id="damSearchSelector" styleClass="langSelect">
         <a4j:support event="onchange"
           actionListener="#{damSearchActions.refreshAndRewind()}"
-          reRender="nxw_damPanelLeft_1_panel,nxw_damPanelCenter_1_panel,nxw_damPanelRight_1_panel"
+          reRender="nxw_damSearchForm_2_panel,nxw_damSearchResults_2_panel,nxw_damAssetView_2_panel"
           eventsQueue="damSearchQueue" />
         <c:forEach var="contentViewHeader"
           items="#{damSearchActions.contentViewHeaders}"
