@@ -37,7 +37,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -130,7 +129,7 @@ public class JarBundleFile implements BundleFile {
         }
         try {
             return new URL(urlBase + name);
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             return null;
         }
     }
@@ -263,7 +262,7 @@ public class JarBundleFile implements BundleFile {
                     Constants.BUNDLE_SYMBOLICNAME);
             return value != null ? BundleManifestReader.removePropertiesFromHeaderValue(value)
                     : null;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return null;
         }
     }
@@ -272,7 +271,7 @@ public class JarBundleFile implements BundleFile {
     public URL getURL() {
         try {
             return new File(jarFile.getName()).toURI().toURL();
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             return null;
         }
     }
@@ -281,7 +280,7 @@ public class JarBundleFile implements BundleFile {
         try {
             String url = new File(jarFile.getName()).toURI().toURL().toExternalForm();
             return new URL("jar:" + url + "!/");
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             return null;
         }
     }
@@ -303,29 +302,6 @@ public class JarBundleFile implements BundleFile {
 
     protected final URL getEntryUrl(String name) throws MalformedURLException {
         return new URL(urlBase + name);
-    }
-
-    static class UrlEntryEnum implements Enumeration<URL> {
-        Enumeration<? extends ZipEntry> e;
-        ZipFile zf;
-        String prefix;
-        UrlEntryEnum(ZipFile zf, Enumeration<? extends ZipEntry> e) throws MalformedURLException {
-            prefix = "jar:" + new File(zf.getName()).toURI().toURL() + "!/";
-            this.e = e;
-        }
-        @Override
-        public boolean hasMoreElements() {
-            return e.hasMoreElements();
-        }
-        @Override
-        public URL nextElement() {
-            try {
-                return new URL(prefix+e.nextElement().getName());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     @Override

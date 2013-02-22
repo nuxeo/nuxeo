@@ -111,7 +111,7 @@ public class ClassPathScanner {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             // ignore exception since some manifest may be invalid (invalid ClassPath entries) etc.
         }
     }

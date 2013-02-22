@@ -238,9 +238,9 @@ public class OSGiAdapter {
                 ((FrameworkListener) listener).frameworkEvent(event);
                 log.debug("End execution of " + listener.getClass()
                         + " listener");
-            } catch (Throwable t) {
+            } catch (RuntimeException e) {
                 log.error("Error during Framework Listener execution : "
-                        + listener.getClass(), t);
+                        + listener.getClass(), e);
             }
         }
     }

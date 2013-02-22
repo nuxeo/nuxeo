@@ -18,6 +18,7 @@
  */
 package org.nuxeo.osgi.application;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -36,7 +37,11 @@ public class DelegateLoader implements SharedClassLoader {
         try {
             addUrl = loader.getClass().getDeclaredMethod("addURL", URL.class);
             addUrl.setAccessible(true);
-        } catch (Exception e) {
+        } catch (SecurityException e) {
+            throw new RuntimeException(
+                    "Failed to create a shared delegate loader for classloader: "
+                            + loader, e);
+        } catch (NoSuchMethodException e) {
             throw new RuntimeException(
                     "Failed to create a shared delegate loader for classloader: "
                             + loader, e);
@@ -47,7 +52,10 @@ public class DelegateLoader implements SharedClassLoader {
     public void addURL(URL url) {
         try {
             addUrl.invoke(loader, url);
-        } catch (Throwable e) {
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Failed to add an URL to this loader: "
+                    + url, e);
+        } catch (InvocationTargetException e) {
             throw new RuntimeException("Failed to add an URL to this loader: "
                     + url, e);
         }

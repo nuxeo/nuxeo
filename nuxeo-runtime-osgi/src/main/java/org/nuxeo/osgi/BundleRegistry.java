@@ -132,7 +132,7 @@ public class BundleRegistry {
         if (getFragmentHost(reg) == null) {
             reg.bundle.stop();
         }
-        
+
         reg.bundle.setUnResolved();
         bundles.remove(reg.bundle.getSymbolicName());
         bundlesById.remove(reg.bundle.getBundleId());
@@ -168,7 +168,7 @@ public class BundleRegistry {
         bundles.put(name, reg);
         bundlesById.put(reg.bundle.getBundleId(), reg);
         reg.bundle.setResolved();
-        
+
         String hostBundleId = getFragmentHost(reg);
         if (hostBundleId != null) {
             BundleRegistration host = bundles.get(hostBundleId);
@@ -177,7 +177,7 @@ public class BundleRegistry {
             // TODO how to lazy start the bundle?
             reg.bundle.start();
         }
-        
+
         // check if there are objects waiting for me
         Set<BundleRegistration> regs = pendings.remove(name);
         if (regs != null) {
@@ -210,7 +210,11 @@ public class BundleRegistry {
                 if (reg.bundle != null) {
                     reg.bundle.shutdown();
                 }
-            } catch (Throwable e) {
+            } catch (BundleException e) {
+                log.error(
+                        "Failed to stop bundle " + reg.bundle.getSymbolicName(),
+                        e);
+            } catch (RuntimeException e) {
                 log.error(
                         "Failed to stop bundle " + reg.bundle.getSymbolicName(),
                         e);

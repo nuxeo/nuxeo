@@ -24,6 +24,8 @@ package org.nuxeo.osgi.application;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -40,53 +42,48 @@ public class TestMain {
     public static final String LIB_DIR = "libdir";
     public static final Pattern STR_LIST = Pattern.compile("\\s,\\s");
 
-    public static void main(String[] args) {
-        try {
-            CommandLineOptions cmdArgs = new CommandLineOptions(args);
+    public static void main(String[] args) throws Exception {
+        CommandLineOptions cmdArgs = new CommandLineOptions(args);
 
-            //String clear = cmdArgs.getOption("c");
+        // String clear = cmdArgs.getOption("c");
 
-            File configFile;
-            String cfg = cmdArgs.getOption("f");
-            if (cfg != null) {
-                configFile = new File(cfg);
-            } else {
-                configFile = new File(CONFIG_FILE);
-            }
+        File configFile;
+        String cfg = cmdArgs.getOption("f");
+        if (cfg != null) {
+            configFile = new File(cfg);
+        } else {
+            configFile = new File(CONFIG_FILE);
+        }
 
-            String installDirProp;
-            String bundlesList = null;
-            String libList;
-            if (configFile.isFile()) {
-                Properties config = new Properties();
-                InputStream in = new BufferedInputStream(new FileInputStream(
-                        configFile));
-                config.load(in);
-                installDirProp = config.getProperty(INSTALL_DIR);
-                bundlesList = config.getProperty(BUNDLES);
-                libList = config.getProperty(LIB_DIR);
-            } else {
-                installDirProp = cmdArgs.getOption("d");
-                bundlesList = cmdArgs.getOption("b");
-                libList = cmdArgs.getOption("cp");
-            }
+        String installDirProp;
+        String bundlesList = null;
+        String libList;
+        if (configFile.isFile()) {
+            Properties config = new Properties();
+            InputStream in = new BufferedInputStream(new FileInputStream(
+                    configFile));
+            config.load(in);
+            installDirProp = config.getProperty(INSTALL_DIR);
+            bundlesList = config.getProperty(BUNDLES);
+            libList = config.getProperty(LIB_DIR);
+        } else {
+            installDirProp = cmdArgs.getOption("d");
+            bundlesList = cmdArgs.getOption("b");
+            libList = cmdArgs.getOption("cp");
+        }
 
-            File installDir = null;
-            if (installDirProp == null) {
-                installDir = new File("."); // current dir
-            } else {
-                installDir = new File(installDirProp);
-            }
+        File installDir = null;
+        if (installDirProp == null) {
+            installDir = new File("."); // current dir
+        } else {
+            installDir = new File(installDirProp);
+        }
 
-            SharedClassLoader cl = new SharedClassLoaderImpl(TestMain.class.getClassLoader());
-            if (libList != null) {
-                String[] libs = STR_LIST.split(libList, 0);
-                //loadLibs(cl, installDir, libs);
-            }
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-            System.exit(1);
+        SharedClassLoader cl = new SharedClassLoaderImpl(
+                TestMain.class.getClassLoader());
+        if (libList != null) {
+            String[] libs = STR_LIST.split(libList, 0);
+            // loadLibs(cl, installDir, libs);
         }
     }
 

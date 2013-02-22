@@ -18,6 +18,7 @@ package org.nuxeo.osgi.util.jar;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.jar.JarFile;
@@ -33,6 +34,8 @@ public class JarFileFactoryCloser {
 
     private static final Log log = LogFactory.getLog(JarFileFactoryCloser.class);
 
+    protected boolean ok;
+
     protected Object factory;
 
     protected Method factoryGetMethod;
@@ -42,15 +45,22 @@ public class JarFileFactoryCloser {
     public JarFileFactoryCloser() {
         try {
             introspectClasses();
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             log.error("Cannot introspect jar file factory class", e);
-            factory = null;
+        } catch (SecurityException e) {
+            log.error("Cannot introspect jar file factory class", e);
+        } catch (NoSuchFieldException e) {
+            log.error("Cannot introspect jar file factory class", e);
+        } catch (IllegalAccessException e) {
+            log.error("Cannot introspect jar file factory class", e);
+        } catch (NoSuchMethodException e) {
+            log.error("Cannot introspect jar file factory class", e);
         }
     }
 
     protected void introspectClasses() throws ClassNotFoundException,
-            SecurityException, NoSuchFieldException, IllegalArgumentException,
-            IllegalAccessException, NoSuchMethodException {
+            SecurityException, NoSuchFieldException, IllegalAccessException,
+            NoSuchMethodException {
         Class<?> jarURLConnectionClass = loadClass("sun.net.www.protocol.jar.JarURLConnection");
         Field jarFileFactoryField = jarURLConnectionClass.getDeclaredField("factory");
         jarFileFactoryField.setAccessible(true);
@@ -62,6 +72,7 @@ public class JarFileFactoryCloser {
         factoryCloseMethod = factoryClass.getMethod("close",
                 new Class<?>[] { JarFile.class });
         factoryCloseMethod.setAccessible(true);
+        ok = true;
     }
 
     protected static Class<?> loadClass(String name)
@@ -70,7 +81,7 @@ public class JarFileFactoryCloser {
     }
 
     public void close(URL location) throws IOException  {
-        if (factory == null) {
+        if (!ok) {
             return;
         }
         JarFile jar = null;
@@ -78,7 +89,10 @@ public class JarFileFactoryCloser {
             jar = (JarFile) factoryGetMethod.invoke(factory,
                     new Object[] { location });
             factoryCloseMethod.invoke(factory, jar);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(
+                    "Cannot use reflection on jar file factory", e);
+        } catch (InvocationTargetException e) {
             throw new RuntimeException(
                     "Cannot use reflection on jar file factory", e);
         }

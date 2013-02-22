@@ -22,15 +22,19 @@
 package org.nuxeo.osgi.application;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.DirectoryBundleFile;
 import org.nuxeo.osgi.JarBundleFile;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
 /**
@@ -38,6 +42,8 @@ import org.osgi.framework.Constants;
  *
  */
 public class BundleWalker extends FileWalker.Visitor {
+
+    private static final Log log = LogFactory.getLog(BundleWalker.class);
 
     public static final FileNamePattern[] DEFAULT_PATTERNS = {
         new FileNamePattern("*.jar"),
@@ -123,9 +129,8 @@ public class BundleWalker extends FileWalker.Visitor {
                 // assume that a directory OSGi bundle cannot contain other bundles so skip it
                 return FileWalker.BREAK;
             }
-        } catch (Exception e) {
-            //TODO: log?
-            // ignore
+        } catch (IOException e) {
+            log.error(e, e);
         }
         return FileWalker.CONTINUE;
     }
@@ -158,7 +163,7 @@ public class BundleWalker extends FileWalker.Visitor {
                 // notify the callback about the new jar
                 callback.visitJar(bundleFile);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             // ignore
         }
         return FileWalker.CONTINUE;
@@ -175,8 +180,8 @@ public class BundleWalker extends FileWalker.Visitor {
     }
 
     public interface Callback {
-        void visitBundle(BundleFile bundleFile) throws Exception;
-        void visitJar(BundleFile bundleFile) throws Exception;
+        void visitBundle(BundleFile bundleFile) throws IOException;
+        void visitJar(BundleFile bundleFile) throws IOException;
     }
 
 }

@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import javax.management.JMException;
 import javax.management.Notification;
 
 import org.jboss.bootstrap.spi.Server;
@@ -83,8 +84,8 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
         }
         try {
             return instance.getDeploymentInfo().parent;
-        } catch (Throwable t) {
-            throw new IllegalStateException(t);
+        } catch (JMException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -293,7 +294,11 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements
                     uninstallBundle(symbolicName, di);
                 }
             }
-        } catch (Exception e) {
+        } catch (JMException e) {
+            throw new IllegalStateException("NXRuntime deployment failed", e);
+        } catch (BundleException e) {
+            throw new IllegalStateException("NXRuntime deployment failed", e);
+        } catch (RuntimeException e) {
             throw new IllegalStateException("NXRuntime deployment failed", e);
         }
     }

@@ -22,7 +22,6 @@
 package org.nuxeo.osgi.application;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class StandaloneBundleLoader extends ApplicationLoader {
         loader.addURL(bundleFile.getURL());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         File home = new File("/tmp/test_osgi_loader");
         OSGiAdapter osgi = new OSGiAdapter(home);
         System.out.println("Starting ...");
@@ -93,24 +92,10 @@ public class StandaloneBundleLoader extends ApplicationLoader {
             List<BundleFile> jars = new ArrayList<BundleFile>();
             loader.load(new File("/opt/jboss/server/default/deploy/nuxeo.ear"), bundles, jars);
             loader.installAll(bundles);
-//            jars.clear(); bundles.clear();
-//            loader.load(new File("/opt/jboss/server/default/deploy/nuxeo.ear/system"), bundles, jars);
-//            loader.installAll(bundles);
-//            jars.clear(); bundles.clear();
-//            loader.load(new File("/opt/jboss/server/default/deploy/nuxeo.ear/core"), bundles, jars);
-//            loader.installAll(bundles);
             System.out.println(">>>> Loading done!!!!");
-        } catch (Throwable e) {
-            log.error(e, e);
-            for (URL url : loader.loader.getURLs()) {
-                System.err.println("url> " + url);
-            }
         } finally {
             System.out.println("Shutting down");
-            try {
-                osgi.shutdown();
-            } catch (Exception e) {
-            }
+            osgi.shutdown();
         }
         double e = System.currentTimeMillis();
         System.out.println("Total time: " + ((e - s) / 1000) + " sec.");

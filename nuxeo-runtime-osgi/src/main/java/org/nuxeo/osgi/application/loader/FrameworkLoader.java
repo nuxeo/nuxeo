@@ -21,6 +21,7 @@ package org.nuxeo.osgi.application.loader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 
@@ -96,7 +98,7 @@ public class FrameworkLoader {
         isInitialized = true;
     }
 
-    public static synchronized void start() throws Exception {
+    public static synchronized void start() throws BundleException {
         if (isStarted) {
             return;
         }
@@ -114,7 +116,7 @@ public class FrameworkLoader {
         isStarted = true;
     }
 
-    public static synchronized void stop() throws Exception {
+    public static synchronized void stop() throws BundleException {
         if (!isStarted) {
             return;
         }
@@ -144,7 +146,7 @@ public class FrameworkLoader {
         if (doPreprocessing) {
             try {
                 preprocess();
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 throw new RuntimeException("Failed to run preprocessing", e);
             }
         }
@@ -198,10 +200,15 @@ public class FrameworkLoader {
         return mf.getMainAttributes().containsKey(SYMBOLIC_NAME);
     }
 
-    private static void doStart() throws Exception {
+    private static void doStart() throws BundleException {
         printStartMessage();
         // install system bundle first
-        BundleFile bf = new SystemBundleFile(home);
+        BundleFile bf;
+        try {
+            bf = new SystemBundleFile(home);
+        } catch (IOException e) {
+            throw new BundleException("Cannot create system bundle for " + home, e);
+        }
         SystemBundle systemBundle = new SystemBundle(osgi, bf, loader);
         osgi.setSystemBundle(systemBundle);
         printDeploymentOrderInfo(bundleFiles);
@@ -211,8 +218,15 @@ public class FrameworkLoader {
             }
             try {
                 install(f);
-            } catch (Throwable t) {
-                log.error("Failed to install bundle: " + f, t);
+            } catch (IOException e) {
+                log.error("Failed to install bundle: " + f, e);
+                // continue
+            } catch (BundleException e) {
+                log.error("Failed to install bundle: " + f, e);
+                // continue
+            } catch (RuntimeException e) {
+                log.error("Failed to install bundle: " + f, e);
+                // continue
             }
         }
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
@@ -221,18 +235,22 @@ public class FrameworkLoader {
         // FrameworkEvent(FrameworkEvent.AFTER_START, systemBundle, null));
     }
 
-    private static void doStop() throws Exception {
-        osgi.shutdown();
+    private static void doStop() throws BundleException {
+        try {
+            osgi.shutdown();
+        } catch (IOException e) {
+            throw new BundleException("Cannot shutdown OSGi", e);
+        }
     }
 
-    public static void uninstall(String symbolicName) throws Exception {
+    public static void uninstall(String symbolicName) throws BundleException {
         BundleImpl bundle = osgi.getBundle(symbolicName);
         if (bundle != null) {
             bundle.uninstall();
         }
     }
 
-    public static String install(File f) throws Exception {
+    public static String install(File f) throws IOException, BundleException {
         BundleFile bf = null;
         if (f.isDirectory()) {
             bf = new DirectoryBundleFile(f);
@@ -248,15 +266,27 @@ public class FrameworkLoader {
         return bundle.getSymbolicName();
     }
 
-    public static void preprocess() throws Exception {
+    public static void preprocess() {
         File f = new File(home, "OSGI-INF/deployment-container.xml");
         if (!f.isFile()) { // make sure a preprocessing container is defined
             return;
         }
-        Class<?> klass = loader.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
-        Method main = klass.getMethod("main", String[].class);
-        main.invoke(null,
-                new Object[]{new String[]{home.getAbsolutePath()}});
+        try {
+            Class<?> klass = loader.loadClass("org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor");
+            Method main = klass.getMethod("main", String[].class);
+            main.invoke(null,
+                    new Object[] { new String[] { home.getAbsolutePath() } });
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected static void loadSystemProperties() {
@@ -275,7 +305,7 @@ public class FrameworkLoader {
                 v = StringUtils.expandVars(v, System.getProperties());
                 System.setProperty((String) entry.getKey(), v);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Failed to load system properties", e);
         } finally {
             if (in != null) {

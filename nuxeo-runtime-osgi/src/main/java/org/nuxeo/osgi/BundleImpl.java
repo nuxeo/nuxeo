@@ -267,24 +267,28 @@ public class BundleImpl implements Bundle {
         return true; // TODO
     }
 
-    public BundleActivator getActivator() throws IllegalAccessException,
-            InstantiationException, ClassNotFoundException {
+    protected String getActivatorClassName() {
+        return headers == null ? null : headers.get(Constants.BUNDLE_ACTIVATOR);
+    }
+
+    public BundleActivator getActivator() throws BundleException {
         if (activator == null) {
-            if (headers == null) {
-                // bundle without manifest does not have an activator
-                activator = NullActivator.INSTANCE;
-                return activator;
-            }
-            String className = headers.get(Constants.BUNDLE_ACTIVATOR);
+            activator = NullActivator.INSTANCE;
+            String className = getActivatorClassName();
             if (className == null) {
-                activator = NullActivator.INSTANCE;
                 return activator;
             }
             try {
                 activator = (BundleActivator) loadClass(className).newInstance();
             } catch (ClassNotFoundException e) {
-                activator = NullActivator.INSTANCE;
-                throw e;
+                throw new BundleException("Activator not found: " + className,
+                        e);
+            } catch (InstantiationException e) {
+                throw new BundleException("Activator not instantiable: "
+                        + className, e);
+            } catch (IllegalAccessException e) {
+                throw new BundleException("Activator not accessible: "
+                        + className, e);
             }
         }
         return activator;
@@ -294,19 +298,15 @@ public class BundleImpl implements Bundle {
     public void start() throws BundleException {
         try {
             setStarting();
-            getActivator().start(context);
+            getActivator().start(context); // stupid API throws Exception
             setStarted();
-        } catch (Exception e) {
-            if (headers == null) {
-                throw new BundleException("Failed to start bundle at: " + file
-                        + " with error: " + e.getMessage(), e);
-            } else {
-                throw new BundleException("Failed to start bundle at: "
-                        + file
-                        + " with activator: "
-                        + headers.get(Constants.BUNDLE_ACTIVATOR
-                                + " with error: " + e.getMessage()), e);
-            }
+        } catch (InterruptedException e) {
+            // restore interrupted status
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (Exception e) { // InterruptedException caught above
+            throw new BundleException("Failed to start bundle at: " + file
+                    + " with activator: " + getActivatorClassName(), e);
         }
     }
 
@@ -314,23 +314,31 @@ public class BundleImpl implements Bundle {
     public void stop() throws BundleException {
         try {
             setStopping();
-            getActivator().stop(context);
+            getActivator().stop(context); // stupid API throws Exception
             setStopped();
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            // restore interrupted status
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (Exception e) { // InterruptedException caught above
             throw new BundleException("Failed to stop activator: "
-                    + headers.get(Constants.BUNDLE_ACTIVATOR), e);
+                    + getActivatorClassName(), e);
         }
     }
 
     public void shutdown() throws BundleException {
         try {
             state = STOPPING;
-            getActivator().stop(context);
+            getActivator().stop(context); // stupid API throws Exception
             lastModified = System.currentTimeMillis();
             state = UNINSTALLED;
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            // restore interrupted status
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (Exception e) { // InterruptedException caught above
             throw new BundleException("Failed to stop activator: "
-                    + headers.get(Constants.BUNDLE_ACTIVATOR), e);
+                    + getActivatorClassName(), e);
         }
     }
 

@@ -72,7 +72,7 @@ public final class BundleManifestReader {
         if (mf != null) {
             try {
                 return getHeaders(mf);
-            } catch (Exception e) {
+            } catch (BundleException e) {
                 log.error(e, e);
             }
         }
@@ -85,7 +85,7 @@ public final class BundleManifestReader {
         if (mf != null) {
             try {
                 return getHeaders(mf);
-            } catch (Exception e) {
+            } catch (BundleException e) {
                 log.error(e, e);
             }
         }

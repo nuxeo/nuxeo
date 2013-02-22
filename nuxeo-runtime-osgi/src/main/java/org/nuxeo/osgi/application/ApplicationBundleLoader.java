@@ -90,7 +90,8 @@ public class ApplicationBundleLoader {
         return new File(app.getDataDir(), "bundles.cache");
     }
 
-    public ClassLoader loadBundles(List<File> classPath) throws Exception {
+    public ClassLoader loadBundles(List<File> classPath) throws IOException,
+            BundleException {
         // create the standalone loader
         bundleLoader = new StandaloneBundleLoader(app, app.getSharedClassLoader());
         Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader().getLoader());
@@ -103,6 +104,8 @@ public class ApplicationBundleLoader {
                 scan = false;
                 try {
                     fastLoad(file);
+                } catch (IOException e) {
+                    scan = true;
                 } catch (BundleException e) {
                     scan = true;
                 }
@@ -157,9 +160,9 @@ public class ApplicationBundleLoader {
         }
     }
 
-    public static void writeCache(File file, List<BundleFile> bundles, List<BundleFile> jars) throws BundleException {
+    public static void writeCache(File file, List<BundleFile> bundles,
+            List<BundleFile> jars) throws IOException {
         // write loaded bundles to the cache
-        Throwable error = null;
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(file));
@@ -173,25 +176,14 @@ public class ApplicationBundleLoader {
                 writer.append(bf.getFile().getAbsolutePath());
                 writer.newLine();
             }
-        } catch (Throwable e) {
-            error = e;
         } finally {
             if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Exception e) {
-                    error = e;
-                }
-            }
-            if (error != null) {
-                file.delete();
-                throw new BundleException("failed to write cache file", error);
+                writer.close();
             }
         }
     }
 
-    public void fastLoad(File file) throws BundleException {
-        Throwable error = null;
+    public void fastLoad(File file) throws IOException, BundleException {
         BufferedReader reader = null;
         List<BundleFile> bundles = new ArrayList<BundleFile>();
         try {
@@ -218,18 +210,9 @@ public class ApplicationBundleLoader {
                     list.add(bf);
                 }
             }
-        } catch (Throwable t) {
-            error = t;
         } finally {
             if (reader != null) {
-                try {
-                    reader.close();
-                } catch (Exception e) {
-                    error = e;
-                }
-            }
-            if (error != null) {
-                throw new BundleException("Failed to load runtime application from cache info", error);
+                reader.close();
             }
         }
         // install found bundles

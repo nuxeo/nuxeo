@@ -77,7 +77,7 @@ public class ServiceReferenceImpl implements ServiceReference {
         }
         try {
             return service.getClass() == bundle.loadClass(className);
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             return false;
         }
     }

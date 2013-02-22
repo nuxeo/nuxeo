@@ -31,7 +31,6 @@ import java.util.jar.JarFile;
  */
 public class URLClassLoaderCloser  {
 
-
     protected  URLClassLoader loader;
 
     protected  ArrayList<?> loaders;
@@ -42,18 +41,31 @@ public class URLClassLoaderCloser  {
 
     protected  HashMap<?, ?> lmap;
 
-
-
     public URLClassLoaderCloser(URLClassLoader loader) {
         try {
             introspectClassLoader(loader);
-        } catch (Exception e) {
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("Cannot introspect url class loader "
+                    + loader, e);
+        } catch (SecurityException e) {
+            throw new RuntimeException("Cannot introspect url class loader "
+                    + loader, e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Cannot introspect url class loader "
+                    + loader, e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Cannot introspect url class loader "
+                    + loader, e);
+        } catch (NoSuchMethodException e) {
             throw new RuntimeException("Cannot introspect url class loader "
                     + loader, e);
         }
     }
 
-    protected void introspectClassLoader(URLClassLoader loader) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException, NoSuchMethodException {
+    protected void introspectClassLoader(URLClassLoader loader)
+            throws NoSuchFieldException, SecurityException,
+            IllegalAccessException, ClassNotFoundException,
+            NoSuchMethodException {
         this.loader = loader;
         Field ucpField = URLClassLoader.class.getDeclaredField("ucp");
         ucpField.setAccessible(true);
@@ -103,17 +115,6 @@ public class URLClassLoaderCloser  {
         return localStringBuilder.toString();
     }
 
-    Object getLoader(String name) throws IllegalArgumentException,
-            IllegalAccessException {
-        for (Object loader : loaders) {
-            JarFile jar = (JarFile) jarField.get(loader);
-            if (name.equals(jar.getName())) {
-                return loader;
-            }
-        }
-        throw new IllegalArgumentException("No such jar " + name);
-    }
-
     public boolean close(URL location) throws IOException {
         if (lmap.isEmpty()) {
             return false;
@@ -129,7 +130,10 @@ public class URLClassLoaderCloser  {
         try {
             jar = (JarFile) jarField.get(loader);
             jarField.set(loader, null);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(
+                    "Cannot use reflection on url class path", e);
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(
                     "Cannot use reflection on url class path", e);
         }

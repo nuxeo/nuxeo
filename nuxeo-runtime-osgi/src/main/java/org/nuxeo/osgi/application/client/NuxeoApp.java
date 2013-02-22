@@ -223,10 +223,15 @@ public class NuxeoApp {
         }
     }
 
-    public void fireFrameworkStarted() throws Exception {
+    public void fireFrameworkStarted() throws BundleException {
         if (osgi.getSystemBundle() == null) {
-            osgi.setSystemBundle(new SystemBundle(osgi, new SystemBundleFile(
-                    osgi.getWorkingDir()), loader));
+            SystemBundleFile file;
+            try {
+                file = new SystemBundleFile(osgi.getWorkingDir());
+            } catch (IOException e) {
+                throw new BundleException("Cannot create system bundle file", e);
+            }
+            osgi.setSystemBundle(new SystemBundle(osgi, file, loader));
         }
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
                 osgi.getSystemBundle(), null));

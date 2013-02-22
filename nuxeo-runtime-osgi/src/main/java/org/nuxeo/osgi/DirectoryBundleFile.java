@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.osgi.util.CompoundEnumeration;
 import org.nuxeo.osgi.util.EntryFilter;
 import org.nuxeo.osgi.util.FileIterator;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
 /**
@@ -112,7 +114,7 @@ public class DirectoryBundleFile implements BundleFile {
             if (entry.exists()) {
                 try {
                     return entry.toURI().toURL();
-                } catch (Exception e) {
+                } catch (MalformedURLException e) {
                     // ignore
                 }
             }
@@ -166,7 +168,8 @@ public class DirectoryBundleFile implements BundleFile {
     }
 
     @Override
-    public Collection<BundleFile> getNestedBundles(File tmpDir) throws IOException {
+    public Collection<BundleFile> getNestedBundles(File tmpDir)
+            throws IOException {
         Attributes attrs = mf.getMainAttributes();
         String cp = attrs.getValue(Constants.BUNDLE_CLASSPATH);
         if (cp == null) {
@@ -190,7 +193,7 @@ public class DirectoryBundleFile implements BundleFile {
 
     @Override
     public Collection<BundleFile> findNestedBundles(File tmpDir)
-    throws IOException {
+            throws IOException {
         List<BundleFile> nested = new ArrayList<BundleFile>();
         File[] files = FileUtils.findFiles(file, "*.jar", true);
         for (File jar : files) {
@@ -205,20 +208,16 @@ public class DirectoryBundleFile implements BundleFile {
 
     @Override
     public String getSymbolicName() {
-        try {
-            String value = mf.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
-            return value == null ? null
-                    : BundleManifestReader.removePropertiesFromHeaderValue(value);
-        } catch (Exception e) {
-            return null;
-        }
+        String value = mf.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
+        return value == null ? null
+                : BundleManifestReader.removePropertiesFromHeaderValue(value);
     }
 
     @Override
     public URL getURL() {
         try {
             return file.toURI().toURL();
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             return null;
         }
     }

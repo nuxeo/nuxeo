@@ -26,6 +26,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,8 +92,7 @@ public class ClassPath implements ClassPathScanner.Callback {
         loader.addURL(bf.getURL());
     }
 
-    public void store(File file) throws BundleException {
-        Throwable error = null;
+    public void store(File file) throws IOException {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(file));
@@ -112,25 +112,14 @@ public class ClassPath implements ClassPathScanner.Callback {
                 writer.append(bf.getFile().getAbsolutePath());
                 writer.newLine();
             }
-        } catch (Throwable e) {
-            error = e;
         } finally {
             if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Exception e) {
-                    error = e;
-                }
-            }
-            if (error != null) {
-                file.delete();
-                throw new BundleException("failed to write cache file", error);
+                writer.close();
             }
         }
     }
 
-    public void restore(File file) throws BundleException {
-        Throwable error = null;
+    public void restore(File file) throws IOException {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
@@ -159,18 +148,9 @@ public class ClassPath implements ClassPathScanner.Callback {
                 loader.addURL(bf.getURL());
                 list.add(bf);
             }
-        } catch (Throwable t) {
-            error = t;
         } finally {
             if (reader != null) {
-                try {
-                    reader.close();
-                } catch (Exception e) {
-                    error = e;
-                }
-            }
-            if (error != null) {
-                throw new BundleException("Failed to load runtime application from cache info", error);
+                reader.close();
             }
         }
     }

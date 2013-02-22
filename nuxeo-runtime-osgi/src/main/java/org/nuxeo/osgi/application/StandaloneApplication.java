@@ -23,6 +23,8 @@ package org.nuxeo.osgi.application;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -123,7 +125,7 @@ public class StandaloneApplication extends OSGiAdapter {
         return env;
     }
 
-    public void start() throws Exception {
+    public void start() throws IOException, BundleException {
         if (isStarted) {
             throw new IllegalStateException(
                     "OSGi Application is already started");
@@ -164,13 +166,14 @@ public class StandaloneApplication extends OSGiAdapter {
         }
     }
 
-    protected void startBundles(List<BundleFile> bundles) throws Exception {
+    protected void startBundles(List<BundleFile> bundles)
+            throws BundleException {
         for (BundleFile bf : bundles) {
             this.install(new BundleImpl(this, bf, classLoader.getLoader()));
         }
     }
 
-    protected List<BundleFile> loadUserBundles(String key) throws Exception {
+    protected List<BundleFile> loadUserBundles(String key) throws IOException {
         if (options == null) {
             return null;
         }
@@ -183,8 +186,14 @@ public class StandaloneApplication extends OSGiAdapter {
         for (String entry : ar) {
             File file;
             if (entry.contains("file:")) {
-                URL url = new URL(entry);
-                file = new File(url.toURI());
+                try {
+                    URL url = new URL(entry);
+                    file = new File(url.toURI());
+                } catch (MalformedURLException e) {
+                    throw new IOException(e);
+                } catch (URISyntaxException e) {
+                    throw new IOException(e);
+                }
             } else {
                 file = new File(entry);
             }
@@ -208,7 +217,7 @@ public class StandaloneApplication extends OSGiAdapter {
         this.classPath = classPath;
     }
 
-    protected void autoInstallBundles() throws Exception {
+    protected void autoInstallBundles() throws IOException, BundleException {
         List<File> cp = getClassPath();
         if (cp == null || cp.isEmpty()) {
             return;
@@ -220,7 +229,7 @@ public class StandaloneApplication extends OSGiAdapter {
         if (!clear && cache.exists()) {
             try {
                 cpath.restore(cache);
-            } catch (BundleException e) { // rebuild cache
+            } catch (IOException e) { // rebuild cache
                 cpath.scan(classPath, scanForNestedJARs, libdirs);
                 cpath.store(cache);
             }
@@ -247,8 +256,14 @@ public class StandaloneApplication extends OSGiAdapter {
      * nuxeo.osgi.system.bundle property.
      */
     public static BundleFile createSystemBundle(URL systemBundle)
-            throws URISyntaxException, IOException {
-        File file = new File(systemBundle.toURI());
+            throws IOException {
+        URI uri;
+        try {
+            uri = systemBundle.toURI();
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
+        File file = new File(uri);
         BundleFile sysbf = null;
         if (file.isFile()) {
             sysbf = new JarBundleFile(file);
@@ -323,40 +338,24 @@ public class StandaloneApplication extends OSGiAdapter {
     }
 
     public static void main(URL systemBundle, List<File> classPath,
-            String[] args) {
+            String[] args) throws Exception {
         SharedClassLoader classLoader = (SharedClassLoader) Thread.currentThread().getContextClassLoader();
         long startTime = System.currentTimeMillis();
         // parse command line args
         StandaloneApplication.args = args;
         options = new CommandLineOptions(args);
         // start framework
-        try {
-            StandaloneApplication app = createInstance(classLoader);
-            // start level 0
-            app.setClassPath(classPath);
-            app.setSystemBundle(new SystemBundle(app,
-                    createSystemBundle(systemBundle), classLoader.getLoader()));
-            // start level 1
-            app.start();
-            log.info("Framework started in "
-                    + ((System.currentTimeMillis() - startTime) / 1000)
-                    + " sec.");
-            if (mainTask != null) {
-                mainTask.run();
-            }
-        } catch (Throwable e) {
-            log.error(e, e);
-            System.exit(13);
-            // this should not be called here because it will stop the server if
-            // the main thread is not blocking
-            // } finally {
-            // try {
-            // if (app != null && app.isStarted()) {
-            // app.shutdown();
-            // }
-            // } catch (Exception e) {
-            // System.err.println("Failed to stop framework");
-            // }
+        StandaloneApplication app = createInstance(classLoader);
+        // start level 0
+        app.setClassPath(classPath);
+        app.setSystemBundle(new SystemBundle(app,
+                createSystemBundle(systemBundle), classLoader.getLoader()));
+        // start level 1
+        app.start();
+        log.info("Framework started in "
+                + ((System.currentTimeMillis() - startTime) / 1000) + " sec.");
+        if (mainTask != null) {
+            mainTask.run();
         }
     }
 
