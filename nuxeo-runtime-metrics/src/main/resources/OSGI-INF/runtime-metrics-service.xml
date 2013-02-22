@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.metrics.MetricsService">
+
+  <documentation>
+    Define CodeHale Metrics configuration.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.metrics.MetricsService" />
+  </service>
+
+  <implementation class="org.nuxeo.runtime.metrics.MetricsServiceImpl" />
+
+  <extension-point name="configuration">
+    <documentation>
+      TODO
+    </documentation>
+    <object class="org.nuxeo.runtime.metrics.MetricsDescriptor" />
+  </extension-point>
+
+</component>
