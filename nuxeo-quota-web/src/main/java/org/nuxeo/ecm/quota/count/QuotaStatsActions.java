@@ -167,17 +167,14 @@ public class QuotaStatsActions implements Serializable {
         }
     }
 
-    public QuotaSlidervalueInfo getMinQuotaSliderValue() throws Exception {
-        return new QuotaSlidervalueInfo(Math.log(100 * 1024), 100, "KB");
+    public long getMinQuotaSliderValue() throws Exception {
+        return 102400;// 100KB
     }
 
-    public QuotaSlidervalueInfo getMaxQuotaSliderValue() throws Exception {
+    public long getMaxQuotaSliderValue() throws Exception {
         long maxQuotaSize = getQuotaStatsService().getQuotaFromParent(
                 navigationContext.getCurrentDocument(), documentManager);
-        if (maxQuotaSize > 0) {
-            return new QuotaSlidervalueInfo(new QuotaDisplayValue(maxQuotaSize));
-        }
-        return new QuotaSlidervalueInfo(27.70, 999, "GB");
+        return maxQuotaSize > 0 ? maxQuotaSize : 1072668082176L; // 999GB
     }
 
     /**
@@ -260,38 +257,5 @@ public class QuotaStatsActions implements Serializable {
             workManager = Framework.getLocalService(WorkManager.class);
         }
         return workManager;
-    }
-
-    class QuotaSlidervalueInfo {
-
-        double size;
-
-        float valueInUnit;
-
-        String unit;
-
-        QuotaSlidervalueInfo(QuotaDisplayValue maxSizeDisplayValue) {
-            this.size = Math.log(maxSizeDisplayValue.getValue());
-            valueInUnit = maxSizeDisplayValue.getValueInUnit();
-            unit = maxSizeDisplayValue.getUnit();
-        }
-
-        QuotaSlidervalueInfo(double maxSize, float valueInUnit, String unit) {
-            this.size = maxSize;
-            this.valueInUnit = valueInUnit;
-            this.unit = unit;
-        }
-
-        public double getSize() {
-            return size;
-        }
-
-        public float getValueInUnit() {
-            return valueInUnit;
-        }
-
-        public String getUnit() {
-            return unit;
-        }
     }
 }

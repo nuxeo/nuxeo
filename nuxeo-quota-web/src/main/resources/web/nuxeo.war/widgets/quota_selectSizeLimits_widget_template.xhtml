@@ -8,64 +8,79 @@
   xmlns:f="http://java.sun.com/jsf/core"
   id="#{widget.id}">
 
-<c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
- <nxu:set var="minQuotaSliderValue" value="#{quotaStatsActions.getMinQuotaSliderValue()}" cache="true">
- <nxu:set var="maxQuotaSliderValue" value="#{quotaStatsActions.getMaxQuotaSliderValue()}" cache="true">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
+<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+<script>
+jQuery.noConflict();
+
+<h:outputText  value="var currentSliderValue='#{field}';" />
+<h:outputText  value="var maxQuotaSliderValue='#{quotaStatsActions.getMaxQuotaSliderValue()}';" />
+<h:outputText  value="var minQuotaSliderValue='#{quotaStatsActions.getMinQuotaSliderValue()}';" />
+
+ 
+ function expon(value){
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    return value;
+    
+ }
+ function logposition(val){
+    return Math.log(val);
+ }
+ 
+  function getCurrentSliderValue(){
+  if(currentSliderValue == -1){
+  	return 0;
+  }
+  return logposition(currentSliderValue);
+  }
+ 
+  function displayQuotaSize(value) {
+    var gb = 1024*1024*1024;
+    var mb = 1024*1024;
+    var kb = 1024;
+    var label = "";
+    value = Number(value);
+    value = Math.exp(value);
+    value = Math.round(value / 1000)*1000;
+    if (value > gb) {
+      label = Math.round(value/gb) + " " + GB_label;
+    } else if (value > mb) {
+      label = Math.round(value/mb) + " " + MB_label;
+    } else if (value > kb) {
+      label = Math.round(value/kb) + " " + KB_label;
+    } else {
+     label = value + " " + B_label;
+    }
+    jQuery('#sliderDisplay').html(label);
+    return label;
+  } 
   
-  <table id="sliderTable">
-   <tr>
-    </tr><tr>
-    <td>
-     <table>
-     <tr>
-     <td></td><td style="text-align:center;font-weight:bold"><span id="sliderDisplay"></span>
-     </td><td></td></tr>
-     <tr>
-      <td>
-
+  jQuery(document).ready(function() {
+  console.log(getCurrentSliderValue());
+  console.log(Math.floor(logposition(minQuotaSliderValue)));
+  console.log(Math.floor(logposition(maxQuotaSliderValue)));
   
-      <h:outputText value="#{minQuotaSliderValue.getValueInUnit()}">
-        <f:convertNumber maxFractionDigits="2" />
-      </h:outputText>
-      <h:outputText value=" #{messages[minQuotaSliderValue.getUnit()]}"/>
+  jQuery( "#slider" ).slider({
+  value: Number(getCurrentSliderValue()),
+  min: Number(logposition(minQuotaSliderValue),
+  max: Number(logposition(maxQuotaSliderValue)),
+  step: 0.001,
+  slide: function( event, ui ) {
+    jQuery("#amount").val(displayQuotaSize(ui.value));
+    jQuery("#quota_edit\\:nxl_edit_quota\\:maxValue").val(expon(ui.value));
+  }
+  });
+ jQuery("#amount").val(displayQuotaSize(jQuery("#slider").slider("value")));
+ });
+</script>
 
-      </td>
-      <td>
-   
-       <rich:inputNumberSlider id="slider" width="450px"
-            showBoundaryValues="false"
-            onchange="displayQuotaSize(this.value);"
-            onslide="displayQuotaSize(this.value);"
-            showToolTip="false"
-            showInput="true"
-            maxValue="#{maxQuotaSliderValue.getSize()}"
-            minValue="#{minQuotaSliderValue.getSize()}" step="0.001">
-       </rich:inputNumberSlider>
-      </td>
-      <td>
-       <h:outputText value="#{maxQuotaSliderValue.getValueInUnit()}">
-        <f:convertNumber maxFractionDigits="2" />
-       </h:outputText> 
-       #{messages[maxQuotaSliderValue.getUnit()]}
-        <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
-     </td>
-     </tr>
-     </table>
-    </td></tr>
-   </table>
-  </nxu:set>
-  </nxu:set>
-</c:if>
+<p>
+<label for="amount"></label>
+<input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" />
+</p>
+<div id="slider"></div>
+<h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
 
- <c:if test="#{widget.mode != 'create' and widget.mode != 'edit'}">
-
-  <nxu:set var="formatedSize" value="#{quotaStatsActions.formatQuota(field, 0)}">
-    <h:outputText value="#{formatedSize.valueInUnit}">
-      <f:convertNumber maxFractionDigits="2" />
-    </h:outputText>
-    <h:outputText value=" #{messages[formatedSize.unit]}"/>
-  </nxu:set>
-
-
- </c:if>
 </div>

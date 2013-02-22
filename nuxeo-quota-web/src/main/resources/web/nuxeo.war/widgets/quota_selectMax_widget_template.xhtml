@@ -8,12 +8,21 @@
   xmlns:f="http://java.sun.com/jsf/core"
   id="#{widget.id}">
 
+<c:if test="#{widget.mode == 'edit'}">
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css" />
 <script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
 <script>
 jQuery.noConflict();
 
 <h:outputText  value="var currentSliderValue='#{field}';" />
+<h:outputText  value="var maxQuotaSliderValue='#{quotaStatsActions.getMaxQuotaSliderValue()}';" />
+<h:outputText  value="var minQuotaSliderValue='#{quotaStatsActions.getMinQuotaSliderValue()}';" />
+
+  var GB_label = "#{messages['label.unit.GB']}";
+  var MB_label = "#{messages['label.unit.MB']}";
+  var KB_label = "#{messages['label.unit.KB']}";
+  var B_label = "#{messages['label.unit.B']}";
+
  
  function expon(value){
     value = Number(value);
@@ -33,7 +42,7 @@ jQuery.noConflict();
   return logposition(currentSliderValue);
   }
  
-  function displayQuotaSize(value) {
+  function formatQuotaSize(value) {
     var gb = 1024*1024*1024;
     var mb = 1024*1024;
     var kb = 1024;
@@ -41,6 +50,7 @@ jQuery.noConflict();
     value = Number(value);
     value = Math.exp(value);
     value = Math.round(value / 1000)*1000;
+    var label;
     if (value > gb) {
       label = Math.round(value/gb) + " " + GB_label;
     } else if (value > mb) {
@@ -50,34 +60,52 @@ jQuery.noConflict();
     } else {
      label = value + " " + B_label;
     }
+    return label;
+  } 
+ 
+  function displayQuotaSize(value) {
+    var label = formatQuotaSize(value);
     jQuery('#sliderDisplay').html(label);
     return label;
   } 
   
   jQuery(document).ready(function() {
-  console.log(getCurrentSliderValue());
-  console.log(Math.floor(logposition(100 * 1024)));
-  console.log(Math.floor(logposition(1072668082176)));
   
   jQuery( "#slider" ).slider({
   value: Number(getCurrentSliderValue()),
-  min: Number(logposition(100 * 1024)),
-  max: Number(logposition(1072668082176)),
+  min: Number(logposition(minQuotaSliderValue)),
+  max: Number(logposition(maxQuotaSliderValue)),
   step: 0.001,
   slide: function( event, ui ) {
-    jQuery("#amount").val(displayQuotaSize(ui.value));
-    jQuery("#quota_edit\\:nxl_edit_quota\\:maxValue").val(expon(ui.value));
+    jQuery("#sliderValue").text(displayQuotaSize(ui.value));
+    console.log(jQuery("inputText[id$='maxValue']").val());
+    jQuery("input[id$='maxValue']").val(expon(ui.value));
   }
   });
- jQuery("#amount").val(displayQuotaSize(jQuery("#slider").slider("value")));
+ 
+ jQuery("#sliderValue").text(displayQuotaSize(jQuery("#slider").slider("value")));
+ jQuery("#limitMin").text(formatQuotaSize(Number(logposition(minQuotaSliderValue))));
+ jQuery("#limitMax").text(formatQuotaSize(Number(logposition(maxQuotaSliderValue))));
+ 
  });
 </script>
-
-<p>
-<label for="amount"></label>
-<input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" />
-</p>
-<div id="slider"></div>
-<h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
-
+<table class="dataTableNoBorder">
+  <tbody>
+      <tr>
+      <td class="labelColumn"/>
+      <td class="eightyPercent"><span id="sliderValue" style="border: 0; color: #f6931f; font-weight: bold;"></span> </td>
+      <td class="labelColumn"/>
+    </tr>
+    <tr>
+      <td class="labelColumn"> <span id="limitMin"></span> </td>
+      <td class="eightyPercent"> <div id="slider"></div> </td>
+      <td class="labelColumn">  <span id="limitMax"></span>
+     </td>
+    </tr>
+  </tbody>
+</table>
+ <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
+</c:if>
+<c:if test="#{widget.mode == 'view'}">
+</c:if>
 </div>
