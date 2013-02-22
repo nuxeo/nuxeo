@@ -174,13 +174,6 @@ public class TestDefaultTopLevelFolderItemFactory {
                     "Cannot create a folder in the top level folder item.",
                     e.getMessage());
         }
-
-        // ---------------------------------------------------------------------
-        // Check TopLevelFolderItemFactory#getSyncRootParentFolderItemId(String
-        // userName)
-        // ---------------------------------------------------------------------
-        String syncRootParentFolderId = defaultTopLevelFolderItemFactory.getSyncRootParentFolderItemId("Administrator");
-        assertEquals(topLevelFolderItem.getId(), syncRootParentFolderId);
     }
 
     /**

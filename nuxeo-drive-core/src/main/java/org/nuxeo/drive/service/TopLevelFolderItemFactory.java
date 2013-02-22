@@ -25,8 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * {@code topLevelFolderItemFactory} extension point of the
  * {@link FileSystemItemAdapterService}.
  * <p>
- * Allows to get the top level {@link FolderItem} and the id of the
- * synchronization root parent {@link FolderItem} for a given user.
+ * Allows to get the top level {@link FolderItem} for a given user.
  *
  * @author Antoine Taillefer
  * @see DefaultTopLevelFolderItemFactory
@@ -34,8 +33,5 @@ import org.nuxeo.ecm.core.api.ClientException;
 public interface TopLevelFolderItemFactory extends FileSystemItemFactory {
 
     FolderItem getTopLevelFolderItem(String userName) throws ClientException;
-
-    String getSyncRootParentFolderItemId(String userName)
-            throws ClientException;
 
 }

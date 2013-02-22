@@ -49,10 +49,7 @@ public class DefaultSyncRootFolderItemFactory extends
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
         String userName = doc.getCoreSession().getPrincipal().getName();
-        return getFileSystemItem(
-                doc,
-                getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getSyncRootParentFolderItemId(
-                        userName), includeDeleted);
+        return getFileSystemItem(doc, getParentId(userName), includeDeleted);
     }
 
     @Override
@@ -140,8 +137,10 @@ public class DefaultSyncRootFolderItemFactory extends
     }
 
     /*--------------------------- Protected ---------------------------------*/
-    protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
-        return Framework.getLocalService(FileSystemItemAdapterService.class);
+    protected String getParentId(String userName) throws ClientException {
+        FileSystemItemAdapterService fileSystemItemAdapterService = Framework.getLocalService(FileSystemItemAdapterService.class);
+        return fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
+                userName).getId();
     }
 
 }

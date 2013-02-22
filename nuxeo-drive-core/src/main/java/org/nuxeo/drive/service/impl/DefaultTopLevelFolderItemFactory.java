@@ -48,12 +48,6 @@ public class DefaultTopLevelFolderItemFactory implements
         return new DefaultTopLevelFolderItem(getName(), userName);
     }
 
-    @Override
-    public String getSyncRootParentFolderItemId(String userName)
-            throws ClientException {
-        return getTopLevelFolderItem(userName).getId();
-    }
-
     /*--------------------------- FileSystemItemFactory ---------------------*/
     @Override
     public String getName() {
