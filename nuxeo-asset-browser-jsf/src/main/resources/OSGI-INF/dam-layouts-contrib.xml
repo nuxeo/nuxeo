@@ -148,7 +148,7 @@
       </properties>
     </widget>
 
-    <widget name="damSearchResults" type="dropZone">
+    <widget name="damContentView" type="dropZone">
       <subWidgets>
         <widget name="searchResults" type="contentViewWithForms">
           <properties widgetMode="any">
@@ -417,10 +417,10 @@
       <filter-id>canCreateNewAsset</filter-id>
     </action>
 
-    <action id="damSearchResults" type="widget" order="200">
+    <action id="damContentView" type="widget" order="200">
       <category>DAM_PANEL_CENTER</category>
       <properties>
-        <property name="widgetName">damSearchResults</property>
+        <property name="widgetName">damContentView</property>
       </properties>
     </action>
 
