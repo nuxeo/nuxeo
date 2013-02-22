@@ -39,4 +39,8 @@ public class PermissionSyncRootParentFolderItem extends
         this.name = folderName;
     }
 
+    protected PermissionSyncRootParentFolderItem() {
+        // Needed for JSON deserialization
+    }
+
 }

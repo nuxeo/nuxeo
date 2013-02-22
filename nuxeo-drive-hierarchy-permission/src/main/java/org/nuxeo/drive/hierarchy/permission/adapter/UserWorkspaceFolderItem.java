@@ -38,6 +38,10 @@ public class UserWorkspaceFolderItem extends DocumentBackedFolderItem {
         this.name = folderName;
     }
 
+    protected UserWorkspaceFolderItem() {
+        // Needed for JSON deserialization
+    }
+
     @Override
     public boolean getCanRename() {
         return false;

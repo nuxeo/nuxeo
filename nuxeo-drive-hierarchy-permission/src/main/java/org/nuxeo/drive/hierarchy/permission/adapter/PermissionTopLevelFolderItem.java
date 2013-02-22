@@ -65,6 +65,10 @@ public class PermissionTopLevelFolderItem extends DefaultTopLevelFolderItem {
         this.factory = factory;
     }
 
+    protected PermissionTopLevelFolderItem() {
+        // Needed for JSON deserialization
+    }
+
     @Override
     public List<FileSystemItem> getChildren() throws ClientException {
 
