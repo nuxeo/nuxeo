@@ -28,7 +28,7 @@
       </parameters>
     </fileSystemItemFactory>
 
-    <!-- Synchronization root parent factory: order before the "defaultFileSystemItemFactory"
+    <!-- Synchronization root factory: order before the "defaultFileSystemItemFactory"
       that has an order of 50 -->
     <fileSystemItemFactory name="permissionSyncRootFolderItemFactory"
       order="40" facet="DriveSynchronized"
@@ -39,7 +39,7 @@
     </fileSystemItemFactory>
 
     <fileSystemItemFactory name="permissionSyncRootParentFolderItemFactory"
-      order="0"
+      order="100"
       class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootParentFolderItemFactory">
       <parameters>
         <parameter name="folderName">Other Documents</parameter>
