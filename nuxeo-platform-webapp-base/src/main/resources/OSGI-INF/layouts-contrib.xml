@@ -2733,6 +2733,33 @@
       <property name="template">/widgets/search_path_widget.xhtml</property>
     </widgetType>
 
+    <widgetType name="dropZone">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Drop zone</title>
+        <description>
+          <p>
+            The dropZone widget wraps its subwidgets with a div acting as
+            the drop zone to be able to drop files inside.
+          </p>
+        </description>
+        <categories>
+          <category>decoration</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/drop_zone_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
