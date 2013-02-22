@@ -16,9 +16,15 @@
  */
 package org.nuxeo.drive.hierarchy.permission.adapter;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Permission based implementation of the synchronization root parent
@@ -31,6 +37,8 @@ public class PermissionSyncRootParentFolderItem extends
 
     private static final long serialVersionUID = 1L;
 
+    protected static final String USE_WORKSPACE_FOLDER_ITEM_FACTORY_NAME = "userWorkspaceFolderItemFactory";
+
     public PermissionSyncRootParentFolderItem(String factoryName,
             String userName, String parentId, String folderName)
             throws ClientException {
@@ -41,6 +49,25 @@ public class PermissionSyncRootParentFolderItem extends
 
     protected PermissionSyncRootParentFolderItem() {
         // Needed for JSON deserialization
+    }
+
+    @Override
+    public List<FileSystemItem> getChildren() throws ClientException {
+        List<FileSystemItem> children = super.getChildren();
+        // Filter user workspace
+        Iterator<FileSystemItem> childrenIt = children.iterator();
+        while (childrenIt.hasNext()) {
+            FileSystemItem child = childrenIt.next();
+            if (USE_WORKSPACE_FOLDER_ITEM_FACTORY_NAME.equals(getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                    child.getId()).getName())) {
+                childrenIt.remove();
+            }
+        }
+        return children;
+    }
+
+    protected FileSystemItemAdapterService getFileSystemItemAdapterService() {
+        return Framework.getLocalService(FileSystemItemAdapterService.class);
     }
 
 }
