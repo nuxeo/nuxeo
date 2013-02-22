@@ -105,6 +105,8 @@ public class TestDefaultTopLevelFolderItemFactory {
         // Get default top level folder item factory
         defaultTopLevelFolderItemFactory = fileSystemItemAdapterService.getTopLevelFolderItemFactory();
         assertTrue(defaultTopLevelFolderItemFactory instanceof DefaultTopLevelFolderItemFactory);
+        assertEquals("Nuxeo Drive",
+                defaultTopLevelFolderItemFactory.getFolderName());
     }
 
     @Test

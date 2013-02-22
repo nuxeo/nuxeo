@@ -37,4 +37,8 @@ public interface TopLevelFolderItemFactory extends FileSystemItemFactory {
     FolderItem getTopLevelFolderItem(Principal principal)
             throws ClientException;
 
+    String getFolderName() throws ClientException;
+
+    void setFolderName(String folderName);
+
 }

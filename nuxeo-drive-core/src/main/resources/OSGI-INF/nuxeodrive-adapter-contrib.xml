@@ -29,7 +29,11 @@
     point="topLevelFolderItemFactory">
 
     <topLevelFolderItemFactory
-      class="org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory" />
+      class="org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory">
+      <parameters>
+        <parameter name="folderName">Nuxeo Drive</parameter>
+      </parameters>
+    </topLevelFolderItemFactory>
 
   </extension>
 
