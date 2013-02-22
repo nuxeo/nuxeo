@@ -10,10 +10,10 @@
 
   <nxu:set var="widgetLabel"
     value="#{nxu:test(widget.translated, messages[widget.label], widget.label)}"
-    cache="true">
+    cache="true" resolveTwice="true">
   <nxu:set var="widgetHelpLabel"
     value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
-    cache="true">
+    cache="true" resolveTwice="true">
 
     <ui:decorate template="/incl/content_view.xhtml">
 

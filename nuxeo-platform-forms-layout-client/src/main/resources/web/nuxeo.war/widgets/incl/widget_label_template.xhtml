@@ -15,11 +15,17 @@ Accepted parameters:
 - labelStyleClass: CSS style class for the label item, optional
 </c:if>
 
-  <ui:include src="/widgets//incl/label_template.xhtml">
-    <ui:param name="label" value="#{widget.label}" />
-    <ui:param name="helpLabel" value="#{widget.helpLabel}" />
-    <ui:param name="translated" value="#{widget.translated}" />
-    <ui:param name="required" value="#{widget.required}" />
-  </ui:include>
+  <nxu:set var="widgetLabel" value="#{widget.label}"
+    resolveTwice="true" cache="true">
+    <nxu:set var="widgetHelpLabel" value="#{widget.helpLabel}"
+      resolveTwice="true" cache="true">
+      <ui:include src="/widgets/incl/label_template.xhtml">
+        <ui:param name="label" value="#{widgetLabel}" />
+        <ui:param name="helpLabel" value="#{widgetHelpLabel}" />
+        <ui:param name="translated" value="#{widget.translated}" />
+        <ui:param name="required" value="#{widget.required}" />
+      </ui:include>
+    </nxu:set>
+  </nxu:set>
 
 </c:if>
