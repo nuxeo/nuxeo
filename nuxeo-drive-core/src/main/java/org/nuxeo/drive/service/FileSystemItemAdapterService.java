@@ -98,6 +98,7 @@ public interface FileSystemItemAdapterService {
     /**
      * Gets the {@link TopLevelFolderItemFactory}.
      */
-    TopLevelFolderItemFactory getTopLevelFolderItemFactory();
+    TopLevelFolderItemFactory getTopLevelFolderItemFactory()
+            throws ClientException;
 
 }

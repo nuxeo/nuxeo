@@ -147,7 +147,12 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public TopLevelFolderItemFactory getTopLevelFolderItemFactory() {
+    public TopLevelFolderItemFactory getTopLevelFolderItemFactory()
+            throws ClientException {
+        if (topLevelFolderItemFactoryRegistry.factory == null) {
+            throw new ClientException(
+                    "Found no topLevelFolderItemFactory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
+        }
         return topLevelFolderItemFactoryRegistry.factory;
     }
 
