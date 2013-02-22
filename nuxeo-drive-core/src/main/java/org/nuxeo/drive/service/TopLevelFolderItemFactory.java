@@ -32,13 +32,9 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @author Antoine Taillefer
  * @see DefaultTopLevelFolderItemFactory
  */
-public interface TopLevelFolderItemFactory extends FileSystemItemFactory {
+public interface TopLevelFolderItemFactory extends VirtualFolderItemFactory {
 
     FolderItem getTopLevelFolderItem(Principal principal)
             throws ClientException;
-
-    String getFolderName() throws ClientException;
-
-    void setFolderName(String folderName);
 
 }
