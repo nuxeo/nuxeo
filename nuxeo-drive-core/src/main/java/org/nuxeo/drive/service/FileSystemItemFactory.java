@@ -54,7 +54,8 @@ public interface FileSystemItemFactory {
      * Handles the factory parameters contributed through the
      * {@code fileSystemItemFactory} contribution.
      */
-    void handleParameters(Map<String, String> parameters);
+    void handleParameters(Map<String, String> parameters)
+            throws ClientException;
 
     /**
      * Returns true if the given {@link DocumentModel} is adaptable as a

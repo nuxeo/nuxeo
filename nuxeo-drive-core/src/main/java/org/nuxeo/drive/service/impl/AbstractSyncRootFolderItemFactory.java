@@ -62,7 +62,8 @@ public abstract class AbstractSyncRootFolderItemFactory extends
      * No parameters by default.
      */
     @Override
-    public void handleParameters(Map<String, String> parameters) {
+    public void handleParameters(Map<String, String> parameters)
+            throws ClientException {
         // Nothing to do as no parameters are contributed to the factory
         if (!parameters.isEmpty()) {
             throw new IllegalArgumentException(

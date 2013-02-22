@@ -25,6 +25,7 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * XMap descriptor for factories contributed to the
@@ -45,7 +46,8 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
     protected Map<String, String> parameters = new HashMap<String, String>();
 
     public TopLevelFolderItemFactory getFactory()
-            throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException,
+            ClientException {
         TopLevelFolderItemFactory factory = factoryClass.newInstance();
         factory.setName(factory.getClass().getName());
         factory.handleParameters(parameters);
