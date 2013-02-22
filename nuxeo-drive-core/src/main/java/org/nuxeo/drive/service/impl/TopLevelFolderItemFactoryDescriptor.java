@@ -17,8 +17,11 @@
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
@@ -38,9 +41,19 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
     @XNode("@class")
     protected Class<? extends TopLevelFolderItemFactory> factoryClass;
 
+    @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> parameters = new HashMap<String, String>();
+
     public TopLevelFolderItemFactory getFactory()
             throws InstantiationException, IllegalAccessException {
-        return factoryClass.newInstance();
+        TopLevelFolderItemFactory factory = factoryClass.newInstance();
+        factory.setName(factory.getClass().getName());
+        factory.handleParameters(parameters);
+        return factory;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
     @Override

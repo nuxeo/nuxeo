@@ -44,13 +44,6 @@ public class DefaultSyncRootFolderItemFactory extends
 
     private static final Log log = LogFactory.getLog(DefaultSyncRootFolderItemFactory.class);
 
-    /**
-     * Prevent from instantiating class as it should only be done by
-     * {@link FileSystemItemFactoryDescriptor#getFactory()}.
-     */
-    protected DefaultSyncRootFolderItemFactory() {
-    }
-
     /*--------------------------- AbstractFileSystemItemFactory -------------*/
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
@@ -94,6 +87,7 @@ public class DefaultSyncRootFolderItemFactory extends
             log.debug(String.format(
                     "Document %s is not Folderish, it cannot be adapted as a FileSystemItem.",
                     doc.getId()));
+            return false;
         }
         // Check version
         if (doc.isVersion()) {

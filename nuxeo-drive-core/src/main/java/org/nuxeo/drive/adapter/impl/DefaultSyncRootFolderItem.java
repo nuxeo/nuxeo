@@ -22,6 +22,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -37,8 +38,10 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
     public DefaultSyncRootFolderItem(String factoryName, String parentId,
             DocumentModel doc) throws ClientException {
         super(factoryName, parentId, doc);
-        // A sync root cannot be renamed
-        this.canRename = false;
+        // A sync root can be renamed if the current user has the
+        // WriteProperties permission on it
+        this.canRename = doc.getCoreSession().hasPermission(doc.getRef(),
+                SecurityConstants.WRITE_PROPERTIES);
         // A sync root can be deleted since deletion is implemented as
         // unregistration
         this.canDelete = true;
@@ -46,12 +49,6 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
 
     protected DefaultSyncRootFolderItem() {
         // Needed for JSON deserialization
-    }
-
-    @Override
-    public void rename(String name) throws ClientException {
-        throw new UnsupportedOperationException(
-                "Cannot rename a synchronization root folder item.");
     }
 
     @Override

@@ -40,9 +40,10 @@ public final class NuxeoDriveOperationHelper {
         // Helper class
     }
 
-    public static void commitTransaction() {
+    public static void commitAndReopenTransaction() {
         if (TransactionHelper.isTransactionActive()) {
             TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 

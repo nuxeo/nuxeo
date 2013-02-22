@@ -221,7 +221,7 @@ public class TestFileSystemItemOperations {
         assertEquals("folder1", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
-        assertFalse(child.getCanRename());
+        assertTrue(child.getCanRename());
         assertTrue(child.getCanDelete());
         assertTrue(child.getCanCreateChild());
 
@@ -233,7 +233,7 @@ public class TestFileSystemItemOperations {
         assertEquals("folder2", child.getName());
         assertTrue(child.isFolder());
         assertEquals("Administrator", child.getCreator());
-        assertFalse(child.getCanRename());
+        assertTrue(child.getCanRename());
         assertTrue(child.getCanDelete());
         assertTrue(child.getCanCreateChild());
     }
@@ -316,7 +316,7 @@ public class TestFileSystemItemOperations {
         assertEquals("folder1", syncRootFolderItem.getName());
         assertTrue(syncRootFolderItem.isFolder());
         assertEquals("Administrator", syncRootFolderItem.getCreator());
-        assertFalse(syncRootFolderItem.getCanRename());
+        assertTrue(syncRootFolderItem.getCanRename());
         assertTrue(syncRootFolderItem.getCanDelete());
         assertTrue(syncRootFolderItem.getCanCreateChild());
 
@@ -629,15 +629,25 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // Sync root
         // ------------------------------------------------------
-        try {
-            clientSession.newRequest(NuxeoDriveRename.ID).set("id",
-                    SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId()).set(
-                    "name", "New name for sync root").execute();
-            fail("Sync root renaming shoud be unsupported.");
-        } catch (Exception e) {
-            assertEquals("Failed to execute operation: NuxeoDrive.Rename",
-                    e.getMessage());
-        }
+        renamedFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveRename.ID).set(
+                "id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId()).set(
+                "name", "New name for sync root").execute();
+        assertNotNull(renamedFSItemJSON);
+
+        DefaultSyncRootFolderItem renamedSyncRootItem = mapper.readValue(
+                renamedFSItemJSON.getStream(), DefaultSyncRootFolderItem.class);
+        assertNotNull(renamedSyncRootItem);
+        assertEquals("New name for sync root", renamedSyncRootItem.getName());
+
+        // Need to flush VCS cache to be aware of changes in the session used by
+        // the file system item obtained by
+        // FileSystemItemManager#getSession(String
+        // repositoryName, Principal principal)
+        session.save();
+
+        DocumentModel renamedSyncRootDoc = session.getDocument(new IdRef(
+                syncRoot1.getId()));
+        assertEquals("New name for sync root", renamedSyncRootDoc.getTitle());
 
         // ------------------------------------------------------
         // Top level folder
@@ -748,8 +758,7 @@ public class TestFileSystemItemOperations {
         // syncRoot2 is not registered as a sync root for joe
         assertEquals("false", canMoveFSItem);
 
-        nuxeoDriveManager.registerSynchronizationRoot("joe",
-                syncRoot2, session);
+        nuxeoDriveManager.registerSynchronizationRoot("joe", syncRoot2, session);
         session.save();
         canMoveFSItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveCanMove.ID).set("srcId",
@@ -767,6 +776,7 @@ public class TestFileSystemItemOperations {
         resetPermissions(rootDoc, "joe");
         resetPermissions(syncRoot1, "joe");
         resetPermissions(syncRoot2, "joe");
+        deleteUser("joe");
     }
 
     @Test

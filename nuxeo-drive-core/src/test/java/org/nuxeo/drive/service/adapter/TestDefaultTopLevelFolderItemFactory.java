@@ -205,14 +205,9 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertEquals("syncRoot1", firstRootAsFsItem.getName());
         assertTrue(firstRootAsFsItem.isFolder());
         assertEquals("Administrator", firstRootAsFsItem.getCreator());
-        assertFalse(firstRootAsFsItem.getCanRename());
-        try {
-            firstRootAsFsItem.rename("newName");
-            fail("Should not be able to rename a synchronization root folder item.");
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot rename a synchronization root folder item.",
-                    e.getMessage());
-        }
+        assertTrue(firstRootAsFsItem.getCanRename());
+        firstRootAsFsItem.rename("newName");
+        assertEquals("newName", firstRootAsFsItem.getName());
         assertTrue(firstRootAsFsItem instanceof FolderItem);
         FolderItem firstRootAsFolderItem = (FolderItem) firstRootAsFsItem;
         List<FileSystemItem> childFsItemChildren = firstRootAsFolderItem.getChildren();
@@ -248,18 +243,14 @@ public class TestDefaultTopLevelFolderItemFactory {
     @Test
     public void testFileSystemItemFactory() throws ClientException {
 
-        // #setName(String name)
-        try {
-            defaultTopLevelFolderItemFactory.setName("testName");
-            fail("Should be unsupported.");
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot set the name of a TopLevelFolderItemFactory.",
-                    e.getMessage());
-        }
         // #getName()
         assertEquals(
                 "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory",
                 defaultTopLevelFolderItemFactory.getName());
+        // #setName(String name)
+        defaultTopLevelFolderItemFactory.setName("testName");
+        assertEquals("testName", defaultTopLevelFolderItemFactory.getName());
+        defaultTopLevelFolderItemFactory.setName("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory");
         // #isFileSystemItem(DocumentModel doc)
         DocumentModel fakeDoc = new DocumentModelImpl("File");
         assertFalse(defaultTopLevelFolderItemFactory.isFileSystemItem(fakeDoc));
@@ -270,7 +261,7 @@ public class TestDefaultTopLevelFolderItemFactory {
             fail("Should be unsupported.");
         } catch (UnsupportedOperationException e) {
             assertEquals(
-                    "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.",
+                    "Cannot get the file system item for a given document from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
                     e.getMessage());
         }
         // #getFileSystemItem(DocumentModel doc, String parentId)
@@ -280,7 +271,7 @@ public class TestDefaultTopLevelFolderItemFactory {
             fail("Should be unsupported.");
         } catch (UnsupportedOperationException e) {
             assertEquals(
-                    "Cannot get the file system item for a given document from a TopLevelFolderItemFactory.",
+                    "Cannot get the file system item for a given document from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
                     e.getMessage());
         }
         // #canHandleFileSystemItemId(String id)
@@ -296,7 +287,7 @@ public class TestDefaultTopLevelFolderItemFactory {
             fail("Should be unsupported.");
         } catch (UnsupportedOperationException e) {
             assertEquals(
-                    "Cannot check if a file system item with a given id exists for an id different than the top level folder item one from a TopLevelFolderItemFactory.",
+                    "Cannot check if a file system item exists for an id that cannot be handled from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
                     e.getMessage());
         }
         // #getFileSystemItemById(String id, Principal principal)
@@ -313,9 +304,8 @@ public class TestDefaultTopLevelFolderItemFactory {
             fail("Should be unsupported.");
         } catch (UnsupportedOperationException e) {
             assertEquals(
-                    "Cannot get the file system item for an id different than the top level folder item one from a TopLevelFolderItemFactory.",
+                    "Cannot get the file system item for an id that cannot be handled from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
                     e.getMessage());
         }
     }
-
 }
