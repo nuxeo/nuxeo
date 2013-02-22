@@ -148,9 +148,20 @@
       </properties>
     </widget>
 
-    <widget name="damSearchResults" type="template">
+    <widget name="damSearchResults" type="dropZone">
+      <subWidgets>
+        <widget name="searchResults" type="contentViewWithForms">
+          <properties widgetMode="any">
+            <property name="contentViewName">#{damSearchActions.currentContentViewName}</property>
+            <property name="showFilterForm">false</property>
+            <property name="useAjaxForm">true</property>
+            <property name="useAjaxPagination">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
       <properties widgetMode="any">
-        <property name="template">/dam/widgets/dam_search_results_widget_template.xhtml</property>
+        <property name="dropContext">DAM_IMPORT</property>
+        <property name="cannotDrop">#{not webActions.checkFilter('canCreateInAssetLibrary')}</property>
       </properties>
     </widget>
 
@@ -161,7 +172,6 @@
       </labels>
       <translated>false</translated>
     </widget>
-
 
     <widget name="damAssetViewActions" type="currentDocumentActionsWithForms">
       <properties widgetMode="view">
