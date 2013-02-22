@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.core.operations.notification;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -35,7 +36,9 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -150,23 +153,54 @@ public class SendMail {
         } else {
             ArrayList<Blob> blobs = new ArrayList<Blob>();
             for (String xpath : blobXpath) {
-                Property p = doc.getProperty(xpath);
-                if (p instanceof ListProperty) {
-                    for (Property pp : p) {
-                        Object o = pp.getValue();
+                try {
+                    Property p = doc.getProperty(xpath);
+                    if (p instanceof ListProperty) {
+                        for (Property pp : p) {
+                            getBlob(pp.getValue(), blobs);
+                        }
+                    } else if (p instanceof MapProperty) {
+                        for (Property sp : ((MapProperty) p).values())
+                            getBlob(sp.getValue(), blobs);
+                    } else {
+                        Object o = p.getValue();
                         if (o instanceof Blob) {
                             blobs.add((Blob) o);
                         }
                     }
-                } else {
-                    Object o = p.getValue();
-                    if (o instanceof Blob) {
-                        blobs.add((Blob) o);
-                    }
+                } catch (PropertyException pe) {
+                    log.error("Error while fetching blobs: " + pe.getMessage());
+                    log.debug(pe);
+                    continue;
                 }
             }
             return COMPOSER.newMixedMessage(message, map, asHtml ? "html"
                     : "plain", blobs);
         }
+    }
+
+    /**
+     *
+     * @since 5.7
+     * @param o: the object to introspect to find a blob
+     * @param blobs: the Blob list where the blobs are put during property
+     *            introspection
+     */
+    @SuppressWarnings("unchecked")
+    private void getBlob(Object o, List<Blob> blobs) {
+        if (o instanceof List) {
+            for (Object item : (List<Object>) o) {
+                getBlob(item, blobs);
+            }
+        } else if (o instanceof Map) {
+            for (Object item : ((Map<String, Object>) o).values()) {
+                getBlob(item, blobs);
+            }
+        } else if (o instanceof Blob) {
+            blobs.add((Blob) o);
+        } else {
+            // stop looking for blobs
+        }
+
     }
 }
