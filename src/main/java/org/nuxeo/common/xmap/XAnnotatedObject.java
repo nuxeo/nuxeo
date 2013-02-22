@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -23,6 +23,7 @@ package org.nuxeo.common.xmap;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,8 +61,11 @@ public class XAnnotatedObject {
             if (order.length > 0) {
                 sorter = new Sorter(order);
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid xmap class - no default constructor found", e);
+        } catch (SecurityException e) {
+            throw new IllegalArgumentException(e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException(
+                    "Invalid xmap class - no default constructor found", e);
         }
     }
 
@@ -73,8 +77,20 @@ public class XAnnotatedObject {
         return path;
     }
 
-    public Object newInstance(Context ctx, Element element) throws Exception {
-        Object ob = ctor.newInstance();
+    public Object newInstance(Context ctx, Element element) {
+        Object ob;
+        try {
+            ob = ctor.newInstance();
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw new IllegalArgumentException(e);
+        }
         ctx.push(ob);
 
         if (sorter != null) {

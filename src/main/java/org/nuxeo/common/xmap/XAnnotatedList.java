@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.w3c.dom.Element;
@@ -67,7 +65,7 @@ public class XAnnotatedList extends XAnnotatedMember {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Object getValue(Context ctx, Element base) throws Exception {
+    protected Object getValue(Context ctx, Element base) {
         List<Object> values = new ArrayList<Object>();
         if (xao != null) {
             DOMHelper.visitNodes(ctx, this, base, path, elementListVisitor,
@@ -99,9 +97,15 @@ public class XAnnotatedList extends XAnnotatedMember {
                             componentType, values.size()));
                 }
             } else {
-                Collection col = (Collection) type.newInstance();
-                col.addAll(values);
-                return col;
+                try {
+                    Collection col = (Collection) type.newInstance();
+                    col.addAll(values);
+                    return col;
+                } catch (InstantiationException e) {
+                    throw new IllegalArgumentException(e);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalArgumentException(e);
+                }
             }
         }
 
@@ -109,7 +113,7 @@ public class XAnnotatedList extends XAnnotatedMember {
     }
 
     @Override
-    public void toXML(Object instance, Element parent) throws Exception {
+    public void toXML(Object instance, Element parent) {
         Object v = accessor.getValue(instance);
         if (v != null) {
             Object[] objects = null;
@@ -144,16 +148,10 @@ public class XAnnotatedList extends XAnnotatedMember {
 
 class ElementVisitor implements DOMHelper.NodeVisitor {
 
-    private static final Log log = LogFactory.getLog(ElementVisitor.class);
-
     @Override
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
             Collection<Object> result) {
-        try {
-            result.add(xam.xao.newInstance(ctx, (Element) node));
-        } catch (Exception e) {
-            log.error(e, e);
-        }
+        result.add(xam.xao.newInstance(ctx, (Element) node));
     }
 }
 

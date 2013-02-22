@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -23,6 +23,7 @@ package org.nuxeo.common.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -54,19 +55,22 @@ public final class SerializableHelper {
         try {
             ob = serializeUnserialize(ob);
             return ob != null;
-        } catch (Exception e) {
+        } catch (IOException e) {
+            return false;
+        } catch (ClassNotFoundException e) {
             return false;
         }
     }
 
     /**
-     * Serializes and unserializes back an object to test whether it is correctly
-     * rebuilt (to be used in unit tests as sanity checks).
+     * Serializes and unserializes back an object to test whether it is
+     * correctly rebuilt (to be used in unit tests as sanity checks).
      *
      * @param ob the actual object we want to test
      * @return true if the object is serializable.
      */
-    public static Object serializeUnserialize(Object ob) throws Exception {
+    public static Object serializeUnserialize(Object ob) throws IOException,
+            ClassNotFoundException {
         Serializable in = (Serializable) ob;
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
         ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -40,13 +40,20 @@ public class XFieldAccessor implements XAccessor {
         return field.getType();
     }
 
-    public void setValue(Object instance, Object value)
-            throws IllegalAccessException {
-        field.set(instance, value);
+    public void setValue(Object instance, Object value) {
+        try {
+            field.set(instance, value);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
-    public Object getValue(Object instance) throws Exception  {
-       return field.get(instance);
+    public Object getValue(Object instance) {
+        try {
+            return field.get(instance);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
 }

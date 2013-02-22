@@ -79,7 +79,7 @@ public class XAnnotatedMember {
         xao = xmap.register(type);
     }
 
-    protected void setValue(Object instance, Object value) throws Exception {
+    protected void setValue(Object instance, Object value) {
         try {
             accessor.setValue(instance, value);
         } catch (IllegalArgumentException e) {
@@ -89,7 +89,7 @@ public class XAnnotatedMember {
         }
     }
 
-    public void toXML(Object instance, Element parent) throws Exception {
+    public void toXML(Object instance, Element parent) {
         Element e = XMLBuilder.getOrCreateElement(parent, path);
         Object v = accessor.getValue(instance);
         if (xao == null) {
@@ -105,17 +105,21 @@ public class XAnnotatedMember {
         }
     }
 
-    public void process(Context ctx, Element element) throws Exception {
+    public void process(Context ctx, Element element) {
         Object value = getValue(ctx, element);
         if (value != null) {
             setValue(ctx.getObject(), value);
         }
     }
 
-    protected Object getValue(Context ctx, Element base) throws Exception {
+    protected Object getValue(Context ctx, Element base) {
         if (xao != null) {
             Element el = (Element) DOMHelper.getElementNode(base, path);
-            return el == null ? null : xao.newInstance(ctx, el);
+            if (el == null) {
+                return null;
+            } else {
+                return xao.newInstance(ctx, el);
+            }
         }
         // scalar field
         if (type == Element.class) {

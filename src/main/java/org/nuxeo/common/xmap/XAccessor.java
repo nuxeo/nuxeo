@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -39,12 +39,9 @@ public interface XAccessor {
      *
      * @param instance the instance of the object that owns this field
      * @param value the value to set
-     * @throws Exception
      */
-    void setValue(Object instance, Object value)
-            throws Exception;
+    void setValue(Object instance, Object value);
 
-
-    Object getValue(Object instance) throws Exception;
+    Object getValue(Object instance);
 
 }

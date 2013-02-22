@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -45,8 +45,17 @@ public class XMethodAccessor implements XAccessor {
         return setter.getParameterTypes()[0];
     }
 
-    public void setValue(Object instance, Object value) throws IllegalAccessException, InvocationTargetException {
-        setter.invoke(instance, value);
+    public void setValue(Object instance, Object value) {
+        try {
+            setter.invoke(instance, value);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw new IllegalArgumentException(e);
+        }
     }
 
     @Override
@@ -54,14 +63,23 @@ public class XMethodAccessor implements XAccessor {
         return "XMethodSetter {method: " + setter + '}';
     }
 
-    public Object getValue(Object instance) throws Exception {
+    public Object getValue(Object instance) {
         // lazy initialization for getter to keep the compatibility
         // with current xmap definition
         if (getter == null) {
             getter = findGetter(klass);
         }
         if (getter != null) {
-            return getter.invoke(instance);
+            try {
+                return getter.invoke(instance);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(e);
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof RuntimeException) {
+                    throw (RuntimeException) e.getCause();
+                }
+                throw new IllegalArgumentException(e);
+            }
         }
         return null;
     }
@@ -83,7 +101,9 @@ public class XMethodAccessor implements XAccessor {
             String getterName = prefix + suffix;
             try {
                 return klass.getMethod(getterName, new Class[0]);
-            } catch (Exception e) {
+            } catch (SecurityException e) {
+                throw new IllegalArgumentException(e);
+            } catch (NoSuchMethodException e) {
                 throw new IllegalArgumentException(
                         "there is NO getter defined for annotated setter: " + setterName, e);
             }

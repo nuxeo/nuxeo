@@ -22,8 +22,10 @@
 package org.nuxeo.common.xmap;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
@@ -157,7 +159,7 @@ public abstract class XValueFactory {
         public Object deserialize(Context context, String value) {
             try {
                 return df.parse(value);
-            } catch (Exception e) {
+            } catch (ParseException e) {
                 return null;
             }
         }
@@ -187,7 +189,7 @@ public abstract class XValueFactory {
         public Object deserialize(Context context, String value) {
             try {
                 return new URL(value);
-            } catch (Exception e) {
+            } catch (MalformedURLException e) {
                 return null;
             }
         }
@@ -203,8 +205,8 @@ public abstract class XValueFactory {
         public Object deserialize(Context context, String value) {
             try {
                 return context.loadClass(value);
-            } catch (Exception e) {
-                log.error("Cannot load class: " + e);
+            } catch (ClassNotFoundException e) {
+                log.error("Cannot load class: " + value, e);
                 return null;
             }
         }
@@ -219,12 +221,7 @@ public abstract class XValueFactory {
     public static final XValueFactory RESOURCE = new XValueFactory() {
         @Override
         public Object deserialize(Context context, String value) {
-            try {
-                return new Resource(context.getResource(value));
-            } catch (Exception e) {
-                log.error("Cannot load resource: " + e);
-                return null;
-            }
+            return new Resource(context.getResource(value));
         }
 
         @Override

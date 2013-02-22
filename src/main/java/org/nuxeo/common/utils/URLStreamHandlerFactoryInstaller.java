@@ -41,28 +41,33 @@ public class URLStreamHandlerFactoryInstaller {
     private URLStreamHandlerFactoryInstaller() {
     }
 
-    public static void installURLStreamHandlerFactory(URLStreamHandlerFactory shf) throws Exception {
+    public static void installURLStreamHandlerFactory(URLStreamHandlerFactory shf) {
         Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
         if (factoryField == null) {
-            throw new Exception("Could not find URLStreamHandlerFactory field");
+            throw new IllegalArgumentException(
+                    "Could not find URLStreamHandlerFactory field");
         }
         // look for a lock to synchronize on
         Object lock = getURLStreamHandlerFactoryLock();
         synchronized (lock) {
-            URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
-            if (factory == null) { // not installed - install it
-                factoryStack.push(shf); // push the new factory
-            } else if (factory != factoryStack) { // another factory is
-                                                  // installed
-                factoryStack.push(factory);
-                factoryStack.push(shf); // push the new factory
-            } else { // already installed
-                factoryStack.push(shf); // push the new factory
+            try {
+                URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
+                if (factory == null) { // not installed - install it
+                    factoryStack.push(shf); // push the new factory
+                } else if (factory != factoryStack) { // another factory is
+                                                      // installed
+                    factoryStack.push(factory);
+                    factoryStack.push(shf); // push the new factory
+                } else { // already installed
+                    factoryStack.push(shf); // push the new factory
+                }
+                // install it
+                factoryField.set(null, null);
+                resetURLStreamHandlers();
+                URL.setURLStreamHandlerFactory(factoryStack);
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(e);
             }
-            // install it
-            factoryField.set(null, null);
-            resetURLStreamHandlers();
-            URL.setURLStreamHandlerFactory(factoryStack);
         }
     }
 
@@ -74,7 +79,9 @@ public class URLStreamHandlerFactoryInstaller {
             }
             factoryField.set(null, null);
             resetURLStreamHandlers();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            // ignore and continue closing the framework
+        } catch (IllegalAccessException e) {
            // ignore and continue closing the framework
         }
     }
@@ -104,8 +111,10 @@ public class URLStreamHandlerFactoryInstaller {
                 resetURLStreamHandlers();
                 URL.setURLStreamHandlerFactory(factoryStack);
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             // ignore and continue closing the framework
+        } catch (IllegalAccessException e) {
+           // ignore and continue closing the framework
         }
 
     }
@@ -127,8 +136,9 @@ public class URLStreamHandlerFactoryInstaller {
             Hashtable<?, ?> handlers;
             try {
                 handlers = (Hashtable<?, ?>) handlersField.get(null);
-            } catch (Exception e) {
-                throw new RuntimeException("Cannot clear URL handlers cache");
+            } catch (IllegalAccessException e) {
+                throw new IllegalArgumentException(
+                        "Cannot clear URL handlers cache", e);
             }
             if (handlers != null) {
                 handlers.clear();
@@ -136,7 +146,7 @@ public class URLStreamHandlerFactoryInstaller {
         }
     }
 
-    private static Object getURLStreamHandlerFactoryLock() throws IllegalAccessException {
+    private static Object getURLStreamHandlerFactoryLock() {
         Object lock;
         try {
             Field streamHandlerLockField = URL.class.getDeclaredField("streamHandlerLock");
@@ -145,6 +155,8 @@ public class URLStreamHandlerFactoryInstaller {
         } catch (NoSuchFieldException noField) {
             // could not find the lock, lets sync on the class object
             lock = URL.class;
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
         }
         return lock;
     }

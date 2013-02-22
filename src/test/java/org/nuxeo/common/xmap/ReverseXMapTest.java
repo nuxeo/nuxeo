@@ -24,6 +24,7 @@ package org.nuxeo.common.xmap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -42,10 +43,11 @@ public class ReverseXMapTest {
                 "test-xmap.xml");
         Author author = (Author) xmap.load(url);
         try {
-            xmap.toXML(new Exception());
-            fail("should throw exception ('Exception' type is not registered)");
-        } catch (RuntimeException e) {
-            // just check if exception is thrown
+            xmap.toXML(new String());
+            fail("should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("java.lang.String is NOT registred in xmap"));
         }
 
         // save the object

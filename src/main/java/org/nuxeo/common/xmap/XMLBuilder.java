@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -20,6 +20,8 @@
  */
 
 package org.nuxeo.common.xmap;
+
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,14 +40,13 @@ public class XMLBuilder {
         try {
             toXML(object, root, xao);
             return DOMSerializer.toString(root);
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e, e);
         }
         return null;
     }
 
-    public static void toXML(Object o, Element parent, XAnnotatedObject xao)
-            throws Exception {
+    public static void toXML(Object o, Element parent, XAnnotatedObject xao) {
         // XPath xpath = XPathFactory.newInstance().newXPath();
         Element currentNode = parent;
         String path = xao.getPath().toString();

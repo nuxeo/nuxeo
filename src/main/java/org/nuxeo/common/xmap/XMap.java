@@ -52,6 +52,7 @@ import org.nuxeo.common.xmap.annotation.XParent;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -237,7 +238,7 @@ public class XMap {
      * @return the first registered top level object that is found in the file,
      *    or null if no objects are found.
      */
-    public Object load(URL url) throws Exception {
+    public Object load(URL url) throws IOException {
         return load(new Context(), url.openStream());
     }
 
@@ -248,7 +249,7 @@ public class XMap {
      * @param url the XML file url
      * @return the first registered top level object that is found in the file.
      */
-    public Object load(Context ctx, URL url) throws Exception {
+    public Object load(Context ctx, URL url) throws IOException {
         return load(ctx, url.openStream());
     }
 
@@ -258,7 +259,7 @@ public class XMap {
      * @param in the XML input source
      * @return the first registered top level object that is found in the file.
      */
-    public Object load(InputStream in) throws Exception {
+    public Object load(InputStream in) throws IOException {
         return load(new Context(), in);
     }
 
@@ -269,12 +270,16 @@ public class XMap {
      * @param in the input stream
      * @return the first registered top level object that is found in the file.
      */
-    public Object load(Context ctx, InputStream in) throws Exception {
+    public Object load(Context ctx, InputStream in) throws IOException {
         try {
             DocumentBuilderFactory factory = getFactory();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
             return load(ctx, document.getDocumentElement());
+        } catch (ParserConfigurationException e) {
+            throw new IOException(e);
+        } catch (SAXException e) {
+            throw new IOException(e);
         } finally {
             if (in != null) {
                 try {
@@ -296,7 +301,7 @@ public class XMap {
      * @param url the XML file url
      * @return a list with all registered top level objects that are found in the file
      */
-    public Object[] loadAll(URL url) throws Exception {
+    public Object[] loadAll(URL url) throws IOException {
         return loadAll(new Context(), url.openStream());
     }
 
@@ -311,7 +316,7 @@ public class XMap {
      * @param url the XML file url
      * @return a list with all registered top level objects that are found in the file
      */
-    public Object[] loadAll(Context ctx, URL url) throws Exception {
+    public Object[] loadAll(Context ctx, URL url) throws IOException {
         return loadAll(ctx, url.openStream());
     }
 
@@ -325,7 +330,7 @@ public class XMap {
      * @param in the XML input stream
      * @return a list with all registered top level objects that are found in the file
      */
-    public Object[] loadAll(InputStream in) throws Exception {
+    public Object[] loadAll(InputStream in) throws IOException {
         return loadAll(new Context(), in);
     }
 
@@ -340,12 +345,16 @@ public class XMap {
      * @param in the XML input stream
      * @return a list with all registered top level objects that are found in the file
      */
-    public Object[] loadAll(Context ctx, InputStream in) throws Exception {
+    public Object[] loadAll(Context ctx, InputStream in) throws IOException {
         try {
             DocumentBuilderFactory factory = getFactory();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document document = builder.parse(in);
             return loadAll(ctx, document.getDocumentElement());
+        } catch (ParserConfigurationException e) {
+            throw new IOException(e);
+        } catch (SAXException e) {
+            throw new IOException(e);
         } finally {
             if (in != null) {
                 try {
@@ -366,7 +375,7 @@ public class XMap {
      * @param root the element to process
      * @return the first object found in this element or null if none
      */
-    public Object load(Element root) throws Exception {
+    public Object load(Element root) {
         return load(new Context(), root);
     }
 
@@ -380,7 +389,7 @@ public class XMap {
      * @param root the element to process
      * @return the first object found in this element or null if none
      */
-    public Object load(Context ctx, Element root) throws Exception {
+    public Object load(Context ctx, Element root) {
         // check if the current element is bound to an annotated object
         String name = root.getNodeName();
         XAnnotatedObject xob = roots.get(name);
@@ -410,7 +419,7 @@ public class XMap {
      * @param root the element to process
      * @return the list of all top level objects found
      */
-    public Object[] loadAll(Context ctx, Element root) throws Exception {
+    public Object[] loadAll(Context ctx, Element root) {
         List<Object> result = new ArrayList<Object>();
         loadAll(ctx, root, result);
         return result.toArray();
@@ -425,7 +434,7 @@ public class XMap {
      * @param root the element to process
      * @return the list of all top level objects found
      */
-    public Object[] loadAll(Element root) throws Exception {
+    public Object[] loadAll(Element root) {
         return loadAll(new Context(), root);
     }
 
@@ -436,7 +445,7 @@ public class XMap {
      * @param root the element to process
      * @param result the collection where to collect objects
      */
-    public void loadAll(Element root, Collection<Object> result) throws Exception {
+    public void loadAll(Element root, Collection<Object> result) {
         loadAll(new Context(), root, result);
     }
 
@@ -448,7 +457,7 @@ public class XMap {
      * @param root the element to process
      * @param result the collection where to collect objects
      */
-    public void loadAll(Context ctx, Element root, Collection<Object> result) throws Exception {
+    public void loadAll(Context ctx, Element root, Collection<Object> result) {
         // check if the current element is bound to an annotated object
         String name = root.getNodeName();
         XAnnotatedObject xob = roots.get(name);
@@ -512,9 +521,14 @@ public class XMap {
 
 
     // methods to serialize the map
-    public String toXML(Object object) throws ParserConfigurationException, IOException{
+    public String toXML(Object object) throws IOException {
         DocumentBuilderFactory dbfac = getFactory();
-        DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
+        DocumentBuilder docBuilder;
+        try {
+            docBuilder = dbfac.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new IOException(e);
+        }
         Document doc = docBuilder.newDocument();
         // create root element
         Element root = doc.createElement("root");
@@ -525,12 +539,12 @@ public class XMap {
         return DOMSerializer.toString(root);
     }
 
-    public void toXML(Object object, OutputStream os ) throws Exception{
+    public void toXML(Object object, OutputStream os ) throws IOException {
         String xml = toXML(object);
         os.write(xml.getBytes());
     }
 
-    public void toXML(Object object, File file) throws Exception{
+    public void toXML(Object object, File file) throws IOException {
         String xml = toXML(object);
         FileUtils.writeFile(file, xml);
     }

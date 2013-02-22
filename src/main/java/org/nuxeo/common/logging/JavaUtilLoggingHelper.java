@@ -75,7 +75,7 @@ public class JavaUtilLoggingHelper {
             rootLogger.setLevel(threshold);
             log.info("Redirecting java.util.logging to Apache Commons Logging, threshold is "
                     + threshold.toString());
-        } catch (Exception e) {
+        } catch (SecurityException e) {
             log.error("Handler setup failed", e);
         }
     }
@@ -90,7 +90,7 @@ public class JavaUtilLoggingHelper {
         try {
             Logger rootLogger = LogManager.getLogManager().getLogger("");
             rootLogger.removeHandler(activeHandler);
-        } catch (Exception e) {
+        } catch (SecurityException e) {
             log.error("Handler removal failed", e);
         }
         activeHandler = null;

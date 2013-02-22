@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -21,11 +21,13 @@
 
 package org.nuxeo.common.xmap;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +36,7 @@ import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -249,7 +252,11 @@ public final class DOMHelper {
                 el.appendChild(node.removeChild(node.getFirstChild()));
             }
 
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
+            log.error(e, e);
+        } catch (SAXException e) {
+            log.error(e, e);
+        } catch (IOException e) {
             log.error(e, e);
         }
     }

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -34,7 +34,7 @@ public class XAnnotatedParent extends XAnnotatedMember {
     }
 
     @Override
-    protected Object getValue(Context ctx, Element base) throws Exception {
+    protected Object getValue(Context ctx, Element base) {
         return ctx.getParent();
     }
 

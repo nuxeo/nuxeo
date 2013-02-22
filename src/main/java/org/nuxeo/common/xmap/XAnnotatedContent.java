@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -56,7 +56,7 @@ public class XAnnotatedContent extends XAnnotatedMember {
     }
 
     @Override
-    protected Object getValue(Context ctx, Element base) throws IOException {
+    protected Object getValue(Context ctx, Element base) {
         Element el = (Element) DOMHelper.getElementNode(base, path);
         if (el == null) {
             return null;
@@ -72,11 +72,19 @@ public class XAnnotatedContent extends XAnnotatedMember {
         range.setEndAfter(el.getLastChild());
         DocumentFragment fragment = range.cloneContents();
         boolean asDOM = accessor.getType() == DocumentFragment.class;
-        return asDOM ? fragment : DOMSerializer.toString(fragment, DEFAULT_FORMAT);
+        if (asDOM) {
+            return fragment;
+        } else {
+            try {
+                return DOMSerializer.toString(fragment, DEFAULT_FORMAT);
+            } catch (IOException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
     }
 
     @Override
-    public void toXML(Object instance, Element parent) throws Exception {
+    public void toXML(Object instance, Element parent) {
         Object v = accessor.getValue(instance);
         if (v instanceof DocumentFragment) {
             Element e = XMLBuilder.getOrCreateElement(parent, path);

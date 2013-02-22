@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -23,8 +23,6 @@ package org.nuxeo.common.xmap;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -59,9 +57,15 @@ public class XAnnotatedMap extends XAnnotatedList {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Object getValue(Context ctx, Element base)
-            throws IllegalAccessException, InstantiationException {
-        Map<String, Object> values = (Map) type.newInstance();
+    protected Object getValue(Context ctx, Element base) {
+        Map<String, Object> values;
+        try {
+            values = (Map) type.newInstance();
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
         if (xao != null) {
             DOMHelper.visitMapNodes(ctx, this, base, path, elementMapVisitor,
                     values);
@@ -83,7 +87,7 @@ public class XAnnotatedMap extends XAnnotatedList {
     }
 
     @Override
-    public void toXML(Object instance, Element parent) throws Exception {
+    public void toXML(Object instance, Element parent) {
         Object v = accessor.getValue(instance);
         if (v != null && v instanceof Map<?, ?>) {
             Map<String, ?> map = (Map<String, ?>) v;
@@ -112,15 +116,9 @@ public class XAnnotatedMap extends XAnnotatedList {
 
 class ElementMapVisitor implements DOMHelper.NodeMapVisitor {
 
-    private static final Log log = LogFactory.getLog(ElementMapVisitor.class);
-
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node,
             String key, Map<String, Object> result) {
-        try {
-            result.put(key, xam.xao.newInstance(ctx, (Element) node));
-        } catch (Exception e) {
-            log.error(e, e);
-        }
+        result.put(key, xam.xao.newInstance(ctx, (Element) node));
     }
 }
 
