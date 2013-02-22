@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.adapters.hierarchy.permission"
+  version="1.0">
+
+  <require>org.nuxeo.drive.adapters</require>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="topLevelFolderItemFactory">
+    <topLevelFolderItemFactory
+      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFolderItemFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="fileSystemItemFactory">
+
+    <!-- Disable the "defaultSyncRootFolderItemFactory" bound to the DriveSynchronized
+      facet -->
+    <fileSystemItemFactory name="defaultSyncRootFolderItemFactory"
+      enabled="false" />
+
+    <!-- User workspace factory: order before the "permissionSyncRootFolderItemFactory"
+      also bound to the DriveSynchronized facet -->
+    <fileSystemItemFactory name="userWorkspaceFolderItemFactory"
+      order="10" facet="DriveSynchronized"
+      class="org.nuxeo.drive.hierarchy.permission.factory.UserWorkspaceFolderItemFactory">
+      <parameters>
+        <parameter name="folderName">My Documents</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
+    <!-- Synchronization root factory: order before the "defaultFileSystemItemFactory"
+      that has an order of 50 -->
+    <fileSystemItemFactory name="permissionSyncRootFolderItemFactory"
+      order="40" facet="DriveSynchronized"
+      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootFolderItemFactory">
+      <parameters>
+        <parameter name="requiredPermission">ReadWrite</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
+    <fileSystemItemFactory name="permissionSyncRootParentFolderItemFactory"
+      order="100"
+      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootParentFolderItemFactory">
+      <parameters>
+        <parameter name="folderName">Other Documents</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
+  </extension>
+
+</component>

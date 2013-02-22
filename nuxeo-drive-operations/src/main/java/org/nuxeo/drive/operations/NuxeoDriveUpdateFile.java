@@ -16,9 +16,6 @@
  */
 package org.nuxeo.drive.operations;
 
-import java.io.StringWriter;
-
-import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -29,7 +26,6 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -59,13 +55,8 @@ public class NuxeoDriveUpdateFile {
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
-        NuxeoDriveOperationHelper.commitTransaction();
-
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter writer = new StringWriter();
-        mapper.writeValue(writer, fileItem);
-        return StreamingBlob.createFromString(writer.toString(),
-                "application/json");
+        NuxeoDriveOperationHelper.commitAndReopenTransaction();
+        return NuxeoDriveOperationHelper.asJSONBlob(fileItem);
     }
 
 }
