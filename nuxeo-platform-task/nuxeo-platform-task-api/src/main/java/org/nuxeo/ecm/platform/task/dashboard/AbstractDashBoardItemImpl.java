@@ -58,10 +58,14 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
     }
 
     public String getI18nTaskName() {
-        if (locale == null || !needi18n()) {
+        if (locale == null) {
             return getName();
         }
-        String labelKey = "label.workflow.task." + getName();
+
+        String labelKey = getName();
+        if (needi18n()) {
+            labelKey = "label.workflow.task." + labelKey;
+        }
         return getI18nLabel(labelKey, locale);
     }
 
@@ -70,12 +74,15 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         if (directiveKey == null) {
             directiveKey = getName();
         }
-        if (locale == null || !needi18n()) {
+        if (locale == null) {
             return directiveKey;
         }
+
         String directiveLabel = getI18nLabel(directiveKey, locale);
         if (directiveKey != null && directiveKey.equals(directiveLabel)) {
-            directiveKey = "label.workflow.task." + directiveKey;
+            if (needi18n()) {
+                directiveKey = "label.workflow.task." + directiveKey;
+            }
             String newdirectiveLabel = getI18nLabel(directiveKey, locale);
             if (!directiveKey.equals(newdirectiveLabel)) {
                 directiveLabel = newdirectiveLabel;
