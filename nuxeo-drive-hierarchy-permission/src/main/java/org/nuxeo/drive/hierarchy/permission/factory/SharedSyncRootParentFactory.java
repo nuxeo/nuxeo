@@ -36,7 +36,7 @@ public class SharedSyncRootParentFactory extends
         AbstractVirtualFolderItemFactory {
 
     @Override
-    protected FolderItem getVirtualFolderItem(Principal principal)
+    public FolderItem getVirtualFolderItem(Principal principal)
             throws ClientException {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(principal);

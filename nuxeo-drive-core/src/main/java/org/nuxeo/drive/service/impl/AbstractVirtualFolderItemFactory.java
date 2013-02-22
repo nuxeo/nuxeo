@@ -26,6 +26,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -35,7 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author Antoine Taillefer
  */
 public abstract class AbstractVirtualFolderItemFactory implements
-        FileSystemItemFactory {
+        VirtualFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(AbstractVirtualFolderItemFactory.class);
 
@@ -47,10 +48,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
 
     protected String folderName = DEFAULT_FOLDER_NAME;
 
-    /**
-     * Returns the (unique) virtual {@link FolderItem}.
-     */
-    protected abstract FolderItem getVirtualFolderItem(Principal principal)
+    public abstract FolderItem getVirtualFolderItem(Principal principal)
             throws ClientException;
 
     @Override

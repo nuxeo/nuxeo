@@ -31,8 +31,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 public class DefaultTopLevelFolderItemFactory extends
         AbstractVirtualFolderItemFactory implements TopLevelFolderItemFactory {
 
-    /*---------------------- AbstractVirtualFolderItemFactory ---------------*/
-    protected FolderItem getVirtualFolderItem(Principal principal)
+    /*---------------------- VirtualFolderItemFactory ---------------*/
+    public FolderItem getVirtualFolderItem(Principal principal)
             throws ClientException {
         return getTopLevelFolderItem(principal);
     }
