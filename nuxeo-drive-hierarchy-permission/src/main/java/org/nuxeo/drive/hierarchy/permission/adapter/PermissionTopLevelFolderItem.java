@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.hierarchy.permission.adapter;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,29 +24,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
-import org.nuxeo.drive.service.TopLevelFolderItemFactory;
+import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
+import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- * User workspace and permission based implementation of the top level
- * {@link FolderItem}.
+ * Permission based implementation of the top level {@link FolderItem}.
  * <p>
  * Implements the following tree:
  *
  * <pre>
  * Nuxeo Drive
- *  |-- My Documents (= user workspace)
- *  |      |-- File 1.doc
- *  |      |-- File 2.doc
+ *  |-- My Documents (= user synchronization roots)
  *  |      |-- Folder 1
+ *  |      |-- Folder 2
  *  |      |-- ...
- *  |-- Other Documents (= synchronized roots with ReadWrite permission)
+ *  |-- Other Documents (= user's shared synchronized roots with ReadWrite permission)
  *  |      |-- Other folder 1
  *  |      |-- Other folder 2
  *  |      |-- ...
@@ -53,18 +47,19 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-public class PermissionTopLevelFolderItem extends DefaultTopLevelFolderItem {
+public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     private static final long serialVersionUID = 5179858544427598560L;
 
     private static final Log log = LogFactory.getLog(PermissionTopLevelFolderItem.class);
 
-    protected TopLevelFolderItemFactory factory;
+    protected List<String> childrenFactoryNames;
 
-    public PermissionTopLevelFolderItem(TopLevelFolderItemFactory factory,
-            String userName) throws ClientException {
-        super(factory.getName(), userName);
-        this.factory = factory;
+    public PermissionTopLevelFolderItem(String factoryName,
+            Principal principal, String folderName,
+            List<String> childrenFactoryNames) throws ClientException {
+        super(factoryName, principal, null, folderName);
+        this.childrenFactoryNames = childrenFactoryNames;
     }
 
     protected PermissionTopLevelFolderItem() {
@@ -75,43 +70,19 @@ public class PermissionTopLevelFolderItem extends DefaultTopLevelFolderItem {
     public List<FileSystemItem> getChildren() throws ClientException {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
-
-        // Add user workspace
-        UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        // TODO: handle multiple repositories
-        CoreSession session = getSession(repositoryManager.getDefaultRepository().getName());
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, null);
-        if (userWorkspace == null) {
-            log.warn(String.format(
-                    "No personal workspace found for user %s, not adding it to the top level folder children.",
-                    userName));
-        } else {
-            FileSystemItem userWorkspaceFSItem = getFileSystemItemAdapterService().getFileSystemItem(
-                    userWorkspace, id);
-            if (userWorkspaceFSItem == null) {
-                log.warn(String.format(
-                        "Personal workspace of user %s is not adaptable as a FileSystemItem, not adding it to the top level folder children.",
-                        userName));
+        for (String childFactoryName : childrenFactoryNames) {
+            String childFileSystemItemId = childFactoryName
+                    + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR;
+            FileSystemItem childFileSystemItem = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                    childFileSystemItemId).getFileSystemItemById(
+                    childFileSystemItemId, principal);
+            if (childFileSystemItem == null) {
+                log.warn(String.format("No FileSystemItem found for id %s.",
+                        childFileSystemItemId));
             } else {
-                children.add(userWorkspaceFSItem);
+                children.add(childFileSystemItem);
             }
         }
-
-        // Add synchronization root parent folder
-        String syncRootParentFolderItemId = factory.getSyncRootParentFolderItemId(userName);
-        FileSystemItem syncRootParentFolderItem = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
-                syncRootParentFolderItemId).getFileSystemItemById(
-                syncRootParentFolderItemId, principal);
-        if (syncRootParentFolderItem == null) {
-            log.warn(String.format(
-                    "No FileSystemItem found for id %s, not adding the synchronization root parent folder to the top level folder children.",
-                    syncRootParentFolderItemId));
-        } else {
-            children.add(syncRootParentFolderItem);
-        }
-
         return children;
     }
 

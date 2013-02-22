@@ -7,7 +7,13 @@
   <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
     point="topLevelFolderItemFactory">
     <topLevelFolderItemFactory
-      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFolderItemFactory" />
+      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFactory">
+      <parameters>
+        <parameter name="folderName">Nuxeo Drive</parameter>
+        <parameter name="childrenFactories">userSyncRootParentFactory,sharedSyncRootParentFactory
+        </parameter>
+      </parameters>
+    </topLevelFolderItemFactory>
   </extension>
 
   <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
@@ -18,29 +24,33 @@
     <fileSystemItemFactory name="defaultSyncRootFolderItemFactory"
       enabled="false" />
 
-    <!-- User workspace factory: order before the "permissionSyncRootFolderItemFactory"
-      also bound to the DriveSynchronized facet -->
-    <fileSystemItemFactory name="userWorkspaceFolderItemFactory"
-      order="10" facet="DriveSynchronized"
-      class="org.nuxeo.drive.hierarchy.permission.factory.UserWorkspaceFolderItemFactory">
+    <!-- Synchronization root factory: order before the "defaultFileSystemItemFactory"
+      that has an order of 50 -->
+    <fileSystemItemFactory name="permissionSyncRootFactory"
+      order="40" facet="DriveSynchronized"
+      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootFactory">
+      <parameters>
+        <parameter name="requiredPermission">ReadWrite</parameter>
+        <parameter name="userSyncRootParentFactory">userSyncRootParentFactory</parameter>
+        <parameter name="sharedSyncRootParentFactory">
+          sharedSyncRootParentFactory
+        </parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
+    <!-- User synchronization root parent factory -->
+    <fileSystemItemFactory name="userSyncRootParentFactory"
+      order="100"
+      class="org.nuxeo.drive.hierarchy.permission.factory.UserSyncRootParentFactory">
       <parameters>
         <parameter name="folderName">My Documents</parameter>
       </parameters>
     </fileSystemItemFactory>
 
-    <!-- Synchronization root factory: order before the "defaultFileSystemItemFactory"
-      that has an order of 50 -->
-    <fileSystemItemFactory name="permissionSyncRootFolderItemFactory"
-      order="40" facet="DriveSynchronized"
-      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootFolderItemFactory">
-      <parameters>
-        <parameter name="requiredPermission">ReadWrite</parameter>
-      </parameters>
-    </fileSystemItemFactory>
-
-    <fileSystemItemFactory name="permissionSyncRootParentFolderItemFactory"
-      order="100"
-      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootParentFolderItemFactory">
+    <!-- Shared synchronization root parent factory -->
+    <fileSystemItemFactory name="sharedSyncRootParentFactory"
+      order="110"
+      class="org.nuxeo.drive.hierarchy.permission.factory.SharedSyncRootParentFactory">
       <parameters>
         <parameter name="folderName">Other Documents</parameter>
       </parameters>
