@@ -302,7 +302,8 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>quota_heaviest_containers_cv:documents_size_statistics_totalSize</field>
+          <field>quota_heaviest_containers_cv:documents_size_statistics_totalSize_min</field>
+          <field>quota_heaviest_containers_cv:documents_size_statistics_totalSize_max</field>
         </fields>
         <properties mode="any">
           <property name="template">

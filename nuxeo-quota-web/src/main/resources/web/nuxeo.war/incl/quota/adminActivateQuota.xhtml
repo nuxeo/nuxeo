@@ -34,7 +34,7 @@
  <h:form>
   <a4j:poll id="checkQuotaStatus" interval="5000"
    enabled="true" eventsQueue="quotaActivateQueue"
-   reRender="setQuotaOnUserWorkspacesPanel, checkQuotaStatus, quotaActivateQueueReg" onsubmit="" />
+   reRender="setQuotaOnUserWorkspacesPanel, checkQuotaStatus, quotaActivateQueueReg" />
  </h:form>
 
   <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel" rendered="#{!quotaStatsActions.workQueuesInProgess()}">
@@ -70,6 +70,7 @@
   </h:form>
  <h:messages/>
  </a4j:outputPanel>
+ <h:outputText value="#{messages['status.quota.initialComputationInProgress']}" rendered="#{quotaStatsActions.workQueuesInProgess()}"/>
 </a4j:region>
 
 </div>

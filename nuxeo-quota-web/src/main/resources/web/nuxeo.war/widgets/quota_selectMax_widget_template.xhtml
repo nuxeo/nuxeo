@@ -61,12 +61,6 @@ jQuery.noConflict();
     return label;
   } 
  
-  function displayQuotaSize(value) {
-    var label = formatQuotaSize(value);
-    jQuery('#sliderDisplay').html(label);
-    return label;
-  } 
-  
   jQuery(document).ready(function() {
   
   jQuery( "#slider" ).slider({
@@ -75,13 +69,13 @@ jQuery.noConflict();
   max: Number(logposition(maxQuotaSliderValue)),
   step: 0.001,
   slide: function( event, ui ) {
-    jQuery("#sliderValue").text(displayQuotaSize(ui.value));
+    jQuery("#sliderValue").text(formatQuotaSize(ui.value));
     console.log(jQuery("inputText[id$='maxValue']").val());
     jQuery("input[id$='maxValue']").val(expon(ui.value));
   }
   });
  
- jQuery("#sliderValue").text(displayQuotaSize(jQuery("#slider").slider("value")));
+ jQuery("#sliderValue").text(formatQuotaSize(jQuery("#slider").slider("value")));
  jQuery("#limitMin").text(formatQuotaSize(Number(logposition(minQuotaSliderValue))));
  jQuery("#limitMax").text(formatQuotaSize(Number(logposition(maxQuotaSliderValue))));
  
