@@ -25,98 +25,123 @@
 
             <div class="#{widgetProperty_subStyleClass}">
 
-              <ui:decorate template="/widgets/incl/form_template.xhtml">
-                <ui:param name="addForm" value="#{widgetProperty_addForm}" />
-                <ui:param name="formId" value="#{widget.id}_form" />
-                <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
-                <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
-                <ui:param name="formStyleClass" value="subWidgetForm" />
-                <ui:define name="form_template_content">
+              <div>
+                <a4j:status>
+                  <f:facet name="start">
+                    <h:graphicImage value="/img/standart_waiter.gif" />
+                  </f:facet>
+                </a4j:status>
+              </div>
 
-                  <div>
-                    <a4j:status>
-                      <f:facet name="start">
-                        <h:graphicImage value="/img/standart_waiter.gif" />
-                      </f:facet>
-                    </a4j:status>
-                  </div>
-
-                  <c:choose>
-                    <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
-                      <div class="widgetPanel actionsWidgetPanel">
-                        <c:forEach var="action" items="#{widgetProperty_actions}"
-                          begin="0"
-                          end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
-                          step="1">
+              <c:choose>
+                <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
+                  <div class="widgetPanel actionsWidgetPanel">
+                    <c:forEach var="action" items="#{widgetProperty_actions}"
+                      begin="0"
+                      end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+                      step="1">
+                      <ui:decorate template="/widgets/incl/form_template.xhtml">
+                        <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                        <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
+                        <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+                        <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                        <ui:param name="formStyleClass" value="subWidgetForm" />
+                        <ui:define name="form_template_content">
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                           </ui:decorate>
-                        </c:forEach>
-                      </div>
-                    </c:when>
+                        </ui:define>
+                      </ui:decorate>
+                    </c:forEach>
+                  </div>
+                </c:when>
 
-                    <c:when test="#{widgetProperty_overallDisplay == 'menu'}">
-                      <ul>
-                        <c:forEach var="action" items="#{widgetProperty_actions}"
-                          begin="0"
-                          end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
-                          step="1">
-                          <li class="#{nxu:test(widgetProperty_selectedExpression, 'selected', '')}">
+                <c:when test="#{widgetProperty_overallDisplay == 'menu'}">
+                  <ul>
+                    <c:forEach var="action" items="#{widgetProperty_actions}"
+                      begin="0"
+                      end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+                      step="1">
+                      <li class="#{nxu:test(widgetProperty_selectedExpression, 'selected', '')}">
+                        <ui:decorate template="/widgets/incl/form_template.xhtml">
+                          <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                          <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
+                          <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+                          <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                          <ui:param name="formStyleClass" value="subWidgetForm" />
+                          <ui:define name="form_template_content">
                             <ui:decorate template="/incl/action/action_template.xhtml">
                               <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                             </ui:decorate>
-                          </li>
-                        </c:forEach>
-                      </ul>
-                    </c:when>
+                          </ui:define>
+                        </ui:decorate>
+                      </li>
+                    </c:forEach>
+                  </ul>
+                </c:when>
 
-                    <!-- TODO: add rollover menu? -->
+                <!-- TODO: add rollover menu? -->
 
-                    <c:otherwise>
-                      <c:forEach var="action" items="#{widgetProperty_actions}"
-                        begin="0"
-                        end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
-                        step="1">
-                        <div class="widgetPanel actionsWidgetPanel">
+                <c:otherwise>
+                  <c:forEach var="action" items="#{widgetProperty_actions}"
+                    begin="0"
+                    end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+                    step="1">
+                    <div class="widgetPanel actionsWidgetPanel">
+                      <ui:decorate template="/widgets/incl/form_template.xhtml">
+                        <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                        <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
+                        <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+                        <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                        <ui:param name="formStyleClass" value="subWidgetForm" />
+                        <ui:define name="form_template_content">
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                           </ui:decorate>
-                        </div>
+                        </ui:define>
+                      </ui:decorate>
+                    </div>
+                  </c:forEach>
+                </c:otherwise>
+
+              </c:choose>
+
+              <c:if test="#{not empty widgetProperty_maxActionsNumber and widgetProperty_actions.size > widgetProperty_maxActionsNumber}">
+                <ul class="actionList">
+                  <li class="dropDownMenu button dropdown">
+                    <h:outputText value="#{empty widgetProperty_moreMenuLabel ? messages['label.summary.actions.more'] : widgetProperty_moreMenuLabel}" />
+                    <ul class="actionSubList">
+                      <c:forEach var="action" begin="#{widgetProperty_maxActionsNumber}"
+                        end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
+                        <li>
+                          <ui:decorate template="/widgets/incl/form_template.xhtml">
+                            <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                            <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
+                            <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+                            <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
+                            <ui:param name="formStyleClass" value="subWidgetForm" />
+                            <ui:define name="form_template_content">
+                              <ui:include src="/incl/action/generic_action_template.xhtml" />
+                            </ui:define>
+                          </ui:decorate>
+                        </li>
                       </c:forEach>
-                    </c:otherwise>
-
-                  </c:choose>
-
-                  <c:if test="#{not empty widgetProperty_maxActionsNumber and widgetProperty_actions.size > widgetProperty_maxActionsNumber}">
-                    <ul class="actionList">
-                      <li class="dropDownMenu button dropdown">
-                        <h:outputText value="#{empty widgetProperty_moreMenuLabel ? messages['label.summary.actions.more'] : widgetProperty_moreMenuLabel}" />
-                        <ul class="actionSubList">
-                          <c:forEach var="action" begin="#{widgetProperty_maxActionsNumber}"
-                            end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
-                            <li>
-                              <ui:decorate template="/incl/action/generic_action_template.xhtml" />
-                            </li>
-                          </c:forEach>
-                        </ul>
-                      </li>
                     </ul>
-                    <script type="text/javascript">
-                    jQuery(document).ready(function($) {
-                      jQuery('.dropDownMenu').click(function(e) {
-                        jQuery(this).find('ul').hide();
-                        jQuery(this).find("ul").show();
-                        e.stopPropagation();
-                      });
-                      jQuery(document).click(function() {
-                        jQuery('.dropDownMenu').find('ul').hide();
-                      });
+                  </li>
+                </ul>
+                <script type="text/javascript">
+                  jQuery(document).ready(function($) {
+                    jQuery('.dropDownMenu').click(function(e) {
+                      jQuery(this).find('ul').hide();
+                      jQuery(this).find("ul").show();
+                      e.stopPropagation();
                     });
-                    </script>
-                  </c:if>
-
-                </ui:define>
-              </ui:decorate>
+                    jQuery(document).click(function() {
+                      jQuery('.dropDownMenu').find('ul').hide();
+                    });
+                  });
+                </script>
+              </c:if>
 
             </div>
 

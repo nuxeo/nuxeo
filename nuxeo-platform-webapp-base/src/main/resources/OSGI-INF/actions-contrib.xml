@@ -41,6 +41,9 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}"
@@ -48,6 +51,9 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="permalinkAction" order="20" label="label.permalink" type="fancybox"
@@ -58,6 +64,7 @@
         <property name="onclick">
           jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
         </property>
+        <property name="ajaxSupport">true</property>
       </properties>
     </action>
 
@@ -74,6 +81,9 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasNoSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="unsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
@@ -82,6 +92,9 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasSubscriptions</filter-id>
       <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="addCurrentDocumentToWorklist"
@@ -91,6 +104,9 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>not_folder</filter-id>
       <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="print" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
