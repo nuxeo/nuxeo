@@ -123,6 +123,13 @@ public class PreviewActionBean implements Serializable {
     }
 
     public String getPreviewPopupURL(DocumentModel doc) {
+        return getPreviewPopupURL(doc, false);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public String getPreviewPopupURL(DocumentModel doc, boolean newConversation) {
         DocumentLocation docLocation = new DocumentLocationImpl(
                 doc.getRepositoryName(), doc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation,
@@ -130,7 +137,9 @@ public class PreviewActionBean implements Serializable {
         docView.setPatternName("id");
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
         String url = urlPolicyService.getUrlFromDocumentView(docView, null);
-        url = RestHelper.addCurrentConversationParameters(url);
+        if (!newConversation) {
+            url = RestHelper.addCurrentConversationParameters(url);
+        }
         return VirtualHostHelper.getContextPathProperty() + "/" + url;
     }
 
@@ -138,7 +147,7 @@ public class PreviewActionBean implements Serializable {
     public String getPreviewPopupURL(String docId) {
         try {
             DocumentModel doc = documentManager.getDocument(new IdRef(docId));
-            return getPreviewPopupURL(doc);
+            return getPreviewPopupURL(doc, true);
         } catch (ClientException e) {
             log.error(e, e);
             return "";
