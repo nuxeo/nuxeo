@@ -283,7 +283,7 @@ public class TestFileSystemItemOperations {
 
         // Get top level folder
         String topLevelFolderItemId = fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                session.getPrincipal().getName()).getId();
+                session.getPrincipal()).getId();
         Blob fileSystemItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetFileSystemItem.ID).set("id", topLevelFolderItemId).execute();
         assertNotNull(fileSystemItemJSON);
@@ -560,7 +560,7 @@ public class TestFileSystemItemOperations {
             clientSession.newRequest(NuxeoDriveDelete.ID).set(
                     "id",
                     fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                            session.getPrincipal().getName()).getId()).execute();
+                            session.getPrincipal()).getId()).execute();
             fail("Top level folder item deletion should be unsupported.");
         } catch (Exception e) {
             assertEquals("Failed to execute operation: NuxeoDrive.Delete",
@@ -656,8 +656,8 @@ public class TestFileSystemItemOperations {
             clientSession.newRequest(NuxeoDriveRename.ID).set(
                     "id",
                     fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                            session.getPrincipal().getName()).getId()).set(
-                    "name", "New name for top level folder").execute();
+                            session.getPrincipal()).getId()).set("name",
+                    "New name for top level folder").execute();
             fail("Top level folder renaming shoud be unsupported.");
         } catch (Exception e) {
             assertEquals("Failed to execute operation: NuxeoDrive.Rename",
@@ -701,8 +701,8 @@ public class TestFileSystemItemOperations {
                 NuxeoDriveCanMove.ID).set(
                 "srcId",
                 fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                        session.getPrincipal().getName()).getId()).set(
-                "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
+                        session.getPrincipal()).getId()).set("destId",
+                SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
         assertNotNull(canMoveFSItemJSON);
 
         canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
@@ -817,8 +817,7 @@ public class TestFileSystemItemOperations {
             clientSession.newRequest(NuxeoDriveMove.ID).set(
                     "srcId",
                     fileSystemItemAdapterService.getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                            session.getPrincipal().getName()).getId()).set(
-                    "destId",
+                            session.getPrincipal()).getId()).set("destId",
                     SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
             fail("Should not be able to move the top level folder item.");
         } catch (Exception e) {

@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.service;
 
+import java.security.Principal;
+
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -32,6 +34,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface TopLevelFolderItemFactory extends FileSystemItemFactory {
 
-    FolderItem getTopLevelFolderItem(String userName) throws ClientException;
+    FolderItem getTopLevelFolderItem(Principal principal)
+            throws ClientException;
 
 }

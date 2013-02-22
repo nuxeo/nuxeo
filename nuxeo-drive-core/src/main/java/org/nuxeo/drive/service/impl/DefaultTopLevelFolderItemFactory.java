@@ -17,127 +17,32 @@
 package org.nuxeo.drive.service.impl;
 
 import java.security.Principal;
-import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Default implementation of a {@link TopLevelFolderItemFactory}.
  *
  * @author Antoine Taillefer
  */
-public class DefaultTopLevelFolderItemFactory implements
-        TopLevelFolderItemFactory {
+public class DefaultTopLevelFolderItemFactory extends
+        AbstractVirtualFolderItemFactory implements TopLevelFolderItemFactory {
 
-    private static final Log log = LogFactory.getLog(DefaultTopLevelFolderItemFactory.class);
-
-    protected String name;
-
-    /*--------------------------- TopLevelFolderItemFactory -----------------*/
-    @Override
-    public FolderItem getTopLevelFolderItem(String userName)
+    /*---------------------- AbstractVirtualFolderItemFactory ---------------*/
+    protected FolderItem getVirtualFolderItem(Principal principal)
             throws ClientException {
-        return new DefaultTopLevelFolderItem(getName(), userName);
+        return getTopLevelFolderItem(principal);
     }
 
-    /*--------------------------- FileSystemItemFactory ---------------------*/
+    /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void handleParameters(Map<String, String> parameters) {
-        // Nothing to do as no parameters are contributed to the factory
-        if (!parameters.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Parameter map is not empty whereas no parameters are contributed to the factory.");
-        }
-        log.debug(String.format("Factory %s has no parameters to handle.",
-                getName()));
-    }
-
-    @Override
-    public boolean isFileSystemItem(DocumentModel doc) throws ClientException {
-        return isFileSystemItem(doc, false);
-    }
-
-    @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
+    public FolderItem getTopLevelFolderItem(Principal principal)
             throws ClientException {
-        return false;
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc)
-            throws ClientException {
-        return getFileSystemItem(doc, false);
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
-        throw new UnsupportedOperationException(
-                String.format(
-                        "Cannot get the file system item for a given document from factory %s.",
-                        getName()));
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
-            throws ClientException {
-        return getFileSystemItem(doc, parentId, false);
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
-            boolean includeDeleted) throws ClientException {
-        throw new UnsupportedOperationException(
-                String.format(
-                        "Cannot get the file system item for a given document from factory %s.",
-                        getName()));
-    }
-
-    @Override
-    public boolean canHandleFileSystemItemId(String id) {
-        return (getName() + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR).equals(id);
-    }
-
-    @Override
-    public boolean exists(String id, Principal principal)
-            throws ClientException {
-        if (!canHandleFileSystemItemId(id)) {
-            throw new UnsupportedOperationException(
-                    String.format(
-                            "Cannot check if a file system item exists for an id that cannot be handled from factory %s.",
-                            getName()));
-        }
-        return true;
-    }
-
-    @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal)
-            throws ClientException {
-        if (!canHandleFileSystemItemId(id)) {
-            throw new UnsupportedOperationException(
-                    String.format(
-                            "Cannot get the file system item for an id that cannot be handled from factory %s.",
-                            getName()));
-        }
-        return getTopLevelFolderItem(principal.getName());
+        return new DefaultTopLevelFolderItem(getName(), principal,
+                getFolderName());
     }
 
 }

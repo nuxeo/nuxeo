@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base {@link FileSystemItemFactory} for a synchronization root
- * {@link FolderItem}
+ * {@link FolderItem}.
  *
  * @author Antoine Taillefer
  */
@@ -42,7 +42,10 @@ public abstract class AbstractSyncRootFolderItemFactory extends
 
     private static final Log log = LogFactory.getLog(AbstractSyncRootFolderItemFactory.class);
 
-    protected abstract String getParentId(String userName)
+    /**
+     * Returns the id of the parent {@link FileSystemItem}.
+     */
+    protected abstract String getParentId(DocumentModel doc)
             throws ClientException;
 
     /*--------------------------- AbstractFileSystemItemFactory -------------*/
@@ -52,8 +55,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
-        String userName = doc.getCoreSession().getPrincipal().getName();
-        return getFileSystemItem(doc, getParentId(userName), includeDeleted);
+        return getFileSystemItem(doc, getParentId(doc), includeDeleted);
     }
 
     /**
