@@ -33,6 +33,7 @@
         <property name="iframe">
           #{previewActions.getCurrentDocumentPreviewPopupURL()}
         </property>
+        <property name="ajaxSupport">true</property>
       </properties>
     </action>
 
