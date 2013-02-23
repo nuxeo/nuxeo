@@ -172,6 +172,14 @@ public class TestDefaultTopLevelFolderItemFactory {
             assertEquals("Cannot create a folder in a virtual folder item.",
                     e.getMessage());
         }
+
+        // -------------------------------------------------------------
+        // Check VirtualFolderItemFactory#getVirtualFolderItem(Principal
+        // userName)
+        // -------------------------------------------------------------
+        assertEquals(
+                topLevelFolderItem,
+                defaultTopLevelFolderItemFactory.getVirtualFolderItem(session.getPrincipal()));
     }
 
     /**

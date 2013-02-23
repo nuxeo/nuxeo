@@ -101,4 +101,10 @@ public interface FileSystemItemAdapterService {
     TopLevelFolderItemFactory getTopLevelFolderItemFactory()
             throws ClientException;
 
+    /**
+     * Gets the {@link VirtualFolderItemFactory} for the given factory name.
+     */
+    VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName)
+            throws ClientException;
+
 }
