@@ -395,7 +395,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
         assertNotNull(fileSystemItemFactoryDescs);
-        assertEquals(3, fileSystemItemFactoryDescs.size());
+        assertEquals(4, fileSystemItemFactoryDescs.size());
 
         FileSystemItemFactoryDescriptor desc = fileSystemItemFactoryDescs.get("defaultSyncRootFolderItemFactory");
         assertNotNull(desc);
@@ -435,12 +435,15 @@ public class TestFileSystemItemAdapterService {
                 VersioningOption.MAJOR,
                 ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
+        desc = fileSystemItemFactoryDescs.get("dummyVirtualFolderItemFactory");
+        assertNotNull(desc);
+
         // ------------------------------------------------------
         // Check ordered file system item factories
         // ------------------------------------------------------
         List<FileSystemItemFactoryWrapper> fileSystemItemFactories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
         assertNotNull(fileSystemItemFactories);
-        assertEquals(3, fileSystemItemFactories.size());
+        assertEquals(4, fileSystemItemFactories.size());
 
         FileSystemItemFactoryWrapper factoryWrapper = fileSystemItemFactories.get(0);
         assertNotNull(factoryWrapper);
@@ -462,6 +465,9 @@ public class TestFileSystemItemAdapterService {
         assertNull(factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
+
+        factoryWrapper = fileSystemItemFactories.get(3);
+        assertNotNull(factoryWrapper);
 
         // -------------------------------------------------------------
         // Check #getFileSystemItem(DocumentModel doc)
