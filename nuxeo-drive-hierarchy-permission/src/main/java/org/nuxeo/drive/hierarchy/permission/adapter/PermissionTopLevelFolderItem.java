@@ -20,12 +20,10 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
+import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
@@ -51,8 +49,6 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     private static final long serialVersionUID = 5179858544427598560L;
 
-    private static final Log log = LogFactory.getLog(PermissionTopLevelFolderItem.class);
-
     protected List<String> childrenFactoryNames;
 
     public PermissionTopLevelFolderItem(String factoryName,
@@ -71,17 +67,10 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
         for (String childFactoryName : childrenFactoryNames) {
-            String childFileSystemItemId = childFactoryName
-                    + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR;
-            FileSystemItem childFileSystemItem = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
-                    childFileSystemItemId).getFileSystemItemById(
-                    childFileSystemItemId, principal);
-            if (childFileSystemItem == null) {
-                log.warn(String.format("No FileSystemItem found for id %s.",
-                        childFileSystemItemId));
-            } else {
-                children.add(childFileSystemItem);
-            }
+            VirtualFolderItemFactory factory = getFileSystemItemAdapterService().getVirtualFolderItemFactory(
+                    childFactoryName);
+            FileSystemItem child = factory.getVirtualFolderItem(principal);
+            children.add(child);
         }
         return children;
     }

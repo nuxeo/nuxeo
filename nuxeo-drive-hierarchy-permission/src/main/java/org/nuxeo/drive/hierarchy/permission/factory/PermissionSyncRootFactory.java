@@ -16,18 +16,20 @@
  */
 package org.nuxeo.drive.hierarchy.permission.factory;
 
+import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.AbstractSyncRootFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Permission based implementation of {@link FileSystemItemFactory} for a
@@ -113,15 +115,21 @@ public class PermissionSyncRootFactory extends
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
     protected String getParentId(DocumentModel doc) throws ClientException {
-        String currentUser = doc.getCoreSession().getPrincipal().getName();
+        Principal principal = doc.getCoreSession().getPrincipal();
         String docCreator = (String) doc.getPropertyValue("dc:creator");
-        if (currentUser.equals(docCreator)) {
-            return userSyncRootParentFactoryName
-                    + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR;
+        if (principal.getName().equals(docCreator)) {
+            return getFileSystemAdapterService().getVirtualFolderItemFactory(
+                    userSyncRootParentFactoryName).getVirtualFolderItem(
+                    principal).getId();
         } else {
-            return sharedSyncRootParentFactoryName
-                    + AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR;
+            return getFileSystemAdapterService().getVirtualFolderItemFactory(
+                    sharedSyncRootParentFactoryName).getVirtualFolderItem(
+                    principal).getId();
         }
+    }
+
+    protected FileSystemItemAdapterService getFileSystemAdapterService() {
+        return Framework.getLocalService(FileSystemItemAdapterService.class);
     }
 
 }
