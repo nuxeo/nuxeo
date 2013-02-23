@@ -114,7 +114,7 @@ public class TestDefaultTopLevelFolderItemFactory {
 
         // -------------------------------------------------------------
         // Check TopLevelFolderItemFactory#getTopLevelFolderItem(String
-        // userName)
+        // Principal)
         // -------------------------------------------------------------
         FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem(session.getPrincipal());
         assertNotNull(topLevelFolderItem);
