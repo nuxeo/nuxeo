@@ -14,7 +14,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.adapter.impl;
+package org.nuxeo.drive.hierarchy.permission.adapter;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -35,24 +36,25 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Default implementation of the top level {@link FolderItem}.
+ * Permission based implementation of the parent {@link FolderItem} of the
+ * user's shared synchronization roots.
  *
  * @author Antoine Taillefer
  */
-public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
+public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
 
     private static final long serialVersionUID = 1L;
 
-    public DefaultTopLevelFolderItem(String factoryName, Principal principal,
-            String folderName) throws ClientException {
-        super(factoryName, principal, null, folderName);
+    public SharedSyncRootParentFolderItem(String factoryName,
+            Principal principal, String parentId, String folderName)
+            throws ClientException {
+        super(factoryName, principal, parentId, folderName);
     }
 
-    protected DefaultTopLevelFolderItem() {
+    protected SharedSyncRootParentFolderItem() {
         // Needed for JSON deserialization
     }
 
-    /*--------------------- FolderItem -----------------*/
     @Override
     public List<FileSystemItem> getChildren() throws ClientException {
 
@@ -66,8 +68,15 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
             while (syncRootRefsIt.hasNext()) {
                 IdRef idRef = syncRootRefsIt.next();
                 DocumentModel doc = session.getDocument(idRef);
-                children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                        doc, getId()));
+                // Filter by creator
+                // TODO: allow filtering by dc:creator in
+                // NuxeoDriveManager#getSynchronizationRoots(Principal
+                // principal)
+                if (!session.getPrincipal().getName().equals(
+                        doc.getPropertyValue("dc:creator"))) {
+                    children.add(getFileSystemItemAdapterService().getFileSystemItem(
+                            doc, getId()));
+                }
             }
         }
         Collections.sort(children);

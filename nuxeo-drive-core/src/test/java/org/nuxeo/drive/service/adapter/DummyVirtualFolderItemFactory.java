@@ -14,27 +14,27 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.drive.service;
+package org.nuxeo.drive.service.adapter;
 
 import java.security.Principal;
 
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
+import org.nuxeo.drive.service.VirtualFolderItemFactory;
+import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Interface for the classes contributed to the
- * {@code topLevelFolderItemFactory} extension point of the
- * {@link FileSystemItemAdapterService}.
- * <p>
- * Allows to get the top level {@link FolderItem} for a given user.
+ * Dummy implementation of a {@link VirtualFolderItemFactory} for test purpose.
  *
  * @author Antoine Taillefer
- * @see DefaultTopLevelFolderItemFactory
  */
-public interface TopLevelFolderItemFactory extends VirtualFolderItemFactory {
+public class DummyVirtualFolderItemFactory extends
+        AbstractVirtualFolderItemFactory {
 
-    FolderItem getTopLevelFolderItem(Principal principal)
-            throws ClientException;
+    @Override
+    public FolderItem getVirtualFolderItem(Principal principal)
+            throws ClientException {
+        return null;
+    }
 
 }

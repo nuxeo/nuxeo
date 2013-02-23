@@ -47,7 +47,8 @@ public abstract class AbstractFileSystemItemFactory implements
     protected String name;
 
     /*--------------------------- FileSystemItemFactory ---------------------*/
-    public abstract void handleParameters(Map<String, String> parameters);
+    public abstract void handleParameters(Map<String, String> parameters)
+            throws ClientException;
 
     public abstract boolean isFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException;

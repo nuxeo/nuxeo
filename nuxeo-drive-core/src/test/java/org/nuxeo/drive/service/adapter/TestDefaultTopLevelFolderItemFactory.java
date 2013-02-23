@@ -105,6 +105,8 @@ public class TestDefaultTopLevelFolderItemFactory {
         // Get default top level folder item factory
         defaultTopLevelFolderItemFactory = fileSystemItemAdapterService.getTopLevelFolderItemFactory();
         assertTrue(defaultTopLevelFolderItemFactory instanceof DefaultTopLevelFolderItemFactory);
+        assertEquals("Nuxeo Drive",
+                defaultTopLevelFolderItemFactory.getFolderName());
     }
 
     @Test
@@ -112,9 +114,9 @@ public class TestDefaultTopLevelFolderItemFactory {
 
         // -------------------------------------------------------------
         // Check TopLevelFolderItemFactory#getTopLevelFolderItem(String
-        // userName)
+        // Principal)
         // -------------------------------------------------------------
-        FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem("Administrator");
+        FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem(session.getPrincipal());
         assertNotNull(topLevelFolderItem);
         assertTrue(topLevelFolderItem instanceof DefaultTopLevelFolderItem);
         assertTrue(topLevelFolderItem.getId().endsWith(
@@ -131,24 +133,21 @@ public class TestDefaultTopLevelFolderItemFactory {
             topLevelFolderItem.rename("newName");
             fail("Should not be able to rename the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot rename the top level folder item.",
-                    e.getMessage());
+            assertEquals("Cannot rename a virtual folder item.", e.getMessage());
         }
         assertFalse(topLevelFolderItem.getCanDelete());
         try {
             topLevelFolderItem.delete();
             fail("Should not be able to delete the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot delete the top level folder item.",
-                    e.getMessage());
+            assertEquals("Cannot delete a virtual folder item.", e.getMessage());
         }
         assertFalse(topLevelFolderItem.canMove(null));
         try {
             topLevelFolderItem.move(null);
             fail("Should not be able to move the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot move the top level folder item.",
-                    e.getMessage());
+            assertEquals("Cannot move a virtual folder item.", e.getMessage());
         }
         List<FileSystemItem> children = topLevelFolderItem.getChildren();
         assertNotNull(children);
@@ -163,24 +162,24 @@ public class TestDefaultTopLevelFolderItemFactory {
             topLevelFolderItem.createFile(new StringBlob("Child file content."));
             fail("Should not be able to create a file in the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals("Cannot create a file in the top level folder item.",
+            assertEquals("Cannot create a file in a virtual folder item.",
                     e.getMessage());
         }
         try {
             topLevelFolderItem.createFolder("subFolder");
             fail("Should not be able to create a folder in the default top level folder item.");
         } catch (UnsupportedOperationException e) {
-            assertEquals(
-                    "Cannot create a folder in the top level folder item.",
+            assertEquals("Cannot create a folder in a virtual folder item.",
                     e.getMessage());
         }
 
-        // ---------------------------------------------------------------------
-        // Check TopLevelFolderItemFactory#getSyncRootParentFolderItemId(String
+        // -------------------------------------------------------------
+        // Check VirtualFolderItemFactory#getVirtualFolderItem(Principal
         // userName)
-        // ---------------------------------------------------------------------
-        String syncRootParentFolderId = defaultTopLevelFolderItemFactory.getSyncRootParentFolderItemId("Administrator");
-        assertEquals(topLevelFolderItem.getId(), syncRootParentFolderId);
+        // -------------------------------------------------------------
+        assertEquals(
+                topLevelFolderItem,
+                defaultTopLevelFolderItemFactory.getVirtualFolderItem(session.getPrincipal()));
     }
 
     /**
@@ -190,7 +189,7 @@ public class TestDefaultTopLevelFolderItemFactory {
     @Test
     public void testTopLevelFolderItemChildren() throws ClientException {
 
-        FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem("Administrator");
+        FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem(session.getPrincipal());
         List<FileSystemItem> children = topLevelFolderItem.getChildren();
         assertNotNull(children);
         assertEquals(2, children.size());

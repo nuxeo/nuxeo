@@ -28,6 +28,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
+import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -147,8 +148,32 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public TopLevelFolderItemFactory getTopLevelFolderItemFactory() {
+    public TopLevelFolderItemFactory getTopLevelFolderItemFactory()
+            throws ClientException {
+        if (topLevelFolderItemFactoryRegistry.factory == null) {
+            throw new ClientException(
+                    "Found no topLevelFolderItemFactory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
+        }
         return topLevelFolderItemFactoryRegistry.factory;
+    }
+
+    @Override
+    public VirtualFolderItemFactory getVirtualFolderItemFactory(
+            String factoryName) throws ClientException {
+        FileSystemItemFactory factory = getFileSystemItemFactory(factoryName);
+        if (factory == null) {
+            throw new ClientException(
+                    String.format(
+                            "No factory named %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                            factoryName));
+        }
+        if (!(factory instanceof VirtualFolderItemFactory)) {
+            throw new ClientException(
+                    String.format(
+                            "Factory class %s for factory %s is not a VirtualFolderItemFactory.",
+                            factory.getClass().getName(), factory.getName()));
+        }
+        return (VirtualFolderItemFactory) factory;
     }
 
     /*------------------------- For test purpose ----------------------------------*/
@@ -182,6 +207,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * finds one that matches and retrieves a non null {@link FileSystemItem}
      * for the given doc. A factory matches if:
      * <ul>
+     * <li>It is not a VirtualFolderItemFactory</li>
      * <li>It is not bound to any docType nor facet (this is the case for the
      * default factory contribution {@code defaultFileSystemItemFactory} bound
      * to {@link DefaultFileSystemItemFactory})</li>
@@ -198,9 +224,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factory = factoriesIt.next();
-            if (generalFactoryMatches(factory)
-                    || docTypeFactoryMatches(factory, doc)
-                    || facetFactoryMatches(factory, doc)) {
+            if (!isVirtualFolderItemFactory(factory)
+                    && (generalFactoryMatches(factory)
+                            || docTypeFactoryMatches(factory, doc) || facetFactoryMatches(
+                                factory, doc))) {
                 matchingFactory = factory;
                 if (forceParentId) {
                     fileSystemItem = factory.getFactory().getFileSystemItem(
@@ -224,6 +251,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                     doc.getId()));
         }
         return fileSystemItem;
+    }
+
+    protected boolean isVirtualFolderItemFactory(
+            FileSystemItemFactoryWrapper factory) {
+        return factory.getFactory() instanceof VirtualFolderItemFactory;
     }
 
     protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {

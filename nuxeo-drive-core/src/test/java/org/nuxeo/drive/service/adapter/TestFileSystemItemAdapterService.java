@@ -37,6 +37,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
+import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultSyncRootFolderItemFactory;
 import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
@@ -127,7 +128,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
         assertNotNull(fileSystemItemFactoryDescs);
-        assertEquals(4, fileSystemItemFactoryDescs.size());
+        assertEquals(5, fileSystemItemFactoryDescs.size());
 
         FileSystemItemFactoryDescriptor desc = fileSystemItemFactoryDescs.get("defaultSyncRootFolderItemFactory");
         assertNotNull(desc);
@@ -185,12 +186,24 @@ public class TestFileSystemItemAdapterService {
                 VersioningOption.MINOR,
                 ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
+        desc = fileSystemItemFactoryDescs.get("dummyVirtualFolderItemFactory");
+        assertNotNull(desc);
+        assertTrue(desc.isEnabled());
+        assertEquals(100, desc.getOrder());
+        assertEquals("dummyVirtualFolderItemFactory", desc.getName());
+        assertNull(desc.getDocType());
+        assertNull(desc.getFacet());
+        factory = desc.getFactory();
+        assertTrue(factory instanceof VirtualFolderItemFactory);
+        assertEquals("Dummy Folder",
+                ((VirtualFolderItemFactory) factory).getFolderName());
+
         // ------------------------------------------------------
         // Check ordered file system item factories
         // ------------------------------------------------------
         List<FileSystemItemFactoryWrapper> fileSystemItemFactories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
         assertNotNull(fileSystemItemFactories);
-        assertEquals(4, fileSystemItemFactories.size());
+        assertEquals(5, fileSystemItemFactories.size());
 
         FileSystemItemFactoryWrapper factoryWrapper = fileSystemItemFactories.get(0);
         assertNotNull(factoryWrapper);
@@ -219,6 +232,13 @@ public class TestFileSystemItemAdapterService {
         assertNull(factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
+
+        factoryWrapper = fileSystemItemFactories.get(4);
+        assertNotNull(factoryWrapper);
+        assertNull(factoryWrapper.getDocType());
+        assertNull(factoryWrapper.getFacet());
+        assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
+                "DummyVirtualFolderItemFactory"));
 
         // ------------------------------------------------------
         // Check #getFileSystemItem(DocumentModel doc)
@@ -337,6 +357,30 @@ public class TestFileSystemItemAdapterService {
         assertTrue(topLevelFactory.getClass().getName().endsWith(
                 "DefaultTopLevelFolderItemFactory"));
         assertTrue(topLevelFactory instanceof DefaultTopLevelFolderItemFactory);
+
+        // -------------------------------------------------------------
+        // Check #getVirtualFolderItemFactory(String factoryName)
+        // -------------------------------------------------------------
+        try {
+            fileSystemItemAdapterService.getVirtualFolderItemFactory("nonExistentFactory");
+            fail("No VirtualFolderItemFactory should be found for factory name.");
+        } catch (ClientException e) {
+            assertEquals(
+                    "No factory named nonExistentFactory. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                    e.getMessage());
+        }
+        try {
+            fileSystemItemAdapterService.getVirtualFolderItemFactory("defaultFileSystemItemFactory");
+            fail("No VirtualFolderItemFactory should be found for factory name.");
+        } catch (ClientException e) {
+            assertEquals(
+                    "Factory class org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory for factory defaultFileSystemItemFactory is not a VirtualFolderItemFactory.",
+                    e.getMessage());
+        }
+        VirtualFolderItemFactory virtualFolderItemFactory = fileSystemItemAdapterService.getVirtualFolderItemFactory("dummyVirtualFolderItemFactory");
+        assertNotNull(virtualFolderItemFactory);
+        assertTrue(virtualFolderItemFactory.getClass().getName().endsWith(
+                "DummyVirtualFolderItemFactory"));
     }
 
     @Test
@@ -351,7 +395,7 @@ public class TestFileSystemItemAdapterService {
         // ------------------------------------------------------
         Map<String, FileSystemItemFactoryDescriptor> fileSystemItemFactoryDescs = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactoryDescriptors();
         assertNotNull(fileSystemItemFactoryDescs);
-        assertEquals(3, fileSystemItemFactoryDescs.size());
+        assertEquals(4, fileSystemItemFactoryDescs.size());
 
         FileSystemItemFactoryDescriptor desc = fileSystemItemFactoryDescs.get("defaultSyncRootFolderItemFactory");
         assertNotNull(desc);
@@ -391,12 +435,15 @@ public class TestFileSystemItemAdapterService {
                 VersioningOption.MAJOR,
                 ((VersioningFileSystemItemFactory) factory).getVersioningOption());
 
+        desc = fileSystemItemFactoryDescs.get("dummyVirtualFolderItemFactory");
+        assertNotNull(desc);
+
         // ------------------------------------------------------
         // Check ordered file system item factories
         // ------------------------------------------------------
         List<FileSystemItemFactoryWrapper> fileSystemItemFactories = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactories();
         assertNotNull(fileSystemItemFactories);
-        assertEquals(3, fileSystemItemFactories.size());
+        assertEquals(4, fileSystemItemFactories.size());
 
         FileSystemItemFactoryWrapper factoryWrapper = fileSystemItemFactories.get(0);
         assertNotNull(factoryWrapper);
@@ -418,6 +465,9 @@ public class TestFileSystemItemAdapterService {
         assertNull(factoryWrapper.getFacet());
         assertTrue(factoryWrapper.getFactory().getClass().getName().endsWith(
                 "DefaultFileSystemItemFactory"));
+
+        factoryWrapper = fileSystemItemFactories.get(3);
+        assertNotNull(factoryWrapper);
 
         // -------------------------------------------------------------
         // Check #getFileSystemItem(DocumentModel doc)

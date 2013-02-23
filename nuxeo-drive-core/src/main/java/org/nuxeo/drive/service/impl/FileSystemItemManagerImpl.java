@@ -109,14 +109,14 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     @Override
     public List<FileSystemItem> getTopLevelChildren(Principal principal)
             throws ClientException {
-        return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                principal.getName()).getChildren();
+        return getTopLevelFolder(principal).getChildren();
     }
 
     @Override
-    public FolderItem getTopLevelFolder(Principal principal)  throws ClientException {
+    public FolderItem getTopLevelFolder(Principal principal)
+            throws ClientException {
         return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(
-                principal.getName());
+                principal);
     }
 
     @Override

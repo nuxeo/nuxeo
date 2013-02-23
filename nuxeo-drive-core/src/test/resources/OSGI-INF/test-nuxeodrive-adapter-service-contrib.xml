@@ -19,6 +19,14 @@
     <fileSystemItemFactory name="dummyFacetFactory"
       order="30" facet="Folderish"
       class="org.nuxeo.drive.service.adapter.DummyFolderItemFactory" />
+    <fileSystemItemFactory name="dummyVirtualFolderItemFactory"
+      order="100"
+      class="org.nuxeo.drive.service.adapter.DummyVirtualFolderItemFactory">
+      <parameters>
+        <parameter name="folderName">Dummy Folder</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
 
   </extension>
 
