@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
@@ -105,6 +106,59 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         out.close();
         file.deleteOnExit();
         return file;
+    }
+
+    @Test
+    public void testUnknownProperty() throws Exception {
+        try {
+            doc.getPropertyValue("nosuchprop");
+            fail("Should throw PropertyNotFoundException");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("nosuchprop", e.getPath());
+            assertNull(e.getDetail());
+        }
+        try {
+            doc.getPropertyValue("tp:nosuchprop");
+            fail("Should throw PropertyNotFoundException");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("tp:nosuchprop", e.getPath());
+            assertEquals("segment nosuchprop cannot be resolved", e.getDetail());
+        }
+        try {
+            doc.getPropertyValue("nosuchschema:nosuchprop");
+            fail("Should throw PropertyNotFoundException");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("nosuchschema:nosuchprop", e.getPath());
+            assertEquals("No such schema", e.getDetail());
+        }
+        try {
+            doc.getPropertyValue("tp:complexChain/nosuchprop");
+            fail("Should throw PropertyNotFoundException");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("tp:complexChain/nosuchprop", e.getPath());
+            assertEquals("segment nosuchprop cannot be resolved", e.getDetail());
+        }
+        try {
+            doc.getPropertyValue("tp:complexChain/complex/nosuchprop");
+            fail("Should throw PropertyNotFoundException");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("tp:complexChain/complex/nosuchprop", e.getPath());
+            assertEquals("segment nosuchprop cannot be resolved", e.getDetail());
+        }
+        try {
+            doc.getPropertyValue("tp:complexList/notaninteger/foo");
+            fail("Should throw PropertyNotFoundException");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("tp:complexList/notaninteger/foo", e.getPath());
+            assertEquals("segment notaninteger cannot be resolved", e.getDetail());
+        }
+        try {
+            doc.getPropertyValue("tp:complexList/0/foo");
+            fail("Should throw PropertyNotFoundException");
+        } catch (PropertyNotFoundException e) {
+            assertEquals("tp:complexList/0/foo", e.getPath());
+            assertEquals("segment 0 cannot be resolved", e.getDetail());
+        }
     }
 
     // NXP-2467
