@@ -192,8 +192,7 @@ public class TestNuxeoDriveManager {
                 user1Session);
 
         // Check synchronization root references
-        Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(
-                user1Session);
+        Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
         assertEquals(2, rootRefs.size());
         assertTrue(rootRefs.contains(user1Workspace));
         assertTrue(rootRefs.contains(new IdRef(user1Session.getDocument(
