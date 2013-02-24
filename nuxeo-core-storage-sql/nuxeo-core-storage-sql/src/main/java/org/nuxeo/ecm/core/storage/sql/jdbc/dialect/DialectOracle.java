@@ -411,7 +411,8 @@ public class DialectOracle extends Dialect {
     @Override
     public String getClusterNodeIdSql() {
         return "SELECT SYS_CONTEXT('USERENV', 'SID') || ',' || SERIAL# "
-                + "FROM GV$SESSION WHERE SID = SYS_CONTEXT('USERENV', 'SID')";
+                + "FROM GV$SESSION WHERE SID = SYS_CONTEXT('USERENV', 'SID') "
+                + "AND INST_ID = SYS_CONTEXT('USERENV', 'INSTANCE')";
     }
 
     /*
