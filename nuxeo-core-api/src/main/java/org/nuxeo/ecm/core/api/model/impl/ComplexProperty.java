@@ -152,7 +152,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     public Property get(String name) throws PropertyNotFoundException {
         Field field = getType().getField(name);
         if (field == null) {
-            throw new PropertyNotFoundException(name, "");
+            return null;
         }
         return getChild(field);
     }

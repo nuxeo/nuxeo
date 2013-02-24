@@ -1360,13 +1360,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (xpath == null) {
             throw new PropertyNotFoundException("null", "Invalid null xpath");
         }
-        xpath = canonicalXPath(xpath);
-        if (xpath.isEmpty()) {
+        String cxpath = canonicalXPath(xpath);
+        if (cxpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String schemaName = getXPathSchemaName(xpath, schemas, null);
+        String schemaName = getXPathSchemaName(cxpath, schemas, null);
         if (schemaName == null) {
-            throw new PropertyNotFoundException(xpath, "No such schema");
+            if (cxpath.indexOf(':') != -1) {
+                throw new PropertyNotFoundException(xpath, "No such schema");
+            } else {
+                throw new PropertyNotFoundException(xpath);
+            }
 
         }
         DocumentPart part = getPart(schemaName);
@@ -1374,8 +1378,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             throw new PropertyNotFoundException(xpath);
         }
         // cut prefix
-        String partPath = xpath.substring(xpath.indexOf(':') + 1);
-        return part.resolvePath(partPath);
+        String partPath = cxpath.substring(cxpath.indexOf(':') + 1);
+        try {
+            return part.resolvePath(partPath);
+        } catch (PropertyNotFoundException e) {
+            throw new PropertyNotFoundException(xpath, e.getDetail());
+        }
     }
 
     public static String getXPathSchemaName(String xpath,

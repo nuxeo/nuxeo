@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,27 +7,46 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.model;
 
-
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Exception indicating a property not found.
  */
 public class PropertyNotFoundException extends PropertyException {
 
-    private static final long serialVersionUID = -7766425583638251741L;
+    private static final long serialVersionUID = 1L;
+
+    protected final String detail;
 
     public PropertyNotFoundException(String path) {
-        this(path, "");
+        this(path, null);
     }
 
-    public PropertyNotFoundException(String path, String message) {
-        super("Property not found: " + path + ". " + message);
+    public PropertyNotFoundException(String path, String detail) {
+        super(path);
+        this.detail = detail;
+    }
+
+    public String getPath() {
+        return super.getMessage();
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    @Override
+    public String getMessage() {
+        StringBuilder buf = new StringBuilder("Property not found: ");
+        buf.append(getPath());
+        if (detail != null) {
+            buf.append(". ");
+            buf.append(detail);
+        }
+        return buf.toString();
     }
 
 }

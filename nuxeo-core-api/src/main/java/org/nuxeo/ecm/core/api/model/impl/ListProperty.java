@@ -122,12 +122,20 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     @Override
     public Property get(String name) {
-        return children.get(Integer.parseInt(name));
+        try {
+            return get(Integer.parseInt(name));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     @Override
     public Property get(int index) {
-        return children.get(index);
+        try {
+            return children.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
     }
 
     @Override
