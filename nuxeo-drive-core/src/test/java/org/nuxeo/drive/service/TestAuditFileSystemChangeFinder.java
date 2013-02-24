@@ -498,6 +498,8 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(
                 "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                 fsItemChange.getFileSystemItemId());
+
+        commitAndWaitForAsyncCompletion();
     }
 
     @Test
@@ -530,6 +532,7 @@ public class TestAuditFileSystemChangeFinder {
         assertNotNull(changeSummary);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertFalse(changeSummary.getHasTooManyChanges());
+        commitAndWaitForAsyncCompletion();
     }
 
     /**
