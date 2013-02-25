@@ -13,7 +13,6 @@ package org.nuxeo.ecm.automation.core.operations.blob;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -46,6 +45,9 @@ public class BlobToPDF {
         if (bh == null) {
             return null;
         }
+        if ("application/pdf".equals(bh.getBlob().getMimeType())) {
+            return bh.getBlob();
+        }
         BlobHolder pdfBh = service.convertToMimeType("application/pdf", bh,
                 new HashMap<String, Serializable>());
         Blob result = pdfBh.getBlob();
@@ -72,6 +74,9 @@ public class BlobToPDF {
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
+        if ("application/pdf".equals(blob.getMimeType())) {
+            return blob;
+        }
         BlobHolder bh = new SimpleBlobHolder(blob);
         bh = service.convertToMimeType("application/pdf", bh,
                 new HashMap<String, Serializable>());
