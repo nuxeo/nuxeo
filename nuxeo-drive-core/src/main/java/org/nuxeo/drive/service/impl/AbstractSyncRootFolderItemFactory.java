@@ -48,16 +48,6 @@ public abstract class AbstractSyncRootFolderItemFactory extends
     protected abstract String getParentId(DocumentModel doc)
             throws ClientException;
 
-    /*--------------------------- AbstractFileSystemItemFactory -------------*/
-    /**
-     * Force parent id using {@link #getParentId(String)}.
-     */
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, getParentId(doc), includeDeleted);
-    }
-
     /**
      * No parameters by default.
      */
@@ -138,6 +128,15 @@ public abstract class AbstractSyncRootFolderItemFactory extends
             return false;
         }
         return true;
+    }
+
+    /**
+     * Force parent id using {@link #getParentId(String)}.
+     */
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, getParentId(doc), includeDeleted);
     }
 
 }
