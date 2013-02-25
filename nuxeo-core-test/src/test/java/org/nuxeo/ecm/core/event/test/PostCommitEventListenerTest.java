@@ -75,7 +75,7 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
         assertEquals(0, SCRIPT_CNT);
 
         session.save();
-        waitForAsyncCompletion();
+        waitForAsyncExec();
         assertEquals(2, SCRIPT_CNT);
     }
 
@@ -87,8 +87,12 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
         ShallowFilterPostCommitEventListener.handledCount = 0;
         session.save();
-        waitForAsyncCompletion();
+        waitForAsyncExec();
         assertEquals(1, ShallowFilterPostCommitEventListener.handledCount);
+    }
+
+    protected void waitForAsyncExec() {
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
 }
