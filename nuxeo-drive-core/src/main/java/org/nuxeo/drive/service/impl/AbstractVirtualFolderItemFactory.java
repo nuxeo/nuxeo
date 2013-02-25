@@ -62,7 +62,8 @@ public abstract class AbstractVirtualFolderItemFactory implements
     }
 
     @Override
-    public void handleParameters(Map<String, String> parameters) {
+    public void handleParameters(Map<String, String> parameters)
+            throws ClientException {
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (!StringUtils.isEmpty(folderNameParam)) {

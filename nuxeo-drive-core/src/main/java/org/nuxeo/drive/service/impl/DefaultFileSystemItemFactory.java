@@ -58,7 +58,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
 
     /*--------------------------- AbstractFileSystemItemFactory -------------------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters) {
+    public void handleParameters(Map<String, String> parameters)
+            throws ClientException {
         String versioningDelayParam = parameters.get(VERSIONING_DELAY_PARAM);
         if (!StringUtils.isEmpty(versioningDelayParam)) {
             versioningDelay = Double.parseDouble(versioningDelayParam);
