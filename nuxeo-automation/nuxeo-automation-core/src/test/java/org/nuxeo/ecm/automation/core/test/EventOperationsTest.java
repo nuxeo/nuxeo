@@ -40,6 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -49,6 +50,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core" })
+@LocalDeploy("org.nuxeo.ecm.automation.core:test-events.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EventOperationsTest {
 
@@ -85,7 +87,7 @@ public class EventOperationsTest {
     /**
      * Create | Copy | Set Property This is also testing
      * {@link StringToProperties} adapter
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -123,7 +125,7 @@ public class EventOperationsTest {
     /**
      * Create | Copy | Set Property in a post commit listener This is also
      * testing {@link StringToProperties} adapter
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -164,6 +166,19 @@ public class EventOperationsTest {
         assertEquals("MyDocPc", doc.getTitle());
         assertEquals("Note", doc.getType());
         CoreInstance.getInstance().close(session2);
+    }
+
+    @Test
+    public void testShallowFiltering() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/src", "myfile",
+                "File");
+        doc.setPropertyValue("dc:description", "ChangeMySource");
+        doc = session.createDocument(doc);
+        session.save();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        session.save(); // process invalidations
+        doc = session.getDocument(doc.getRef());
+        assertEquals("New source", doc.getPropertyValue("dc:source"));
     }
 
 }

@@ -32,7 +32,7 @@ public class PostCommitOperationEventListener implements
             return false;
         }
         List<EventHandler> handlers = registry.getPostCommitEventHandlers(event.getName());
-        return !handlers.isEmpty();
+        return registry.acceptEvent(event, handlers);
     }
 
     @Override

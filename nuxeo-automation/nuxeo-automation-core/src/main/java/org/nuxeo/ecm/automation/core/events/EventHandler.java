@@ -187,8 +187,16 @@ public class EventHandler {
         return expr;
     }
 
-    public boolean isEnabled(OperationContext ctx, EventContext eventCtx)
-            throws Exception {
+    /**
+     * Checks if this handler should run for the event and operation context.
+     *
+     * @param quick If {@code true}, then this method may not check all filter
+     *            parameters like {@code filter/expression} and just return
+     *            {@code true} to avoid costly evaluations on
+     *            {@link ShallowDocumentModel} instances
+     */
+    public boolean isEnabled(OperationContext ctx, EventContext eventCtx,
+            boolean quick) throws Exception {
         Object obj = ctx.getInput();
         DocumentModel doc = null;
         if (obj instanceof DocumentModel) {
@@ -250,6 +258,13 @@ public class EventHandler {
                 return false;
             }
         }
+        if (quick) {
+            return true;
+        }
+        /*
+         * The following are not evaluated in quick mode, as we need a full
+         * DocumentModelImpl to evaluate most expressions.
+         */
         if (expression != null) {
             if (expr == null) {
                 expr = Scripting.newExpression(expression);
