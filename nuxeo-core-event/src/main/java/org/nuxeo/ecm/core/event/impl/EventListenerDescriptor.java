@@ -20,8 +20,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.script.Script;
 import org.nuxeo.ecm.core.event.script.ScriptingEventListener;
 import org.nuxeo.ecm.core.event.script.ScriptingPostCommitEventListener;
@@ -225,6 +228,26 @@ public class EventListenerDescriptor {
 
     public boolean isSingleThreaded() {
         return singleThreaded;
+    }
+
+    /**
+     * Filters the event bundle to only keep events of interest to this
+     * listener.
+     */
+    protected EventBundle filterBundle(EventBundle bundle) {
+        EventBundle filtered = new EventBundleImpl();
+        for (Event event : bundle) {
+            if (!acceptEvent(event.getName())) {
+                continue;
+            }
+            PostCommitEventListener pcl = asPostCommitListener();
+            if (pcl instanceof PostCommitFilteringEventListener
+                    && !((PostCommitFilteringEventListener) pcl).acceptEvent(event)) {
+                continue;
+            }
+            filtered.push(event);
+        }
+        return filtered;
     }
 
 }

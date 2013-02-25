@@ -31,6 +31,15 @@ public interface PostCommitFilteringEventListener extends
     /**
      * Checks if this event is worth passing to the asynchronous
      * {@link #handleEvent}.
+     * <p>
+     * Note that the event's documents are usually <strong>disconnected</strong>
+     * into {@link org.nuxeo.ecm.core.event.impl.ShallowDocumentModel
+     * ShallowDocumentModel} instances, which means that this method may not be
+     * able to get to all the information it would get from a standard
+     * DocumentModel implementation. If there is not enough information in the
+     * ShallowDocumentModel to decide whether this event is of interest, then
+     * this method should accept it an let the actual logic done in
+     * {@link #handleEvent} do the final filtering.
      *
      * @param event the event
      * @return {@code true} to accept it, or {@code false} to ignore it
