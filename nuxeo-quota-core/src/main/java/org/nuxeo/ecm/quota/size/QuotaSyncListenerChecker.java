@@ -105,12 +105,12 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         }
         if (unrestrictedSession.exists(ref)) {
             DocumentModel target = unrestrictedSession.getDocument(ref);
-            if (target.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)
-                    || target.getPathAsString().equals("/")) {
+            if (target.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
                 if (log.isTraceEnabled()) {
                     log.trace("doc with uuid " + uuid + " already up to date");
                 }
-                return;
+                // this will force an update if the plugin was installed and then removed
+                target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             }
 
             if (log.isTraceEnabled()) {
