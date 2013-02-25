@@ -90,10 +90,13 @@
     </widget>
 
     <!-- Main actions widgets -->
-    <widget name="damSearchForm" type="currentDocumentActionsWithForms">
+    <widget name="damSearchForm" type="currentDocumentActions">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_LEFT</property>
       </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
     </widget>
 
     <widget name="damSearchResults" type="currentDocumentActions">
