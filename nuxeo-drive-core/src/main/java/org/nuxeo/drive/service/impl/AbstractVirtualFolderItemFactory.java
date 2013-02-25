@@ -144,10 +144,12 @@ public abstract class AbstractVirtualFolderItemFactory implements
         return getVirtualFolderItem(principal);
     }
 
+    @Override
     public String getFolderName() {
         return folderName;
     }
 
+    @Override
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
