@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TimeZone;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -27,6 +28,7 @@ import net.sf.json.JSONObject;
 import org.junit.runner.RunWith;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -127,8 +129,9 @@ public class TaskAutomationTest {
         assertEquals("test comment", comment.getText());
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2006, 6, 6, 17, 10, 15);
+        calendar.set(2006, 6, 6, 15, 10, 15);
         calendar.set(Calendar.MILLISECOND,0);
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         assertEquals(calendar.getTime(), task.getDueDate());
         // task status
         assertTrue(task.isOpened());
