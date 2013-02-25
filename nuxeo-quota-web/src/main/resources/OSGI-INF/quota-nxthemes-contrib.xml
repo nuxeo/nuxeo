@@ -17,8 +17,8 @@
       <resource>automation.js</resource>
       <resource>jquery.flot.pie.min.js</resource>
       <resource>displayQuotaStats.js</resource>
-      <resource>jquery.ui.js</resource>
-      <resource>jquery.ui.css</resource>
+      <resource>jquery.ui.slider.js</resource>
+      <resource>jquery.ui.slider.css</resource>
     </view>
 
   </extension>
