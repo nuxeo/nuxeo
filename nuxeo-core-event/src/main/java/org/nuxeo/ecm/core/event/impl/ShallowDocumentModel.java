@@ -84,10 +84,15 @@ public class ShallowDocumentModel implements DocumentModel {
         isVersion = doc.isVersion();
         contextData = doc.getContextData();
         facets = doc.getFacets();
-        try {
-            lifecycleState = doc.getCurrentLifeCycleState();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException("Cannot get lifecycle state", e);
+        if (doc.isLifeCycleLoaded()) {
+            try {
+                lifecycleState = doc.getCurrentLifeCycleState();
+            } catch (ClientException e) {
+                throw new ClientRuntimeException("Cannot get lifecycle state",
+                        e);
+            }
+        } else {
+            lifecycleState = null;
         }
     }
 
@@ -367,7 +372,7 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public boolean isLifeCycleLoaded() {
-        return true;
+        return lifecycleState != null;
     }
 
     @Override
