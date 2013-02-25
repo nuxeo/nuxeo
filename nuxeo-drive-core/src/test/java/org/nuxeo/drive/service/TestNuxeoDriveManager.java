@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -87,6 +88,9 @@ public class TestNuxeoDriveManager {
 
     @Inject
     UserWorkspaceService userWorkspaceService;
+
+    @Inject
+    EventServiceAdmin eventServiceAdmin;
 
     protected CoreSession user1Session;
 
@@ -192,8 +196,7 @@ public class TestNuxeoDriveManager {
                 user1Session);
 
         // Check synchronization root references
-        Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(
-                user1Session);
+        Set<IdRef> rootRefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
         assertEquals(2, rootRefs.size());
         assertTrue(rootRefs.contains(user1Workspace));
         assertTrue(rootRefs.contains(new IdRef(user1Session.getDocument(
@@ -288,6 +291,11 @@ public class TestNuxeoDriveManager {
 
     @Test
     public void testSynchronizationRootDeletion() throws Exception {
+        // Disable bulk life cycle change listener to avoid exception when
+        // trying to apply recursive changes on a removed document
+        eventServiceAdmin.setListenerEnabledFlag("bulkLifeCycleChangeListener",
+                false);
+
         Principal user1 = user1Session.getPrincipal();
         Principal user2 = user2Session.getPrincipal();
         checkRootsCount(user1, 0);

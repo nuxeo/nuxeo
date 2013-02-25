@@ -68,6 +68,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
                     USER_WORKSPACE_PARENT_PATH + "/" + testUserWorkspaceName);
             if (session.exists(testUserWorkspaceRef)) {
                 session.removeDocument(testUserWorkspaceRef);
+                session.save();
             }
         }
 
@@ -75,6 +76,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
         DocumentRef testWorkspaceDocRef = new PathRef(TEST_WORKSPACE_PATH);
         if (session.exists(testWorkspaceDocRef)) {
             session.removeDocument(testWorkspaceDocRef);
+            session.save();
         }
     }
 }

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -78,6 +80,9 @@ public class TestAuditFileSystemChangeFinder {
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
 
+    @Inject
+    protected EventServiceAdmin eventServiceAdmin;
+
     protected long lastSuccessfulSync;
 
     protected String lastSyncActiveRootDefinitions;
@@ -88,6 +93,10 @@ public class TestAuditFileSystemChangeFinder {
 
     @Before
     public void init() throws Exception {
+        // Enable deletion listener because the tear down disables it
+        eventServiceAdmin.setListenerEnabledFlag(
+                "nuxeoDriveFileSystemDeletionListener", true);
+
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
         lastSyncActiveRootDefinitions = "";
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
@@ -102,6 +111,15 @@ public class TestAuditFileSystemChangeFinder {
         session.createDocument(session.createDocumentModel("/", "folder3",
                 "Folder"));
         commitAndWaitForAsyncCompletion();
+    }
+
+    @After
+    public void tearDown() {
+        // Disable deletion listener for the repository cleanup phase done in
+        // CoreFeature#afterTeardown to avoid exception due to no active
+        // transaction in FileSystemItemManagerImpl#getSession
+        eventServiceAdmin.setListenerEnabledFlag(
+                "nuxeoDriveFileSystemDeletionListener", false);
     }
 
     @Test
@@ -480,6 +498,8 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(
                 "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                 fsItemChange.getFileSystemItemId());
+
+        commitAndWaitForAsyncCompletion();
     }
 
     @Test
@@ -512,6 +532,7 @@ public class TestAuditFileSystemChangeFinder {
         assertNotNull(changeSummary);
         assertTrue(changeSummary.getFileSystemChanges().isEmpty());
         assertFalse(changeSummary.getHasTooManyChanges());
+        commitAndWaitForAsyncCompletion();
     }
 
     /**
