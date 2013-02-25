@@ -7,8 +7,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   id="#{widget.id}">
-
-<c:if test="#{widget.mode == 'edit'}">
+<nxu:set var="validateMaxSize" value="#{nxu:test(empty widgetProperty_validateMaxSize, 'false', widgetProperty_validateMaxSize)}" cache="true">
 <script>
 jQuery.noConflict();
 
@@ -96,8 +95,11 @@ jQuery.noConflict();
     </tr>
   </tbody>
 </table>
+<c:if test="#{validateMaxSize}">
+ <h:inputText id="maxValue" value="#{field}" style="visibility:hidden" validator="#{quotaStatsActions.validateQuotaSize}"/>
+</c:if>
+<c:if test="#{!validateMaxSize}">
  <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
-</c:if>
-<c:if test="#{widget.mode == 'view'}">
-</c:if>
+</c:if> 
+</nxu:set>
 </div>
