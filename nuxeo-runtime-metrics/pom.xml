@@ -20,24 +20,21 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
-   <dependency>
-        <groupId>com.yammer.metrics</groupId>
-        <artifactId>metrics-core</artifactId>
-        <version>2.2.0</version>
+    <dependency>
+      <groupId>com.yammer.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.yammer.metrics</groupId>
-        <artifactId>metrics-graphite</artifactId>
-        <version>2.1.3</version>
+      <groupId>com.yammer.metrics</groupId>
+      <artifactId>metrics-graphite</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.yammer.metrics</groupId>
-        <artifactId>metrics-log4j</artifactId>
-        <version>2.2.0</version>
+      <groupId>com.yammer.metrics</groupId>
+      <artifactId>metrics-log4j</artifactId>
     </dependency>
 
  </dependencies>
