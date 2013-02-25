@@ -66,7 +66,7 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
 
         String userName = getUserByToken(token);
         if (userName == null) {
-            log.error(String.format(
+            log.debug(String.format(
                     "No user bound to the token '%s' (maybe it has been revoked), returning null.",
                     token));
             return null;
