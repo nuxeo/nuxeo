@@ -27,6 +27,8 @@ import org.nuxeo.common.utils.FileUtils;
  */
 public abstract class AbstractStreamSource implements StreamSource {
 
+    protected String charsetName = "UTF-8";
+
     @Override
     public long getLength() throws IOException {
         return -1L;
@@ -44,7 +46,7 @@ public abstract class AbstractStreamSource implements StreamSource {
 
     @Override
     public String getString() throws IOException {
-        return new String(getBytes());
+        return new String(getBytes(), charsetName);
     }
 
     @Override
@@ -60,6 +62,25 @@ public abstract class AbstractStreamSource implements StreamSource {
     @Override
     public void destroy() {
         // do nothing
+    }
+
+    /**
+     * Change the charset used for serializing the String source as a byte
+     * stream.
+     *
+     * @since 5.7
+     */
+    public void setCharsetName(String charsetName) {
+        this.charsetName = charsetName;
+    }
+
+    /**
+     * Get the charset used for serializing the String source as a byte stream.
+     *
+     * @since 5.7
+     */
+    public String getCharsetName() {
+        return charsetName;
     }
 
 }

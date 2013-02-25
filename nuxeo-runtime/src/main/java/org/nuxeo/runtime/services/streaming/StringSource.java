@@ -24,8 +24,6 @@ import java.io.InputStream;
  */
 public class StringSource extends AbstractStreamSource {
 
-    protected String charsetName = "UTF-8";
-
     protected final String string;
 
 
@@ -43,22 +41,9 @@ public class StringSource extends AbstractStreamSource {
         return new ByteArrayInputStream(string.getBytes(charsetName));
     }
 
-    /**
-     * Change the charset used for serializing the String source as a byte
-     * stream.
-     *
-     * @since 5.7
-     */
-    public void setCharsetName(String charsetName) {
-        this.charsetName = charsetName;
+    @Override
+    public String getString() throws IOException {
+        return string;
     }
 
-    /**
-     * Get the charset used for serializing the String source as a byte stream.
-     *
-     * @since 5.7
-     */
-    public String getCharsetName() {
-        return charsetName;
-    }
 }
