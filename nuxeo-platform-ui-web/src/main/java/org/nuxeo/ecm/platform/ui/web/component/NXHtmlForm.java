@@ -24,11 +24,9 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- * Override the default form component to add warnings for nested forms issues
- * when debug mode is on.
+ * Override the default form component to add warnings for nested forms issues.
  *
  * @since 5.7
  */
@@ -38,21 +36,18 @@ public class NXHtmlForm extends HtmlForm {
 
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
-        if (Framework.isDevModeSet()) {
-            // sanity check before checking for nested forms: issue an error if
-            // there is a parent container that is a form
-            UIComponent parent = getParent();
-            while (parent != null) {
-                if (parent instanceof NXHtmlForm
-                        || parent instanceof NXAjaxForm) {
-                    log.error(String.format(
-                            "Form component with id '%s' is already surrounded"
-                                    + " by a form with id '%s'", this.getId(),
-                            parent.getId()));
-                    break;
-                }
-                parent = parent.getParent();
+        // sanity check before checking for nested forms: issue an error if
+        // there is a parent container that is a form
+        UIComponent parent = getParent();
+        while (parent != null) {
+            if (parent instanceof NXHtmlForm || parent instanceof NXAjaxForm) {
+                log.error(String.format(
+                        "Form component with id '%s' is already surrounded"
+                                + " by a form with id '%s'", this.getId(),
+                        parent.getId()));
+                break;
             }
+            parent = parent.getParent();
         }
         super.processDecodes(context);
     }
