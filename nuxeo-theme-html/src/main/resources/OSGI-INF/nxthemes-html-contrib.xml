@@ -142,6 +142,16 @@
     <resource name="bsn.AutoSuggest_2.1.3.js">
       <path>nxthemes/html/scripts/bsn.AutoSuggest_2.1.3.js</path>
     </resource>
+    
+     <!-- JQuery UI Slider 1.9.2-->
+    <resource name="jquery.ui.slider.js">
+      <path>nxthemes/html/scripts/jquery-ui-1.9.2.slider.js</path>
+    </resource>
+    
+         <!-- JQuery UI CSS Slider 1.9.2-->
+    <resource name="jquery.ui.slider.css">
+      <path>nxthemes/html/styles/jquery-ui-1.9.2.slider.min.css</path>
+    </resource>
 
   </extension>
 
