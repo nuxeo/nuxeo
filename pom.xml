@@ -27,6 +27,7 @@
     <module>nuxeo-runtime-tomcat-adapter</module>
     <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
+    <module>nuxeo-runtime-metrics</module>
     <module>nuxeo-runtime-jtajca</module>
     <module>nuxeo-runtime-datasource</module>
     <module>nuxeo-runtime-test</module>

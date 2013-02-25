@@ -12,6 +12,9 @@
 
 package org.nuxeo.runtime.transaction;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -24,12 +27,35 @@ import javax.transaction.UserTransaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
+
+
 /**
  * Utilities to work with transactions.
  */
 public class TransactionHelper {
 
     private static final Log log = LogFactory.getLog(TransactionHelper.class);
+
+    // @since 5.7
+    // TODO: Move metrics to jtajca DefaultTransactionMonitor to track all tx
+    protected final static Counter rollbackCount = Metrics.newCounter(
+            TransactionHelper.class, "rollback");
+
+    protected final static Counter concurrentCount = Metrics.newCounter(
+            TransactionHelper.class, "tx-concurrent");
+
+    protected final static Counter concurrentMaxCount = Metrics.newCounter(
+            TransactionHelper.class, "tx-concurrent-max");
+
+    protected final static Timer transactionTimer = Metrics.newTimer(
+            TransactionHelper.class, "transaction",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+
+    protected static final ConcurrentHashMap<UserTransaction, TimerContext> timers = new ConcurrentHashMap<UserTransaction, TimerContext>();
 
     private TransactionHelper() {
         // utility class
@@ -163,11 +189,19 @@ public class TransactionHelper {
      *         {@code false} otherwise
      */
     public static boolean startTransaction() {
+        UserTransaction ut;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Starting transaction");
             }
-            lookupUserTransaction().begin();
+            ut = lookupUserTransaction();
+            ut.begin();
+
+            timers.put(ut, transactionTimer.time());
+            concurrentCount.inc();
+            if (concurrentCount.count() > concurrentMaxCount.count()) {
+                concurrentMaxCount.inc();
+            }
             return true;
         } catch (NamingException e) {
             // no transaction
@@ -198,6 +232,11 @@ public class TransactionHelper {
                 tx = tm.suspend();
             }
             tm.begin();
+            timers.put((UserTransaction) tm, transactionTimer.time());
+            concurrentCount.inc();
+            if (concurrentCount.count() > concurrentMaxCount.count()) {
+                concurrentMaxCount.inc();
+            }
             return tx;
         } catch (Exception e) {
             throw new TransactionRuntimeException("Cannot suspend tx", e);
@@ -225,6 +264,12 @@ public class TransactionHelper {
             }
         } catch (Exception e) {
             throw new TransactionRuntimeException("Cannot resume tx", e);
+        } finally {
+            concurrentCount.dec();
+            TimerContext timerContext = timers.remove(mgr);
+            if (timerContext != null) {
+                timerContext.stop();
+            }
         }
     }
 
@@ -289,6 +334,7 @@ public class TransactionHelper {
                 if (log.isDebugEnabled()) {
                     log.debug("Cannot commit transaction because it is marked rollback only");
                 }
+                rollbackCount.inc();
                 ut.rollback();
             } else {
                 if (log.isDebugEnabled()) {
@@ -307,6 +353,12 @@ public class TransactionHelper {
                 log.error(msg, e);
             }
             throw new TransactionRuntimeException(msg, e);
+        } finally {
+            concurrentCount.dec();
+            TimerContext timerContext = timers.remove(ut);
+            if (timerContext != null) {
+                timerContext.stop();
+            }
         }
     }
 
