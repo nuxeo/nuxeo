@@ -8,7 +8,7 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
 <nxu:set var="elementsToReRender"
-  value="#{action.properties.reRender}"
+  value="#{ajaxReRender},#{action.properties.reRender}"
   resolveTwice="true" cache="true">
 <nxu:set var="onclick"
   value="if (!confirm#{idPrefix}#{action.id}Message()) return false;#{action.confirm};#{action.properties.onclick};"

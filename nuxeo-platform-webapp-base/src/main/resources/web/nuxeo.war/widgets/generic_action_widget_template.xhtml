@@ -21,7 +21,7 @@
             <ui:decorate template="/widgets/incl/form_template.xhtml">
               <ui:param name="addForm" value="#{widgetProperty_addForm}" />
               <ui:param name="formId" value="#{widget.id}_form" />
-              <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+              <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
               <ui:param name="formStyleClass" value="subWidgetForm" />
               <ui:define name="form_template_content">
 
@@ -36,6 +36,7 @@
                 <div class="widgetPanel actionsWidgetPanel #{widgetProperty_styleClass}">
                   <ui:decorate template="/incl/action/action_template.xhtml">
                     <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                    <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
                   </ui:decorate>
                 </div>
 

@@ -49,6 +49,7 @@
                         <ui:define name="form_template_content">
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                            <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
                           </ui:decorate>
                         </ui:define>
                       </ui:decorate>
@@ -72,6 +73,7 @@
                           <ui:define name="form_template_content">
                             <ui:decorate template="/incl/action/action_template.xhtml">
                               <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                              <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
                             </ui:decorate>
                           </ui:define>
                         </ui:decorate>
@@ -97,6 +99,7 @@
                         <ui:define name="form_template_content">
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                            <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
                           </ui:decorate>
                         </ui:define>
                       </ui:decorate>
@@ -121,7 +124,9 @@
                             <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
                             <ui:param name="formStyleClass" value="subWidgetForm" />
                             <ui:define name="form_template_content">
-                              <ui:include src="/incl/action/generic_action_template.xhtml" />
+                              <ui:include src="/incl/action/generic_action_template.xhtml">
+                                <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                              </ui:include>
                             </ui:define>
                           </ui:decorate>
                         </li>
