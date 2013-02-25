@@ -146,10 +146,16 @@ public class EventOperationsTest {
     }
 
     @Test
-    public void testShadowedFiltering() throws ClientException {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    public void testShallowFiltering() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/src", "myfile",
+                "File");
+        doc.setPropertyValue("dc:description", "ChangeMySource");
+        doc = session.createDocument(doc);
         session.save();
-        DocumentModel doc = session.getDocument(src.getRef());
-        assertEquals("Filtered lifecycle state", doc.getPropertyValue("dc:source"));
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        session.save(); // process invalidations
+        doc = session.getDocument(doc.getRef());
+        assertEquals("New source", doc.getPropertyValue("dc:source"));
     }
+
 }

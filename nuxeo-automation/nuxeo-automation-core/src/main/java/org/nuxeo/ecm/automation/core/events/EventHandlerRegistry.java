@@ -92,7 +92,7 @@ public class EventHandlerRegistry {
         ctx.put("Event", event);
         for (EventHandler handler : handlers) {
             try {
-                if (handler.isEnabled(ctx, ectx)) {
+                if (handler.isEnabled(ctx, ectx, true)) {
                     return true;
                 }
             } catch (Exception e) {
@@ -125,9 +125,8 @@ public class EventHandlerRegistry {
             ctx.put("Event", event);
             ctx.setCommit(saveSession); // avoid reentrant events
             try {
-                if (handler.isEnabled(ctx, ectx)) { // TODO this will save the
-                    // session at each
-                    // iteration!
+                if (handler.isEnabled(ctx, ectx, false)) {
+                    // TODO this will save the session at each iteration!
                     svc.run(ctx, handler.getChainId());
                 }
             } catch (Exception e) {
