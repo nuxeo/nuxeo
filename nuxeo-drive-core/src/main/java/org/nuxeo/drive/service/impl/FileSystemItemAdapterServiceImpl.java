@@ -207,7 +207,6 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * finds one that matches and retrieves a non null {@link FileSystemItem}
      * for the given doc. A factory matches if:
      * <ul>
-     * <li>It is not a VirtualFolderItemFactory</li>
      * <li>It is not bound to any docType nor facet (this is the case for the
      * default factory contribution {@code defaultFileSystemItemFactory} bound
      * to {@link DefaultFileSystemItemFactory})</li>
@@ -224,10 +223,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factory = factoriesIt.next();
-            if (!isVirtualFolderItemFactory(factory)
-                    && (generalFactoryMatches(factory)
-                            || docTypeFactoryMatches(factory, doc) || facetFactoryMatches(
-                                factory, doc))) {
+            if (generalFactoryMatches(factory)
+                    || docTypeFactoryMatches(factory, doc)
+                    || facetFactoryMatches(factory, doc)) {
                 matchingFactory = factory;
                 if (forceParentId) {
                     fileSystemItem = factory.getFactory().getFileSystemItem(
@@ -251,11 +249,6 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                     doc.getId()));
         }
         return fileSystemItem;
-    }
-
-    protected boolean isVirtualFolderItemFactory(
-            FileSystemItemFactoryWrapper factory) {
-        return factory.getFactory() instanceof VirtualFolderItemFactory;
     }
 
     protected boolean generalFactoryMatches(FileSystemItemFactoryWrapper factory) {
