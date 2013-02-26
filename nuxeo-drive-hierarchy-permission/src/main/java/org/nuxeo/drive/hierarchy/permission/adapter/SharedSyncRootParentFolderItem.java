@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
@@ -32,6 +34,7 @@ import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
@@ -44,6 +47,8 @@ import org.nuxeo.runtime.api.Framework;
 public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(SharedSyncRootParentFolderItem.class);
 
     public SharedSyncRootParentFolderItem(String factoryName,
             Principal principal, String parentId, String folderName)
@@ -67,15 +72,21 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
             Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
             while (syncRootRefsIt.hasNext()) {
                 IdRef idRef = syncRootRefsIt.next();
-                DocumentModel doc = session.getDocument(idRef);
-                // Filter by creator
-                // TODO: allow filtering by dc:creator in
-                // NuxeoDriveManager#getSynchronizationRoots(Principal
-                // principal)
-                if (!session.getPrincipal().getName().equals(
-                        doc.getPropertyValue("dc:creator"))) {
-                    children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                            doc, getId()));
+                try {
+                    DocumentModel doc = session.getDocument(idRef);
+                    // Filter by creator
+                    // TODO: allow filtering by dc:creator in
+                    // NuxeoDriveManager#getSynchronizationRoots(Principal
+                    // principal)
+                    if (!session.getPrincipal().getName().equals(
+                            doc.getPropertyValue("dc:creator"))) {
+                        children.add(getFileSystemItemAdapterService().getFileSystemItem(
+                                doc, getId()));
+                    }
+                } catch (DocumentSecurityException e) {
+                    log.debug(String.format(
+                            "User %s has no READ access on synchronization root %s, not including it in children.",
+                            session.getPrincipal().getName(), idRef));
                 }
             }
         }
