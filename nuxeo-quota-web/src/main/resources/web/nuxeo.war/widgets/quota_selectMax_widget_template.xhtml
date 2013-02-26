@@ -25,6 +25,7 @@ jQuery.noConflict();
     value = Number(value);
     value = Math.exp(value);
     value = Math.round(value / 1000)*1000;
+    console.log('ddd' + value);
     return value;
     
  }
@@ -49,13 +50,13 @@ jQuery.noConflict();
     value = Math.round(value / 1000)*1000;
     var label;
     if (value > gb) {
-      label = Math.round(value/gb) + " " + GB_label;
+      label = Math.round(value/gb*100)/100 + " " + GB_label;
     } else if (value > mb) {
-      label = Math.round(value/mb) + " " + MB_label;
+      label = Math.round(value/mb*100)/100 + " " + MB_label;
     } else if (value > kb) {
-      label = Math.round(value/kb) + " " + KB_label;
+      label = Math.round(value/kb*100)/100 + " " + KB_label;
     } else {
-     label = value + " " + B_label;
+     label = Math.round(value*100)/100 + " " + B_label;
     }
     return label;
   } 
@@ -69,7 +70,6 @@ jQuery.noConflict();
   step: 0.001,
   slide: function( event, ui ) {
     jQuery("#sliderValue").text(formatQuotaSize(ui.value));
-    console.log(jQuery("inputText[id$='maxValue']").val());
     jQuery("input[id$='maxValue']").val(expon(ui.value));
   }
   });
