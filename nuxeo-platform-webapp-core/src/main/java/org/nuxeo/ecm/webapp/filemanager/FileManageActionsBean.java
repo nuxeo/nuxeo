@@ -498,9 +498,16 @@ public class FileManageActionsBean extends InputController implements
                             documentManager.getDocument(srcRef).getType()));
 
             return debug;
-        } catch (Throwable t) {
-            log.error(t.getMessage(), t);
-            return getErrorMessage(MOVE_ERROR, docId);
+        } catch (ClientException e) {
+            throw new RecoverableClientException(
+                    "Cannot validate, caught client exception",
+                    "message.operation.fails.generic", null, e);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof RecoverableClientException) {
+                throw e;
+            }
+            throw new RecoverableClientException(
+                    "Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
