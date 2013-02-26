@@ -223,6 +223,7 @@ public class NXHttpFetcher implements HttpFetcher {
 
         httpMethod.setFollowRedirects(false);
         httpMethod.getParams().setSoTimeout(connectionTimeoutMs);
+        httpMethod.setRequestHeader("Connection", "close");
 
         if (requestCompressedContent)
             httpMethod.setRequestHeader("Accept-Encoding", "gzip, deflate");
