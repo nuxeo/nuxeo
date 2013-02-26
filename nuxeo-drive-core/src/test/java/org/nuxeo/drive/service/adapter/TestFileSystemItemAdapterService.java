@@ -472,9 +472,11 @@ public class TestFileSystemItemAdapterService {
         // -------------------------------------------------------------
         // Check #getFileSystemItem(DocumentModel doc)
         // -------------------------------------------------------------
-        // File => should use the dummyDocTypeFactory bound to the
-        // DefaultFileSystemItemFactory class, but return null because the
-        // document has no file
+        // File => should try the dummyDocTypeFactory bound to the
+        // DefaultFileSystemItemFactory class, returning null because the
+        // document has no file, then try the dummyVirtualFolderItemFactory
+        // bound to the DummyVirtualFolderItemFactory, returning null because
+        // virtual
         file.setPropertyValue("file:content", null);
         session.saveDocument(file);
         FileSystemItem fsItem = fileSystemItemAdapterService.getFileSystemItem(file);
@@ -492,7 +494,9 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
 
-        // Custom => should find no matching fileSystemItemFactory
+        // Custom => should try the dummyVirtualFolderItemFactory
+        // bound to the DummyVirtualFolderItemFactory, returning null because
+        // virtual
         fsItem = fileSystemItemAdapterService.getFileSystemItem(custom);
         assertNull(fsItem);
 

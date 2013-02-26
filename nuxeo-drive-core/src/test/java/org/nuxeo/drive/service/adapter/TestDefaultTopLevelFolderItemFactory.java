@@ -253,26 +253,11 @@ public class TestDefaultTopLevelFolderItemFactory {
         // #isFileSystemItem(DocumentModel doc)
         DocumentModel fakeDoc = new DocumentModelImpl("File");
         assertFalse(defaultTopLevelFolderItemFactory.isFileSystemItem(fakeDoc));
-
         // #getFileSystemItem(DocumentModel doc)
-        try {
-            defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc);
-            fail("Should be unsupported.");
-        } catch (UnsupportedOperationException e) {
-            assertEquals(
-                    "Cannot get the file system item for a given document from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
-                    e.getMessage());
-        }
+        assertNull(defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc));
         // #getFileSystemItem(DocumentModel doc, String parentId)
-        try {
-            defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc,
-                    "testParentId");
-            fail("Should be unsupported.");
-        } catch (UnsupportedOperationException e) {
-            assertEquals(
-                    "Cannot get the file system item for a given document from factory org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory.",
-                    e.getMessage());
-        }
+        assertNull(defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc,
+                "testParentId"));
         // #canHandleFileSystemItemId(String id)
         assertTrue(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#"));
         assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory#"));
