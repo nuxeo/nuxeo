@@ -20,8 +20,8 @@
 package org.nuxeo.ecm.platform.importer.tests;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.nuxeo.ecm.platform.importer.random.DictionaryHolder;
+import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
 
 public class TestWordGen {
@@ -29,7 +29,8 @@ public class TestWordGen {
     @Test
     public void testWordGen() throws Exception {
         long t0 = System.currentTimeMillis();
-        RandomTextGenerator gen = new RandomTextGenerator();
+        DictionaryHolder dic = new HunspellDictionaryHolder("fr_FR.dic");
+        RandomTextGenerator gen = new RandomTextGenerator(dic);
         long t1 = System.currentTimeMillis();
         System.out.println("loading dico :" + (t1 - t0) + "ms");
         System.out.println("prefilling cache ...");
@@ -51,7 +52,8 @@ public class TestWordGen {
     @Test
     public void testTextGen() throws Exception {
         long t0 = System.currentTimeMillis();
-        RandomTextGenerator gen = new RandomTextGenerator();
+        DictionaryHolder dic = new HunspellDictionaryHolder("fr_FR.dic");
+        RandomTextGenerator gen = new RandomTextGenerator(dic);
         long t1 = System.currentTimeMillis();
         System.out.println("loading dico :" + (t1 - t0) + "ms");
         System.out.println("prefilling cache ...");

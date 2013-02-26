@@ -32,7 +32,7 @@ import java.util.Random;
  */
 public class RandomTextGenerator {
 
-    protected DictionaryHolder dictionaryHolder = new FrenchDictionaryHolder();
+    protected DictionaryHolder dictionaryHolder;
 
     protected Map<String, String> paragraphCache = new HashMap<String, String>();
 
@@ -64,7 +64,8 @@ public class RandomTextGenerator {
 
     protected Random generator;
 
-    public RandomTextGenerator() throws Exception {
+    public RandomTextGenerator(DictionaryHolder dictionary) throws Exception {
+        dictionaryHolder = dictionary;
         generator = new Random(System.currentTimeMillis());
     }
 
