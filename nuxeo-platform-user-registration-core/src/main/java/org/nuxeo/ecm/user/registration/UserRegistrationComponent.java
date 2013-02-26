@@ -42,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -510,10 +509,11 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 if (!baseUrl.endsWith("/")) {
                     baseUrl += "/";
                 }
-                String url = baseUrl + getConfiguration(configurationName).getValidationRelUrl();
-                url = url.replace("//", "/");
-
-                additionnalInfo.put("validationBaseURL", url);
+                String validationRelUrl = getConfiguration(configurationName).getValidationRelUrl();
+                if (validationRelUrl.startsWith("/")) {
+                    validationRelUrl = validationRelUrl.substring(1);
+                }
+                additionnalInfo.put("validationBaseURL", baseUrl.concat(validationRelUrl));
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
