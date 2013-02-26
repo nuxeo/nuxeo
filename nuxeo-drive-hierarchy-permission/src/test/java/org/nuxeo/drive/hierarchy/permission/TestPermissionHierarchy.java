@@ -91,7 +91,7 @@ import com.google.inject.Inject;
 @Jetty(port = 18080)
 public class TestPermissionHierarchy {
 
-    private static final String TOP_LEVEL_ID_SUFFIX = "PermissionTopLevelFactory#";
+    private static final String TOP_LEVEL_ID = "org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFactory#";
 
     private static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";
 
@@ -262,7 +262,7 @@ public class TestPermissionHierarchy {
                 PermissionTopLevelFolderItem.class);
 
         assertNotNull(topLevelFolder);
-        assertTrue(topLevelFolder.getId().endsWith(TOP_LEVEL_ID_SUFFIX));
+        assertEquals(TOP_LEVEL_ID, topLevelFolder.getId());
         assertNull(topLevelFolder.getParentId());
         assertEquals("Nuxeo Drive", topLevelFolder.getName());
         assertTrue(topLevelFolder.isFolder());
@@ -316,8 +316,7 @@ public class TestPermissionHierarchy {
                 topLevelChildren.get(0), UserSyncRootParentFolderItem.class);
         assertEquals(USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
                 userSyncRootParent.getId());
-        assertTrue(userSyncRootParent.getParentId().endsWith(
-                TOP_LEVEL_ID_SUFFIX));
+        assertEquals(TOP_LEVEL_ID, userSyncRootParent.getParentId());
         assertEquals("My Documents", userSyncRootParent.getName());
         assertTrue(userSyncRootParent.isFolder());
         assertEquals("user1", userSyncRootParent.getCreator());
@@ -330,8 +329,7 @@ public class TestPermissionHierarchy {
         SharedSyncRootParentFolderItem sharedSyncRootParent = mapper.readValue(
                 topLevelChildren.get(1), SharedSyncRootParentFolderItem.class);
         assertEquals(SHARED_SYNC_ROOT_PARENT_ID, sharedSyncRootParent.getId());
-        assertTrue(sharedSyncRootParent.getParentId().endsWith(
-                TOP_LEVEL_ID_SUFFIX));
+        assertEquals(TOP_LEVEL_ID, sharedSyncRootParent.getParentId());
         assertEquals("Other Documents", sharedSyncRootParent.getName());
         assertTrue(sharedSyncRootParent.isFolder());
         assertEquals("system", sharedSyncRootParent.getCreator());
@@ -498,8 +496,7 @@ public class TestPermissionHierarchy {
                 UserSyncRootParentFolderItem.class);
         assertEquals(USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
                 userSyncRootParent.getId());
-        assertTrue(userSyncRootParent.getParentId().endsWith(
-                TOP_LEVEL_ID_SUFFIX));
+        assertEquals(TOP_LEVEL_ID, userSyncRootParent.getParentId());
         assertEquals("My Documents", userSyncRootParent.getName());
         assertTrue(userSyncRootParent.isFolder());
         assertEquals("user1", userSyncRootParent.getCreator());
