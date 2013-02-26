@@ -20,7 +20,9 @@
 package org.nuxeo.ecm.webapp.filemanager;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +53,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -134,46 +137,54 @@ public class FileManageActionsBean extends InputController implements
         return "view_documents";
     }
 
-    /**
-     * Creates a document from the file held in the fileUploadHolder.
-     *
-     * Takes responsibility for the fileUploadHolder temporary file.
-     */
+
     @Override
-    @SuppressWarnings("static-access")
     public String addFile() throws ClientException {
-        try {
-            File tempFile = fileUploadHolder.getTempFile();
-            String fileName = getFileName();
-            if (tempFile == null || fileName == null) {
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "fileImporter.error.nullUploadedFile"));
-                return navigationContext.getActionResult(
-                        navigationContext.getCurrentDocument(),
-                        UserAction.AFTER_CREATE);
-            }
-            fileName = FileUtils.getCleanFileName(fileName);
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            String path = currentDocument.getPathAsString();
-            Blob blob = createTemporaryFileBlob(tempFile, fileName, null);
+        return addFile(getFileUpload(), getFileName());
+    }
 
-            DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fileName);
-            eventManager.raiseEventsOnDocumentSelected(createdDoc);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
-
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("document_saved"),
-                    resourcesAccessor.getMessages().get(createdDoc.getType()));
-            return navigationContext.getActionResult(createdDoc,
+    @SuppressWarnings("static-access")
+    public String addFile(InputStream fileUpload, String fileName)
+            throws ClientException {
+        if (fileUpload == null || fileName == null) {
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "fileImporter.error.nullUploadedFile"));
+            return navigationContext.getActionResult(
+                    navigationContext.getCurrentDocument(),
                     UserAction.AFTER_CREATE);
-
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
         }
+        fileName = FileUtils.getCleanFileName(fileName);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        String path = currentDocument.getPathAsString();
+        Blob blob = FileUtils.createSerializableBlob(fileUpload, fileName, null);
+        DocumentModel createdDoc = null;
+        try {
+            createdDoc = getFileManagerService().createDocumentFromBlob(
+                    documentManager, blob, path, true, fileName);
+        } catch (IOException e) {
+            throw new ClientException("Can not write blob for" + fileName, e);
+        } catch (ClientException e) {
+            throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            new ClientException(
+                    "Caught general system exception, throwing client exception ",
+                    e);
+        }
+        EventManager.raiseEventsOnDocumentSelected(createdDoc);
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                currentDocument);
+
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get("document_saved"),
+                resourcesAccessor.getMessages().get(createdDoc.getType()));
+        return navigationContext.getActionResult(createdDoc,
+                UserAction.AFTER_CREATE);
     }
 
     @Override
@@ -200,8 +211,8 @@ public class FileManageActionsBean extends InputController implements
     }
 
     /**
-     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to
-     *             avoid loading the content in memory
+     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
+     *             loading the content in memory
      */
     @Override
     @Deprecated
@@ -276,7 +287,7 @@ public class FileManageActionsBean extends InputController implements
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
-        eventManager.raiseEventsOnDocumentSelected(createdDoc);
+        EventManager.raiseEventsOnDocumentSelected(createdDoc);
         return createdDoc.getName();
     }
 
@@ -468,7 +479,7 @@ public class FileManageActionsBean extends InputController implements
             // delCopyWithId(docId);
             documentManager.save();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            eventManager.raiseEventsOnDocumentChildrenChange(currentDocument);
+            EventManager.raiseEventsOnDocumentChildrenChange(currentDocument);
 
             // notify current container
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
@@ -642,36 +653,44 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String validate() throws ClientException {
-        File tempFile;
-        if (fileUploadHolder == null
-                || (tempFile = fileUploadHolder.getTempFile()) == null) {
+
+        if (fileUploadHolder != null && fileUploadHolder.getTempFile() != null) {
+            InputStream stream = null;
+            try {
+                try {
+                    stream = new FileInputStream(fileUploadHolder.getTempFile());
+                } catch (FileNotFoundException e) {
+                    throw new RecoverableClientException(
+                            "Cannot validate, caught no such file",
+                            "message.operation.fails.generic", null, e);
+                }
+                try {
+                    return addFile(stream, getFileName());
+                } catch (ClientException e) {
+                    throw new RecoverableClientException(
+                            "Cannot validate, caught client exception",
+                            "message.operation.fails.generic", null, e);
+                } catch (RuntimeException e) {
+                    if (e.getCause() instanceof RecoverableClientException) {
+                        throw e;
+                    }
+                    throw new RecoverableClientException(
+                            "Cannot validate, caught runtime", "error.db.fs",
+                            null, e);
+                }
+            } finally {
+                org.nuxeo.common.utils.FileUtils.close(stream);
+                // the content of the temporary blob has been
+                if (fileUploadHolder.getTempFile() != null) {
+                    fileUploadHolder.getTempFile().delete();
+                }
+            }
+        }else {
             facesMessages.add(
                     StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "fileImporter.error.nullUploadedFile"));
             return null;
-        }
-        try {
-            return addFile();
-        } catch (ClientException e) {
-            log.warn(e.getMessage());
-            log.debug(e.getMessage(), e);
-            if (ExceptionHelper.isSecurityError(e)) {
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "fileImporter.security.error"));
-            } else {
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "fileImporter.error.unsupportedFile"));
-            }
-            return null;
-        } finally {
-            if (tempFile != null && tempFile.exists()) {
-                Framework.trackFile(tempFile, tempFile);
-            }
         }
     }
 
