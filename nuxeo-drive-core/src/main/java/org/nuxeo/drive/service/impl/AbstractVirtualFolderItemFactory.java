@@ -95,10 +95,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
-        throw new UnsupportedOperationException(
-                String.format(
-                        "Cannot get the file system item for a given document from factory %s.",
-                        getName()));
+        return null;
     }
 
     @Override
@@ -110,10 +107,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
             boolean includeDeleted) throws ClientException {
-        throw new UnsupportedOperationException(
-                String.format(
-                        "Cannot get the file system item for a given document from factory %s.",
-                        getName()));
+        return null;
     }
 
     @Override

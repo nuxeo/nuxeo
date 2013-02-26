@@ -45,7 +45,7 @@ public class SharedSyncRootParentFactory extends
                     "Found no top level folder item. Please check your contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
         }
         return new SharedSyncRootParentFolderItem(getName(), principal,
-                topLevelFolder.getId(), folderName);
+                topLevelFolder.getId(), topLevelFolder.getPath(), folderName);
     }
 
 }

@@ -77,7 +77,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
                 && "UserWorkspaces".equals(path.segment(pathLength - 2));
         if (!isUserWorkspace) {
             log.debug(String.format(
-                    "Document %s is not a suer workspace, it cannot be adapted as a FileSystemItem.",
+                    "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
                     doc.getId()));
             return false;
         }

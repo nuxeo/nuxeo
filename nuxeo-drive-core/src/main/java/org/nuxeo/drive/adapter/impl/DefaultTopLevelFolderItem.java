@@ -45,7 +45,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     public DefaultTopLevelFolderItem(String factoryName, Principal principal,
             String folderName) throws ClientException {
-        super(factoryName, principal, null, folderName);
+        super(factoryName, principal, null, null, folderName);
     }
 
     protected DefaultTopLevelFolderItem() {

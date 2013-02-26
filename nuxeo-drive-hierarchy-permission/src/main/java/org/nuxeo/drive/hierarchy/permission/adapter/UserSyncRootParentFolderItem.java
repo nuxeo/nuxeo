@@ -110,7 +110,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
         }
     }
 
-    protected boolean isUserWorkspaceSyncRoot(DocumentModel doc)
+    private boolean isUserWorkspaceSyncRoot(DocumentModel doc)
             throws ClientException {
         NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
         return nuxeoDriveManager.isSynchronizationRoot(principal, doc);
