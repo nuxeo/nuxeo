@@ -54,6 +54,9 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+
 /**
  * The implementation of a {@link WorkManager}.
  *
@@ -260,6 +263,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         protected WorkList suspended;
 
+        // @since 5.7
+        protected final Counter scheduledCount = Metrics.newCounter(
+                WorkThreadPoolExecutor.class, "scheduled");
+
+        protected final Counter scheduledMax = Metrics.newCounter(
+                WorkThreadPoolExecutor.class, "scheduled-max");
+
         public WorkThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
                 long keepAliveTime, TimeUnit unit,
                 BlockingQueue<Runnable> queue, ThreadFactory threadFactory) {
@@ -393,6 +403,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          * @see #execute(Runnable)
          */
         public void execute(Work work, boolean afterCommit) {
+            scheduledCount.inc();
+            if (scheduledCount.count() > scheduledMax.count()) {
+                scheduledMax.inc();
+            }
             if (afterCommit) {
                 TransactionManager transactionManager;
                 try {
@@ -449,6 +463,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 scheduled.remove(work);
                 running.add(work);
                 work.beforeRun(); // change state
+                scheduledCount.dec();
             }
         }
 

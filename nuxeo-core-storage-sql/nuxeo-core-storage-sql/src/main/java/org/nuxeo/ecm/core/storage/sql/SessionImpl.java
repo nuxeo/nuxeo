@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
@@ -63,6 +64,11 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
+
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -110,6 +116,19 @@ public class SessionImpl implements Session, XAResource {
 
     private String threadName;
 
+    // @since 5.7
+    private final Timer saveTimer = Metrics.newTimer(SessionImpl.class, "save",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+
+    private final Timer queryTimer = Metrics.newTimer(SessionImpl.class, "query",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+
+    private final Counter sessionCount = Metrics.newCounter(
+            SessionImpl.class, "session");
+
+    private final Timer aclrUpdateTimer = Metrics.newTimer(SessionImpl.class, "aclr-update",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
         this.repository = repository;
@@ -128,7 +147,7 @@ public class SessionImpl implements Session, XAResource {
         } catch (Exception e) {
             throw new StorageException(e);
         }
-
+        sessionCount.inc();
         computeRootNode();
     }
 
@@ -224,6 +243,7 @@ public class SessionImpl implements Session, XAResource {
         // close the mapper and therefore the connection
         mapper.close();
         // don't clean the caches, we keep the pristine cache around
+        sessionCount.dec();
     }
 
     @Override
@@ -297,13 +317,19 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void save() throws StorageException {
-        checkLive();
-        flush();
-        if (!inTransaction) {
-            sendInvalidationsToOthers();
-            // as we don't have a way to know when the next non-transactional
-            // statement will start, process invalidations immediately
-            processReceivedInvalidations();
+        final TimerContext timerContext = saveTimer.time();
+        try {
+            checkLive();
+            flush();
+            if (!inTransaction) {
+                sendInvalidationsToOthers();
+                // as we don't have a way to know when the next
+                // non-transactional
+                // statement will start, process invalidations immediately
+                processReceivedInvalidations();
+            }
+        } finally {
+            timerContext.stop();
         }
     }
 
@@ -1128,27 +1154,46 @@ public class SessionImpl implements Session, XAResource {
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        return mapper.query(query, NXQL.NXQL, queryFilter, countTotal);
+        final TimerContext timerContext = queryTimer.time();
+        try {
+            return mapper.query(query, NXQL.NXQL, queryFilter, countTotal);
+        } finally  {
+            timerContext.stop();
+        }
     }
 
     @Override
     public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        return mapper.query(query, queryType, queryFilter, countTotal);
+        final TimerContext timerContext = queryTimer.time();
+        try {
+            return mapper.query(query, queryType, queryFilter, countTotal);
+        } finally  {
+            timerContext.stop();
+        }
     }
 
     @Override
     public PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo)
-            throws StorageException {
-        return mapper.query(query, queryType, queryFilter, countUpTo);
+            QueryFilter queryFilter, long countUpTo) throws StorageException {
+        final TimerContext timerContext = queryTimer.time();
+        try {
+            return mapper.query(query, queryType, queryFilter, countUpTo);
+        } finally  {
+            timerContext.stop();
+        }
     }
 
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        return mapper.queryAndFetch(query, queryType, queryFilter, params);
+        final TimerContext timerContext = queryTimer.time();
+        try {
+            return mapper.queryAndFetch(query, queryType, queryFilter, params);
+        } finally  {
+            timerContext.stop();
+        }
     }
 
     @Override
@@ -1177,8 +1222,13 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void updateReadAcls() throws StorageException {
-        mapper.updateReadAcls();
-        readAclsChanged = false;
+        final TimerContext timerContext = aclrUpdateTimer.time();
+        try {
+            mapper.updateReadAcls();
+            readAclsChanged = false;
+        } finally {
+            timerContext.stop();
+        }
     }
 
     @Override
