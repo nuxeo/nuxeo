@@ -51,9 +51,9 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
     private static final Log log = LogFactory.getLog(SharedSyncRootParentFolderItem.class);
 
     public SharedSyncRootParentFolderItem(String factoryName,
-            Principal principal, String parentId, String folderName)
-            throws ClientException {
-        super(factoryName, principal, parentId, folderName);
+            Principal principal, String parentId, String parentPath,
+            String folderName) throws ClientException {
+        super(factoryName, principal, parentId, parentPath, folderName);
     }
 
     protected SharedSyncRootParentFolderItem() {

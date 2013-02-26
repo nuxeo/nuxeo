@@ -54,7 +54,7 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
     public PermissionTopLevelFolderItem(String factoryName,
             Principal principal, String folderName,
             List<String> childrenFactoryNames) throws ClientException {
-        super(factoryName, principal, null, folderName);
+        super(factoryName, principal, null, null, folderName);
         this.childrenFactoryNames = childrenFactoryNames;
     }
 

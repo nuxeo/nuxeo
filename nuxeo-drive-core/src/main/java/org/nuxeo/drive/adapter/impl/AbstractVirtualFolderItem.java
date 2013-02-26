@@ -40,7 +40,8 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
     protected boolean canCreateChild;
 
     public AbstractVirtualFolderItem(String factoryName, Principal principal,
-            String parentId, String folderName) throws ClientException {
+            String parentId, String parentPath, String folderName)
+            throws ClientException {
         super(factoryName, principal);
         this.parentId = parentId;
         name = folderName;
@@ -54,6 +55,9 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem
         canDelete = false;
         canCreateChild = false;
         path = "/" + getId();
+        if (parentPath != null) {
+            path = parentPath + path;
+        }
     }
 
     protected AbstractVirtualFolderItem() {
