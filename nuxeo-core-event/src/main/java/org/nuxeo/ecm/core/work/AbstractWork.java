@@ -48,6 +48,10 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
+
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the
  * details around state change.
@@ -96,6 +100,13 @@ public abstract class AbstractWork implements Work {
 
     protected CoreSession session;
 
+    // @since 5.7
+    protected final Timer workTimer = Metrics.newTimer(
+            AbstractWork.class, "work",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+
+    private TimerContext timerContext;
+
     public AbstractWork() {
         state = SCHEDULED;
         progress = PROGRESS_INDETERMINATE;
@@ -135,6 +146,7 @@ public abstract class AbstractWork implements Work {
     // after this, state is RUNNING or SUSPENDED
     @Override
     public void beforeRun() {
+        timerContext = workTimer.time();
         startTime = System.currentTimeMillis();
         setProgress(PROGRESS_0_PC);
         synchronized (stateMonitor) {
@@ -219,6 +231,7 @@ public abstract class AbstractWork implements Work {
             setProgress(PROGRESS_100_PC);
         }
         completionTime = System.currentTimeMillis();
+        timerContext.stop();
     }
 
     /**

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
@@ -26,14 +27,14 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.javasimon.Counter;
-import org.javasimon.SimonManager;
-import org.javasimon.Split;
-import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
-import org.nuxeo.runtime.api.Framework;
+
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
 
 /**
  * A {@link RowMapper} that has an internal cache.
@@ -107,30 +108,25 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     /**
      * Cache statistics
+     * @since 5.7
      */
-    // JavaSimpon Counter Names
-    private static final String CN_ACCESS = "org.nuxeo.ecm.core.storage.sql.row.cache.access";
+    private final Counter cacheHitCount = Metrics.newCounter(
+            SoftRefCachingRowMapper.class, "cache-hit");
 
-    private static final String CN_HITS = "org.nuxeo.ecm.core.storage.sql.row.cache.hits";
+    private final Counter cacheSize = Metrics.newCounter(
+            SoftRefCachingRowMapper.class, "cache-size");
 
-    private static final String CN_SIZE = "org.nuxeo.ecm.core.storage.sql.row.cache.size";
+    private final Timer cacheGetTimer = Metrics.newTimer(
+            SoftRefCachingRowMapper.class, "cache-get",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
-    // Stop watch for cache access
-    private static final String SW_CACHE = "org.nuxeo.ecm.core.storage.sql.cache.get";
+    // sor means system of record (database access)
+    private final Counter sorRows = Metrics.newCounter(
+            SoftRefCachingRowMapper.class, "sor-rows");
 
-    // Stop watch for SOR access (System Of Record i.e the db access)
-    private static final String SW_SOR = "org.nuxeo.ecm.core.storage.sql.sor.gets";
-
-    // Property to enable stop watch
-    private static final String CACHE_STATS_PROP = "org.nuxeo.vcs.cache.statistics";
-
-    private long accessCount;
-
-    private long hitsCount;
-
-    private long cacheSize;
-
-    private boolean cacheStatistics;
+    private final Timer sorGetTimer = Metrics.newTimer(
+            SoftRefCachingRowMapper.class, "sor-get",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
@@ -138,8 +134,6 @@ public class SoftRefCachingRowMapper implements RowMapper {
         localInvalidations = new Invalidations();
         cacheQueue = new InvalidationsQueue("mapper-" + this);
         forRemoteClient = false;
-        String prop = Framework.getProperty(CACHE_STATS_PROP, "false");
-        cacheStatistics = Boolean.parseBoolean(prop);
     }
 
     public void initialize(Model model, RowMapper rowMapper,
@@ -159,7 +153,6 @@ public class SoftRefCachingRowMapper implements RowMapper {
     public void close() throws StorageException {
         cachePropagator.removeQueue(cacheQueue);
         eventPropagator.removeQueue(eventQueue); // TODO can be overriden
-        logCacheStat();
     }
 
     @Override
@@ -185,6 +178,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
             row.values = sortACLRows((ACLRow[]) row.values);
         }
         cache.put(new RowId(row), row);
+        cacheSize.inc();
     }
 
     protected ACLRow[] sortACLRows(ACLRow[] acls) {
@@ -196,6 +190,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     protected void cachePutAbsent(RowId rowId) {
         cache.put(new RowId(rowId), new Row(ABSENT, (Serializable) null));
+        cacheSize.inc();
     }
 
     protected void cachePutAbsentIfNull(RowId rowId, Row row) {
@@ -215,59 +210,19 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected Row cacheGet(RowId rowId) {
-        Split split = null;
-        if (cacheStatistics) {
-            Stopwatch stopWatch = SimonManager.getStopwatch(SW_CACHE);
-            split = stopWatch.start();
-        }
-
-        Row row = cache.get(rowId);
-        if (row != null && !isAbsent(row)) {
-            row = row.clone();
-        }
-
-        if (split != null) {
-            split.stop();
-        }
-        updateCacheStat(row);
-        return row;
-    }
-
-    private void updateCacheStat(Row row) {
-        if (row != null) {
-            hitsCount++;
-        }
-        if ((++accessCount % 200) == 0) {
-            Counter accessCounter = SimonManager.getCounter(CN_ACCESS);
-            accessCounter.increase(accessCount);
-            accessCount = 0;
-            Counter hitsCounter = SimonManager.getCounter(CN_HITS);
-            hitsCounter.increase(hitsCount);
-            hitsCount = 0;
-            Counter sizeCounter = SimonManager.getCounter(CN_SIZE);
-            long delta = cache.size() - cacheSize;
-            if (delta > 0) {
-                sizeCounter.increase(delta);
-            } else if (delta < 0) {
-                sizeCounter.decrease(-1 * delta);
+        final TimerContext context = cacheGetTimer.time();
+        try {
+            Row row = cache.get(rowId);
+            if (row != null && !isAbsent(row)) {
+                row = row.clone();
             }
-            cacheSize = cache.size();
+            if (row != null) {
+                cacheHitCount.inc();
+            }
+            return row;
+        } finally {
+            context.stop();
         }
-    }
-
-    private void logCacheStat() {
-        if (cacheStatistics) {
-            Stopwatch stopWatch = SimonManager.getStopwatch(SW_CACHE);
-            log.info(stopWatch);
-            stopWatch = SimonManager.getStopwatch(SW_SOR);
-            log.info(stopWatch);
-        }
-        Counter counter = SimonManager.getCounter(CN_ACCESS);
-        log.info(counter);
-        counter = SimonManager.getCounter(CN_HITS);
-        log.info(counter);
-        counter = SimonManager.getCounter(CN_SIZE);
-        log.info(counter);
     }
 
     protected void cacheRemove(RowId rowId) {
@@ -369,6 +324,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     @Override
     public void clearCache() {
         cache.clear();
+        cacheSize.clear();
         localInvalidations.clear();
         rowMapper.clearCache();
     }
@@ -379,6 +335,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
             rowMapper.rollback(xid);
         } finally {
             cache.clear();
+            cacheSize.clear();
             localInvalidations.clear();
         }
     }
@@ -411,21 +368,19 @@ public class SoftRefCachingRowMapper implements RowMapper {
             }
         }
         if (!todo.isEmpty()) {
-            Split split = null;
-            if (cacheStatistics) {
-                Stopwatch stopWatch = SimonManager.getStopwatch(SW_SOR);
-                split = stopWatch.start();
-            }
-            // ask missing ones to underlying row mapper
-            List<? extends RowId> fetched = rowMapper.read(todo, cacheOnly);
-            // add them to the cache
-            for (RowId rowId : fetched) {
-                cachePutAbsentIfRowId(rowId);
-            }
-            // merge results
-            res.addAll(fetched);
-            if (split != null) {
-                split.stop();
+            final TimerContext context = sorGetTimer.time();
+            try {
+                // ask missing ones to underlying row mapper
+                List<? extends RowId> fetched = rowMapper.read(todo, cacheOnly);
+                // add them to the cache
+                for (RowId rowId : fetched) {
+                    cachePutAbsentIfRowId(rowId);
+                }
+                // merge results
+                res.addAll(fetched);
+                sorRows.inc(fetched.size());
+            } finally {
+                context.stop();
             }
         }
         return res;

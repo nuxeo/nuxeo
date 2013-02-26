@@ -110,6 +110,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+
 /**
  * Abstract implementation of the client interface.
  * <p>
@@ -148,6 +151,17 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     private Boolean limitedResults;
 
     private Long maxResults;
+
+    // @since 5.7
+    protected final static Counter createDocumentCount = Metrics.newCounter(
+            AbstractSession.class, "create-document");
+
+    protected final static Counter deleteDocumentCount = Metrics.newCounter(
+            AbstractSession.class, "delete-document");
+
+    protected final static Counter updateDocumentCount = Metrics.newCounter(
+            AbstractSession.class, "update-document");
+
 
     public static class QueryAndFetchExecuteContextException extends ClientRuntimeException {
 
@@ -899,6 +913,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     null, null, true, false);
             docModel = writeModel(doc, docModel);
 
+            createDocumentCount.inc();
             return docModel;
         } catch (DocumentException e) {
             throw new ClientException("Failed to create document: "
@@ -1768,6 +1783,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throw new ClientException("Failed to remove document "
                     + doc.getUUID(), e);
         }
+        deleteDocumentCount.inc();
     }
 
     protected void removeNotifyOneDoc(Document doc) throws ClientException,
@@ -1967,7 +1983,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
             notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options,
                     null, null, true, false);
-
+            updateDocumentCount.inc();
             return docModel;
         } catch (DocumentException e) {
             throw new ClientException("Failed to save document " + docModel, e);

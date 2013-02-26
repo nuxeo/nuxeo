@@ -18,11 +18,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.map.ReferenceMap;
-import org.javasimon.Counter;
-import org.javasimon.SimonManager;
 import org.nuxeo.ecm.core.storage.StorageException;
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Gauge;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
 
 /**
  * A {@link SelectionContext} holds information for a set {@link Selection}
@@ -53,18 +57,14 @@ public class SelectionContext {
      */
     private final Set<Serializable> modifiedInTransaction;
 
-    // cache statistics
-    private static final String CN_ACCESS = "org.nuxeo.ecm.core.storage.sql.selection.cache.access";
+    // @since 5.7
+    private final Counter cacheHitCount = Metrics.newCounter(
+            SelectionContext.class, "sel-cache-hit");
 
-    private static final String CN_HITS = "org.nuxeo.ecm.core.storage.sql.selection.cache.hits";
-
-    private static final String CN_SIZE = "org.nuxeo.ecm.core.storage.sql.selection.cache.size";
-
-    private long accessCount;
-
-    private long hitsCount;
-
-    private long cacheSize;
+    // @since 5.7
+    private final Timer cacheGetTimer = Metrics.newTimer(
+            SelectionContext.class, "sel-cache-get", TimeUnit.MICROSECONDS,
+            TimeUnit.SECONDS);
 
     @SuppressWarnings("unchecked")
     public SelectionContext(SelectionType selType, Serializable criterion,
@@ -76,6 +76,14 @@ public class SelectionContext {
         softMap = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
         hardMap = new HashMap<Serializable, Selection>();
         modifiedInTransaction = new HashSet<Serializable>();
+
+        Metrics.newGauge(
+                SelectionContext.class, "sel-cache-size", new Gauge<Integer>() {
+                    @Override
+                    public Integer value() {
+                        return softMap == null ? 0: softMap.size();
+                    }
+                });
     }
 
     public int clearCaches() {
@@ -88,17 +96,24 @@ public class SelectionContext {
 
     /** Gets the proper selection cache. Creates one if missing. */
     private Selection getSelection(Serializable selId) {
-        Selection selection = softMap.get(selId);
-        updateCacheStat(selection);
-        if (selection != null) {
-            return selection;
+        final TimerContext timerContext = cacheGetTimer.time();
+        try {
+            Selection selection = softMap.get(selId);
+            if (selection != null) {
+                cacheHitCount.inc();
+                return selection;
+            }
+            selection = hardMap.get(selId);
+            if (selection != null) {
+                cacheHitCount.inc();
+                return selection;
+            }
+        } finally {
+            timerContext.stop();
         }
-        selection = hardMap.get(selId);
-        if (selection != null) {
-            return selection;
-        }
-        return new Selection(selId, selType.tableName, false, selType.filterKey,
-                context, softMap, hardMap);
+
+        return new Selection(selId, selType.tableName, false,
+                selType.filterKey, context, softMap, hardMap);
     }
 
     public boolean applicable(SimpleFragment fragment) throws StorageException {
@@ -168,7 +183,8 @@ public class SelectionContext {
     }
 
     /** Records a selection as removed. */
-    public void recordRemovedSelection(Serializable selId) throws StorageException {
+    public void recordRemovedSelection(Serializable selId)
+            throws StorageException {
         softMap.remove(selId);
         hardMap.remove(selId);
         modifiedInTransaction.add(selId);
@@ -287,28 +303,6 @@ public class SelectionContext {
                 softMap.remove(id);
                 hardMap.remove(id);
             }
-        }
-    }
-
-    private void updateCacheStat(Selection selection) {
-        if (selection != null) {
-            hitsCount++;
-        }
-        if ((++accessCount % 200) == 0) {
-            Counter accessCounter = SimonManager.getCounter(CN_ACCESS);
-            accessCounter.increase(accessCount);
-            accessCount = 0;
-            Counter hitsCounter = SimonManager.getCounter(CN_HITS);
-            hitsCounter.increase(hitsCount);
-            hitsCount = 0;
-            Counter sizeCounter = SimonManager.getCounter(CN_SIZE);
-            long delta = softMap.size() - cacheSize;
-            if (delta > 0) {
-                sizeCounter.increase(delta);
-            } else if (delta < 0) {
-                sizeCounter.decrease(-1 * delta);
-            }
-            cacheSize = softMap.size();
         }
     }
 

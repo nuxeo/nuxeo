@@ -132,6 +132,10 @@
     </dependency>
     <!-- cache stat -->
     <dependency>
+      <groupId>com.yammer.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.javasimon</groupId>
       <artifactId>javasimon-core</artifactId>
     </dependency>

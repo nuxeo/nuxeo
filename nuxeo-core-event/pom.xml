@@ -9,7 +9,7 @@
   <name>Nuxeo Core Event</name>
   <description>Core Events model and implementation</description>
   <dependencies>
-    <dependency>
+   <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
@@ -44,6 +44,10 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.yammer.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
     </dependency>
 
     <!-- only for tests -->
