@@ -84,6 +84,13 @@ public interface NuxeoDriveManager {
             Principal principal) throws ClientException;
 
     /**
+     * Checks if the given {@link DocumentModel} is a synchronization root for
+     * the given user.
+     */
+    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc)
+            throws ClientException;
+
+    /**
      * Method to be called by a CoreEvent listener monitoring documents
      * deletions to cleanup references to recently deleted documents and
      * invalidate the caches.

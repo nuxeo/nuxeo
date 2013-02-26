@@ -24,6 +24,17 @@
     <fileSystemItemFactory name="defaultSyncRootFolderItemFactory"
       enabled="false" />
 
+    <!-- User synchronization root parent factory (user workspace): order
+      before the "permissionSyncRootFactory" that has an order of 40 and before
+      the "defaultFileSystemItemFactory" that has an order of 50 -->
+    <fileSystemItemFactory name="userSyncRootParentFactory"
+      order="30"
+      class="org.nuxeo.drive.hierarchy.permission.factory.UserSyncRootParentFactory">
+      <parameters>
+        <parameter name="folderName">My Documents</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
     <!-- Synchronization root factory: order before the "defaultFileSystemItemFactory"
       that has an order of 50 -->
     <fileSystemItemFactory name="permissionSyncRootFactory"
@@ -38,18 +49,9 @@
       </parameters>
     </fileSystemItemFactory>
 
-    <!-- User synchronization root parent factory -->
-    <fileSystemItemFactory name="userSyncRootParentFactory"
-      order="100"
-      class="org.nuxeo.drive.hierarchy.permission.factory.UserSyncRootParentFactory">
-      <parameters>
-        <parameter name="folderName">My Documents</parameter>
-      </parameters>
-    </fileSystemItemFactory>
-
     <!-- Shared synchronization root parent factory -->
     <fileSystemItemFactory name="sharedSyncRootParentFactory"
-      order="110"
+      order="100"
       class="org.nuxeo.drive.hierarchy.permission.factory.SharedSyncRootParentFactory">
       <parameters>
         <parameter name="folderName">Other Documents</parameter>

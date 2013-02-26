@@ -284,6 +284,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         return syncRoots;
     }
 
+    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc)
+            throws ClientException {
+        String repoName = doc.getRepositoryName();
+        SynchronizationRoots syncRoots = getSynchronizationRoots(principal).get(
+                repoName);
+        return syncRoots.refs.contains(doc.getRef());
+    }
+
     protected Map<String, SynchronizationRoots> computeSynchronizationRoots(
             String query, Principal principal) throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();

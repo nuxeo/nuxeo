@@ -25,7 +25,6 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -47,16 +46,6 @@ public abstract class AbstractSyncRootFolderItemFactory extends
      */
     protected abstract String getParentId(DocumentModel doc)
             throws ClientException;
-
-    /*--------------------------- AbstractFileSystemItemFactory -------------*/
-    /**
-     * Force parent id using {@link #getParentId(String)}.
-     */
-    @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, getParentId(doc), includeDeleted);
-    }
 
     /**
      * No parameters by default.
@@ -128,16 +117,24 @@ public abstract class AbstractSyncRootFolderItemFactory extends
         // Check synchronization root registered for the current user
         NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = doc.getCoreSession().getPrincipal();
-        String repoName = doc.getRepositoryName();
-        SynchronizationRoots syncRoots = nuxeoDriveManager.getSynchronizationRoots(
-                principal).get(repoName);
-        if (!syncRoots.refs.contains(doc.getRef())) {
+        boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal,
+                doc);
+        if (!isSyncRoot) {
             log.debug(String.format(
                     "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
                     doc.getId(), principal.getName()));
             return false;
         }
         return true;
+    }
+
+    /**
+     * Force parent id using {@link #getParentId(String)}.
+     */
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, getParentId(doc), includeDeleted);
     }
 
 }
