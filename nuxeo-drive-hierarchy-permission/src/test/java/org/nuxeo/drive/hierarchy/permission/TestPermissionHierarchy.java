@@ -133,6 +133,10 @@ public class TestPermissionHierarchy {
             user1Folder3, user1File3, user1Folder4, user2Folder1, user2File1,
             user2Folder2, user2File2, user2Folder3, user2File3;
 
+    protected String userWorkspace1ItemId;
+
+    protected String userWorkspace1ItemPath;
+
     protected Session clientSession1;
 
     protected ObjectMapper mapper;
@@ -182,6 +186,11 @@ public class TestPermissionHierarchy {
                 session1, null);
         userWorkspace2 = userWorkspaceService.getCurrentUserPersonalWorkspace(
                 session2, null);
+
+        userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
+                + userWorkspace1.getId();
+        userWorkspace1ItemPath = "/" + TOP_LEVEL_ID + "/"
+                + userWorkspace1ItemId;
 
         // Populate user workspaces
         // user1
@@ -264,6 +273,7 @@ public class TestPermissionHierarchy {
         assertNotNull(topLevelFolder);
         assertEquals(TOP_LEVEL_ID, topLevelFolder.getId());
         assertNull(topLevelFolder.getParentId());
+        assertEquals("/" + TOP_LEVEL_ID, topLevelFolder.getPath());
         assertEquals("Nuxeo Drive", topLevelFolder.getName());
         assertTrue(topLevelFolder.isFolder());
         assertEquals("system", topLevelFolder.getCreator());
@@ -314,9 +324,9 @@ public class TestPermissionHierarchy {
         // Check "My Documents"
         UserSyncRootParentFolderItem userSyncRootParent = mapper.readValue(
                 topLevelChildren.get(0), UserSyncRootParentFolderItem.class);
-        assertEquals(USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
-                userSyncRootParent.getId());
+        assertEquals(userWorkspace1ItemId, userSyncRootParent.getId());
         assertEquals(TOP_LEVEL_ID, userSyncRootParent.getParentId());
+        assertEquals(userWorkspace1ItemPath, userSyncRootParent.getPath());
         assertEquals("My Documents", userSyncRootParent.getName());
         assertTrue(userSyncRootParent.isFolder());
         assertEquals("user1", userSyncRootParent.getCreator());
@@ -330,6 +340,8 @@ public class TestPermissionHierarchy {
                 topLevelChildren.get(1), SharedSyncRootParentFolderItem.class);
         assertEquals(SHARED_SYNC_ROOT_PARENT_ID, sharedSyncRootParent.getId());
         assertEquals(TOP_LEVEL_ID, sharedSyncRootParent.getParentId());
+        assertEquals("/" + TOP_LEVEL_ID + "/" + SHARED_SYNC_ROOT_PARENT_ID,
+                sharedSyncRootParent.getPath());
         assertEquals("Other Documents", sharedSyncRootParent.getName());
         assertTrue(sharedSyncRootParent.isFolder());
         assertEquals("system", sharedSyncRootParent.getCreator());
@@ -352,8 +364,7 @@ public class TestPermissionHierarchy {
         DocumentBackedFolderItem folderItem = mapper.readValue(
                 userSyncRoots.get(0), DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1Folder1,
-                USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
+                user1Folder1, userWorkspace1ItemId, userWorkspace1ItemPath,
                 "user1Folder1", "user1");
         Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(
                 NuxeoDriveGetChildren.ID).set("id", folderItem.getId()).execute();
@@ -365,24 +376,25 @@ public class TestPermissionHierarchy {
         DocumentBackedFileItem childFileItem = mapper.readValue(
                 folderItemChildren.get(0), DocumentBackedFileItem.class);
         checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1File1, folderItem.getId(), "user1File1.txt", "user1");
+                user1File1, folderItem.getId(), folderItem.getPath(),
+                "user1File1.txt", "user1");
         // user1Folder2
         DocumentBackedFolderItem childFolderItem = mapper.readValue(
                 folderItemChildren.get(1), DocumentBackedFolderItem.class);
         checkFolderItem(childFolderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1Folder2, folderItem.getId(), "user1Folder2", "user1");
+                user1Folder2, folderItem.getId(), folderItem.getPath(),
+                "user1Folder2", "user1");
         // user1File2
         DocumentBackedFileItem fileItem = mapper.readValue(
                 userSyncRoots.get(1), DocumentBackedFileItem.class);
         checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2,
-                USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
-                "user1File2.txt", "user1");
+                userWorkspace1ItemId, userWorkspace1ItemPath, "user1File2.txt",
+                "user1");
         // user1Folder3
         folderItem = mapper.readValue(userSyncRoots.get(2),
                 DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1Folder3,
-                USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
+                user1Folder3, userWorkspace1ItemId, userWorkspace1ItemPath,
                 "user1Folder3", "user1");
         folderItemChildrenJSON = (Blob) clientSession1.newRequest(
                 NuxeoDriveGetChildren.ID).set("id", folderItem.getId()).execute();
@@ -394,13 +406,13 @@ public class TestPermissionHierarchy {
         childFileItem = mapper.readValue(folderItemChildren.get(0),
                 DocumentBackedFileItem.class);
         checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1File3, folderItem.getId(), "user1File3.txt", "user1");
+                user1File3, folderItem.getId(), folderItem.getPath(),
+                "user1File3.txt", "user1");
         // user1Folder4
         folderItem = mapper.readValue(userSyncRoots.get(3),
                 DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1Folder4,
-                USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
+                user1Folder4, userWorkspace1ItemId, userWorkspace1ItemPath,
                 "user1Folder4", "user1");
 
         // ---------------------------------------------
@@ -421,7 +433,8 @@ public class TestPermissionHierarchy {
         DefaultSyncRootFolderItem sharedSyncRoot = sharedSyncRoots.get(0);
         checkFolderItem(sharedSyncRoot, SYNC_ROOT_ID_PREFIX,
                 session1.getDocument(user2Folder1.getRef()),
-                sharedSyncRootParent.getId(), "user2Folder1", "user2");
+                sharedSyncRootParent.getId(), sharedSyncRootParent.getPath(),
+                "user2Folder1", "user2");
         Blob sharedSyncRootChildrenJSON = (Blob) clientSession1.newRequest(
                 NuxeoDriveGetChildren.ID).set("id", sharedSyncRoot.getId()).execute();
         ArrayNode sharedSyncRootChildren = mapper.readValue(
@@ -434,19 +447,22 @@ public class TestPermissionHierarchy {
         checkFileItem(sharedSyncRootChildFileItem,
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 session1.getDocument(user2File1.getRef()),
-                sharedSyncRoot.getId(), "user2File1.txt", "user2");
+                sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
+                "user2File1.txt", "user2");
         // user2Folder2
         DocumentBackedFolderItem sharedSyncRootChildFolderItem = mapper.readValue(
                 sharedSyncRootChildren.get(1), DocumentBackedFolderItem.class);
         checkFolderItem(sharedSyncRootChildFolderItem,
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 session1.getDocument(user2Folder2.getRef()),
-                sharedSyncRoot.getId(), "user2Folder2", "user2");
+                sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
+                "user2Folder2", "user2");
         // user2Folder3
         sharedSyncRoot = sharedSyncRoots.get(1);
         checkFolderItem(sharedSyncRoot, SYNC_ROOT_ID_PREFIX,
                 session1.getDocument(user2Folder3.getRef()),
-                sharedSyncRootParent.getId(), "user2Folder3", "user2");
+                sharedSyncRootParent.getId(), sharedSyncRootParent.getPath(),
+                "user2Folder3", "user2");
         sharedSyncRootChildrenJSON = (Blob) clientSession1.newRequest(
                 NuxeoDriveGetChildren.ID).set("id", sharedSyncRoot.getId()).execute();
         sharedSyncRootChildren = mapper.readValue(
@@ -459,7 +475,8 @@ public class TestPermissionHierarchy {
         checkFileItem(sharedSyncRootChildFileItem,
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 session1.getDocument(user2File3.getRef()),
-                sharedSyncRoot.getId(), "user2File3.txt", "user2");
+                sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
+                "user2File3.txt", "user2");
 
         /**
          * <pre>
@@ -487,16 +504,15 @@ public class TestPermissionHierarchy {
         // Check "My Documents"
         // ---------------------------------------------
         Blob userSyncRootParentJSON = (Blob) clientSession1.newRequest(
-                NuxeoDriveGetFileSystemItem.ID).set("id",
-                USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId()).execute();
+                NuxeoDriveGetFileSystemItem.ID).set("id", userWorkspace1ItemId).execute();
         assertNotNull(userSyncRootParentJSON);
 
         userSyncRootParent = mapper.readValue(
                 userSyncRootParentJSON.getStream(),
                 UserSyncRootParentFolderItem.class);
-        assertEquals(USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
-                userSyncRootParent.getId());
+        assertEquals(userWorkspace1ItemId, userSyncRootParent.getId());
         assertEquals(TOP_LEVEL_ID, userSyncRootParent.getParentId());
+        assertEquals(userWorkspace1ItemPath, userSyncRootParent.getPath());
         assertEquals("My Documents", userSyncRootParent.getName());
         assertTrue(userSyncRootParent.isFolder());
         assertEquals("user1", userSyncRootParent.getCreator());
@@ -560,8 +576,8 @@ public class TestPermissionHierarchy {
         folderItem = mapper.readValue(userSyncRoots.get(0),
                 DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, SYNC_ROOT_ID_PREFIX, user1Folder3,
-                USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
-                "user1Folder3", "user1");
+                userWorkspace1ItemId, userWorkspace1ItemPath, "user1Folder3",
+                "user1");
         folderItemChildrenJSON = (Blob) clientSession1.newRequest(
                 NuxeoDriveGetChildren.ID).set("id", folderItem.getId()).execute();
         folderItemChildren = mapper.readValue(
@@ -572,13 +588,14 @@ public class TestPermissionHierarchy {
         childFileItem = mapper.readValue(folderItemChildren.get(0),
                 DocumentBackedFileItem.class);
         checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1File3, folderItem.getId(), "user1File3.txt", "user1");
+                user1File3, folderItem.getId(), folderItem.getPath(),
+                "user1File3.txt", "user1");
         // user1Folder4
         folderItem = mapper.readValue(userSyncRoots.get(1),
                 DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, SYNC_ROOT_ID_PREFIX, user1Folder4,
-                USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId(),
-                "user1Folder4", "user1");
+                userWorkspace1ItemId, userWorkspace1ItemPath, "user1Folder4",
+                "user1");
 
         /**
          * <pre>
@@ -619,7 +636,8 @@ public class TestPermissionHierarchy {
         sharedSyncRoot = sharedSyncRoots.get(0);
         checkFolderItem(sharedSyncRoot, SYNC_ROOT_ID_PREFIX,
                 session1.getDocument(user2Folder3.getRef()),
-                sharedSyncRootParent.getId(), "user2Folder3", "user2");
+                sharedSyncRootParent.getId(), sharedSyncRootParent.getPath(),
+                "user2Folder3", "user2");
         sharedSyncRootChildrenJSON = (Blob) clientSession1.newRequest(
                 NuxeoDriveGetChildren.ID).set("id", sharedSyncRoot.getId()).execute();
         sharedSyncRootChildren = mapper.readValue(
@@ -632,7 +650,8 @@ public class TestPermissionHierarchy {
         checkFileItem(sharedSyncRootChildFileItem,
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 session1.getDocument(user2File3.getRef()),
-                sharedSyncRoot.getId(), "user2File3.txt", "user2");
+                sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
+                "user2File3.txt", "user2");
 
         /**
          * <pre>
@@ -668,11 +687,13 @@ public class TestPermissionHierarchy {
     }
 
     protected void checkFileItem(FileItem fileItem, String fileItemIdPrefix,
-            DocumentModel doc, String parentId, String name, String creator)
-            throws ClientException {
+            DocumentModel doc, String parentId, String parentPath, String name,
+            String creator) throws ClientException {
 
-        assertEquals(fileItemIdPrefix + doc.getId(), fileItem.getId());
+        String expectedFileItemId = fileItemIdPrefix + doc.getId();
+        assertEquals(expectedFileItemId, fileItem.getId());
         assertEquals(parentId, fileItem.getParentId());
+        assertEquals(parentPath + "/" + expectedFileItemId, fileItem.getPath());
         assertEquals(name, fileItem.getName());
         assertFalse(fileItem.isFolder());
         assertEquals(creator, fileItem.getCreator());
@@ -686,10 +707,14 @@ public class TestPermissionHierarchy {
 
     protected void checkFolderItem(FolderItem folderItem,
             String folderItemIdPrefix, DocumentModel doc, String parentId,
-            String name, String creator) throws ClientException {
+            String parentPath, String name, String creator)
+            throws ClientException {
 
-        assertEquals(folderItemIdPrefix + doc.getId(), folderItem.getId());
+        String expectedFolderItemId = folderItemIdPrefix + doc.getId();
+        assertEquals(expectedFolderItemId, folderItem.getId());
         assertEquals(parentId, folderItem.getParentId());
+        assertEquals(parentPath + "/" + expectedFolderItemId,
+                folderItem.getPath());
         assertEquals(name, folderItem.getName());
         assertTrue(folderItem.isFolder());
         assertEquals(creator, folderItem.getCreator());
