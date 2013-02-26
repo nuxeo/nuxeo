@@ -27,13 +27,14 @@ import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Permission based implementation of the top level {@link FolderItem}.
+ * User workspace and permission based implementation of the top level
+ * {@link FolderItem}.
  * <p>
  * Implements the following tree:
  *
  * <pre>
  * Nuxeo Drive
- *  |-- My Documents (= user synchronization roots)
+ *  |-- My Documents (= user workspace if synchronized else user synchronization roots)
  *  |      |-- Folder 1
  *  |      |-- Folder 2
  *  |      |-- ...

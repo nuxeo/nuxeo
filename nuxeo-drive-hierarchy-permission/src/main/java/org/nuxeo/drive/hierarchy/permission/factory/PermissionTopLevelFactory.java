@@ -32,7 +32,8 @@ import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * Permission based implementation of the {@link TopLevelFolderItemFactory}.
+ * User workspace and permission based implementation of the
+ * {@link TopLevelFolderItemFactory}.
  *
  * @author Antoine Taillefer
  */
