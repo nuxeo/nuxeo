@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -54,6 +55,7 @@ import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
+import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
@@ -74,6 +76,10 @@ import org.nuxeo.runtime.api.Framework;
 
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
 /**
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
@@ -126,6 +132,21 @@ public class NuxeoAuthenticationFilter implements Filter {
      * Which security domain to use
      */
     protected String securityDomain = LOGIN_DOMAIN;
+
+    // @since 5.7
+    protected final Timer requestTimer = Metrics.newTimer(
+            NuxeoAuthenticationFilter.class, "request",
+            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+
+    protected final static Counter concurrentCount = Metrics.newCounter(
+            NuxeoAuthenticationFilter.class, "request-concurrent");
+
+    protected final static Counter concurrentMaxCount = Metrics.newCounter(
+            NuxeoAuthenticationFilter.class, "request-concurrent-max");
+
+    protected final static Counter loginCount = Metrics.newCounter(
+            NuxeoAuthenticationFilter.class, "logged-user");
+
 
     public void destroy() {
     }
@@ -193,6 +214,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             eventId = "loginSuccess";
             comment = userName + " successfully logged in using "
                     + userInfo.getAuthPluginName() + "Authentication";
+            loginCount.inc();
         } else {
             eventId = "loginFailed";
             comment = userName + " failed to authenticate using "
@@ -206,6 +228,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (byPassAuthenticationLog) {
             return true;
         }
+        loginCount.dec();
         String userName = userInfo.getUserName();
         if (userName == null || userName.length() == 0) {
             userName = userInfo.getToken();
@@ -336,17 +359,26 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+        final TimerContext contextTimer = requestTimer.time();
+        concurrentCount.inc();
+        if (concurrentCount.count() > concurrentMaxCount.count()) {
+            concurrentMaxCount.inc();
+        }
+        try {
+            doInitIfNeeded();
 
-        doInitIfNeeded();
+            List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
 
-        List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
-
-        if (preFilters == null) {
-            doFilterInternal(request, response, chain);
-        } else {
-            NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
-                    preFilters, chain, this);
-            chainWithPreFilters.doFilter(request, response);
+            if (preFilters == null) {
+                doFilterInternal(request, response, chain);
+            } else {
+                NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
+                        preFilters, chain, this);
+                chainWithPreFilters.doFilter(request, response);
+            }
+        } finally {
+            contextTimer.stop();
+            concurrentCount.dec();
         }
     }
 
