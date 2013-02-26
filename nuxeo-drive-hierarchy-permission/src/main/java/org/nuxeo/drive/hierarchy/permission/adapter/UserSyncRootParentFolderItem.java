@@ -93,6 +93,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                 Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
                 while (syncRootRefsIt.hasNext()) {
                     IdRef idRef = syncRootRefsIt.next();
+                    // TODO: handle DocumentSecurityException
                     DocumentModel doc = session.getDocument(idRef);
                     // Filter by creator
                     // TODO: allow filtering by dc:creator in
@@ -100,6 +101,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                     // principal)
                     if (session.getPrincipal().getName().equals(
                             doc.getPropertyValue("dc:creator"))) {
+                        // TODO: handle null FileSystemItem
                         children.add(getFileSystemItemAdapterService().getFileSystemItem(
                                 doc, getId()));
                     }
