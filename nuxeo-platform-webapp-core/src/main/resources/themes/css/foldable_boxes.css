@@ -36,8 +36,15 @@ author: lkemen@nuxeo.com
 .foldableLightBox { margin-bottom: 1.8em }
 .foldableLightBox div.folded { background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat left 5px }
 .foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat left 3px }
-.foldableLightBox div.folded a, .foldableLightBox div.unfolded a { color: "gray.dark (__FLAVOR__ color)"; float: left }
-.foldableLightBox div.folded, .foldableLightBox div.unfolded {
+.foldableLightBox div.folded a,
+.foldableLightBox div.unfolded a {
+  color: "gray.dark (__FLAVOR__ color)";
+  float: left;
+  font-size: 1em;
+  margin: 0;
+  padding: 0 .4em }
+.foldableLightBox div.folded,
+.foldableLightBox div.unfolded {
   border-width: 1px; border-style: none none solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "gray.dark (__FLAVOR__ color)";
