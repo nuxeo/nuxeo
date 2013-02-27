@@ -147,10 +147,8 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
             if (path != null) {
                 // add leading slash to make it absolute if it's not the root
                 path = "/" + URIUtils.unquoteURIPathComponent(path);
-            } else {
-                path = "/";
             }
-            final DocumentRef docRef = new PathRef(path);
+            final DocumentRef docRef = path != null ? new PathRef(path) : null;
             final String viewId = m.group(3);
 
             // get other parameters
