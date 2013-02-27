@@ -41,18 +41,24 @@
 
   <h:form id="set_quota_userworkspace_form">
 
-   <h:outputText value="#{messages['adm.quota.set.personalworkspace']}"/>
- 
-   <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}" 
-   onchange="changeUnlimited()">
-   <f:selectItem
-     itemLabel="#{messages['label.forum.thread.moderated.yes']}"
-     itemValue="#{true}"/>
-   <f:selectItem
-     itemLabel="#{messages['label.forum.thread.moderated.no']}"
-     itemValue="#{false}"/>
-   </h:selectOneRadio>
- 
+   <table class="dataInput fullWidth">
+     <tr>
+      <td class="labelColumn">
+       <h:outputText value="#{messages['adm.quota.set.personalworkspace']}"/>
+     </td>	
+    <td>
+     <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}" 
+     onchange="changeUnlimited()">
+     <f:selectItem
+      itemLabel="#{messages['label.forum.thread.moderated.yes']}"
+      itemValue="#{true}"/>
+     <f:selectItem
+      itemLabel="#{messages['label.forum.thread.moderated.no']}"
+      itemValue="#{false}"/>
+     </h:selectOneRadio>
+   </td>
+   </tr>
+   </table>
    <nxu:set var="canEditQuota" cache="true" value="#{webActions.checkFilter('editQuota')}">
    <div id="sliderTable">
      <nxl:layout mode="#{nxu:test(canEditQuota, 'edit', 'view')}" name="edit_userworkspaces_quota" value="#{quotaStatsActions}" />
@@ -70,7 +76,7 @@
   </h:form>
  <h:messages/>
  </a4j:outputPanel>
- <h:outputText value="#{messages['status.quota.initialComputationInProgress']}" rendered="#{quotaStatsActions.workQueuesInProgess()}"/>
+ <h:outputText value="#{messages['status.quota.initialComputationInProgress']}" rendered="#{quotaStatsActions.workQueuesInProgess()}" class="processMessage running"/>
 </a4j:region>
 
 </div>

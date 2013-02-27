@@ -164,7 +164,7 @@
             /widgets/quota_selectMax_widget_template.xhtml
           </property>
         </properties>
-        <handlingLabels>true</handlingLabels>
+        <handlingLabels>false</handlingLabels>
       </widget>
       
       <widget name="listing_quota_title" type="listing_title_link">
