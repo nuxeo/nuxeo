@@ -21,17 +21,8 @@
         var="clickedActionId">
 
         <a4j:outputPanel id="#{widget.id}_panel">
-          <a4j:region id="#{widget.id}_region">
 
             <div class="#{widgetProperty_subStyleClass}">
-
-              <div>
-                <a4j:status>
-                  <f:facet name="start">
-                    <h:graphicImage value="/img/standart_waiter.gif" />
-                  </f:facet>
-                </a4j:status>
-              </div>
 
               <c:choose>
                 <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
@@ -150,7 +141,8 @@
 
             </div>
 
-          </a4j:region>
+            <div class="clear" />
+
         </a4j:outputPanel>
 
         <c:forEach var="action" items="#{widgetProperty_actions}">

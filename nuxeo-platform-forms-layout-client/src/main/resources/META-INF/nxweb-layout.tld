@@ -78,6 +78,10 @@
           considered as 'view' (old default mode), e.g. non-null mode, and none of
           edit, pdf, plain modes. Available since 5.4.2.
         </li>
+        <li>
+          joinReRender(String, String): joins two strings to generate a valid
+          reRender attribute for ajax components. Available since 5.7.
+        </li>
       </ul>
     </p>
     ]]>

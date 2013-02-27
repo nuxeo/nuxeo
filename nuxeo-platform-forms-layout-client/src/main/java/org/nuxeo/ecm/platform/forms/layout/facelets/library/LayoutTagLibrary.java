@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.faces.FacesException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
@@ -142,6 +143,14 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             log.error(e, e);
         }
 
+        try {
+            Method joinReRender = LayoutTagLibrary.class.getMethod(
+                    "joinReRender", new Class[] { String.class, String.class });
+            addFunction("joinReRender", joinReRender);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
     }
 
     // JSF functions
@@ -182,6 +191,25 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             boolean showAlwaysSelected) {
         return LayoutFunctions.getDefaultSelectedRowNames(layout,
                 showAlwaysSelected);
+    }
+
+    /**
+     * Joins two strings to get a valid reRender attribute for ajax components.
+     *
+     * @since 5.7
+     */
+    public static String joinReRender(String reRender1, String reRender2) {
+        String res = StringUtils.join(new String[] { reRender1, reRender2 },
+                ",");
+        res = res.replaceAll(" ", "");
+        res = res.replaceAll("(,)\\1+", "$1");
+        if (res.startsWith(",")) {
+            res = res.substring(1);
+        }
+        if (res.endsWith(",")) {
+            res = res.substring(0, res.length() - 1);
+        }
+        return res;
     }
 
 }

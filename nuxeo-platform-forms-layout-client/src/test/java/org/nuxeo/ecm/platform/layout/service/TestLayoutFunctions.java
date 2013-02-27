@@ -111,4 +111,15 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
         assertEquals("subjects", notSelectedRows.get(1).getName());
         assertEquals("rights", notSelectedRows.get(2).getName());
     }
+
+    @Test
+    public void testJoinReRender() {
+        assertEquals("", LayoutTagLibrary.joinReRender(null, null));
+        assertEquals("", LayoutTagLibrary.joinReRender(null, ""));
+        assertEquals("", LayoutTagLibrary.joinReRender(" ", ",, "));
+        assertEquals("foo", LayoutTagLibrary.joinReRender("foo ,", " ,,"));
+        assertEquals("foo,bar", LayoutTagLibrary.joinReRender("foo", "bar"));
+        assertEquals("foo,bar,baz",
+                LayoutTagLibrary.joinReRender(", foo", "bar,,, baz,"));
+    }
 }

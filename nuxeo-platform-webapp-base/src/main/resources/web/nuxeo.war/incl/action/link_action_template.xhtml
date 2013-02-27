@@ -5,11 +5,15 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<nxu:set var="elementsToReRender"
-  value="#{ajaxReRender},#{action.properties.reRender}"
+<nxu:set var="actionReRender"
+  value="#{action.properties.ajaxReRender}"
   resolveTwice="true" cache="true">
+<nxu:set var="elementsToReRender"
+  value="#{nxl:joinReRender(ajaxReRender, actionReRender)}"
+  cache="true">
 <nxu:set var="onclick"
   value="if (!confirm#{idPrefix}#{action.id}Message()) return false;#{action.confirm};#{action.properties.onclick};"
   cache="true">
@@ -35,7 +39,7 @@
     <a4j:commandButton
       id="#{idPrefix}#{action.id}"
       onclick="#{onclick}"
-      immediate="#{action.immediate}"
+      ajaxSingle="#{action.immediate}"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
       reRender="#{elementsToReRender}"
@@ -49,6 +53,7 @@
         value="#{action.getLink()}" />
       <ui:insert name="after_action_trigger" />
     </a4j:commandButton>
+
   </c:if>
 
 </c:if>
@@ -72,7 +77,7 @@
     <a4j:commandLink
       id="#{idPrefix}#{action.id}"
       onclick="#{onclick}"
-      immediate="#{action.immediate}"
+      ajaxSingle="#{action.immediate}"
       disabled="#{!action.available}"
       reRender="#{elementsToReRender}"
       eventsQueue="#{eventsQueueId}"
@@ -87,6 +92,7 @@
 
 </c:if>
 
+</nxu:set>
 </nxu:set>
 </nxu:set>
 

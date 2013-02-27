@@ -1,6 +1,7 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
+<c:if test="true" xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
@@ -8,7 +9,7 @@
   <c:if test="#{not empty widgetProperty_action}">
 
     <a4j:outputPanel id="#{widget.id}_panel">
-      <a4j:region id="#{widget.id}_region">
+
         <nxu:set var="action" value="#{widgetProperty_action}"
           cache="true">
         <nxu:set var="idPrefix" value="#{widget.id}_"
@@ -25,33 +26,25 @@
               <ui:param name="formStyleClass" value="subWidgetForm" />
               <ui:define name="form_template_content">
 
-                <div>
-                  <a4j:status>
-                    <f:facet name="start">
-                      <h:graphicImage value="/img/standart_waiter.gif" />
-                    </f:facet>
-                  </a4j:status>
-                </div>
-
-                <div class="widgetPanel actionsWidgetPanel #{widgetProperty_styleClass}">
+                <span class="widgetPanel actionsWidgetPanel #{widgetProperty_styleClass}">
                   <ui:decorate template="/incl/action/action_template.xhtml">
                     <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                     <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
                   </ui:decorate>
-                </div>
+                </span>
 
               </ui:define>
             </ui:decorate>
 
-            <ui:include src="/incl/action/action_template.xhtml" />
+            <ui:include src="/incl/action/generic_after_action_template.xhtml" />
 
           </nxu:valueHolder>
         </nxu:set>
         </nxu:set>
+        </nxu:set>
 
-      </a4j:region>
     </a4j:outputPanel>
 
   </c:if>
 
-</div>
+</c:if>
