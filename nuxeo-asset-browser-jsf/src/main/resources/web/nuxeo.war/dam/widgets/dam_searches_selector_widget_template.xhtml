@@ -7,7 +7,7 @@
 
   <nxu:set var="displaySelector"
     value="#{damSearchActions.contentViewNames.size > 1}">
-    <c:if test="${displaySelector}">
+    <c:if test="#{displaySelector}">
 
       <a4j:region id="#{widget.id}_region">
         <h:selectOneMenu
@@ -15,7 +15,7 @@
           id="#{widget.id}" styleClass="langSelect">
           <a4j:support event="onchange"
             actionListener="#{damSearchActions.refreshAndRewind()}"
-            reRender="nxw_damSearchForm_2_panel,nxw_damSearchResults_2_panel,nxw_damAssetView_2_panel"
+            reRender="#{wigetProperty_ajaxReRender}"
             eventsQueue="damSearchQueue" />
           <c:forEach var="contentViewHeader"
             items="#{damSearchActions.contentViewHeaders}"

@@ -121,7 +121,12 @@
     <!-- Search -->
     <widget name="damSearchesSelector" type="template">
       <properties widgetMode="any">
-        <property name="template">/dam/widgets/dam_searches_selector_widget_template.xhtml</property>
+        <property name="template">
+          /dam/widgets/dam_searches_selector_widget_template.xhtml
+        </property>
+        <property name="ajaxReRender">
+          damPanelLeft, damPanelCenter, damPanelRight
+        </property>
       </properties>
     </widget>
 
