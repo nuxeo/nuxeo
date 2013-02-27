@@ -104,7 +104,7 @@ public abstract class AbstractFileSystemItemFactory implements
         try {
             parseFileSystemId(id);
         } catch (ClientException e) {
-            log.debug(e.getMessage());
+            log.trace(e.getMessage());
             return false;
         }
         return true;
@@ -159,7 +159,7 @@ public abstract class AbstractFileSystemItemFactory implements
 
         // If the doc is not adaptable as a FileSystemItem return null
         if (!isFileSystemItem(doc, includeDeleted)) {
-            log.debug(String.format(
+            log.trace(String.format(
                     "Document %s cannot be adapted as a FileSystemItem => returning null.",
                     doc.getId()));
             return null;
