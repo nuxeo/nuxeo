@@ -3,6 +3,7 @@ syntax:glob
 .metadata
 .project
 .settings
+.DS_Store
 bin
 target
 *~
