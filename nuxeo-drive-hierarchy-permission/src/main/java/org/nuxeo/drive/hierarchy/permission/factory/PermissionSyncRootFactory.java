@@ -20,6 +20,8 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
@@ -27,6 +29,7 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.AbstractSyncRootFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -39,6 +42,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PermissionSyncRootFactory extends
         AbstractSyncRootFolderItemFactory {
+
+    private static final Log log = LogFactory.getLog(PermissionSyncRootFactory.class);
 
     protected static final String REQUIRED_PERMISSION_PARAM = "requiredPermission";
 
@@ -100,8 +105,16 @@ public class PermissionSyncRootFactory extends
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
             throws ClientException {
         // Check required permission
-        boolean hasRequiredPermission = doc.getCoreSession().hasPermission(
-                doc.getRef(), requiredPermission);
+        CoreSession session = doc.getCoreSession();
+        boolean hasRequiredPermission = session.hasPermission(doc.getRef(),
+                requiredPermission);
+        if (!hasRequiredPermission) {
+            log.debug(String.format(
+                    "Required permission %s is not granted on document %s to user %s, it cannot be adapted as a FileSystemItem.",
+                    requiredPermission, doc.getId(),
+                    session.getPrincipal().getName()));
+            return false;
+        }
         return super.isFileSystemItem(doc, includeDeleted)
                 && hasRequiredPermission;
     }
