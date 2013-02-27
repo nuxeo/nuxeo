@@ -71,7 +71,9 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
             VirtualFolderItemFactory factory = getFileSystemItemAdapterService().getVirtualFolderItemFactory(
                     childFactoryName);
             FileSystemItem child = factory.getVirtualFolderItem(principal);
-            children.add(child);
+            if (child != null) {
+                children.add(child);
+            }
         }
         return children;
     }
