@@ -3,7 +3,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  id="#{widget.id}">
+  id="#{widget.id}" class="detail">
 
   <c:if test="#{currentQuotaDoc!=null}">
   
@@ -16,11 +16,12 @@
      <h:outputText value=" #{messages[formatedSize.unit]} "/>
      
      <c:if test="#{maxFormatedSize.value > 0}">
-      /<h:outputText value="#{maxFormatedSize.valueInUnit}">
+      <h:outputText value=" - "/>
+      <h:outputText value=" #{messages['label.quota.info.available']} "/> 
+      <h:outputText value="#{maxFormatedSize.valueInUnit}">
        <f:convertNumber maxFractionDigits="2" />
       </h:outputText>
       <h:outputText value=" #{messages[maxFormatedSize.unit]}"/>
-      <h:outputText value=" #{messages['label.quota.info.available']} "/>
      </c:if>
    </nxu:set>
   </nxu:set>

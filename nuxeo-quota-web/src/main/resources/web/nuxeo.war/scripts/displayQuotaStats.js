@@ -10,7 +10,7 @@ function invokeGetQuotaStatistics(currentDocId, currentLang) {
      function(data, status, xhr) {
 		jQuery.plot(jQuery("#quota_stats"), data, {series: {pie: {show: true,label: {show: false}}}});
 	}, function(xhr, status, errorMessage) {
-		jQuery('<div>Can not display quota</div>').appendTo('#quota_stats');
+		jQuery('<div>Can not display statistics. Please run initial computation from Admin Center/Quota</div>').appendTo('#quota_stats');
 	}, true);
 };
 

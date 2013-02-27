@@ -515,8 +515,14 @@
       <rows>
         <row>
           <widget>quota_statsistics_graph</widget>
+          <properties mode="any">
+           <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties> 
         </row>
-        <row>  
+        <row>
+          <properties mode="any">
+           <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>  
           <widget>quota_heaviest_folders_container</widget>
         </row>
       </rows>
