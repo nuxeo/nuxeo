@@ -26,6 +26,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
 
 /**
  * Handles Bulk Edit actions.
@@ -68,30 +70,32 @@ public class BulkEditActions implements Serializable {
      * {@code edit} mode.
      */
     public List<String> getCommonsLayouts() {
-        if (documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
+        if (documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return Collections.emptyList();
         }
 
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
         return BulkEditHelper.getCommonLayouts(typeManager, selectedDocuments);
     }
 
     /**
      * Returns the common schemas for the current selected documents.
+     * @deprecated not yet used since 5.7
      */
     protected List<String> getCommonSchemas() {
-        if (documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
+        if (documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return Collections.emptyList();
         }
 
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
         return BulkEditHelper.getCommonSchemas(selectedDocuments);
     }
 
     @Factory(value = "bulkEditDocumentModel", scope = ScopeType.EVENT)
     public DocumentModel getBulkEditDocumentModel() {
         if (fictiveDocumentModel == null) {
-            fictiveDocumentModel = new SimpleDocumentModel(getCommonSchemas());
+            //fictiveDocumentModel = new SimpleDocumentModel(getCommonSchemas());
+            fictiveDocumentModel = new SimpleDocumentModel();
         }
         return fictiveDocumentModel;
     }
@@ -103,13 +107,15 @@ public class BulkEditActions implements Serializable {
 
     public void bulkEditSelectionNoRedirect() throws ClientException {
         if (fictiveDocumentModel != null) {
-            List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+            List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
             BulkEditHelper.copyMetadata(documentManager, fictiveDocumentModel,
                     selectedDocuments);
+
             fictiveDocumentModel = null;
         }
     }
 
+    @Observer(CURRENT_DOCUMENT_SELECTION + "Updated")
     public void cancel() {
         fictiveDocumentModel = null;
     }
