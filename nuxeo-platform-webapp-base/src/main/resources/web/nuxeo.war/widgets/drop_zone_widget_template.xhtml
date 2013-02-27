@@ -32,7 +32,12 @@
 
     <c:if test="#{cannotDrop}">
       <div class="#{widgetProperty_styleClass}">
-        <h:outputText value="#{messages[widgetProperty_cannotDropMessage]}" />
+        <c:if test="#{not isEmpty}">
+          <nxl:subWidget>
+            <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+          </nxl:subWidget>
+        </c:if>
+        <c:if test="#{isEmpty}"><h:outputText value="#{messages[widgetProperty_cannotDropMessage]}" /></c:if>
       </div>
     </c:if>
     <c:if test="#{not cannotDrop}">
