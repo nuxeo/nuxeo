@@ -1457,6 +1457,9 @@
                   <widget>useAjaxPagination</widget>
                 </row>
                 <row>
+                  <widget>ajaxReRender</widget>
+                </row>
+                <row>
                   <widget>hideTopPaginationControls</widget>
                 </row>
                 <row>
@@ -1567,6 +1570,21 @@
                 </helpLabels>
                 <fields>
                   <field>useAjaxPagination</field>
+                </fields>
+              </widget>
+              <widget name="ajaxReRender" type="text">
+                <labels>
+                  <label mode="any">Ajax reRender</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given ajax reRender ids will be added to the zones to
+                    reRender on some actions (page navigation, result layout
+                    selection, selection actions...). Available since 5.7.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>ajaxReRender</field>
                 </fields>
               </widget>
               <widget name="hideTopPaginationControls" type="checkbox">

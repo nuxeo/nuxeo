@@ -57,6 +57,8 @@
     optional
   - resultLayoutTemplate: layout template to use for results, optional,
     available since 5.6
+  - ajaxReRender: ids of components that should be re-rendered on ajax actions,
+    optional, available since 5.7
 
   Templating zones that can be replaced using facelets tag ui:define:
   - content_view_title
@@ -93,6 +95,9 @@
   cache="true">
 <nxu:set var="contentViewRenderId"
   value="#{nxu:jsfTagIdEscape(contentViewRenderId)}"
+  cache="true">
+<nxu:set var="resultsPanelId"
+  value="#{contentViewRenderId}_resultsPanel"
   cache="true">
 
 <a4j:region id="#{contentViewRenderId}_region">
@@ -166,7 +171,7 @@
           <ui:insert name="content_view_selector">
             <ui:include src="/incl/content_view_result_layout_selector.xhtml">
               <ui:param name="contentIdToBeReRendered"
-                value="#{contentViewRenderId}_resultsPanel" />
+                value="#{nxl:joinReRender(resultsPanelId, ajaxReRender)}" />
             </ui:include>
             <div style="clear:both;" />
           </ui:insert>
@@ -178,7 +183,7 @@
             </c:if>
           </ui:insert>
 
-          <a4j:outputPanel id="#{contentViewRenderId}_resultsPanel">
+          <a4j:outputPanel id="#{resultsPanelId}">
             <script>
               jQuery(document).ready(function() {
                 initNXDrapAndDropOnPage(jQuery('##{contentViewRenderId}_panel'));
@@ -193,7 +198,7 @@
               <ui:param name="layoutTemplate"
                 value="#{resultLayoutTemplate}" />
               <ui:param name="contentIdToBeReRendered"
-                value="#{contentViewRenderId}_resultsPanel" />
+                value="#{nxl:joinReRender(resultsPanelId, ajaxReRender)}" />
 
               <ui:define name="empty_folder_label">
                 <ui:insert name="empty_content_view_label">
@@ -292,6 +297,7 @@
 
 </a4j:outputPanel>
 </a4j:region>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </c:if>
