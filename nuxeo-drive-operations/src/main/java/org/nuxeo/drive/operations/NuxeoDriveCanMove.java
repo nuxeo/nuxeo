@@ -52,8 +52,8 @@ public class NuxeoDriveCanMove {
     public Blob run() throws Exception {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        String canMove = String.valueOf(fileSystemItemManager.canMove(srcId,
-                destId, ctx.getPrincipal()));
+        boolean canMove = fileSystemItemManager.canMove(srcId,
+                destId, ctx.getPrincipal());
         return NuxeoDriveOperationHelper.asJSONBlob(canMove);
     }
 
