@@ -10,6 +10,28 @@
       <category>MAIN_TABS</category>
     </action>
 
+    <action id="damClearSearch" link="#{damSearchActions.clearSearch()}"
+      label="command.faceted.search.clear" order="10" immediate="true">
+      <category>DAM_SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          damPanelLeft, damPanelCenter, damPanelRight
+        </property>
+      </properties>
+    </action>
+
+    <action id="damSubmitSearch" link="#{damSearchActions.refreshAndRewind()}"
+      label="command.faceted.search.go" order="20">
+      <category>DAM_SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          damPanelCenter, damPanelRight
+        </property>
+      </properties>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

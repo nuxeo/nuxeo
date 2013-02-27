@@ -39,7 +39,8 @@
         <title>No Document selected</title>
         <description>
           <p>
-            This widget type displays a placeholder when no document is selected.
+            This widget type displays a placeholder when no document is
+            selected.
           </p>
         </description>
       </configuration>
@@ -130,9 +131,38 @@
       </properties>
     </widget>
 
-    <widget name="damSearchActions" type="template">
+    <widget name="damSearchActions" type="container">
+      <subWidgetRefs>
+        <widget>damClearSearch</widget>
+        <widget>damSubmitSearch</widget>
+        <widget>damSearchCSSClear</widget>
+      </subWidgetRefs>
       <properties widgetMode="any">
-        <property name="template">/dam/widgets/dam_search_actions_widget_template.xhtml</property>
+        <property name="display">inline</property>
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">facetedSearchActionBar</property>
+      </properties>
+    </widget>
+
+    <widget name="damClearSearch" type="currentDocumentAction">
+      <properties widgetMode="any">
+        <property name="actionId">damClearSearch</property>
+        <property name="useAjaxForm">true</property>
+        <property name="actionsDisplay">links</property>
+      </properties>
+    </widget>
+
+    <widget name="damSubmitSearch" type="currentDocumentAction">
+      <properties widgetMode="any">
+        <property name="actionId">damSubmitSearch</property>
+        <property name="useAjaxForm">true</property>
+        <property name="actionsDisplay">buttons</property>
+      </properties>
+    </widget>
+
+    <widget name="damSearchCSSClear" type="container">
+      <properties widgetMode="any">
+        <property name="styleClass">clear</property>
       </properties>
     </widget>
 
@@ -164,7 +194,10 @@
       </subWidgets>
       <properties widgetMode="any">
         <property name="dropContext">DAM_IMPORT</property>
-        <property name="cannotDrop">#{not webActions.checkFilter('canCreateInAssetLibrary')}</property>
+        <property name="cannotDrop">
+          #{not
+          webActions.checkFilter('canCreateInAssetLibrary')}
+        </property>
       </properties>
     </widget>
 
@@ -182,7 +215,6 @@
         <property name="styleClass">globalActionBar</property>
         <property name="subStyleClass">contextActions</property>
         <property name="overallDisplay">horizontal_block</property>
-        <property name="actionStyleClass">button</property>
         <property name="actionsDisplay">icons</property>
         <property name="useAjaxForm">true</property>
         <property name="ignoreTemplateProperty">true</property>
@@ -412,7 +444,8 @@
       </properties>
     </action>
 
-    <action id="damNewAsset" order="100" label="label.dam.new.asset" type="fancybox">
+    <action id="damNewAsset" order="100" label="label.dam.new.asset"
+      type="fancybox">
       <category>DAM_SEARCH_RESULTS_ACTIONS</category>
       <properties>
         <property name="include">/dam/incl/new_asset_box.xhtml</property>
@@ -425,6 +458,14 @@
       <properties>
         <property name="widgetName">damContentView</property>
       </properties>
+    </action>
+
+    <action id="damAssetViewActions" type="widget" order="100">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewActions</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
     </action>
 
     <action id="damAssetViewActions" type="widget" order="100">
@@ -553,7 +594,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <!-- Asset view actions-->
+    <!-- Asset view actions -->
     <action id="showFancyBoxPreview">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>

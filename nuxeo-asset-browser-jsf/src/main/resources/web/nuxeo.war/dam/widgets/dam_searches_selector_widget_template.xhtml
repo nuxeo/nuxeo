@@ -9,21 +9,23 @@
     value="#{damSearchActions.contentViewNames.size > 1}">
     <c:if test="${displaySelector}">
 
-      <h:selectOneMenu
-        value="#{damSearchActions.currentContentViewName}"
-        id="damSearchSelector" styleClass="langSelect">
-        <a4j:support event="onchange"
-          actionListener="#{damSearchActions.refreshAndRewind()}"
-          reRender="nxw_damSearchForm_2_panel,nxw_damSearchResults_2_panel,nxw_damAssetView_2_panel"
-          eventsQueue="damSearchQueue" />
-        <c:forEach var="contentViewHeader"
-          items="#{damSearchActions.contentViewHeaders}"
-          varStatus="contentViewListStatus">
-          <f:selectItem itemValue="#{contentViewHeader.name}"
-            itemLabel="#{nxu:test(contentViewHeader.translateTitle,
-            messages[contentViewHeader.title], contentViewHeader.title)}" />
-        </c:forEach>
-      </h:selectOneMenu>
+      <a4j:region id="#{widget.id}_region">
+        <h:selectOneMenu
+          value="#{damSearchActions.currentContentViewName}"
+          id="#{widget.id}" styleClass="langSelect">
+          <a4j:support event="onchange"
+            actionListener="#{damSearchActions.refreshAndRewind()}"
+            reRender="nxw_damSearchForm_2_panel,nxw_damSearchResults_2_panel,nxw_damAssetView_2_panel"
+            eventsQueue="damSearchQueue" />
+          <c:forEach var="contentViewHeader"
+            items="#{damSearchActions.contentViewHeaders}"
+            varStatus="contentViewListStatus">
+            <f:selectItem itemValue="#{contentViewHeader.name}"
+              itemLabel="#{nxu:test(contentViewHeader.translateTitle,
+              messages[contentViewHeader.title], contentViewHeader.title)}" />
+          </c:forEach>
+        </h:selectOneMenu>
+      </a4j:region>
 
     </c:if>
   </nxu:set>
