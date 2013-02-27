@@ -8,13 +8,13 @@
   xmlns:f="http://java.sun.com/jsf/core"
   id="#{widget.id}">
 
-<c:if test="#{widget.mode == 'edit'}">
+<nxu:set var="rangeMinSize" value="#{nxu:test(empty widgetProperty_rangeMinSize, quotaStatsActions.getMinQuotaSliderValue(), widgetProperty_rangeMinSize)}" cache="true">
 <script>
 jQuery.noConflict();
 
 <h:outputText  value="var currentSliderValue_min='#{field_0}';" />
 <h:outputText  value="var currentSliderValue_max='#{field_1}';" />
-<h:outputText  value="var minQuotaSliderValue='#{quotaStatsActions.getMinQuotaSliderValue()}';" />
+<h:outputText  value="var minQuotaSliderValue='#{rangeMinSize}';" />
 <h:outputText  value="var maxQuotaSliderValue='#{quotaStatsActions.getMaxQuotaSliderValue()}';" />
 
  var GB_label = "#{messages['label.unit.GB']}";
@@ -36,14 +36,14 @@ jQuery.noConflict();
 
  function getCurrentSliderValueMin(){
   if(Number(currentSliderValue_min) == 0){
-  	return minQuotaSliderValue;
+  	return logposition(minQuotaSliderValue);
   }
   return logposition(currentSliderValue_min);
   }
  
  function getCurrentSliderValueMax(){
   if(Number(currentSliderValue_max) == 0){
-  	return maxQuotaSliderValue;
+  	return logposition(maxQuotaSliderValue);
   }
   return logposition(currentSliderValue_max);
   }
@@ -61,7 +61,7 @@ jQuery.noConflict();
       label = Math.round(value/gb) + " " + GB_label;
     } else if (value > mb) {
       label = Math.round(value/mb) + " " + MB_label;
-    } else if (value > kb) {
+    } else if (value >=1000) {
       label = Math.round(value/kb) + " " + KB_label;
     } else {
      label = value + " " + B_label;
@@ -107,7 +107,5 @@ jQuery.noConflict();
 </table>
  <h:inputText id="maxTotal" value="#{field_1}" style="visibility:hidden"/>
  <h:inputText id="minTotal" value="#{field_0}" style="visibility:hidden"/>
-</c:if>
-<c:if test="#{widget.mode == 'view'}">
-</c:if>
+</nxu:set>
 </div>
