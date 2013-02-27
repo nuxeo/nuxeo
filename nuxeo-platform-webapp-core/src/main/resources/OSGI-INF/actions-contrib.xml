@@ -8,6 +8,9 @@
     <action id="documents" link="view_documents" label="label.main.tab.documents"
       order="40">
       <category>MAIN_TABS</category>
+      <properties>
+        <property name="requireDocument">true</property>
+      </properties>
     </action>
 
     <action id="non_anonymous_logout" link="logout" label="command.logout"

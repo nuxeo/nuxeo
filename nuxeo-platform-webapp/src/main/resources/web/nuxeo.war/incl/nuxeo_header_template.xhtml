@@ -15,7 +15,7 @@
       </div>
     </c:if>
 <!--[if lt IE 9]>
-    <script type="text/javascript" 
+    <script type="text/javascript"
     src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
 
     <div id="gcfdiv" class="actionHide" style="display:none; text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;">
@@ -95,17 +95,31 @@
       <ui:insert name="header_main_tabs">
       <div class="mainTabs">
         <ul>
-          <nxu:dataList var="mainTab" value="#{webActions.getActionsList('MAIN_TABS')}">
+          <c:forEach var="mainTab" items="#{webActions.getActionsList('MAIN_TABS')}">
             <li class="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
-              <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
-                view="#{mainTabsActions.getViewFor(mainTab)}"
-                pattern="#{mainTabsActions.getPatternFor(mainTab)}"
-                addTabInfo="false"
-                tabs="MAIN_TABS:#{mainTab.id}">
-                <h:outputText value="#{messages[mainTab.label]}" />
-              </nxd:restDocumentLink>
+              <nxu:set var="requireDocument" value="#{mainTab.properties.requireDocument}">
+                <c:if test="#{not empty requireDocument}">
+                  <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
+                    view="#{mainTabsActions.getViewFor(mainTab)}"
+                    pattern="#{mainTabsActions.getPatternFor(mainTab)}"
+                    addTabInfo="false"
+                    tabs="MAIN_TABS:#{mainTab.id}">
+                    <h:outputText value="#{messages[mainTab.label]}" />
+                  </nxd:restDocumentLink>
+                </c:if>
+                <c:if test="#{empty requireDocument}">
+                  <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
+                    repositoryName="#{navigationContext.currentServerLocation.name}"
+                    view="#{mainTabsActions.getViewFor(mainTab)}"
+                    pattern="#{mainTabsActions.getPatternFor(mainTab)}"
+                    addTabInfo="false"
+                    tabs="MAIN_TABS:#{mainTab.id}">
+                    <h:outputText value="#{messages[mainTab.label]}" />
+                  </nxd:restDocumentLink>
+                </c:if>
+              </nxu:set>
             </li>
-          </nxu:dataList>
+          </c:forEach>
         </ul>
       </div>
       </ui:insert>
