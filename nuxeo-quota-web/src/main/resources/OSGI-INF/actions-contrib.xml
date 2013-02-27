@@ -39,7 +39,7 @@
     <action id="TAB_SET_QUOTA" link="/incl/tabs/document_set_quota.xhtml"
       order="300" label="action.activate.quota" icon="/icons/file.gif">
       <category>TAB_QUOTA_sub_tab</category>
-      <filter-id>only_for_manager</filter-id>
+      <filter-id>setQuota</filter-id>
     </action>
     
     <action id="TAB_QUOTA_STATS" link="/incl/tabs/document_quota_statistics.xhtml"
@@ -71,6 +71,12 @@
     <filter id="editQuota">
       <rule grant="true">
         <permission>Write</permission>
+      </rule>
+    </filter>
+    
+    <filter id="setQuota">
+      <rule grant="true">
+        <permission>Manage everything</permission>
       </rule>
     </filter>
 
