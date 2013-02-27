@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     private static String USERNAME = "userId";
-    
+
     private static HttpClient client;
 
     @BeforeClass
@@ -168,7 +168,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
                 response.getProperties(200).get(
                         DavConstants.PROPERTY_DISPLAYNAME).getValue());
     }
-    
+
     @Test
     public void testPropFindOnLockedFile() throws Exception {
         String fileUri = ROOT_URI + "quality.jpg";
@@ -176,7 +176,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
                 fileUri, Scope.EXCLUSIVE, Type.WRITE, USERNAME, 10000l, false);
         client.executeMethod(pLock);
         pLock.checkSuccess();
-        
+
         HttpClient client2 = createClient("user2Id");
         DavMethod pFind = new PropFindMethod(
                 fileUri, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
@@ -187,9 +187,9 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         assertEquals(1L, (long) responses.length);
 
         MultiStatusResponse response = responses[0];
-        DavProperty<?> pLockDiscovery =  
+        DavProperty<?> pLockDiscovery =
                 response.getProperties(200).get(DavConstants.PROPERTY_LOCKDISCOVERY);
-        Element eLockDiscovery = 
+        Element eLockDiscovery =
                 (Element) ((Element) pLockDiscovery.getValue()).getParentNode();
         LockDiscovery lockDiscovery = LockDiscovery.createFromXml(eLockDiscovery);
         assertEquals("system", lockDiscovery.getValue().get(0).getOwner());
