@@ -283,8 +283,24 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public void setPropertyValue(String xpath, Serializable value)
-            throws PropertyException, ClientException {
-        getProperty(xpath).setValue(value);
+            throws ClientException {
+        Path path = new Path(xpath);
+        String segment = path.segment(0);
+        String prefix = segment.substring(0, segment.indexOf(":"));
+
+        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
+        Schema schema = mgr.getSchemaFromPrefix(prefix);
+        if (schema == null) {
+            schema = mgr.getSchema(prefix);
+            if (schema == null) {
+                throw new PropertyNotFoundException(xpath,
+                        "Could not find registered schema with prefix: "
+                                + prefix);
+            }
+        }
+
+        String propertyName = segment.substring(segment.indexOf(":") + 1, segment.length());
+        getDataModelInternal(schema.getName()).setData(propertyName, value);
     }
 
     @Override
