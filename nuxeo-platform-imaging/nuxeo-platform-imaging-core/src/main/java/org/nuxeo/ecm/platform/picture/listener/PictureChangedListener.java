@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.picture.listener;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,9 +92,13 @@ public class PictureChangedListener implements EventListener {
 
     protected void preFillPictureViews(CoreSession session, DocumentModel doc) {
         try {
-            Blob blob = new FileBlob(
-                    FileUtils.getResourceFileFromContext(getEmptyPicturePath()));
+            URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(
+                    getEmptyPicturePath());
+            if (fileUrl == null) {
+                return;
+            }
 
+            Blob blob = new FileBlob(FileUtils.getFileFromURL(fileUrl));
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
             String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
                     blob.getFilename(), blob, null);
@@ -113,7 +119,9 @@ public class PictureChangedListener implements EventListener {
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             adapter.preFillPictureViews(blob, pictureTemplates);
         } catch (Exception e) {
-            log.error("Error while : " + e.getMessage());
+            log.debug(e, e);
+            log.error("Error while pre-filling picture views: "
+                    + e.getMessage());
         }
     }
 
