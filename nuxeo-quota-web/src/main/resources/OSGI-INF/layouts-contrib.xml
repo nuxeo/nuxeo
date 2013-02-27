@@ -311,7 +311,7 @@
           </property>
          <property name="rangeMinSize">1024</property>
         </properties>
-        <handlingLabels>true</handlingLabels>
+        <handlingLabels>false</handlingLabels>
       </widget>
     </layout>
     <layout name="quota_heaviest_children@cvListingLayout">
