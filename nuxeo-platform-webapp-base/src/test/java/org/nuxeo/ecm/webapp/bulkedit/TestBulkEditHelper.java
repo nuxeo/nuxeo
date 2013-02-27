@@ -139,8 +139,8 @@ public class TestBulkEditHelper {
         DocumentModel sourceDoc = new SimpleDocumentModel(commonSchemas);
         sourceDoc.setProperty("dublincore", "title", "new title");
         sourceDoc.setProperty("dublincore", "description", "new description");
-        sourceDoc.setProperty("dublincore", "creator", "new creator");
-        sourceDoc.setProperty("dublincore", "source", "new source");
+        sourceDoc.setPropertyValue("dublincore:creator", "new creator");
+        sourceDoc.setPropertyValue("dc:source", "new source");
         ScopedMap map = sourceDoc.getContextData();
         map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:title", true);
         map.put(BulkEditHelper.BULK_EDIT_PREFIX + "dc:description", false);
@@ -150,7 +150,7 @@ public class TestBulkEditHelper {
         BulkEditHelper.copyMetadata(session, sourceDoc, docs);
         for (DocumentModel doc : docs) {
             assertEquals("new title", doc.getPropertyValue("dc:title"));
-            assertEquals("new creator", doc.getPropertyValue("dc:creator"));
+            assertEquals("new creator", doc.getProperty("dc:creator").getValue());
             assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
             assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
         }
