@@ -9,7 +9,7 @@
   
  <nxu:set var="maxFormatedSize" value="#{currentQuotaDoc.quotaInfo.maxQuota}">
    <nxu:set var="formatedSize" value="#{currentQuotaDoc.quotaInfo.totalSize}">
-     <h:outputText value=" #{messages['label.quota.info.used']} "/>
+     <h:outputText value="#{messages['label.quota.info.used']} "/>
      <h:outputText value="#{formatedSize.valueInUnit}">
        <f:convertNumber maxFractionDigits="2" />
      </h:outputText>
@@ -17,7 +17,7 @@
      
      <c:if test="#{maxFormatedSize.value > 0}">
       <h:outputText value=" - "/>
-      <h:outputText value=" #{messages['label.quota.info.available']} "/> 
+      <h:outputText value="#{messages['label.quota.info.available']} "/> 
       <h:outputText value="#{maxFormatedSize.valueInUnit}">
        <f:convertNumber maxFractionDigits="2" />
       </h:outputText>
