@@ -10,38 +10,38 @@
 
     <a4j:outputPanel id="#{widget.id}_panel">
 
-        <nxu:set var="action" value="#{widgetProperty_action}"
-          cache="true">
-        <nxu:set var="idPrefix" value="#{widget.id}_"
-          cache="true">
-        <nxu:set var="eventsQueueId" value="#{layout.id}_queue"
-          cache="true">
-          <nxu:valueHolder id="#{idPrefix}clickedActionIdHolder"
-            var="clickedActionId">
+      <nxu:set var="action" value="#{widgetProperty_action}"
+        cache="true">
+      <nxu:set var="idPrefix" value="#{widget.id}_"
+        cache="true">
+      <nxu:set var="eventsQueueId" value="#{layout.id}_queue"
+        cache="true">
+        <nxu:valueHolder id="#{idPrefix}clickedActionIdHolder"
+          var="clickedActionId">
 
-            <ui:decorate template="/widgets/incl/form_template.xhtml">
-              <ui:param name="addForm" value="#{widgetProperty_addForm}" />
-              <ui:param name="formId" value="#{widget.id}_form" />
-              <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
-              <ui:param name="formStyleClass" value="subWidgetForm" />
-              <ui:define name="form_template_content">
+          <ui:decorate template="/widgets/incl/form_template.xhtml">
+            <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+            <ui:param name="formId" value="#{widget.id}_form" />
+            <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
+            <ui:param name="formStyleClass" value="subWidgetForm" />
+            <ui:define name="form_template_content">
 
-                <span class="widgetPanel actionsWidgetPanel #{widgetProperty_styleClass}">
-                  <ui:decorate template="/incl/action/action_template.xhtml">
-                    <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-                    <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
-                  </ui:decorate>
-                </span>
+              <span class="widgetPanel actionsWidgetPanel #{widgetProperty_styleClass}">
+                <ui:decorate template="/incl/action/action_template.xhtml">
+                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                  <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                </ui:decorate>
+              </span>
 
-              </ui:define>
-            </ui:decorate>
+            </ui:define>
+          </ui:decorate>
 
-            <ui:include src="/incl/action/generic_after_action_template.xhtml" />
+          <ui:include src="/incl/action/generic_after_action_template.xhtml" />
 
-          </nxu:valueHolder>
-        </nxu:set>
-        </nxu:set>
-        </nxu:set>
+        </nxu:valueHolder>
+      </nxu:set>
+      </nxu:set>
+      </nxu:set>
 
     </a4j:outputPanel>
 
