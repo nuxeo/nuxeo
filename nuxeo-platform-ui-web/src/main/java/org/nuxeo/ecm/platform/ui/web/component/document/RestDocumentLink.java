@@ -56,6 +56,11 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     protected DocumentModel document;
 
+    /**
+     * @since 5.7
+     */
+    protected String repositoryName;
+
     protected DocumentRef documentIdRef;
 
     protected String view;
@@ -90,7 +95,8 @@ public class RestDocumentLink extends HtmlOutputLink {
     public Object getValue() {
 
         DocumentModel doc = getDocument();
-        if (doc == null) {
+        String repoName = getRepositoryName();
+        if (doc == null && repoName == null) {
             return null;
         }
 
@@ -142,8 +148,10 @@ public class RestDocumentLink extends HtmlOutputLink {
         String pattern = getPattern();
         Boolean nc = getNewConversation();
 
-        return DocumentModelFunctions.documentUrl(pattern, doc, viewId, params,
-                nc != null ? nc.booleanValue() : false);
+        return doc != null ? DocumentModelFunctions.documentUrl(pattern, doc,
+                viewId, params, nc != null ? nc.booleanValue() : false)
+                : DocumentModelFunctions.repositoryUrl(pattern, repoName,
+                        viewId, params, nc != null ? nc.booleanValue() : false);
     }
 
     protected Param[] getParamList() {
@@ -205,6 +213,26 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     public void setDocument(DocumentModel document) {
         this.document = document;
+    }
+
+    public String getRepositoryName() {
+        if (repositoryName != null) {
+            return repositoryName;
+        }
+        ValueExpression ve = getValueExpression("repositoryName");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
     }
 
     // XXX AT: useless right now

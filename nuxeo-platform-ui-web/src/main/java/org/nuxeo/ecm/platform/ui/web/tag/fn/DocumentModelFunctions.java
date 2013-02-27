@@ -678,17 +678,28 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String documentUrl(String patternName, DocumentModel doc,
             String viewId, Map<String, String> parameters,
             boolean newConversation, HttpServletRequest req) {
-        try {
-            DocumentLocation docLoc = new DocumentLocationImpl(doc);
-            if (viewId == null || viewId.length() == 0) {
-                viewId = getDefaultView(doc);
-            }
-            parameters = parameters == null ? new HashMap<String, String>()
-                    : parameters;
+        DocumentLocation docLoc = new DocumentLocationImpl(doc);
+        if (viewId == null || viewId.length() == 0) {
+            viewId = getDefaultView(doc);
+        }
+        parameters = parameters == null ? new HashMap<String, String>()
+                : parameters;
 
-            if (doc.isVersion()) {
-                parameters.put("version", "true");
-            }
+        if (doc.isVersion()) {
+            parameters.put("version", "true");
+        }
+        return documentUrl(patternName, docLoc, viewId, parameters,
+                newConversation, req);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public static String documentUrl(String patternName,
+            DocumentLocation docLoc, String viewId,
+            Map<String, String> parameters, boolean newConversation,
+            HttpServletRequest req) {
+        try {
             DocumentView docView = new DocumentViewImpl(docLoc, viewId,
                     parameters);
 
@@ -718,6 +729,34 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             log.error("Could not generate url for document", e);
         }
         return null;
+    }
+
+    /**
+     * Computes an URL for a {@code repositoryName} only.
+     *
+     * @since 5.7
+     */
+    public static String repositoryUrl(String patternName,
+            String repositoryName, String viewId,
+            Map<String, String> parameters, boolean newConversation) {
+        return repositoryUrl(patternName, repositoryName, viewId, parameters,
+                newConversation, null);
+    }
+
+    /**
+     * Computes an URL for a {@code repositoryName} only.
+     *
+     * @since 5.7
+     */
+    public static String repositoryUrl(String patternName,
+            String repositoryName, String viewId,
+            Map<String, String> parameters, boolean newConversation,
+            HttpServletRequest req) {
+        DocumentLocation docLoc = new DocumentLocationImpl(repositoryName, null);
+        parameters = parameters == null ? new HashMap<String, String>()
+                : parameters;
+        return documentUrl(patternName, docLoc, viewId, parameters,
+                newConversation, req);
     }
 
     protected static void addQueryParameter(StringBuilder sb, String name,
