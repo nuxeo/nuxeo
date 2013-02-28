@@ -310,6 +310,26 @@
     </function-signature>
   </function>
 
+  <function>
+    <function-name>fileExtension</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String fileExtension(java.lang.String)
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>fileBaseName</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String fileBaseName(java.lang.String)
+    </function-signature>
+  </function>
+
   <tag>
     <tag-name>methodResult</tag-name>
     <handler-class>

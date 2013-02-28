@@ -36,6 +36,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -736,6 +738,28 @@ public final class Functions {
             }
         }
         return org.nuxeo.common.utils.StringUtils.toAscii(res.toString());
+    }
+
+    /**
+     * Returns the extension from the given {@code filename}.
+     * <p>
+     * See {@link FilenameUtils#getExtension(String)}.
+     *
+     * @since 5.7
+     */
+    public static String fileExtension(String filename) {
+        return FilenameUtils.getExtension(filename);
+    }
+
+    /**
+     * Returns the base name from the given {@code filename}.
+     * <p>
+     * See {@link FilenameUtils#getBaseName(String)}.
+     *
+     * @since 5.7
+     */
+    public static String fileBaseName(String filename) {
+        return FilenameUtils.getBaseName(filename);
     }
 
 }
