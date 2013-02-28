@@ -236,11 +236,11 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public Property getProperty(String xpath) throws PropertyException,
             ClientException {
-        Path path = new Path(xpath);
-        if (path.segmentCount() == 0) {
+        Path propertyPath = new Path(xpath);
+        if (propertyPath.segmentCount() == 0) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String segment = path.segment(0);
+        String segment = propertyPath.segment(0);
         int p = segment.indexOf(':');
         if (p == -1) { // support also other schema paths? like schema.property
             // allow also unprefixed schemas -> make a search for the first
@@ -249,7 +249,7 @@ public class SimpleDocumentModel implements DocumentModel {
             DocumentPart[] parts = getParts();
             for (DocumentPart part : parts) {
                 if (part.getSchema().hasField(segment)) {
-                    return part.resolvePath(path.toString());
+                    return part.resolvePath(propertyPath.toString());
                 }
             }
             // could not find any matching schema
@@ -266,13 +266,13 @@ public class SimpleDocumentModel implements DocumentModel {
                                 + prefix);
             }
         }
-        String[] segments = path.segments();
+        String[] segments = propertyPath.segments();
         segments[0] = segments[0].substring(p + 1);
-        path = Path.createFromSegments(segments);
+        propertyPath = Path.createFromSegments(segments);
 
         DocumentPart part = DefaultPropertyFactory.newDocumentPart(schema);
         part.init((Serializable) getDataModelInternal(schema.getName()).getMap());
-        return part.resolvePath(path.toString());
+        return part.resolvePath(propertyPath.toString());
     }
 
     @Override
@@ -284,9 +284,9 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public void setPropertyValue(String xpath, Serializable value)
             throws ClientException {
-        Path path = new Path(xpath);
-        String segment = path.segment(0);
-        String prefix = segment.substring(0, segment.indexOf(":"));
+        Path propertyPath = new Path(xpath);
+        String segment = propertyPath.segment(0);
+        String prefix = segment.substring(0, segment.indexOf(':'));
 
         SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
         Schema schema = mgr.getSchemaFromPrefix(prefix);
@@ -299,7 +299,7 @@ public class SimpleDocumentModel implements DocumentModel {
             }
         }
 
-        String propertyName = segment.substring(segment.indexOf(":") + 1, segment.length());
+        String propertyName = segment.substring(segment.indexOf(':') + 1, segment.length());
         getDataModelInternal(schema.getName()).setData(propertyName, value);
     }
 
