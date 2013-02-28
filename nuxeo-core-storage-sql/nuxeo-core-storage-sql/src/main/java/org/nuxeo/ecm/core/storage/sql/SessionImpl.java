@@ -405,7 +405,8 @@ public class SessionImpl implements Session, XAResource {
             if (!model.getFulltextInfo().isFulltextIndexable(documentType)) {
                 continue;
             }
-
+            document.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
+                    model.idToString(document.getId()));
             fulltextParser.setDocument(document, this);
             for (String indexName : model.getFulltextInfo().indexNames) {
                 Set<String> paths;
