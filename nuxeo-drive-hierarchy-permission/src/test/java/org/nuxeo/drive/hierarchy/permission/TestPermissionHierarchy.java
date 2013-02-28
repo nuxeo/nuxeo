@@ -289,7 +289,7 @@ public class TestPermissionHierarchy {
          * => Expected client side for user1:
          *
          * Nuxeo Drive
-         *   |-- My Documents
+         *   |-- My Docs
          *   |     |-- user1Folder1
          *   |     |     |-- user1File1
          *   |     |     |-- user1Folder2
@@ -298,7 +298,7 @@ public class TestPermissionHierarchy {
          *   |     |      |-- user1File3
          *   |     |-- user1Folder4
          *   |
-         *   |-- Other Documents
+         *   |-- Other Docs
          *   |     |-- user2Folder1
          *   |     |     |-- user2File1
          *   |     |     |-- user2Folder2
@@ -321,28 +321,28 @@ public class TestPermissionHierarchy {
         assertNotNull(topLevelChildren);
         assertEquals(2, topLevelChildren.size());
 
-        // Check "My Documents"
+        // Check "My Docs"
         UserSyncRootParentFolderItem userSyncRootParent = mapper.readValue(
                 topLevelChildren.get(0), UserSyncRootParentFolderItem.class);
         assertEquals(userWorkspace1ItemId, userSyncRootParent.getId());
         assertEquals(TOP_LEVEL_ID, userSyncRootParent.getParentId());
         assertEquals(userWorkspace1ItemPath, userSyncRootParent.getPath());
-        assertEquals("My Documents", userSyncRootParent.getName());
+        assertEquals("My Docs", userSyncRootParent.getName());
         assertTrue(userSyncRootParent.isFolder());
         assertEquals("user1", userSyncRootParent.getCreator());
         assertFalse(userSyncRootParent.getCanRename());
         assertFalse(userSyncRootParent.getCanDelete());
-        // Can create a child since "My Documents" is the user workspace
+        // Can create a child since "My Docs" is the user workspace
         assertTrue(userSyncRootParent.getCanCreateChild());
 
-        // Check "Other Documents"
+        // Check "Other Docs"
         SharedSyncRootParentFolderItem sharedSyncRootParent = mapper.readValue(
                 topLevelChildren.get(1), SharedSyncRootParentFolderItem.class);
         assertEquals(SHARED_SYNC_ROOT_PARENT_ID, sharedSyncRootParent.getId());
         assertEquals(TOP_LEVEL_ID, sharedSyncRootParent.getParentId());
         assertEquals("/" + TOP_LEVEL_ID + "/" + SHARED_SYNC_ROOT_PARENT_ID,
                 sharedSyncRootParent.getPath());
-        assertEquals("Other Documents", sharedSyncRootParent.getName());
+        assertEquals("Other Docs", sharedSyncRootParent.getName());
         assertTrue(sharedSyncRootParent.isFolder());
         assertEquals("system", sharedSyncRootParent.getCreator());
         assertFalse(sharedSyncRootParent.getCanRename());
@@ -486,9 +486,9 @@ public class TestPermissionHierarchy {
          * => Expected client side for user1:
          *
          * Nuxeo Drive
-         *   |-- My Documents
+         *   |-- My Docs
          *   |
-         *   |-- Other Documents (unchanged)
+         *   |-- Other Docs (unchanged)
          *   |     |-- user2Folder1
          *   |     |     |-- user2File1
          *   |     |     |-- user2Folder2
@@ -501,7 +501,7 @@ public class TestPermissionHierarchy {
                 userWorkspace1, session1);
 
         // ---------------------------------------------
-        // Check "My Documents"
+        // Check "My Docs"
         // ---------------------------------------------
         Blob userSyncRootParentJSON = (Blob) clientSession1.newRequest(
                 NuxeoDriveGetFileSystemItem.ID).set("id", userWorkspace1ItemId).execute();
@@ -513,12 +513,12 @@ public class TestPermissionHierarchy {
         assertEquals(userWorkspace1ItemId, userSyncRootParent.getId());
         assertEquals(TOP_LEVEL_ID, userSyncRootParent.getParentId());
         assertEquals(userWorkspace1ItemPath, userSyncRootParent.getPath());
-        assertEquals("My Documents", userSyncRootParent.getName());
+        assertEquals("My Docs", userSyncRootParent.getName());
         assertTrue(userSyncRootParent.isFolder());
         assertEquals("user1", userSyncRootParent.getCreator());
         assertFalse(userSyncRootParent.getCanRename());
         assertFalse(userSyncRootParent.getCanDelete());
-        // Cannot create a child since "My Documents" is only the parent of the
+        // Cannot create a child since "My Docs" is only the parent of the
         // synchronization roots, not the user workspace
         assertFalse(userSyncRootParent.getCanCreateChild());
 
@@ -542,12 +542,12 @@ public class TestPermissionHierarchy {
          * => Expected client side for user1:
          *
          * Nuxeo Drive
-         *   |-- My Documents
+         *   |-- My Docs
          *   |     |-- user1Folder3
          *   |     |      |-- user1File3
          *   |     |-- user1Folder4
          *   |
-         *   |-- Other Documents (unchanged)
+         *   |-- Other Docs (unchanged)
          *   |     |-- user2Folder1
          *   |     |     |-- user2File1
          *   |     |     |-- user2Folder2
@@ -605,12 +605,12 @@ public class TestPermissionHierarchy {
          * => Expected client side for user1:
          *
          * Nuxeo Drive
-         *   |-- My Documents (unchanged)
+         *   |-- My Docs (unchanged)
          *   |     |-- user1Folder3
          *   |     |      |-- user1File3
          *   |     |-- user1Folder4
          *   |
-         *   |-- Other Documents
+         *   |-- Other Docs
          *   |     |-- user2Folder3
          *   |     |     |-- user2File3
          *
@@ -661,12 +661,12 @@ public class TestPermissionHierarchy {
          * => Expected client side for user1:
          *
          * Nuxeo Drive
-         *   |-- My Documents (unchanged)
+         *   |-- My Docs (unchanged)
          *   |     |-- user1Folder3
          *   |     |      |-- user1File3
          *   |     |-- user1Folder4
          *   |
-         *   |-- Other Documents
+         *   |-- Other Docs
          *
          * </pre>
          */

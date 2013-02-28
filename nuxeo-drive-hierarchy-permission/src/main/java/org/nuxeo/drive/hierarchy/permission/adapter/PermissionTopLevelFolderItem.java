@@ -34,11 +34,11 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * <pre>
  * Nuxeo Drive
- *  |-- My Documents (= user workspace if synchronized else user synchronization roots)
+ *  |-- My Docs (= user workspace if synchronized else user synchronization roots)
  *  |      |-- Folder 1
  *  |      |-- Folder 2
  *  |      |-- ...
- *  |-- Other Documents (= user's shared synchronized roots with ReadWrite permission)
+ *  |-- Other Docs (= user's shared synchronized roots with ReadWrite permission)
  *  |      |-- Other folder 1
  *  |      |-- Other folder 2
  *  |      |-- ...
