@@ -264,10 +264,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         protected WorkList suspended;
 
         // @since 5.7
-        protected final Counter scheduledCount = Metrics.newCounter(
+        protected final Counter scheduledCount = Metrics.defaultRegistry().newCounter(
                 WorkThreadPoolExecutor.class, "scheduled");
 
-        protected final Counter scheduledMax = Metrics.newCounter(
+        protected final Counter scheduledMax = Metrics.defaultRegistry().newCounter(
                 WorkThreadPoolExecutor.class, "scheduled-max");
 
         public WorkThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
@@ -404,7 +404,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          */
         public void execute(Work work, boolean afterCommit) {
             scheduledCount.inc();
-            if (scheduledCount.count() > scheduledMax.count()) {
+            if (scheduledCount.getCount() > scheduledMax.getCount()) {
                 scheduledMax.inc();
             }
             if (afterCommit) {

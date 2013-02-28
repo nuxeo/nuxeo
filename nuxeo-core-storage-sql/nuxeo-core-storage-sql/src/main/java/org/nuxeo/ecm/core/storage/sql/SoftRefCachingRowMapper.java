@@ -110,21 +110,21 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * Cache statistics
      * @since 5.7
      */
-    private final Counter cacheHitCount = Metrics.newCounter(
+    private final Counter cacheHitCount = Metrics.defaultRegistry().newCounter(
             SoftRefCachingRowMapper.class, "cache-hit");
 
-    private final Counter cacheSize = Metrics.newCounter(
+    private final Counter cacheSize = Metrics.defaultRegistry().newCounter(
             SoftRefCachingRowMapper.class, "cache-size");
 
-    private final Timer cacheGetTimer = Metrics.newTimer(
+    private final Timer cacheGetTimer = Metrics.defaultRegistry().newTimer(
             SoftRefCachingRowMapper.class, "cache-get",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
     // sor means system of record (database access)
-    private final Counter sorRows = Metrics.newCounter(
+    private final Counter sorRows = Metrics.defaultRegistry().newCounter(
             SoftRefCachingRowMapper.class, "sor-rows");
 
-    private final Timer sorGetTimer = Metrics.newTimer(
+    private final Timer sorGetTimer = Metrics.defaultRegistry().newTimer(
             SoftRefCachingRowMapper.class, "sor-get",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
