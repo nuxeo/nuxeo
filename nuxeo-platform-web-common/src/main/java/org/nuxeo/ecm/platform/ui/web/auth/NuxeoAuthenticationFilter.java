@@ -134,17 +134,17 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected String securityDomain = LOGIN_DOMAIN;
 
     // @since 5.7
-    protected final Timer requestTimer = Metrics.newTimer(
+    protected final Timer requestTimer = Metrics.defaultRegistry().newTimer(
             NuxeoAuthenticationFilter.class, "request",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
-    protected final static Counter concurrentCount = Metrics.newCounter(
+    protected final static Counter concurrentCount = Metrics.defaultRegistry().newCounter(
             NuxeoAuthenticationFilter.class, "request-concurrent");
 
-    protected final static Counter concurrentMaxCount = Metrics.newCounter(
+    protected final static Counter concurrentMaxCount = Metrics.defaultRegistry().newCounter(
             NuxeoAuthenticationFilter.class, "request-concurrent-max");
 
-    protected final static Counter loginCount = Metrics.newCounter(
+    protected final static Counter loginCount = Metrics.defaultRegistry().newCounter(
             NuxeoAuthenticationFilter.class, "logged-user");
 
 
@@ -361,7 +361,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
         final TimerContext contextTimer = requestTimer.time();
         concurrentCount.inc();
-        if (concurrentCount.count() > concurrentMaxCount.count()) {
+        if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
             concurrentMaxCount.inc();
         }
         try {
