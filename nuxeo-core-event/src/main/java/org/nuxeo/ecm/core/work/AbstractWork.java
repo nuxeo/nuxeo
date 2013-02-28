@@ -101,7 +101,7 @@ public abstract class AbstractWork implements Work {
     protected CoreSession session;
 
     // @since 5.7
-    protected final Timer workTimer = Metrics.newTimer(
+    protected final Timer workTimer = Metrics.defaultRegistry().newTimer(
             AbstractWork.class, "work",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 

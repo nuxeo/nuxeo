@@ -58,12 +58,12 @@ public class SelectionContext {
     private final Set<Serializable> modifiedInTransaction;
 
     // @since 5.7
-    private final Counter cacheHitCount = Metrics.newCounter(
-            SelectionContext.class, "sel-cache-hit");
+    private final Counter cacheHitCount = Metrics.defaultRegistry().newCounter(
+            SelectionContext.class, "cache-hit");
 
     // @since 5.7
-    private final Timer cacheGetTimer = Metrics.newTimer(
-            SelectionContext.class, "sel-cache-get", TimeUnit.MICROSECONDS,
+    private final Timer cacheGetTimer = Metrics.defaultRegistry().newTimer(
+            SelectionContext.class, "cache-get", TimeUnit.MICROSECONDS,
             TimeUnit.SECONDS);
 
     @SuppressWarnings("unchecked")
@@ -77,10 +77,10 @@ public class SelectionContext {
         hardMap = new HashMap<Serializable, Selection>();
         modifiedInTransaction = new HashSet<Serializable>();
 
-        Metrics.newGauge(
-                SelectionContext.class, "sel-cache-size", new Gauge<Integer>() {
+        Metrics.defaultRegistry().newGauge(
+                SelectionContext.class, "cache-size", new Gauge<Integer>() {
                     @Override
-                    public Integer value() {
+                    public Integer getValue() {
                         return softMap == null ? 0: softMap.size();
                     }
                 });

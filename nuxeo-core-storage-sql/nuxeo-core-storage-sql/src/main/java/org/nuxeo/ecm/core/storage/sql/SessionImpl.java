@@ -117,16 +117,16 @@ public class SessionImpl implements Session, XAResource {
     private String threadName;
 
     // @since 5.7
-    private final Timer saveTimer = Metrics.newTimer(SessionImpl.class, "save",
+    private final Timer saveTimer = Metrics.defaultRegistry().newTimer(SessionImpl.class, "save",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
-    private final Timer queryTimer = Metrics.newTimer(SessionImpl.class, "query",
+    private final Timer queryTimer = Metrics.defaultRegistry().newTimer(SessionImpl.class, "query",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
-    private final Counter sessionCount = Metrics.newCounter(
+    private final Counter sessionCount = Metrics.defaultRegistry().newCounter(
             SessionImpl.class, "session");
 
-    private final Timer aclrUpdateTimer = Metrics.newTimer(SessionImpl.class, "aclr-update",
+    private final Timer aclrUpdateTimer = Metrics.defaultRegistry().newTimer(SessionImpl.class, "aclr-update",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,

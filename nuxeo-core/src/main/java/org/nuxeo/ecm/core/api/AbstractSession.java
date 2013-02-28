@@ -153,13 +153,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     private Long maxResults;
 
     // @since 5.7
-    protected final static Counter createDocumentCount = Metrics.newCounter(
+    protected final static Counter createDocumentCount = Metrics.defaultRegistry().newCounter(
             AbstractSession.class, "create-document");
 
-    protected final static Counter deleteDocumentCount = Metrics.newCounter(
+    protected final static Counter deleteDocumentCount = Metrics.defaultRegistry().newCounter(
             AbstractSession.class, "delete-document");
 
-    protected final static Counter updateDocumentCount = Metrics.newCounter(
+    protected final static Counter updateDocumentCount = Metrics.defaultRegistry().newCounter(
             AbstractSession.class, "update-document");
 
 
