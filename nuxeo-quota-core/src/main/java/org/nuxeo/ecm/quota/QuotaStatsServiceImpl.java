@@ -27,7 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -168,42 +170,6 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc,
-            CoreSession session) throws ClientException {
-        QuotaAware qa = null;
-        DocumentModel parent = null;
-        if ("UserWorkspacesRoot".equals(doc.getType())) {
-            return true;
-        }
-        List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
-        for (DocumentModel p : parents) {
-            if ("UserWorkspacesRoot".equals(p.getType())) {
-                // checks don't apply to personal user workspaces
-                return true;
-            }
-            qa = p.getAdapter(QuotaAware.class);
-            if (qa == null) {
-                // if no quota set on the parent, any value is valid
-                continue;
-            }
-            if (qa.getMaxQuota() > 0) {
-                parent = p;
-                break;
-            }
-        }
-        if (qa == null || qa.getMaxQuota() == -1) {
-            return true;
-        }
-
-        long maxAllowedOnChildrenToSetQuota = qa.getMaxQuota() - maxQuota;
-        if (maxAllowedOnChildrenToSetQuota < 0) {
-            return false;
-        }
-        return canSetMaxQuotaOnChildrenTree(parent,
-                maxAllowedOnChildrenToSetQuota, session);
-    }
-
-    @Override
     public void activateQuotaOnUserWorkspaces(final long maxQuota,
             CoreSession session) throws ClientException {
         final String userWorkspacesRootId = getUserWorkspaceRootId(
@@ -258,13 +224,6 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         return parentsFetcher.getParents();
     }
 
-    protected boolean canSetMaxQuotaOnChildrenTree(DocumentModel parent,
-            Long maxAllowedOnChildrenToSetQuota, CoreSession session)
-            throws ClientException {
-        return new UnrestrictedQuotaOnChildrenCalculator(parent,
-                maxAllowedOnChildrenToSetQuota, session).canSetQuota();
-    }
-
     @Override
     public void launchSetMaxQuotaOnUserWorkspaces(final long maxSize,
             DocumentModel context, CoreSession session) throws ClientException {
@@ -315,6 +274,40 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         return ((IdRef) currentUserWorkspace.getParentRef()).value;
     }
 
+    @Override
+    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc,
+            CoreSession session) throws ClientException {
+        QuotaAware qa = null;
+        DocumentModel parent = null;
+        List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
+        for (DocumentModel p : parents) {
+            qa = p.getAdapter(QuotaAware.class);
+            if (qa == null) {
+                // if no quota set on the parent, any value is valid
+                continue;
+            }
+            if (qa.getMaxQuota() > 0) {
+                parent = p;
+                break;
+            }
+        }
+        if (qa == null || qa.getMaxQuota() < 0) {
+            return true;
+        }
+
+        long maxAllowedOnChildrenToSetQuota = qa.getMaxQuota() - maxQuota;
+        if (maxAllowedOnChildrenToSetQuota < 0) {
+            return false;
+        }
+        Long quotaOnChildren = new UnrestrictedQuotaOnChildrenCalculator(
+                parent, maxAllowedOnChildrenToSetQuota, doc.getId(), session).quotaOnChildren();
+        if (quotaOnChildren > 0
+                && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+            return false;
+        }
+        return true;
+    }
+
     class UnrestrictedQuotaOnChildrenCalculator extends
             UnrestrictedSessionRunner {
 
@@ -322,64 +315,71 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
         Long maxAllowedOnChildrenToSetQuota;
 
-        boolean canSetQuota = true;
+        long quotaOnChildren = -1;
+
+        String currentDocIdToIgnore;
 
         protected UnrestrictedQuotaOnChildrenCalculator(DocumentModel parent,
-                Long maxAllowedOnChildrenToSetQuota, CoreSession session) {
+                Long maxAllowedOnChildrenToSetQuota,
+                String currentDocIdToIgnore, CoreSession session) {
             super(session);
             this.parent = parent;
             this.maxAllowedOnChildrenToSetQuota = maxAllowedOnChildrenToSetQuota;
+            this.currentDocIdToIgnore = currentDocIdToIgnore;
         }
 
         @Override
         public void run() throws ClientException {
-            IterableQueryResult results = null;
-            String userWorkspaceRootId = null;
-            String queryString = "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:primaryType NOT IN ('UserWorkspacesRoot') "
-                    + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:parentId !='%s' ORDER BY dss:maxSize DESC";
-            try {
-                userWorkspaceRootId = getUserWorkspaceRootId(
-                        session.getRootDocument(), session);
-            } catch (ClientException e) {
-                // no userworkspaces root?
-                log.error(e);
-                queryString = "Select dss:maxSize from Document where ecm:path STARTSWITH '%s' AND ecm:mixinType = 'DocumentsSizeStatistics' AND ecm:primaryType NOT IN ('UserWorkspacesRoot') "
-                        + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dss:maxSize DESC";
-            }
-            if (userWorkspaceRootId != null) {
-                queryString = String.format(queryString,
-                        parent.getPathAsString(), userWorkspaceRootId);
-
-            } else {
-                queryString = String.format(queryString,
-                        parent.getPathAsString());
-            }
-            try {
-                results = session.queryAndFetch(queryString, "NXQL");
-                long quotaOnChildren = 0;
-                for (Map<String, Serializable> result : results) {
-                    Long maxSize = (Long) result.get("dss:maxSize");
-                    quotaOnChildren = quotaOnChildren
-                            + (maxSize == null || maxSize == -1 ? 0 : maxSize);
-                    if (quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
-                        results.close();
-                        canSetQuota = false;
-                        return;
-                    }
-                }
-            } catch (Exception e) {
-                log.error(e);
-                throw new ClientException(e);
-            } finally {
-                if (results != null) {
-                    results.close();
-                }
-            }
+            quotaOnChildren = canSetMaxQuotaOnChildrenTree(
+                    maxAllowedOnChildrenToSetQuota, quotaOnChildren, parent,
+                    currentDocIdToIgnore, session);
         }
 
-        public boolean canSetQuota() throws ClientException {
+        public long quotaOnChildren() throws ClientException {
             runUnrestricted();
-            return canSetQuota;
+            return quotaOnChildren;
+        }
+
+        protected Long canSetMaxQuotaOnChildrenTree(
+                Long maxAllowedOnChildrenToSetQuota, Long quotaOnChildren,
+                DocumentModel doc, String currentDocIdToIgnore,
+                CoreSession session) throws ClientException {
+            if (quotaOnChildren > 0
+                    && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                // quota can not be set, don't continue
+                return quotaOnChildren;
+            }
+            DocumentModelIterator childrenIterator = null;
+            childrenIterator = session.getChildrenIterator(doc.getRef(), null,
+                    null, new QuotaFilter());
+
+            while (childrenIterator.hasNext()) {
+                DocumentModel child = childrenIterator.next();
+                QuotaAware qac = child.getAdapter(QuotaAware.class);
+                if (qac == null) {
+                    continue;
+                }
+                if (qac.getMaxQuota() > 0
+                        && !currentDocIdToIgnore.equals(child.getId())) {
+                    quotaOnChildren = (quotaOnChildren == -1L ? 0L
+                            : quotaOnChildren) + qac.getMaxQuota();
+                }
+                if (quotaOnChildren > 0
+                        && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                    return quotaOnChildren;
+                }
+                if (qac.getMaxQuota() == -1L) {
+                    // if there is no quota set at this level, go deeper
+                    quotaOnChildren = canSetMaxQuotaOnChildrenTree(
+                            maxAllowedOnChildrenToSetQuota, quotaOnChildren,
+                            child, currentDocIdToIgnore, session);
+                }
+                if (quotaOnChildren > 0
+                        && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
+                    return quotaOnChildren;
+                }
+            }
+            return quotaOnChildren;
         }
     }
 
@@ -410,6 +410,19 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         public List<DocumentModel> getParents() throws ClientException {
             runUnrestricted();
             return parents;
+        }
+    }
+
+    class QuotaFilter implements Filter {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public boolean accept(DocumentModel doc) {
+            if ("UserWorkspacesRoot".equals(doc.getType())) {
+                return false;
+            }
+            return true;
         }
     }
 }
