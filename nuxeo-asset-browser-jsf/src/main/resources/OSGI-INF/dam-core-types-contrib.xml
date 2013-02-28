@@ -42,7 +42,6 @@
     <!-- For default DAM search -->
     <doctype name="DamSearch" extends="FacetedSearch">
       <schema name="dam_search" />
-      <facet name="HiddenInFacetedSearch" />
     </doctype>
 
     <!--

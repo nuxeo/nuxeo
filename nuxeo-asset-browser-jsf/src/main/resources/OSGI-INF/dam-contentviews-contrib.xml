@@ -17,7 +17,6 @@
         <whereClause docType="FacetedSearchDefault">
           <fixedPart>
             ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation'
-            AND ecm:mixinType != 'HiddenInFacetedSearch'
             AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
@@ -92,7 +91,6 @@
         <whereClause docType="DamSearch">
           <fixedPart>
             ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation'
-            AND ecm:mixinType != 'HiddenInFacetedSearch'
             AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
