@@ -279,8 +279,15 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             CoreSession session) throws ClientException {
         QuotaAware qa = null;
         DocumentModel parent = null;
+        if ("UserWorkspacesRoot".equals(doc.getType())) {
+            return true;
+        }
         List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
         for (DocumentModel p : parents) {
+            if ("UserWorkspacesRoot".equals(p.getType())) {
+                // checks don't apply to personal user workspaces
+                return true;
+            }
             qa = p.getAdapter(QuotaAware.class);
             if (qa == null) {
                 // if no quota set on the parent, any value is valid
