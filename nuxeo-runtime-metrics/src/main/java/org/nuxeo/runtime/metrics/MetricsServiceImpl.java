@@ -28,16 +28,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.graphite.GraphiteReporter;
 import com.yammer.metrics.log4j.InstrumentedAppender;
 import com.yammer.metrics.reporting.CsvReporter;
-import com.yammer.metrics.reporting.GraphiteReporter;
 
 public class MetricsServiceImpl extends DefaultComponent implements
         MetricsService {
 
     private static final Log log = LogFactory.getLog(MetricsServiceImpl.class);
 
-    private final Counter instanceUp = Metrics.newCounter(MetricsService.class,
+    private final Counter instanceUp = Metrics.defaultRegistry().newCounter(getClass(),
             "instance-up");
 
     public static final String CONFIGURATION_EP = "configuration";

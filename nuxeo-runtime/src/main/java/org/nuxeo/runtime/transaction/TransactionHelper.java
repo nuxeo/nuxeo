@@ -42,16 +42,16 @@ public class TransactionHelper {
 
     // @since 5.7
     // TODO: Move metrics to jtajca DefaultTransactionMonitor to track all tx
-    protected final static Counter rollbackCount = Metrics.newCounter(
+    protected final static Counter rollbackCount =  Metrics.defaultRegistry().newCounter(
             TransactionHelper.class, "rollback");
 
-    protected final static Counter concurrentCount = Metrics.newCounter(
+    protected final static Counter concurrentCount = Metrics.defaultRegistry().newCounter(
             TransactionHelper.class, "tx-concurrent");
 
-    protected final static Counter concurrentMaxCount = Metrics.newCounter(
+    protected final static Counter concurrentMaxCount = Metrics.defaultRegistry().newCounter(
             TransactionHelper.class, "tx-concurrent-max");
 
-    protected final static Timer transactionTimer = Metrics.newTimer(
+    protected final static Timer transactionTimer = Metrics.defaultRegistry().newTimer(
             TransactionHelper.class, "transaction",
             TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
 
@@ -199,7 +199,7 @@ public class TransactionHelper {
 
             timers.put(ut, transactionTimer.time());
             concurrentCount.inc();
-            if (concurrentCount.count() > concurrentMaxCount.count()) {
+            if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
                 concurrentMaxCount.inc();
             }
             return true;
@@ -234,7 +234,7 @@ public class TransactionHelper {
             tm.begin();
             timers.put((UserTransaction) tm, transactionTimer.time());
             concurrentCount.inc();
-            if (concurrentCount.count() > concurrentMaxCount.count()) {
+            if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
                 concurrentMaxCount.inc();
             }
             return tx;

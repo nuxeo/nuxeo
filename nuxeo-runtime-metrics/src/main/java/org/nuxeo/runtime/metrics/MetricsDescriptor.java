@@ -70,7 +70,7 @@ public class MetricsDescriptor implements Serializable {
         public String getPrefix() {
             String hostname;
             try {
-                hostname = InetAddress.getLocalHost().getHostName();
+                hostname = InetAddress.getLocalHost().getHostName().split("\\.")[0];
             } catch (UnknownHostException e) {
                 hostname = "unknown";
             }
