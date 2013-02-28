@@ -142,7 +142,7 @@ public class TestDocumentPathCodec {
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals(null, docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());
 
@@ -151,7 +151,7 @@ public class TestDocumentPathCodec {
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals(null, docLoc.getDocRef());
         assertEquals("view.domains", docView.getViewId());
         assertNull(docView.getSubURI());
 
@@ -160,7 +160,7 @@ public class TestDocumentPathCodec {
         docView = codec.getDocumentViewFromUrl(url);
         docLoc = docView.getDocumentLocation();
         assertEquals("demo.withdot", docLoc.getServerName());
-        assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals(null, docLoc.getDocRef());
         assertEquals("view_domains", docView.getViewId());
         assertNull(docView.getSubURI());
 
@@ -226,7 +226,7 @@ public class TestDocumentPathCodec {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
         assertEquals("demo", docLoc.getServerName());
-        assertEquals(new PathRef("/"), docLoc.getDocRef());
+        assertEquals(null, docLoc.getDocRef());
         assertEquals("view_documents", docView.getViewId());
         assertNull(docView.getSubURI());
 
