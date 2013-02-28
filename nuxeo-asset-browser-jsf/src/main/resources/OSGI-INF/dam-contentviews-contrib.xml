@@ -431,17 +431,6 @@
       </properties>
     </widget>
 
-    <widget name="damPanelRight" type="container">
-      <properties widgetMode="view">
-        <property name="display">block_top</property>
-        <property name="hideSubLabels">true</property>
-        <property name="ajaxPanelId">damPanelRight</property>
-      </properties>
-      <subWidgetRefs>
-        <widget>damAssetView</widget>
-      </subWidgetRefs>
-    </widget>
-
     <widget name="dam_listing_size_and_format" type="container">
       <properties widgetMode="view">
         <property name="display">inline</property>
