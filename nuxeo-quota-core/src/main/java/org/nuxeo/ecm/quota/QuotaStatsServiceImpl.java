@@ -283,11 +283,13 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             return true;
         }
         List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
-        for (DocumentModel p : parents) {
-            if ("UserWorkspacesRoot".equals(p.getType())) {
+        if (parents != null && parents.size() > 0) {
+            if ("UserWorkspacesRoot".equals(parents.get(0).getType())) {
                 // checks don't apply to personal user workspaces
                 return true;
             }
+        }
+        for (DocumentModel p : parents) {
             qa = p.getAdapter(QuotaAware.class);
             if (qa == null) {
                 // if no quota set on the parent, any value is valid
