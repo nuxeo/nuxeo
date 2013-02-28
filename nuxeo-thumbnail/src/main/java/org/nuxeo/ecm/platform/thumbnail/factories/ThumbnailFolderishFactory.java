@@ -13,25 +13,19 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.factories;
 
-import java.io.File;
-
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
-import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
-import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
 /**
  * Default thumbnail factory for all folderish documents
- * 
+ *
  * @since 5.7
  */
-public class ThumbnailFolderishFactory implements ThumbnailFactory {
+public class ThumbnailFolderishFactory extends ThumbnailDocumentFactory {
 
     @Override
     public Blob getThumbnail(DocumentModel doc, CoreSession session)
@@ -47,9 +41,7 @@ public class ThumbnailFolderishFactory implements ThumbnailFactory {
                         ThumbnailAdapter.class).getThumbnail(session);
             }
         }
-        TypeInfo docType = doc.getAdapter(TypeInfo.class);
-        return new FileBlob(FileUtils.getResourceFileFromContext("nuxeo.war"
-                + File.separator + docType.getBigIcon()));
+        return getDefaultThumbnail(doc);
     }
 
     @Override

@@ -13,14 +13,16 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.factories;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Default thumbnail factory for all non folderish documents Return the main
  * blob converted in thumbnail or get the document big icon as a thumbnail
- * 
+ *
  * @since 5.7
  */
 public class ThumbnailDocumentFactory implements ThumbnailFactory {
@@ -53,13 +55,9 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             }
         } catch (ClientException e) {
             log.warn("Could not fetch the thumbnail blob", e);
-        } finally {
-            if (thumbnailBlob == null) {
-                TypeInfo docType = doc.getAdapter(TypeInfo.class);
-                thumbnailBlob = new FileBlob(
-                        FileUtils.getResourceFileFromContext("nuxeo.war"
-                                + File.separator + docType.getBigIcon()));
-            }
+        }
+        if (thumbnailBlob == null) {
+            thumbnailBlob = getDefaultThumbnail(doc);
         }
         return thumbnailBlob;
     }
@@ -94,4 +92,35 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
         }
         return thumbnailBlob;
     }
+
+    protected Blob getDefaultThumbnail(DocumentModel doc) {
+        if (doc == null) {
+            return null;
+        }
+        TypeInfo docType = doc.getAdapter(TypeInfo.class);
+        String iconPath = docType.getBigIcon();
+        if (iconPath == null) {
+            iconPath = docType.getIcon();
+        }
+        if (iconPath == null) {
+            return null;
+        }
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (ctx == null) {
+            return null;
+        }
+        try {
+            InputStream iconStream = ctx.getExternalContext().getResourceAsStream(
+                    iconPath);
+            if (iconStream != null) {
+                return new FileBlob(iconStream);
+            }
+        } catch (IOException e) {
+            log.warn(String.format(
+                    "Could not fetch the thumbnail blob from icon path '%s'",
+                    iconPath), e);
+        }
+        return null;
+    }
+
 }
