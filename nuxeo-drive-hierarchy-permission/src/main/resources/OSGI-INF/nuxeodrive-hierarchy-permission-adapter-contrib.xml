@@ -31,7 +31,7 @@
       order="30"
       class="org.nuxeo.drive.hierarchy.permission.factory.UserSyncRootParentFactory">
       <parameters>
-        <parameter name="folderName">My Documents</parameter>
+        <parameter name="folderName">My Docs</parameter>
       </parameters>
     </fileSystemItemFactory>
 
@@ -54,7 +54,7 @@
       order="100"
       class="org.nuxeo.drive.hierarchy.permission.factory.SharedSyncRootParentFactory">
       <parameters>
-        <parameter name="folderName">Other Documents</parameter>
+        <parameter name="folderName">Other Docs</parameter>
       </parameters>
     </fileSystemItemFactory>
 
