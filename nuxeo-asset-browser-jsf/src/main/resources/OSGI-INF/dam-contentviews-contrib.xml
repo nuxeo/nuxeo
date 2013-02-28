@@ -240,6 +240,34 @@
       </property>
     </widgetType>
 
+    <widgetType name="dam_listing_main_file_format">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Main file format</title>
+        <description>
+          <p>
+            This widget type displays the format of the main file of the
+            document
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the format
+              </li>
+            </ul>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/listing/listing_main_file_format_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -362,7 +390,6 @@
       <translated>true</translated>
       <fields>
         <field>data</field>
-        <field>data.dc.description</field>
       </fields>
     </widget>
 
@@ -382,10 +409,12 @@
       </labels>
       <fields>
         <field>data</field>
-        <field>data.dc.description</field>
         <field>selected</field>
         <field>data.ref</field>
       </fields>
+      <properties widgetMode="any">
+        <property name="hideExtension">true</property>
+      </properties>
     </widget>
 
     <widget name="dam_listing_dam_common" type="layout">
@@ -402,6 +431,28 @@
       </properties>
     </widget>
 
+    <widget name="damPanelRight" type="container">
+      <properties widgetMode="view">
+        <property name="display">block_top</property>
+        <property name="hideSubLabels">true</property>
+        <property name="ajaxPanelId">damPanelRight</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>damAssetView</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="dam_listing_size_and_format" type="container">
+      <properties widgetMode="view">
+        <property name="display">inline</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>dam_listing_size</widget>
+        <widget>dam_listing_main_file_format</widget>
+      </subWidgetRefs>
+    </widget>
+
     <widget name="dam_listing_size" type="dam_listing_size">
       <labels>
         <label mode="any"></label>
@@ -412,6 +463,15 @@
       </fields>
     </widget>
 
+    <widget name="dam_listing_main_file_format" type="dam_listing_main_file_format">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>false</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
 
   </extension>
 
@@ -532,7 +592,7 @@
           <widget>dam_listing_dam_common</widget>
         </column>
         <column>
-          <widget>dam_listing_size</widget>
+          <widget>dam_listing_size_and_format</widget>
         </column>
       </columns>
     </layout>
