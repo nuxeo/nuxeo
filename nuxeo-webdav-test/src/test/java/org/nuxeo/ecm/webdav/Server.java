@@ -55,7 +55,7 @@ public class Server {
 
     static int PORT = 9998;
 
-    private static NXRuntimeTestCase osgi;
+    protected static WebDAVServerTestCase osgi;
 
     private static GrizzlyWebServer gws;
 
@@ -139,7 +139,13 @@ public class Server {
             super.setUp();
 
             // deploy platform bundles
+            deployBundle("org.nuxeo.ecm.platform.types.api");
+            deployBundle("org.nuxeo.ecm.platform.types.core");
             deployBundle("org.nuxeo.ecm.platform.dublincore");
+            deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+            deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+            deployBundle("org.nuxeo.ecm.platform.filemanager.api");
+            deployBundle("org.nuxeo.ecm.platform.filemanager.core");
 
             // deploy this project's bundles + contribs
             deployBundle(Constants.BUNDLE_NAME);

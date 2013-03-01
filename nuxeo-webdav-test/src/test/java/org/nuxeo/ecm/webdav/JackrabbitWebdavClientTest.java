@@ -17,19 +17,28 @@
 
 package org.nuxeo.ecm.webdav;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.client.methods.DavMethod;
 import org.apache.jackrabbit.webdav.client.methods.LockMethod;
+import org.apache.jackrabbit.webdav.client.methods.MkColMethod;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 import org.apache.jackrabbit.webdav.lock.LockDiscovery;
 import org.apache.jackrabbit.webdav.lock.Scope;
@@ -37,29 +46,41 @@ import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.jackrabbit.webdav.property.DavProperty;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
-import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.w3c.dom.Element;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Jackrabbit includes a WebDAV client library. Let's use it to test our
  * server.
  */
-
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     private static String USERNAME = "userId";
     
     private static HttpClient client;
 
+    protected CoreSession session;
+
     @BeforeClass
-    public static void setUp() {
-        // Setup code
+    public static void setUpClass() {
         client = createClient(USERNAME);
+    }
+
+    @Before
+    public void setUp() {
+        session = Server.osgi.session;
     }
 
     protected static HttpClient createClient(String username) {
@@ -140,6 +161,102 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
         MultiStatusResponse response = responses[0];
         assertEquals("123631", response.getProperties(200).get("getcontentlength").getValue());
+    }
+
+    @Test
+    public void testCreateFolder() throws Exception {
+        String name = "newfolder";
+
+        DavMethod method = new MkColMethod(ROOT_URI + name);
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_CREATED, status);
+
+        // check using Nuxeo Core APIs
+        session.save(); // process invalidations
+        PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
+        assertTrue(session.exists(pathRef));
+        DocumentModel doc = session.getDocument(pathRef);
+        assertEquals("Folder", doc.getType());
+        assertEquals(name, doc.getTitle());
+    }
+
+    @Test
+    public void testCreateBinaryFile() throws Exception {
+        String name = "newfile.bin";
+        String mimeType = "application/binary";
+        byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
+        String expectedType = "File";
+        doTestPutFile(name, bytes, mimeType, expectedType);
+    }
+
+    @Test
+    public void testCreateTextFile() throws Exception {
+        String name = "newfile.txt";
+        String mimeType = "text/plain";
+        byte[] bytes = "Hello, world!".getBytes("UTF-8");
+        String expectedType = "Note";
+        doTestPutFile(name, bytes, mimeType, expectedType);
+    }
+
+    @Test
+    public void testOverwriteExistingFile() throws Exception {
+        String name = "test.txt"; // this file already exists
+        String mimeType = "application/binary";
+        PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
+        assertTrue(session.exists(pathRef));
+        byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
+        String expectedType = "File";
+        doTestPutFile(name, bytes, mimeType, expectedType);
+    }
+
+    protected void doTestPutFile(String name, byte[] bytes, String mimeType,
+            String expectedType) throws Exception {
+        InputStream is = new ByteArrayInputStream(bytes);
+        PutMethod method = new PutMethod(ROOT_URI + name);
+        method.setRequestEntity(new InputStreamRequestEntity(is, bytes.length,
+                mimeType));
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_CREATED, status);
+
+        // check using Nuxeo Core APIs
+        session.save(); // process invalidations
+        PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
+        assertTrue(session.exists(pathRef));
+        DocumentModel doc = session.getDocument(pathRef);
+        assertEquals(expectedType, doc.getType());
+        assertEquals(name, doc.getTitle());
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        assertNotNull(bh);
+        Blob blob = bh.getBlob();
+        assertNotNull(blob);
+        assertEquals(bytes.length, blob.getLength());
+        assertEquals(mimeType, blob.getMimeType());
+        assertArrayEquals(bytes, blob.getByteArray());
+    }
+
+    @Test
+    public void testDeleteFile() throws Exception {
+        String name = "test.txt";
+
+        HttpMethod method = new DeleteMethod(ROOT_URI + name);
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_NO_CONTENT, status);
+
+        // check using Nuxeo Core APIs
+        session.save(); // process invalidations
+        PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
+        assertTrue(session.exists(pathRef)); // in trash
+        DocumentModel doc = session.getDocument(pathRef);
+        assertEquals("deleted", doc.getCurrentLifeCycleState());
+    }
+
+    @Test
+    public void testDeleteMissingFile() throws Exception {
+        String name = "nosuchfile.txt";
+
+        HttpMethod method = new DeleteMethod(ROOT_URI + name);
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_NOT_FOUND, status);
     }
 
     @Test

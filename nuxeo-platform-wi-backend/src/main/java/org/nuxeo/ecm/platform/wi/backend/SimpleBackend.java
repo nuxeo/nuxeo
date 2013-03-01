@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +12,11 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
+ *     Thierry Delprat
  *     Gagnavarslan ehf
+ *     Florent Guillaume
+ *     Benoit Delbosc
+ *     Thierry Martins
  */
 package org.nuxeo.ecm.platform.wi.backend;
 
@@ -31,10 +35,12 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.webdav.resource.ExistingResource;
 import org.nuxeo.runtime.api.Framework;
 
@@ -48,9 +54,11 @@ import java.util.List;
 
 public class SimpleBackend extends AbstractCoreBackend {
 
+    private static final Log log = LogFactory.getLog(SimpleBackend.class);
+
     public static final String SOURCE_EDIT_KEYWORD = "source-edit";
 
-    private static final Log log = LogFactory.getLog(SimpleBackend.class);
+    public static final String ALWAYS_CREATE_FILE_PROP = "nuxeo.webdav.always-create-file";
 
     private static final int PATH_CACHE_SIZE = 255;
 
@@ -444,21 +452,28 @@ public class SimpleBackend extends AbstractCoreBackend {
             throw new ClientException(
                     "Can not create a child in a non folderish node");
         }
-
-        String targetType = "File";
-        // name = cleanName(name);
         try {
             cleanTrashPath(parent, name);
-            DocumentModel file = getSession().createDocumentModel(
-                    parent.getPathAsString(), name, targetType);
-            file.setPropertyValue("dc:title", name);
-            if (content != null) {
-                BlobHolder bh = file.getAdapter(BlobHolder.class);
-                if (bh != null) {
-                    bh.setBlob(content);
+            DocumentModel file;
+            if (Boolean.parseBoolean(Framework.getProperty(
+                    ALWAYS_CREATE_FILE_PROP, "false"))) {
+                // compat for older versions, always create a File
+                file = getSession().createDocumentModel(
+                        parent.getPathAsString(), name, "File");
+                file.setPropertyValue("dc:title", name);
+                if (content != null) {
+                    BlobHolder bh = file.getAdapter(BlobHolder.class);
+                    if (bh != null) {
+                        bh.setBlob(content);
+                    }
                 }
+                file = getSession().createDocument(file);
+            } else {
+                // use the FileManager to create the file
+                FileManager fileManager = Framework.getLocalService(FileManager.class);
+                file = fileManager.createDocumentFromBlob(getSession(),
+                        content, parent.getPathAsString(), false, name);
             }
-            file = getSession().createDocument(file);
             getPathCache().put(parseLocation(parentPath) + "/" + name, file);
             return file;
         } catch (Exception e) {
@@ -470,7 +485,8 @@ public class SimpleBackend extends AbstractCoreBackend {
     @Override
     public DocumentModel createFile(String parentPath, String name)
             throws ClientException {
-        return createFile(parentPath, name, null);
+        Blob blob = new ByteArrayBlob(new byte[0], "application/octet-stream");
+        return createFile(parentPath, name, blob);
     }
 
     @Override
