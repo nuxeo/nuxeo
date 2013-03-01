@@ -38,8 +38,6 @@ import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
-import org.nuxeo.ecm.core.event.tx.BulkExecutor;
-import org.nuxeo.ecm.core.event.tx.PostCommitSynchronousRunner;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -78,6 +76,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     protected final EventListenerList listenerDescriptors;
 
+    protected PostCommitEventExecutor postCommitExec;
+
     protected volatile AsyncEventExecutor asyncExec;
 
     protected final List<AsyncWaitHook> asyncWaitHooks = new CopyOnWriteArrayList<AsyncWaitHook>();
@@ -91,6 +91,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
     public EventServiceImpl() {
         txListeners = new ListenerList();
         listenerDescriptors = new EventListenerList();
+        postCommitExec = new PostCommitEventExecutor();
         asyncExec = new AsyncEventExecutor();
         init();
     }
@@ -100,6 +101,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
+        postCommitExec.shutdown(timeoutMillis);
         Set<AsyncWaitHook> notTerminated = new HashSet<AsyncWaitHook>();
         for (AsyncWaitHook hook : asyncWaitHooks) {
             if (hook.shutdown() == false) {
@@ -290,18 +292,20 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
             }
         }
 
+        List<EventListenerDescriptor> postCommitSync = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
+        List<EventListenerDescriptor> postCommitAsync = listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors();
+
         if (bulkModeEnabled) {
             // run all listeners synchronously in one transaction
             List<EventListenerDescriptor> listeners = new ArrayList<EventListenerDescriptor>();
             if (!blockSyncPostCommitProcessing) {
-                listeners = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
+                listeners = postCommitSync;
             }
             if (!blockAsyncProcessing) {
-                listeners.addAll(listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors());
+                listeners.addAll(postCommitAsync);
             }
             if (!listeners.isEmpty()) {
-                BulkExecutor bulkExecutor = new BulkExecutor(listeners, event);
-                bulkExecutor.run();
+                postCommitExec.runBulk(listeners, event);
             }
             return;
         }
@@ -315,11 +319,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
             // - there is no transaction started by JMS listener
             log.debug("Deactivating sync post-commit listener since we are called from JMS");
         } else {
-            List<EventListenerDescriptor> syncPCDescs = listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors();
-            if (syncPCDescs != null && !syncPCDescs.isEmpty()) {
-                PostCommitSynchronousRunner syncRunner = new PostCommitSynchronousRunner(
-                        syncPCDescs, event);
-                syncRunner.run();
+            if (!postCommitSync.isEmpty()) {
+                postCommitExec.run(postCommitSync, event);
             }
         }
 
@@ -332,9 +333,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
         } else {
-            asyncExec.run(
-                    listenerDescriptors.getEnabledAsyncPostCommitListenersDescriptors(),
-                    event);
+            asyncExec.run(postCommitAsync, event);
         }
     }
 

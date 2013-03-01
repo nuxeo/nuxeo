@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.event.impl;
 
@@ -32,8 +33,6 @@ import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * XObject descriptor to declare event listeners
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @XObject("listener")
 public class EventListenerDescriptor {
@@ -92,10 +91,7 @@ public class EventListenerDescriptor {
     protected PostCommitEventListener postCommitEventListener;
 
     public int getPriority() {
-        if (priority == null) {
-            return 0;
-        }
-        return priority;
+        return priority == null ? 0 : priority.intValue();
     }
 
     public void setRuntimeContext(RuntimeContext rc) {
@@ -223,7 +219,7 @@ public class EventListenerDescriptor {
     }
 
     public boolean getIsAsync() {
-        return isAsync;
+        return isAsync == null ? false : isAsync.booleanValue();
     }
 
     public boolean isSingleThreaded() {
@@ -233,8 +229,10 @@ public class EventListenerDescriptor {
     /**
      * Filters the event bundle to only keep events of interest to this
      * listener.
+     *
+     * @since 5.7
      */
-    protected EventBundle filterBundle(EventBundle bundle) {
+    public EventBundle filterBundle(EventBundle bundle) {
         EventBundle filtered = new EventBundleImpl();
         for (Event event : bundle) {
             if (!acceptEvent(event.getName())) {
@@ -248,6 +246,26 @@ public class EventListenerDescriptor {
             filtered.push(event);
         }
         return filtered;
+    }
+
+    /**
+     * Checks if there's at least one event of interest in the bundle.
+     *
+     * @since 5.7
+     */
+    public boolean acceptBundle(EventBundle bundle) {
+        for (Event event : bundle) {
+            if (!acceptEvent(event.getName())) {
+                continue;
+            }
+            PostCommitEventListener pcl = asPostCommitListener();
+            if (pcl instanceof PostCommitFilteringEventListener
+                    && !((PostCommitFilteringEventListener) pcl).acceptEvent(event)) {
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
 }
