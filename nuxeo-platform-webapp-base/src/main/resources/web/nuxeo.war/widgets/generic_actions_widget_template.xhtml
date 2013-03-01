@@ -23,7 +23,6 @@
         <a4j:outputPanel id="#{widget.id}_panel">
 
           <div class="#{widgetProperty_subStyleClass}">
-
             <c:choose>
               <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
                 <div class="widgetPanel actionsWidgetPanel">
@@ -36,7 +35,7 @@
                       <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
                       <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
                       <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
-                      <ui:param name="formStyleClass" value="subWidgetForm" />
+                      <ui:param name="formStyleClass" value="displayI subWidgetForm" />
                       <ui:define name="form_template_content">
                         <ui:decorate template="/incl/action/action_template.xhtml">
                           <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
@@ -45,6 +44,9 @@
                       </ui:define>
                     </ui:decorate>
                   </c:forEach>
+
+                  <ui:include src="./generic_actions_more_menu.xhtml" />
+
                 </div>
               </c:when>
 
@@ -60,7 +62,7 @@
                         <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
                         <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
                         <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
-                        <ui:param name="formStyleClass" value="subWidgetForm" />
+                        <ui:param name="formStyleClass" value="displayI subWidgetForm" />
                         <ui:define name="form_template_content">
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
@@ -71,6 +73,8 @@
                     </li>
                   </c:forEach>
                 </ul>
+
+                <ui:include src="./generic_actions_more_menu.xhtml" />
               </c:when>
 
               <!-- TODO: add rollover menu? -->
@@ -96,48 +100,12 @@
                     </ui:decorate>
                   </div>
                 </c:forEach>
+
+                <ui:include src="./generic_actions_more_menu.xhtml" />
+
               </c:otherwise>
 
             </c:choose>
-
-            <c:if test="#{not empty widgetProperty_maxActionsNumber and widgetProperty_actions.size > widgetProperty_maxActionsNumber}">
-              <ul class="actionList">
-                <li class="dropDownMenu button dropdown">
-                  <h:outputText value="#{empty widgetProperty_moreMenuLabel ? messages['label.summary.actions.more'] : widgetProperty_moreMenuLabel}" />
-                  <ul class="actionSubList">
-                    <c:forEach var="action" begin="#{widgetProperty_maxActionsNumber}"
-                      end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
-                      <li>
-                        <ui:decorate template="/widgets/incl/form_template.xhtml">
-                          <ui:param name="addForm" value="#{widgetProperty_addForm}" />
-                          <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
-                          <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
-                          <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
-                          <ui:param name="formStyleClass" value="subWidgetForm" />
-                          <ui:define name="form_template_content">
-                            <ui:include src="/incl/action/generic_action_template.xhtml">
-                              <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
-                            </ui:include>
-                          </ui:define>
-                        </ui:decorate>
-                      </li>
-                    </c:forEach>
-                  </ul>
-                </li>
-              </ul>
-              <script type="text/javascript">
-                jQuery(document).ready(function($) {
-                  jQuery('.dropDownMenu').click(function(e) {
-                    jQuery(this).find('ul').hide();
-                    jQuery(this).find("ul").show();
-                    e.stopPropagation();
-                  });
-                  jQuery(document).click(function() {
-                    jQuery('.dropDownMenu').find('ul').hide();
-                  });
-                });
-              </script>
-            </c:if>
 
           </div>
 
