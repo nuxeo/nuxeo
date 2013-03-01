@@ -70,6 +70,11 @@ public class NuxeoDriveSetupIntegrationTests {
     @Param(name = "userNames")
     protected String userNames;
 
+    // Put the test users in the members group to enable Read permission to the
+    // whole repository.
+    @Param(name = "useMembersGroup", required = false)
+    protected boolean useMembersGroup = false;
+
     @OperationMethod
     public Blob run() throws Exception {
 
@@ -113,8 +118,10 @@ public class NuxeoDriveSetupIntegrationTests {
                     testUserName);
             testUserModel.setProperty(userSchemaName, passwordField,
                     testUserPassword);
-            testUserModel.setProperty(userSchemaName, "groups",
-                    new String[] { "members" });
+            if (useMembersGroup) {
+                testUserModel.setProperty(userSchemaName, "groups",
+                        new String[] { "members" });
+            }
             userManager.createUser(testUserModel);
 
             // Append test user's credentials
@@ -141,7 +148,8 @@ public class NuxeoDriveSetupIntegrationTests {
         ACP acp = session.getACP(testWorkspaceDocRef);
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (String testUserName : testUserNames) {
-            localACL.add(new ACE(testUserName, SecurityConstants.WRITE, true));
+            localACL.add(new ACE(testUserName, SecurityConstants.READ_WRITE,
+                    true));
         }
         session.setACP(testWorkspaceDocRef, acp, false);
     }
