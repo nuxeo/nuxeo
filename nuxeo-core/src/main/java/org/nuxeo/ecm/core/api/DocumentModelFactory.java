@@ -40,6 +40,8 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -356,11 +358,11 @@ public class DocumentModelFactory {
             if (schemas == null) {
                 schemas = docSchemas.toArray(new String[0]);
             }
-            DocumentType type = doc.getType();
+            TypeProvider typeProvider = Framework.getLocalService(SchemaManager.class);
             DocumentPart[] parts = new DocumentPart[schemas.length];
             for (int i = 0; i < schemas.length; i++) {
                 DocumentPart part = new DocumentPartImpl(
-                        type.getSchema(schemas[i]));
+                        typeProvider.getSchema(schemas[i]));
                 doc.readDocumentPart(part);
                 parts[i] = part;
             }

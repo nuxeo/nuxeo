@@ -2241,6 +2241,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc.refresh(DocumentModel.REFRESH_STATE, null);
         assertTrue(doc.hasFacet("Aged"));
         assertTrue(doc.hasSchema("age"));
+        doc = session.saveDocument(doc);
+        doc.refresh(DocumentModel.REFRESH_ALL, null);
     }
 
     @Test
