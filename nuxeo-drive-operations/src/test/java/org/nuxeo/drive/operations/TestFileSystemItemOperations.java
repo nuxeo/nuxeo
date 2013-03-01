@@ -856,14 +856,73 @@ public class TestFileSystemItemOperations {
         assertEquals(movedFileBlob.getDigest(), movedFileItem.getDigest());
     }
 
+    @Test
+    public void testConflictedNames() throws Exception {
+        // Try a canonical example with the Administrator user
+        Blob jsonOut = (Blob) clientSession.newRequest(
+                NuxeoDriveGenerateConflictedItemName.ID).set("name",
+                "My file (with accents \u00e9).doc").execute();
+        assertNotNull(jsonOut);
+        String newName = mapper.readValue(jsonOut.getStream(),
+                String.class);
+        assertTrue(newName.startsWith("My file (with accents \u00e9) (Administrator - "));
+        assertTrue(newName.endsWith(").doc"));
+
+        // Try with a filename with filename extension
+        jsonOut = (Blob) clientSession.newRequest(
+                NuxeoDriveGenerateConflictedItemName.ID).set("name",
+                "My file").execute();
+        assertNotNull(jsonOut);
+        newName = mapper.readValue(jsonOut.getStream(),
+                String.class);
+        assertTrue(newName.startsWith("My file (Administrator - "));
+        assertTrue(newName.endsWith(")"));
+
+        // Test with a user that has a firstname and a lastname
+        // Joe Strummer likes conflicting files
+        createUser("joe", "joe", "Joe", "Strummer");
+        clientSession = automationClient.getSession("joe", "joe");
+        jsonOut = (Blob) clientSession.newRequest(
+                NuxeoDriveGenerateConflictedItemName.ID).set("name",
+                "The Clashing File.xls").execute();
+        assertNotNull(jsonOut);
+        newName = mapper.readValue(jsonOut.getStream(),
+                String.class);
+        assertTrue(newName.startsWith("The Clashing File (Joe Strummer - "));
+        assertTrue(newName.endsWith(").xls"));
+
+        // Check that the client can choose the timezone
+        jsonOut = (Blob) clientSession.newRequest(
+                NuxeoDriveGenerateConflictedItemName.ID).set("name",
+                "The Clashing File.xls").set("timezone", "BST").execute();
+        assertNotNull(jsonOut);
+        String bstName = mapper.readValue(jsonOut.getStream(),
+                String.class);
+        jsonOut = (Blob) clientSession.newRequest(
+                NuxeoDriveGenerateConflictedItemName.ID).set("name",
+                "The Clashing File.xls").set("timezone", "PST").execute();
+        assertNotNull(jsonOut);
+        String pstName = mapper.readValue(jsonOut.getStream(), String.class);
+        assertFalse(String.format(
+                "Confliceted filenames should be different. Got '%s' twice.",
+                pstName), bstName.equals(pstName));
+    }
+
     protected void createUser(String userName, String password)
             throws ClientException {
+        createUser(userName, password, null, null);
+    }
+
+    protected void createUser(String userName, String password,
+            String firstName, String lastName) throws ClientException {
         org.nuxeo.ecm.directory.Session userDir = directoryService.getDirectory(
                 "userDirectory").getSession();
         try {
             Map<String, Object> user = new HashMap<String, Object>();
             user.put("username", userName);
             user.put("password", password);
+            user.put("firstName", firstName);
+            user.put("lastName", lastName);
             userDir.createEntry(user);
         } finally {
             userDir.close();

@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -34,12 +35,15 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * Renames the {@link FileSystemItem} with the given id with the given name for
  * the currently authenticated user.
  *
+ * Doing so as an operation make it possible to override this part without
+ * having to fork the client codebase.
+ *
  * @author Olivier Grisel
  */
 @Operation(id = NuxeoDriveGenerateConflictedItemName.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Generate Conflicted Item Name")
 public class NuxeoDriveGenerateConflictedItemName {
 
-    public static final String ID = "NuxeoDrive.GenerateConflictRename";
+    public static final String ID = "NuxeoDrive.GenerateConflictedItemName";
 
     @Context
     protected OperationContext ctx;
@@ -63,7 +67,8 @@ public class NuxeoDriveGenerateConflictedItemName {
         }
         NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
         String userName = principal.getName(); // fallback
-        if (principal.getLastName() != null && principal.getFirstName() != null) {
+        if (!StringUtils.isBlank(principal.getLastName())
+                && !StringUtils.isBlank(principal.getFirstName())) {
             // build more user friendly name from user info
             userName = principal.getFirstName() + " " + principal.getLastName();
         }
@@ -73,7 +78,7 @@ public class NuxeoDriveGenerateConflictedItemName {
         } else {
             userDate = Calendar.getInstance();
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         dateFormat.setCalendar(userDate);
         String formatedDate = dateFormat.format(userDate.getTime());
         String contextSection = String.format(" (%s - %s)", userName,
