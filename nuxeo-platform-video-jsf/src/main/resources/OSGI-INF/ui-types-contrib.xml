@@ -33,6 +33,12 @@
       </subtypes>
     </type>
 
+    <type id="OrderedFolder">
+      <subtypes>
+        <type>Video</type>
+      </subtypes>
+    </type>
+
   </extension>
 
 </component>
