@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PATH;
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.USER_WORKSPACE_PARENT_PATH;
 
@@ -116,12 +115,13 @@ public class TestIntegrationTestOperations {
         assertTrue(testUserCrendentialsArray[0].startsWith("nuxeoDriveTestUser_joe:"));
         assertTrue(testUserCrendentialsArray[1].startsWith("nuxeoDriveTestUser_jack:"));
 
+        // useMembersGroup is false by default
         NuxeoPrincipal joePrincipal = userManager.getPrincipal("nuxeoDriveTestUser_joe");
         assertNotNull(joePrincipal);
-        assertTrue(joePrincipal.getGroups().contains("members"));
+        assertFalse(joePrincipal.getGroups().contains("members"));
         NuxeoPrincipal jackPrincipal = userManager.getPrincipal("nuxeoDriveTestUser_jack");
         assertNotNull(jackPrincipal);
-        assertTrue(jackPrincipal.getGroups().contains("members"));
+        assertFalse(jackPrincipal.getGroups().contains("members"));
 
         // Check test workspace
         DocumentRef testWorkspaceRef = new PathRef(TEST_WORKSPACE_PATH);
@@ -148,7 +148,8 @@ public class TestIntegrationTestOperations {
         // having teared it down previously => should start by cleaning it up
         // ----------------------------------------------------------------------
         testUserCredentialsBlob = (Blob) clientSession.newRequest(
-                NuxeoDriveSetupIntegrationTests.ID).set("userNames", "sarah").execute();
+                NuxeoDriveSetupIntegrationTests.ID).set("userNames", "sarah").set(
+                        "useMembersGroup", true).execute();
         assertNotNull(testUserCredentialsBlob);
 
         // Check cleanup
