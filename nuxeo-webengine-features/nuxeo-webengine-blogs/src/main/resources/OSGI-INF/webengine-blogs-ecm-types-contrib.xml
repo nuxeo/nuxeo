@@ -72,6 +72,12 @@
       </subtypes>
     </type>
 
+    <type id="OrderedFolder">
+      <subtypes>
+        <type>BlogSite</type>
+      </subtypes>
+    </type>
+
   </extension>
 
 </component>

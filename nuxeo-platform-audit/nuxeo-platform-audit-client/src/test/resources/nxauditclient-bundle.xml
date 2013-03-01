@@ -10,6 +10,7 @@
         <rule grant="true">
           <type>File</type>
           <type>Folder</type>
+          <type>OrderedFolder</type>
           <type>Workspace</type>
           <type>Section</type>
           <type>Domain</type>

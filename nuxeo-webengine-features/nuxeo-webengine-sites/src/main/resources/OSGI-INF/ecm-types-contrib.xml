@@ -89,6 +89,12 @@
       </subtypes>
     </type>
 
+    <type id="OrderedFolder">
+      <subtypes>
+        <type>WebSite</type>
+      </subtypes>
+    </type>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
