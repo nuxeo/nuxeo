@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <type id="PictureBook" coretype="PictureBook">
+    <type id="PictureBook">
       <label>PictureBook</label>
       <icon>/icons/picturebook.gif</icon>
       <bigIcon>/icons/picturebook_100.png</bigIcon>
@@ -35,19 +35,25 @@
       </layouts>
     </type>
 
-    <type id="Folder" coretype="Folder">
+    <type id="Folder">
       <subtypes>
         <type>Picture</type>
         <type>PictureBook</type>
       </subtypes>
     </type>
-    <type id="PictureBook" coretype="PictureBook">
+    <type id="OrderedFolder">
       <subtypes>
         <type>Picture</type>
         <type>PictureBook</type>
       </subtypes>
     </type>
-    <type id="Workspace" coretype="Workspace">
+    <type id="PictureBook">
+      <subtypes>
+        <type>Picture</type>
+        <type>PictureBook</type>
+      </subtypes>
+    </type>
+    <type id="Workspace">
       <subtypes>
         <type>Picture</type>
         <type>PictureBook</type>
