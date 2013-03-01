@@ -32,7 +32,8 @@ Templating zone to define:
 
     <div class="#{foldableStyleClass} foldableBox">
       <ui:include src="./foldable_box_header_template.xhtml" />
-      <div class="#{foldableStyleClass} foldableBox">
+      <div class="boxBody"
+        style="#{nxu:test(foldedByDefault, 'display: none;', '')}">
         <ui:insert name="foldable_box_content" />
       </div>
     </div>
