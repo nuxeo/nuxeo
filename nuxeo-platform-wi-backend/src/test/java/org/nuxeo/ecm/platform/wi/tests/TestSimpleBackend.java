@@ -30,9 +30,10 @@ import org.nuxeo.ecm.platform.wi.backend.wss.WSSBackendAdapter;
 import org.nuxeo.ecm.platform.wi.backend.wss.WSSBackendFactoryImpl;
 import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import java.util.Collections;
@@ -50,10 +51,17 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     public static WSSListItemSorter wssListItemSorter = new WSSListItemSorter();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.platform.types.api");
+        deployBundle("org.nuxeo.ecm.platform.types.core");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
+        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.content.template");
         deployContrib("org.nuxeo.ecm.platform.wi.backend","OSGI-INF/wi-backend-contrib.xml");
         fireFrameworkStarted();
@@ -124,6 +132,13 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         doc4 = session.createDocument(doc4);
 
         session.save();
+    }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     @Test
