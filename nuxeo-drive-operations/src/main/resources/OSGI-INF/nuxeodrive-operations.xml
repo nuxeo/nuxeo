@@ -31,6 +31,8 @@
       class="org.nuxeo.drive.operations.test.NuxeoDriveWaitForAsyncCompletion" />
     <operation
       class="org.nuxeo.drive.operations.test.NuxeoDriveSetVersioningOptions" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveGenerateConflictedItemName" />
   </extension>
 
 </component>
