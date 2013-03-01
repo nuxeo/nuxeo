@@ -35,6 +35,11 @@
       </subtypes>
     </type>
 
+    <type id="OrderedFolder">
+      <subtypes>
+        <type>Audio</type>
+      </subtypes>
+    </type>
   </extension>
 
 </component>
