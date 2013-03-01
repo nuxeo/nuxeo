@@ -103,12 +103,6 @@ author: lkemen@nuxeo.com
 /* =Assets View */
 .nxDamAssetView .widgetPanel { margin: 0 .1em .3em; padding: 0 }
 
-.globalActionBar .contextActions .actionsWidgetPanel {
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  border-style: none none solid;
-  border-width: 1px;
-  padding: .2em 0;
-  text-align: right }
 .globalActionBar a.actionLink.button {
   padding: .2em .4em }
 
@@ -143,11 +137,6 @@ author: lkemen@nuxeo.com
   font-size: 1em;
   padding: .3em;
   text-transform: none }
-.nxDamAssetView .widgetPanel.containerWidgetPanel {
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 5px }
 
 /* smaller buttons in Foldable boxes*/
 .foldableBox .buttonsGadget {

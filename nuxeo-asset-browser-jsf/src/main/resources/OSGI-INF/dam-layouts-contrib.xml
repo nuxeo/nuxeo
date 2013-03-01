@@ -136,38 +136,14 @@
       </properties>
     </widget>
 
-    <widget name="damSearchActions" type="container">
-      <subWidgetRefs>
-        <widget>damClearSearch</widget>
-        <widget>damSubmitSearch</widget>
-        <widget>damSearchCSSClear</widget>
-      </subWidgetRefs>
+    <widget name="damSearchActions" type="currentDocumentActions">
       <properties widgetMode="any">
-        <property name="display">inline</property>
+        <property name="category">DAM_SEARCH_FILTER_ACTIONS</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="overallDisplay">horizontal_block</property>
         <property name="hideSubLabels">true</property>
         <property name="styleClass">facetedSearchActionBar</property>
-      </properties>
-    </widget>
-
-    <widget name="damClearSearch" type="currentDocumentAction">
-      <properties widgetMode="any">
-        <property name="actionId">damClearSearch</property>
         <property name="useAjaxForm">true</property>
-        <property name="actionsDisplay">links</property>
-      </properties>
-    </widget>
-
-    <widget name="damSubmitSearch" type="currentDocumentAction">
-      <properties widgetMode="any">
-        <property name="actionId">damSubmitSearch</property>
-        <property name="useAjaxForm">true</property>
-        <property name="actionsDisplay">buttons</property>
-      </properties>
-    </widget>
-
-    <widget name="damSearchCSSClear" type="container">
-      <properties widgetMode="any">
-        <property name="styleClass">clear</property>
       </properties>
     </widget>
 
@@ -218,7 +194,7 @@
     <widget name="damAssetViewActions" type="currentDocumentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">DAM_ASSET_VIEW_ACTIONS</property>
-        <property name="styleClass">globalActionBar</property>
+        <property name="styleClass">globalActionBar textAlignR</property>
         <property name="subStyleClass">contextActions</property>
         <property name="overallDisplay">horizontal_block</property>
         <property name="actionsDisplay">icons</property>
