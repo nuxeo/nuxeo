@@ -652,6 +652,7 @@
         <facet>Folderish</facet>
         <type>Workspace</type>
         <type>Folder</type>
+        <type>OrderedFolder</type>
         <condition>
           #{typeManager.getAllowedSubTypes(document.getType(),
           document).size()
