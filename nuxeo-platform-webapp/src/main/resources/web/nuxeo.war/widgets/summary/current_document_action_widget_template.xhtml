@@ -4,7 +4,10 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <a4j:outputPanel value="#{widget.id}_panel">
+<nxu:set var="ajaxReRender"
+  value="#{widget.id}_panel"
+  cache="true">
+  <a4j:outputPanel value="#{ajaxReRender}">
     <nxu:set var="action"
       value="#{webActions.getAction(widgetProperty_actionId, not widgetProperty_disableFiltered)}"
       cache="true">
@@ -14,12 +17,13 @@
         label="#{widget.label}"
         value="#{fieldOrValue}"
         properties="#{widget.properties}"
-        ajaxReRender="#{widget.id}_panel"
+        ajaxReRender="#{nxl:joinReRender(ajaxReRender, widgetProperty_ajaxReRender)}"
         action="#{action}"
         ignoreTemplateProperty="true"
         subWidgets="#{widget.subWidgets}"
         addForm="false" />
     </nxu:set>
   </a4j:outputPanel>
+</nxu:set>
 
 </c:if>
