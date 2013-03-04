@@ -109,6 +109,10 @@
           <predicate parameter="ecm:path" operator="STARTSWITH">
             <field schema="dam_search" name="ecm_path" />
           </predicate>
+          <predicate parameter="ecm:tag" operator="IN">
+            <field schema="dam_search" name="ecm_tags" />
+          </predicate>
+
         </whereClause>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
@@ -381,6 +385,28 @@
       </subWidgets>
     </widget>
 
+    <widget name="dam_tags_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.tagSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="tags" type="select_tags">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:ecm_tags</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
     <!-- widgets for listings -->
 
     <widget name="dam_listing_title" type="dam_title">
@@ -488,6 +514,9 @@
         </row>
         <row>
           <widget>dam_path_search</widget>
+        </row>
+        <row>
+          <widget>dam_tags_search</widget>
         </row>
       </rows>
     </layout>
