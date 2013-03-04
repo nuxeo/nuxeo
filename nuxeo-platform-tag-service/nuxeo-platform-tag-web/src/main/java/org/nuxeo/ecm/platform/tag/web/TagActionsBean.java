@@ -38,6 +38,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
@@ -55,8 +56,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This Seam bean provides support for tagging related actions which can be
- * made on the current document.
+ * This Seam bean provides support for tagging related actions which can be made
+ * on the current document.
  */
 @Name("tagActions")
 @Scope(CONVERSATION)
@@ -96,6 +97,9 @@ public class TagActionsBean implements Serializable {
      * Controls the presence of the tagging text field in UI.
      */
     private boolean addTag;
+
+    @RequestParameter
+    protected Boolean canAddNewTag;
 
     @Factory(value = "tagServiceEnabled", scope = APPLICATION)
     public boolean isTagServiceEnabled() throws ClientException {
@@ -179,8 +183,8 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Returns tag cloud info for the whole repository. For performance
-     * reasons, the security on underlying documents is not tested.
+     * Returns tag cloud info for the whole repository. For performance reasons,
+     * the security on underlying documents is not tested.
      */
     @Factory(value = "tagCloudOnAllDocuments", scope = EVENT)
     public List<Tag> getPopularCloudOnAllDocuments() throws ClientException {
@@ -231,8 +235,8 @@ public class TagActionsBean implements Serializable {
     }
 
     /**
-     * Returns <b>true</b> if the current logged user has permission to modify
-     * a tag that is applied on the current document.
+     * Returns <b>true</b> if the current logged user has permission to modify a
+     * tag that is applied on the current document.
      */
     public boolean canModifyTag(Tag tag) {
         return tag != null;
@@ -276,6 +280,14 @@ public class TagActionsBean implements Serializable {
         if (tags.size() > 10) {
             tags = tags.subList(0, 10);
         }
+
+        // add the typed tag as first suggestion if we can add new tag
+        label = cleanLabel(label);
+        if (Boolean.TRUE.equals(canAddNewTag)
+                && !tags.contains(new Tag(label, 0))) {
+            tags.add(0, new Tag(label, -1));
+        }
+
         return tags;
     }
 

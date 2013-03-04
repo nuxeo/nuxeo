@@ -18,6 +18,9 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -53,6 +56,16 @@ public class Tag implements Serializable {
 
     public void setWeight(long weight) {
         this.weight = weight;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     protected static class TagLabelComparator implements Comparator<Tag> {

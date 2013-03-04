@@ -8,89 +8,84 @@
 
   <c:if test="#{tagServiceEnabled}">
 
-    <h3 class="summaryTitle">
-      <h:outputText value="#{messages['action.view.tagging']}" />
-      <a4j:commandLink id="#{widget.id}_addTagLink" style="float:right"
-        ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
-        reRender="#{widget.id}_taggingPanel">
-        <h:graphicImage id="#{widget.id}_toggle_plus"
-          url="/icons/action_add.gif" />
-      </a4j:commandLink>
-    </h3>
+    <c:set var="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+    <c:set var="outputPanelId" value="#{widget.id}_panel" />
+    <c:set var="listRegionId" value="#{widget.id}_listRegion" />
 
-    <a4j:region id="#{widget.id}_taggingRegion">
-      <a4j:outputPanel id="#{widget.id}_taggingPanel"
-        ajaxRendered="false">
+    <c:if test="#{widget.handlingLabels}">
+      <c:if test="#{!empty widget.label}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+      <c:if test="#{empty widget.label}">
+        <ui:include src="/widgets/incl/label_template.xhtml">
+          <ui:param name="label" value="action.view.tagging" />
+          <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+          <ui:param name="translated" value="true" />
+          <ui:param name="required" value="#{widget.required}" />
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+    </c:if>
 
-        <nxu:dataList id="#{widget.id}_tagsTable" var="tag"
-          value="#{currentDocumentTags}"
-          rendered="#{not empty currentDocumentTags}">
-
+    <a4j:outputPanel id="#{outputPanelId}">
+      <a4j:outputPanel ajaxRendered="false" id="#{listRegionId}">
+        <nxu:inputList id="#{widget.id}_list" value="#{currentDocumentTags}" model="model"
+          required="#{widget.required}">
+          <h:panelGroup id="#{widget.id}_listItem">
           <span class="tag tagLink">
-
-            <h:commandLink value="#{tag.label}"
-              action="#{tagActions.listDocumentsForTag(tag.label)}" />
-
+            <h:commandLink value="#{model.rowData.label}"
+              action="#{tagActions.listDocumentsForTag(model.rowData.label)}" />
             <a4j:commandLink id="#{widget.id}_removeTag"
-              action="#{tagActions.removeTagging(tag.label)}"
+              action="#{tagActions.removeTagging(model.rowData.label)}"
               immediate="true"
-              reRender="#{widget.id}_taggingPanel, MultiTreeView"
-              rendered="#{tagActions.canModifyTag(tag)}">
+              reRender="#{nxl:joinReRender(outputPanelId, ajaxReRender)}"
+              rendered="#{tagActions.canModifyTag(model.rowData)}">
               <h:graphicImage value="/icons/action_tag_delete.png" />
             </a4j:commandLink>
-
           </span>
-
-        </nxu:dataList>
-
-        <c:if test="#{tagActions.addTag}">
-
-          <div>
-            <span id="#{widget.id}_tag_suggestDiv">
-              <h:inputText
-                id="#{widget.id}_tagLabel"
-                value="#{tagActions.tagLabel}"
-                styleClass="dataInputText"
-                onkeydown="if (event.keyCode == 13 || event.keyCode == 9) {return false;}">
-              </h:inputText>
-            </span>
-
-            <a4j:commandButton
-              value="#{messages['command.tag.add.new.tag']}"
-              id="#{widget.id}_tagLabelAddButton"
-              action="#{tagActions.addTagging}" styleClass="button"
-              reRender="#{widget.id}_taggingPanel, MultiTreeView" />
-
-            <a4j:status>
-              <f:facet name="start">
-                <h:graphicImage value="/img/standart_waiter.gif" />
-              </f:facet>
-            </a4j:status>
-          </div>
-
-          <h:panelGroup id="#{widget.id}_tag_suggestGroup">
-            <rich:suggestionbox id="#{widget.id}_tag_suggestBox"
-              for="#{widget.id}_tagLabel" tokens=""
-              suggestionAction="#{tagActions.getSuggestions}"
-              var="sugtag" fetchValue="#{sugtag.label}"
-              nothingLabel="#{messages['label.suggestion.noSearchResults']}"
-              minChars="3" frequency="0" requestDelay="100">
-              <a4j:support event="onselect" bypassUpdates="true">
-              </a4j:support>
-              <h:column>
-                <f:subview>
-                  <span class="tag tagLink">
-                    <h:outputText value="${sugtag.label}" />
-                  </span>
-                </f:subview>
-              </h:column>
-            </rich:suggestionbox>
           </h:panelGroup>
-
-        </c:if>
-
+        </nxu:inputList>
+        <h:message styleClass="errorMessage" for="#{widget.id}_list"
+          id="#{widget.id}_message" />
       </a4j:outputPanel>
-    </a4j:region>
+
+      <span id="#{widget.id}_suggestDiv">
+        <h:inputText id="#{widget.id}_suggest"
+          onkeydown="if (event.keyCode == 13) {return false;}" />
+      </span>
+      <rich:suggestionbox id="#{widget.id}_tag_suggestBox"
+        for="#{widget.id}_suggest" tokens=""
+        suggestionAction="#{tagActions.getSuggestions}"
+        var="sugtag" fetchValue=""
+        nothingLabel="#{messages['label.suggestion.noSearchResults']}"
+        minChars="3" frequency="0" requestDelay="100">
+        <f:param name="canAddNewTag" value="true" />
+        <a4j:support event="onselect"
+          focus="#{widget.id}_suggest"
+          bypassUpdates="true"
+          reRender="#{nxl:joinReRender(listRegionId, ajaxReRender)}"
+          id="#{widget.id}_listRegion_select">
+          <f:setPropertyActionListener value="#{sugtag.label}"
+            target="#{tagActions.tagLabel}" />
+          <nxu:actionListenerMethod value="#{tagActions.addTagging}" />
+          <f:param name="canAddNewTag" value="true" />
+        </a4j:support>
+        <h:column>
+          <f:subview rendered="#{sugtag.weight eq -1}">
+            <span class="tag newTag">
+              <h:outputText value="${sugtag.label}" />
+            </span>
+          </f:subview>
+          <f:subview rendered="#{sugtag.weight gt -1}">
+            <span class="tag tagLink">
+              <h:outputText value="${sugtag.label}" />
+            </span>
+          </f:subview>
+        </h:column>
+      </rich:suggestionbox>
+    </a4j:outputPanel>
 
   </c:if>
 

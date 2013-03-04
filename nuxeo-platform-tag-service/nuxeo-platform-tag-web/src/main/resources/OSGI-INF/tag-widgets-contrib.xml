@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.tag.widgets">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="select_tags">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Tags selection</title>
+        <description>
+          <p>
+            This widget type allows to select multiple tags.
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/select_tags_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+</component>
