@@ -78,7 +78,7 @@ public class NuxeoDriveGenerateConflictedItemName {
         } else {
             userDate = Calendar.getInstance();
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh-mm");
         dateFormat.setCalendar(userDate);
         String formatedDate = dateFormat.format(userDate.getTime());
         String contextSection = String.format(" (%s - %s)", userName,
