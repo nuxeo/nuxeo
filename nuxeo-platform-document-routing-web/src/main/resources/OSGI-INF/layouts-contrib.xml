@@ -169,6 +169,7 @@
       </labels>
       <controls mode="any">
         <control name="handlingLabels">true</control>
+        <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 

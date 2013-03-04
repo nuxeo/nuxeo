@@ -10,9 +10,9 @@
   <h:outputText rendered="#{fn:startsWith(fieldOrValue, 'group:')}">
     <nxu:set var="group" value="#{fn:split(fieldOrValue, ':')[1]}">
       <span class="tag group creator">
-        <a href="#{baseURL}group/#{group}">
-          #{group}
-        </a>
+         <h:commandLink action="#{groupManagementActions.viewGroup(group)}">
+          <h:outputText value="#{group}"/>
+         </h:commandLink>
       </span>
     </nxu:set>
   </h:outputText>
