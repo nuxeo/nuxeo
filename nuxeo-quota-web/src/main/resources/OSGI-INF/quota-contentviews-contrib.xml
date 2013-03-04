@@ -10,7 +10,7 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <whereClause docType="quota_heaviest_containers_cv">
-          <predicate parameter="dc:title" operator="=">
+          <predicate parameter="dc:title" operator="LIKE">
             <field schema="quota_heaviest_containers_cv" name="dublincore_title"/>
           </predicate>
           <predicate parameter="dss:totalSize" operator="BETWEEN">
@@ -48,7 +48,7 @@
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
         <whereClause docType="quota_heaviest_containers_cv">
-          <predicate parameter="dc:title" operator="=">
+          <predicate parameter="dc:title" operator="LIKE">
             <field schema="quota_heaviest_containers_cv" name="dublincore_title"/>
           </predicate>
           <predicate parameter="dss:totalSize" operator="BETWEEN">

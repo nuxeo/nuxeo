@@ -98,4 +98,5 @@ jQuery.noConflict();
  <h:inputText id="maxValue" value="#{field}" style="visibility:hidden"/>
 </c:if> 
 </nxu:set>
+ <h:outputText value="#{messages['label.quota.setMaxSize']}" rendered="#{!quotaStatsActions.isQuotaSetOnCurrentDocument()}" class="help"/>
 </div>

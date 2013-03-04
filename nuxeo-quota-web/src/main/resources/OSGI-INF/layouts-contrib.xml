@@ -310,6 +310,7 @@
             /widgets/quota_selectSizeLimits_widget_template.xhtml
           </property>
          <property name="rangeMinSize">1024</property>
+         <property name="styleClass">gridStyle12</property>
         </properties>
         <handlingLabels>false</handlingLabels>
       </widget>
