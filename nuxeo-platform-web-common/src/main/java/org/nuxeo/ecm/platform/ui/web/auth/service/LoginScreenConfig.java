@@ -24,6 +24,7 @@ import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link XMap} object to manage configuration of the login screen (login.jsp)
@@ -39,25 +40,20 @@ public class LoginScreenConfig implements Serializable {
     @XNodeList(value = "loginProviders/loginProvider", type = ArrayList.class, componentType = LoginProviderLink.class)
     protected List<LoginProviderLink> providers;
 
-    @XNode("headerStyle")
     protected String headerStyle;
 
-    @XNode("footerStyle")
     protected String footerStyle;
 
     @XNode("@displayNews")
     protected Boolean displayNews;
 
-    @XNode("bodyBackgroundStyle")
     protected String bodyBackgroundStyle;
 
-    @XNode("loginBoxBackgroundStyle")
     protected String loginBoxBackgroundStyle;
 
     @XNode("loginBoxWidth")
     protected String loginBoxWidth;
 
-    @XNode("logoUrl")
     protected String logoUrl;
 
     @XNode("logoAlt")
@@ -204,6 +200,31 @@ public class LoginScreenConfig implements Serializable {
             return true;
         }
         return displayNews;
+    }
+
+    @XNode("headerStyle")
+    public void setHeaderStyle(String headerStyle) {
+        this.headerStyle = Framework.expandVars(headerStyle);
+    }
+
+    @XNode("footerStyle")
+    public void setFooterStyle(String footerStyle) {
+        this.footerStyle = Framework.expandVars(footerStyle);
+    }
+
+    @XNode("bodyBackgroundStyle")
+    public void setBodyBackgroundStyle(String bodyBackgroundStyle) {
+        this.bodyBackgroundStyle = Framework.expandVars(bodyBackgroundStyle);
+    }
+
+    @XNode("loginBoxBackgroundStyle")
+    public void setLoginBoxBackgroundStyle(String loginBoxBackgroundStyle) {
+        this.loginBoxBackgroundStyle = Framework.expandVars(loginBoxBackgroundStyle);
+    }
+
+    @XNode("logoUrl")
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = Framework.expandVars(logoUrl);
     }
 
 }

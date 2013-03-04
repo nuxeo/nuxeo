@@ -9,6 +9,7 @@
 
    <headerStyle>#CCCCCC</headerStyle>
    <footerStyle>Something</footerStyle>
+   <bodyBackgroundStyle>url("${org.nuxeo.ecm.contextPath}/img/login_bg.png") repeat scroll bottom left #cadfc0;</bodyBackgroundStyle>
 
    <loginProviders>
      <loginProvider name="google">
@@ -17,12 +18,12 @@
        <description>YYYYY</description>
      </loginProvider>
      <loginProvider name="facebook">
-       <iconPath>nuxeo.war/img/fb.png</iconPath>
+       <iconPath>nuxeo/img/fb.png</iconPath>
        <link>XXXX</link>
        <description>YYYYY</description>
      </loginProvider>
      <loginProvider name="linkedin">
-       <iconPath>nuxeo.war/img/li.png</iconPath>
+       <iconPath>nuxeo/img/li.png</iconPath>
        <link>XXXX</link>
        <description>YYYYY</description>
      </loginProvider>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 @XObject("loginProvider")
 public class LoginProviderLink implements Serializable {
@@ -28,10 +29,8 @@ public class LoginProviderLink implements Serializable {
     @XNode("@remove")
     protected boolean remove = false;
 
-    @XNode("iconPath")
     protected String iconPath;
 
-    @XNode("link")
     protected String link;
 
     @XNode("description")
@@ -49,16 +48,18 @@ public class LoginProviderLink implements Serializable {
         return iconPath;
     }
 
+    @XNode("iconPath")
     public void setIconPath(String iconPath) {
-        this.iconPath = iconPath;
+        this.iconPath = Framework.expandVars(iconPath);
     }
 
     public String getLink() {
         return link;
     }
 
+    @XNode("link")
     public void setLink(String link) {
-        this.link = link;
+        this.link = Framework.expandVars(link);
     }
 
     public String getDescription() {

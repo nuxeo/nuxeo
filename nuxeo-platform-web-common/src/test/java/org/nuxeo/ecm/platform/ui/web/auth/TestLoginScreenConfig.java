@@ -66,6 +66,18 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testVariableExpension() {
+        PluggableAuthenticationService authService = getAuthService();
+        assertNotNull(authService);
+
+        LoginScreenConfig config = authService.getLoginScreenConfig();
+        assertNotNull(config);
+
+        String style = config.getBodyBackgroundStyle();
+        assertTrue(style.contains("/nuxeo/img/login_bg.png"));
+    }
+
+    @Test
     public void testMergeConfig() throws Exception {
         PluggableAuthenticationService authService = getAuthService();
         assertNotNull(authService);
