@@ -58,7 +58,7 @@
       <table>oauth2Tokens</table>
       <idField>id</idField>
       <autoincrementIdField>true</autoincrementIdField>
-      <createTablePolicy>always</createTablePolicy> <!-- on_missing_columns -->
+      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
   </extension>
