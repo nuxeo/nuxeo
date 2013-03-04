@@ -401,6 +401,7 @@
           This widget displays the tags for the currentDocument and
           allows to add new ones. It requires the tag service to be deployed.
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -656,9 +657,16 @@
     </widget>
 
     <widget name="summary_current_document_tagging" type="summary_current_document_tagging">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handlingLabels">true</control>
       </controls>
+      <properties mode="any">
+        <property name="ajaxReRender">MultiTreeView</property>
+      </properties>
     </widget>
 
     <widget name="summary_current_document_dublincore" type="summary_current_document_dublincore">
