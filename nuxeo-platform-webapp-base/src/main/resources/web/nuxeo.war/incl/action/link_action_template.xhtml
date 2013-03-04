@@ -15,7 +15,7 @@
   value="#{nxl:joinReRender(ajaxReRender, actionReRender)}"
   cache="true">
 <nxu:set var="onclick"
-  value="if (!confirm#{idPrefix}#{action.id}Message()) return false;#{action.confirm};#{action.properties.onclick};"
+  value="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};"
   cache="true">
 
 <c:if test="#{useButton}">

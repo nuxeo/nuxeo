@@ -43,6 +43,10 @@
       <filter-id>can_lock</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
+        <property name="confirmMessage">label.login.copyright</property>
+        <propertyList name="confirmMessageArgs">
+          <value>2012</value>
+        </propertyList>
       </properties>
     </action>
 
@@ -53,6 +57,7 @@
       <filter-id>can_unlock</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
+        <property name="confirmMessage">command.save</property>
       </properties>
     </action>
 
@@ -65,6 +70,10 @@
           jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
         </property>
         <property name="ajaxSupport">true</property>
+        <property name="confirmMessage">label.login.copyright</property>
+        <propertyList name="confirmMessageArgs">
+          <value>#{messages['label.loggedAsUser]}</value>
+        </propertyList>
       </properties>
     </action>
 
@@ -73,6 +82,12 @@
       icon="/icons/contextual_menu/download.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>documentHasBlobs</filter-id>
+      <properties>
+        <property name="confirmMessage">label.login.copyright</property>
+        <propertyList name="confirmMessageArgs">
+          <value>#{currentUser.name}</value>
+        </propertyList>
+      </properties>
     </action>
 
     <action id="subscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"

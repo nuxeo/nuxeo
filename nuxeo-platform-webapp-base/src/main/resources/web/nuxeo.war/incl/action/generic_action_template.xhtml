@@ -1,5 +1,6 @@
 <c:if test="true"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <c:if test="false">
@@ -39,16 +40,20 @@ TODO:
 
 </c:if>
 
-  <script type="text/javascript">
-    function confirm#{idPrefix}#{action.id}Message() {
-      message = "#{nxu:translate(action.properties.confirmMessage, action.properties.confirmMessageArgs)}";
-      if (message != "") {
-        return confirm(message);
-      }
-      return true;
-    }
-  </script>
 
+<script type="text/javascript">
+  function confirm#{idPrefix}#{action.id}Message() {
+    message = "#{nxu:translate(action.properties.confirmMessage, action.properties.confirmMessageArgs)}";
+    if (message != "") {
+      return confirm(message);
+    }
+    return true;
+  }
+</script>
+
+<nxu:set var="actionConfirmMessageJs"
+  value="if (!confirm#{idPrefix}#{action.id}Message()) return false;"
+  cache="true">
   <c:choose>
 
     <c:when test="#{action.type == 'bare_link' or (empty action.type and actionType == 'bare_link')}">
@@ -79,5 +84,6 @@ TODO:
     </c:otherwise>
 
   </c:choose>
+</nxu:set>
 
 </c:if>
