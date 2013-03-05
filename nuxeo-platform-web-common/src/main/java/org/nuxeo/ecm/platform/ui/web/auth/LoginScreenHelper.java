@@ -51,4 +51,11 @@ public class LoginScreenHelper {
         }
     }
 
+    public static String getValueWithDefault(String value, String defaultValue) {
+        if (value == null || value.isEmpty()) {
+            return defaultValue;
+        }
+        return value;
+    }
+
 }
