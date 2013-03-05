@@ -45,7 +45,7 @@ public class LoginScreenConfig implements Serializable {
     protected String footerStyle;
 
     @XNode("newsIframeUrl")
-    protected String newsIframeUrl;
+    protected String newsIframeUrl = "https://www.nuxeo.com/embedded/dm-login";
 
     protected String bodyBackgroundStyle;
 
