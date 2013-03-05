@@ -17,12 +17,15 @@
 
 package org.nuxeo.ecm.quota.size;
 
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -147,6 +150,7 @@ public class QuotaAwareDocument implements QuotaAware {
                 QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, true);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
                 Boolean.TRUE);
+        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
         doc = doc.getCoreSession().saveDocument(doc);
     }
 

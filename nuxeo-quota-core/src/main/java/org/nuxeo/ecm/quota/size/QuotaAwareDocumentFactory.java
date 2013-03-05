@@ -20,6 +20,7 @@ package org.nuxeo.ecm.quota.size;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * Simple factory for {@link QuotaAwareDocument} document model adapter
@@ -34,6 +35,7 @@ public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
         if (!doc.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
             doc.addFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             if (save) {
+                doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
                 doc = doc.getCoreSession().saveDocument(doc);
             }
         }
