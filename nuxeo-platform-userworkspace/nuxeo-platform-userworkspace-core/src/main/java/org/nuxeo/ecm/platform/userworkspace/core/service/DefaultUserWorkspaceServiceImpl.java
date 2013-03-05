@@ -19,7 +19,10 @@
 
 package org.nuxeo.ecm.platform.userworkspace.core.service;
 
+import java.io.Serializable;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -34,12 +37,19 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -48,7 +58,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of the {@link UserWorkspaceService}.
- * 
+ *
  * @author tiry
  */
 public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
@@ -105,6 +115,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         return path.toString();
     }
 
+    @Override
     public DocumentModel getCurrentUserPersonalWorkspace(String userName,
             DocumentModel currentDocument) throws ClientException {
         if (currentDocument == null) {
@@ -117,6 +128,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
                 currentDocument);
     }
 
+    @Override
     public DocumentModel getCurrentUserPersonalWorkspace(
             CoreSession userCoreSession, DocumentModel context)
             throws ClientException {
@@ -128,6 +140,8 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
      * This method handles the UserWorkspace creation with a Principal or a
      * username. At least one should be passed. If a principal is passed, the
      * username is not taken into account.
+     *
+     * @since 5.7 "userWorkspaceCreated" is triggered
      */
     protected DocumentModel getCurrentUserPersonalWorkspace(
             Principal principal, String userName, CoreSession userCoreSession,
@@ -284,7 +298,6 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
                 buildUserWorkspaceTitle(principal, userName));
         doc.setProperty("dublincore", "description", "");
         doc = unrestrictedSession.createDocument(doc);
-
         ACP acp = new ACPImpl();
         ACE grantEverything = new ACE(userName, SecurityConstants.EVERYTHING,
                 true);
@@ -292,7 +305,14 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         acl.setACEs(new ACE[] { grantEverything });
         acp.addACL(acl);
         doc.setACP(acp, true);
-
+        /**
+         * @since 5.7
+         */
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("username", userName);
+        notifyEvent(unrestrictedSession, doc,
+                (NuxeoPrincipal) unrestrictedSession.getPrincipal(),
+                DocumentEventTypes.USER_WORKSPACE_CREATED, properties);
         return doc;
     }
 
@@ -303,6 +323,7 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
                 context.getCoreSession(), context);
     }
 
+    @Override
     public DocumentModel getUserPersonalWorkspace(String userName,
             DocumentModel context) throws ClientException {
         try {
@@ -377,6 +398,30 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
 
         return userName;
 
+    }
+
+    protected static void notifyEvent(CoreSession coreSession,
+            DocumentModel document, NuxeoPrincipal principal, String eventId,
+            Map<String, Serializable> properties) throws ClientException {
+        if (properties == null) {
+            properties = new HashMap<String, Serializable>();
+        }
+        EventContext eventContext = null;
+        if (document != null) {
+            properties.put(CoreEventConstants.REPOSITORY_NAME,
+                    document.getRepositoryName());
+            properties.put(CoreEventConstants.SESSION_ID,
+                    coreSession.getSessionId());
+            properties.put(CoreEventConstants.DOC_LIFE_CYCLE,
+                    document.getCurrentLifeCycleState());
+            eventContext = new DocumentEventContext(coreSession, principal,
+                    document);
+        } else {
+            eventContext = new EventContextImpl(coreSession, principal);
+        }
+        eventContext.setProperties(properties);
+        Event event = eventContext.newEvent(eventId);
+        Framework.getLocalService(EventProducer.class).fireEvent(event);
     }
 
     protected class UnrestrictedUserWorkspaceFinder extends
