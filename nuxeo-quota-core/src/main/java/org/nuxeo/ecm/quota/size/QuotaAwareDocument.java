@@ -23,6 +23,7 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * Adapter to manage a DocumentModel that supports Quotas
@@ -95,10 +96,13 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
+    @Override
     public void save() throws ClientException {
         doc.getContextData().putScopedValue(ScopeType.REQUEST,
                 QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, true);
-        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                Boolean.TRUE);
+        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
         doc = doc.getCoreSession().saveDocument(doc);
     }
 
@@ -112,6 +116,7 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
+    @Override
     public void setMaxQuota(long maxSize, boolean save) throws ClientException {
         long existingTotal = getTotalSize();
         if (existingTotal > maxSize && maxSize > 0) {
@@ -124,6 +129,7 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
+    @Override
     public QuotaInfo getQuotaInfo() {
         return new QuotaInfo(getInnerSize(), getTotalSize(), getMaxQuota());
     }

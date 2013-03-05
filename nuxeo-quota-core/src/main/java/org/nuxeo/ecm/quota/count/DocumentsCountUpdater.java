@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISAB
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_FACET;
+import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_AUDIT_LOGGER;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -174,6 +175,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
                 }
                 ancestor.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
                 ancestor.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
+                ancestor.putContextData(DISABLE_AUDIT_LOGGER, true);
                 session.saveDocument(ancestor);
             }
         }
@@ -194,6 +196,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
                 childrenCount + count);
         parent.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
         parent.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
+        parent.putContextData(DISABLE_AUDIT_LOGGER, true);
         session.saveDocument(parent);
     }
 
@@ -336,6 +339,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         // do not send notifications
         folder.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
         folder.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
+        folder.putContextData(DISABLE_AUDIT_LOGGER, true);
         session.saveDocument(folder);
     }
 
