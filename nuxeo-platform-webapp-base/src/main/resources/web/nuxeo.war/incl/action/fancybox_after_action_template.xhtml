@@ -33,6 +33,21 @@
             cache="true">
 
             <c:if test="#{actionClicked}">
+
+              <a4j:form>
+                <a4j:jsFunction name="#{fancyboxId}_closeFancybox">
+                  <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+                    target="#{selectionActions.lookupLevelValue}" />
+                  <f:setPropertyActionListener value=""
+                    target="#{selectionActions.selectedValue}" />
+                  <f:setPropertyActionListener
+                    value="#{idPrefix}clickedActionIdHolder"
+                    target="#{selectionActions.selectedValueHolder}" />
+                  <nxu:actionListenerMethod
+                    value="#{selectionActions.onClick}" />
+                </a4j:jsFunction>
+              </a4j:form>
+
               <script>
                 jQuery(document).ready(function() {
                   openFancyBox('##{fancyboxId}_box', {
@@ -44,6 +59,7 @@
                     modal: #{fancy_modal},
                     centerOnScroll: #{fancy_centerOnScroll},
                     enableEscapeButton: #{fancy_enableEscapeButton},
+                    onClosed: #{fancyboxId}_closeFancybox
                   });
                 });
               </script>
