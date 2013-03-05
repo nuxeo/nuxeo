@@ -15,8 +15,7 @@
           id="#{widget.id}" styleClass="langSelect">
           <a4j:support event="onchange"
             actionListener="#{damSearchActions.refreshAndRewind()}"
-            reRender="#{wigetProperty_ajaxReRender}"
-            eventsQueue="damSearchQueue" />
+            reRender="#{wigetProperty_ajaxReRender}" />
           <c:forEach var="contentViewHeader"
             items="#{damSearchActions.contentViewHeaders}"
             varStatus="contentViewListStatus">
