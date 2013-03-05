@@ -605,10 +605,9 @@ class FolderPage(BasePage):
             description="Click on 'New' action")
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionSubviewUpperList_1_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_1_newDocument_fancyorm'],
+            ['nxw_documentActionSubviewUpperList_1_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_1_newDocument_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_documentActionSubviewUpperList_1_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_1_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink'],
-            ['nxw_documentActionSubviewUpperList_1_newDocument_form:selectDocTypePanelOpenedState', '']],
+            ['nxw_documentActionSubviewUpperList_1_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_1_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink']],
             description="Create file: New document")
 
         fl.assert_('document_create' in fl.getBody(),
@@ -678,17 +677,21 @@ class FolderPage(BasePage):
         folder_uid = self.getDocUid()
         state = fl.getLastJsfState()
         self.selectItem(title, item_type)
-        # position of the delete button
+
         table_name = "document_content"
-        pos = '3'
+        button_name = "CURRENT_SELECTION_TRASH"
         if item_type in ['Section', 'SectionRoot']:
             table_name = "section_content"
-            pos = '0'
+            button_name = "CURRENT_SELECTION_SECTIONS_TRASH"
+
+        form_name = table_name + '_afterForm'
+        button_id = 'nxw_cvButton_' + button_name
+        button_form = button_id + '_form'
+
         params = [
-            [table_name + ':nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document', 'on'],
             ['javax.faces.ViewState', state],
-            [table_name + ':clipboardActionsTable_0_0:' + pos + ':clipboardActionsButton', 'Delete'],
-            [table_name, table_name]
+            [form_name + ':' + button_form + ':' + button_id, 'Delete'],
+            [form_name + ':' + button_form, form_name + ':' + button_form]
             ]
         fl.post(fl.server_url + "/view_documents.faces", params,
             description='Delete document "%s"' % title)
