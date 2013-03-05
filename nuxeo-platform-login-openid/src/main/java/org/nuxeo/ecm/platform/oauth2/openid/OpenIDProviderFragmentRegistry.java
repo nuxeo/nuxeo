@@ -48,6 +48,8 @@ public class OpenIDProviderFragmentRegistry extends
         copy.name = source.name;
         copy.tokenServerURL = source.tokenServerURL;
         copy.userInfoURL = source.userInfoURL;
+        copy.label = source.label;
+        copy.description = source.description;
         return copy;
     }
 
@@ -99,6 +101,13 @@ public class OpenIDProviderFragmentRegistry extends
         if (dst.userInfoURL == null || dst.userInfoURL.isEmpty()) {
             dst.userInfoURL = src.userInfoURL;
         }
+        if (dst.label == null || dst.label.isEmpty()) {
+            dst.label = src.label;
+        }
+        if (dst.description == null || dst.description.isEmpty()) {
+            dst.description = src.description;
+        }
+
         dst.enabled = src.enabled;
     }
 

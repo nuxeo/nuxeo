@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIdUserInfo;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
+import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
@@ -50,7 +51,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * 
  */
-public class OpenIDConnectProvider {
+public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     protected static final Log log = LogFactory.getLog(OpenIDConnectProvider.class);
 
@@ -170,6 +171,11 @@ public class OpenIDConnectProvider {
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public String computeUrl(HttpServletRequest req, String requestedUrl) {
+        return getAuthenticationUrl(req, requestedUrl);
     }
 
 }

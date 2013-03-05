@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
+import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -63,7 +64,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
 
             if (provider.getClientId() == null
                     || provider.getClientSecret() == null) {
-                log.warn("OpenId provider for "
+                log.info("OpenId provider for "
                         + provider.getName()
                         + " is disabled because clientId and/or clientSecret are empty (component id = "
                         + contributor.getName().toString() + ")");
@@ -130,6 +131,12 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
                             provider.getUserInfoURL(), provider.getIcon(),
                             provider.isEnabled()));
 
+            // contribute icon and link to the Login Screen
+            LoginScreenHelper.registerLoginProvider(provider.getName(),
+                    provider.getIcon(), provider.getUserInfoURL(),
+                    provider.getLabel(), provider.getDescription(),
+                    providers.get(provider.getName()));
+
         } else {
             if (Framework.isTestModeSet()) {
                 providers.put(provider.getName(), new OpenIDConnectProvider(
@@ -139,6 +146,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
                 log.error("Can not register OAuth Provider since OAuth Registry is not available");
             }
         }
+
     }
 
     @Override

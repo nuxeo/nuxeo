@@ -11,11 +11,13 @@
     point="providers">
     <provider>
       <name>GoogleOpenIDConnect</name>
+      <label>Google</label>
+      <description>Login using your Google account</description>
       <authorizationServerURL>https://accounts.google.com/o/oauth2/auth</authorizationServerURL>
       <tokenServerURL>https://accounts.google.com/o/oauth2/token</tokenServerURL>
       <userInfoURL>https://www.googleapis.com/oauth2/v1/tokeninfo</userInfoURL>
       <scope>https://www.googleapis.com/auth/userinfo.email</scope>
-      <icon>/img/google_icon.png</icon>
+      <icon>/icons/google.png</icon>
     </provider>
   </extension>
 

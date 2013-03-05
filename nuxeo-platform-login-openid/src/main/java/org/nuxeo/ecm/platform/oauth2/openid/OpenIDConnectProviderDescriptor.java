@@ -55,6 +55,12 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     @XNode("icon")
     protected String icon;
 
+    @XNode("label")
+    protected String label;
+
+    @XNode("description")
+    protected String description;
+
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
@@ -97,6 +103,14 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
 }
