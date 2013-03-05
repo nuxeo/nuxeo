@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.annotations.gwt.client;
 
 import com.google.gwt.i18n.client.Dictionary;
 
+import java.util.MissingResourceException;
+
 /**
  * @author Alexandre Russel
  *
@@ -34,6 +36,11 @@ public class AnnotationConfiguration {
 
     private static final String DOCUMENT_URL = "documentUrl";
 
+    /**
+     * @since 5.7
+     */
+    private static final String DATE_FORMAT_PATTERN = "dateFormatPattern";
+
     private static final String ANNOTATION_CONFIGURATION = "annotationConfiguration";
 
     private static final AnnotationConfiguration INSTANCE;
@@ -45,6 +52,11 @@ public class AnnotationConfiguration {
     private String previewUrl;
 
     private String documentUrl;
+
+    /**
+     * @since 5.7
+     */
+    private String dateFormatPattern;
 
     static {
         INSTANCE = new AnnotationConfiguration();
@@ -79,11 +91,26 @@ public class AnnotationConfiguration {
         return documentUrl;
     }
 
+    /**
+     * Returns the configured date format, if any.
+     *
+     * @since 5.7
+     */
+    public String getDateFormatPattern() {
+        return dateFormatPattern;
+    }
+
     private void loadConfiguration() {
         Dictionary dictionary = Dictionary.getDictionary(ANNOTATION_CONFIGURATION);
         annoteaServerUrl = dictionary.get(ANNOTEA_SERVER_URL);
         annotationCssUrl = dictionary.get(ANNOTATION_CSS_URL);
         previewUrl = dictionary.get(PREVIEW_URL);
         documentUrl = dictionary.get(DOCUMENT_URL);
+        try {
+            // this one is optional
+            dateFormatPattern = dictionary.get(DATE_FORMAT_PATTERN);
+        } catch (MissingResourceException e) {
+            dateFormatPattern = null;
+        }
     }
 }

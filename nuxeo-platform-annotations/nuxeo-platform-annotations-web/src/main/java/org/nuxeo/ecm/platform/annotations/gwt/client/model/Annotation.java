@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.user.client.Window;
+import org.nuxeo.ecm.platform.annotations.gwt.client.AnnotationConfiguration;
 import org.nuxeo.ecm.platform.annotations.gwt.client.util.XPointer;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -85,8 +87,15 @@ public class Annotation {
 
     public void setStringDate(String stringDate) {
         date = computeDate(stringDate);
-        formattedDate = DateTimeFormat.getShortDateFormat().format(date);
+        String dateFormatPattern = getDateFormatPattern();
+        DateTimeFormat dateTimeFormat = dateFormatPattern != null ? DateTimeFormat.getFormat(dateFormatPattern)
+                : DateTimeFormat.getShortDateFormat();
+        formattedDate = dateTimeFormat.format(date);
     }
+
+    private native String getDateFormatPattern() /*-{
+      return top['dateFormatPattern'];
+    }-*/;
 
     public Annotation(XPointer xpointer) {
         this.xpointer = xpointer;
