@@ -40,6 +40,12 @@ public interface QuotaAware {
 
     void save() throws ClientException;
 
+    /**
+     * @since 5.7 allows to save the document without notifying
+     *        DublincoreListener and the notification service
+     */
+    void save(boolean disableNotifications) throws ClientException;
+
     DocumentModel getDoc();
 
     void setMaxQuota(long maxSize, boolean save) throws ClientException;
