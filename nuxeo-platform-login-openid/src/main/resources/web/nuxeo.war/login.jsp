@@ -41,8 +41,7 @@ String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
 
 LoginScreenConfig screenConfig = LoginScreenHelper.getConfig();
 List<LoginProviderLink> providers = screenConfig.getProviders();
-boolean useExternalProviders = providers.size()>0;
-
+boolean useExternalProviders = providers!=null && providers.size()>0;
 
 // fetch Login Screen config and manage default
 boolean showNews = screenConfig.getDisplayNews();
@@ -433,13 +432,6 @@ body {
                    </a>
                 </div>
              <%}%>
-
-
-<!--                <div class="idItem"><a class="openID" href="#">OpenID</a></div>
-                <div class="idItem"><a class="google" href="#">Google</a></div>
-                <div class="idItem"><a class="twitter" href="#">Twitter</a></div>
-                <div class="idItem"><a class="facebook" href="#">Facebook</a></div>
-                <div class="idItem"><a class="linkedIn" href="#">LinkedIn</a></div>-->
               </div>
             </div>
           <%}%>
