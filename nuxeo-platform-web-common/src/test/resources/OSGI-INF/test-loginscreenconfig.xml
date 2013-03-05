@@ -5,8 +5,9 @@
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="loginScreen">
 
-  <loginScreenConfig displayNews="true">
+  <loginScreenConfig>
 
+   <newsIframeUrl>someurl</newsIframeUrl>
    <headerStyle>#CCCCCC</headerStyle>
    <footerStyle>Something</footerStyle>
    <bodyBackgroundStyle>url("${org.nuxeo.ecm.contextPath}/img/login_bg.png") repeat scroll bottom left #cadfc0;</bodyBackgroundStyle>

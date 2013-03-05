@@ -2,6 +2,10 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 
 import java.io.Serializable;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
@@ -10,6 +14,8 @@ import org.nuxeo.runtime.api.Framework;
 public class LoginProviderLink implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    protected static final Log log = LogFactory.getLog(LoginProviderLink.class);
 
     public LoginProviderLink() {
 
@@ -26,12 +32,20 @@ public class LoginProviderLink implements Serializable {
     @XNode("@name")
     protected String name;
 
+    @XNode("label")
+    protected String label;
+
     @XNode("@remove")
     protected boolean remove = false;
 
     protected String iconPath;
 
     protected String link;
+
+    @XNode("@class")
+    protected Class<LoginProviderLinkComputer> urlComputerClass;
+
+    protected LoginProviderLinkComputer urlComputer;
 
     @XNode("description")
     protected String description;
@@ -53,8 +67,19 @@ public class LoginProviderLink implements Serializable {
         this.iconPath = Framework.expandVars(iconPath);
     }
 
-    public String getLink() {
-        return link;
+    public String getLink(HttpServletRequest req, String requestedUrl) {
+        if (urlComputerClass != null && urlComputer == null) {
+            try {
+                urlComputer = (LoginProviderLinkComputer) urlComputerClass.newInstance();
+            } catch (Exception e) {
+                log.error("Unable to instantiate LoginProviderLinkComputer", e);
+            }
+        }
+        if (urlComputer != null) {
+            return urlComputer.computeUrl(req, requestedUrl);
+        } else {
+            return link;
+        }
     }
 
     @XNode("link")
@@ -81,4 +106,16 @@ public class LoginProviderLink implements Serializable {
             iconPath = newLink.iconPath;
         }
     }
+
+    public String getLabel() {
+        if (label == null) {
+            return getName();
+        }
+        return label;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
 }

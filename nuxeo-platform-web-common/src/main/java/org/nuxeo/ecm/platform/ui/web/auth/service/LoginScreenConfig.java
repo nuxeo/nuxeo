@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -44,8 +44,8 @@ public class LoginScreenConfig implements Serializable {
 
     protected String footerStyle;
 
-    @XNode("@displayNews")
-    protected Boolean displayNews;
+    @XNode("newsIframeUrl")
+    protected String newsIframeUrl;
 
     protected String bodyBackgroundStyle;
 
@@ -90,8 +90,8 @@ public class LoginScreenConfig implements Serializable {
     }
 
     protected void merge(LoginScreenConfig newConfig) {
-        if (newConfig.displayNews != null) {
-            this.displayNews = newConfig.displayNews;
+        if (newConfig.newsIframeUrl != null) {
+            this.newsIframeUrl = newConfig.newsIframeUrl;
         }
         if (newConfig.headerStyle != null) {
             this.headerStyle = newConfig.headerStyle;
@@ -141,12 +141,18 @@ public class LoginScreenConfig implements Serializable {
         }
     }
 
-    public void registerLoginProvider(String name, String iconUrl, String link) {
+    public void registerLoginProvider(String name, String iconUrl, String link,
+            String label, String description, LoginProviderLinkComputer computer) {
 
         LoginProviderLink newProvider = new LoginProviderLink();
         newProvider.name = name;
         newProvider.iconPath = iconUrl;
         newProvider.link = link;
+        newProvider.label = label;
+        newProvider.description = description;
+        if (computer != null) {
+            newProvider.urlComputer = computer;
+        }
 
         LoginProviderLink existingProvider = getProvider(name);
         if (existingProvider != null) {
@@ -196,10 +202,10 @@ public class LoginScreenConfig implements Serializable {
     }
 
     public boolean getDisplayNews() {
-        if (displayNews == null) {
-            return true;
+        if (newsIframeUrl == null || newsIframeUrl.isEmpty()) {
+            return false;
         }
-        return displayNews;
+        return true;
     }
 
     @XNode("headerStyle")
@@ -225,6 +231,10 @@ public class LoginScreenConfig implements Serializable {
     @XNode("logoUrl")
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = Framework.expandVars(logoUrl);
+    }
+
+    public String getNewsIframeUrl() {
+        return newsIframeUrl;
     }
 
 }

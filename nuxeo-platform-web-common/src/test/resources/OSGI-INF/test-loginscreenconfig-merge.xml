@@ -5,9 +5,10 @@
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="loginScreen">
 
-  <loginScreenConfig displayNews="false">
+  <loginScreenConfig>
 
    <headerStyle>#DDDDDD</headerStyle>
+   <newsIframeUrl></newsIframeUrl>
 
    <loginProviders>
      <loginProvider name="google">

@@ -93,7 +93,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("linkedin"));
         assertTrue(config.getDisplayNews());
 
-        assertEquals("XXXX", config.getProvider("google").getLink());
+        assertEquals("XXXX", config.getProvider("google").getLink(null, null));
         deployContrib(WEB_BUNDLE_TEST,
                 "OSGI-INF/test-loginscreenconfig-merge.xml");
 
@@ -104,7 +104,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("google"));
         assertNotNull(config.getProvider("linkedin"));
         assertNull(config.getProvider("facebook"));
-        assertEquals("News", config.getProvider("google").getLink());
+        assertEquals("News", config.getProvider("google").getLink(null, null));
 
     }
 
@@ -120,18 +120,20 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("google"));
         assertNotNull(config.getProvider("facebook"));
         assertNotNull(config.getProvider("linkedin"));
-        assertEquals("XXXX", config.getProvider("google").getLink());
+        assertEquals("XXXX", config.getProvider("google").getLink(null, null));
 
-        LoginScreenHelper.registerLoginProvider("google", "XXX", "new");
-        LoginScreenHelper.registerLoginProvider("OuvertId", "AAA", "BBB");
+        LoginScreenHelper.registerLoginProvider("google", "XXX", "new", null,
+                null, null);
+        LoginScreenHelper.registerLoginProvider("OuvertId", "AAA", "BBB", null,
+                null, null);
 
         assertEquals(4, config.getProviders().size());
         assertNotNull(config.getProvider("google"));
         assertNotNull(config.getProvider("linkedin"));
         assertNotNull(config.getProvider("facebook"));
         assertNotNull(config.getProvider("OuvertId"));
-        assertEquals("new", config.getProvider("google").getLink());
-        assertEquals("BBB", config.getProvider("OuvertId").getLink());
+        assertEquals("new", config.getProvider("google").getLink(null, null));
+        assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
 
     }
 }

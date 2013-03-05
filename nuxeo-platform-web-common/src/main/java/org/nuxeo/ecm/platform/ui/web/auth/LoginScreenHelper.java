@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
@@ -36,11 +37,13 @@ public class LoginScreenHelper {
     }
 
     public static void registerLoginProvider(String name, String iconUrl,
-            String link) throws ClientException {
+            String link, String label, String description,
+            LoginProviderLinkComputer computer) throws ClientException {
 
         LoginScreenConfig config = getConfig();
         if (config != null) {
-            config.registerLoginProvider(name, iconUrl, link);
+            config.registerLoginProvider(name, iconUrl, link, label,
+                    description, computer);
         } else {
             throw new ClientException(
                     "There is no available LoginScreen config");
