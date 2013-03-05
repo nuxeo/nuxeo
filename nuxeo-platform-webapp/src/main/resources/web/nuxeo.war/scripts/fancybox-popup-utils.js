@@ -47,7 +47,7 @@ function openFancyBox(ele, options) {
   for (name in options) {
     if (options.hasOwnProperty(name)) {
       option = options[name];
-      if (option == null || option == '') {
+      if (option === null || option === '') {
         delete options[name]
       }
     }
@@ -56,14 +56,15 @@ function openFancyBox(ele, options) {
   settings = {
     'type'     : popupType,
     'autoScale': true,
-    'width': "90%",
-    'height': "90%",
+    'autoDimensions': true,
+    'width': '90%',
+    'height': '90%',
     'modal': false,
     'transitionIn': 'none',
     'transitionOut': 'none',
     'enableEscapeButton': true,
     'centerOnScroll': true,
-    'scrolling': "auto"
+    'scrolling': 'auto'
   };
 
   if (options) {
