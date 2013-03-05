@@ -24,6 +24,11 @@
       class="org.nuxeo.ecm.quota.size.QuotaComputerProcessor" order="100">
       <event>quotaUpdateNeeded</event>
     </listener>
+    
+     <listener name="quotaUserWorkspaceSetter" async="false"
+      class="org.nuxeo.ecm.quota.QuotaUserWorkspaceListener" order="110">
+      <event>userWorkspaceCreated</event>
+    </listener>
 
   </extension>
 

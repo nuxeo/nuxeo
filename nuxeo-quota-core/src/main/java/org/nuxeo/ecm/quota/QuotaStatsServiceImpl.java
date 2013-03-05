@@ -157,6 +157,13 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     public long getQuotaFromParent(DocumentModel doc, CoreSession session)
             throws ClientException {
         List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
+        // if a user workspace, only interested in the qouta on its direct
+        // parent
+        if (parents.size() > 0
+                && "UserWorkspacesRoot".equals(parents.get(0).getType())) {
+            QuotaAware qa = parents.get(0).getAdapter(QuotaAware.class);
+            return qa != null ? qa.getMaxQuota() : -1L;
+        }
         for (DocumentModel documentModel : parents) {
             QuotaAware qa = documentModel.getAdapter(QuotaAware.class);
             if (qa == null) {

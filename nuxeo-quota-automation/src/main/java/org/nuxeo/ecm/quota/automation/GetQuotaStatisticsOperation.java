@@ -30,6 +30,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -68,7 +69,7 @@ public class GetQuotaStatisticsOperation {
         DocumentModel doc = session.getDocument(documentRef);
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         if (qa == null) {
-            new ClientRuntimeException("Quota not enabled on doc");
+             throw new ClientException("Quota not enabled on doc");
         }
         String string = toJSON(qa.getQuotaInfo(), locale);
 

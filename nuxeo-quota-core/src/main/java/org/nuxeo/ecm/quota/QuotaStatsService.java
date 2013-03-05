@@ -63,7 +63,8 @@ public interface QuotaStatsService {
 
     /**
      * Gets the quota from the first parent where quota has been set. Returns -1
-     * if no quota has been set
+     * if no quota has been set.
+     * For user workspaces, only the first parent is investigated
      *
      * @since 5.7
      */
@@ -71,7 +72,8 @@ public interface QuotaStatsService {
             throws ClientException;
 
     /**
-     * Test to see if quota allowed
+     * Test to see if quota allowed.
+     * Skip user worskpaces, where validation rules don't apply.
      *
      * @since 5.7
      */

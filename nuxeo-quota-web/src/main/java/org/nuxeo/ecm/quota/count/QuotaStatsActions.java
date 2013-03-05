@@ -172,8 +172,12 @@ public class QuotaStatsActions implements Serializable {
     }
 
     public long getMaxQuotaSliderValue() throws Exception {
-        long maxQuotaSize = getQuotaStatsService().getQuotaFromParent(
-                navigationContext.getCurrentDocument(), documentManager);
+        long maxQuotaSize = -1L;
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        if (doc != null) {
+            maxQuotaSize = getQuotaStatsService().getQuotaFromParent(doc,
+                    documentManager);
+        }
         return maxQuotaSize > 0 ? maxQuotaSize : 1072668082176L; // 999GB
     }
 
@@ -182,16 +186,12 @@ public class QuotaStatsActions implements Serializable {
      * @since 5.7
      */
     public void saveQuotaActivatedOnUsersWorkspaces() throws ClientException {
-        try {
-            getQuotaStatsService().activateQuotaOnUserWorkspaces(
-                    getMaxQuotaOnUsersWorkspaces(), documentManager);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
         long maxSize = -1;
         if (isActivateQuotaOnUsersWorkspaces()) {
             maxSize = getMaxQuotaOnUsersWorkspaces();
         }
+        getQuotaStatsService().activateQuotaOnUserWorkspaces(maxSize,
+                documentManager);
         getQuotaStatsService().launchSetMaxQuotaOnUserWorkspaces(maxSize,
                 documentManager.getRootDocument(), documentManager);
     }
