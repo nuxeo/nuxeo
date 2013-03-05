@@ -55,7 +55,7 @@
         <h:inputText id="#{widget.id}_suggest"
           onkeydown="if (event.keyCode == 13) {return false;}" />
       </span>
-      <rich:suggestionbox id="#{widget.id}_tag_suggestBox"
+      <rich:suggestionbox id="#{widget.id}_suggestionBox"
         for="#{widget.id}_suggest" tokens=""
         suggestionAction="#{tagActions.getSuggestions}"
         var="sugtag" fetchValue=""
