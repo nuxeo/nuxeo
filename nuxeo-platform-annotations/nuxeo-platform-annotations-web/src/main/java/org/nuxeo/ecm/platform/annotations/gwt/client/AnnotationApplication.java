@@ -55,6 +55,7 @@ public class AnnotationApplication {
         registerBaseHref(baseElement.getHref());
         registerAnnoteaServerUrl(annotationConfiguration.getAnnoteaServerUrl());
         registerDocUrl(annotationConfiguration.getDocumentUrl());
+        registerDateFormatPattern(annotationConfiguration.getDateFormatPattern());
         notifyAnnoteaServerUrlRegistered();
 
         applicationPanel.setStyleName("annotationApplicationPanel");
@@ -106,6 +107,10 @@ public class AnnotationApplication {
 
     private static native void registerDocUrl(String docUrl) /*-{
         top['docUrl'] = docUrl;
+    }-*/;
+
+    private static native void registerDateFormatPattern(String dateFormatPattern) /*-{
+      top['dateFormatPattern'] = dateFormatPattern;
     }-*/;
 
 }

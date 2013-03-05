@@ -249,6 +249,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements
             final int row = y;
             Annotation annotation = annotations.get(y);
             final HorizontalPanel hp = new HorizontalPanel();
+            hp.setWidth("100%");
             AnnotationDefinition def = webConfiguration.getAnnotationDefinition(annotation.getShortType());
 
             Image icon = new Image(def.getIcon());
@@ -282,8 +283,6 @@ public class AnnotationManagerPanel extends VerticalPanel implements
                 });
                 hp.add(l);
             }
-
-            hp.setCellWidth(hp.getWidget(hp.getWidgetCount() - 1), "100%");
             vp.add(hp);
 
             if (getSelectedAnnotationIndex() == row) {
