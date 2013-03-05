@@ -87,8 +87,7 @@
         </c:if>
 
         <c:if test="#{setupConfigurable}">
-          <a4j:form id="changeDevModeForm" ajaxSumit="true"
-            eventsQueue="adminCenterQueue">
+          <a4j:form id="changeDevModeForm" ajaxSumit="true">
             <c:if test="#{nxDevModeSet}">
               <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOn']}"/>
               <a4j:commandButton
@@ -134,7 +133,6 @@
           value="#{messages['admCommand.studio.refresh']}"
           actionListener="#{appsViews.flushCache()}"
           reRender="connectAppListing"
-          eventsQueue="adminCenterQueue"
           styleClass="button" />
         <h:outputText value="#{messages['label.studio.refresh']}" />
       </h:form>

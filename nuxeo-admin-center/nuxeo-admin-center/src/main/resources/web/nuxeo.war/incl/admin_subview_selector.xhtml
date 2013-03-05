@@ -12,8 +12,7 @@
           <a4j:commandLink id="#{adminSubTab.id}"
             action="#{adminViews.setCurrentSubViewId(adminSubTab.id)}"
             immediate="true"
-            reRender="admin_subtab"
-            eventsQueue="adminCenterQueue">
+            reRender="admin_subtab">
             <h:outputText value="#{messages[adminSubTab.label]}" />
           </a4j:commandLink>
         </li>
