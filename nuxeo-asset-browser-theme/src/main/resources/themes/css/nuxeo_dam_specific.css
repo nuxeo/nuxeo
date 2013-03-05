@@ -10,57 +10,50 @@ author: lkemen@nuxeo.com
 /* =Grid */
 .nxMainContainer { background-color: "neutral.lighter (__FLAVOR__ background)" }
 
-.gridStyle2 {
+.nxDamSearchForm {
   background-color: #fff;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   padding: .3em;
   width: 19% }
-.gridStyle2 .gridStyle2 {
-  padding: 0;
-  width: 16% }
 
-.gridStyle6 {
+.nxDamSearchResults {
   background-color: "neutral.lighter (__FLAVOR__ background)";
   text-align: center;
   width: 48% }
-.gridStyle6 .gridStyle6 {
-  text-align: left;
-  width: 50% }
 
-.gridStyle4 {
+.nxDamAssetView {
   background-color: #fff;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 0 0.3em;
+  padding: 0 .3em;
   width: 33% }
-.gridStyle4 .gridStyle4 { width: 33% }
 
 /* =Faceted Search */
-.gridStyle2 { font-size: 0.82em }
+.nxDamSearchForm { font-size: .82em }
 
-.gridStyle2 .widgetPanel { padding: 0 }
+.nxDamSearchForm .widgetPanel { padding: 0 }
 
 /* =Assets list */
-.gridStyle6 { background-color: "neutral.lighter (__FLAVOR__ background)" }
-.gridStyle6 .widgetPanel { padding: 0 2% }
+.nxDamSearchResults { background-color: "neutral.lighter (__FLAVOR__ background)" }
+.nxDamSearchResults .widgetPanel { padding: 0 2% }
 
-.gridStyle6 .action_bar a { padding: .1em .4em }
+.nxDamSearchResults .action_bar a { padding: .1em .4em }
 
-.gridStyle6 .listingLayoutSelector {
+.nxDamSearchResults .listingLayoutSelector {
   font-size: .9em }
 
-.gridStyle6 .pageNavigationControls {
+.nxDamSearchResults .pageNavigationControls {
   border-style: solid none }
 
-.gridStyle6 .detail {
+.nxDamSearchResults .detail {
   clear: both;
   /*margin-top: -2.5em;*/
   text-align: right }
 
-.gridStyle6 .detail span {
+.nxDamSearchResults .detail span {
   margin-right: .3em }
 
 .bubbleBox {
@@ -108,7 +101,7 @@ author: lkemen@nuxeo.com
   max-height: 70px }
 
 /* =Assets View */
-.gridStyle4 .widgetPanel { margin: 0 .1em .3em; padding: 0 }
+.nxDamAssetView .widgetPanel { margin: 0 .1em .3em; padding: 0 }
 
 .globalActionBar .contextActions .actionsWidgetPanel {
   border-color: "neutral.lighter (__FLAVOR__ border)";
@@ -124,12 +117,12 @@ author: lkemen@nuxeo.com
   margin: 1em .4em }
 
 /* Smaller tables display in foldableBox, apply .dataTableLine styles */
-.gridStyle4 .dataInput {
+.nxDamAssetView .dataInput {
   border-collapse: collapse;
   border-spacing: 0;
   font-size: .9em;
   margin: 0 0 .5em }
-.gridStyle4 .dataInput td {
+.nxDamAssetView .dataInput td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-spacing: 0;
   border-style: solid none;
@@ -137,20 +130,20 @@ author: lkemen@nuxeo.com
   padding: .1em .3em .2em;
   text-align: left;
   vertical-align: top }
-.gridStyle4 .dataInput tr:hover {
+.nxDamAssetView .dataInput tr:hover {
   background-color: "color.major.light (__FLAVOR__ background)" }
-.gridStyle4 .widgetTable table {
+.nxDamAssetView .widgetTable table {
   width: 100% }
-.gridStyle4 .widgetPanel .labelColumn {
+.nxDamAssetView .widgetPanel .labelColumn {
   text-align: left }
 
-.gridStyle4 .summaryTitle {
+.nxDamAssetView .summaryTitle {
   background-color: "neutral.medium (__FLAVOR__ background)";
   border-bottom: 0 none;
   font-size: 1em;
   padding: .3em;
   text-transform: none }
-.gridStyle4 .widgetPanel.containerWidgetPanel {
+.nxDamAssetView .widgetPanel.containerWidgetPanel {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-style: solid;
   border-width: 1px;
