@@ -17,19 +17,19 @@
    value="#{action.properties.scrolling}"
    resolveTwice="true">
   <nxu:set var="fancy_autoScale"
-   value="#{action.properties.autoScale}"
+   value="#{nxu:test(empty action.properties.autoScale, true, action.properties.autoScale)}"
    resolveTwice="true">
   <nxu:set var="fancy_autoDimensions"
-   value="#{action.properties.autoDimensions}"
+   value="#{nxu:test(empty action.properties.autoDimensions, true, action.properties.autoDimensions)}"
    resolveTwice="true">
   <nxu:set var="fancy_modal"
-   value="#{action.properties.modal}"
+   value="#{nxu:test(empty action.properties.modal, false, action.properties.modal)}"
    resolveTwice="true">
   <nxu:set var="fancy_centerOnScroll"
-   value="#{action.properties.centerOnScroll}"
+   value="#{nxu:test(empty action.properties.centerOnScroll, true, action.properties.centerOnScroll)}"
    resolveTwice="true">
   <nxu:set var="fancy_enableEscapeButton"
-   value="#{action.properties.enableEscapeButton}"
+   value="#{nxu:test(empty action.properties.enableEscapeButton, true, action.properties.enableEscapeButton)}"
    resolveTwice="true">
 
    <ui:insert name="fancybox_properties_include" />
