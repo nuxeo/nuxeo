@@ -19,7 +19,6 @@
               <ui:param name="addForm" value="#{widgetProperty_addForm}" />
               <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
               <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
-              <ui:param name="eventsQueueId" value="#{layout.id}_queue" />
               <ui:param name="formStyleClass" value="subWidgetForm" />
               <ui:define name="form_template_content">
                 <ui:include src="/incl/action/generic_action_template.xhtml">

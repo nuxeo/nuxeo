@@ -10,7 +10,6 @@
   <c:if test="#{canToggleMode}">
     <a4j:commandLink
       ignoreDupResponses="true"
-      eventsQueue="#{widget.id}_queue"
       id="#{widget.id}_#{idPrefix}toggleAction"
       immediate="true"
       reRender="#{widget.id}_regionPanel"

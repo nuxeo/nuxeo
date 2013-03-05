@@ -42,7 +42,6 @@ empty:
         reRender="#{elementsToReRender}"
         ignoreDupResponses="true"
         requestDelay="100"
-        eventsQueue="contentViewQueue"
         styleClass="action_bar">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}"
@@ -70,7 +69,6 @@ empty:
           ajaxSingle="true"
           ignoreDupResponses="true"
           requestDelay="100"
-          eventsQueue="contentViewQueue"
           styleClass="button">
           <f:setPropertyActionListener value="true"
             target="#{selectionActions.selectedValue}" />
@@ -92,7 +90,6 @@ empty:
           reRender="#{elementsToReRender}"
           ignoreDupResponses="true"
           requestDelay="100"
-          eventsQueue="contentViewQueue"
           styleClass="button">
           <nxu:actionListenerMethod
             value="#{contentView.resetSearchDocumentModel()}" />
@@ -146,7 +143,6 @@ empty:
             reRender="#{elementsToReRender}"
             ignoreDupResponses="true"
             requestDelay="100"
-            eventsQueue="contentViewQueue"
             oncomplete="jQuery.fancybox.close();">
 
             <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
@@ -174,7 +170,6 @@ empty:
                 reRender="#{filterFormId}"
                 ignoreDupResponses="true"
                 requestDelay="100"
-                eventsQueue="contentViewQueue"
                 styleClass="button">
                 <nxu:actionListenerMethod
                   value="#{contentView.resetSearchDocumentModel()}" />

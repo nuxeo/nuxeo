@@ -10,7 +10,7 @@
       <a4j:region id="search_users_region">
         <!-- search form -->
         <a4j:form id="searchForm" ajaxSubmit="true"
-          ignoreDupResponses="true" eventsQueue="adminCenterQueue"
+          ignoreDupResponses="true"
           reRender="usersListingPanel,searchForm"
           onsubmit="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
           <script>
@@ -29,8 +29,7 @@
           <a4j:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{userManagementActions.clearSearch}"
-            styleClass="button"
-            eventsQueue="adminCenterQueue" />
+            styleClass="button" />
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />

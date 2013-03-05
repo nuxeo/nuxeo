@@ -50,7 +50,6 @@ empty:
             ajaxSingle="true"
             rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
             reRender="#{elementsToReRender}"
-            eventsQueue="contentViewQueue"
             ignoreDupResponses="true"
             requestDelay="100"
             styleClass="button warningLink">
@@ -67,8 +66,7 @@ empty:
         reRender="#{elementsToReRender}"
         oncomplete="jQuery.fancybox.close();"
         ignoreDupResponses="true"
-        requestDelay="100"
-        eventsQueue="contentViewQueue">
+        requestDelay="100">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}" />
         <p class="buttonsGadget">
@@ -83,7 +81,6 @@ empty:
             ajaxSingle="true"
             disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
             reRender="#{elementsToReRender}"
-            eventsQueue="contentViewQueue"
             ignoreDupResponses="true"
             requestDelay="100"
             styleClass="button">

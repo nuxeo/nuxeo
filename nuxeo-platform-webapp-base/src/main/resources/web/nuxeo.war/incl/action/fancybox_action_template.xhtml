@@ -27,7 +27,6 @@
           oncomplete="#{action.properties.onclick};return false;"
           styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
-          eventsQueue="#{eventsQueueId}"
           reRender="#{fancyboxId}_ajax_panel">
           <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
@@ -52,7 +51,6 @@
           value="#{messages[action.label]}"
           styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
-          eventsQueue="#{eventsQueueId}"
           reRender="#{fancyboxId}_ajax_panel">
           <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
@@ -94,7 +92,6 @@
                 ignoreDupResponses="true" requestDelay="100"
                 onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
                 disabled="#{!action.available}"
-                eventsQueue="#{eventsQueueId}"
                 styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
                 <ui:include src="/incl/action/action_icon_label_template.xhtml" />
                 <ui:insert name="inside_action" />
@@ -108,7 +105,6 @@
                 onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
                 value="#{messages[action.label]}"
                 disabled="#{!action.available}"
-                eventsQueue="#{eventsQueueId}"
                 styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
                 <ui:include src="/incl/action/action_icon_label_template.xhtml">
                   <ui:param name="hideLabel" value="true" />

@@ -29,20 +29,17 @@
               value="#{messages['command.saveAndCreate']}"
               action="#{userManagementActions.createUser(true)}"
               styleClass="button"
-              reRender="usersPanel,facesStatusMessagePanel"
-              eventsQueue="adminCenterQueue" />
+              reRender="usersPanel,facesStatusMessagePanel" />
             <a4j:commandButton
               id="button_save"
               value="#{messages['command.save']}"
               action="#{userManagementActions.createUser}"
               styleClass="button"
-              reRender="usersPanel,facesStatusMessagePanel"
-              eventsQueue="adminCenterQueue" />
+              reRender="usersPanel,facesStatusMessagePanel" />
             <a4j:commandButton
               action="#{userManagementActions.toggleShowCreateForm}" immediate="true"
               value="#{messages['command.cancel']}" styleClass="button"
-              reRender="usersPanel"
-              eventsQueue="adminCenterQueue" />
+              reRender="usersPanel" />
           </td>
         </tr>
       </tbody>
