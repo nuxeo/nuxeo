@@ -7,48 +7,65 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
-<nxu:set var="fancyboxId"
-  value="#{idPrefix}#{action.id}"
-  cache="true">
-
-<nxu:set var="include"
-  value="#{action.properties.include}"
-  resolveTwice="true" cache="true">
 <nxu:set var="iframe"
   value="#{action.properties.iframe}"
   resolveTwice="true" cache="true">
+  <c:if test="#{empty iframe}">
 
-  <a4j:outputPanel id="#{fancyboxId}_ajax_panel">
+  <ui:decorate template="fancybox_properties_template.xhtml">
+    <ui:define name="fancybox_properties_include">
 
-    <nxu:set var="fancyboxFormId"
-      value="#{fancyboxId}_fancyform"
-      cache="true">
-    <nxu:set
-      var="actionClicked"
-      value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
-      cache="true">
+      <nxu:set var="fancyboxId"
+        value="#{idPrefix}#{action.id}"
+        cache="true">
+      <nxu:set var="include"
+        value="#{action.properties.include}"
+        resolveTwice="true" cache="true">
 
-      <c:if test="#{actionClicked}">
-        <script>
-          jQuery(document).ready(function() {
-            openFancyBox('##{fancyboxId}_box');
-          });
-        </script>
-        <div style="display:none">
-          <div id="#{fancyboxId}_box">
-            <ui:include src="#{include}" />
-          </div>
-        </div>
-      </c:if>
+        <a4j:outputPanel id="#{fancyboxId}_ajax_panel">
 
-    </nxu:set>
-    </nxu:set>
+          <nxu:set var="fancyboxFormId"
+            value="#{fancyboxId}_fancyform"
+            cache="true">
+          <nxu:set
+            var="actionClicked"
+            value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
+            cache="true">
 
-  </a4j:outputPanel>
+            <c:if test="#{actionClicked}">
+              <script>
+                jQuery(document).ready(function() {
+                  openFancyBox('##{fancyboxId}_box', {
+                    width: '#{fancy_width}',
+                    height: '#{fancy_height}',
+                    scrolling: '#{fancy_scrolling}',
+                    autoScale: '#{fancy_autoScale}',
+                    autoDimensions: '#{fancy_autoDimensions}',
+                    modal: '#{fancy_modal}',
+                    centerOnScroll: '#{fancy_centerOnScroll}',
+                    enableEscapeButton: '#{fancy_enableEscapeButton}',
+                  });
+                });
+              </script>
+              <div style="display:none">
+                <div id="#{fancyboxId}_box">
+                  <ui:include src="#{include}" />
+                </div>
+              </div>
+            </c:if>
 
-</nxu:set>
-</nxu:set>
+          </nxu:set>
+          </nxu:set>
 
+        </a4j:outputPanel>
+
+      </nxu:set>
+      </nxu:set>
+
+    </ui:define>
+  </ui:decorate>
+
+</c:if>
 </nxu:set>
 
 </ui:composition>

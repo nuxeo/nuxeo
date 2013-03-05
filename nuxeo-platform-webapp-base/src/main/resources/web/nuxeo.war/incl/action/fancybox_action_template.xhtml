@@ -11,9 +11,6 @@
   value="#{idPrefix}#{action.id}"
   cache="true">
 
-<nxu:set var="include"
-  value="#{action.properties.include}"
-  resolveTwice="true" cache="true">
 <nxu:set var="iframe"
   value="#{action.properties.iframe}"
   resolveTwice="true" cache="true">
@@ -77,54 +74,57 @@
 
     <c:if test="#{not empty iframe}">
 
-      <nxu:set var="iframe_width"
-       value="#{action.properties.width}"
-       resolveTwice="true">
-      <nxu:set var="iframe_height"
-       value="#{action.properties.height}"
-       resolveTwice="true">
-      <nxu:set var="iframe_scrolling"
-       value="#{action.properties.scrolling}"
-       resolveTwice="true">
+      <nxu:set var="fancyboxJs"
+        value="openFancyBox('#{iframe}', {
+                width: '#{fancy_width}',
+                height: '#{fancy_height}',
+                scrolling: '#{fancy_scrolling}',
+                autoScale: '#{fancy_autoScale}',
+                autoDimensions: '#{fancy_autoDimensions}',
+                modal: '#{fancy_modal}',
+                centerOnScroll: '#{fancy_centerOnScroll}',
+                enableEscapeButton: '#{fancy_enableEscapeButton}',
+              });"
+        cache="true">
+        <ui:decorate template="fancybox_properties_template.xhtml">
+          <ui:define name="fancybox_properties_include">
+            <c:if test="#{not useButton}">
+              <a4j:commandLink id="#{fancyboxId}_link"
+                ajaxSingle="true"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                disabled="#{!action.available}"
+                eventsQueue="#{eventsQueueId}"
+                styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
+                <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+                <ui:insert name="inside_action" />
+              </a4j:commandLink>
+            </c:if>
 
-        <c:if test="#{not useButton}">
-          <a4j:commandLink id="#{fancyboxId}_link"
-            ajaxSingle="true"
-            ignoreDupResponses="true" requestDelay="100"
-            onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};javascript:openFancyBox('#{iframe}', { width: '#{iframe_width}', height: '#{iframe_height}', scrolling: '#{iframe_scrolling}' });"
-            disabled="#{!action.available}"
-            eventsQueue="#{eventsQueueId}"
-            styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
-            <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-            <ui:insert name="inside_action" />
-          </a4j:commandLink>
-        </c:if>
+            <c:if test="#{useButton}">
+              <a4j:commandButton id="#{fancyboxId}_link"
+                ajaxSingle="true"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                value="#{messages[action.label]}"
+                disabled="#{!action.available}"
+                eventsQueue="#{eventsQueueId}"
+                styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
+                <ui:include src="/incl/action/action_icon_label_template.xhtml">
+                  <ui:param name="hideLabel" value="true" />
+                </ui:include>
+                <ui:insert name="inside_action" />
+              </a4j:commandButton>
+            </c:if>
 
-        <c:if test="#{useButton}">
-          <a4j:commandButton id="#{fancyboxId}_link"
-            ajaxSingle="true"
-            ignoreDupResponses="true" requestDelay="100"
-            onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};javascript:openFancyBox('#{iframe}', { width: '#{iframe_width}', height: '#{iframe_height}', scrolling: '#{iframe_scrolling}' });"
-            value="#{messages[action.label]}"
-            disabled="#{!action.available}"
-            eventsQueue="#{eventsQueueId}"
-            styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
-            <ui:include src="/incl/action/action_icon_label_template.xhtml">
-              <ui:param name="hideLabel" value="true" />
-            </ui:include>
-            <ui:insert name="inside_action" />
-          </a4j:commandButton>
-        </c:if>
-
-      </nxu:set>
-      </nxu:set>
+          </ui:define>
+        </ui:decorate>
       </nxu:set>
 
     </c:if>
 
   </f:subview>
 
-</nxu:set>
 </nxu:set>
 
 </nxu:set>
