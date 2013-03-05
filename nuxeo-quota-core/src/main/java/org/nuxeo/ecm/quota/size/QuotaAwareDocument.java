@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.quota.size;
 
+import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 
 import org.apache.commons.logging.Log;
@@ -25,9 +26,9 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * Adapter to manage a DocumentModel that supports Quotas
@@ -110,7 +111,7 @@ public class QuotaAwareDocument implements QuotaAware {
         doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, inner);
         doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, total);
         if (save) {
-            save();
+            save(true);
         }
     }
 
@@ -120,7 +121,7 @@ public class QuotaAwareDocument implements QuotaAware {
         Long total = getTotalSize() + additionalSize;
         doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, total);
         if (save) {
-            save();
+            save(true);
         }
     }
 
@@ -130,7 +131,7 @@ public class QuotaAwareDocument implements QuotaAware {
         Long trash = getTrashSize() + additionalSize;
         doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, trash);
         if (save) {
-            save();
+            save(true);
         }
     }
 
@@ -140,7 +141,7 @@ public class QuotaAwareDocument implements QuotaAware {
         Long total = getVersionsSize() + additionalSize;
         doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, total);
         if (save) {
-            save();
+            save(true);
         }
     }
 
@@ -152,6 +153,15 @@ public class QuotaAwareDocument implements QuotaAware {
                 Boolean.TRUE);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
         doc = doc.getCoreSession().saveDocument(doc);
+    }
+
+    @Override
+    public void save(boolean disableNotifications) throws ClientException {
+        if (disableNotifications) {
+            doc.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
+            doc.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
+        }
+        save();
     }
 
     @Override
@@ -179,7 +189,7 @@ public class QuotaAwareDocument implements QuotaAware {
         }
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, maxSize);
         if (save) {
-            save();
+            save(false);
         }
     }
 
@@ -206,7 +216,7 @@ public class QuotaAwareDocument implements QuotaAware {
         doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, 0L);
         if (save) {
-            save();
+            save(true);
         }
     }
 }
