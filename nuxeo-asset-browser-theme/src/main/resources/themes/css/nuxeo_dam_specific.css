@@ -31,10 +31,24 @@ author: lkemen@nuxeo.com
   padding: 0 .3em;
   width: 33% }
 
+/* Widgets and Containers specific styles */
+.nxDam .containerSubWidget {
+    margin: 0 }
+
 /* =Faceted Search */
 .nxDamSearchForm { font-size: .82em }
 
-.nxDamSearchForm .widgetPanel { padding: 0 }
+.nxDamSearchForm .facetedSearchBlock .widgetPanel {
+  display: block;
+  padding: 0 }
+
+.nxDamSearchForm .facetedSearchActionBar {
+    background-color: "color.major.light (__FLAVOR__ background)";
+    border-color: "color.major.medium (__FLAVOR__ border)";
+    border-style: solid none }
+.nxDamSearchForm .facetedSearchActionBar input.button {
+    margin: .2em 0 .2em .5em;
+    padding: .3em .7em }
 
 /* =Assets list */
 .nxDamSearchResults { background-color: "neutral.lighter (__FLAVOR__ background)" }
@@ -66,8 +80,7 @@ author: lkemen@nuxeo.com
   text-align: left;
   position: relative;
   vertical-align: top;
-  min-width: 128px;
-  max-width: 140px }
+  width: 130px }
 
 .bubbleBox:hover {
   background-color: "color.major.light (__FLAVOR__ background)";
@@ -99,6 +112,29 @@ author: lkemen@nuxeo.com
   height: 75px }
 .thumbnailContainer img { border: 2px solid #fff;
   max-height: 70px }
+.bubbleBox:hover .thumbnailContainer img {
+	background-color: #fff }
+
+.bubbleBox .tag {
+  display: inline-block;
+  line-height: 150%;
+  margin: 0;
+  padding: 0 .2em .1em;
+  position: absolute;
+  right: 10px }
+
+.bubbleBox .tag.picture {
+  background-color: #00bfa6 }
+.bubbleBox .tag.video {
+  background-color: #00896e }
+.bubbleBox .tag.audio {
+  background-color: #871900 }
+.bubbleBox .tag.other {
+	background-color: #a99d9a }
+
+.bubbleBox.selectedItem .tag,
+.bubbleBox:hover .tag {
+    background-color: #000 }
 
 /* =Assets View */
 .nxDamAssetView .widgetPanel { margin: 0 .1em .3em; padding: 0 }
