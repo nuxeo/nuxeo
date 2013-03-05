@@ -114,6 +114,13 @@ public final class DocumentEventTypes {
 
     public static final String EMAIL_DOCUMENT_SEND = "emailDocumentSend";
 
+    /**
+     * Event triggered when a personal user workspace is created
+     *
+     * @since 5.7
+     */
+    public static final String USER_WORKSPACE_CREATED = "userWorkspaceCreated";
+
     // Constant utility class
     private DocumentEventTypes() {
     }
