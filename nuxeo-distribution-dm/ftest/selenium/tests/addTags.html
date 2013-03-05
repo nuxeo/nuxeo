@@ -61,23 +61,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>id=nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_toggle_plus</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>typeKeys</td>
-	<td>id=nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_tagLabel</td>
+	<td>id=nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_suggest</td>
 	<td>adminTag</td>
 </tr>
 <tr>
@@ -85,21 +70,19 @@
 	<td>10000</td>
 	<td></td>
 </tr>
-<!-- is not true when the same tag exists already in the system
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='document_view:nxl_grid_summary_layout:tag_suggestBox:suggest']/x:tbody[1]/x:tr[1]/x:td[1]</td>
-	<td>No result</td>
+	<td>//*[@id='nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>admintag</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
 	<td></td>
 </tr>
--->
 <tr>
 	<td>click</td>
-	<td>//input[@value='Add tags']</td>
+	<td>//*[@id='nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
 <tr>
@@ -118,6 +101,7 @@
 	<td>logout</td>
 	<td></td>
 </tr>
+
 <!-- log as user jdoe -->
 <tr>
 	<td>open</td>
@@ -151,23 +135,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>id=nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_toggle_plus</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
 	<td>typeKeys</td>
-	<td>id=nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_tagLabel</td>
+	<td>id=nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_suggest</td>
 	<td>newTag</td>
 </tr>
 <tr>
@@ -175,26 +144,24 @@
 	<td>10000</td>
 	<td></td>
 </tr>
-<!-- is not true when the same tag exists already in the system
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='document_view:nxl_grid_summary_layout:tag_suggestBox:suggest']/x:tbody[1]/x:tr[1]/x:td[1]</td>
-	<td>No result</td>
+	<td>//*[@id='nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
+	<td>newtag</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
 	<td></td>
 </tr>
--->
 <tr>
 	<td>click</td>
-	<td>//input[@value='Add tags']</td>
+	<td>//*[@id='nxl_grid_summary_layout:nxl_grid_summary_layout_summary_current_document_tagging_form:nxw_summary_current_document_tagging_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>waitForA4jRequest</td>
-	<td>20000</td>
+	<td>10000</td>
 	<td></td>
 </tr>
 <tr>
