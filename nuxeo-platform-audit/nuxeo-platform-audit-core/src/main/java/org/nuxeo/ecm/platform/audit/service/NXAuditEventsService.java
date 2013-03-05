@@ -99,6 +99,13 @@ public class NXAuditEventsService extends DefaultComponent implements
     private static final String EXTENDED_INFO_EXT_POINT = "extendedInfo";
 
     private static final String ADAPTER_POINT = "adapter";
+    
+    /**
+     * If passed as true on the event properties, event not logged
+     * 
+     * @since 5.7
+     */
+    public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
 
     protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
@@ -776,6 +783,11 @@ public class NXAuditEventsService extends DefaultComponent implements
             return;
         }
 
+        Boolean disabled = (Boolean) docCtx.getProperty(DISABLE_AUDIT_LOGGER);
+        if (disabled != null && disabled) {
+            // don't log events with this flag 
+            return;
+        }
         Principal principal = docCtx.getPrincipal();
         Map<String, Serializable> properties = docCtx.getProperties();
 
