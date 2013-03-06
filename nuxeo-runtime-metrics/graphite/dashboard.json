@@ -1,0 +1,170 @@
+[
+  {
+    "title": "sys/Load",
+    "colorList": "darkgray,red,orange,yellow",
+    "target": [
+      "alias(secondYAxis(servers.octopussy.loadavg.processes_running),\"process running\")",
+      "alias(servers.octopussy.loadavg.15,\"15min\")",
+      "alias(servers.octopussy.loadavg.05,\"5min\")",
+      "alias(servers.octopussy.loadavg.01,\"1min\")"
+    ]
+  },
+  {
+    "title": "sys/CPU",
+    "vtitle": "CPU",
+    "colorList": "green,darkgray,yellow,orange,red",
+    "vtitleRight": "temp C",
+    "target": [
+      "alias(asPercent(servers.octopussy.cpu.total.idle,800),\"idle\")",
+      "alias(secondYAxis(servers.octopussy.sensors.i5k_amb-isa-0000.Ch.-3-DIMM-0),\"temp\")",
+      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.user),800),\"user\")",
+      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.system),800),\"system\")",
+      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.iowait),800),\"iowait\")"
+    ]
+  },
+  {
+    "title": "sys/Disk usage",
+    "vtitle": "percent",
+    "colorList": "red,orange,yellow",
+    "lineMode": "connected",
+    "yMax": "100",
+    "target": [
+      "alias(servers.octopussy.iostat.sda.util_percentage,\"sda\")",
+      "alias(servers.octopussy.iostat.sdb.util_percentage,\"sdb\")",
+      "alias(servers.octopussy.iostat.sdc.util_percentage,\"sdc\")",
+      "alias(servers.octopussy.iostat.sdd.util_percentage,\"sdd\")"
+    ]
+  },
+  {
+    "title": "sys/Memory",
+    "vtitle": "percent",
+    "colorList": "green,blue,orange",
+    "target": [
+      "alias(asPercent(servers.octopussy.memory.MemFree,servers.octopussy.memory.MemTotal),\"free\")",
+      "alias(asPercent(servers.octopussy.memory.Buffers,servers.octopussy.memory.MemTotal),\"buffers\")",
+      "alias(asPercent(servers.octopussy.memory.Cached,servers.octopussy.memory.MemTotal),\"cached\")"
+    ]
+  },
+  {
+    "title": "sys/Sockets",
+    "target": [
+      "alias(servers.octopussy.tcp.ActiveOpens,\"active\")",
+      "alias(servers.octopussy.tcp.CurrEstab,\"established\")"
+    ]
+  },
+  {
+    "title": "db/Postgres",
+    "colorList": "red,orange,yellow,blue,green",
+    "target": [
+      "alias(perSecond(servers.octopussy.postgres.cibenchod.database.tup_deleted),\"tup_deleted\")",
+      "alias(perSecond(servers.octopussy.postgres.cibenchod.database.tup_inserted),\"tup_inserted\")",
+      "alias(perSecond(servers.octopussy.postgres.cibenchod.database.tup_updated),\"tup_updated\")",
+      "alias(perSecond(servers.octopussy.postgres.cibenchod.database.xact_commit),\"xact_commit\")",
+      "alias(secondYAxis(servers.octopussy.postgres.cibenchod.database.connections),\"connections\")"
+    ]
+  },
+  {
+    "title": "jvm/Threads",
+    "target": [
+      "alias(servers.octopussy.nuxeo.jvm.thread_count,\"thread_count\")",
+      "alias(servers.octopussy.nuxeo.jvm.daemon_thread_count,\"daemond\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.jvm.fd_usage),\"fd_usage\")"
+    ]
+  },
+  {
+    "title": "jvm/Thread state",
+    "areaMode": "stacked",
+    "colorList": "green,blue,red,yellow,orange,purple",
+    "target": [
+      "alias(servers.octopussy.nuxeo.jvm.thread-states.runnable,\"runnable\")",
+      "alias(servers.octopussy.nuxeo.jvm.thread-states.new,\"new\")",
+      "alias(servers.octopussy.nuxeo.jvm.thread-states.blocked,\"blocked\")",
+      "alias(servers.octopussy.nuxeo.jvm.thread-states.waiting,\"waiting\")",
+      "alias(servers.octopussy.nuxeo.jvm.thread-states.timed_waiting,\"timed_waiting\")",
+      "alias(servers.octopussy.nuxeo.jvm.thread-states.terminated,\"terminated\")"
+    ]
+  },
+  {
+    "title": "jvm/Heap",
+    "vtitle": "percent",
+    "yMax": "100",
+    "target": [
+      "alias(asPercent(servers.octopussy.nuxeo.jvm.memory.heap_usage,1),\"heap usage\")",
+      "alias(asPercent(servers.octopussy.nuxeo.jvm.memory.non_heap_usage,1),\"non heap usage\")"
+    ]
+  },
+  {
+    "title": "jvm/GC",
+    "areaMode": "stacked",
+    "lineMode": "staircase",
+    "vtitle": "percent",
+    "colorList": "orange,red",
+    "yMax": "100",
+    "target": [
+      "alias(asPercent(perSecond(servers.octopussy.nuxeo.jvm.gc.PS-Scavenge.time),1000),\"minor GC\")",
+      "alias(asPercent(perSecond(servers.octopussy.nuxeo.jvm.gc.PS-MarkSweep.time),1000),\"major GC\")"
+    ]
+  },
+  {
+    "title": "nx/Transactions",
+    "target": [
+      "alias(servers.octopussy.nuxeo.org.nuxeo.runtime.transaction.TransactionHelper.transaction.1MinuteRate,\"1minRate\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.runtime.transaction.TransactionHelper.transaction.mean),\"mean\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.runtime.transaction.TransactionHelper.transaction.99percentile),\"99perc\")"
+    ]
+  },
+  {
+    "title": "nx/Up and log",
+    "colorList": "green,orange,red",
+    "target": [
+      "alias(drawAsInfinite(absolute(derivative(transformNull(servers.octopussy.nuxeo.org.nuxeo.runtime.metrics.MetricsServiceImpl.instance-up.count,0)))),\"start or stop\")",
+      "alias(servers.octopussy.nuxeo.org.apache.log4j.Appender.warn.count,\"warnings\")",
+      "alias(servers.octopussy.nuxeo.org.apache.log4j.Appender.error.count,\"errors\")"
+    ]
+  },
+  {
+    "title": "nx/Requests",
+    "target": [
+      "alias(servers.octopussy.nuxeo.org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.request.1MinuteRate,\"1minRate req/s\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.request.mean),\"mean\")",
+      "alias(servers.octopussy.nuxeo.org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.logged-user.count,\"logged\")",
+      "alias(servers.octopussy.nuxeo.org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.request-concurrent.count,\"concurrent\")"
+    ]
+  },
+  {
+    "title": "nx/AbstractSession",
+    "areaMode": "stacked",
+    "vtitle": "per second",
+    "target": [
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.api.AbstractSession.create-document.count),\"created\")",
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.api.AbstractSession.update-document.count),\"updated\")",
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.api.AbstractSession.delete-document.count),\"deleted\")"
+    ]
+  },
+  {
+    "title": "nx/SessionImpl",
+    "vtitle": "per second",
+    "colorList": "green,orange,red,blue",
+    "target": [
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.query.count),\"query\")",
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.save.count),\"save\")",
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.aclr-update.count),\"aclrUpdate\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.session.count),\"sessions count\")"
+    ]
+  },
+  {
+    "title": "nx/VCS cache",
+    "target": [
+      "alias(asPercent(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper.cache-hit.count,servers.*.nuxeo.org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper.cache-get.count),\"Row hit-ratio\")",
+      "alias(asPercent(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SelectionContext.cache-hit.count,servers.*.nuxeo.org.nuxeo.ecm.core.storage.sql.SelectionContext.cache-get.count),\"Selection hit-ratio\")"
+    ]
+  },
+  {
+    "title": "nx/Workers",
+    "vtitle": "per second",
+    "target": [
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.AbstractWork.work.count),\"running\")",
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.WorkThreadPoolExecutor.scheduled.count),\"pending\")"
+    ]
+  }
+]
