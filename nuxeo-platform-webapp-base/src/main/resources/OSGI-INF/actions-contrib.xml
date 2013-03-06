@@ -68,49 +68,6 @@
       </properties>
     </action>
 
-    <action id="permalinkAction_1" order="21" label="label.permalink" type="fancybox"
-      icon="/icons/contextual_menu/share.png">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <properties>
-        <property name="include">/incl/permalink_box.xhtml</property>
-        <property name="onclick">
-          jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
-        </property>
-        <property name="width">300px</property>
-        <property name="height">500px</property>
-        <property name="modal">true</property>
-        <property name="autoDimension">false</property>
-        <property name="ajaxSupport">true</property>
-      </properties>
-    </action>
-
-    <action id="permalinkAction_2" order="22" label="label.permalink" type="fancybox"
-      icon="/icons/contextual_menu/share.png">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <properties>
-        <property name="include">/incl/permalink_box.xhtml</property>
-        <property name="onclick">
-          jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
-        </property>
-        <property name="ajaxSupport">true</property>
-        <property name="enableEscapeButton">false</property>
-      </properties>
-    </action>
-
-    <action id="permalinkAction_3" order="23" label="label.permalink" type="fancybox"
-      icon="/icons/contextual_menu/share.png">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <properties>
-        <property name="include">/incl/permalink_box.xhtml</property>
-        <property name="onclick">
-          jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
-        </property>
-        <property name="ajaxSupport">true</property>
-        <property name="centerOnScroll">false</property>
-      </properties>
-    </action>
-
-
     <action id="downloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
       order="30" label="label.document.download" type="link"
       icon="/icons/contextual_menu/download.png">
