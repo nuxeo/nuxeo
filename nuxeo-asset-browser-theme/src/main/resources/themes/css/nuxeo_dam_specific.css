@@ -8,18 +8,22 @@ author: lkemen@nuxeo.com
 */
 
 /* =Grid */
-.nxMainContainer { background-color: "neutral.lighter (__FLAVOR__ background)" }
+.nxMainContainer { background-color: "neutral.lighter (__FLAVOR__ background)"; }
 
 .nxDamSearchForm {
   background-color: #fff;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  padding: .3em;
+  padding: 1em .5em;
   width: 19% }
 
 .nxDamSearchResults {
   background-color: "neutral.lighter (__FLAVOR__ background)";
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 .5em;
   text-align: center;
   width: 48% }
 
@@ -32,15 +36,11 @@ author: lkemen@nuxeo.com
   width: 33% }
 
 /* Widgets and Containers specific styles */
-.nxDam .containerSubWidget {
-    margin: 0 }
+.nxMainContainer .widgetPanel { display: block; padding: 0 }
+.nxMainContainer .containerSubWidget { margin: 0 }
 
 /* =Faceted Search */
 .nxDamSearchForm { font-size: .82em }
-
-.nxDamSearchForm .facetedSearchBlock .widgetPanel {
-  display: block;
-  padding: 0 }
 
 .nxDamSearchForm .facetedSearchActionBar {
     background-color: "color.major.light (__FLAVOR__ background)";
@@ -51,10 +51,20 @@ author: lkemen@nuxeo.com
     padding: .3em .7em }
 
 /* =Assets list */
-.nxDamSearchResults { background-color: "neutral.lighter (__FLAVOR__ background)" }
-.nxDamSearchResults .widgetPanel { padding: 0 2% }
+.nxDamSearchResults { background-color: "neutral.lighter (__FLAVOR__ background)"; }
 
-.nxDamSearchResults .action_bar a { padding: .1em .4em }
+.nxDamSearchResults .globalActionBar,
+.nxDamAssetView .globalActionBar {
+  border-bottom: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)"; }
+
+.nxDamSearchResults .globalActionBar {
+  text-align: left }
+
+.nxDamSearchResults .globalActionBar .button {
+  font-size: .9em;
+  margin: .5em .5em .5em 0;
+  padding: .2em .4em }
 
 .nxDamSearchResults .listingLayoutSelector {
   font-size: .9em }
@@ -64,7 +74,6 @@ author: lkemen@nuxeo.com
 
 .nxDamSearchResults .detail {
   clear: both;
-  /*margin-top: -2.5em;*/
   text-align: right }
 
 .nxDamSearchResults .detail span {
@@ -85,7 +94,7 @@ author: lkemen@nuxeo.com
 .bubbleBox:hover {
   background-color: "color.major.light (__FLAVOR__ background)";
   box-shadow: 0 1px 2px 2px #fff }
-.bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
+.bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)"; }
 
 .bubbleBox .bubbleHeader input {
   margin-right: .3em }
@@ -137,10 +146,10 @@ author: lkemen@nuxeo.com
     background-color: #000 }
 
 /* =Assets View */
-.nxDamAssetView .widgetPanel { margin: 0 .1em .3em; padding: 0 }
+.nxDamAssetView .widgetPanel { margin: 0 .1em .3em }
 
-.globalActionBar a.actionLink.button {
-  padding: .2em .4em }
+.nxDamAssetView .globalActionBar {
+  padding: .3em 0 .2em }
 
 .widgetPanel .description_block {
   font-size: .9em;
@@ -174,6 +183,9 @@ author: lkemen@nuxeo.com
   padding: .3em;
   text-transform: none }
 
+.nxDamAssetView .containerWidgetPanel {
+  display: block }
+
 /* smaller buttons in Foldable boxes*/
 .foldableBox .buttonsGadget {
   margin: .1em 0 0.2em;
@@ -197,7 +209,7 @@ author: lkemen@nuxeo.com
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  font-size: 1.1em;
+  font-size: 1.3em;
   font-weight: bold;
   margin: 0 0 -0.3em;
   overflow: hidden;
@@ -215,10 +227,12 @@ author: lkemen@nuxeo.com
   vertical-align: middle }
 .pictureContainer img {
   display: inline-block;
+  max-width: 100%;
   vertical-align: middle }
 
 /* TODO: move to box styles */
 .bubbleBox .bubbleHeader .documentTitle {
+  font-size: 1.1em;
   display: inline;
   padding: 0;
   text-align: left }
