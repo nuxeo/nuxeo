@@ -67,6 +67,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
                 IdRef idRef = syncRootRefsIt.next();
                 // TODO: handle DocumentSecurityException, or ensure sync roots
                 // cache is up-to-date if ACL change
+                // See https://jira.nuxeo.com/browse/NXP-11146
                 DocumentModel doc = session.getDocument(idRef);
                 // TODO: handle null FileSystemItem
                 children.add(getFileSystemItemAdapterService().getFileSystemItem(

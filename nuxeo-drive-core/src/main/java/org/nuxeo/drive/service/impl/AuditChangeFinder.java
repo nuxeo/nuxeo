@@ -141,7 +141,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                         // system items in a separate event: no need to try
                         // to propagate this event.
                         // TODO: find a consistent way to map ACL removals as
-                        // filesystem deletion change
+                        // file system deletion change
+                        // See https://jira.nuxeo.com/browse/NXP-11159
                         continue;
                     }
                     DocumentModel doc = session.getDocument(docRef);
@@ -179,7 +180,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         StringBuilder rootPathClause = new StringBuilder();
         if (!lastActiveRootRefs.isEmpty()) {
             List<String> ids = new ArrayList<String>();
-            for  (IdRef ref : lastActiveRootRefs) {
+            for (IdRef ref : lastActiveRootRefs) {
                 ids.add(ref.toString());
             }
             rootPathClause.append("log.docUUID in ('");
@@ -221,7 +222,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         } catch (DocumentSecurityException e) {
             // This event matches a document that is not visible by the
             // current user, skip it.
-            // TODO: how to detect ACL removal to map those as
+            // TODO: how to detect ACL removal to map those as file system
+            // deletion change
+            // See https://jira.nuxeo.com/browse/NXP-11159
             return false;
         }
     }

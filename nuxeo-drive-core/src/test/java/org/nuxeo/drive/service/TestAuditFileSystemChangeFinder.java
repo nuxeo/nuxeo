@@ -430,7 +430,7 @@ public class TestAuditFileSystemChangeFinder {
         List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
         assertEquals(1, changes.size());
         FileSystemItemChange fsItemChange = changes.get(0);
-        // TODO: this should be detected has an filesystem item
+        // TODO: this should be detected has a file system item
         // creation rather than modification
         assertEquals("documentModified", fsItemChange.getEventId());
         assertEquals(
@@ -468,7 +468,7 @@ public class TestAuditFileSystemChangeFinder {
         changes = changeSummary.getFileSystemChanges();
         assertEquals(1, changes.size());
         fsItemChange = changes.get(0);
-        // TODO: this should be detected has an filesystem item
+        // TODO: this should be detected has a file system item
         // creation rather than modification
         assertEquals("documentModified", fsItemChange.getEventId());
         assertEquals(
