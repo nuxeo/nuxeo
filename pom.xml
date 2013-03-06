@@ -34,6 +34,11 @@
         <artifactId>nuxeo-quota-web</artifactId>
         <version>${nuxeo.quota.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-quota-automation</artifactId>
+        <version>${nuxeo.quota.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
