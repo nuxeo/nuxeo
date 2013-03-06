@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
@@ -7,7 +8,6 @@
     <version>5.7-SNAPSHOT</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.features</groupId>
   <artifactId>nuxeo-tree-snapshot</artifactId>
   <name>Nuxeo Tree Snapshot</name>
@@ -16,22 +16,10 @@
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -157,12 +145,6 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert-plugins</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -190,9 +172,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>
-                nuxeo-platform-content-template-manager
-            </artifactId>
+      <artifactId>nuxeo-platform-content-template-manager</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -202,12 +182,6 @@
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -230,10 +204,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
-    <!-- <dependency> <groupId>jaxen</groupId> <artifactId>jaxen</artifactId>
-      </dependency> -->
-
-
+    <!-- <dependency> -->
+    <!-- <groupId>jaxen</groupId> -->
+    <!-- <artifactId>jaxen</artifactId> -->
+    <!-- </dependency> -->
   </dependencies>
 
   <build>
@@ -241,7 +215,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <!-- <version>2.4</version> -->
         <executions>
           <execution>
             <id>copy</id>
