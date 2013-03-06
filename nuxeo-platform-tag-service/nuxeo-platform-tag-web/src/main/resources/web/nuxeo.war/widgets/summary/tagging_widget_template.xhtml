@@ -53,7 +53,8 @@
 
       <span id="#{widget.id}_suggestDiv">
         <h:inputText id="#{widget.id}_suggest"
-          onkeydown="if (event.keyCode == 13) {return false;}" />
+          onkeydown="if (event.keyCode == 13) {return false;}"
+          styleClass="tagInput" />
       </span>
       <rich:suggestionbox id="#{widget.id}_suggestionBox"
         for="#{widget.id}_suggest" tokens=""
