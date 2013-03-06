@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,18 +28,19 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.downloads.ConnectDownloadManager;
 import org.nuxeo.connect.packages.PackageManager;
-import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Provides REST binding for {@link Package} download management
+ * Provides REST binding for {@link org.nuxeo.connect.update.Package} download
+ * management.
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
@@ -141,8 +142,14 @@ public class DownloadHandler extends DefaultObject {
         }
         try {
             pm.download(pkgId);
-        } catch (Exception e) {
+        } catch (ConnectServerError e) {
             return getView("downloadError").arg("e", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return getView("downloadStarted").arg("pkg",
                 getDownloadingPackage(pkgId)).arg("source", source).arg("over",
@@ -158,11 +165,17 @@ public class DownloadHandler extends DefaultObject {
                 String[] pkgs = pkgList.split("/");
                 PackageManager pm = Framework.getLocalService(PackageManager.class);
                 try {
-                    log.info("Starting download for packages " + pkgs);
+                    log.info("Starting download for packages "
+                            + Arrays.toString(pkgs));
                     pm.download(Arrays.asList(pkgs));
+                } catch (ConnectServerError e) {
+                    log.error(e, e);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (RuntimeException e) {
+                    throw e;
                 } catch (Exception e) {
-                    log.error("Unable to start download for packages " + pkgs,
-                            e);
+                    throw new RuntimeException(e);
                 }
                 // here we generate a fake progress report so that if some
                 // download are very fast, they will still be visible on the
