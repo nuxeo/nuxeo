@@ -6,6 +6,5 @@ Bundle-Name: org.nuxeo.runtime.metrics
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/runtime-metrics-service.xml,
- OSGI-INF/runtime-metrics-contrib.xml
+Nuxeo-Component: OSGI-INF/runtime-metrics-service.xml
 Bundle-SymbolicName: org.nuxeo.runtime.metrics;singleton:=true

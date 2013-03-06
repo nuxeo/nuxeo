@@ -27,6 +27,7 @@ import java.util.Date;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 @XObject("metrics")
 public class MetricsDescriptor implements Serializable {
@@ -35,39 +36,76 @@ public class MetricsDescriptor implements Serializable {
 
     public MetricsDescriptor() {
         super();
+        graphiteReporter = new GraphiteDescriptor();
+        csvReporter = new CsvDescriptor();
+        tomcatInstrunmentation = new TomcatInstrumentationDescriptor();
+        log4jInstrunmentation = new Log4jInstrumentationDescriptor();
     }
 
     @XObject(value = "graphiteReporter")
     public static class GraphiteDescriptor {
 
-        @XNode("@host")
-        public String host = "localhost";
+        public static final String ENABLED_PROPERTY = "metrics.graphite.enabled";
 
-        @XNode("@port")
-        public int port = 2030;
+        public static final String HOST_PROPERTY = "metrics.graphite.host";
 
-        @XNode("@periodInSecond")
-        public int period = 10;
+        public static final String PORT_PROPERTY = "metrics.graphite.port";
 
-        @XNode("@prefix")
-        public String prefix = "servers.${hostname}.nuxeo.";
+        public static final String PERIOD_PROPERTY = "metrics.graphite.period";
+
+        public static final String PREFIX_PROPERTY = "metrics.graphite.prefix";
 
         @XNode("@enabled")
-        protected boolean enabled = false;
+        protected Boolean enabled;
 
-        @Override
-        public String toString() {
-            return String.format(
-                    "graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d",
-                    enabled ? "enabled" : "disabled", getPrefix(), host, port,
-                    period);
-        }
+        @XNode("@host")
+        public String host;
+
+        @XNode("@port")
+        public Integer port;
+
+        @XNode("@periodInSecond")
+        public Integer period;
+
+        @XNode("@prefix")
+        public String prefix;
 
         public boolean isEnabled() {
+            if (enabled == null) {
+                enabled = Boolean.valueOf(Framework.getProperty(
+                        ENABLED_PROPERTY, "false"));
+            }
             return enabled;
         }
 
+        public String getHost() {
+            if (host == null) {
+                host = Framework.getProperty(HOST_PROPERTY, "0.0.0.0");
+            }
+            return host;
+        }
+
+        public int getPort() {
+            if (port == null) {
+                port = Integer.valueOf(Framework.getProperty(PORT_PROPERTY,
+                        "2030"));
+            }
+            return port;
+        }
+
+        public int getPeriod() {
+            if (period == null) {
+                period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY,
+                        "10"));
+            }
+            return period;
+        }
+
         public String getPrefix() {
+            if (prefix == null) {
+                prefix = Framework.getProperty(PREFIX_PROPERTY,
+                        "servers.${hostname}.nuxeo.");
+            }
             String hostname;
             try {
                 hostname = InetAddress.getLocalHost().getHostName().split("\\.")[0];
@@ -76,35 +114,71 @@ public class MetricsDescriptor implements Serializable {
             }
             return prefix.replace("${hostname}", hostname);
         }
+
+        @Override
+        public String toString() {
+            return String.format(
+                    "graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d",
+                    isEnabled() ? "enabled" : "disabled", getPrefix(),
+                    getHost(), getPort(), getPeriod());
+        }
+
     }
 
     @XObject(value = "csvReporter")
     public static class CsvDescriptor {
 
-        @XNode("@outputDir")
-        public String outputDir = "${nuxeo.log.dir}";
+        public static final String ENABLED_PROPERTY = "metrics.csv.enabled";
+
+        public static final String PERIOD_PROPERTY = "metrics.csv.period";
+
+        public static final String OUTPUT_PROPERTY = "metrics.csv.output";
+
+        @XNode("@output")
+        public String outputPath;
+
+        public File outputDir;
 
         @XNode("@periodInSecond")
-        public int period = 10;
+        public Integer period = 10;
 
         @XNode("@enabled")
-        protected boolean enabled = false;
+        public Boolean enabled;
 
         public boolean isEnabled() {
+            if (enabled == null) {
+                enabled = Boolean.valueOf(Framework.getProperty(
+                        ENABLED_PROPERTY, "false"));
+            }
             return enabled;
         }
 
-        public File getOutputDir() {
-            DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss");
-            Date today = Calendar.getInstance().getTime();
-            File dir = new File(outputDir, "metrics-" + df.format(today));
-            return dir;
+        public int getPeriod() {
+            if (period == null) {
+                period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY,
+                        "10"));
+            }
+            return period;
+        }
+
+        public File getOutput() {
+            if (outputDir == null) {
+                if (outputPath == null) {
+                    outputPath = Framework.getProperty(OUTPUT_PROPERTY,
+                            Framework.getProperty("nuxeo.log.dir"));
+                }
+                DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss");
+                Date today = Calendar.getInstance().getTime();
+                outputDir = new File(outputPath, "metrics-" + df.format(today));
+            }
+            return outputDir;
         }
 
         @Override
         public String toString() {
             return String.format("csvReporter %s, outputDir: %s, period: %d",
-                    enabled ? "enabled" : "disabled", outputDir, period);
+                    isEnabled() ? "enabled" : "disabled",
+                    getOutput().toString(), getPeriod());
         }
 
     }
@@ -112,17 +186,47 @@ public class MetricsDescriptor implements Serializable {
     @XObject(value = "log4jInstrumentation")
     public static class Log4jInstrumentationDescriptor {
 
+        public static final String ENABLED_PROPERTY = "metrics.log4j.enabled";
+
         @XNode("@enabled")
-        protected boolean enabled = false;
+        protected Boolean enabled;
 
         public boolean isEnabled() {
+            if (enabled == null) {
+                enabled = Boolean.valueOf(Framework.getProperty(
+                        ENABLED_PROPERTY, "false"));
+            }
             return enabled;
         }
 
         @Override
         public String toString() {
-            return String.format("log4jInstrumentation %s", enabled ? "enabled"
-                    : "disabled");
+            return String.format("log4jInstrumentation %s",
+                    isEnabled() ? "enabled" : "disabled");
+        }
+
+    }
+
+    @XObject(value = "tomcatInstrumentation")
+    public static class TomcatInstrumentationDescriptor {
+
+        public static final String ENABLED_PROPERTY = "metrics.tomcat.enabled";
+
+        @XNode("@enabled")
+        protected Boolean enabled;
+
+        public boolean isEnabled() {
+            if (enabled == null) {
+                enabled = Boolean.valueOf(Framework.getProperty(
+                        ENABLED_PROPERTY, "false"));
+            }
+            return enabled;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("tomcatInstrumentation %s",
+                    enabled ? "enabled" : "disabled");
         }
 
     }
@@ -135,5 +239,8 @@ public class MetricsDescriptor implements Serializable {
 
     @XNode("log4jInstrumentation")
     public Log4jInstrumentationDescriptor log4jInstrunmentation;
+
+    @XNode("tomcatInstrumentation")
+    public TomcatInstrumentationDescriptor tomcatInstrunmentation;
 
 }
