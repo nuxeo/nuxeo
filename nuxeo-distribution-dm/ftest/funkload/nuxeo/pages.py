@@ -684,7 +684,7 @@ class FolderPage(BasePage):
             table_name = "section_content"
             button_name = "CURRENT_SELECTION_SECTIONS_TRASH"
 
-        form_name = table_name + '_afterForm'
+        form_name = table_name + '_buttons'
         button_id = 'nxw_cvButton_' + button_name
         button_form = button_id + '_form'
 
