@@ -113,3 +113,6 @@ div.detail, p.detail { margin: .1em 0 .7em }
   margin: .1em 0 .5em;
   padding: .8em;
   text-align: center }
+.tips.processMessage {
+  background-position: 5px 13px;
+  padding: .8em 1.8em }
