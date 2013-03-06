@@ -46,6 +46,9 @@ import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
 import org.nuxeo.ecm.core.storage.sql.net.NetServer;
 import org.nuxeo.runtime.api.Framework;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+
 /**
  * {@link Repository} implementation, to be extended by backend-specific
  * initialization code.
@@ -81,6 +84,9 @@ public class RepositoryImpl implements Repository {
     private final RepositoryBackend backend;
 
     private final Collection<SessionImpl> sessions;
+
+    private final Counter sessionCount = Metrics.defaultRegistry().newCounter(
+                getClass(), "session");
 
     private LockManager lockManager;
 
@@ -417,6 +423,7 @@ public class RepositoryImpl implements Repository {
         SessionImpl session = newSession(model, mapper, credentials);
         pathResolver.setSession(session);
         sessions.add(session);
+        sessionCount.inc();
         return session;
     }
 
@@ -496,6 +503,7 @@ public class RepositoryImpl implements Repository {
             session.closeSession();
         }
         sessions.clear();
+        sessionCount.clear();
         if (lockManager != null) {
             lockManager.shutdown();
         }
@@ -558,6 +566,7 @@ public class RepositoryImpl implements Repository {
     // callback by session at close time
     protected void closeSession(SessionImpl session) {
         sessions.remove(session);
+        sessionCount.dec();
     }
 
 }
