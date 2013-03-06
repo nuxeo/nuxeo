@@ -219,20 +219,13 @@
 
               <ui:define name="buttons">
                 <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
-                  <ui:insert name="content_view_buttons" />
-                </a4j:outputPanel>
-              </ui:define>
-
-              <ui:define name="after_documents_form">
-                <a4j:outputPanel id="ajax_after_selection_buttons_form" ajaxRendered="false">
                   <div id="selection_buttons">
                     <table>
                       <tbody>
                         <tr>
                           <td>
                             <ui:insert name="content_view_actions_before" />
-                            <ui:insert name="content_view_actions" />
-                            <ui:insert name="content_view_compat_actions">
+                            <ui:insert name="content_view_actions">
                               <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
                                 <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
                                   <c:if test="#{not status.first and not empty actions}">

@@ -48,8 +48,8 @@
         <h:form id="#{formId}">
           <ui:include src="documents_layout_table_content.xhtml" />
         </h:form>
-        <f:subview id="#{formId}_afterForm">
-          <ui:insert name="after_documents_form" />
+        <f:subview id="#{formId}_buttons">
+          <ui:insert name="buttons" />
         </f:subview>
       </c:if>
       <c:if test="#{useAjaxForm}">
@@ -57,14 +57,17 @@
           reRender="#{contentIdToBeReRendered}">
           <ui:include src="documents_layout_table_content.xhtml" />
         </a4j:form>
-        <f:subview id="#{formId}_afterForm">
-          <ui:insert name="after_documents_form" />
+        <f:subview id="#{formId}_buttons">
+          <ui:insert name="buttons" />
         </f:subview>
       </c:if>
     </c:if>
 
     <c:if test="#{removeForm}">
       <ui:include src="documents_layout_table_content.xhtml" />
+      <f:subview id="#{formId}_buttons">
+        <ui:insert name="buttons" />
+      </f:subview>
     </c:if>
 
   </nxu:set>
