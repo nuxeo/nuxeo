@@ -26,6 +26,8 @@ import java.util.Set;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -34,6 +36,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -58,6 +62,8 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
 public class NuxeoDriveActions implements Serializable {
+
+    private static final Log log = LogFactory.getLog(NuxeoDriveActions.class);
 
     protected static final String IS_UNDER_SYNCHRONIZATION_ROOT = "nuxeoDriveIsUnderSynchronizationRoot";
 
@@ -124,19 +130,31 @@ public class NuxeoDriveActions implements Serializable {
      * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}://
      *         {@link #PROTOCOL_COMMAND_EDIT}
      *         /protocol/server[:port]/webappName/nxdoc/repoName/docRef"
+     * @throws ClientException
      *
      */
-    public String getDriveEditURL() {
+    public String getDriveEditURL() throws ClientException {
 
+        FileSystemItemAdapterService fsAdapterService = Framework.getLocalService(FileSystemItemAdapterService.class);
+        // TODO: optim: add a new method to FileSystemItemAdapterService to
+        // quickly compute the fsitem id from a doc (without having to
+        // recursively adapt the parents)
+        FileSystemItem fileSystemItem = fsAdapterService.getFileSystemItem(navigationContext.getCurrentDocument());
+        if (fileSystemItem == null) {
+            log.warn(String.format(
+                    "Failed to adapt '%s' to generate drive edit link",
+                    navigationContext.getCurrentDocument().getTitle()));
+            return "";
+        }
+        String fsItemId = fileSystemItem.getId();
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
         StringBuffer sb = new StringBuffer();
         sb.append(NXDRIVE_PROTOCOL).append("://");
         sb.append(PROTOCOL_COMMAND_EDIT).append("/");
         sb.append(baseURL.replaceFirst("://", "/"));
-        sb.append("nxdoc/");
-        sb.append(documentManager.getRepositoryName()).append("/");
-        sb.append(navigationContext.getCurrentDocument().getId());
+        sb.append("fsitem/");
+        sb.append(fsItemId);
         return sb.toString();
     }
 
