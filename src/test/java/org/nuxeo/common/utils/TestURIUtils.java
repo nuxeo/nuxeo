@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
@@ -21,24 +21,23 @@
 
 package org.nuxeo.common.utils;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class TestURIUtils {
 
-    private static final String URI_QUERY
-            = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
+    private static final String URI_QUERY = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
 
-    private static final String PARTIAL_URI
-            = "nuxeo/view_documents.faces?" + URI_QUERY;
+    private static final String PARTIAL_URI = "nuxeo/view_documents.faces?"
+            + URI_QUERY;
 
     private static final String URI = "http://localhost:8080/" + PARTIAL_URI;
 
@@ -62,7 +61,8 @@ public class TestURIUtils {
         Map<String, String> newParams = new HashMap<String, String>();
         newParams.put("conversationId", "0NXMAIN21");
 
-        Map<String, String> expectedParams = new HashMap<String, String>(parameters);
+        Map<String, String> expectedParams = new HashMap<String, String>(
+                parameters);
         expectedParams.put("conversationId", "0NXMAIN21");
 
         // Test full URI first
@@ -75,7 +75,8 @@ public class TestURIUtils {
         assertEquals(expectedParams, actualParams);
 
         // Then test partial URI
-        String newPartialUri = URIUtils.addParametersToURIQuery(PARTIAL_URI, newParams);
+        String newPartialUri = URIUtils.addParametersToURIQuery(PARTIAL_URI,
+                newParams);
 
         uriPath = URIUtils.getURIPath(newUri);
         newUriQuery = newUri.substring(uriPath.length() + 1);
@@ -94,15 +95,18 @@ public class TestURIUtils {
 
     @Test
     public void testQuoteURIPathComponent() {
-        assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin", q(
-                "test yes:no /caf\u00e9.bin", true));
+        assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin",
+                q("test yes:no /caf\u00e9.bin", true));
         assertEquals("http%3A%2F%2Ffoo%2Fbar", q("http://foo/bar", true));
         assertEquals("a/b/c", q("a/b/c", false));
         // NXP-2480
         assertEquals("%5Bfoo%5D%20bar%3F", q("[foo] bar?", true));
-        assertEquals("http%3A%2F%2Ffoo%2Fbar%2F%40adapter", q("http://foo/bar/@adapter", true));
-        assertEquals("http%3A%2F%2Ffoo%2Fbar%2F@adapter", q("http://foo/bar/@adapter", true, false));
-        assertEquals("http%3A//foo/bar/@adapter", q("http://foo/bar/@adapter", false, false));
+        assertEquals("http%3A%2F%2Ffoo%2Fbar%2F%40adapter",
+                q("http://foo/bar/@adapter", true));
+        assertEquals("http%3A%2F%2Ffoo%2Fbar%2F@adapter",
+                q("http://foo/bar/@adapter", true, false));
+        assertEquals("http%3A//foo/bar/@adapter",
+                q("http://foo/bar/@adapter", false, false));
     }
 
     private static String uq(String s) {

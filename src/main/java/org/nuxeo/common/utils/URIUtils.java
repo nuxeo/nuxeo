@@ -154,8 +154,8 @@ public final class URIUtils {
     }
 
     /**
-     * Quotes a URI path component, with ability to quote "/" and "@"
-     * characters or not depending on the URI path
+     * Quotes a URI path component, with ability to quote "/" and "@" characters
+     * or not depending on the URI path
      *
      * @since 5.6
      * @param the uri path to quote
