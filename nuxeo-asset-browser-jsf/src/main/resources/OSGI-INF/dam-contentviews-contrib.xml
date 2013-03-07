@@ -386,6 +386,9 @@
           <fields>
             <field>dams:ecm_path</field>
           </fields>
+          <properties widgetMode="any">
+            <property name="showAllDomains">true</property>
+          </properties>
         </widget>
       </subWidgets>
     </widget>
