@@ -10,6 +10,7 @@
       <category>MAIN_TABS</category>
     </action>
 
+    <!-- Search actions -->
     <action id="damSubmitSearch" link="#{damSearchActions.refreshAndRewind()}"
       label="command.faceted.search.go" order="10">
       <category>DAM_SEARCH_FILTER_ACTIONS</category>
@@ -30,6 +31,61 @@
           damPanelLeft, damPanelCenter, damPanelRight
         </property>
       </properties>
+    </action>
+
+    <!-- Asset view actions -->
+    <action id="showFancyBoxPreview">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentLock">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentUnlock">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="downloadAction">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="permalinkAction">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="subscribesAllDocNotifications">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="unsubscribesAllDocNotifications">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="addCurrentDocumentToWorklist">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="print">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentLike">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <action id="documentUnlike">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
+    <!-- Search results actions -->
+    <action id="damNewAsset" order="100" label="label.dam.new.asset"
+      type="fancybox">
+      <category>DAM_SEARCH_RESULTS_ACTIONS</category>
+      <properties>
+        <property name="include">/dam/incl/new_asset_box.xhtml</property>
+      </properties>
+      <filter-id>canCreateNewAsset</filter-id>
     </action>
 
   </extension>

@@ -433,15 +433,6 @@
       </properties>
     </action>
 
-    <action id="damNewAsset" order="100" label="label.dam.new.asset"
-      type="fancybox">
-      <category>DAM_SEARCH_RESULTS_ACTIONS</category>
-      <properties>
-        <property name="include">/dam/incl/new_asset_box.xhtml</property>
-      </properties>
-      <filter-id>canCreateNewAsset</filter-id>
-    </action>
-
     <action id="damContentView" type="widget" order="200">
       <category>DAM_PANEL_CENTER</category>
       <properties>
@@ -589,51 +580,6 @@
         <property name="widgetName">damAssetViewDublincore</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
-    </action>
-
-    <!-- Asset view actions -->
-    <action id="showFancyBoxPreview">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="documentLock">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="documentUnlock">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="downloadAction">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="permalinkAction">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="subscribesAllDocNotifications">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="unsubscribesAllDocNotifications">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="addCurrentDocumentToWorklist">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="print">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="documentLike">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
-    </action>
-
-    <action id="documentUnlike">
-      <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
   </extension>
