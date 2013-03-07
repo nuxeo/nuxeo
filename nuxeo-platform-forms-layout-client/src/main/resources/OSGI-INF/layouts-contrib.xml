@@ -160,6 +160,24 @@
       </selectOptions>
     </widget>
 
+    <widget name="placeholder" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Placeholder</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          String representing a short hint (a word or short phrase)
+          intended to aid the user with data entry.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>placeholder</field>
+      </fields>
+    </widget>
+
     <widget name="disabled" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -1058,6 +1076,9 @@
                   <widget category="widgetTypeConf">dir</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">disabled</widget>
                 </row>
                 <row>
@@ -1161,6 +1182,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">disabled</widget>
@@ -1267,6 +1291,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dir</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">disabled</widget>
