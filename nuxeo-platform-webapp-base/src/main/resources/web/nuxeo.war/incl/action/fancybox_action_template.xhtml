@@ -72,20 +72,20 @@
 
     <c:if test="#{not empty iframe}">
 
-      <nxu:set var="fancyboxJs"
-        value="openFancyBox('#{iframe}', {
-                width: '#{fancy_width}',
-                height: '#{fancy_height}',
-                scrolling: '#{fancy_scrolling}',
-                autoScale: #{fancy_autoScale},
-                autoDimensions: #{fancy_autoDimensions},
-                modal: #{fancy_modal},
-                centerOnScroll: #{fancy_centerOnScroll},
-                enableEscapeButton: #{fancy_enableEscapeButton}
-              });"
-        cache="true">
-        <ui:decorate template="fancybox_properties_template.xhtml">
-          <ui:define name="fancybox_properties_include">
+      <ui:decorate template="fancybox_properties_template.xhtml">
+        <ui:define name="fancybox_properties_include">
+          <nxu:set var="fancyboxJs"
+            value="openFancyBox('#{iframe}', {
+                    width: '#{fancy_width}',
+                    height: '#{fancy_height}',
+                    scrolling: '#{fancy_scrolling}',
+                    autoScale: #{fancy_autoScale},
+                    autoDimensions: #{fancy_autoDimensions},
+                    modal: #{fancy_modal},
+                    centerOnScroll: #{fancy_centerOnScroll},
+                    enableEscapeButton: #{fancy_enableEscapeButton}
+                  });"
+            cache="true">
             <c:if test="#{not useButton}">
               <a4j:commandLink id="#{fancyboxId}_link"
                 ajaxSingle="true"
@@ -113,9 +113,9 @@
               </a4j:commandButton>
             </c:if>
 
-          </ui:define>
-        </ui:decorate>
-      </nxu:set>
+          </nxu:set>
+        </ui:define>
+      </ui:decorate>
 
     </c:if>
 
