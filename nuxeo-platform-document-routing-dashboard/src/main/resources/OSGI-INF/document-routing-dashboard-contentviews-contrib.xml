@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.routing.dashboard.contentviews">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="routing_tasks">
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:mixinType IN ('RoutingTask')
+          AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+          'deleted' AND ecm:currentLifeCycleState != 'ended' AND ecm:isProxy = 0
+        </pattern>
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+      </refresh>
+      <cacheSize>0</cacheSize>
+
+      <resultLayouts>
+        <layout name="routing_task_listing" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+
+    </contentView>
+
+  </extension>
+
+</component>

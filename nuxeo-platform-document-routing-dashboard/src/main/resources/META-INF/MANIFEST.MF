@@ -6,4 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
 Nuxeo-Component: OSGI-INF/document-routing-dashboard-actions-contrib.xml,
+ OSGI-INF/document-routing-dashboard-contentviews-contrib.xml,
+ OSGI-INF/document-routing-dashboard-layouts-contrib.xml,
  OSGI-INF/document-routing-dashboard-urlservice-contrib.xml

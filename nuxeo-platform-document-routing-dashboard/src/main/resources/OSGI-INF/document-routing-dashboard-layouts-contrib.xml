@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.routing.dashboard.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="routing_task_name" type="text">
+      <labels>
+        <label mode="any">label.document.route.content.header.type</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.name</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_target_document" type="singleDocumentSuggestion">
+      <labels>
+        <label mode="any">label.document</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.targetDocumentId</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="routing_task_duedate" type="datetime">
+      <labels>
+        <label mode="any">label.widget.task_step.dueDate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.dueDate</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="format">#{nxu:dateAndTimeFormater('medium')}</property>
+        <property name="timeZone">#{timeZone}</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_directive" type="text">
+      <labels>
+        <label mode="any">label.widget.task_step.directive</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.directive</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_actors" type="multiplePrefixedUsersSuggestion">
+      <labels>
+        <label mode="any">label.document.route.content.header.actors</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.actors</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+
+    <widget name="routing_task_comments" type="list">
+      <labels>
+        <label mode="any">label.content.header.comments</label>
+      </labels>
+      <fields>
+        <field>data.nt.taskComments</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="comment" type="text">
+          <fields>
+            <field></field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="routing_task_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:name</property>
+          </properties>
+          <widget>routing_task_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_target_document</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:directive</property>
+          </properties>
+          <widget>routing_task_directive</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:dueDate</property>
+          </properties>
+          <widget>routing_task_duedate</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_actors</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_comments</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+</component>

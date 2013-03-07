@@ -2,15 +2,16 @@
 <component name="org.nuxeo.ecm.platform.routing.dashboard.actions">
 
   <documentation>
-    Main workflow tab, disabled by default.
+    Main workflow tab, and sample sub tab, disabled by default.
     <p>
-      To enable it, add the following contribution:
+      To enable them, add the following contribution:
     </p>
     <code>
       <require>org.nuxeo.ecm.platform.routing.dashboard.actions</require>
       <extension target="org.nuxeo.ecm.platform.actions.ActionService"
         point="actions">
         <action id="workflow_dashboard" enabled="true" />
+        <action id="all_tasks" enabled="true" />
       </extension>
     </code>
   </documentation>
@@ -21,6 +22,11 @@
     <action id="workflow_dashboard" link="view_workflow" label="label.main.tab.workflow"
       order="30" enabled="false">
       <category>MAIN_TABS</category>
+    </action>
+
+    <action id="routing_tasks" link="/incl/tabs/workflow_dashboard_tab.xhtml"
+      label="action.view.workflow.tasks" order="10" enabled="false">
+      <category>WORKFLOW_DASHBOARD</category>
     </action>
 
   </extension>
