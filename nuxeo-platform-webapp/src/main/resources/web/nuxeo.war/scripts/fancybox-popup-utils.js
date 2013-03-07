@@ -71,5 +71,12 @@ function openFancyBox(ele, options) {
     jQuery.extend(settings, options);
   }
 
+  if (paramIsNumber(settings.width)) {
+    settings.width = parseInt(settings.width);
+  }
+  if (paramIsNumber(settings.height)) {
+    settings.height = parseInt(settings.height);
+  }
+
   jQuery('<a href="' + ele + '"></a>').fancybox(settings).click();
 }
