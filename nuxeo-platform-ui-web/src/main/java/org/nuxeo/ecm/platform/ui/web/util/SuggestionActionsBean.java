@@ -28,6 +28,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.event.ActionEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
@@ -132,7 +133,9 @@ public class SuggestionActionsBean implements Serializable {
         if (list != null) {
             // add selected value to the list
             String selectedValue = getSelectedValue();
-            list.addValue(selectedValue);
+            if (!StringUtils.isBlank(selectedValue)) {
+                list.addValue(selectedValue);
+            }
         }
     }
 
