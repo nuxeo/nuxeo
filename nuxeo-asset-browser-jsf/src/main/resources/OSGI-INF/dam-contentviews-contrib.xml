@@ -4,81 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
     point="contentViews">
 
-    <!-- reuse the faceted search layout -->
-    <contentView name="dam_faceted_search">
-      <title>label.dam.faceted.search</title>
-      <translateTitle>true</translateTitle>
-      <emptySentence>label.content.empty.search</emptySentence>
-      <translateEmptySentence>true</translateEmptySentence>
-
-      <coreQueryPageProvider>
-        <property name="coreSession">#{documentManager}</property>
-        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
-        <whereClause docType="FacetedSearchDefault">
-          <fixedPart>
-            ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation'
-            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
-          </fixedPart>
-          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-            <field schema="faceted_search_default" name="ecm_fulltext" />
-          </predicate>
-          <predicate parameter="dc:created" operator="BETWEEN">
-            <field schema="faceted_search_default" name="dc_created_min" />
-            <field schema="faceted_search_default" name="dc_created_max" />
-          </predicate>
-          <predicate parameter="dc:modified" operator="BETWEEN">
-            <field schema="faceted_search_default" name="dc_modified_min" />
-            <field schema="faceted_search_default" name="dc_modified_max" />
-          </predicate>
-          <predicate parameter="dc:creator" operator="IN">
-            <field schema="faceted_search_default" name="dc_creator" />
-          </predicate>
-          <predicate parameter="dc:nature" operator="IN">
-            <field schema="faceted_search_default" name="dc_nature" />
-          </predicate>
-          <predicate parameter="dc:coverage" operator="STARTSWITH">
-            <field schema="faceted_search_default" name="dc_coverage" />
-          </predicate>
-          <predicate parameter="dc:subjects" operator="STARTSWITH">
-            <field schema="faceted_search_default" name="dc_subjects" />
-          </predicate>
-          <predicate parameter="ecm:path" operator="STARTSWITH">
-            <field schema="faceted_search_default" name="ecm_path" />
-          </predicate>
-        </whereClause>
-        <sort column="dc:title" ascending="true" />
-        <pageSize>20</pageSize>
-      </coreQueryPageProvider>
-
-      <searchLayout name="faceted_search_default" />
-
-      <showPageSizeSelector>true</showPageSizeSelector>
-      <useGlobalPageSize>true</useGlobalPageSize>
-      <refresh>
-        <event>documentChanged</event>
-        <event>documentChildrenChanged</event>
-      </refresh>
-      <cacheKey>only_one_cache</cacheKey>
-      <cacheSize>1</cacheSize>
-
-      <resultLayouts>
-        <layout name="dam_box_listing_ajax" title="label.dam.box.listing.title"
-          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
-          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
-        <layout name="dam_listing_ajax" title="label.dam.listing.title"
-          translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
-      </resultLayouts>
-
-      <selectionList>CURRENT_SELECTION</selectionList>
-      <actions category="CURRENT_SELECTION_LIST" />
-
-      <flags>
-        <flag>DAM</flag>
-      </flags>
-    </contentView>
-
-    <!-- custom search for DAM -->
     <contentView name="dam_search">
       <title>label.dam.search</title>
       <translateTitle>true</translateTitle>
@@ -282,15 +207,18 @@
     <widget name="dam_text_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.faceted.search.textSearch</label>
+        <label mode="any">label.dam.search.textSearch</label>
       </labels>
       <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
       <subWidgets>
         <widget name="ecm_fulltext" type="text">
           <labels>
-            <label mode="any">label.faceted.search.fulltext</label>
+            <label mode="any"></label>
           </labels>
-          <translated>true</translated>
+          <translated>false</translated>
           <fields>
             <field>dams:ecm_fulltext</field>
           </fields>
@@ -306,10 +234,24 @@
     <widget name="dam_date_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.faceted.search.dateSearch</label>
+        <label mode="any">label.dam.search.dateSearch</label>
       </labels>
       <translated>true</translated>
       <subWidgets>
+        <widget name="dc_creationDate" type="datetimeRange">
+          <labels>
+            <label mode="any">label.dublincore.creationDate</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:dc_created_min</field>
+            <field>dams:dc_created_max</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="styleClass">dataInputTextDate</property>
+            <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+          </properties>
+        </widget>
         <widget name="damc_authoringDate" type="datetimeRange">
           <labels>
             <label mode="any">label.dam.damc.authoringDate</label>
@@ -327,13 +269,27 @@
       </subWidgets>
     </widget>
 
-    <widget name="dam_author_search" type="container">
+    <widget name="dam_user_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.faceted.search.peopleSearch</label>
+        <label mode="any">label.dam.search.userSearch</label>
       </labels>
       <translated>true</translated>
       <subWidgets>
+        <widget name="dc_creator" type="multipleUsersSuggestion">
+          <labels>
+            <label mode="any">label.dublincore.creator</label>
+          </labels>
+          <fields>
+            <field>dams:dc_creator</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="userSuggestionSearchType">USER_TYPE</property>
+            <property name="displaySuggestionOnTop">true</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="hideSearchTypeText">true</property>
+          </properties>
+        </widget>
         <widget name="damc_author" type="text">
           <labels>
             <label mode="any">label.dam.damc.author</label>
@@ -349,15 +305,28 @@
     <widget name="dam_categorization_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.faceted.search.categorizationSearch</label>
+        <label mode="any">label.dam.search.categorizationSearch</label>
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
       </properties>
       <subWidgets>
+        <widget name="dc_subjects" type="select_l10n_vocabulary_tree">
+          <labels>
+            <label mode="any">label.dublincore.subject</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>dams:dc_subjects</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="directoryName">l10nsubjects</property>
+            <property name="multiSelect">true</property>
+          </properties>
+        </widget>
         <widget name="dc_coverage" type="select_l10n_vocabulary_tree">
           <labels>
-            <label mode="any">label.faceted.search.coverage</label>
+            <label mode="any">label.dublincore.coverage</label>
           </labels>
           <translated>true</translated>
           <fields>
@@ -371,16 +340,16 @@
       </subWidgets>
     </widget>
 
-    <widget name="dam_path_search" type="container">
+    <widget name="dam_location_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
-        <label mode="any">label.faceted.search.pathSearch</label>
+        <label mode="any">label.dam.search.locationSearch</label>
       </labels>
       <translated>true</translated>
       <subWidgets>
         <widget name="ecm_path" type="select_path_tree">
           <labels>
-            <label mode="any">label.faceted.search.path</label>
+            <label mode="any">label.dam.search.path</label>
           </labels>
           <translated>true</translated>
           <fields>
@@ -512,19 +481,19 @@
           <widget>dam_text_search</widget>
         </row>
         <row>
-          <widget>dam_author_search</widget>
+          <widget>dam_tags_search</widget>
         </row>
         <row>
           <widget>dam_date_search</widget>
         </row>
         <row>
+          <widget>dam_user_search</widget>
+        </row>
+        <row>
           <widget>dam_categorization_search</widget>
         </row>
         <row>
-          <widget>dam_path_search</widget>
-        </row>
-        <row>
-          <widget>dam_tags_search</widget>
+          <widget>dam_location_search</widget>
         </row>
       </rows>
     </layout>

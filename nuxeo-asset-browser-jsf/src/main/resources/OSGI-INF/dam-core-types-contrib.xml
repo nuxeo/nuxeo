@@ -40,7 +40,7 @@
     </doctype>
 
     <!-- For default DAM search -->
-    <doctype name="DamSearch" extends="FacetedSearch">
+    <doctype name="DamSearch" extends="Document">
       <schema name="dam_search" />
     </doctype>
 

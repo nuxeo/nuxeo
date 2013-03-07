@@ -6,11 +6,15 @@
   <xs:include schemaLocation="base.xsd" />
 
   <xs:element name="ecm_fulltext" type="xs:string" />
-  <xs:element name="damc_author" type="xs:string" />
+  <xs:element name="ecm_tags" type="nxs:stringList"/>
+  <xs:element name="dc_created_min" type="xs:date" />
+  <xs:element name="dc_created_max" type="xs:date" />
   <xs:element name="damc_authoringDate_min" type="xs:date" />
   <xs:element name="damc_authoringDate_max" type="xs:date" />
+  <xs:element name="dc_creator" type="nxs:stringList" />
+  <xs:element name="damc_author" type="xs:string" />
   <xs:element name="dc_coverage" type="nxs:stringList" />
+  <xs:element name="dc_subjects" type="nxs:stringList" />
   <xs:element name="ecm_path" type="nxs:stringList"/>
-  <xs:element name="ecm_tags" type="nxs:stringList"/>
 
 </xs:schema>
