@@ -294,6 +294,11 @@
           <fields>
             <field>dams:ecm_fulltext</field>
           </fields>
+          <properties widgetMode="edit">
+            <property name="placeholder">
+              #{messages['label.dam.search.text.placeholder']}
+            </property>
+          </properties>
         </widget>
       </subWidgets>
     </widget>
