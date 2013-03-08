@@ -92,7 +92,7 @@
           <p>
             This widget displays the user tasks of the current route on
             the
-            current document. Duplicate of "summary_current_document_single_tasks" widget. 
+            current document. Duplicate of "summary_current_document_single_tasks" widget.
           </p>
         </description>
         <handlingLabels>true</handlingLabels>
@@ -160,7 +160,7 @@
       </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
-        <control name="handlingLabels">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
     <widget name="current_route_open_tasks" type="current_route_open_tasks">
@@ -395,7 +395,7 @@
         </properties>
       </widget>
     </layout>
-    
+
     <layout name="graphViewLayout">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml
