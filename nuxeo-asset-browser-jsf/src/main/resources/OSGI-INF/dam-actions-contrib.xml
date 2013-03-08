@@ -84,6 +84,7 @@
       <category>DAM_SEARCH_RESULTS_ACTIONS</category>
       <properties>
         <property name="include">/dam/incl/new_asset_box.xhtml</property>
+        <property name="modal">true</property>
       </properties>
       <filter-id>canCreateNewAsset</filter-id>
     </action>
