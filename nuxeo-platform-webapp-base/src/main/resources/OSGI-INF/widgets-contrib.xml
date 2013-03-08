@@ -49,6 +49,71 @@
         <categories>
           <category>document</category>
         </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="life_cycle_transitions_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget>lifeCycleName</widget>
+                </row>
+                <row>
+                  <widget>currentLifeCycleState</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+              </rows>
+              <widget name="lifeCycleName" type="text">
+                <labels>
+                  <label mode="any">Lifecycle name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The lifecycle containing transitions to
+                    choose.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>lifeCycleName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="currentLifeCycleState" type="text">
+                <labels>
+                  <label mode="any">Current life cycle state</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The life cycle state to choose transitions
+                    from.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>currentLifeCycleState</field>
+                </fields>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -145,9 +210,6 @@
           <supportedTypes>
             <type>blob</type>
           </supportedTypes>
-          <defaultTypes>
-            <type>blob</type>
-          </defaultTypes>
         </fields>
       </configuration>
       <handler-class>
