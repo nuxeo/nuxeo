@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.runtime.api.Framework;
 
-public class PublishRelationsListenerTestCase extends SQLRepositoryTestCase {
+public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
     protected static final Resource conformsTo = new ResourceImpl(
             "http://purl.org/dc/terms/ConformsTo");
