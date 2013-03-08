@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.rendition.publisher.relations.listener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <documentation>
+      Copies the relations from a replaced proxy to the new
+      proxy.
+    </documentation>
+
+    <listener name="publishRelationsListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.platform.relations.core.listener.PublishRelationsListener"
+      priority="50">
+      <event>renditionProxyPublished</event>
+    </listener>
+
+  </extension>
+
+</component>
