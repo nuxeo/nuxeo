@@ -1,4 +1,6 @@
-<div class="comments_block" xmlns:nxu="http://nuxeo.org/nxweb/util"
+<div class="comments_block"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
@@ -6,11 +8,22 @@
   <c:if
     test="#{currentDocument.hasFacet('Commentable') and (documentThreadedComments.size > 0)}">
 
-    <h3 class="summaryTitle">
-      <h:outputFormat value="#{messages['label.summary.comments']}">
-        <f:param value="#{documentThreadedComments.size}" />
-      </h:outputFormat>
-    </h3>
+    <c:if test="#{widget.handlingLabels}">
+      <c:if test="#{!empty widget.label}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+      <c:if test="#{empty widget.label}">
+        <ui:include src="/widgets/incl/label_template.xhtml">
+          <ui:param name="label" value="#{nxu:translate('label.summary.comments', documentThreadedComments.size)}" />
+          <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+          <ui:param name="translated" value="false" />
+          <ui:param name="required" value="#{widget.required}" />
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+    </c:if>
 
     <h:outputText class="boldLabel"
       value="#{messages['label.summary.lastComments']}" />
