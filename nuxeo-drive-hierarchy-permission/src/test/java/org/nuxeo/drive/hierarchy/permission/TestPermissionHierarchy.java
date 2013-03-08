@@ -60,6 +60,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -722,21 +724,36 @@ public class TestPermissionHierarchy {
 
     protected DocumentModel createFile(CoreSession session, String path,
             String name, String type, String fileName, String content)
-            throws ClientException {
+            throws ClientException, InterruptedException {
 
         DocumentModel file = session.createDocumentModel(path, name, type);
         org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
                 content);
         blob.setFilename(fileName);
         file.setPropertyValue("file:content", (Serializable) blob);
-        return session.createDocument(file);
+        file = session.createDocument(file);
+        // If the test is run against MySQL, because of its milliseconds
+        // limitation, we need to wait for 1 second between each document
+        // creation to ensure correct ordering when fetching a folder's
+        // children, the default page provider query being ordered by ascendant
+        // creation date.
+        waitIfMySQL();
+        return file;
     }
 
     protected DocumentModel createFolder(CoreSession session, String path,
-            String name, String type) throws ClientException {
+            String name, String type) throws ClientException,
+            InterruptedException {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
-        return session.createDocument(folder);
+        folder = session.createDocument(folder);
+        // If the test is run against MySQL, because of its milliseconds
+        // limitation, we need to wait for 1 second between each document
+        // creation to ensure correct ordering when fetching a folder's
+        // children, the default page provider query being ordered by ascendant
+        // creation date.
+        waitIfMySQL();
+        return folder;
     }
 
     protected void createUser(String userName, String password)
@@ -785,6 +802,12 @@ public class TestPermissionHierarchy {
         }
         session.setACP(docRef, acp, true);
         session.save();
+    }
+
+    protected void waitIfMySQL() throws InterruptedException {
+        if (DatabaseHelper.DATABASE instanceof DatabaseMySQL) {
+            Thread.sleep(1000);
+        }
     }
 
 }
