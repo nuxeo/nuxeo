@@ -17,9 +17,13 @@
 
 package org.nuxeo.dam;
 
+import static org.nuxeo.dam.DamConstants.ASSET_FACET;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
@@ -42,10 +46,15 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
 
     @Override
     public List<Type> getAllowedAssetTypes() {
-        AssetLibrary assetLibrary = getAssetLibrary();
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Set<String> docTypes = schemaManager.getDocumentTypeNamesForFacet(ASSET_FACET);
         TypeManager typeManager = Framework.getLocalService(TypeManager.class);
-        return new ArrayList<Type>(
-                typeManager.getAllowedSubTypes(assetLibrary.getDocType()));
+
+        List<Type> types = new ArrayList<Type>();
+        for (String docType : docTypes) {
+            types.add(typeManager.getType(docType));
+        }
+        return types;
     }
 
     @Override

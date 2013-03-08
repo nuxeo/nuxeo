@@ -26,5 +26,7 @@ public final class DamConstants {
         // Constants class
     }
 
+    public static final String ASSET_FACET = "Asset";
+
     public static final String ASSET_LIBRARY_TYPE = "AssetLibrary";
 }
