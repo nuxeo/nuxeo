@@ -450,6 +450,7 @@
           This widget displays the comments for the currentDocument.
           It requires the Comment service to be deployed.
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -687,7 +688,7 @@
       </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
-        <control name="handlingLabels">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
 
