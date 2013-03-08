@@ -50,9 +50,6 @@ public class AuditEventLogger implements PostCommitFilteringEventListener {
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        if (!(events instanceof ReconnectedEventBundle)) {
-            throw new AssertionError("Not a reconnected event bundle : " + events.getClass().getName());
-        }
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger != null) {
             try {
