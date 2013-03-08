@@ -115,6 +115,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
     }
 
+
     public WidgetDefinitionImpl(String name, String type,
             Map<String, String> labels, Map<String, String> helpLabels,
             boolean translated, Map<String, String> modes,
@@ -364,8 +365,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         // migration code
         Map<String, Serializable> controls = getControls(BuiltinModes.ANY,
                 BuiltinModes.ANY);
-        if (controls != null && controls.containsKey("handlingLabels")) {
-            Serializable handling = controls.get("handlingLabels");
+        if (controls != null && controls.containsKey("handleLabels")) {
+            Serializable handling = controls.get("handleLabels");
             if (handling != null) {
                 return Boolean.parseBoolean(handling.toString());
             }
