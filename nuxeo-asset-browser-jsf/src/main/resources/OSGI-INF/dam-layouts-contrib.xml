@@ -184,12 +184,7 @@
     </widget>
 
     <!-- Asset view -->
-    <widget name="damAssetViewNoDocument" type="damAssetViewNoDocument">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <translated>false</translated>
-    </widget>
+    <widget name="damAssetViewNoDocument" type="damAssetViewNoDocument" />
 
     <widget name="damAssetViewActions" type="currentDocumentActionsWithForms">
       <properties widgetMode="view">
@@ -205,10 +200,6 @@
     </widget>
 
     <widget name="damAssetViewTitle" type="dam_title">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <translated>false</translated>
       <fields>
         <field></field>
         <field>dc:description</field>
@@ -232,16 +223,11 @@
 
     <widget name="damAssetViewTags" type="summary_current_document_tagging">
       <controls mode="any">
-        <control name="handlingLabels">false</control>
         <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
 
-    <widget name="damAssetViewStates" type="summary_current_document_states">
-      <controls mode="any">
-        <control name="handlingLabels">false</control>
-      </controls>
-    </widget>
+    <widget name="damAssetViewStates" type="summary_current_document_states" />
 
     <widget name="damAssetViewLikeStatus" type="summary_document_like_status" />
 
@@ -250,16 +236,15 @@
         <label mode="any">heading.storyboard</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
       <subWidgets>
-        <widget name="videoStoryboard" type="video_storyboard">
-          <controls mode="any">
-            <control name="handlingLabels">false</control>
-          </controls>
-        </widget>
+        <widget name="videoStoryboard" type="video_storyboard" />
       </subWidgets>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="foldable">true</property>
+        <property name="hideSubLabels">true</property>
       </properties>
     </widget>
 
@@ -268,18 +253,16 @@
         <label mode="any">label.dam.video.information</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
       <subWidgets>
         <widget name="videoInfo" type="layout">
-          <labels>
-            <label mode="any"></label>
-          </labels>
-          <translated>false</translated>
           <properties widgetMode="any">
             <property name="name">video_info</property>
           </properties>
         </widget>
       </subWidgets>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="foldable">true</property>
         <property name="hideSubLabels">true</property>
@@ -297,7 +280,9 @@
         <label mode="any">label.dam.common</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="displayToggleActionInHeader">true</property>
         <property name="foldable">true</property>
@@ -311,15 +296,16 @@
         <label mode="any">label.document.routing.workflow</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
       <subWidgets>
         <widget name="assetWorkflow" type="summary_document_route">
           <controls mode="any">
             <control name="requireSurroundingForm">true</control>
-            <control name="handlingLabels">false</control>
           </controls>
         </widget>
       </subWidgets>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="foldable">true</property>
         <property name="foldedByDefault">true</property>
@@ -332,15 +318,16 @@
         <label mode="any">label.document.routing.your.tasks</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
       <subWidgets>
         <widget name="assetTasks" type="summary_current_document_single_tasks">
           <controls mode="any">
             <control name="requireSurroundingForm">true</control>
-            <control name="handlingLabels">false</control>
           </controls>
         </widget>
       </subWidgets>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="foldable">true</property>
         <property name="foldedByDefault">true</property>
@@ -353,7 +340,9 @@
         <label mode="any">label.schema.dublincore</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="displayToggleActionInHeader">true</property>
         <property name="foldable">true</property>
@@ -368,19 +357,16 @@
         <label mode="any">#{nxu:translate('label.summary.comments', documentThreadedComments.size)}</label>
       </labels>
       <translated>false</translated>
-      <handlingLabels>true</handlingLabels>
       <subWidgets>
         <widget name="comments" type="summary_current_document_comments">
-          <labels>
-            <label mode="any"></label>
-          </labels>
-          <translated>false</translated>
           <controls mode="any">
-            <control name="handlingLabels">false</control>
             <control name="requireSurroundingForm">true</control>
           </controls>
         </widget>
       </subWidgets>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="foldable">true</property>
         <property name="foldedByDefault">true</property>
@@ -393,18 +379,16 @@
         <label mode="any">label.header.info.iptc</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
       <subWidgets>
         <widget name="iptc" type="layout">
-          <labels>
-            <label mode="any"></label>
-          </labels>
-          <translated>false</translated>
           <properties widgetMode="any">
             <property name="name">iptc_info</property>
           </properties>
         </widget>
       </subWidgets>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="foldable">true</property>
         <property name="foldedByDefault">true</property>
@@ -417,18 +401,16 @@
         <label mode="any">label.header.info.exif</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
       <subWidgets>
         <widget name="exif" type="layout">
-          <labels>
-            <label mode="any"></label>
-          </labels>
-          <translated>false</translated>
           <properties widgetMode="any">
             <property name="name">exif_info</property>
           </properties>
         </widget>
       </subWidgets>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="foldable">true</property>
         <property name="foldedByDefault">true</property>
@@ -441,7 +423,9 @@
         <label mode="any">label.dam.iprights</label>
       </labels>
       <translated>true</translated>
-      <handlingLabels>true</handlingLabels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
       <properties widgetMode="any">
         <property name="displayToggleActionInHeader">true</property>
         <property name="foldable">true</property>
