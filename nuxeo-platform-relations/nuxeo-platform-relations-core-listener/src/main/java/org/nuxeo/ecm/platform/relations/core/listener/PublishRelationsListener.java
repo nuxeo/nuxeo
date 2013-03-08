@@ -27,7 +27,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
@@ -61,6 +63,8 @@ public class PublishRelationsListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(PublishRelationsListener.class);
 
+    public static final String RENDITION_PROXY_PUBLISHED = "renditionProxyPublished";
+
     protected RelationManager rmanager;
 
     // Override to change the list of graphs to copy relations when a document
@@ -68,7 +72,8 @@ public class PublishRelationsListener implements EventListener {
 
     protected List<String> graphNamesForCopyFromWork = Arrays.asList(RelationConstants.GRAPH_NAME);
 
-    protected List<String> graphNamesForCopyFromReplacedProxy = Arrays.asList(RelationConstants.GRAPH_NAME, "documentComments");
+    protected List<String> graphNamesForCopyFromReplacedProxy = Arrays.asList(
+            RelationConstants.GRAPH_NAME, "documentComments");
 
     public RelationManager getRelationManager() throws ClientException {
         if (rmanager == null) {
@@ -88,7 +93,8 @@ public class PublishRelationsListener implements EventListener {
         return graphNamesForCopyFromWork;
     }
 
-    public List<String> getGraphNamesForCopyFromReplacedProxy() throws ClientException {
+    public List<String> getGraphNamesForCopyFromReplacedProxy()
+            throws ClientException {
         if (graphNamesForCopyFromReplacedProxy == null) {
             return getRelationManager().getGraphNames();
         }
@@ -108,27 +114,40 @@ public class PublishRelationsListener implements EventListener {
             CoreSession session = ctx.getCoreSession();
             RelationManager rmanager = getRelationManager();
 
-            // fetch the archived version the proxy is pointing to
-            DocumentModel sourceDoc = session.getSourceDocument(publishedDoc.getRef());
-
-            // fetch the working version the archived version is coming from
-            sourceDoc = session.getSourceDocument(sourceDoc.getRef());
-
-            if (sourceDoc == null) {
-                log.warn("working version of the proxy is no longer available, cannot copy the relations");
-                return;
-            }
-
-            Resource sourceResource = rmanager.getResource(
-                    RelationConstants.DOCUMENT_NAMESPACE, sourceDoc, null);
             Resource publishedResource = rmanager.getResource(
                     RelationConstants.DOCUMENT_NAMESPACE, publishedDoc, null);
+            Resource sourceResource = null;
 
-            // copy the relations from the work version (the source document
-            // getting published)
-            copyRelationsFromWorkVersion(rmanager, sourceResource,
-                    publishedResource);
+            // Copy relations from working copy if not a rendition proxy
+            if (!RENDITION_PROXY_PUBLISHED.equals(event.getName())) {
+                try {
+                    // fetch the archived version the proxy is pointing to
+                    DocumentModel sourceDoc = session.getSourceDocument(publishedDoc.getRef());
 
+                    // fetch the working version the archived version is coming
+                    // from
+                    sourceDoc = session.getSourceDocument(sourceDoc.getRef());
+
+                    sourceResource = rmanager.getResource(
+                            RelationConstants.DOCUMENT_NAMESPACE, sourceDoc,
+                            null);
+
+                    // copy the relations from the working copy (the source
+                    // document getting published)
+                    copyRelationsFromWorkingCopy(rmanager, sourceResource,
+                            publishedResource);
+                } catch (ClientException e) {
+                    if (e.getCause() instanceof DocumentException
+                            || e instanceof DocumentSecurityException) {
+                        log.warn("working copy of the proxy is no longer available or not readable by the current user, cannot copy the source relations");
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+
+            // Copy relations from replaced proxies
+            @SuppressWarnings("unchecked")
             List<String> replacedProxyIds = (List<String>) ctx.getProperties().get(
                     CoreEventConstants.REPLACED_PROXY_IDS);
             if (replacedProxyIds != null) {
@@ -156,7 +175,8 @@ public class PublishRelationsListener implements EventListener {
             for (Statement stmt : graph.getStatements(replacedResource, null,
                     null)) {
                 if (!isCopyFromSource(stmt, sourceResource)) {
-                    // do not copy previous relations that come from a source
+                    // do not copy previous relations that come from a
+                    // source
                     // copy
                     stmt.setSubject(publishedResource);
                     newStatements.add(stmt);
@@ -165,7 +185,8 @@ public class PublishRelationsListener implements EventListener {
             for (Statement stmt : graph.getStatements(null, null,
                     replacedResource)) {
                 if (!isCopyFromSource(stmt, sourceResource)) {
-                    // do not copy previous relations that come from a source
+                    // do not copy previous relations that come from a
+                    // source
                     // copy
                     stmt.setObject(publishedResource);
                     newStatements.add(stmt);
@@ -187,7 +208,7 @@ public class PublishRelationsListener implements EventListener {
         }
     }
 
-    protected void copyRelationsFromWorkVersion(RelationManager rmanager,
+    protected void copyRelationsFromWorkingCopy(RelationManager rmanager,
             Resource sourceResource, Resource publishedResource)
             throws ClientException {
         for (String graphName : getGraphNamesForCopyFromWork()) {
