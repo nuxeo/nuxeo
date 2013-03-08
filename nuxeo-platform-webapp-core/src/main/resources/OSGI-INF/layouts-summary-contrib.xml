@@ -682,8 +682,12 @@
     </widget>
 
     <widget name="summary_current_document_comments" type="summary_current_document_comments">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handlingLabels">true</control>
       </controls>
     </widget>
 
