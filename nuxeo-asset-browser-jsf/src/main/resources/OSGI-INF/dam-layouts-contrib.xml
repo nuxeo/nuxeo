@@ -363,6 +363,94 @@
       </properties>
     </widget>
 
+    <widget name="damAssetViewComments" type="container">
+      <labels>
+        <label mode="any">#{nxu:translate('label.summary.comments', documentThreadedComments.size)}</label>
+      </labels>
+      <translated>false</translated>
+      <handlingLabels>true</handlingLabels>
+      <subWidgets>
+        <widget name="comments" type="summary_current_document_comments">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>false</translated>
+          <controls mode="any">
+            <control name="handlingLabels">false</control>
+            <control name="requireSurroundingForm">true</control>
+          </controls>
+        </widget>
+      </subWidgets>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+        <property name="foldedByDefault">true</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetViewIPTC" type="container">
+      <labels>
+        <label mode="any">label.header.info.iptc</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <subWidgets>
+        <widget name="iptc" type="layout">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>false</translated>
+          <properties widgetMode="any">
+            <property name="name">iptc_info</property>
+          </properties>
+        </widget>
+      </subWidgets>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+        <property name="foldedByDefault">true</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetViewEXIF" type="container">
+      <labels>
+        <label mode="any">label.header.info.exif</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <subWidgets>
+        <widget name="exif" type="layout">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>false</translated>
+          <properties widgetMode="any">
+            <property name="name">exif_info</property>
+          </properties>
+        </widget>
+      </subWidgets>
+      <properties widgetMode="any">
+        <property name="foldable">true</property>
+        <property name="foldedByDefault">true</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+    </widget>
+
+    <widget name="damAssetViewIpRights" type="toggleableLayoutWithForms">
+      <labels>
+        <label mode="any">label.dam.iprights</label>
+      </labels>
+      <translated>true</translated>
+      <handlingLabels>true</handlingLabels>
+      <properties widgetMode="any">
+        <property name="displayToggleActionInHeader">true</property>
+        <property name="foldable">true</property>
+        <property name="foldedByDefault">true</property>
+        <property name="initialLayoutName">ip_rights</property>
+        <property name="useAjaxForm">true</property>
+      </properties>
+    </widget>
+
     <widget name="damc_author" type="text">
       <labels>
         <label mode="any">label.dam.damc.author</label>
@@ -398,6 +486,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <!-- Search form -->
     <action id="damSearchesSelector" type="widget" order="100">
       <category>DAM_PANEL_LEFT</category>
       <properties>
@@ -419,6 +508,7 @@
       </properties>
     </action>
 
+    <!-- Search results -->
     <action id="damSearchActionsBottom" type="widget" order="400">
       <category>DAM_PANEL_LEFT</category>
       <properties>
@@ -440,6 +530,7 @@
       </properties>
     </action>
 
+    <!-- Asset view -->
     <action id="damAssetViewActions" type="widget" order="100">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
@@ -540,14 +631,6 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDamCommon" type="widget" order="900">
-      <category>DAM_PANEL_RIGHT</category>
-      <properties>
-        <property name="widgetName">damAssetViewDamCommon</property>
-      </properties>
-      <filter-id>hasAssetFacet</filter-id>
-    </action>
-
     <action id="damAssetViewVideoInfo" type="widget" order="1000">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
@@ -557,12 +640,21 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
+    <action id="damAssetViewDamCommon" type="widget" order="900">
+      <category></category>
+      <properties>
+        <property name="widgetName">damAssetViewDamCommon</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
     <action id="damAssetViewWorkflow" type="widget" order="1100">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewWorkflow</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
+      <filter-id>hasWorkflowProcess</filter-id>
     </action>
 
     <action id="damAssetViewTasks" type="widget" order="1200">
@@ -575,13 +667,49 @@
     </action>
 
     <action id="damAssetViewDublincore" type="widget" order="1300">
-      <category>DAM_PANEL_RIGHT</category>
+      <category></category>
       <properties>
         <property name="widgetName">damAssetViewDublincore</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
+    <action id="damAssetViewComments" type="widget" order="1400">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewComments</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+      <filter-id>commentable</filter-id>
+      <filter-id>hasComments</filter-id>
+    </action>
+
+    <action id="damAssetViewIPTC" type="widget" order="1500">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewIPTC</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+      <filter-id>hasPictureFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewEXIF" type="widget" order="1600">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewEXIF</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+      <filter-id>hasPictureFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewIpRights" type="widget" order="1700">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewIpRights</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+      <filter-id>hasPictureFacet</filter-id>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -599,9 +727,21 @@
       </rule>
     </filter>
 
+    <filter id="hasWorkflowProcess">
+      <rule grant="true">
+        <condition>#{routingActions.filteredRouteModels.size() > 0}</condition>
+      </rule>
+    </filter>
+
     <filter id="hasTasks">
       <rule grant="true">
         <condition>#{currentDashBoardItemsExceptPublishingTasks.size() > 0}</condition>
+      </rule>
+    </filter>
+
+    <filter id="hasComments">
+      <rule grant="true">
+        <condition>#{documentThreadedComments.size() > 0}</condition>
       </rule>
     </filter>
 
@@ -661,6 +801,112 @@
           <widget>damc_authoringDate</widget>
         </row>
       </rows>
+    </layout>
+
+    <layout name="ip_rights">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>media_type</widget>
+        </row>
+        <row>
+          <widget>geo_broadcast</widget>
+        </row>
+        <row>
+          <widget>copyright_holder</widget>
+        </row>
+        <row>
+          <widget>licence</widget>
+        </row>
+        <row>
+          <widget>embargo_date</widget>
+        </row>
+        <row>
+          <widget>expiration_date</widget>
+        </row>
+      </rows>
+
+      <widget name="media_type" type="selectOneDirectory">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:media_type</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="directoryName">dam_media_type</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="ordering">label</property>
+          <property name="cssStyleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="geo_broadcast" type="selectOneDirectory">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:geo_broadcast</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="directoryName">dam_geo_broadcast</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="ordering">label</property>
+          <property name="cssStyleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="copyright_holder" type="text">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:copyright_holder</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="licence" type="selectOneDirectory">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:licence</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="directoryName">dam_licence</property>
+          <property name="localize">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="ordering">label</property>
+          <property name="cssStyleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+      <widget name="embargo_date" type="datetime">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:embargo_date</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
+        </properties>
+      </widget>
+      <widget name="expiration_date" type="datetime">
+        <translated>true</translated>
+        <fields>
+          <field>ipr:expiration_date</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="styleClass">dataInputTextDate</property>
+        </properties>
+      </widget>
     </layout>
 
   </extension>
