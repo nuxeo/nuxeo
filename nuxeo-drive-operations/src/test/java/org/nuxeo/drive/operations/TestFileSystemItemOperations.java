@@ -899,7 +899,7 @@ public class TestFileSystemItemOperations {
         assertNotNull(jsonOut);
         String pstName = mapper.readValue(jsonOut.getStream(), String.class);
         assertFalse(String.format(
-                "Confliceted filenames should be different. Got '%s' twice.",
+                "Conflicted filenames should be different. Got '%s' twice.",
                 pstName), bstName.equals(pstName));
     }
 

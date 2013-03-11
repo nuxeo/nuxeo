@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Olivier Grisel <ogrisel@nuxeo.com>
  */
 package org.nuxeo.drive.operations;
 
@@ -32,8 +32,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
- * Renames the {@link FileSystemItem} with the given id with the given name for
- * the currently authenticated user.
+ * Generates a conflicted name for a {@link FileSystemItem} given its name, the
+ * currently authenticated user's first name, last name and time zone.
  *
  * Doing so as an operation make it possible to override this part without
  * having to fork the client codebase.
