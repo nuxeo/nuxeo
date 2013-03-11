@@ -863,18 +863,15 @@ public class TestFileSystemItemOperations {
                 NuxeoDriveGenerateConflictedItemName.ID).set("name",
                 "My file (with accents \u00e9).doc").execute();
         assertNotNull(jsonOut);
-        String newName = mapper.readValue(jsonOut.getStream(),
-                String.class);
+        String newName = mapper.readValue(jsonOut.getStream(), String.class);
         assertTrue(newName.startsWith("My file (with accents \u00e9) (Administrator - "));
         assertTrue(newName.endsWith(").doc"));
 
         // Try with a filename with filename extension
         jsonOut = (Blob) clientSession.newRequest(
-                NuxeoDriveGenerateConflictedItemName.ID).set("name",
-                "My file").execute();
+                NuxeoDriveGenerateConflictedItemName.ID).set("name", "My file").execute();
         assertNotNull(jsonOut);
-        newName = mapper.readValue(jsonOut.getStream(),
-                String.class);
+        newName = mapper.readValue(jsonOut.getStream(), String.class);
         assertTrue(newName.startsWith("My file (Administrator - "));
         assertTrue(newName.endsWith(")"));
 
@@ -886,8 +883,7 @@ public class TestFileSystemItemOperations {
                 NuxeoDriveGenerateConflictedItemName.ID).set("name",
                 "The Clashing File.xls").execute();
         assertNotNull(jsonOut);
-        newName = mapper.readValue(jsonOut.getStream(),
-                String.class);
+        newName = mapper.readValue(jsonOut.getStream(), String.class);
         assertTrue(newName.startsWith("The Clashing File (Joe Strummer - "));
         assertTrue(newName.endsWith(").xls"));
 
@@ -896,8 +892,7 @@ public class TestFileSystemItemOperations {
                 NuxeoDriveGenerateConflictedItemName.ID).set("name",
                 "The Clashing File.xls").set("timezone", "BST").execute();
         assertNotNull(jsonOut);
-        String bstName = mapper.readValue(jsonOut.getStream(),
-                String.class);
+        String bstName = mapper.readValue(jsonOut.getStream(), String.class);
         jsonOut = (Blob) clientSession.newRequest(
                 NuxeoDriveGenerateConflictedItemName.ID).set("name",
                 "The Clashing File.xls").set("timezone", "PST").execute();
