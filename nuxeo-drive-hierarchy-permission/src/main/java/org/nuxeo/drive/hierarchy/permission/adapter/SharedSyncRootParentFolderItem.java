@@ -34,8 +34,8 @@ import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -72,22 +72,25 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
             Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
             while (syncRootRefsIt.hasNext()) {
                 IdRef idRef = syncRootRefsIt.next();
-                try {
-                    DocumentModel doc = session.getDocument(idRef);
-                    // Filter by creator
-                    // TODO: allow filtering by dc:creator in
-                    // NuxeoDriveManager#getSynchronizationRoots(Principal
-                    // principal)
-                    if (!session.getPrincipal().getName().equals(
-                            doc.getPropertyValue("dc:creator"))) {
-                        // TODO: handle null FileSystemItem
-                        children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                                doc, getId()));
-                    }
-                } catch (DocumentSecurityException e) {
+                // TODO: ensure sync roots cache is up-to-date if ACL
+                // change, for now need to check permission
+                // See https://jira.nuxeo.com/browse/NXP-11146
+                if (!session.hasPermission(idRef, SecurityConstants.READ)) {
                     log.debug(String.format(
                             "User %s has no READ access on synchronization root %s, not including it in children.",
                             session.getPrincipal().getName(), idRef));
+                    continue;
+                }
+                DocumentModel doc = session.getDocument(idRef);
+                // Filter by creator
+                // TODO: allow filtering by dc:creator in
+                // NuxeoDriveManager#getSynchronizationRoots(Principal
+                // principal)
+                if (!session.getPrincipal().getName().equals(
+                        doc.getPropertyValue("dc:creator"))) {
+                    // TODO: handle null FileSystemItem
+                    children.add(getFileSystemItemAdapterService().getFileSystemItem(
+                            doc, getId()));
                 }
             }
         }

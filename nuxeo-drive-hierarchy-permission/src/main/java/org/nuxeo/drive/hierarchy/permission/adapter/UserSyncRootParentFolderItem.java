@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
@@ -32,6 +34,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -43,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
 public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(UserSyncRootParentFolderItem.class);
 
     protected boolean isUserWorkspaceSyncRoot = false;
 
@@ -93,9 +98,15 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                 Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
                 while (syncRootRefsIt.hasNext()) {
                     IdRef idRef = syncRootRefsIt.next();
-                    // TODO: handle DocumentSecurityException, or ensure sync
-                    // roots cache is up-to-date if ACL change
+                    // TODO: ensure sync roots cache is up-to-date if ACL
+                    // change, for now need to check permission
                     // See https://jira.nuxeo.com/browse/NXP-11146
+                    if (!session.hasPermission(idRef, SecurityConstants.READ)) {
+                        log.debug(String.format(
+                                "User %s has no READ access on synchronization root %s, not including it in children.",
+                                session.getPrincipal().getName(), idRef));
+                        continue;
+                    }
                     DocumentModel doc = session.getDocument(idRef);
                     // Filter by creator
                     // TODO: allow filtering by dc:creator in
