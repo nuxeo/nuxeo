@@ -195,7 +195,7 @@
         <property name="actionsDisplay">icons</property>
         <property name="useAjaxForm">true</property>
         <property name="ignoreTemplateProperty">true</property>
-        <property name="maxActionsNumber">7</property>
+        <property name="maxActionsNumber">8</property>
       </properties>
     </widget>
 
