@@ -92,7 +92,7 @@
       </labels>
       <translated>true</translated>
       <controls mode="any">
-        <control name="handlingLabels">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
     <widget name="summary_video_conversions" type="video_conversions">
