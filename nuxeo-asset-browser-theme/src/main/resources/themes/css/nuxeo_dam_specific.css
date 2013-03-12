@@ -125,15 +125,18 @@ author: lkemen@nuxeo.com
 	background-color: #fff }
 
 .bubbleBox .tag {
+  border-radius: 0;
   display: inline-block;
-  line-height: 150%;
+  font-size: .9em;
+  line-height: 130%;
   margin: 0;
   padding: 0 .2em .1em;
   position: absolute;
-  right: 10px }
+  right: 10px;
+  text-transform: lowercase }
 
 .bubbleBox .tag.picture {
-  background-color: #00bfa6 }
+  background-color: #00b4e1 }
 .bubbleBox .tag.video {
   background-color: #00896e }
 .bubbleBox .tag.audio {
