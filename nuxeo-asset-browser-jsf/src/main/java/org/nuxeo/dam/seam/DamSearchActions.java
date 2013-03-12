@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -205,30 +207,32 @@ public class DamSearchActions implements Serializable {
 
     public void setState(String state) throws ClientException,
             UnsupportedEncodingException {
-        Long finalPageSize = null;
-        if (!StringUtils.isBlank(pageSize)) {
-            try {
-                finalPageSize = Long.valueOf(pageSize);
-            } catch (NumberFormatException e) {
-                log.warn(String.format(
-                        "Unable to parse '%s' parameter with value '%s'",
-                        PAGE_SIZE_PARAMETER, pageSize));
+        if (StringUtils.isNotBlank(state)) {
+            Long finalPageSize = null;
+            if (!StringUtils.isBlank(pageSize)) {
+                try {
+                    finalPageSize = Long.valueOf(pageSize);
+                } catch (NumberFormatException e) {
+                    log.warn(String.format(
+                            "Unable to parse '%s' parameter with value '%s'",
+                            PAGE_SIZE_PARAMETER, pageSize));
+                }
             }
-        }
 
-        Long finalCurrentPage = null;
-        if (!StringUtils.isBlank(currentPage)) {
-            try {
-                finalCurrentPage = Long.valueOf(currentPage);
-            } catch (NumberFormatException e) {
-                log.warn(String.format(
-                        "Unable to parse '%s' parameter with value '%s'",
-                        CURRENT_PAGE_PARAMETER, currentPage));
+            Long finalCurrentPage = null;
+            if (!StringUtils.isBlank(currentPage)) {
+                try {
+                    finalCurrentPage = Long.valueOf(currentPage);
+                } catch (NumberFormatException e) {
+                    log.warn(String.format(
+                            "Unable to parse '%s' parameter with value '%s'",
+                            CURRENT_PAGE_PARAMETER, currentPage));
+                }
             }
-        }
 
-        contentViewActions.restoreContentView(getCurrentContentViewName(),
-                finalCurrentPage, finalPageSize, null, state);
+            contentViewActions.restoreContentView(getCurrentContentViewName(),
+                    finalCurrentPage, finalPageSize, null, state);
+        }
         updateCurrentDocument();
     }
 
@@ -296,7 +300,12 @@ public class DamSearchActions implements Serializable {
         String currentContentViewName = getCurrentContentViewName();
         if (currentContentViewName != null
                 && currentContentViewName.equals(contentViewName)) {
-            updateCurrentDocument();
+            String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+            // FIXME find a better way to update the current document only if we
+            // are on DAM
+            if ("/dam/assets.xhtml".equals(viewId)) {
+                updateCurrentDocument();
+            }
         }
     }
 

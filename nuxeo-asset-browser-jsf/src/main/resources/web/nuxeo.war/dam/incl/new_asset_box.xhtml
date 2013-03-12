@@ -10,8 +10,9 @@
 
   <h3><h:outputText value="#{messages['label.dam.new.asset']}" /></h3>
 
-  <div class="content">
-    <a4j:outputPanel id="newAsset_panel">
+  <h:form enctype="multipart/form-data" id="#{fancyboxFormId}">
+
+    <div class="content">
 
       <c:if test="#{not empty damActions.selectedNewAssetType}">
         <table class="dataInput">
@@ -20,17 +21,15 @@
               #{messages['label.dam.new.asset.type']}
             </td>
             <td class="fieldColumn">
-              <a4j:form>
                 <h:selectOneListbox size="1" value="#{damActions.selectedNewAssetType}"
                   id="#{widget.id}_select">
                   <a4j:support event="onchange" action="#{damActions.selectNewAssetType()}"
-                    reRender="newAssetLayout_panel" />
+                    reRender="newAssetLayout_panel" ajaxSingle="true"/>
                   <nxu:selectItems value="#{damActions.allowedAssetTypes}"
                     var="type"
                     itemValue="#{type.id}"
                     itemLabel="#{messages[type.label]}" />
                 </h:selectOneListbox>
-              </a4j:form>
             </td>
           </tr>
         </table>
@@ -47,25 +46,24 @@
             </tr>
           </table>
 
-          <h:form enctype="multipart/form-data" id="#{fancyboxFormId}">
-            <nxl:documentLayout mode="create" value="#{changeableDocument}" />
+          <nxl:documentLayout mode="create" value="#{changeableDocument}" />
 
-            <p class="buttonsGadget">
-              <nxh:commandButton value="#{messages['command.create']}"
-                action="#{damActions.saveNewAsset()}"
-                styleClass="button" />
-              <a4j:commandButton value="#{messages['command.cancel']}"
-                immediate="true"
-                action="#{damActions.cancelNewAsset()}"
-                oncomplete="jQuery.fancybox.close()"
-                styleClass="button" />
-            </p>
-          </h:form>
         </a4j:outputPanel>
       </c:if>
-    </a4j:outputPanel>
 
+    </div>
 
-  </div>
+    <div class="buttonsGadget">
+      <nxh:commandButton value="#{messages['command.create']}"
+        action="#{damActions.saveNewAsset()}"
+        styleClass="button" />
+      <a4j:commandButton value="#{messages['command.cancel']}"
+        immediate="true"
+        action="#{damActions.cancelNewAsset()}"
+        oncomplete="jQuery.fancybox.close()"
+        styleClass="button" />
+    </div>
+
+  </h:form>
 
 </div>

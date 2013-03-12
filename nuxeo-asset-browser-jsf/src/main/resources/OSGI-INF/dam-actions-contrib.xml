@@ -89,6 +89,35 @@
       <filter-id>canCreateNewAsset</filter-id>
     </action>
 
+    <!-- Current selection actions -->
+    <action id="damBulkEdit" type="fancybox"
+      label="command.bulk.edit" icon="" order="0">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+      <filter-id>canEditCurrentSelection</filter-id>
+      <properties>
+        <property name="include">/incl/bulk_edit_box.xhtml</property>
+        <property name="layout">damBulkEdit@edit</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">50%</property>
+        <property name="height">70%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="CURRENT_SELECTION_COPY">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+    </action>
+
+    <action id="CURRENT_SELECTION_ADDTOLIST">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+    </action>
+
+    <action id="CURRENT_SELECTION_TRASH">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

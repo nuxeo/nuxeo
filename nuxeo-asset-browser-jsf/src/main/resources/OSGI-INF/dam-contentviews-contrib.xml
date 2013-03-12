@@ -64,7 +64,7 @@
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
-      <actions category="CURRENT_SELECTION_LIST" />
+      <actions category="DAM_CURRENT_SELECTION_LIST" />
 
       <flags>
         <flag>DAM</flag>
