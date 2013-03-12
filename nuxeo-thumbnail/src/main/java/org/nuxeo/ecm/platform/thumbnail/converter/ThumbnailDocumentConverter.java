@@ -45,7 +45,7 @@ public class ThumbnailDocumentConverter implements Converter {
 
     public static final String THUMBNAIL_SIZE_PARAMETER_NAME = "size";
 
-    public static final String THUMBNAIL_DEFAULT_SIZE = "100";
+    public static final String THUMBNAIL_DEFAULT_SIZE = "100x100";
 
     public static final String THUMBNAIL_COMMAND = "toThumbnail";
 
