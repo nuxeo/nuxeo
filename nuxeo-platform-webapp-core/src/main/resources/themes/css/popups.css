@@ -11,8 +11,8 @@ author: lkemen@nuxeo.com
 #fancybox-wrap a, #fancybox-wrap a:link, #fancybox-wrap a:visited { text-decoration: none; color: "link (__FLAVOR__ color)"; }
 #fancybox-wrap a:hover, #fancybox-wrap a:active { text-decoration: underline }
 #fancybox-content h3 { border-bottom: 2px dotted #ddd; margin: 0 0 .5em; padding: .5em 0 }
-#fancybox-content .content { padding: 1em 1em 1.5em }
-#fancybox-content .buttonsGadget { border-top: 2px dotted #E9E9E9; font-size: 1.1em; margin: .5em 0 0; padding: .5em 0 0 }
+#fancybox-content .content { padding: 1em 1em 1.5em; overflow: auto }
+#fancybox-content .buttonsGadget { border-top: 2px dotted #e9e9e9; font-size: 1.1em; margin: .5em 0 0; padding: .5em 0 0 }
 #fancybox-content .popUpDescription { padding: 0 0 1em }
 /* Override default size from the page */
 #fancybox-content .nxMainContainer { height: auto }
