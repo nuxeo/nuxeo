@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -38,6 +40,8 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class FileSystemItemFactoryRegistry extends
         ContributionFragmentRegistry<FileSystemItemFactoryDescriptor> {
+
+    private static final Log log = LogFactory.getLog(FileSystemItemFactoryRegistry.class);
 
     protected final Map<String, FileSystemItemFactoryDescriptor> factoryDescriptors = new HashMap<String, FileSystemItemFactoryDescriptor>();
 
@@ -57,8 +61,14 @@ public class FileSystemItemFactoryRegistry extends
             FileSystemItemFactoryDescriptor newOrigContrib) {
         if (newOrigContrib.isEnabled()) {
             // No merge
+            log.trace(String.format(
+                    "Putting contribution %s with id %s in factory descriptors",
+                    newOrigContrib, id));
             factoryDescriptors.put(id, newOrigContrib);
         } else {
+            log.trace(String.format(
+                    "Removing disabled contribution with id %s from factory descriptors",
+                    id));
             factoryDescriptors.remove(id);
         }
     }
@@ -66,12 +76,16 @@ public class FileSystemItemFactoryRegistry extends
     @Override
     public void contributionRemoved(String id,
             FileSystemItemFactoryDescriptor origContrib) {
+        log.trace(String.format(
+                "Removing contribution with id %s from factory descriptors", id));
         factoryDescriptors.remove(id);
     }
 
     @Override
     public FileSystemItemFactoryDescriptor clone(
             FileSystemItemFactoryDescriptor orig) {
+        log.trace(String.format("Cloning contribution with id %s",
+                orig.getName()));
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -90,6 +104,9 @@ public class FileSystemItemFactoryRegistry extends
     public void merge(FileSystemItemFactoryDescriptor src,
             FileSystemItemFactoryDescriptor dst) {
         // Null merge
+        log.trace(String.format(
+                "Null merge between contributions %s (source) and %s (destination)",
+                src.getName(), dst.getName()));
     }
 
     protected List<FileSystemItemFactoryWrapper> getOrderedFactories()

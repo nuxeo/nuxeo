@@ -110,18 +110,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             }
             parentPath = parent.getPath();
         } else {
-            DocumentModel parentDoc = docSession.getParentDocument(doc.getRef());
-            if (parentDoc == null) {
-                parentPath = "";
-            } else {
-                FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
-                        parentDoc, true);
-                if (parent == null) {
-                    parentPath = "";
-                } else {
-                    parentPath = parent.getPath();
-                }
-            }
+            parentPath = "";
         }
         path = parentPath + '/' + id;
     }
