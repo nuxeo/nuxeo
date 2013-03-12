@@ -22,6 +22,7 @@
     <module>nuxeo-platform-login-digest</module>
     <module>nuxeo-platform-login-deputy</module>
     <module>nuxeo-platform-login-token</module>
+    <module>nuxeo-platform-login-kerberos</module>
   </modules>
 
   <repositories>
