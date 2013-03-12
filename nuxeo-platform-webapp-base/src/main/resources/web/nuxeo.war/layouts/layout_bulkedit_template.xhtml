@@ -7,21 +7,15 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   id="#{layout.id}">
 
-<c:if test="false">
-  template needing parameter "jsfContainerId" representing the JSF
-  UINamingContainerId so that javascript code can use it to find
-  DOM elements on the page.
-</c:if>
+  <c:if test="#{nxl:isBoundToEditMode(layout.mode)}">
 
-<c:if test="#{nxl:isBoundToEditMode(layout.mode)}">
-
-  <table class="dataInput fullWidth">
-    <tbody>
+    <table class="dataInput fullWidth">
+      <tbody>
 
       <nxl:layoutRow>
         <tr>
           <nxl:layoutRowWidget>
-            <td class="iconColumn">
+            <td class="iconColumn" data-bulkCheckBox="#{bulkEditCheckBoxId}">
               <c:set var="bulkEditCheckBoxId"
                 value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
               <c:set var="contextDataKey"
@@ -66,22 +60,22 @@
             </td>
             <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
               <nxl:widget widget="#{widget}" value="#{value}"
-                onclick="document.getElementById('#{jsfContainerId}:#{layout.id}:#{bulkEditCheckBoxId}').checked='checked'"
-                onchange="document.getElementById('#{jsfContainerId}:#{layout.id}:#{bulkEditCheckBoxId}').checked='checked'" />
+                onclick="jQuery(this).parents('td').siblings(':first').find('input').attr('checked', 'checked')"
+                onchange="jQuery(this).parents('td').siblings(':first').find('input').attr('checked', 'checked')" />
             </td>
           </nxl:layoutRowWidget>
         </tr>
       </nxl:layoutRow>
 
-    </tbody>
-  </table>
+      </tbody>
+    </table>
 
-<script>
-  jQuery(document).ready(function() {
-    jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
-  });
-</script>
+    <script>
+      jQuery(document).ready(function() {
+        jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
+      });
+    </script>
 
-</c:if>
+  </c:if>
 
 </f:subview>

@@ -17,9 +17,13 @@
 
 package org.nuxeo.ecm.webapp.bulkedit;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -28,16 +32,18 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * Handles Bulk Edit actions.
@@ -63,6 +69,12 @@ public class BulkEditActions implements Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected Map<String, String> messages;
+
     protected DocumentModel fictiveDocumentModel;
 
     /**
@@ -80,6 +92,7 @@ public class BulkEditActions implements Serializable {
 
     /**
      * Returns the common schemas for the current selected documents.
+     *
      * @deprecated not yet used since 5.7
      */
     protected List<String> getCommonSchemas() {
@@ -94,25 +107,52 @@ public class BulkEditActions implements Serializable {
     @Factory(value = "bulkEditDocumentModel", scope = ScopeType.EVENT)
     public DocumentModel getBulkEditDocumentModel() {
         if (fictiveDocumentModel == null) {
-            //fictiveDocumentModel = new SimpleDocumentModel(getCommonSchemas());
             fictiveDocumentModel = new SimpleDocumentModel();
         }
         return fictiveDocumentModel;
     }
 
     public String bulkEditSelection() throws ClientException {
-        bulkEditSelectionNoRedirect();
-        return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
-    }
-
-    public void bulkEditSelectionNoRedirect() throws ClientException {
         if (fictiveDocumentModel != null) {
             List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
             BulkEditHelper.copyMetadata(documentManager, fictiveDocumentModel,
                     selectedDocuments);
-
             fictiveDocumentModel = null;
+            for (DocumentModel doc : selectedDocuments) {
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, doc);
+            }
+
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get("label.bulk.edit.documents.updated"),
+                    selectedDocuments.size());
         }
+        return null;
+    }
+
+    /**
+     *
+     * @deprecated since 5.7. Use
+     *             {@link org.nuxeo.ecm.webapp.bulkedit.BulkEditActions#bulkEditSelection()}
+     *             .
+     */
+    @Deprecated
+    public void bulkEditSelectionNoRedirect() throws ClientException {
+        bulkEditSelection();
+    }
+
+    public boolean getCanEdit() throws ClientException {
+        if (documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
+            return false;
+        }
+
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
+        for (DocumentModel doc : docs) {
+            if (!documentManager.hasPermission(doc.getRef(),
+                    SecurityConstants.WRITE)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Observer(CURRENT_DOCUMENT_SELECTION + "Updated")
