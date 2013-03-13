@@ -51,7 +51,7 @@ public class HttpConnector implements Connector {
      * Timeout in milliseconds for the socket, connection manager and connection
      * used by {@link #http}.
      */
-    protected final long httpConnectionTimeout;
+    protected final int httpConnectionTimeout;
 
     protected final HttpContext ctx;
 
@@ -71,7 +71,7 @@ public class HttpConnector implements Connector {
      *
      * @since 5.7
      */
-    public HttpConnector(HttpClient http, long httpConnectionTimeout) {
+    public HttpConnector(HttpClient http, int httpConnectionTimeout) {
         this(http, new BasicHttpContext(), httpConnectionTimeout);
     }
 
@@ -84,7 +84,7 @@ public class HttpConnector implements Connector {
      * @since 5.7
      */
     public HttpConnector(HttpClient http, HttpContext ctx,
-            long httpConnectionTimeout) {
+            int httpConnectionTimeout) {
         ctx.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
         this.http = (AbstractHttpClient) http;
         this.httpConnectionTimeout = httpConnectionTimeout;
@@ -163,11 +163,11 @@ public class HttpConnector implements Connector {
         // and connection itself
         if (httpConnectionTimeout > 0) {
             HttpParams httpParams = http.getParams();
-            httpParams.setParameter("http.socket.timeout",
+            httpParams.setIntParameter("http.socket.timeout",
                     httpConnectionTimeout);
-            httpParams.setParameter("http.connection-manager.timeout",
+            httpParams.setIntParameter("http.connection-manager.timeout",
                     httpConnectionTimeout);
-            httpParams.setParameter("http.connection.timeout",
+            httpParams.setIntParameter("http.connection.timeout",
                     httpConnectionTimeout);
         }
         return http.execute(httpReq, ctx);

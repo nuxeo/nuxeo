@@ -29,7 +29,7 @@ public class HttpAutomationClient extends AsyncAutomationClient {
 
     protected DefaultHttpClient http;
 
-    protected long httpConnectionTimeout;
+    protected int httpConnectionTimeout;
 
     /**
      * Instantiates a new {@link HttpAutomationClient} with no timeout for the
@@ -47,7 +47,7 @@ public class HttpAutomationClient extends AsyncAutomationClient {
      *
      * @since 5.7
      */
-    public HttpAutomationClient(String url, long httpConnectionTimeout) {
+    public HttpAutomationClient(String url, int httpConnectionTimeout) {
         super(url);
         init(httpConnectionTimeout);
     }
@@ -59,13 +59,13 @@ public class HttpAutomationClient extends AsyncAutomationClient {
      *
      * @since 5.7
      */
-    public HttpAutomationClient(String url, long httpConnectionTimeout,
+    public HttpAutomationClient(String url, int httpConnectionTimeout,
             long asyncAwaitTerminationTimeout) {
         super(url, asyncAwaitTerminationTimeout);
         init(httpConnectionTimeout);
     }
 
-    private void init(long httpConnectionTimeout) {
+    private void init(int httpConnectionTimeout) {
         http = new DefaultHttpClient(new ThreadSafeClientConnManager());
         this.httpConnectionTimeout = httpConnectionTimeout;
         // http.setCookieSpecs(null);
