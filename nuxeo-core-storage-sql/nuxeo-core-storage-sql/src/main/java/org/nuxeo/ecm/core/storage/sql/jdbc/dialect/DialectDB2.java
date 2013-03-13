@@ -146,7 +146,7 @@ public class DialectDB2 extends Dialect {
             setToPreparedStatementString(ps, index, value, column);
             return;
         case Types.BIT:
-            ps.setBoolean(index, ((Boolean) value).booleanValue());
+            ps.setInt(index, ((Boolean) value).booleanValue() ? 1 : 0);
             return;
         case Types.TINYINT:
         case Types.SMALLINT:
