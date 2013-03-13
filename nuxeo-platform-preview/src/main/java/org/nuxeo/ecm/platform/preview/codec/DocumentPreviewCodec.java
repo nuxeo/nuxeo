@@ -56,6 +56,7 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
         return PREFIX;
     }
 
+    @Override
     public DocumentView getDocumentViewFromUrl(String url) {
         final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
         Matcher m = pattern.matcher(url);
@@ -78,9 +79,16 @@ public class DocumentPreviewCodec extends AbstractDocumentViewCodec {
         return null;
     }
 
+    @Override
     public String getUrlFromDocumentView(DocumentView docView) {
         DocumentLocation docLoc = docView.getDocumentLocation();
         String property = docView.getParameter(PROPERTY_PATH_KEY);
+
+        //NXP-11215 Avoid NPE with not persisted documentModel
+        if(docLoc.getDocRef() == null) {
+            return null;
+        }
+
         if (docLoc != null) {
             List<String> items = new ArrayList<String>();
             items.add(getPrefix());
