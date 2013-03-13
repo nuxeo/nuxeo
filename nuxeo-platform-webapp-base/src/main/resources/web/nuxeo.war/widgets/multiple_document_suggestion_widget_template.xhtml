@@ -1,27 +1,74 @@
-<div xmlns:f="http://java.sun.com/jsf/core"
+<c:if test="true"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:rich="http://richfaces.org/rich">
-
-  <c:if test="#{widget.mode != 'edit'}">
-
-    <h:dataTable value="#{field_0}"
-      var="docid" rendered="#{not empty field_0}">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <nxu:inputList value="#{fieldOrValue}" model="model"
+    rendered="#{not empty field}">
+    <nxu:set var="canSee"
+      value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(model.rowData)}">
+      <h:outputText rendered="#{canSee}">
+        <nxu:set var="doc"
+          value="#{docSuggestionActions.getDocumentWithId(model.rowData)}">
+          <h:outputText value="#{nxd:titleOrId(doc)}" />
+        </nxu:set>
+      </h:outputText>
+      <h:outputText rendered="#{not canSee}">
+        <h:outputText
+          value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{model.rowData})" />
+      </h:outputText>
+      <h:outputText value=", "
+        rendered="#{model.rowIndex != (model.rowCount-1)}" />
+    </nxu:set>
+  </nxu:inputList>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <nxp:html>
+    <h:dataTable value="#{field}"
+      var="docid" rendered="#{not empty field}">
       <h:column>
         <nxu:set var="canSee"
           value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(docid)}">
-          <f:subview rendered="#{canSee}">
+          <h:outputText rendered="#{canSee}">
+            <nxu:set var="doc"
+              value="#{docSuggestionActions.getDocumentWithId(docid)}">
+              <nxu:graphicImage
+                value="#{nxd:iconPath(doc)}"
+                rendered="#{!empty nxd:iconPath(doc)}" />
+              <h:outputText value=" #{nxd:titleOrId(doc)} " />
+            </nxu:set>
+          </h:outputText>
+          <h:outputText rendered="#{not canSee}">
+            <h:outputText
+              value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{docid})" />
+          </h:outputText>
+        </nxu:set>
+      </h:column>
+    </h:dataTable>
+  </nxp:html>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+    <h:dataTable value="#{field}"
+      var="docid" rendered="#{not empty field}">
+      <h:column>
+        <nxu:set var="canSee"
+          value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(docid)}">
+          <h:outputText rendered="#{canSee}">
             <nxu:set var="doc"
               value="#{docSuggestionActions.getDocumentWithId(docid)}">
               <nxu:graphicImage
                 value="#{nxd:iconPath(doc)}"
                 rendered="#{!empty nxd:iconPath(doc)}"
+                style="vertical-align:middle"
                 styleClass="smallIcon" />
-              <h:outputText value="#{doc.dublincore.title}" />
+              <h:outputText value=" #{nxd:titleOrId(doc)} " />
               <nxd:restDocumentLink document="#{doc}"
                 newConversation="true" target="_blank"
                 tab="#{widgetProperty_tab}"
@@ -32,18 +79,17 @@
                   title="#{messages['permalink.newTab']}" />
               </nxd:restDocumentLink>
             </nxu:set>
-          </f:subview>
-          <f:subview rendered="#{not canSee}">
+          </h:outputText>
+          <h:outputText rendered="#{not canSee}">
             <h:outputText
               value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{docid})" />
-          </f:subview>
+          </h:outputText>
         </nxu:set>
       </h:column>
     </h:dataTable>
 
-  </c:if>
-
-  <c:if test="#{widget.mode == 'edit'}">
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
 
     <c:set var="minChars" value="#{nxu:test(!empty widgetProperty_minChars, widgetProperty_minChars, '3')}" />
     <c:set var="frequency" value="#{nxu:test(!empty widgetProperty_frequency, widgetProperty_frequency, '0')}" />
@@ -105,7 +151,7 @@
 
         <h:panelGroup>
           <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion">
-            <nxu:inputList id="#{widget.id}_list" value="#{field_0}" model="model"
+            <nxu:inputList id="#{widget.id}_list" value="#{field}" model="model"
               required="#{widget.required}">
               <h:panelGroup id="#{widget.id}_listItem">
                 <h:panelGrid columns="3">
@@ -118,14 +164,14 @@
                   </h:panelGroup>
                   <nxu:set var="canSee"
                     value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(model.rowData)}">
-                    <f:subview rendered="#{canSee}">
+                    <h:outputText rendered="#{canSee}">
                       <nxu:set var="doc"
                         value="#{docSuggestionActions.getDocumentWithId(model.rowData)}">
                         <nxu:graphicImage
                           value="#{nxd:iconPath(doc)}"
                           rendered="#{!empty nxd:iconPath(doc)}"
                           styleClass="smallIcon" />
-                        <h:outputText value="#{doc.dublincore.title}" />
+                        <h:outputText value="#{nxd:titleOrId(doc)}" />
                         <nxd:restDocumentLink document="#{doc}"
                           newConversation="true" target="_blank"
                           tab="#{widgetProperty_tab}"
@@ -136,11 +182,11 @@
                             title="#{messages['permalink.newTab']}" />
                         </nxd:restDocumentLink>
                       </nxu:set>
-                    </f:subview>
-                    <f:subview rendered="#{not canSee}">
+                    </h:outputText>
+                    <h:outputText rendered="#{not canSee}">
                       <h:outputText
                         value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{model.rowData})" />
-                    </f:subview>
+                    </h:outputText>
                   </nxu:set>
                 </h:panelGrid>
               </h:panelGroup>
@@ -154,6 +200,5 @@
 
     </a4j:region>
 
-  </c:if>
-
-</div>
+</c:if>
+</c:if>

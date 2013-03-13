@@ -1,46 +1,86 @@
-<div xmlns:f="http://java.sun.com/jsf/core"
+<c:if test="true"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:rich="http://richfaces.org/rich">
-
-  <c:if test="#{widget.mode != 'edit'}">
-
-    <c:if test="#{not empty field_0}">
-      <nxu:set var="canSee"
-        value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field_0)}"
-        cache="true">
+<c:if test="#{nxl:isLikePlainMode(widget.mode)}">
+  <h:outputText rendered="#{not empty field}">
+    <nxu:set var="canSee"
+      value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}">
+      <h:outputText rendered="#{canSee}">
+        <nxu:set var="doc"
+          value="#{docSuggestionActions.getDocumentWithId(field)}">
+          <h:outputText value="#{nxd:titleOrId(doc)}" />
+        </nxu:set>
+      </h:outputText>
+      <h:outputText rendered="#{not canSee}"
+        value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})" />
+    </nxu:set>
+  </h:outputText>
+</c:if>
+<c:if test="#{widget.mode == 'pdf'}">
+  <c:if test="#{not empty field}">
+    <nxu:set var="canSee"
+      value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}"
+      cache="true">
+      <nxp:html>
         <c:if test="#{canSee}">
           <nxu:set var="doc"
-            value="#{docSuggestionActions.getDocumentWithId(field_0)}">
+            value="#{docSuggestionActions.getDocumentWithId(field)}">
             <nxu:graphicImage
               value="#{nxd:iconPath(doc)}"
-              rendered="#{!empty nxd:iconPath(doc)}"
-              styleClass="smallIcon" />
-            <h:outputText value="#{doc.dublincore.title}" />
-            <nxd:restDocumentLink document="#{doc}"
-              newConversation="true" target="_blank"
-              tab="#{widgetProperty_tab}"
-              subTab="#{widgetProperty_subTab}">
-              <nxu:graphicImage value="/icons/external.gif"
-                style="vertical-align:middle"
-                alt="#{messages['permalink.newTab']}"
-                title="#{messages['permalink.newTab']}" />
-            </nxd:restDocumentLink>
+              rendered="#{!empty nxd:iconPath(doc)}" />
+            <h:outputText value="#{nxd:titleOrId(doc)}" />
           </nxu:set>
         </c:if>
         <c:if test="#{not canSee}">
           <h:outputText
-            value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field_0})" />
+            value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})" />
         </c:if>
-      </nxu:set>
-    </c:if>
+      </nxp:html>
+    </nxu:set>
+  </c:if>
+</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
+  <c:if test="#{not empty field}">
+    <nxu:set var="canSee"
+      value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}"
+      cache="true">
+      <c:if test="#{canSee}">
+        <nxu:set var="doc"
+          value="#{docSuggestionActions.getDocumentWithId(field)}"
+          cache="true">
+          <nxu:graphicImage
+            value="#{nxd:iconPath(doc)}"
+            rendered="#{!empty nxd:iconPath(doc)}"
+            style="vertical-align:middle"
+            styleClass="smallIcon" />
+          <h:outputText value=" #{nxd:titleOrId(doc)} " />
+          <nxd:restDocumentLink document="#{doc}"
+            newConversation="true" target="_blank"
+            tab="#{widgetProperty_tab}"
+            subTab="#{widgetProperty_subTab}">
+            <nxu:graphicImage value="/icons/external.gif"
+              style="vertical-align:middle"
+              alt="#{messages['permalink.newTab']}"
+              title="#{messages['permalink.newTab']}" />
+          </nxd:restDocumentLink>
+        </nxu:set>
+      </c:if>
+      <c:if test="#{not canSee}">
+        <h:outputText
+          value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})" />
+      </c:if>
+    </nxu:set>
   </c:if>
 
-  <c:if test="#{widget.mode == 'edit'}">
+</c:if>
+<c:if test="#{widget.mode == 'edit'}">
 
     <c:set var="minChars" value="#{nxu:test(!empty widgetProperty_minChars, widgetProperty_minChars, '3')}" />
     <c:set var="frequency" value="#{nxu:test(!empty widgetProperty_frequency, widgetProperty_frequency, '0')}" />
@@ -103,7 +143,7 @@
         </h:panelGroup>
 
         <h:panelGroup id="#{widget.id}_selectionGroup">
-          <nxu:valueHolder var="selectedDocId" value="#{field_0}"
+          <nxu:valueHolder var="selectedDocId" value="#{field}"
             id="#{widget.id}"
             required="#{widget.required}">
             <a4j:commandLink id="#{widget.id}_selectionReset"
@@ -128,7 +168,7 @@
                       value="#{nxd:iconPath(doc)}"
                       rendered="#{!empty nxd:iconPath(doc)}"
                       styleClass="smallIcon" />
-                    <h:outputText value="#{doc.dublincore.title}" />
+                    <h:outputText value="#{nxd:titleOrId(doc)}" />
                     <nxd:restDocumentLink document="#{doc}"
                       newConversation="true" target="_blank"
                       tab="#{widgetProperty_tab}"
@@ -154,6 +194,5 @@
 
     </a4j:region>
 
-  </c:if>
-
-</div>
+</c:if>
+</c:if>
