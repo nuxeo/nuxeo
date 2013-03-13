@@ -209,6 +209,11 @@
         <artifactId>nuxeo-platform-login-token</artifactId>
         <version>${nuxeo.login.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login-kerberos</artifactId>
+        <version>${nuxeo.login.version}</version>
+      </dependency>
 
       <!-- Faceted Search -->
       <dependency>
