@@ -91,6 +91,7 @@ public abstract class Dialect {
         DIALECTS.put("Microsoft SQL Server", DialectSQLServer.class);
         DIALECTS.put("HSQL Database Engine", DialectHSQLDB.class);
         DIALECTS.put("Apache Derby", DialectDerby.class);
+        DIALECTS.put("DB2", DialectDB2.class);
     }
 
     public static final class JDBCInfo {
@@ -156,6 +157,10 @@ public abstract class Dialect {
             databaseName = metadata.getDatabaseProductName();
         } catch (SQLException e) {
             throw new StorageException(e);
+        }
+        if (databaseName.contains("/")) {
+            // DB2/LINUX, DB2/DARWIN, etc.
+            databaseName = databaseName.substring(0, databaseName.indexOf('/'));
         }
         String dialectClassName = Framework.getProperty(DIALECT_CLASS);
         if (dialectClassName == null) {
