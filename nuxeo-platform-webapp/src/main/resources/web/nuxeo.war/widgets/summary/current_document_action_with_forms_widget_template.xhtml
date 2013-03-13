@@ -7,7 +7,7 @@
 <nxu:set var="ajaxReRender"
   value="#{widget.id}_panel"
   cache="true">
-  <a4j:outputPanel value="#{ajaxReRender}">
+  <a4j:outputPanel id="#{ajaxReRender}">
     <nxu:set var="action"
       value="#{webActions.getAction(widgetProperty_actionId, not widgetProperty_disableFiltered)}"
       cache="true">
