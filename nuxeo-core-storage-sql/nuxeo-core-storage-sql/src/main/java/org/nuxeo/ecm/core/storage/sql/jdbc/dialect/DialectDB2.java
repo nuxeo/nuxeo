@@ -306,7 +306,7 @@ public class DialectDB2 extends Dialect {
 
     @Override
     public String getSecurityCheckSql(String idColumnName) {
-        throw new UnsupportedOperationException();
+        return String.format("NX_ACCESS_ALLOWED(%s, ?, ?) = 1", idColumnName);
     }
 
     @Override
