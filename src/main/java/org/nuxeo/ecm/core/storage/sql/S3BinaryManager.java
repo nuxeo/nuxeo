@@ -350,8 +350,13 @@ public class S3BinaryManager extends BinaryCachingManager {
 
         @Override
         public boolean fetchFile(String digest, File tmp) {
-            try {
+            long t0 = 0;
+            if (log.isDebugEnabled()) {
+                t0 = System.currentTimeMillis();
                 log.debug("fetching blob " + digest + " from S3 store");
+            }
+            try {
+
                 ObjectMetadata metadata = amazonS3.getObject(
                         new GetObjectRequest(bucketName, digest), tmp);
                 // check ETag
@@ -368,12 +373,24 @@ public class S3BinaryManager extends BinaryCachingManager {
                     log.error("Unknown binary: " + digest, e);
                 }
                 return false;
+            } finally {
+                if (log.isDebugEnabled()) {
+                    long dtms = System.currentTimeMillis() - t0;
+                    log.debug("fetched blob " + digest + " from S3 store in "
+                            + dtms + "ms");
+                }
             }
 
         }
 
         @Override
         public Long fetchLength(String digest) {
+            long t0 = 0;
+            if (log.isDebugEnabled()) {
+                t0 = System.currentTimeMillis();
+                log.debug("fetching blob " + digest
+                        + " from S3 store to get length");
+            }
             try {
                 ObjectMetadata metadata = amazonS3.getObjectMetadata(
                         bucketName, digest);
@@ -391,10 +408,16 @@ public class S3BinaryManager extends BinaryCachingManager {
                     log.error("Unknown binary: " + digest, e);
                 }
                 return null;
+            } finally {
+                if (log.isDebugEnabled()) {
+                    long dtms = System.currentTimeMillis() - t0;
+                    log.debug("fetched blob " + digest
+                            + " from S3 store to get it's length in " + dtms
+                            + "ms");
+                }
             }
 
         }
-
     }
 
     /**
