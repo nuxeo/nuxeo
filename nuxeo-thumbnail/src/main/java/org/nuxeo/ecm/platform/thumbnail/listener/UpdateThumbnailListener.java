@@ -12,11 +12,11 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 /**
  * Thumbnail listener handling creation and update document event to store doc
  * thumbnail preview (only for DocType File)
- * 
+ *
  * @since 5.7
  */
 public class UpdateThumbnailListener implements PostCommitEventListener {
@@ -41,6 +41,9 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
                             ThumbnailConstants.EventNames.afterBlobUpdateCheck.name())) {
                 DocumentEventContext context = (DocumentEventContext) ec;
                 DocumentModel doc = context.getSourceDocument();
+                if (doc instanceof DeletedDocumentModel) {
+                    return;
+                }
                 BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
                 if (blobHolder != null) {
                     try {
