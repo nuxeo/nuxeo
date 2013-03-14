@@ -64,7 +64,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * Because the BLOB length can be accessed independently of the binary stream,
  * it is also cached in a simple text file if accessed before the stream.
  */
-public class S3BinaryManager extends BinaryCachingManager  {
+public class S3BinaryManager extends BinaryCachingManager {
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
@@ -351,6 +351,7 @@ public class S3BinaryManager extends BinaryCachingManager  {
         @Override
         public boolean fetchFile(String digest, File tmp) {
             try {
+                log.debug("fetching blob " + digest + " from S3 store");
                 ObjectMetadata metadata = amazonS3.getObject(
                         new GetObjectRequest(bucketName, digest), tmp);
                 // check ETag
