@@ -88,11 +88,26 @@ Delete the tgt with kdestroy if you use your server as a Kerberos client too (eg
 
 ### Configure Java
 
+To enable kerberos, you need to use a login configuration implementation. You have two ways of doing this. Either change the default Java configuration or use JAVA_OPTS. Take a look at [JAAS](http://docs.oracle.com/javase/6/docs/technotes/guides/security/jaas/JAASRefGuide.html#AppendixA) documentation for more details.
+
+#### Change the default JRE configuration
+
 in $JAVA_HOME/jre/lib/security/java.security find the login config url (it's commented out by default):
 
      #login.config.url.1=file:${user.home}/.java.login.config
 
 set this to a regular file, e.g. /opt/nuxeo/java.login.config
+
+#### Give a custom login file as Java argument
+
+In _nuxeo.conf_, add the following line:
+
+    JAVA_OPTS=$JAVA_OPTS -Djava.security.auth.login.config=/opt/nuxeo/java.login.config
+
+Note that using one equal sign append or override parts of the default java.security file whereas using two equal sign completely override the default java.security file content.
+
+    JAVA_OPTS=$JAVA_OPTS -Djava.security.auth.login.config==/opt/nuxeo/java.login.config
+
 
 ### Configure JAAS
 
@@ -108,7 +123,6 @@ open the java.login.config file you've setup and add the following configuration
      };
 
 (Note that the login configuration MUST be called Nuxeo with an uppercase N!)
-
 
 
 ### Configure Nuxeo (we're almost there!)
