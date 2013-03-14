@@ -17,6 +17,17 @@
     category="SUBVIEW_UPPER_LIST"
     value="#{currentDocument}" />
 
+  <nxl:widgetType name="currentDocumentActionsWithForms"
+    widgetName="documentActionSubviewUpperList"
+    mode="view"
+    label=""
+    styleClass="action_bar"
+    actionStyleClass="button"
+    actionsDisplay="icons_and_links"
+    overallDisplay="horizontal_block"
+    category="SUBVIEW_UPPER_LIST_HREF"
+    value="#{currentDocument}" />
+
   <h:form id="documentActionsWebViewForm">
     <c:if test="#{currentDocument.hasFacet('WebView') and currentDocument.webc.isWebContainer}">
       <nxl:layout name="#{currentDocument.type}" mode="view" value="" />
