@@ -4253,7 +4253,7 @@
                 <version>[2.2.1,)</version>
               </requireMavenVersion>
               <requireJavaVersion>
-                <version>[1.6,)</version>
+                <version>[1.7,)</version>
               </requireJavaVersion>
             </rules>
             <skip>false</skip>
