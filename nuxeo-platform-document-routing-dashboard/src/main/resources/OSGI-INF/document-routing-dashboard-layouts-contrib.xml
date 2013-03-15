@@ -130,6 +130,7 @@
       <columns>
         <column>
           <properties mode="any">
+            <property name="isListingSelectionBox">true</property>
             <property name="useFirstWidgetLabelAsColumnHeader">false</property>
             <property name="columnStyleClass">iconColumn</property>
           </properties>

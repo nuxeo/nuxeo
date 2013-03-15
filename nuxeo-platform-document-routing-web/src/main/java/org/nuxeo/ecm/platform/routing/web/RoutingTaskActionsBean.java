@@ -170,8 +170,8 @@ public class RoutingTaskActionsBean implements Serializable {
         List<Button> buttons = getTaskInfo(task, false).buttons;
         List<Action> actions = new ArrayList<Action>();
         for (Button button : buttons) {
-            String id = button.getName();
-            Action action = new Action(id, Action.EMPTY_CATEGORIES);
+            Action action = new Action(button.getName(),
+                    Action.EMPTY_CATEGORIES);
             action.setLabel(button.getLabel());
             boolean displayAction = true;
             if (StringUtils.isNotEmpty(button.getFilter())) {
@@ -191,7 +191,8 @@ public class RoutingTaskActionsBean implements Serializable {
         if (formVariables != null) {
             data.put("WorkflowVariables", formVariables);
             data.put("NodeVariables", formVariables);
-            // if there is a comment on the submitted form, pass it to be logged
+            // if there is a comment on the submitted form, pass it to be
+            // logged
             // by audit
             if (formVariables.containsKey("comment")) {
                 data.put("comment", formVariables.get("comment"));
@@ -347,6 +348,16 @@ public class RoutingTaskActionsBean implements Serializable {
     }
 
     /**
+     * Helper to generate a unique action id for all task types
+     *
+     * @since 5.7
+     */
+    protected String getTaskActionId(Task task, String buttonId)
+            throws ClientException {
+        return String.format("%s_%s", task.getType(), buttonId);
+    }
+
+    /**
      * @since 5.6
      */
     public Map<String, Action> getTaskActionsMap(Task task)
@@ -367,13 +378,18 @@ public class RoutingTaskActionsBean implements Serializable {
 
         if (buttons != null && !buttons.isEmpty()) {
             for (Button button : buttons) {
-                String id = button.getName();
+                String buttonId = button.getName();
+                String id = getTaskActionId(task, buttonId);
                 Action action = new Action(id, Action.EMPTY_CATEGORIES);
                 action.setLabel(button.getLabel());
+                Map<String, Serializable> actionProps = new HashMap<String, Serializable>();
+                actionProps.put("buttonId", buttonId);
                 if (addLayout) {
-                    action.setProperties(props);
+                    actionProps.putAll(props);
+                    action.setProperties(actionProps);
                     action.setType("fancybox");
                 } else {
+                    action.setProperties(actionProps);
                     action.setType("link");
                 }
                 boolean displayAction = true;
@@ -387,6 +403,20 @@ public class RoutingTaskActionsBean implements Serializable {
                 }
             }
         }
+
+        // If there is a form attached to these tasks, add a generic
+        // process action to open the fancy box.
+        // The form of the first task will be displayed, but all the tasks
+        // concerned by this action share the same form, as they share the
+        // same type.
+        if (addLayout && !actions.isEmpty()) {
+            String id = getTaskActionId(task, "process_task");
+            Action processAction = new Action(id, Action.EMPTY_CATEGORIES);
+            processAction.setProperties(props);
+            processAction.setType("process_task");
+            actions.put(id, processAction);
+        }
+
         return actions;
     }
 
@@ -422,29 +452,13 @@ public class RoutingTaskActionsBean implements Serializable {
             }
         }
         List<Action> res = new ArrayList<Action>(actions.values());
-        Action processAction = null;
         for (Action action : res) {
             if (!actionsCounter.get(action.getId()).equals(taskDocsNum)) {
                 action.setAvailable(false);
             }
-            // if there is a form attached to these tasks, add a generic process
-            // action to open the fancy box
-            // the form of the first task will be displayed, but all the tasks
-            // concerned by this action share the same form as they share the same type
-            if (processAction == null && "fancybox".equals(action.getType())) {
-                processAction = new Action("process_task",
-                        Action.EMPTY_CATEGORIES);
-                processAction.setType("process_task");
-                processAction.setProperties(action.getProperties());
-            }
-        }
-        if (processAction != null) {
-            res.add(processAction);
         }
         return res;
     }
-
-
 
     /**
      * Ends a task given a selection list name and an action
@@ -456,12 +470,14 @@ public class RoutingTaskActionsBean implements Serializable {
             throws ClientException {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
+        String buttonId = (String) taskAction.getProperties().get("buttonId");
         Map<String, Serializable> formVariables = (Map<String, Serializable>) taskAction.getProperties().get(
                 "formVariables");
         if (formVariables != null) {
             data.put("WorkflowVariables", formVariables);
             data.put("NodeVariables", formVariables);
-            //if there is a comment on the submitted form, pass it to be logged by audit
+            // if there is a comment on the submitted form, pass it to be
+            // logged by audit
             if (formVariables.containsKey("comment")) {
                 data.put("comment", formVariables.get("comment"));
             }
@@ -477,11 +493,9 @@ public class RoutingTaskActionsBean implements Serializable {
                     // add the button name that was clicked
                     try {
                         routing.endTask(documentManager, new TaskImpl(doc),
-                                data, taskAction.getId());
+                                data, buttonId);
                     } catch (DocumentRouteException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(e, e);
-                        }
+                        log.error(e, e);
                         hasErrors = true;
                     }
                 }
