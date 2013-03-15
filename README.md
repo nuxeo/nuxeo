@@ -1,6 +1,4 @@
-# Nuxeo Asset Browser
-
-
+# Nuxeo DAM
 
 ## About Nuxeo
 

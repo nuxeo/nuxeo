@@ -5,12 +5,12 @@
 
   <parent>
     <groupId>org.nuxeo.dam</groupId>
-    <artifactId>nuxeo-asset-browser-parent</artifactId>
+    <artifactId>nuxeo-dam-parent</artifactId>
     <version>5.7-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-asset-browser-theme</artifactId>
-  <name>Nuxeo Asset Browser Theme</name>
-  <description>Nuxeo Asset Browser Theme</description>
+  <artifactId>nuxeo-dam-theme</artifactId>
+  <name>Nuxeo DAM Theme</name>
+  <description>Nuxeo DAM Theme</description>
 
 </project>

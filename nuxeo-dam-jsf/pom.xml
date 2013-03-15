@@ -5,13 +5,13 @@
 
   <parent>
     <groupId>org.nuxeo.dam</groupId>
-    <artifactId>nuxeo-asset-browser-parent</artifactId>
+    <artifactId>nuxeo-dam-parent</artifactId>
     <version>5.7-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-asset-browser-jsf</artifactId>
-  <name>Nuxeo Asset Browser JSF</name>
-  <description>Nuxeo Asset Browser JSF</description>
+  <artifactId>nuxeo-dam-jsf</artifactId>
+  <name>Nuxeo DAM JSF</name>
+  <description>Nuxeo DAM JSF</description>
 
   <dependencies>
     <dependency>

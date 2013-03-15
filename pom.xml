@@ -10,14 +10,14 @@
   </parent>
 
   <groupId>org.nuxeo.dam</groupId>
-  <artifactId>nuxeo-asset-browser-parent</artifactId>
-  <name>Nuxeo Asset Browser Parent</name>
-  <description>Nuxeo Asset Browser Parent</description>
+  <artifactId>nuxeo-dam-parent</artifactId>
+  <name>Nuxeo DAM Parent</name>
+  <description>Nuxeo DAM Parent</description>
   <packaging>pom</packaging>
 
   <modules>
-    <module>nuxeo-asset-browser-jsf</module>
-    <module>nuxeo-asset-browser-theme</module>
+    <module>nuxeo-dam-jsf</module>
+    <module>nuxeo-dam-theme</module>
   </modules>
 
   <repositories>
