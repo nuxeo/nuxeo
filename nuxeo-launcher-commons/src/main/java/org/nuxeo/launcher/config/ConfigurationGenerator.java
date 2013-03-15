@@ -135,7 +135,7 @@ public class ConfigurationGenerator {
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
     public static final List<String> DB_LIST = Arrays.asList("default",
-            "postgresql", "oracle", "mysql", "mssql");
+            "postgresql", "oracle", "mysql", "mssql", "db2");
 
     public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
