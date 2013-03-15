@@ -263,6 +263,22 @@
       </filter>
     </action>
 
+    <action id="CURRENT_SELECTION_EDIT" type="fancybox"
+      label="command.bulk.edit" icon="" order="0">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter-id>canEditCurrentSelection</filter-id>
+      <properties>
+        <property name="include">/incl/bulk_edit_box.xhtml</property>
+        <property name="layout">bulkEdit@edit</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">50%</property>
+        <property name="height">70%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
     <action id="CURRENT_SELECTION_COPY" link="#{clipboardActions.putSelectionInClipboard}"
       label="command.clipboard.copy" icon="" order="10">
       <category>CURRENT_SELECTION_LIST</category>
@@ -817,6 +833,12 @@
     <filter id="canCopyFromCurrentSelection">
       <rule grant="true">
         <condition>#{clipboardActions.canCopy}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canEditCurrentSelection">
+      <rule grant="true">
+        <condition>#{bulkEditActions.canEdit}</condition>
       </rule>
     </filter>
 
