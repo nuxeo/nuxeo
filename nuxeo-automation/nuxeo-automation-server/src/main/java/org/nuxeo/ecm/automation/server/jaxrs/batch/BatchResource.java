@@ -29,6 +29,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -51,9 +52,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Exposes {@link Batch} as a JAX-RS resource
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
- *
+ * 
  */
 public class BatchResource {
 
@@ -65,10 +66,15 @@ public class BatchResource {
         return SessionFactory.getSession(request);
     }
 
+    protected Response buildFromString(String message) {
+        return Response.ok(message, MediaType.APPLICATION_JSON).header(
+                "Content-Length", message.length()).build();
+    }
+
     @POST
-    @Produces("text/html")
     @Path("upload")
-    public Object doPost(@Context HttpServletRequest request) throws Exception {
+    public Object doPost(@Context
+    HttpServletRequest request) throws Exception {
         String fileName = request.getHeader("X-File-Name");
         String fileSize = request.getHeader("X-File-Size");
         String batchId = request.getHeader("X-Batch-Id");
@@ -81,14 +87,14 @@ public class BatchResource {
 
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.addStream(batchId, idx, is, fileName, mimeType);
-        return "uploaded";
+        return buildFromString("uploaded");
     }
 
     @POST
     @Produces("application/json")
     @Path("execute")
-    public Object exec(@Context HttpServletRequest request,
-            ExecutionRequest xreq) throws Exception {
+    public Object exec(@Context
+    HttpServletRequest request, ExecutionRequest xreq) throws Exception {
 
         Map<String, Object> params = xreq.getParams();
         String batchId = (String) params.get(REQUEST_BATCH_ID);
@@ -119,7 +125,7 @@ public class BatchResource {
 
                 });
         try {
-            Object result=null;
+            Object result = null;
             if (operationId.startsWith("Chain.")) {
                 // Copy params in the Chain context
                 ctx.putAll(xreq.getParams());
@@ -139,22 +145,22 @@ public class BatchResource {
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
             if (ExceptionHandler.isSecurityError(e)) {
-                return Response.status(Status.FORBIDDEN).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
-            }
-            else {
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + e.getMessage() + "\"}").build();
+                return Response.status(Status.FORBIDDEN).entity(
+                        "{\"error\" : \"" + e.getMessage() + "\"}").build();
+            } else {
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
+                        "{\"error\" : \"" + e.getMessage() + "\"}").build();
             }
         }
     }
 
     @GET
-    @Produces("text/html")
     @Path("drop/{batchId}")
-    public String dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId)
-            throws Exception {
+    public Object dropBatch(@PathParam(REQUEST_BATCH_ID)
+    String batchId) throws Exception {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.clean(batchId);
-        return "Batch droped";
+        return buildFromString("Batch droped");
     }
 
 }
