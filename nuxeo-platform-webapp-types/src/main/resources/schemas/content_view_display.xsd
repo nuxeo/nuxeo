@@ -4,6 +4,8 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/content_view_display/">
 
+  <xs:element name="contentViewName" type="xs:string" />
+
   <xs:element name="pageSize" type="xs:int" default="20" />
 
   <xs:element name="selectedLayoutColumns" type="nxs:selectedLayoutColumnsType" />
