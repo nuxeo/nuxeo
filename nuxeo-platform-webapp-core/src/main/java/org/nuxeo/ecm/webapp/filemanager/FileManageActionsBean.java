@@ -651,10 +651,17 @@ public class FileManageActionsBean extends InputController implements
             } catch (Exception e) {
                 log.warn(e.getMessage());
                 log.debug(e.getMessage(), e);
-                facesMessages.add(
-                        StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "fileImporter.error.unsupportedFile"));
+                if (ExceptionHelper.isSecurityError(e)) {
+                    facesMessages.add(
+                            StatusMessage.Severity.ERROR,
+                            resourcesAccessor.getMessages().get(
+                                    "fileImporter.security.error"));
+                } else {
+                    facesMessages.add(
+                            StatusMessage.Severity.ERROR,
+                            resourcesAccessor.getMessages().get(
+                                    "fileImporter.error.unsupportedFile"));
+                }
                 return null;
             } finally {
                 org.nuxeo.common.utils.FileUtils.close(stream);
