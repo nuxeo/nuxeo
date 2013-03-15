@@ -11,6 +11,12 @@ function log(msg) {
   }
 }
 
+function logerror(msg) {
+  if (window.console) {
+    //console.error(msg);
+  }
+}
+
 function getReadableSpeedString(speedInKBytesPerSec)
 {
   var speed = speedInKBytesPerSec;
@@ -396,17 +402,19 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
           function(xhr,status,errorMessage) {
             cancelHandler.cancelUpload();
             if (status == "timeout") {
-              alert("Request timeout");
+              alert(jQuery("#dndTimeoutMessage").html());
             } else if (xhr.readyState != 4) {
-              alert("No response from server");
+              alert(jQuery("#dndNoResponseMessage").html());
             } else {
               if (xhr.status==403) {
-                alert("Security Error : \n" + errorMessage);
+                alert(jQuery("#dndSecurityErrorMessage").html());
+                logerror(errorMessage);
               } else {
                 if (errorMessage && errorMessage != 'null') {
-                  alert("Server Error : \n" + errorMessage);
+                  alert(jQuery("#dndServerErrorMessage").html());
+                  logerror(errorMessage);
                 } else {
-                  alert("Unknown Server Error");
+                  alert(jQuery("#dndUnknownErrorMessage").html());
                 }
               }
             }
