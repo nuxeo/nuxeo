@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.activity.datasource">
+
+  <extension target="org.nuxeo.runtime.datasource"
+    point="datasources">
+    <documentation>
+      Datasource contribution for the Activity Service
+    </documentation>
+
+    <datasource name="jdbc/nxactivities" driverClassName="${nuxeo.db.driver}"
+        maxActive="20" maxIdle="5" maxWait="10000">
+      <property name="url">${nuxeo.db.jdbc.url}</property>
+      <property name="username">${nuxeo.db.user}</property>
+      <property name="password">${nuxeo.db.password}</property>
+    </datasource>
+
+  </extension>
+
+</component>

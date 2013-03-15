@@ -78,7 +78,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-distribution-dam</module>
         <module>nuxeo-marketplace-dam</module>
       </modules>
     </profile>
@@ -99,7 +98,6 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-distribution-dam</module>
         <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
@@ -116,7 +114,6 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-distribution-dam</module>
         <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
@@ -136,7 +133,6 @@
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
-        <module>nuxeo-distribution-dam</module>
         <module>nuxeo-marketplace-dam</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
@@ -155,10 +151,10 @@
         <module>nuxeo-distribution-dm/ftest/webdriver</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
         <module>nuxeo-distribution-dm/ftest/funkload</module>
-        <module>nuxeo-distribution-dam/ftest/selenium</module>
         <!-- temporarily DEACTIVATE CMF Selenium tests -->
         <!-- <module>nuxeo-distribution-cmf/ftest/selenium</module>-->
         <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
+        <module>nuxeo-marketplace-dam/ftest/webdriver</module>
       </modules>
     </profile>
     <profile>
@@ -183,7 +179,7 @@
     <profile>
       <id>ftest-dam</id>
       <modules>
-        <module>nuxeo-distribution-dam/ftest/selenium</module>
+        <module>nuxeo-marketplace-dam/ftest/webdriver</module>
       </modules>
     </profile>
     <profile>
@@ -250,7 +246,7 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-dam</artifactId>
+        <artifactId>marketplace-dam</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
@@ -402,19 +398,6 @@
         <artifactId>nuxeo-launcher</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <classifier>jar-with-dependencies</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dam</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-dam</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>resources</classifier>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>

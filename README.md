@@ -68,9 +68,6 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
  * nuxeo-distribution-cmf: Case Management EAR
     * ftest/selenium: Selenium tests for CMF
  * nuxeo-distribution-coreserver: CoreServer EAR
- * nuxeo-distribution-dam: Digital Assets Management EAR
-    * ftest/funkload: Funkload tests for DAM
-    * ftest/selenium: Selenium tests for DAM
  * nuxeo-distribution-dm: Document Management EAR
     * ftest/cmis: CMIS tests for DM
     * ftest/funkload: Funkload tests for DM
@@ -86,6 +83,7 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
  * nuxeo-launcher: Control Panel and launcher
  * nuxeo-marketplace-cmf: Marketplace package of CMF
  * nuxeo-marketplace-dam: Marketplace package of DAM
+    * ftest/webdriver: WebDriver tests for DAM
  * nuxeo-marketplace-dm: Marketplace package of DM
  * nuxeo-marketplace-social-collaboration: Marketplace package of Social Collaboration
  * nuxeo-startup-wizard: Startup Wizard WebApp

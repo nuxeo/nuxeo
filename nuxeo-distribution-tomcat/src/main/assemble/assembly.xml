@@ -151,14 +151,14 @@
     <!-- retrieve Marketplace packages -->
     <copy todir="${maven.project.build.directory}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dm::zip" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-dam::zip" />
+      <artifact:resolveFile key="org.nuxeo.marketplace.dam:marketplace-dam::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-cmf::zip" />
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-marketplace-social-collaboration::zip" />
     </copy>
     <!-- compute MD5 checksums -->
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
               property="DMMPMD5" />
-    <checksum file="${maven.project.build.directory}/nuxeo-marketplace-dam-${nuxeo.distribution.version}.zip"
+    <checksum file="${maven.project.build.directory}/marketplace-dam-${nuxeo.distribution.version}.zip"
               property="DAMMPMD5" />
     <checksum file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
               property="CMFMPMD5" />
@@ -180,7 +180,7 @@
     <!-- Embed the MP files -->
     <move file="${maven.project.build.directory}/nuxeo-marketplace-dm-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${DMMPMD5}" />
-    <move file="${maven.project.build.directory}/nuxeo-marketplace-dam-${nuxeo.distribution.version}.zip"
+    <move file="${maven.project.build.directory}/marketplace-dam-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${DAMMPMD5}" />
     <move file="${maven.project.build.directory}/nuxeo-marketplace-cmf-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${CMFMPMD5}" />

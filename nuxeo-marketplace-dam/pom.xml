@@ -1,27 +1,45 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
     <version>5.7-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>nuxeo-marketplace-dam</artifactId>
-  <packaging>zip</packaging>
-  <name>Marketplace package of Nuxeo DAM</name>
+  <groupId>org.nuxeo.marketplace.dam</groupId>
+  <artifactId>parent</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo DAM Marketplace package</name>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.nuxeo.build</groupId>
-        <artifactId>nuxeo-distribution-tools</artifactId>
-        <configuration>
-          <buildFiles>
-            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
-          </buildFiles>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <modules>
+    <module>marketplace</module>
+  </modules>
+
+  <profiles>
+    <profile>
+      <id>ftest</id>
+      <modules>
+        <module>ftest/webdriver</module>
+      </modules>
+    </profile>
+  </profiles>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.marketplace.dam</groupId>
+        <artifactId>nxr</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.marketplace.dam</groupId>
+        <artifactId>marketplace-dam</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 </project>
