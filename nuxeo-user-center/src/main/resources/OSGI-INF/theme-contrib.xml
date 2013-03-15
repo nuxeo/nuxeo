@@ -59,6 +59,9 @@
       <view id="/view_home.xhtml">
         <theme>userCenter/default</theme>
       </view>
+      <view id="/home_view_documents.xhtml">
+        <theme>userCenter/default</theme>
+      </view>
 
     </application>
 

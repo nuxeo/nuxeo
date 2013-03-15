@@ -62,8 +62,9 @@ public class UserCenterViewManager implements Serializable {
         return getCurrentView().getId();
     }
 
-    public void setCurrentViewId(String currentViewId) {
+    public String setCurrentViewId(String currentViewId) {
         webActions.setCurrentTabId(USER_CENTER_ACTION_CATEGORY, currentViewId);
+        return VIEW_HOME;
     }
 
     @Factory(value = "currentUserCenterSubView", scope = ScopeType.EVENT)

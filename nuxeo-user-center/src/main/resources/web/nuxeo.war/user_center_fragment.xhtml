@@ -11,7 +11,7 @@
      <a4j:outputPanel id="user_center_subtab">
 
       <ui:include src="/incl/message_banner.xhtml"/>
-      <c:if test="#{userCenterViews.availableSubActions.size > 1}">
+      <c:if test="#{!empty currentUserCenterView.properties.alwaysDisplaySubTabs or userCenterViews.availableSubActions.size > 1}">
         <ui:include src="/incl/user_center_subview_selector.xhtml"/>
       </c:if>
 

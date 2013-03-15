@@ -24,6 +24,22 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
+    <!-- Saved searches -->
+    <action id="SavedSearches" link="user_center_fragment.xhtml"
+      label="user.center.saved.searches" icon="/icons/saved_searches.png" order="70">
+      <category>USER_CENTER</category>
+      <properties>
+        <property name="alwaysDisplaySubTabs">true</property>
+      </properties>
+      <filter id="SavedSearches_has_subtabs">
+        <rule grant="false">
+          <condition>
+            #{webActions.getActionsList('SavedSearches_sub_tab').isEmpty()}
+          </condition>
+        </rule>
+      </filter>
+    </action>
+
   </extension>
 
 </component>
