@@ -1844,6 +1844,36 @@
       </property>
     </widgetType>
 
+    <widgetType name="saveBox">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Save box</title>
+        <description>
+          <p>This widget displays a save box with one input for the title and
+          one button to save.</p>
+
+          <p>The input is mapped to the field of the widget.</p>
+
+          <p>It needs the action id as property "actionId" for
+          the "save" button.</p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/save_box_widget.xhtml
+      </property>
+    </widgetType>
+
     <widgetType name="toggleableLayoutWithForms">
       <configuration>
         <sinceVersion>5.6</sinceVersion>
