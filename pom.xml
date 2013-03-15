@@ -61,7 +61,6 @@
     <nuxeo.agenda.version>5.7-SNAPSHOT</nuxeo.agenda.version>
     <nuxeo.templates.version>5.7-SNAPSHOT</nuxeo.templates.version>
     <nuxeo.csv.version>5.7-SNAPSHOT</nuxeo.csv.version>
-    <nuxeo.asset.browser.version>5.7-SNAPSHOT</nuxeo.asset.browser.version>
   </properties>
 
   <modules>
@@ -121,7 +120,6 @@
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-drive</module>
-    <module>nuxeo-asset-browser</module>
   </modules>
 
   <dependencyManagement>
@@ -777,34 +775,15 @@
       <!-- Digital Asset Management -->
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-api</artifactId>
+        <artifactId>nuxeo-dam-jsf</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-core</artifactId>
+        <artifactId>nuxeo-dam-theme</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-web</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-lang</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-importer-core</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-importer-jaxrs</artifactId>
-        <version>${nuxeo.dam.version}</version>
-      </dependency>
+
 
       <!-- Case Management Framework -->
       <dependency>
@@ -1106,18 +1085,6 @@
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-operations</artifactId>
         <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- Asset Browser -->
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-asset-browser-jsf</artifactId>
-        <version>${nuxeo.asset.browser.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-asset-browser-theme</artifactId>
-        <version>${nuxeo.asset.browser.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
