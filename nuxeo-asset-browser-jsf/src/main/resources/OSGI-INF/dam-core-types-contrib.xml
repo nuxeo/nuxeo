@@ -20,6 +20,12 @@
       <schema name="ip_rights"/>
     </facet>
 
+    <facet name="DamSearch">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="uid" />
+    </facet>
+
     <doctype name="AssetLibrary" extends="Domain">
     </doctype>
 
@@ -41,6 +47,9 @@
 
     <!-- For default DAM search -->
     <doctype name="DamSearch" extends="Document">
+      <facet name="DamSearch" />
+      <facet name="ContentViewDisplay" />
+      <facet name="HiddenInNavigation" />
       <schema name="dam_search" />
     </doctype>
 
@@ -59,6 +68,13 @@
       <schema name="dam_common"/>
     </doctype>
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="DamSearch">default</type>
+    </types>
   </extension>
 
 </component>

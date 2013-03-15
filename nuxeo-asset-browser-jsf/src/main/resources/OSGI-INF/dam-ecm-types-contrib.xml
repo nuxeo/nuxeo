@@ -94,6 +94,19 @@
       </layouts>
     </type>
 
+    <!-- Saved search -->
+    <type id="DamSearch">
+      <label>DamSearch</label>
+      <icon>/icons/search.png</icon>
+      <bigIcon>/icons/search_100.png</bigIcon>
+      <description>DamSearch.description</description>
+      <default-view>home_view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>dam_search_layout</layout>
+      </layouts>
+    </type>
+
     <!--
       Keep ImportRoot, ImportFolder and ImportSet for compatibility.
       Nothing can be created inside it.

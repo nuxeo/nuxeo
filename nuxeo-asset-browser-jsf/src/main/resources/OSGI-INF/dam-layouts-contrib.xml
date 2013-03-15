@@ -95,9 +95,6 @@
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_LEFT</property>
       </properties>
-      <controls mode="any">
-        <control name="requireSurroundingForm">true</control>
-      </controls>
     </widget>
 
     <widget name="damSearchResults" type="currentDocumentActions">
@@ -119,6 +116,36 @@
     </widget>
 
     <!-- Search -->
+
+    <widget name="damSaveSearch" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.saveSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+        <property name="foldable">true</property>
+        <property name="foldedByDefault">true</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+      <subWidgets>
+        <widget name="saveContentView" type="saveBox">
+          <fields>
+            <field>#{damSearchActions.savedSearchTitle}</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="required">true</property>
+            <property name="placeholder">#{messages['label.dam.search.save.placeholder']}</property>
+            <property name="description">label.dam.search.save.description</property>
+            <property name="actionId">saveSearchAction</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
     <widget name="damSearchesSelector" type="template">
       <properties widgetMode="any">
         <property name="template">
@@ -128,6 +155,24 @@
           damPanelLeft, damPanelCenter, damPanelRight
         </property>
       </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="damSearchLayout" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+      <subWidgetRefs>
+        <widget>damSearchActions</widget>
+        <widget>damSearchFilters</widget>
+        <widget>damSearchActions</widget>
+      </subWidgetRefs>
     </widget>
 
     <widget name="damSearchFilters" type="template">
@@ -471,35 +516,28 @@
     point="actions">
 
     <!-- Search form -->
-    <action id="damSearchesSelector" type="widget" order="100">
+    <action id="damSaveSearch" type="widget" order="100">
+      <category>DAM_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">damSaveSearch</property>
+      </properties>
+    </action>
+
+    <action id="damSearchesSelector" type="widget" order="200">
       <category>DAM_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">damSearchesSelector</property>
       </properties>
     </action>
 
-    <action id="damSearchActionsTop" type="widget" order="200">
+    <action id="damSearchLayout" type="widget" order="300">
       <category>DAM_PANEL_LEFT</category>
       <properties>
-        <property name="widgetName">damSearchActions</property>
-      </properties>
-    </action>
-
-    <action id="damSearchFilters" type="widget" order="300">
-      <category>DAM_PANEL_LEFT</category>
-      <properties>
-        <property name="widgetName">damSearchFilters</property>
+        <property name="widgetName">damSearchLayout</property>
       </properties>
     </action>
 
     <!-- Search results -->
-    <action id="damSearchActionsBottom" type="widget" order="400">
-      <category>DAM_PANEL_LEFT</category>
-      <properties>
-        <property name="widgetName">damSearchActions</property>
-      </properties>
-    </action>
-
     <action id="damSearchResultsActions" type="widget" order="100">
       <category>DAM_PANEL_CENTER</category>
       <properties>

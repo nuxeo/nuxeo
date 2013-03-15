@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.context.FacesContext;
@@ -41,11 +42,15 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
@@ -59,6 +64,8 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -97,6 +104,12 @@ public class DamSearchActions implements Serializable {
     @In(create = true)
     protected ContentViewActions contentViewActions;
 
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected Map<String, String> messages;
+
     protected List<String> contentViewNames;
 
     protected Set<ContentViewHeader> contentViewHeaders;
@@ -106,6 +119,8 @@ public class DamSearchActions implements Serializable {
     protected String currentPage;
 
     protected String pageSize;
+
+    protected String savedSearchTitle;
 
     public String getCurrentContentViewName() {
         if (currentContentViewName == null) {
@@ -175,6 +190,43 @@ public class DamSearchActions implements Serializable {
         } else if (!docs.contains(currentDocument)) {
             navigationContext.setCurrentDocument(docs.get(0));
         }
+    }
+
+    public String getSavedSearchTitle() {
+        return savedSearchTitle;
+    }
+
+    public void setSavedSearchTitle(String savedSearchTitle) {
+        this.savedSearchTitle = savedSearchTitle;
+    }
+
+    public String saveSearch() throws ClientException {
+        ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
+        if (contentView != null) {
+            UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
+            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(documentManager,
+                    null);
+
+            DocumentModel searchDoc = contentView.getSearchDocumentModel();
+            searchDoc.setPropertyValue("cvd:contentViewName", contentView.getName());
+            searchDoc.setPropertyValue("dc:title", savedSearchTitle);
+            PathSegmentService pathService = Framework.getLocalService(PathSegmentService.class);
+            searchDoc.setPathInfo(uws.getPathAsString(),
+                    pathService.generatePathSegment(searchDoc));
+            searchDoc = documentManager.createDocument(searchDoc);
+            documentManager.save();
+
+            //            currentSelectedSavedSearchId = savedSearch.getId();
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get("label.dam.search.saved"));
+
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    uws);
+
+            savedSearchTitle = null;
+        }
+
+        return null;
     }
 
     /*

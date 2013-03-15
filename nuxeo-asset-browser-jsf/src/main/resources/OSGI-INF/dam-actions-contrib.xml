@@ -11,6 +11,17 @@
     </action>
 
     <!-- Search actions -->
+
+    <action id="saveSearchAction" link="#{damSearchActions.saveSearch()}"
+      label="command.save" order="10">
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          damPanelLeft
+        </property>
+      </properties>
+    </action>
+
     <action id="damSubmitSearch" link="#{damSearchActions.refreshAndRewind()}"
       label="command.faceted.search.go" order="10">
       <category>DAM_SEARCH_FILTER_ACTIONS</category>
@@ -118,6 +129,29 @@
       <category>DAM_CURRENT_SELECTION_LIST</category>
     </action>
 
+    <!-- Saved searches -->
+    <action id="DamSavedSearches" link="dam/incl/saved_searches.xhtml"
+      label="label.home.dam.saved.searches" order="10">
+      <category>SavedSearches_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+    <action id="CURRENT_SELECTION_TRASH">
+      <category>DAM_SEARCHES_CURRENT_SELECTION_LIST</category>
+    </action>
+
+    <action id="TAB_MY_SUBSCRIPTIONS">
+      <filter-id>denyForDamSearch</filter-id>
+    </action>
+
+    <action id="TAB_MANAGE_SUBSCRIPTIONS">
+      <filter-id>denyForDamSearch</filter-id>
+    </action>
+
+    <action id="TAB_RELATIONS">
+      <filter-id>denyForDamSearch</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -138,6 +172,18 @@
     <filter id="importFile" append="true">
       <rule grant="true">
         <type>AssetLibrary</type>
+      </rule>
+    </filter>
+
+    <filter id="rights" append="true">
+      <rule grant="true">
+        <facet>DamSearch</facet>
+      </rule>
+    </filter>
+
+    <filter id="denyForDamSearch">
+      <rule grant="false">
+        <facet>DamSearch</facet>
       </rule>
     </filter>
 
