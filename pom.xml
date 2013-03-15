@@ -237,6 +237,12 @@
         <groupId>org.nuxeo.shell</groupId>
         <artifactId>nuxeo-shell</artifactId>
         <version>${nuxeo.shell.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.shell</groupId>
+        <artifactId>nuxeo-shell</artifactId>
+        <version>${nuxeo.shell.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.shell</groupId>
