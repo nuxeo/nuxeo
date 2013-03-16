@@ -122,7 +122,6 @@ public class TestFileSystemItemAdapterService {
     }
 
     @Test
-    @Ignore
     public void testService() throws Exception {
 
         // ------------------------------------------------------
@@ -386,7 +385,6 @@ public class TestFileSystemItemAdapterService {
     }
 
     @Test
-    @Ignore
     public void testContribOverride() throws Exception {
 
         harness.deployContrib("org.nuxeo.drive.core.test",
