@@ -355,7 +355,7 @@ body {
           </div>
         </form>
       </td>
-      <td class="news_container" align="right" valign="center">
+      <td class="news_container" align="right" valign="middle">
         <% if (!"Nuxeo-Selenium-Tester".equals(testerName)) { %>
           <iframe class="block_container" style="visibility:hidden"
             onload="javascript:this.style.visibility='visible';"
