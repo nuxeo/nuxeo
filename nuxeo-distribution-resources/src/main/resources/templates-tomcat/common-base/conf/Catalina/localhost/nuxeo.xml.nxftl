@@ -56,29 +56,29 @@
   <Transaction factory="org.nuxeo.runtime.jtajca.NuxeoUserTransactionFactory" />
 
   <Resource auth="Container" name="Mail" type="javax.mail.Session" factory="org.nuxeo.ecm.platform.ec.notification.email.EmailResourceFactory"
-        mail.from="${mail.from}"
+    mail.from="${mail.from}"
 <#if "${mail.debug}" == "true">
-	mail.debug="${mail.debug}" />
+    mail.debug="${mail.debug}"
 </#if>
-	mail.store.protocol="${mail.store.protocol}"
-	mail.${mail.store.protocol}.host="${mail.store.host}"
+    mail.store.protocol="${mail.store.protocol}"
+    mail.${mail.store.protocol}.host="${mail.store.host}"
 <#if "${mail.store.port}" != "-1">
-        mail.${mail.store.protocol}.port="${mail.store.port}"
+    mail.${mail.store.protocol}.port="${mail.store.port}"
 </#if>
-        mail.${mail.store.protocol}.user="${mail.store.user}"
-        mail.${mail.store.protocol}.password="${mail.store.password}"
-	mail.transport.protocol="${mail.transport.protocol}"
-	mail.${mail.transport.protocol}.host="${mail.transport.host}"
+    mail.${mail.store.protocol}.user="${mail.store.user}"
+    mail.${mail.store.protocol}.password="${mail.store.password}"
+    mail.transport.protocol="${mail.transport.protocol}"
+    mail.${mail.transport.protocol}.host="${mail.transport.host}"
 <#if "${mail.transport.port}" != "-1">
-        mail.${mail.transport.protocol}.port="${mail.transport.port}"
+    mail.${mail.transport.protocol}.port="${mail.transport.port}"
 </#if>
 <#if "${mail.transport.auth}" == "true">
-        mail.${mail.transport.protocol}.user="${mail.transport.user}"
-        mail.${mail.transport.protocol}.password="${mail.transport.password}"
-	mail.${mail.transport.protocol}.auth="${mail.transport.auth}"
+    mail.${mail.transport.protocol}.user="${mail.transport.user}"
+    mail.${mail.transport.protocol}.password="${mail.transport.password}"
+    mail.${mail.transport.protocol}.auth="${mail.transport.auth}"
 </#if>
 <#if "${mail.transport.usetls}" == "true">
-	mail.${mail.transport.protocol}.starttls.enable="${mail.transport.usetls}"
+    mail.${mail.transport.protocol}.starttls.enable="${mail.transport.usetls}"
 </#if>
   />
 
