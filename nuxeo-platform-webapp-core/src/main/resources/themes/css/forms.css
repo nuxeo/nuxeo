@@ -13,7 +13,7 @@ textarea { font-family: "default (__FLAVOR__ font)"; font-size: .95em; min-heigh
 option { background-color: white }
 optgroup { background-color: "color.major.light (__FLAVOR__ background)" }
 
-input, input[type="file"], textarea, select, .field { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; line-height: 18px; margin-bottom: .3em; padding: .3em }
+input, input[type="file"], textarea, select, .field { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; margin-bottom: .3em; padding: .3em }
 input[type="file"] { margin-left: .6em }
 input[type="checkbox"], input[type="radio"], input[type="image"], input[type="hidden"] { background: none; border: none !important; box-shadow: none; margin-right: .3em }
 
@@ -21,7 +21,7 @@ select:focus > option:checked, select:focus > optgroup > option:checked { backgr
 input:focus, textarea:focus { border-color: "color.major.strong (__FLAVOR__ border)"; box-shadow: 0 0 3px #ffd820  }
 
 /* in Tables */
-.dataInput textarea, .dataInput .dataInputText { max-width: 500px; width: 95% }
+.dataInput textarea, .dataInput .dataInputText { line-height: normal; max-width: 500px; width: 95% }
 .dataInput textarea, .dataInput .dataInputText, .dataInput .dataInputTextNoSize { vertical-align: top }
 .dataInput select { box-shadow: 1px 1px 2px #e0e0e0 inset; min-width: 9em; padding: .3em; vertical-align: top }
 
