@@ -54,8 +54,6 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     private static final long serialVersionUID = 1495841177711755669L;
 
-    public static String DIR_AUTO = "auto";
-
     @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
@@ -75,9 +73,10 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
             // Make text fields automatically switch to right-to-left if
             // not told otherwise
-            if (widget.getProperty("dir") == null) {
-                TagAttribute dir = helper.createAttribute("dir",
-                        DIR_AUTO);
+            if (widget.getProperty(FaceletHandlerHelper.DIR_PROPERTY) == null) {
+                TagAttribute dir = helper.createAttribute(
+                        FaceletHandlerHelper.DIR_PROPERTY,
+                        FaceletHandlerHelper.DIR_AUTO);
                 attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                         dir);
             }
@@ -92,14 +91,6 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             TagAttributes attributes = getViewTagAttributes(ctx, helper,
                     widgetId, widget, !BuiltinWidgetModes.isLikePlainMode(mode));
-            // Make text fields automatically switch to right-to-left if
-            // not told otherwise
-            if (widget.getProperty("dir") == null) {
-                TagAttribute dir = helper.createAttribute("dir",
-                        DIR_AUTO);
-                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                        dir);
-            }
             // default on text for other modes
             ComponentHandler output = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,
@@ -157,8 +148,17 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (!addId) {
             return widgetAttrs;
         } else {
-            return FaceletHandlerHelper.addTagAttribute(widgetAttrs,
-                    helper.createAttribute("id", id));
+            TagAttributes res = FaceletHandlerHelper.addTagAttribute(
+                    widgetAttrs, helper.createAttribute("id", id));
+            // Make text fields automatically switch to right-to-left if
+            // not told otherwise
+            if (widget.getProperty(FaceletHandlerHelper.DIR_PROPERTY) == null) {
+                TagAttribute dir = helper.createAttribute(
+                        FaceletHandlerHelper.DIR_PROPERTY,
+                        FaceletHandlerHelper.DIR_AUTO);
+                res = FaceletHandlerHelper.addTagAttribute(res, dir);
+            }
+            return res;
         }
 
     }
