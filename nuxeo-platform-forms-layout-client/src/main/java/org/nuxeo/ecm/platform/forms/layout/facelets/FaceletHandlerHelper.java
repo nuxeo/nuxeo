@@ -83,6 +83,16 @@ public final class FaceletHandlerHelper {
 
     private static final Pattern UNIQUE_ID_STRIP_PATTERN = Pattern.compile("(.*)(_[0-9]+)");
 
+    /**
+     * @since 5.7
+     */
+    public static String DIR_PROPERTY = "dir";
+
+    /**
+     * @since 5.7
+     */
+    public static String DIR_AUTO = "auto";
+
     final FaceletContext context;
 
     final TagConfig tagConfig;

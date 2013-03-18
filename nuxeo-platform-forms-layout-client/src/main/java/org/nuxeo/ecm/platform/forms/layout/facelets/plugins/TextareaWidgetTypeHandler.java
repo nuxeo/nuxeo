@@ -57,8 +57,6 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
     // }
     public static String WRAP_WORD_STYLE = "white-space: -moz-pre-wrap !important; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;";
 
-    public static String DIR_AUTO = "auto";
-
     @Override
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
@@ -74,14 +72,15 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
             attributes = helper.getTagAttributes(widget);
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
-        }
-        // Make text fields automatically switch to right-to-left if
-        // not told otherwise
-        if (widget.getProperty("dir") == null) {
-            TagAttribute dir = helper.createAttribute("dir",
-                    DIR_AUTO);
-            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
-                    dir);
+            // Make text fields automatically switch to right-to-left if
+            // not told otherwise
+            if (widget.getProperty(FaceletHandlerHelper.DIR_PROPERTY) == null) {
+                TagAttribute dir = helper.createAttribute(
+                        FaceletHandlerHelper.DIR_PROPERTY,
+                        FaceletHandlerHelper.DIR_AUTO);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                        dir);
+            }
         }
         FaceletHandler leaf = null;
         if (subHandlers != null) {
