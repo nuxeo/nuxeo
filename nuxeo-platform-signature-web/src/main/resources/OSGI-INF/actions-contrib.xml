@@ -23,6 +23,7 @@
       label="label.cert.user.center.certificate" icon="/icons/certificates.png"
       order="70">
       <category>USER_CENTER</category>
+      <filter-id>not_anonymous</filter-id>
     </action>
 
     <action id="CertificateView" link="edit_user_certificate.xhtml"
