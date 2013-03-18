@@ -23,7 +23,7 @@
   </c:if>
   <c:if test="#{hasMainBlob}">
     <div class="dropzone" context="mainBlob" id="mainBlobDropZone">
-    <table>
+    <table class="dataTableNoBorder">
       <tbody>
         <tr>
           <td class="labelColumn">
@@ -77,7 +77,7 @@
 
   <c:if test="#{hasOtherBlobs}">
   <div class="dropzone" context="otherBlobs" id="otherBlobsDropZone">
-    <table>
+    <table class="dataTableNoBorder">
       <tbody>
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
           <tr>
