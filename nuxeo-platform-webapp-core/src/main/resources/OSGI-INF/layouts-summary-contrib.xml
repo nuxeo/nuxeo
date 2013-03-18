@@ -743,6 +743,14 @@
       <filter-id>notHasNote</filter-id>
     </action>
 
+    <action id="summary_current_document_dublincore" type="widget" order="350">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">summary_current_document_dublincore</property>
+      </properties>
+      <filter-id>hasDublincore</filter-id>
+    </action>
+
     <action id="summary_current_document_comments" type="widget" order="400">
       <category>SUMMARY_PANEL_LEFT</category>
       <properties>

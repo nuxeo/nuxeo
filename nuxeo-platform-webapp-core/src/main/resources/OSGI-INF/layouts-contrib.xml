@@ -13,6 +13,9 @@
       <fields>
         <field>dc:nature</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.nature?'hidden':'view'}</mode>
+      </widgetModes>
       <properties mode="any">
         <property name="directoryName">nature</property>
         <property name="localize">true</property>
@@ -31,6 +34,9 @@
       <fields>
         <field>dc:subjects</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.subjects?'hidden':'view'}</mode>
+      </widgetModes>
       <properties mode="any">
         <property name="template">/widgets/subjects_widget.xhtml</property>
       </properties>
@@ -44,6 +50,9 @@
       <fields>
         <field>dc:rights</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.rights?'hidden':'view'}</mode>
+      </widgetModes>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
       </properties>
@@ -57,6 +66,9 @@
       <fields>
         <field>dc:source</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.source?'hidden':'view'}</mode>
+      </widgetModes>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
       </properties>
@@ -73,6 +85,9 @@
       <fields>
         <field>dc:coverage</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.coverage?'hidden':'view'}</mode>
+      </widgetModes>
       <properties mode="any">
         <property name="template">/widgets/coverage_widget.xhtml</property>
       </properties>
@@ -86,13 +101,14 @@
       <fields>
         <field>dc:created</field>
       </fields>
-      <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
-      </properties>
       <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.created?'hidden':'view'}</mode>
         <mode value="any">view</mode>
         <mode value="pdf">pdf</mode>
       </widgetModes>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
     </widget>
 
     <widget name="modified" type="datetime">
@@ -103,13 +119,14 @@
       <fields>
         <field>dc:modified</field>
       </fields>
-      <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
-      </properties>
       <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.modified?'hidden':'view'}</mode>
         <mode value="any">view</mode>
         <mode value="pdf">pdf</mode>
       </widgetModes>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+      </properties>
     </widget>
 
     <widget name="format" type="text">
@@ -120,6 +137,9 @@
       <fields>
         <field>dc:format</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.format?'hidden':'view'}</mode>
+      </widgetModes>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
       </properties>
@@ -133,6 +153,9 @@
       <fields>
         <field>dc:language</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.language?'hidden':'view'}</mode>
+      </widgetModes>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
       </properties>
@@ -146,6 +169,9 @@
       <fields>
         <field>dc:expired</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.expired?'hidden':'view'}</mode>
+      </widgetModes>
       <properties widgetMode="any">
         <property name="pattern">#{nxu:basicDateFormater()}</property>
       </properties>
@@ -166,6 +192,7 @@
         <field>dc:creator</field>
       </fields>
       <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.author?'hidden':'view'}</mode>
         <mode value="any">view</mode>
         <mode value="pdf">pdf</mode>
       </widgetModes>
@@ -187,6 +214,9 @@
       <fields>
         <field>dc:contributors</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.contributors?'hidden':'view'}</mode>
+      </widgetModes>
       <properties mode="any">
         <property name="template">/widgets/contributors_widget.xhtml</property>
       </properties>
@@ -207,6 +237,7 @@
         <field>dc:lastContributor</field>
       </fields>
       <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.lastContributor?'hidden':'view'}</mode>
         <mode value="any">view</mode>
         <mode value="pdf">pdf</mode>
       </widgetModes>
@@ -225,6 +256,9 @@
       <fields>
         <field>dc:title</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.title?'hidden':'view'}</mode>
+      </widgetModes>
       <properties widgetMode="edit">
         <property name="required">true</property>
         <property name="styleClass">dataInputText</property>
@@ -239,6 +273,9 @@
       <fields>
         <field>dc:description</field>
       </fields>
+      <widgetModes>
+        <mode value="view_summary">#{empty layoutValue.dc.description?'hidden':'view'}</mode>
+      </widgetModes>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
       </properties>
@@ -253,12 +290,6 @@
         <field>file:content</field>
         <field>file:filename</field>
       </fields>
-      <widgetModes>
-        <mode value="full_edit">edit</mode>
-        <mode value="edit">edit</mode>
-        <mode value="view">view</mode>
-        <mode value="view">preview</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="template">/widgets/extended_file_widget.xhtml</property>
       </properties>
@@ -296,12 +327,6 @@
       <properties widgetMode="edit">
         <property name="diff">true</property>
       </properties>
-      <widgetModes>
-        <mode value="full_edit">edit</mode>
-        <mode value="edit">edit</mode>
-        <mode value="view">view</mode>
-        <mode value="view">preview</mode>
-      </widgetModes>
       <subWidgets>
         <widget name="file" type="template">
           <labels>
