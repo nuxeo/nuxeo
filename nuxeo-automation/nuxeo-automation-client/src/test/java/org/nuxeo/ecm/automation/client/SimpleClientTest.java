@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.automation.client;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.client.model.Documents;
@@ -49,5 +48,20 @@ public class SimpleClientTest {
          assertTrue(docs.size()> 0);
 
          client.shutdown();
+    }
+
+
+    @Test
+    public void returningADocWitNoPathShouldNotThrowError() throws Exception {
+        //NXP-6777
+        client.setResponse("application/json+nxentity", HttpResponses.DOC_NOPATH);
+
+        Session session = client.getSession("Administrator", "Administrator");
+        Documents docs = (Documents) session.newRequest("Document.Query").set(
+               "query", "SELECT * FROM Document").execute();
+        assertTrue(docs.size()> 0);
+
+        client.shutdown();
+
     }
 }

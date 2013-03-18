@@ -47,5 +47,29 @@ public class HttpResponses {
             + "]"
             + "}";
 
+    //Returning a document with no Path (NXP-6777)
+    public static final String DOC_NOPATH = "{"
+            + "\"entity-type\": \"documents\","
+            + "\"entries\": ["
+            + "    {"
+            + "        \"entity-type\": \"document\","
+            + "        \"repository\": \"default\","
+            + "        \"uid\": \"1214a215-33c1-42d9-809f-5ca686f1bc9f\","
+            + "        \"type\": \"WorkspaceRoot\","
+            + "        \"state\": \"project\","
+            + "        \"title\": \"Workspaces\","
+            + "        \"lastModified\": \"2012-09-12T14:10:07.49Z\","
+            + "        \"facets\": ["
+            + "            \"SuperSpace\","
+            + "            \"DocumentsSizeStatistics\","
+            + "            \"Folderish\","
+            + "            \"DocumentsCountStatistics\""
+            + "        ],"
+            + "        \"changeToken\": \"1347459007491\","
+            + "        \"contextParameters\": {}"
+            + "    }"
+            + "]"
+            + "}";
+
 
 }
