@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.auth.oauth;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.security.Principal;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -41,6 +43,7 @@ import net.oauth.server.OAuthServlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
 import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
 import org.nuxeo.ecm.platform.oauth.keys.OAuthServerKeyManager;
@@ -257,20 +260,12 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
                     cbUrl = "http://oauth.gmodules.com/gadgets/oauthcallback";
                 }
             }
+            Map<String, String> parameters = new LinkedHashMap<String, String>();
+            parameters.put(OAuth.OAUTH_TOKEN, rToken.getToken());
+            parameters.put("oauth_verifier", rToken.getVerifier());
+            String targetUrl = URIUtils.addParametersToURIQuery(cbUrl, parameters);
 
-            StringBuffer sb = new StringBuffer(cbUrl);
-            sb.append(cbUrl.indexOf('?') == -1 ? "?" : "&");
-            sb.append(OAuth.OAUTH_TOKEN);
-            sb.append("=");
-            sb.append(rToken.getToken());
-            sb.append("&");
-            sb.append("oauth_verifier");
-            sb.append("=");
-            sb.append(rToken.getVerifier());
-
-            String targetUrl = sb.toString();
-
-            log.debug("redirecting user after successful grant " + sb.toString());
+            log.debug("redirecting user after successful grant " + targetUrl);
 
             httpResponse.sendRedirect(targetUrl);
         }
