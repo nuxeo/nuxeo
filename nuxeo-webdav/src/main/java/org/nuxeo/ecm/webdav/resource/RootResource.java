@@ -97,7 +97,7 @@ public class RootResource {
         WebDavBackend backend = Backend.get(path, request);
 
         if (backend == null) {
-            throw new WebApplicationException(Response.Status.CONFLICT);
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
         if (backend.isVirtual()) {
