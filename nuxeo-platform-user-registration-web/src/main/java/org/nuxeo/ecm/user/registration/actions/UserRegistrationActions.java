@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
-import org.nuxeo.ecm.user.registration.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -377,9 +376,11 @@ public class UserRegistrationActions implements Serializable {
         try {
             additionalsInfo.put("docinfo:documentTitle",
                     navigationContext.getCurrentDocument().getTitle());
-            additionalsInfo.put(
-                    "registration:copyTo",
-                    ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
+            if (copyOwner) {
+                additionalsInfo.put(
+                        "registration:copyTo",
+                        ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
+            }
             additionalsInfo.put("registration:comment", comment);
         } catch (ClientException e) {
             // log it silently as it will break anything
