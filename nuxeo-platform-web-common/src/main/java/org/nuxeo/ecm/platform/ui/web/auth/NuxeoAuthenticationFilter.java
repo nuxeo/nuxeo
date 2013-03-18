@@ -51,6 +51,7 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
@@ -119,6 +120,7 @@ public class NuxeoAuthenticationFilter implements Filter {
      */
     protected String securityDomain = LOGIN_DOMAIN;
 
+    @Override
     public void destroy() {
     }
 
@@ -323,20 +325,26 @@ public class NuxeoAuthenticationFilter implements Filter {
         return true;
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
-        doInitIfNeeded();
+        try {
+            doInitIfNeeded();
 
-        List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
+            List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
 
-        if (preFilters == null) {
-            doFilterInternal(request, response, chain);
-        } else {
-            NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
-                    preFilters, chain, this);
-            chainWithPreFilters.doFilter(request, response);
+            if (preFilters == null) {
+                doFilterInternal(request, response, chain);
+            } else {
+                NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
+                        preFilters, chain, this);
+                chainWithPreFilters.doFilter(request, response);
+            }
+        } finally {
+            ClientLoginModule.clearThreadLocalLogin();
         }
+
     }
 
     public void doFilterInternal(ServletRequest request,
@@ -604,6 +612,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
     }
 
+    @Override
     public void init(FilterConfig config) throws ServletException {
         String val = config.getInitParameter("byPassAuthenticationLog");
         if (val != null && Boolean.parseBoolean(val)) {
