@@ -42,7 +42,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
-import org.jboss.seam.web.Session;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -162,6 +161,13 @@ public class UserManagementActions extends AbstractUserGroupManagement
                 && userManager.getAnonymousUserId().equals(selectedUser.getId())) {
 
             return false;
+        }
+
+        if (selectedUser != null) {
+            NuxeoPrincipal selectedPrincipal = userManager.getPrincipal(selectedUser.getId());
+            if(selectedPrincipal.isAdministrator() && !((NuxeoPrincipal) currentUser).isAdministrator()) {
+                return false;
+            }
         }
 
         if (currentUser instanceof NuxeoPrincipal) {

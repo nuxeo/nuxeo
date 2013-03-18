@@ -177,7 +177,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     public boolean getAllowEditGroup() throws ClientException {
         //Changing administrator group is only given to administrators (not powerusers)
         // NXP-10584
-        if(userManager.getAdministratorsGroups().contains(getGroupName())) {
+        if(userManager.getAdministratorsGroups().contains(selectedGroup.getId())) {
             return ((NuxeoPrincipal) currentUser).isAdministrator();
         }
 
