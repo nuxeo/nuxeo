@@ -1013,7 +1013,7 @@
       </fields>
     </widget>
 
-    <widget name="listing_description" type="text">
+    <widget name="listing_description" type="textarea">
       <labels>
         <label mode="any">label.dublincore.description</label>
       </labels>
