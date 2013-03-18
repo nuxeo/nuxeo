@@ -31,6 +31,7 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.UserSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
+import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -73,21 +74,19 @@ public class UserGroupLookupSuggester implements Suggester {
         List<Suggestion> searchSuggestions = new ArrayList<Suggestion>();
         try {
             int count = 0;
-            for (DocumentModel user : userManager.searchUsers(userInput)) {
+            for (DocumentModel userDoc : userManager.searchUsers(userInput)) {
+            	UserAdapter user = userDoc.getAdapter(UserAdapter.class);
                 // suggest to navigate to the user profile
-                String firstName = user.getProperty("user:firstName").getValue(
-                        String.class);
+                String firstName = user.getFirstName();
                 String userLabel = firstName != null ? firstName : "";
-                String lastName = user.getProperty("user:lastName").getValue(
-                        String.class);
+                String lastName = user.getLastName();
                 userLabel += " ";
                 userLabel += lastName != null ? lastName : "";
                 userLabel = userLabel.trim();
                 if (userLabel.isEmpty()) {
-                    userLabel = user.getProperty("user:username").getValue(
-                            String.class);
+                    userLabel = user.getName();
                 }
-                suggestions.add(new UserSuggestion(user.getId(), userLabel,
+                suggestions.add(new UserSuggestion(userDoc.getId(), userLabel,
                         userIconURL));
 
                 // suggest to search documents related to the user profile
@@ -96,7 +95,7 @@ public class UserGroupLookupSuggester implements Suggester {
                             + searchField.replaceAll(":", "_"), userLabel);
                     Suggestion suggestion = new SearchDocumentsSuggestion(
                             i18nLabel, searchIconURL).withSearchCriterion(
-                            searchField, user.getId());
+                            searchField, userDoc.getId());
                     searchSuggestions.add(suggestion);
                 }
                 count++;
@@ -105,11 +104,13 @@ public class UserGroupLookupSuggester implements Suggester {
                 }
             }
             count = 0;
+            String groupIdField = userManager.getGroupIdField();
+            String groupLabelField = userManager.getGroupLabelField();
             for (DocumentModel group : userManager.searchGroups(userInput)) {
-                String label = group.getProperty("group:grouplabel").getValue(
+                String label = group.getProperty(groupLabelField).getValue(
                         String.class);
                 if (label == null || label.isEmpty()) {
-                    label = group.getProperty("group:groupname").getValue(
+                    label = group.getProperty(groupIdField).getValue(
                             String.class);
                 }
                 suggestions.add(new GroupSuggestion(group.getId(), label,
