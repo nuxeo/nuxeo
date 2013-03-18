@@ -18,6 +18,8 @@
 
 package org.nuxeo.ecm.platform.computedgroups;
 
+import org.nuxeo.ecm.platform.usermanager.UserConfig;
+
 /**
  * Sample {@link GroupComputer} implementation that uses company field.
  *
@@ -27,7 +29,7 @@ public class CompanyGroupComputer extends AbstractAttributeBasedGroupComputer {
 
     @Override
     protected String getAttributeForGroupComputation() {
-        return "company";
+        return UserConfig.COMPANY_COLUMN;
     }
 
 }

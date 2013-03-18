@@ -18,12 +18,16 @@
 package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
-import org.nuxeo.ecm.platform.usermanager.UserConfig;
 
 /**
  * Base class for {@link GroupComputer} implementation that uses User attribute
@@ -44,7 +48,7 @@ public abstract class AbstractAttributeBasedGroupComputer extends
             if (doc != null) {
                 String companyName = (String) doc.getProperty(
                         getUM().getUserSchemaName(),
-                        UserConfig.COMPANY_COLUMN);
+                        getAttributeForGroupComputation());
                 if (!companies.contains(companyName)) {
                     companies.add(companyName);
                 }
