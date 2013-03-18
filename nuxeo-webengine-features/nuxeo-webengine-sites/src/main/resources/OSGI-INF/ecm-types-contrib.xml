@@ -34,7 +34,7 @@
     </type>
 
     <type id="WebPage">
-      <label>Web Page</label>
+      <label>WebPage</label>
       <icon>/icons/webpage.png</icon>
       <bigIcon>/icons/webpage_100.png</bigIcon>
       <icon-expanded>/icons/webpage.png</icon-expanded>
@@ -57,7 +57,7 @@
     </type>
 
     <type id="ContextualLink">
-      <label>Contextual Link</label>
+      <label>ContextualLink</label>
       <icon>/icons/contextuallink.png</icon>
       <bigIcon>/icons/contextuallink_100.png</bigIcon>
       <description>ContextualLink.description</description>
