@@ -48,7 +48,8 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         defaultTime = getValue(attributes, "defaultTime", "12:00");
     }
 
-    protected String getValue(TagAttributes attrs, String name, String defaultValue) {
+    protected String getValue(TagAttributes attrs, String name,
+            String defaultValue) {
         TagAttribute attr = attrs.get(name);
         if (attr == null) {
             return defaultValue;
@@ -57,6 +58,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected MetaRuleset createMetaRuleset(Class type) {
         MetaRuleset m = super.createMetaRuleset(type);
 
@@ -110,10 +112,10 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
     protected void setAttributes(FaceletContext ctx, Object instance) {
         super.setAttributes(ctx, instance);
         // set default time in timezone
-        setDefaultTime((HtmlCalendar)instance);
+        setDefaultTime((HtmlCalendar) instance);
     }
 
-    protected void setDefaultTime(HtmlCalendar instance)  {
+    protected void setDefaultTime(HtmlCalendar instance) {
         HtmlCalendar c = instance;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         format.setTimeZone(TimeZoneSelector.instance().getTimeZone());
@@ -121,7 +123,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         try {
             date = format.parse(defaultTime);
         } catch (ParseException e) {
-           return;
+            return;
         }
         c.setDefaultTime(date);
     }
