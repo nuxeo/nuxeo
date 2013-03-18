@@ -26,11 +26,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,11 +55,29 @@ public class UITypesConfigurationActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @In(create = true)
+    protected Map<String, String> messages;
+
+    /**
+     * @deprecated since 5.7.
+     */
+    @Deprecated
     public static final Comparator<? super Type> TYPE_ALPHABETICAL_ORDER = new Comparator<Type>() {
 
         @Override
         public int compare(Type type1, Type type2) {
             return type1.getId().compareTo(type2.getId());
+        }
+
+    };
+
+    protected final Comparator<? super Type> typeLabelAlphabeticalOrder = new Comparator<Type>() {
+
+        @Override
+        public int compare(Type type1, Type type2) {
+            String label1 = messages.get(type1.getLabel());
+            String label2 = messages.get(type2.getLabel());
+            return label1.compareTo(label2);
         }
 
     };
@@ -80,7 +100,7 @@ public class UITypesConfigurationActions implements Serializable {
 
     /**
      * Returns a List of type not selected for the domain given as parameter
-     * 
+     *
      * @param document the domain to configure
      * @return a List of type of document, not currently selected for the domain
      * @throws ClientException
@@ -103,7 +123,8 @@ public class UITypesConfigurationActions implements Serializable {
                 it.remove();
             }
         }
-        Collections.sort(notSelectedTypes, TYPE_ALPHABETICAL_ORDER);
+
+        Collections.sort(notSelectedTypes, typeLabelAlphabeticalOrder);
 
         return notSelectedTypes;
     }
@@ -129,7 +150,7 @@ public class UITypesConfigurationActions implements Serializable {
 
     /**
      * Returns a List of type selected for the domain given as parameter
-     * 
+     *
      * @param document the domain to configure
      * @return List of documen type selected for the domain
      * @throws ClientException
@@ -142,13 +163,13 @@ public class UITypesConfigurationActions implements Serializable {
         }
 
         List<String> allowedTypes = getAllowedTypes(document);
-        Collections.sort(allowedTypes);
 
         List<Type> selectedTypes = new ArrayList<Type>();
         for (String type : allowedTypes) {
             selectedTypes.add(typeManager.getType(type));
         }
 
+        Collections.sort(selectedTypes, typeLabelAlphabeticalOrder);
         return selectedTypes;
     }
 
@@ -178,8 +199,8 @@ public class UITypesConfigurationActions implements Serializable {
 
     /**
      * Returns a List of Document Types associated with Schema file for the
-     * domain given as parameter, if they're allowed for it. 
-     * 
+     * domain given as parameter, if they're allowed for it.
+     *
      * @param document the domain
      * @return List of Document types which have assoctiated Schema files.
      * @throws ClientException
@@ -195,7 +216,7 @@ public class UITypesConfigurationActions implements Serializable {
                 types.add(typeManager.getType(type));
             }
         }
-        Collections.sort(types, TYPE_ALPHABETICAL_ORDER);
+        Collections.sort(types, typeLabelAlphabeticalOrder);
         return Collections.unmodifiableList(types);
     }
 
