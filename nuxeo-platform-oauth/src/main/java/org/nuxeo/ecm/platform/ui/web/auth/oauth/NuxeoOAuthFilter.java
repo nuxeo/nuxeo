@@ -259,7 +259,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             }
 
             StringBuffer sb = new StringBuffer(cbUrl);
-            sb.append("?");
+            sb.append(cbUrl.indexOf('?') == -1 ? "?" : "&");
             sb.append(OAuth.OAUTH_TOKEN);
             sb.append("=");
             sb.append(rToken.getToken());
