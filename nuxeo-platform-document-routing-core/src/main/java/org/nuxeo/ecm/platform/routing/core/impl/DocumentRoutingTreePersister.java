@@ -148,11 +148,13 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             throws ClientException {
         String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_PARENTID
                 + " = '%s' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                + LifeCycleConstants.DELETED_STATE + "' AND "
-                + NXQL.ECM_MIXINTYPE + " <> '"
-                + FacetNames.HIDDEN_IN_NAVIGATION + "' ORDER BY ecm:name";
+                + LifeCycleConstants.DELETED_STATE + "' ORDER BY ecm:name";
         query = String.format(query, session.getRootDocument().getId());
         DocumentModelList docs = session.query(query, 1);
+        if (docs.size() == 0) {
+            throw new ClientRuntimeException(
+                    "Can't create document-route-instances-root document to store workflows instances. No document of type Domain was found under root.");
+        }
         DocumentModel defaultDomain = docs.get(0);
         DocumentModel root = session.createDocumentModel(
                 defaultDomain.getPathAsString(), id, routeStructureDocType);
