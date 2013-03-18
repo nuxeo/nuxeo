@@ -78,12 +78,10 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             HttpSession session = httpRequest.getSession(false);
             String requestedUrl = null;
             if (session != null) {
-                requestedUrl = (String) session.getAttribute(
-                        START_PAGE_SAVE_KEY);
+                requestedUrl = (String) session.getAttribute(START_PAGE_SAVE_KEY);
             }
             if (requestedUrl != null && !requestedUrl.equals("")) {
-                parameters.put(REQUESTED_URL,
-                        URLEncoder.encode(requestedUrl, "UTF-8"));
+                parameters.put(REQUESTED_URL, requestedUrl);
             }
             String loginError = (String) httpRequest.getAttribute(LOGIN_ERROR);
             if (loginError != null) {
