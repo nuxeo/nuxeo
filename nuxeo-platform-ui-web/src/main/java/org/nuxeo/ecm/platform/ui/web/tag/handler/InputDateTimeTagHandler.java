@@ -118,7 +118,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
     protected void setDefaultTime(HtmlCalendar instance) {
         HtmlCalendar c = instance;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        format.setTimeZone(TimeZoneSelector.instance().getTimeZone());
+        format.setTimeZone(instance.getTimeZone());
         Date date;
         try {
             date = format.parse(defaultTime);
