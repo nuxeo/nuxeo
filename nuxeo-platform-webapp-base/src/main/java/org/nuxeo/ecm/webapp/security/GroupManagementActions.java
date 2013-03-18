@@ -40,7 +40,6 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
@@ -175,22 +174,16 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     }
 
     public boolean getAllowEditGroup() throws ClientException {
-        //Changing administrator group is only given to administrators (not powerusers)
+        // Changing administrator group is only given to administrators (not
+        // powerusers)
         // NXP-10584
-        if(userManager.getAdministratorsGroups().contains(selectedGroup.getId())) {
+        if (userManager.getAdministratorsGroups().contains(
+                selectedGroup.getId())) {
             return ((NuxeoPrincipal) currentUser).isAdministrator();
         }
 
         return getCanEditGroups()
                 && !BaseSession.isReadOnlyEntry(selectedGroup);
-    }
-
-    private String getGroupName() throws ClientException, PropertyException {
-        String groupSchema = userManager.getGroupSchemaName();
-        String groupId = userManager.getGroupIdField();
-
-        String groupName = (String) selectedGroup.getPropertyValue(groupSchema + ":" + groupId);
-        return groupName;
     }
 
     public void validateGroupName(FacesContext context, UIComponent component,
