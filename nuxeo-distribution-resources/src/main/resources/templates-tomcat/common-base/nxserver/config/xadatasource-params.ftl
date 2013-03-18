@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <#if "${nuxeo.db.type}" == "postgresql">
         <property name="ServerName">${nuxeo.db.host}</property>
         <property name="PortNumber">${nuxeo.db.port}</property>
@@ -24,3 +25,4 @@
         <property name="User">${nuxeo.db.user}</property>
         <property name="Password">${nuxeo.db.password}</property>
 </#if>
+</#escape>
