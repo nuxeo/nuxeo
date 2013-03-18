@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
  * document. This default implementation does not track the space used by
  * versions, or the space used by non-Blob properties
- *
+ * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -398,6 +399,24 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         }
 
         List<Blob> blobs = getBlobs(doc, onlyChanges);
+
+        for (Blob blob : blobs) {
+            if (blob != null) {
+                if (blob.getLength() < 0) {
+                    // Blob is a stream (length =-1)
+                    // => must persist to be able to check size
+                    try {
+                        blob.persist();
+                    } catch (IOException e) {
+                        log.error(
+                                "Unable to persist uploaded Blob to check Quotas",
+                                e);
+                        throw new QuotaExceededException(doc,
+                                "Unable to check size");
+                    }
+                }
+            }
+        }
 
         if (onlyChanges) {
             if (blobs.size() == 0) {
