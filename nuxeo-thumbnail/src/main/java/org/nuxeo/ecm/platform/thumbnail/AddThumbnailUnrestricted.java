@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * Thumbnail bean in session unrestricted to add/update thumbnail facet to a
@@ -57,8 +58,7 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
                         doc.setPropertyValue(
                                 ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
                                 (Serializable) thumbnailBlob);
-                        session.saveDocument(doc);
-                        session.save();
+                        saveDocument();
                     }
                 } else {
                     if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
@@ -67,8 +67,7 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
                                     ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
                                     null);
                             doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
-                            session.saveDocument(doc);
-                            session.save();
+                            saveDocument();
                         }
                     }
                 }
@@ -77,4 +76,10 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
             log.warn("Error while adding thumbnail", e);
         }
     }
+
+    protected void saveDocument() throws ClientException {
+    	doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        session.saveDocument(doc);
+        session.save();
+	}
 }
