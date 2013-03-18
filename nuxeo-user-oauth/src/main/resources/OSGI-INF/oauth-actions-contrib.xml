@@ -8,6 +8,7 @@
       label="user.center.authorizedApplication"
       order="50" icon="/icons/authorized_apps.png">
       <category>USER_CENTER</category>
+      <filter-id>not_anonymous</filter-id>
     </action>
 
     <action id="AuthorizedApplicationMain" link="/incl/oauth/authorized_applications.xhtml"

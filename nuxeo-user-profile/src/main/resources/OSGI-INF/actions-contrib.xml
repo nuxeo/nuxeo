@@ -7,6 +7,7 @@
     <action id="Profile" link="user_center_fragment.xhtml" label="user.center.profile"
       icon="/icons/profile.png" order="20">
       <category>USER_CENTER</category>
+      <filter-id>not_anonymous</filter-id>
     </action>
 
     <action id="ProfileView" link="/incl/userprofile/user_profile.xhtml"
@@ -18,6 +19,7 @@
       label="user.center.preferences" icon="/icons/preferences.png"
       order="30">
       <category>USER_CENTER</category>
+      <filter-id>not_anonymous</filter-id>
     </action>
 
     <action id="PreferencesView" link="/incl/userprofile/user_preferences.xhtml"

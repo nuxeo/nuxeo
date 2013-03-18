@@ -5,6 +5,7 @@
 
     <action id="Notification" link="/incl/notification/user_subscriptions.xhtml" label="user.center.notification" order="40" icon="/icons/notifications.png">
       <category>USER_CENTER</category>
+      <filter-id>not_anonymous</filter-id>
     </action>
 
   </extension>
