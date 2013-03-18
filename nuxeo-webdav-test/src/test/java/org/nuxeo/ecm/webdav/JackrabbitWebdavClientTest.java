@@ -102,6 +102,22 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
     }
 
     @Test
+    public void testNotFoundVirtualRoot() throws Exception {
+        DavMethod method = new PropFindMethod(TEST_URI + "/nosuchpath",
+                DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_NOT_FOUND, status);
+    }
+
+    @Test
+    public void testNotFoundRegularPath() throws Exception {
+        DavMethod method = new PropFindMethod(ROOT_URI + "/nosuchpath",
+                DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_0);
+        int status = client.executeMethod(method);
+        assertEquals(HttpStatus.SC_NOT_FOUND, status);
+    }
+
+    @Test
     public void testPropFindOnFolderDepthInfinity() throws Exception {
         DavMethod pFind = new PropFindMethod(ROOT_URI, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_INFINITY);
         client.executeMethod(pFind);
