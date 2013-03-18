@@ -48,6 +48,13 @@ public class ClientLoginModule implements LoginModule {
         return threadInstance.get();
     }
 
+    /**
+     * @since 5.7
+     */
+    public static void clearThreadLocalLogin() {
+        threadInstance.remove();
+    }
+
     public static LoginStack.Entry getCurrentLogin() {
         LoginStack.Entry entry = threadInstance.get().peek();
         if (entry == null) {
