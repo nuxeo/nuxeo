@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,8 +47,8 @@ public class RequestControllerService extends DefaultComponent implements
     protected static final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
     protected static final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
 
+    // @GuardedBy("itself")
     protected static final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(250);
-    protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     @Override
     public void registerContribution(Object contribution,
@@ -93,19 +92,13 @@ public class RequestControllerService extends DefaultComponent implements
         String uri = request.getRequestURI();
         RequestFilterConfig config = null;
 
-        try {
-            cacheLock.readLock().lock();
+        synchronized(configCache) {
             config = configCache.get(uri);
-        } finally {
-            cacheLock.readLock().unlock();
         }
         if (config == null) {
             config = computeConfigForRequest(uri);
-            try {
-                cacheLock.writeLock().lock();
+            synchronized(configCache) {
                 configCache.put(uri, config);
-            } finally {
-                cacheLock.writeLock().unlock();
             }
         }
         return config;
