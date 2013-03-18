@@ -53,12 +53,13 @@ public class PostCommitEventExecutor {
     protected final ExecutorService executor;
 
     public PostCommitEventExecutor() {
+        int corePoolSize = 4;
         // Won't grow to its max because we wait for tasks to finish
         // synchronously, but we have to be big enough for all sessions.
         int maxPoolSize = 100;
         ThreadFactory threadFactory = new NamedThreadFactory(
                 "Nuxeo-Event-PostCommit-");
-        executor = new ThreadPoolExecutor(maxPoolSize, maxPoolSize, 0,
+        executor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, 0,
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
                 threadFactory);
     }
