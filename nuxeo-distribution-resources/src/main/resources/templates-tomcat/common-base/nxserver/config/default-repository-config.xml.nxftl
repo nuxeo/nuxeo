@@ -1,3 +1,4 @@
+<#escape x as x?xml>
 <?xml version="1.0"?>
 <component name="default-repository-config">
   <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
@@ -141,3 +142,4 @@
     </repository>
   </extension>
 </component>
+</#escape>
