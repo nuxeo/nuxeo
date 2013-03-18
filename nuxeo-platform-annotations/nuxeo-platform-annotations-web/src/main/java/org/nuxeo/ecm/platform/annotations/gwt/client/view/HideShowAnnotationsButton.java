@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client.view;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController;
 import org.nuxeo.ecm.platform.annotations.gwt.client.view.i18n.TranslationConstants;
 
@@ -38,25 +40,20 @@ public class HideShowAnnotationsButton extends Composite {
             final AnnotationController annotationController) {
         final TranslationConstants translationConstants = GWT.create(TranslationConstants.class);
         final ToggleButton button = new ToggleButton(
-                annotationController.isAnnotationsVisible() ? translationConstants.hideAnnotations()
-                        : translationConstants.showAnnotations());
+                translationConstants.showAnnotations(),
+                translationConstants.hideAnnotations());
         button.setStyleName("annotation-hide-show-button");
-        button.setDown(!annotationController.isAnnotationsVisible());
-
-        button.addClickListener(new ClickListener() {
-            public void onClick(Widget sender) {
-                if (!button.isDown()) {
-                    button.setTitle(translationConstants.hideAnnotations());
-                    button.setText(translationConstants.hideAnnotations());
+        button.setDown(annotationController.isAnnotationsVisible());
+        button.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (button.isDown()) {
                     showAnnotations();
                 } else {
-                    button.setTitle(translationConstants.showAnnotations());
-                    button.setText(translationConstants.showAnnotations());
                     hideAnnotations();
                 }
             }
         });
-
         initWidget(button);
     }
 
