@@ -19,6 +19,7 @@
 package org.nuxeo.opensocial.webengine.gadgets;
 
 import java.io.InputStream;
+import java.net.URI;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,6 +27,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.opensocial.gadgets.service.InternalGadgetDescriptor;
 import org.nuxeo.opensocial.gadgets.service.api.GadgetDeclaration;
@@ -33,6 +37,8 @@ import org.nuxeo.opensocial.webengine.gadgets.render.GadgetSpecView;
 
 @WebObject(type = "gadget")
 public class GadgetResource extends InputStreamResource {
+
+    protected static final Log log = LogFactory.getLog(GadgetResource.class);
 
     protected GadgetDeclaration gadget;
 
@@ -50,8 +56,8 @@ public class GadgetResource extends InputStreamResource {
 
     @GET
     @Path("{filename:.*}")
-    public Object getGadgetFile(@PathParam("filename") String fileName)
-            throws Exception {
+    public Object getGadgetFile(@PathParam("filename")
+    String fileName) throws Exception {
 
         if (gadget.isExternal()) {
             return Response.seeOther(gadget.getGadgetDefinition().toURI()).build();
@@ -67,7 +73,15 @@ public class GadgetResource extends InputStreamResource {
             in = getResourceAsStream(fileName);
         }
         if (in == null) {
-            return Response.status(404).build();
+            // tentative : forward to nxthemes lib
+            log.warn("Unable to find resource "
+                    + fileName
+                    + " in Gadget, forwarding to nxthemes-lib to make compatibility easier.");
+            String base = VirtualHostHelper.getServerURL(getContext().getRequest());
+            base += VirtualHostHelper.getContextPath(getContext().getRequest()).substring(
+                    1);
+            return Response.seeOther(
+                    new URI(base + "/nxthemes-lib/" + fileName)).build();
         }
         return getObject(in, fileName);
     }
