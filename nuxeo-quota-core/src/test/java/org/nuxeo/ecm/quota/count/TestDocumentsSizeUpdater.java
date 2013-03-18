@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
@@ -59,6 +61,7 @@ import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaAwareDocument;
 import org.nuxeo.ecm.quota.size.QuotaExceededException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -134,6 +137,21 @@ public class TestDocumentsSizeUpdater {
         Blob blob = new StringBlob(sb.toString());
         blob.setMimeType("text/plain");
         blob.setFilename("FakeBlob_" + size + ".txt");
+        return blob;
+    }
+
+    protected Blob getStreamBlob(int size) {
+        StringBuilder sb = new StringBuilder(size);
+        for (int i = 0; i < size; i++) {
+            sb.append('a');
+        }
+        InputStreamSource src = new InputStreamSource(new ByteArrayInputStream(
+                sb.toString().getBytes()));
+        Blob blob = new StreamingBlob(src);
+        blob.setMimeType("text/plain");
+        blob.setFilename("FakeBlob_" + size + ".txt");
+        // ensure we have a Blob without size !
+        assertEquals(-1, blob.getLength());
         return blob;
     }
 
@@ -1491,5 +1509,48 @@ public class TestDocumentsSizeUpdater {
 
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
+    }
+
+    @Test
+    public void testQuotaOnAddStreamingContent() throws Exception {
+
+        addContent();
+        dump();
+
+        TransactionHelper.startTransaction();
+
+        // now add quota limit
+        DocumentModel ws = session.getDocument(wsRef);
+        QuotaAware qa = ws.getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+
+        assertEquals(300L, qa.getTotalSize());
+        assertEquals(-1L, qa.getMaxQuota());
+
+        // set the quota to 400
+        qa.setMaxQuota(400L, true);
+        TransactionHelper.commitOrRollbackTransaction();
+        dump();
+        TransactionHelper.startTransaction();
+
+        boolean canNotExceedQuota = false;
+        try {
+            // now try to update one
+            DocumentModel firstFile = session.getDocument(firstFileRef);
+            firstFile.setPropertyValue("file:content",
+                    (Serializable) getStreamBlob(250));
+            firstFile = session.saveDocument(firstFile);
+        } catch (Exception e) {
+            if (QuotaExceededException.isQuotaExceededException(e)) {
+                System.out.println("raised expected Execption "
+                        + QuotaExceededException.unwrap(e).getMessage());
+                canNotExceedQuota = true;
+            }
+            TransactionHelper.setTransactionRollbackOnly();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+        assertTrue(canNotExceedQuota);
+
     }
 }

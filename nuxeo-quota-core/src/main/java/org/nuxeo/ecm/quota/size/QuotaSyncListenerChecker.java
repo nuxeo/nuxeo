@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_INITIAL_STATISTICS;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
  * document. This default implementation does not track the space used by
  * versions, or the space used by non-Blob properties
- *
+ * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -109,7 +110,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 if (log.isTraceEnabled()) {
                     log.trace("doc with uuid " + uuid + " already up to date");
                 }
-                // this will force an update if the plugin was installed and then removed
+                // this will force an update if the plugin was installed and
+                // then removed
                 target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             }
 
@@ -147,12 +149,14 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void processDocumentCreated(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
+
         if (targetDoc.isVersion()) {
             // version taken into account by checkout
             // TODO 5.7 version accounting should be different
             return;
         }
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+
         // only process if blobs are present
         if (bsi.getBlobSizeDelta() != 0) {
             checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
@@ -211,6 +215,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void processDocumentBeforeUpdate(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
             throws ClientException {
+
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, true);
         log.debug("calling processDocumentBeforeUpdate, bsi=" + bsi.toString());
         // only process if Blobs where added or removed
@@ -422,6 +427,24 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         }
 
         List<Blob> blobs = getBlobs(doc, onlyChanges);
+
+        for (Blob blob : blobs) {
+            if (blob != null) {
+                if (blob.getLength() < 0) {
+                    // Blob is a stream (length =-1)
+                    // => must persist to be able to check size
+                    try {
+                        blob.persist();
+                    } catch (IOException e) {
+                        log.error(
+                                "Unable to persist uploaded Blob to check Quotas",
+                                e);
+                        throw new QuotaExceededException(doc,
+                                "Unable to check size");
+                    }
+                }
+            }
+        }
 
         if (onlyChanges) {
             if (blobs.size() == 0) {
