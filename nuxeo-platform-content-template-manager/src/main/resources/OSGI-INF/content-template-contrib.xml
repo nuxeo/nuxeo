@@ -37,8 +37,7 @@
         <templateItem typeName="WorkspaceRoot" id="workspaces"
           title="Workspaces" />
         <templateItem typeName="SectionRoot" id="sections" title="Sections" />
-        <templateItem typeName="TemplateRoot" id="templates" title="Templates"
-          description="Root of workspaces templates" />
+        <templateItem typeName="TemplateRoot" id="templates" title="Templates" />
       </template>
     </factoryBinding>
 
