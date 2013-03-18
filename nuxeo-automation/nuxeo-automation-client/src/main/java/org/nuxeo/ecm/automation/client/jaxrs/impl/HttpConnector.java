@@ -45,7 +45,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
  */
 public class HttpConnector implements Connector {
 
-    protected final AbstractHttpClient http;
+    protected final HttpClient http;
 
     /**
      * Timeout in milliseconds for the socket, connection manager and connection
@@ -86,7 +86,7 @@ public class HttpConnector implements Connector {
     public HttpConnector(HttpClient http, HttpContext ctx,
             int httpConnectionTimeout) {
         ctx.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
-        this.http = (AbstractHttpClient) http;
+        this.http = http;
         this.httpConnectionTimeout = httpConnectionTimeout;
         this.ctx = ctx;
     }

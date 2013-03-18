@@ -27,7 +27,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
  */
 public class HttpAutomationClient extends AsyncAutomationClient {
 
-    protected DefaultHttpClient http;
+    protected HttpClient http;
 
     protected int httpConnectionTimeout;
 
