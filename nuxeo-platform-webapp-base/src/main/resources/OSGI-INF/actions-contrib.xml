@@ -185,6 +185,12 @@
       </rule>
     </filter>
 
+    <filter id="hasDublincore">
+      <rule grant="true">
+        <schema>dublincore</schema>
+      </rule>
+    </filter>
+
     <filter id="canToggleLayoutToEditMode">
       <documentation>
         <p>
