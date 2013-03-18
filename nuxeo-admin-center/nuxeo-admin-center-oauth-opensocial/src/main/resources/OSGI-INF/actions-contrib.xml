@@ -47,12 +47,6 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="OAuthSubscriber" link="user_center_fragment.xhtml"
-      label="oauth.subscriber.tab.view" icon="/icons/minimessages.png"
-      order="35">
-      <category>USER_CENTER</category>
-    </action>
-
   </extension>
 
 </component>
