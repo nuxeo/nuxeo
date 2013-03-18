@@ -46,6 +46,7 @@
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>manage</filter-id>
       <filter-id>mutable_document</filter-id>
+      <filter-id>view_content</filter-id>
       <filter id="displayRegistrationListingLocal">
         <rule grant="true">
           <condition>#{userRegistrationConfigurationActions.getRules('default_registration').isDisplayLocalTab()}
