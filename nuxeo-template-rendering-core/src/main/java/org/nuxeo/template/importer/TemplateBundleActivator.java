@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.runtime.api.Framework;
@@ -38,30 +40,20 @@ import org.osgi.framework.BundleContext;
  */
 public class TemplateBundleActivator implements BundleActivator {
 
-    protected static final String SAMPLES_ROOT_PATH = "templatesamples";
-
-    private static volatile TemplateBundleActivator instance;
-
     private BundleContext context;
 
-    public static URL getResource(String path) {
-        TemplateBundleActivator a = instance;
-        if (a != null) {
-            return a.context.getBundle().getResource(path);
-        }
-        return Thread.currentThread().getContextClassLoader().getResource(path);
+    protected static final Log log = LogFactory.getLog(TemplateBundleActivator.class);
+
+    protected static String getTemplateResourcesRootPath() {
+        return ModelImporter.RESOURCES_ROOT;
     }
 
-    public static Enumeration findEntries(String path) {
-        TemplateBundleActivator a = instance;
-        if (a != null) {
-            return a.context.getBundle().findEntries(path, null, true);
-        }
-        return null;
+    public URL getResource(String path) {
+        return this.context.getBundle().getResource(path);
     }
 
-    public static TemplateBundleActivator getInstance() {
-        return instance;
+    public Enumeration findEntries(String path) {
+        return this.context.getBundle().findEntries(path, null, true);
     }
 
     public BundleContext getContext() {
@@ -71,13 +63,11 @@ public class TemplateBundleActivator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         this.context = context;
-        instance = this;
         expandResources();
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        instance = null;
         this.context = null;
     }
 
@@ -94,24 +84,30 @@ public class TemplateBundleActivator implements BundleActivator {
         return path;
     }
 
-    public static void expandResources() throws Exception {
-        URL sampleRootURL = getResource(SAMPLES_ROOT_PATH);
+    public void expandResources() throws Exception {
+        log.info("Deploying templates for bundle "
+                + context.getBundle().getSymbolicName());
+
+        URL sampleRootURL = getResource(getTemplateResourcesRootPath());
         if (sampleRootURL == null) {
             return;
         }
+
         Path path = getDataDirPath();
-        path = path.append(SAMPLES_ROOT_PATH);
+        path = path.append(getTemplateResourcesRootPath());
         File dataDir = new File(path.toString());
         if (!dataDir.exists()) {
             dataDir.mkdirs();
         }
 
-        int baseUrlSize = sampleRootURL.getFile().length();
-        Enumeration urls = findEntries(SAMPLES_ROOT_PATH);
+        Enumeration urls = findEntries(getTemplateResourcesRootPath());
         while (urls.hasMoreElements()) {
             URL resourceURL = (URL) urls.nextElement();
             InputStream is = resourceURL.openStream();
-            String filePath = resourceURL.getFile().substring(baseUrlSize);
+            String filePath = resourceURL.getFile();
+            filePath = filePath.split("/" + getTemplateResourcesRootPath()
+                    + "/")[1];
+            filePath = "/" + filePath;
             File f = new File(dataDir, filePath);
             File parent = f.getParentFile();
             if (!parent.exists()) {
@@ -121,5 +117,4 @@ public class TemplateBundleActivator implements BundleActivator {
             is.close();
         }
     }
-
 }

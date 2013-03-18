@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
     <operation
-      class="org.nuxeo.template.DeckJSPDFOperation" />
+      class="org.nuxeo.template.deckjs.DeckJSPDFOperation" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">

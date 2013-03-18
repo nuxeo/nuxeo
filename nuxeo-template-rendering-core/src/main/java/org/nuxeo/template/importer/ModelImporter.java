@@ -75,11 +75,11 @@ public class ModelImporter {
 
     private static final String TEMPLATE_SAMPLE_INIT_EVENT = "TemplateSampleInit";
 
-    private static final String RESOURCES_ROOT = "templatesamples";
-
     public static final String EXAMPLES_ROOT = "examples";
 
     public static final String TEMPLATE_ROOT = "template";
+
+    protected static final String RESOURCES_ROOT = "templatesamples";
 
     protected static final String DOMAIN_QUERY = "select * from Domain where ecm:isCheckedInVersion=0  AND  ecm:currentLifeCycleState != 'deleted' order by dc:created ASC";
 
@@ -87,6 +87,10 @@ public class ModelImporter {
 
     public ModelImporter(CoreSession session) {
         this.session = session;
+    }
+
+    protected String getTemplateResourcesRootPath() {
+        return RESOURCES_ROOT;
     }
 
     protected DocumentModel getTargetDomain() throws ClientException {
@@ -132,11 +136,11 @@ public class ModelImporter {
             if (roots.size() > 0) {
                 DocumentModel WSRoot = roots.get(0);
                 PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/"
-                        + TemplateBundleActivator.SAMPLES_ROOT_PATH);
+                        + getTemplateResourcesRootPath());
                 if (!session.exists(targetPath)) {
                     container = session.createDocumentModel(
                             WSRoot.getPathAsString(),
-                            TemplateBundleActivator.SAMPLES_ROOT_PATH, "Workspace");
+                            getTemplateResourcesRootPath(), "Workspace");
                     container.setPropertyValue("dc:title",
                             "Template usage samples");
                     container.setPropertyValue("dc:description",
@@ -194,24 +198,28 @@ public class ModelImporter {
 
         int nbImportedDocs = 0;
         Path path = TemplateBundleActivator.getDataDirPath();
-        path = path.append(RESOURCES_ROOT);
+        path = path.append(getTemplateResourcesRootPath());
         File root = new File(path.toString());
-        File[] modelRoots = root.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                if (!pathname.isDirectory()) {
-                    return false;
+        if (root.exists()) {
+            File[] modelRoots = root.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    if (!pathname.isDirectory()) {
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
+            });
+
+            if (modelRoots != null && modelRoots.length > 0) {
+                for (File modelRoot : modelRoots) {
+                    log.info("Importing template from "
+                            + modelRoot.getAbsolutePath());
+                    nbImportedDocs += importModelAndExamples(modelRoot);
+                }
+                markImportDone();
             }
-        });
-
-        for (File modelRoot : modelRoots) {
-            log.info("Importing template from " + modelRoot.getAbsolutePath());
-            nbImportedDocs += importModelAndExamples(modelRoot);
         }
-
-        markImportDone();
 
         return nbImportedDocs;
     }

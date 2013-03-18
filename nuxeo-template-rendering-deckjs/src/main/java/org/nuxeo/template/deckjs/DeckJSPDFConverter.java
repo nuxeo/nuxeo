@@ -14,7 +14,7 @@
  * Contributors:
  *     ldoguin
  */
-package org.nuxeo.template;
+package org.nuxeo.template.deckjs;
 
 import java.io.File;
 import java.io.FileWriter;

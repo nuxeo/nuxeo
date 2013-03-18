@@ -14,19 +14,12 @@
  * Contributors:
  *     ldoguin
  */
-package org.nuxeo.template;
+package org.nuxeo.template.deckjs;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+public class DeckJSConverterConstants {
 
-import org.nuxeo.template.importer.TemplateBundleActivator;
+    public static final String DECK_JS2PDF_JS_SCRIPT_PATH = "phantomscript/deckJs2pdf.js";
 
-public class Activator extends TemplateBundleActivator {
+    public static final String PHANTOM_JS_COMMAND_NAME = "phantomjs";
 
-    public static InputStream getResourceAsStream(String path)
-            throws IOException {
-        URL url = getResource(path);
-        return url != null ? url.openStream() : null;
-    }
 }

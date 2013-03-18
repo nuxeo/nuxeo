@@ -35,8 +35,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.template.DeckJSConverterConstants;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+import org.nuxeo.template.deckjs.DeckJSConverterConstants;
 
 import com.google.inject.Inject;
 

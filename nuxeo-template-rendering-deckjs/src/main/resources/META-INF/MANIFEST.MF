@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Bundle-Name: Nuxeo ECM Document template deckjs plugin
-Bundle-Activator: org.nuxeo.template.Activator
+Bundle-Activator: org.nuxeo.template.deckjs.Activator
 Nuxeo-Component: OSGI-INF/deckjs2pdf-commandline-contrib.xml,OSGI-INF/
  deckjs2pdf-converter-contrib.xml,OSGI-INF/deckjs2pdf-automation-contr
  ib.xml,OSGI-INF/deckjs2pdf-outputFormat-contrib.xml
