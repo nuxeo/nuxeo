@@ -20,7 +20,9 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
+import freemarker.core.CollectionAndSequence;
 import freemarker.template.AdapterTemplateModel;
+import freemarker.template.SimpleSequence;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateHashModelEx;
 import freemarker.template.TemplateModel;
@@ -28,7 +30,7 @@ import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class ComplexPropertyTemplate extends PropertyWrapper implements
         TemplateHashModelEx, AdapterTemplateModel {
@@ -53,7 +55,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements
         for (Property p : property.getChildren()) {
             list.add(p.getName());
         }
-        return (TemplateCollectionModel) wrapper.wrap(list);
+        return new CollectionAndSequence(new SimpleSequence(list, wrapper));
     }
 
     @Override
@@ -69,7 +71,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements
                 Object value = p.getValue();
                 list.add(value == null ? "" : value);
             }
-            return (TemplateCollectionModel) wrapper.wrap(list);
+            return new CollectionAndSequence(new SimpleSequence(list, wrapper));
         } catch (PropertyException e) {
             throw new TemplateModelException(
                     "Failed to adapt complex property values", e);

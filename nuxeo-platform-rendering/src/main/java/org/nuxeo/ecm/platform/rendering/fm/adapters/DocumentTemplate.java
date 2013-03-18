@@ -23,8 +23,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.DefaultDocumentView;
 
+import freemarker.core.CollectionAndSequence;
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleSequence;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateHashModelEx;
 import freemarker.template.TemplateModel;
@@ -32,9 +34,9 @@ import freemarker.template.TemplateModelException;
 
 /**
  * TODO document template should not be aware of rendering context ?
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class DocumentTemplate implements TemplateHashModelEx,
         AdapterTemplateModel {
@@ -90,7 +92,8 @@ public class DocumentTemplate implements TemplateHashModelEx,
 
     @Override
     public TemplateCollectionModel keys() throws TemplateModelException {
-        return (TemplateCollectionModel) wrapper.wrap(getRawKeys());
+        return new CollectionAndSequence(new SimpleSequence(getRawKeys(),
+                wrapper));
     }
 
     public Collection<Object> getRawValues() throws TemplateModelException {
@@ -108,7 +111,8 @@ public class DocumentTemplate implements TemplateHashModelEx,
 
     @Override
     public TemplateCollectionModel values() throws TemplateModelException {
-        return (TemplateCollectionModel) wrapper.wrap(getRawValues());
+        return new CollectionAndSequence(new SimpleSequence(getRawValues(),
+                wrapper));
     }
 
     @Override
