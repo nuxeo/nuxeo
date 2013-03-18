@@ -20,6 +20,23 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth;
 
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_AUTHENTICATION_FAILED;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_CONNECTION_FAILED;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS_LOGIN;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORM_SUBMITTED_MARKER;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PAGE_AFTER_SWITCH;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SECURITY_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_KEY;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_PAGE;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -55,7 +72,6 @@ import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
-import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
@@ -74,12 +90,11 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
-
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Counter;
 import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerContext;
+
 /**
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
  * <p>
@@ -135,8 +150,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     // @since 5.7
     protected final Timer requestTimer = Metrics.defaultRegistry().newTimer(
-            NuxeoAuthenticationFilter.class, "request",
-            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+            NuxeoAuthenticationFilter.class, "request", TimeUnit.MICROSECONDS,
+            TimeUnit.SECONDS);
 
     protected final static Counter concurrentCount = Metrics.defaultRegistry().newCounter(
             NuxeoAuthenticationFilter.class, "request-concurrent");
@@ -146,7 +161,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected final static Counter loginCount = Metrics.defaultRegistry().newCounter(
             NuxeoAuthenticationFilter.class, "logged-user");
-
 
     public void destroy() {
     }
@@ -348,8 +362,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         // ServletLifecycle.beginRequest(httpRequest);
 
         // flag redirect to avoid being caught by URLPolicy
-        request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY,
-                Boolean.TRUE);
+        request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         String baseURL = service.getBaseURL(request);
         ((HttpServletResponse) response).sendRedirect(baseURL
                 + targetPageAfterSwitch);
@@ -386,7 +399,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
 
-        if (bypassAuth((HttpServletRequest)request)) {
+        if (bypassAuth((HttpServletRequest) request)) {
             chain.doFilter(request, response);
             return;
         }
@@ -812,7 +825,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         // invalidate Session !
         service.invalidateSession(request);
 
-        request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
+        request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, Boolean.TRUE);
         Map<String, String> parameters = new HashMap<String, String>();
         String securityError = request.getParameter(SECURITY_ERROR);
         if (securityError != null) {
@@ -842,9 +855,9 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         boolean redirected = false;
         if (logoutPlugin != null) {
-            redirected = logoutPlugin.handleLogout(
+            redirected = Boolean.TRUE.equals(logoutPlugin.handleLogout(
                     (HttpServletRequest) request,
-                    (HttpServletResponse) response);
+                    (HttpServletResponse) response));
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         if (!redirected
@@ -947,12 +960,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
             AuthenticationPluginDescriptor descriptor = service.getDescriptor(pluginName);
 
-            if (plugin.needLoginPrompt(httpRequest)) {
+            if (Boolean.TRUE.equals(plugin.needLoginPrompt(httpRequest))) {
                 if (descriptor.getNeedStartingURLSaving()) {
                     saveRequestedURLBeforeRedirect(httpRequest, httpResponse);
                 }
-                return plugin.handleLoginPrompt(httpRequest, httpResponse,
-                        baseURL);
+                return Boolean.TRUE.equals(plugin.handleLoginPrompt(
+                        httpRequest, httpResponse, baseURL));
             }
         }
 
