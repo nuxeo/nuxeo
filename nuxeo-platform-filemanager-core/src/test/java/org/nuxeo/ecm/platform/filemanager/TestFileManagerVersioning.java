@@ -57,6 +57,14 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.versioning" })
 public class TestFileManagerVersioning {
 
+    private static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.filemanager.core.tests";
+
+    private static final String INCORRECT_XML = "nxfilemanager-incorrect-versioning-contrib.xml";
+
+    private static final String CONTRIB_XML = "nxfilemanager-versioning-contrib.xml";
+
+    private static final String CONTRIB2_XML = "nxfilemanager-versioning2-contrib.xml";
+
     private static final String HELLO_DOC = "test-data/hello.doc";
 
     private static final String APPLICATION_MSWORD = "application/msword";
@@ -86,16 +94,15 @@ public class TestFileManagerVersioning {
 
     @Test
     public void testIncorrectVersioningOption() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
-                "nxfilemanager-incorrect-versioning-contrib.xml");
+        harness.deployContrib(TEST_BUNDLE, INCORRECT_XML);
         assertEquals(VersioningOption.MINOR, service.getVersioningOption());
         assertFalse(service.doVersioningAfterAdd());
+        harness.undeployContrib(TEST_BUNDLE, INCORRECT_XML);
     }
 
     @Test
     public void testCreateDocumentNoVersioningAfterAdd() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
-                "nxfilemanager-versioning-contrib.xml");
+        harness.deployContrib(TEST_BUNDLE, CONTRIB_XML);
         assertEquals(VersioningOption.MAJOR, service.getVersioningOption());
         assertFalse(service.doVersioningAfterAdd());
 
@@ -127,12 +134,12 @@ public class TestFileManagerVersioning {
         assertTrue(doc.isCheckedOut());
         assertEquals(2, coreSession.getVersions(docRef).size());
         assertEquals("2.0+", doc.getVersionLabel());
+        harness.undeployContrib(TEST_BUNDLE, CONTRIB_XML);
     }
 
     @Test
     public void testCreateDocumentVersioningAfterAdd() throws Exception {
-        harness.deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
-                "nxfilemanager-versioning2-contrib.xml");
+        harness.deployContrib(TEST_BUNDLE, CONTRIB2_XML);
         assertEquals(VersioningOption.MINOR, service.getVersioningOption());
         assertTrue(service.doVersioningAfterAdd());
 
@@ -164,6 +171,7 @@ public class TestFileManagerVersioning {
         assertFalse(doc.isCheckedOut());
         assertEquals(3, coreSession.getVersions(docRef).size());
         assertEquals("0.3", doc.getVersionLabel());
+        harness.undeployContrib(TEST_BUNDLE, CONTRIB2_XML);
     }
 
     protected File getTestFile(String relativePath) {

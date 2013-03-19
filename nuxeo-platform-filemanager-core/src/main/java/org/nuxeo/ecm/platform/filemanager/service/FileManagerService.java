@@ -327,7 +327,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                     VersioningDescriptor descr = (VersioningDescriptor) contrib;
                     String defver = descr.defaultVersioningOption;
                     if (!StringUtils.isBlank(defver)) {
-                        defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
+                        try {
+                            defaultVersioningOption = VersioningOption.valueOf(defver.toUpperCase(Locale.ENGLISH));
+                        } catch (IllegalArgumentException e) {
+                            log.warn(String.format(
+                                    "Illegal versioning option: %s, using %s instead",
+                                    defver, DEF_VERSIONING_OPTION));
+                            defaultVersioningOption = DEF_VERSIONING_OPTION;
+                        }
                     }
                     Boolean veradd = descr.versionAfterAdd;
                     if (veradd != null) {

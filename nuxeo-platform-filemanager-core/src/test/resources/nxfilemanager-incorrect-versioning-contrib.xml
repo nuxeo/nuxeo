@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="versioning">
     <versioning>
-      <defaultVersioningOption>mijor</defaultVersioningOption>
+      <defaultVersioningOption>nosuchversioningoption</defaultVersioningOption>
     </versioning>
   </extension>
 
