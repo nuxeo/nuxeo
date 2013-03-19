@@ -749,7 +749,17 @@ public class NuxeoAuthenticationFilter implements Filter {
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         String requestedPage = null;
-        if (httpRequest.getParameter(REQUESTED_URL) == null) {
+        if (httpRequest.getParameter(REQUESTED_URL) != null) {
+            String requestedUrl = httpRequest.getParameter(REQUESTED_URL);
+            if (requestedUrl != null && !"".equals(requestedUrl)) {
+                try {
+                    requestedPage = URLDecoder.decode(requestedUrl, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    log.error("Unable to get the requestedUrl parameter" + e);
+                }
+            }
+        } else {
+            // retrieve from session
             HttpSession session = httpRequest.getSession(false);
             if (session != null) {
                 requestedPage = (String) session.getAttribute(START_PAGE_SAVE_KEY);
@@ -758,34 +768,24 @@ public class NuxeoAuthenticationFilter implements Filter {
                     session.removeAttribute(START_PAGE_SAVE_KEY);
                 }
             }
-        } else {
-            requestedPage = httpRequest.getParameter(REQUESTED_URL);
-        }
 
-        // if SSO authentication cookie store the initial URL asked
-
-        Cookie[] cookies = httpRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (SSO_INITIAL_URL_REQUEST_KEY.equals(cookie.getName())) {
-                    requestedPage = cookie.getValue();
-                    cookie.setPath("/"); // enforce cookie removing
-                    cookie.setMaxAge(0);
-                    httpResponse.addCookie(cookie);
+            // retrieve from SSO cookies
+            Cookie[] cookies = httpRequest.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (SSO_INITIAL_URL_REQUEST_KEY.equals(cookie.getName())) {
+                        requestedPage = cookie.getValue();
+                        cookie.setPath("/");
+                        // enforce cookie removal
+                        cookie.setMaxAge(0);
+                        httpResponse.addCookie(cookie);
+                    }
                 }
             }
         }
 
+        // add locale if not in the URL params
         String localeStr = httpRequest.getParameter(NXAuthConstants.LANGUAGE_PARAMETER);
-
-        String requestedUrl = httpRequest.getParameter(REQUESTED_URL);
-        if (requestedUrl != null && !"".equals(requestedUrl)) {
-            try {
-                requestedPage = URLDecoder.decode(requestedUrl, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error("Unable to get the requestedUrl parameter" + e);
-            }
-        }
         if (requestedPage != null && !"".equals(requestedPage)
                 && localeStr != null) {
             Map<String, String> params = new HashMap<String, String>();
@@ -795,6 +795,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
             return URIUtils.addParametersToURIQuery(requestedPage, params);
         }
+
         return requestedPage;
     }
 
