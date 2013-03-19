@@ -60,7 +60,6 @@ public final class URIUtils {
                 for (Map.Entry<String, String> paramInfo : parameters.entrySet()) {
                     String key = paramInfo.getKey();
                     String value = paramInfo.getValue();
-                    // XXX AT: see if needs encoding
                     if (key != null) {
                         if (value == null) {
                             value = "";
@@ -70,7 +69,7 @@ public final class URIUtils {
                                 URLEncoder.encode(value, "UTF-8")));
                     }
                 }
-                query = StringUtils.join(items, "&");
+                query = org.apache.commons.lang.StringUtils.join(items, "&");
             } catch (UnsupportedEncodingException e) {
                 log.error("Failed to get uri query", e);
             }
@@ -100,6 +99,10 @@ public final class URIUtils {
         Map<String, String> parameters = null;
         if (uriQuery != null && uriQuery.length() > 0) {
             try {
+                int index = uriQuery.indexOf("?");
+                if (index != -1) {
+                    uriQuery = uriQuery.substring(index + 1);
+                }
                 String[] items = uriQuery.split("&");
                 if (items != null && items.length > 0) {
                     parameters = new LinkedHashMap<String, String>();
@@ -127,24 +130,21 @@ public final class URIUtils {
 
     public static String addParametersToURIQuery(String uriString,
             Map<String, String> parameters) {
-        String res = uriString;
-        try {
-            String uriPath = getURIPath(uriString);
-            URI uri = URI.create(uriString);
-            String query = uri.getQuery();
-            Map<String, String> existingParams = getRequestParameters(query);
-            if (existingParams == null) {
-                existingParams = new LinkedHashMap<String, String>();
-            }
-            existingParams.putAll(parameters);
-            if (!existingParams.isEmpty()) {
-                String newQuery = getURIQuery(existingParams);
-                res = uriPath + '?' + newQuery;
-            } else {
-                res = uriPath;
-            }
-        } catch (IllegalArgumentException e) {
-            log.error("Failed to add new parameters to uri", e);
+        if (uriString == null || parameters == null || parameters.isEmpty()) {
+            return uriString;
+        }
+        String uriPath = getURIPath(uriString);
+        Map<String, String> existingParams = getRequestParameters(uriString.substring(uriPath.length()));
+        if (existingParams == null) {
+            existingParams = new LinkedHashMap<String, String>();
+        }
+        existingParams.putAll(parameters);
+        String res = null;
+        if (!existingParams.isEmpty()) {
+            String newQuery = getURIQuery(existingParams);
+            res = uriPath + '?' + newQuery;
+        } else {
+            res = uriPath;
         }
         return res;
     }
@@ -154,8 +154,8 @@ public final class URIUtils {
     }
 
     /**
-     * Quotes a URI path component, with ability to quote "/" and "@" characters
-     * or not depending on the URI path
+     * Quotes a URI path component, with ability to quote "/" and "@"
+     * characters or not depending on the URI path
      *
      * @since 5.6
      * @param the uri path to quote

@@ -54,6 +54,7 @@ public class TestURIUtils {
     @Test
     public void testGetRequestParameters() {
         assertEquals(parameters, URIUtils.getRequestParameters(URI_QUERY));
+        assertEquals(parameters, URIUtils.getRequestParameters(PARTIAL_URI));
     }
 
     @Test
@@ -67,6 +68,9 @@ public class TestURIUtils {
 
         // Test full URI first
         String newUri = URIUtils.addParametersToURIQuery(URI, newParams);
+        assertEquals(
+                "http://localhost:8080/nuxeo/view_documents.faces?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo&conversationId=0NXMAIN21",
+                newUri);
 
         String uriPath = URIUtils.getURIPath(newUri);
         String newUriQuery = newUri.substring(uriPath.length() + 1);
@@ -77,12 +81,39 @@ public class TestURIUtils {
         // Then test partial URI
         String newPartialUri = URIUtils.addParametersToURIQuery(PARTIAL_URI,
                 newParams);
+        assertEquals(
+                "nuxeo/view_documents.faces?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo&conversationId=0NXMAIN21",
+                newPartialUri);
 
-        uriPath = URIUtils.getURIPath(newUri);
-        newUriQuery = newUri.substring(uriPath.length() + 1);
+        uriPath = URIUtils.getURIPath(newPartialUri);
+        newUriQuery = newPartialUri.substring(uriPath.length() + 1);
         actualParams = URIUtils.getRequestParameters(newUriQuery);
 
         assertEquals(expectedParams, actualParams);
+    }
+
+    /**
+     * Non regression test for NXP-10974
+     */
+    @Test
+    public void testAddParametersToURIQueryWithParametersInURI()
+            throws Exception {
+        String bareUri = "nxpath/default@xl";
+        String query = "contentViewName=document_content&currentPage=0&pageSize=0&contentViewState=H4sIAAAAAAAAAGVQTU%2FDMAz9Lz637KtorLdpcEBCqNLQLghNJvG2oDYpicM2qv53nG4ndovf8%2FtwOlDOMlneGDq%2BYkNQgnYqNgJtrxRk0OKe1uZX2Ok4AxW9F7wSEEqZvyP5c4Ve5Ew%2BQPkOuBhPkWbTXKtikheaJvniQWOui2K%2B%2BJyhKub38JFBIPTq8HhNhLIDPrepxFL%2FoFWk18NCquBdS54NiX%2FX9yJ1np%2FtzqW8bphWro6NTReokg3XBJetZVBktbF7KNlH6iXXU4g1v%2BDZxSHV%2Fju9NoFFsMUvPInLxe2WT5RHG2pkervspIQMjPxdhXwQzSi9w%2BjGOsF37eARDu64Wm%2BeTq20vZbs%2FwDQcHGtmwEAAA%3D%3D";
+        String uri = bareUri + "?" + query;
+
+        Map<String, String> params = new HashMap<String, String>();
+        String res_1 = URIUtils.addParametersToURIQuery(uri, params);
+
+        String uriPath = URIUtils.getURIPath(uri);
+        Map<String, String> params_2 = URIUtils.getRequestParameters(uri);
+        if (params_2 == null) {
+            params_2 = new HashMap<String, String>();
+        }
+        String res_2 = URIUtils.addParametersToURIQuery(uriPath, params_2);
+
+        assertEquals(res_1, res_2);
+        assertEquals(res_1, uri);
     }
 
     private static String q(String s, boolean b) {
