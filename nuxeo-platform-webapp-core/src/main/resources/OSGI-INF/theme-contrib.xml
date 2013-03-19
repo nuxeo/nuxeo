@@ -211,6 +211,7 @@
         <style>header</style>
         <style>body</style>
         <style>footer</style>
+        <style>grids_and_widgets</style>
         <style>navigation</style>
         <style>forms</style>
         <style>messages_and_tooltips</style>
@@ -231,6 +232,7 @@
         <style>basics</style>
         <style>buttons_and_actions</style>
         <style>body</style>
+        <style>grids_and_widgets</style>
         <style>navigation</style>
         <style>tables</style>
         <style>forms</style>
@@ -255,6 +257,7 @@
         <style>header</style>
         <style>body</style>
         <style>footer</style>
+        <style>grids_and_widgets</style>
         <style>navigation</style>
         <style>tables</style>
         <style>forms</style>
@@ -363,6 +366,9 @@
     </style>
     <style name="forms">
       <src>themes/css/forms.css</src>
+    </style>
+    <style name="grids_and_widgets">
+      <src>themes/css/grids_and_widgets.css</src>
     </style>
     <style name="messages_and_tooltips">
       <src>themes/css/messages_and_tooltips.css</src>

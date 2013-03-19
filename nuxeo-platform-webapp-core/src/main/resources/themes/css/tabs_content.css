@@ -9,69 +9,7 @@ author: lkemen@nuxeo.com
 /* =TabsContent */
 .tabsContent { font-size: .95em; margin: 0; padding: 1.5em 1em }
 
-/* =Layout View and Summary Tab Styles */
-.layoutViewMode { margin: 0; padding: 0 }
-.layoutViewMode li { display: inline }
-.layoutViewMode a img { border: 1px solid; border-color: "noborder (__FLAVOR__ border)" }
-.layoutViewMode a:hover img, .layoutViewMode li.selected img { border: 1px solid; border-color: "neutral.medium (__FLAVOR__ border)" }
-
-/* .summary_div_* classes in summary view are @deprecated since 5.6
-- Legacy summary layout styling, before grids */
-.summary_div_0 { float: left; padding: 1em 0; width: 62% }
-.summary_div_1 { float: right; font-size: .9em; padding: 1em 0; width: 33% }
-.summary_div_2 { clear: both }
-
-.summary_div_0 img { max-height: 50em; max-width: 100% }
-.summary_div_0 .note_content_block { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); margin: auto; max-width: 65em }
-
-/* Grid layout system */
-/*A .gridContainer contains several .gridRow. vertically
-Each .gridRow contains several .gridBox horizontally
-A .gridBox may contain several .widgetPanel vertically. */
-.gridRow { clear: both; padding: 0 }
-.gridBox { float: left; margin: 0 }
-
-/*The .gridStyle** classes represent the width of each .gridBox container.
-The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
-.gridStyle12 { width: 100% }
-.gridStyle10 { width: 84% }
-.gridStyle9 { width: 75% }
-.gridStyle8 { width: 66% }
-.gridStyle7 { width: 58% }
-.gridStyle6 { width: 50% }
-.gridStyle5 { width: 42% }
-.gridStyle4 { width: 33% }
-.gridStyle3 { width: 25% }
-.gridStyle2 { width: 16% }
-
-/* Widgets styles, spacing between blocks in .gridBox containers */
-.actionsWidgetPanel, .widgetPanel { padding: 0 5% 5% 2% }
-.listWidgetPanel { display: block; margin-left: -5% }
-.contextActions .actionsWidgetPanel { padding: 0 }
-.containerField { padding-bottom: 5% }
-
 .contentViewTitle { float: left; line-height: normal; margin: 0 1em 1em 0 }
-
-.gridBox h3, .gridBox h4 { border-width: 1px; border-style: none none solid; border-color: "neutral.lighter (__FLAVOR__ border)"; font-size: 1.2em; margin: .7em 0 .5em; padding: .4em 0 }
-.gridBox h4 { font-size: 1.1em }
-
-.summaryTitle, .gridBox .summaryTitle {
-  border-width: 3px; border-style: none none double; border-color: "color.major.medium (__FLAVOR__ border)";
-  color: "black (__FLAVOR__ color)";
-  display: block;
-  font-size: 1.2em;
-  font-weight: bold;
-  margin: 0 0 .6em;
-  padding: 2em 0 .2em;
-  text-transform: uppercase }
-.gridBox .summaryTitle { padding: 0 0 .2em }
-
-.gridBox .foldableBox {
-  margin-right: 1em;
-  padding: 0 }
-
-.summary_div_1 h3.summaryTitle { font-size: 1.1em }
-.summary_div_1 .fieldColumn img { float: left; margin-bottom: 15px }
 
 .description_block { color: "gray.medium (__FLAVOR__ color)"; line-height: 155% }
 .description_block span { display: block; font-size: 1em }
