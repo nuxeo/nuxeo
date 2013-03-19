@@ -19,6 +19,8 @@ package org.nuxeo.dam.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.DamConstants.SAVED_DAM_SEARCHES_PROVIDER_NAME;
+import static org.nuxeo.dam.DamConstants.SHARED_DAM_SEARCHES_PROVIDER_NAME;
 import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_CHANGED_EVENT;
 import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_SIZE_CHANGED_EVENT;
 import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_REFRESH_EVENT;
@@ -26,12 +28,15 @@ import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_RE
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -48,6 +53,7 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -58,6 +64,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -79,6 +86,14 @@ public class DamSearchActions implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DamSearchActions.class);
+
+    public static final String SAVED_SEARCHES_LABEL = "label.dam.saved.searches";
+
+    public static final String SHARED_SEARCHES_LABEL = "label.dam.shared.searches";
+
+    public static final String SEARCH_FILTERS_LABEL = "label.dam.search.filters";
+
+    public static final String SEARCH_SAVED_LABEL = "label.dam.search.saved";
 
     public static final String DAM_FLAG = "DAM";
 
@@ -116,6 +131,8 @@ public class DamSearchActions implements Serializable {
 
     protected String currentContentViewName;
 
+    protected String currentSelectedSavedSearchId;
+
     protected String currentPage;
 
     protected String pageSize;
@@ -132,8 +149,39 @@ public class DamSearchActions implements Serializable {
         return currentContentViewName;
     }
 
-    public void setCurrentContentViewName(String currentContentViewName) {
-        this.currentContentViewName = currentContentViewName;
+    public void setCurrentContentViewName(String contentViewName)
+            throws ClientException {
+        this.currentContentViewName = contentViewName;
+    }
+
+    public String getCurrentSelectedSavedSearchId() {
+        return currentSelectedSavedSearchId != null ? currentSelectedSavedSearchId
+                : currentContentViewName;
+    }
+
+    public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId)
+            throws ClientException {
+        if (contentViewNames.contains(selectedSavedSearchId)) {
+            contentViewActions.reset(currentContentViewName);
+            currentContentViewName = selectedSavedSearchId;
+            currentSelectedSavedSearchId = null;
+        } else {
+            DocumentModel savedSearch = documentManager.getDocument(new IdRef(
+                    selectedSavedSearchId));
+            String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
+            loadSavedSearch(contentViewName, savedSearch);
+        }
+        this.currentSelectedSavedSearchId = currentSelectedSavedSearchId;
+    }
+
+    public void loadSavedSearch(String contentViewName,
+            DocumentModel searchDocument) throws ClientException {
+        ContentView contentView = contentViewActions.getContentView(
+                contentViewName, searchDocument);
+        if (contentView != null) {
+            currentContentViewName = contentViewName;
+            currentSelectedSavedSearchId = searchDocument.getId();
+        }
     }
 
     public List<String> getContentViewNames() {
@@ -192,6 +240,76 @@ public class DamSearchActions implements Serializable {
         }
     }
 
+    /*
+     * ----- Load / Save searches -----
+     */
+
+    public List<SelectItem> getAllSavedSearchesSelectItems()
+            throws ClientException {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        // Add saved searches
+        SelectItemGroup userGroup = new SelectItemGroup(
+                messages.get(SAVED_SEARCHES_LABEL));
+        List<DocumentModel> userSavedSearches = getSavedSearches();
+        List<SelectItem> userSavedSearchesItems = convertToSelectItems(userSavedSearches);
+        userGroup.setSelectItems(userSavedSearchesItems.toArray(new SelectItem[userSavedSearchesItems.size()]));
+        items.add(userGroup);
+        // Add shared searches
+        List<DocumentModel> otherUsersSavedFacetedSearches = getSharedSearches();
+        List<SelectItem> otherUsersSavedSearchesItems = convertToSelectItems(otherUsersSavedFacetedSearches);
+        SelectItemGroup allGroup = new SelectItemGroup(
+                messages.get(SHARED_SEARCHES_LABEL));
+        allGroup.setSelectItems(otherUsersSavedSearchesItems.toArray(new SelectItem[otherUsersSavedSearchesItems.size()]));
+        items.add(allGroup);
+        SelectItemGroup flaggedGroup = new SelectItemGroup(
+                messages.get(SEARCH_FILTERS_LABEL));
+        // Add flagged content views
+        Set<ContentViewHeader> flaggedSavedSearches = getContentViewHeaders();
+        List<SelectItem> flaggedSavedSearchesItems = convertCVToSelectItems(flaggedSavedSearches);
+        flaggedGroup.setSelectItems(flaggedSavedSearchesItems.toArray(new SelectItem[flaggedSavedSearchesItems.size()]));
+        items.add(flaggedGroup);
+        return items;
+    }
+
+    protected List<DocumentModel> getSavedSearches() throws ClientException {
+        return getDocuments(SAVED_DAM_SEARCHES_PROVIDER_NAME,
+                documentManager.getPrincipal().getName());
+    }
+
+    protected List<DocumentModel> getSharedSearches() throws ClientException {
+        return getDocuments(SHARED_DAM_SEARCHES_PROVIDER_NAME,
+                documentManager.getPrincipal().getName());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<DocumentModel> getDocuments(String pageProviderName,
+            Object... parameters) throws ClientException {
+        PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put("coreSession", (Serializable) documentManager);
+        return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                pageProviderName, null, null, null, properties, parameters)).getCurrentPage();
+    }
+
+    protected List<SelectItem> convertToSelectItems(List<DocumentModel> docs)
+            throws ClientException {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        for (DocumentModel doc : docs) {
+            items.add(new SelectItem(doc.getId(), doc.getTitle(), ""));
+        }
+        return items;
+    }
+
+    protected List<SelectItem> convertCVToSelectItems(
+            Set<ContentViewHeader> contentViewHeaders) {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        for (ContentViewHeader contentViewHeader : contentViewHeaders) {
+            items.add(new SelectItem(contentViewHeader.getName(),
+                    messages.get(contentViewHeader.getTitle()), ""));
+        }
+        return items;
+    }
+
     public String getSavedSearchTitle() {
         return savedSearchTitle;
     }
@@ -204,11 +322,12 @@ public class DamSearchActions implements Serializable {
         ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
         if (contentView != null) {
             UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
-            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(documentManager,
-                    null);
+            DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                    documentManager, null);
 
             DocumentModel searchDoc = contentView.getSearchDocumentModel();
-            searchDoc.setPropertyValue("cvd:contentViewName", contentView.getName());
+            searchDoc.setPropertyValue("cvd:contentViewName",
+                    contentView.getName());
             searchDoc.setPropertyValue("dc:title", savedSearchTitle);
             PathSegmentService pathService = Framework.getLocalService(PathSegmentService.class);
             searchDoc.setPathInfo(uws.getPathAsString(),
@@ -216,14 +335,14 @@ public class DamSearchActions implements Serializable {
             searchDoc = documentManager.createDocument(searchDoc);
             documentManager.save();
 
-            //            currentSelectedSavedSearchId = savedSearch.getId();
             facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("label.dam.search.saved"));
+                    messages.get(SEARCH_SAVED_LABEL));
 
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     uws);
 
             savedSearchTitle = null;
+            currentSelectedSavedSearchId = searchDoc.getId();
         }
 
         return null;

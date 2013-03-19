@@ -5,28 +5,15 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   class="facetedSearchBlock">
 
-  <nxu:set var="displaySelector"
-    value="#{damSearchActions.contentViewNames.size > 1}">
-    <c:if test="#{displaySelector}">
-
-      <a4j:region id="#{widget.id}_region">
-        <h:selectOneMenu
-          value="#{damSearchActions.currentContentViewName}"
-          id="#{widget.id}" styleClass="langSelect">
-          <a4j:support event="onchange"
-            actionListener="#{damSearchActions.refreshAndRewind()}"
-            reRender="#{wigetProperty_ajaxReRender}" />
-          <c:forEach var="contentViewHeader"
-            items="#{damSearchActions.contentViewHeaders}"
-            varStatus="contentViewListStatus">
-            <f:selectItem itemValue="#{contentViewHeader.name}"
-              itemLabel="#{nxu:test(contentViewHeader.translateTitle,
-              messages[contentViewHeader.title], contentViewHeader.title)}" />
-          </c:forEach>
-        </h:selectOneMenu>
-      </a4j:region>
-
-    </c:if>
-  </nxu:set>
+  <a4j:region id="#{widget.id}_region">
+    <h:selectOneMenu
+      value="#{damSearchActions.currentSelectedSavedSearchId}"
+      id="#{widget.id}" styleClass="langSelect">
+      <a4j:support event="onchange"
+        actionListener="#{damSearchActions.refreshAndRewind()}"
+        reRender="#{widgetProperty_ajaxReRender}" />
+      <f:selectItems value="#{damSearchActions.allSavedSearchesSelectItems}" />
+    </h:selectOneMenu>
+  </a4j:region>
 
 </div>

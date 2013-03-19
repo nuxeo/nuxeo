@@ -29,4 +29,9 @@ public final class DamConstants {
     public static final String ASSET_FACET = "Asset";
 
     public static final String ASSET_LIBRARY_TYPE = "AssetLibrary";
+
+    public static final String SAVED_DAM_SEARCHES_PROVIDER_NAME = "SAVED_DAM_SEARCHES";
+
+    public static final String SHARED_DAM_SEARCHES_PROVIDER_NAME = "SHARED_DAM_SEARCHES";
+
 }
