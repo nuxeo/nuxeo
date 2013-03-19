@@ -229,34 +229,6 @@ public class DamSearchActions implements Serializable {
         return null;
     }
 
-    /*
-     * ----- AJAX page navigation -----
-     */
-
-    public void firstPage(PageProvider<DocumentModel> pageProvider)
-            throws ClientException {
-        pageProvider.firstPage();
-        updateCurrentDocument(pageProvider);
-    }
-
-    public void previousPage(PageProvider<DocumentModel> pageProvider)
-            throws ClientException {
-        pageProvider.previousPage();
-        updateCurrentDocument(pageProvider);
-    }
-
-    public void nextPage(PageProvider<DocumentModel> pageProvider)
-            throws ClientException {
-        pageProvider.nextPage();
-        updateCurrentDocument(pageProvider);
-    }
-
-    public void lastPage(PageProvider<DocumentModel> pageProvider)
-            throws ClientException {
-        pageProvider.lastPage();
-        updateCurrentDocument(pageProvider);
-    }
-
     public void setState(String state) throws ClientException,
             UnsupportedEncodingException {
         if (StringUtils.isNotBlank(state)) {
