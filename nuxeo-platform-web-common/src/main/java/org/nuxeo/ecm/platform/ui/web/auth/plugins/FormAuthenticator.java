@@ -19,34 +19,20 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.plugins;
 
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_CONNECTION_FAILED;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_USERNAME_MISSING;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORM_SUBMITTED_MARKER;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_CONNECTION_FAILED;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_FAILED;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_MISSING;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PASSWORD_KEY;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERNAME_KEY;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.*;
+
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
 
 public class FormAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -103,9 +89,9 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             httpResponse.sendRedirect(redirectUrl);
         } catch (IOException e) {
             log.error(e, e);
-            return Boolean.FALSE;
+            return false;
         }
-        return Boolean.TRUE;
+        return true;
     }
 
     public UserIdentificationInfo handleRetrieveIdentity(
@@ -118,14 +104,14 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
                 && (userName == null || userName.length() == 0)) {
             httpRequest.setAttribute(LOGIN_ERROR, ERROR_USERNAME_MISSING);
         }
-        if (userName == null || userName.length() == 0) {
+        if (userName==null  || userName.length() == 0 ) {
             return null;
         }
         return new UserIdentificationInfo(userName, password);
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
-        return Boolean.TRUE;
+        return true;
     }
 
     public void initPlugin(Map<String, String> parameters) {
