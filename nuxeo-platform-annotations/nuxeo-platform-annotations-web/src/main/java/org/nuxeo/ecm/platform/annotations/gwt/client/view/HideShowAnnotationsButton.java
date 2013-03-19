@@ -19,16 +19,14 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client.view;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController;
 import org.nuxeo.ecm.platform.annotations.gwt.client.view.i18n.TranslationConstants;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
