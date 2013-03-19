@@ -23,8 +23,7 @@
      <a4j:poll interval="1000" enabled="#{systemInfo.isStatInfoInProgress()}" reRender="repoInfos"/>
 
      <h:panelGroup rendered="#{systemInfo.isStatInfoInProgress()}">
-       <div><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.computing']}" /> </div>
-       <img src="#{contextPath}/img/big_loading.gif"/>
+       <div class="processMessage running"><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.computing']}" /> </div>
      </h:panelGroup>
 
      <h:panelGroup rendered="#{!systemInfo.isStatInfoInProgress()}">

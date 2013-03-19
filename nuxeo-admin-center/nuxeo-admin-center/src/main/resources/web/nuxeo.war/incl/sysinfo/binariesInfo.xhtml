@@ -16,9 +16,9 @@
       reRender="binariesInfos" />
 
     <h:panelGroup rendered="#{systemInfo.isBinariesGCInProgress()}">
-      <div><h:outputText
-        value="#{messages['adminsubtab.sysinfo.binariesinfo.wait']}" /></div>
-      <img src="#{contextPath}/img/big_loading.gif" />
+      <div class="processMessage running">
+        <h:outputText value="#{messages['adminsubtab.sysinfo.binariesinfo.wait']}" />
+      </div>
     </h:panelGroup>
 
     <h:panelGroup rendered="#{!systemInfo.isBinariesGCInProgress()}">
@@ -27,7 +27,7 @@
         action="#{systemInfo.startBinariesGC()}"
         reRender="binariesInfos"
         styleClass="button" /></p>
-      <p><h:selectBooleanCheckbox class="dataInputText"
+      <p><h:selectBooleanCheckbox
         value="#{systemInfo.binariesGCDelete}">
       </h:selectBooleanCheckbox> <span><h:outputText
         value="#{messages['adminsubtab.sysinfo.binariesinfo.delete']}" /></span></p>
@@ -36,15 +36,15 @@
 
   <div><h:panelGroup
     rendered="#{systemInfo.isBinaryManagerStatusAvailable()}">
-    <p><h:outputText
-      value="#{messages['adminsubtab.sysinfo.binariesinfo.info']}" /></p>
+    <h3><h:outputText
+      value="#{messages['adminsubtab.sysinfo.binariesinfo.info']}" /></h3>
     <h:panelGroup rendered="#{!systemInfo.binariesWereDeleted}">
-      <p><h:outputText
-        value="#{messages['adminsubtab.sysinfo.binariesinfo.notdeleted']}" /></p>
+      <div class="tips"><h:outputText
+        value="#{messages['adminsubtab.sysinfo.binariesinfo.notdeleted']}" /></div>
     </h:panelGroup>
-    <table class="dataOutput">
+    <table class="dataTable">
       <tr class="dataRowEven">
-        <td><h:outputText
+        <td class="focusColumn thirtyPercent"><h:outputText
           value="#{messages['adminsubtab.sysinfo.binariesinfo.gcduration']}" /></td>
         <td><h:outputText
           value="#{binaryManagerStatus.GCDuration / 1000}">
@@ -52,7 +52,7 @@
         </h:outputText></td>
       </tr>
       <tr class="dataRowOdd">
-        <td><h:outputText
+        <td class="focusColumn thirtyPercent"><h:outputText
           value="#{messages['adminsubtab.sysinfo.binariesinfo.numbinaries']}" /></td>
         <td><h:outputText
           value="#{binaryManagerStatus.numBinaries}">
@@ -60,7 +60,7 @@
         </h:outputText></td>
       </tr>
       <tr class="dataRowEven">
-        <td><h:outputText
+        <td class="focusColumn thirtyPercent"><h:outputText
           value="#{messages['adminsubtab.sysinfo.binariesinfo.sizebinaries']}" /></td>
         <td><h:outputText
           value="#{binaryManagerStatus.sizeBinaries}">
@@ -68,7 +68,7 @@
         </h:outputText></td>
       </tr>
       <tr class="dataRowOdd">
-        <td><h:outputText
+        <td class="focusColumn thirtyPercent"><h:outputText
           value="#{messages['adminsubtab.sysinfo.binariesinfo.numbinariesgc']}" /></td>
         <td><h:outputText
           value="#{binaryManagerStatus.numBinariesGC}">
@@ -76,7 +76,7 @@
         </h:outputText></td>
       </tr>
       <tr class="dataRowEven">
-        <td><h:outputText
+        <td class="focusColumn thirtyPercent"><h:outputText
           value="#{messages['adminsubtab.sysinfo.binariesinfo.sizebinariesgc']}" /></td>
         <td><h:outputText
           value="#{binaryManagerStatus.sizeBinariesGC}">
