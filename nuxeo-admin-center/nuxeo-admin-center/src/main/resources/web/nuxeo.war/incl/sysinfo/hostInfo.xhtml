@@ -6,17 +6,19 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="hostInfos">
 
-  <pre>
+  <pre class="bubbleBox">
     <h:outputText value="#{systemInfo.hostInfo}" />
   </pre>
 
   <h:form id="restartForm">
-    <h:outputText value="#{systemInfo.uptime}" />
-    <h:commandButton
-      onclick="return confirmRestart();"
-      action="#{systemInfo.restartServer()}"
-      value="#{messages['label.action.restart']}"
-      styleClass="button" />
+    <div class="processMessage scheduled"><h:outputText value="#{systemInfo.uptime}" /></div>
+    <p class="specification">
+      <h:commandButton
+        onclick="return confirmRestart();"
+        action="#{systemInfo.restartServer()}"
+        value="#{messages['label.action.restart']}"
+        styleClass="button" />
+    </p>
   </h:form>
 
 </div>

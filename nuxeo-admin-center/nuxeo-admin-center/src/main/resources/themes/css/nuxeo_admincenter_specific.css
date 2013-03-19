@@ -61,7 +61,7 @@ author: lkemen@nuxeo.com
 .studioUpdateActions { margin: .4em 0 }
 .studioUpdateActions span { color: #000; font-weight: bold; margin: 0 }
 
-.hostInfos pre { border: 1px solid #eee; padding: 1em }
+.hostInfos pre { font-size: 135%; padding: 1em }
 .repoInfos .dataOutput th { padding: 0 0 .4em .6em; text-align: left }
 
 /* =Setup Panel */
