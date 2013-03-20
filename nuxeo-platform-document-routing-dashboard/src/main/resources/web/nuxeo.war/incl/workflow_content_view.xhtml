@@ -20,11 +20,11 @@
   <ui:decorate template="/incl/content_view.xhtml">
 
     <ui:define name="content_view_actions_before">
+      <nxu:set var="actions"
+        value="#{routingTaskActions.getTaskActions(contentView.selectionListName)}"
+        cache="true">
 
-      <h:form id="routing_task_actions_form">
-        <nxu:set var="actions"
-          value="#{routingTaskActions.getTaskActions(contentView.selectionListName)}"
-          cache="true">
+        <h:form id="routing_task_actions_form">
 
           <c:forEach var="action" items="#{actions}">
             <c:if test="#{action.type == 'link'}">
@@ -67,74 +67,85 @@
           </c:if>
           <br />
 
-        </nxu:set>
-      </h:form>
+        </h:form>
 
-      <a4j:outputPanel id="workflow_action_fancybox_content">
+        <a4j:outputPanel id="workflow_action_fancybox_content">
 
-        <nxu:set var="elementsToReRender"
-          value="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel, ajax_selection_buttons"
-          cache="true">
-        <nxu:set var="actions"
-          value="#{routingTaskActions.getTaskActions(contentView.selectionListName)}"
-          cache="true">
+          <nxu:set var="elementsToReRender"
+            value="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel, ajax_selection_buttons"
+            cache="true">
 
-          <a4j:form id="closeFancyBox">
-            <a4j:jsFunction name="closeFancybox">
-              <f:setPropertyActionListener value="2"
-                target="#{selectionActions.lookupLevelValue}" />
-              <f:setPropertyActionListener value=""
-                target="#{selectionActions.selectedValue}" />
-              <f:setPropertyActionListener
-                value="clickedActionIdHolder"
-                target="#{selectionActions.selectedValueHolder}" />
-              <nxu:actionListenerMethod
-                value="#{selectionActions.onClick}" />
-            </a4j:jsFunction>
-          </a4j:form>
+            <a4j:form id="closeFancyBox">
+              <a4j:jsFunction name="closeFancybox">
+                <f:setPropertyActionListener value="2"
+                  target="#{selectionActions.lookupLevelValue}" />
+                <f:setPropertyActionListener value=""
+                  target="#{selectionActions.selectedValue}" />
+                <f:setPropertyActionListener
+                  value="clickedActionIdHolder"
+                  target="#{selectionActions.selectedValueHolder}" />
+                <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
+              </a4j:jsFunction>
+            </a4j:form>
 
-          <c:forEach var="action" items="#{actions}">
-            <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
-              <c:if test="#{(clickedActionId == action.id and action.type == 'process_task') or nxu:hasMessages(fancyboxFormId)}">
-                <script>
-                  openFancyBox('##{action.id}_fancybox_box', {
-                    'autoDimensions': false,
-                    'autoScale': true,
-                    'width': 'auto',
-                    'height': '320',
-                    'transitionIn': 'none',
-                    'transitionOut': 'none',
-                    'enableEscapeButton': true,
-                    'centerOnScroll': true,
-                    'scrolling': 'auto',
-                    'onClosed': closeFancybox
-                  });
-                  jQuery('##{fancyboxFormId}').focusFirst();
-                </script>
-              </c:if>
-              <div style="display:none;">
-                <div id="#{action.id}_fancybox_box">
-                  <a4j:form id="#{fancyboxFormId}"
-                    ajaxSubmit="true"
-                    reRender="#{elementsToReRender}"
-                    ignoreDupResponses="true"
-                    requestDelay="100"
-                    styleClass="action_bar"
-                    oncomplete="jQuery.fancybox.close();">
-                    <c:if test="#{not empty action.properties.layout}">
-                      <nxl:layout name="#{action.properties.layout}"
-                        mode="edit"
-                        value="#{action.properties.formVariables}"/>
-                    </c:if>
-                    <p class="buttonsGadget">
-                      <c:forEach var="task_action" items="#{actions}">
-                        <c:if test="#{task_action.type == 'fancybox'}">
-                          <nxh:commandButton
-                            id="submitAction_#{task_action.id}"
-                            action="#{routingTaskActions.endTasks(contentView.selectionListName, task_action)}"
-                            value="#{messages[task_action.label]}"
+            <c:forEach var="action" items="#{actions}">
+              <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
+                <c:if test="#{(clickedActionId == action.id and action.type == 'process_task') or nxu:hasMessages(fancyboxFormId)}">
+                  <script>
+                    openFancyBox('##{action.id}_fancybox_box', {
+                      'autoDimensions': false,
+                      'autoScale': true,
+                      'width': 'auto',
+                      'height': '320',
+                      'transitionIn': 'none',
+                      'transitionOut': 'none',
+                      'enableEscapeButton': true,
+                      'centerOnScroll': true,
+                      'scrolling': 'auto',
+                      'onClosed': closeFancybox
+                    });
+                    jQuery('##{fancyboxFormId}').focusFirst();
+                  </script>
+                  <div style="display:none;">
+                    <div id="#{action.id}_fancybox_box">
+                      <a4j:form id="#{fancyboxFormId}"
+                        ajaxSubmit="true"
+                        reRender="#{elementsToReRender}"
+                        ignoreDupResponses="true"
+                        requestDelay="100"
+                        styleClass="action_bar"
+                        oncomplete="jQuery.fancybox.close();">
+                        <c:if test="#{not empty action.properties.layout}">
+                          <nxl:layout name="#{action.properties.layout}"
+                            mode="edit"
+                            value="#{action.properties.formVariables}"/>
+                        </c:if>
+                        <p class="buttonsGadget">
+                          <c:forEach var="task_action" items="#{actions}">
+                            <c:if test="#{task_action.type == 'fancybox'}">
+                              <nxh:commandButton
+                                id="submitAction_#{task_action.id}"
+                                action="#{routingTaskActions.endTasks(contentView.selectionListName, task_action)}"
+                                value="#{messages[task_action.label]}"
+                                styleClass="button">
+                                <f:setPropertyActionListener value="2"
+                                  target="#{selectionActions.lookupLevelValue}" />
+                                <f:setPropertyActionListener value=""
+                                  target="#{selectionActions.selectedValue}" />
+                                <f:setPropertyActionListener
+                                  value="clickedActionIdHolder"
+                                  target="#{selectionActions.selectedValueHolder}" />
+                                <nxu:actionListenerMethod
+                                  value="#{selectionActions.onClick}" />
+                              </nxh:commandButton>
+                            </c:if>
+                          </c:forEach>
+                          <h:commandButton
+                            value="#{messages['command.cancel']}"
+                            immediate="true"
                             styleClass="button">
-                            <f:setPropertyActionListener value="2"
+                            <f:setPropertyActionListener value="3"
                               target="#{selectionActions.lookupLevelValue}" />
                             <f:setPropertyActionListener value=""
                               target="#{selectionActions.selectedValue}" />
@@ -143,35 +154,20 @@
                               target="#{selectionActions.selectedValueHolder}" />
                             <nxu:actionListenerMethod
                               value="#{selectionActions.onClick}" />
-                          </nxh:commandButton>
-                        </c:if>
-                      </c:forEach>
-                      <h:commandButton
-                        value="#{messages['command.cancel']}"
-                        immediate="true"
-                        styleClass="button">
-                        <f:setPropertyActionListener value="3"
-                          target="#{selectionActions.lookupLevelValue}" />
-                        <f:setPropertyActionListener value=""
-                          target="#{selectionActions.selectedValue}" />
-                        <f:setPropertyActionListener
-                          value="clickedActionIdHolder"
-                          target="#{selectionActions.selectedValueHolder}" />
-                        <nxu:actionListenerMethod
-                          value="#{selectionActions.onClick}" />
-                      </h:commandButton>
-                    </p>
-                  </a4j:form>
-                </div>
-              </div>
-            </nxu:set>
-          </c:forEach>
+                          </h:commandButton>
+                        </p>
+                      </a4j:form>
+                    </div>
+                  </div>
+                </c:if>
+              </nxu:set>
+            </c:forEach>
 
-        </nxu:set>
-        </nxu:set>
+          </nxu:set>
 
-      </a4j:outputPanel>
+        </a4j:outputPanel>
 
+      </nxu:set>
     </ui:define>
 
   </ui:decorate>

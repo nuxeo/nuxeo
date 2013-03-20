@@ -425,7 +425,6 @@ public class RoutingTaskActionsBean implements Serializable {
      *
      * @since 5.6
      */
-    // TODO: called twice per page => needs to be cached
     @SuppressWarnings("boxing")
     public List<Action> getTaskActions(String selectionListName)
             throws ClientException {
