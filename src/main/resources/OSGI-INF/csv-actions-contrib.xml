@@ -8,6 +8,9 @@
       <category>SUBVIEW_UPPER_LIST</category>
       <properties>
         <property name="include">/incl/csv_import_box.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">90%</property>
+        <property name="height">90%</property>
       </properties>
       <filter-id>importFile</filter-id>
     </action>
