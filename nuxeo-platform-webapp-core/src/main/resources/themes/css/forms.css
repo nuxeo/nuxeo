@@ -10,8 +10,9 @@ textarea { font-family: "default (__FLAVOR__ font)"; font-size: .95em; min-heigh
 .selectDocumentType { margin-top: 1em }
 .checkBox { margin-right: .3em; border: none }
 .required { background: transparent url("${basePath}/icons/required.gif") top right no-repeat; padding: 0 1em 0 0 }
-option { background-color: white }
-optgroup { background-color: "color.major.light (__FLAVOR__ background)" }
+
+optgroup { font-style: normal; font-weight: bold }
+option { background-color: white; font-weight: normal }
 
 input, input[type="file"], textarea, select, .field { border: 1px solid #bbb; border-radius: 2px; box-shadow: 1px 1px 2px #e0e0e0 inset; color: #666; display: inline-block; font-size: 1em; margin-bottom: .3em; padding: .3em }
 input[type="file"] { margin-left: .6em }

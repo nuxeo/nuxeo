@@ -3,7 +3,8 @@ Style definitions for grids, layout, containers and widgets
 =Grids -> Align your blocks into columns and rows in the page
 =Standard Widgets -> Text, date, file, checkbox widgets
 =Advanced Widgets -> Containers and layout widgets
-=Listing Widgets -> Specific small widgets for listing and tables views
+=Listing Widgets -> Small widgets for listing and tables views
+=Specifics -> Specific styles depending on widgets location
 author: lkemen@nuxeo.com
 */
 
@@ -11,8 +12,12 @@ author: lkemen@nuxeo.com
 /*A .gridContainer contains several .gridRow. vertically
 Each .gridRow contains several .gridBox horizontally
 A .gridBox may contain several .widgetPanel vertically. */
-.gridRow { clear: both; padding: 0 }
-.gridBox { float: left; margin: 0 }
+.gridRow {
+  clear: both;
+  padding: 0 }
+.gridBox {
+  float: left;
+  margin: 0 }
 
 /*The .gridStyle** classes represent the width of each .gridBox container.
 The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
@@ -30,15 +35,19 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .gridBox.gridStyle12 { float: none }
 
 .gridBox h3,
-.gridBox h4 { border-width: 1px; border-style: none none solid;
+.gridBox h4 {
+  border-width: 1px;
+  border-style: none none solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   font-size: 1.2em;
   margin: .7em 0 .5em;
   padding: .4em 0 }
-.gridBox h4 { font-size: 1.1em }
+.gridBox h4 {
+  font-size: 1.1em }
 
 .summaryTitle, .gridBox .summaryTitle {
-  border-width: 3px; border-style: none none double;
+  border-width: 3px;
+  border-style: none none double;
   border-color: "color.major.medium (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
   display: block;
@@ -47,31 +56,190 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin: 0 0 .6em;
   padding: 2em 0 .2em;
   text-transform: uppercase }
-.gridBox .summaryTitle { padding: 0 0 .2em }
+.gridBox .summaryTitle {
+  padding: 0 0 .2em }
 
 .gridBox .foldableBox {
   margin-right: 1em;
   padding: 0 }
 
-/* Layout View and Summary Tab Styles @deprecated since 5.6 ? */
-.layoutViewMode { margin: 0; padding: 0 }
-.layoutViewMode li { display: inline }
-.layoutViewMode a img { border: 1px solid; 
+/* Layout View and Summary Tab Styles - layout view selector list */
+.layoutViewMode {
+  margin: 0;
+  padding: 0 }
+.layoutViewMode li {
+  display: inline }
+.layoutViewMode a img {
+  border: 1px solid;
   border-color: "noborder (__FLAVOR__ border)" }
 
 .layoutViewMode a:hover img,
-.layoutViewMode li.selected img { border: 1px solid; 
+.layoutViewMode li.selected img {
+  border: 1px solid;
   border-color: "neutral.medium (__FLAVOR__ border)" }
 
 /* =Standard Widgets */
 /* Widgets styles, spacing between blocks in .gridBox containers */
 .widgetPanel,
-.actionsWidgetPanel { padding: 0 1em 1em .5em }
+.actionsWidgetPanel {
+  display: block;
+  padding: 0 1em 1em .5em }
 
-.contextActions .actionsWidgetPanel { padding: 0 }
+.contextActions .actionsWidgetPanel {
+  padding: 0 }
 
 /* =Advanced Widgets */
-.containerField { padding-bottom: 1.5em }
+.containerField {
+  padding-bottom: 1.5em }
 
 /* =Listing Widgets */
-.listWidgetPanel { display: block; margin-left: -5% }
+.listWidgetPanel {
+  display: block;
+  margin-left: -0.5em }
+
+/* =Specifics */
+
+/* CompactLayout mode */
+/* The .compactLayout class role is to display widgets and containers in
+   a small column like the faceted search, where the margin and padding values
+   are reviewed to provide a compacter display than a default tab layout */
+
+/* Global rules */
+.compactLayout .containerWidgetPanel,
+.compactLayout .widgetPanel,
+.compactLayout .containerField,
+.compactLayout .dataInput .containerLabel span {
+  display: block;
+  clear: both }
+
+.compactLayout .labelColumn,
+.compactLayout .containerWidgetPanel .labelColumn,
+.compactLayout .widgetPanel .labelColumn,
+.compactLayout .widgetTable .labelColumn {
+  font-weight: normal;
+  text-align: left;
+  width: auto }
+
+.compactLayout .dataTableNoBorder td,
+.compactLayout .fieldColumnn.containerField,
+.compactLayout .fieldColumnn.containerField .fieldColumn {
+  padding: 0 }
+
+.compactLayout .widgetLabel {
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: 0 .7em .4em .3em }
+
+.compactLayout input[type="text"] {
+  width: 95% }
+.compactLayout input[type="image"],
+.compactLayout input[type="button"] {
+  width: auto }
+.compactLayout select {
+  width: 100% }
+.compactLayout input.rich-calendar-input {
+  margin: .1em .3em .1em 0em;
+  max-width: 56%;
+  min-width: 50% }
+
+.compactLayout .tinyLabel {
+  display: inline-block;
+  text-align: right;
+  padding-right: .2em;
+  width: 30px }
+.compactLayout .fieldColumn {
+  padding-left: .1em }
+.compactLayout .fieldColumn img {
+  margin: 0 }
+
+.compactLayout .widgetTable .boldColumn,
+.compactLayout .widgetTable .boldLabel {
+  font-weight: normal }
+
+/* Compact buttons */
+.compactLayout .fieldColumn .button,
+.compactLayout .actionsWidgetPanel .containerField .button {
+  font-weight: bold;
+  margin: 0 0 .1em .5em;
+  padding: .1em .4em .2em;
+  width: auto }
+.compactLayout .actionsWidgetPanel .containerField a.button {
+  padding: 0 .4em }
+
+.compactLayout .fieldColumn .button {
+	float: right }
+
+/* Compact Action bar*/
+.compactLayout .actionsWidgetPanel .actionsWidgetPanel {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  border-width: 1px;
+  border-color: "color.major.medium (__FLAVOR__ border)";
+  border-style: solid none;
+  color: "default (__FLAVOR__ color)";
+  padding: .2em .4em;
+  text-align: right }
+
+.compactLayout .actionsWidgetPanel .foldableBox .actionsWidgetPanel {
+  background-color: transparent;
+  border: none transparent }
+
+.compactLayout .contextActions .actionsWidgetPanel {
+	margin: 0 }
+
+.compactLayout .actionsWidgetPanel .button,
+.compactLayout .actionsWidgetPanel a.button,
+.compactLayout .actionsWidgetPanel input.button {
+  display: inline-block;
+  font-weight: bold;
+  margin: .2em 0 .2em .5em;
+  padding: .3em .7em }
+
+/* Compact Widgets */
+.compactLayout .widgetPanel {
+  color: "gray.dark (__FLAVOR__ color)";
+  padding: 0 }
+
+.compactLayout .widgetHeader.foldedDisabled {
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-width: 1px;
+  border-style: solid none;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  color: "default (__FLAVOR__ color)";
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0 0 .5em;
+  padding: .4em .3em;
+  text-transform: none }
+
+.compactLayout .containerLabel {
+  min-width: 6em;
+  padding-right: .2em }
+
+/* Compact Tables */
+.compactLayout .dataTableNoBorder.containerWidgetTable {
+	margin-bottom: .5em }
+
+.compactLayout .dataInput {
+  clear: both;
+  margin-top: 0;
+  width: 100% }
+
+.compactLayout .dataInput td,
+.compactLayout .UserSuggestionInput td,
+.compactLayout .dataTableNoBorder div.UserSuggestionInput td {
+  padding: 0 }
+
+.compactLayout .containerWidgetTable table.nowrap {
+  border-spacing: 0 }
+
+.compactLayout .UserSuggestionInput table {
+  border-spacing: 0;
+  width: 100% }
+.compactLayout .dataInput .dataTableNoBorder td {
+  padding: 0 .3em .3em }
+
+/* Compact Foldable boxes */
+.compactLayout .containerWidgetPanel.foldableBox {
+	margin: .1em 0 .6em }
+.compactLayout .containerWidgetPanel .foldedDisabled {
+  padding-left: 0 }
+
