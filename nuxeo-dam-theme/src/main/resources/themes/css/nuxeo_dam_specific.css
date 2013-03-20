@@ -36,19 +36,11 @@ author: lkemen@nuxeo.com
   width: 33% }
 
 /* Widgets and Containers specific styles */
-.nxMainContainer .widgetPanel { display: block; padding: 0 }
+.nxMainContainer .widgetPanel { padding: 0 }
 .nxMainContainer .containerSubWidget { margin: 0 }
 
 /* =Faceted Search */
 .nxDamSearchForm { font-size: .82em }
-
-.nxDamSearchForm .facetedSearchActionBar {
-    background-color: "color.major.light (__FLAVOR__ background)";
-    border-color: "color.major.medium (__FLAVOR__ border)";
-    border-style: solid none }
-.nxDamSearchForm .facetedSearchActionBar input.button {
-    margin: .2em 0 .2em .5em;
-    padding: .3em .7em }
 
 /* =Assets list */
 .nxDamSearchResults { background-color: "neutral.lighter (__FLAVOR__ background)"; }
@@ -149,11 +141,6 @@ author: lkemen@nuxeo.com
     background-color: #000 }
 
 /* =Assets View */
-.nxDamAssetView .widgetPanel { margin: 0 .1em .3em }
-
-.nxDamAssetView .globalActionBar {
-  padding: .2em 0 .1em }
-
 .widgetPanel .description_block {
   font-size: .9em;
   margin: 1em .4em }

@@ -805,9 +805,9 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle2 nxDamSearchForm</property>
+            <property name="nxl_gridStyleClass_0">gridStyle2 compactLayout nxDamSearchForm</property>
             <property name="nxl_gridStyleClass_1">gridStyle6 nxDamSearchResults</property>
-            <property name="nxl_gridStyleClass_2">gridStyle4 nxDamAssetView</property>
+            <property name="nxl_gridStyleClass_2">gridStyle4 compactLayout nxDamAssetView</property>
           </properties>
           <widget>damPanelLeft</widget>
           <widget>damPanelCenter</widget>
