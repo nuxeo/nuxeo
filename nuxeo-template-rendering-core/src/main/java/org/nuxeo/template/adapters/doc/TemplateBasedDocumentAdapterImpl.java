@@ -45,9 +45,9 @@ import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
  * Default implementation of {@link TemplateBasedDocument} adapter. This adapter
  * mainly expect from the underlying {@link DocumentModel} to have the
  * "TemplateBased" facet
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
- * 
+ *
  */
 public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
         implements Serializable, TemplateBasedDocument {
@@ -251,8 +251,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
             String templateType = getTemplateType(templateName);
             if (templateType == null) {
                 throw new ClientException(
-                        "Template type is null : if you don't set it explicitly, your template file should have an extension or a mimietype so that it can be automatically determined"
-                                + templateType);
+                        "Template type is null : if you don't set it explicitly, your template file should have an extension or a mimetype so that it can be automatically determined");
             } else {
                 throw new ClientException(
                         "No template processor found for template type="
