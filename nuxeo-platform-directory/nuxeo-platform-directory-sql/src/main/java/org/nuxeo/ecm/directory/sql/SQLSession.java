@@ -204,9 +204,12 @@ public class SQLSession extends BaseSession implements EntrySource {
         PreparedStatement ps = null;
         Statement st = null;
         try {
-            ps = sqlConnection.prepareStatement(sql,
-                    autoincrementIdField ? Statement.RETURN_GENERATED_KEYS
-                            : Statement.NO_GENERATED_KEYS);
+            if (autoincrementIdField) {
+                ps = sqlConnection.prepareStatement(sql,
+                        new String[] { idField });
+            } else {
+                ps = sqlConnection.prepareStatement(sql);
+            }
             int index = 1;
             for (Column column : columnList) {
                 Object value = fieldMap.get(column.getKey());
