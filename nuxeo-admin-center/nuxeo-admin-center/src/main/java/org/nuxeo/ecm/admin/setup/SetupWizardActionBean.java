@@ -139,7 +139,7 @@ public class SetupWizardActionBean implements Serializable {
         this.needsRestart = needsRestart;
     }
 
-    @Factory(value = "setupConfigGenerator", scope = ScopeType.PAGE)
+    @Factory(value = "setupConfigGenerator", scope = ScopeType.EVENT)
     public ConfigurationGenerator getConfigurationGenerator() {
         if (setupConfigGenerator == null) {
             setupConfigGenerator = new ConfigurationGenerator();
