@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -89,6 +90,18 @@ public class RoutingTaskActionsBean implements Serializable {
     private static final Log log = LogFactory.getLog(RoutingTaskActionsBean.class);
 
     public static final String SUBJECT_PATTERN = "([a-zA-Z_0-9]*(:)[a-zA-Z_0-9]*)";
+
+    /**
+     * Runtime property name, that makes it possible to cache actions available
+     * on a given task, depending on its type.
+     * <p>
+     * This caching is global to all tasks in the platform, and will not work
+     * correctly if some tasks are filtering some actions depending on local
+     * variables, for instance.
+     *
+     * @since 5.7
+     */
+    public static final String CACHE_ACTIONS_PER_TASK_TYPE_PROP_NAME = "org.nuxeo.routing.cacheActionsPerTaskType";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -429,14 +442,30 @@ public class RoutingTaskActionsBean implements Serializable {
     public List<Action> getTaskActions(String selectionListName)
             throws ClientException {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
+        Map<String, Map<String, Action>> actionsPerTaskType = new LinkedHashMap<String, Map<String, Action>>();
         Map<String, Integer> actionsCounter = new HashMap<String, Integer>();
         List<DocumentModel> docs = documentsListsManager.getWorkingList(selectionListName);
+        boolean cachePerType = Boolean.TRUE.equals(Boolean.valueOf(Framework.getProperty(CACHE_ACTIONS_PER_TASK_TYPE_PROP_NAME)));
         int taskDocsNum = 0;
         if (docs != null && !docs.isEmpty()) {
             for (DocumentModel doc : docs) {
                 if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME)) {
                     Task task = new TaskImpl(doc);
-                    Map<String, Action> taskActions = getTaskActionsMap(task);
+                    String taskType = task.getType();
+                    Map<String, Action> taskActions = Collections.emptyMap();
+                    // if caching per type, fill the per type map, else update
+                    // actions directly
+                    if (cachePerType) {
+                        if (actionsPerTaskType.containsKey(taskType)) {
+                            taskActions = actionsPerTaskType.get(taskType);
+                        } else {
+                            taskActions = getTaskActionsMap(task);
+                            actionsPerTaskType.put(taskType, taskActions);
+                        }
+                    } else {
+                        taskActions = getTaskActionsMap(task);
+                        actions.putAll(taskActions);
+                    }
                     for (String actionId : taskActions.keySet()) {
                         Integer count = actionsCounter.get(actionId);
                         if (count == null) {
@@ -445,9 +474,14 @@ public class RoutingTaskActionsBean implements Serializable {
                             actionsCounter.put(actionId, count + 1);
                         }
                     }
-                    actions.putAll(taskActions);
                     taskDocsNum++;
                 }
+            }
+        }
+        if (cachePerType) {
+            // initialize actions for cache map
+            for (Map<String, Action> actionsPerType : actionsPerTaskType.values()) {
+                actions.putAll(actionsPerType);
             }
         }
         List<Action> res = new ArrayList<Action>(actions.values());
