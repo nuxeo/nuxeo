@@ -30,4 +30,19 @@
       class="org.nuxeo.dam.AssetLibrary"/>
   </extension-point>
 
+  <extension-point name="allowedAssetTypes">
+    <documentation>
+      Used to configure the allowed asset types to be created in DAM.
+
+      <code>
+        <allowedAssetType name="Picture" />
+      </code>
+
+      @author Thomas Roger (troger@nuxeo.com)
+      @since 5.7
+    </documentation>
+    <object
+      class="org.nuxeo.dam.AllowedAssetTypeDescriptor"/>
+  </extension-point>
+
 </component>

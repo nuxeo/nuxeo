@@ -17,16 +17,13 @@
 
 package org.nuxeo.dam;
 
-import static org.nuxeo.dam.DamConstants.ASSET_FACET;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -37,7 +34,21 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
 
     public static final String ASSET_LIBRARY_EP = "assetLibrary";
 
-    private AssetLibrary assetLibrary;
+    public static final String ALLOWED_ASSET_TYPES_EP = "allowedAssetTypes";
+
+    protected AssetLibrary assetLibrary;
+
+    protected AllowedAssetTypeRegistry allowedAssetTypeRegistry;
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        allowedAssetTypeRegistry = new AllowedAssetTypeRegistry();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        allowedAssetTypeRegistry = null;
+    }
 
     @Override
     public AssetLibrary getAssetLibrary() {
@@ -46,13 +57,14 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
 
     @Override
     public List<Type> getAllowedAssetTypes() {
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        Set<String> docTypes = schemaManager.getDocumentTypeNamesForFacet(ASSET_FACET);
         TypeManager typeManager = Framework.getLocalService(TypeManager.class);
-
+        List<String> docTypes = allowedAssetTypeRegistry.getAllowedAssetTypes();
         List<Type> types = new ArrayList<Type>();
         for (String docType : docTypes) {
-            types.add(typeManager.getType(docType));
+            Type type = typeManager.getType(docType);
+            if (type != null) {
+                types.add(type);
+            }
         }
         return types;
     }
@@ -63,6 +75,8 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
             throws Exception {
         if (ASSET_LIBRARY_EP.equals(extensionPoint)) {
             assetLibrary = (AssetLibrary) contribution;
+        } else if (ALLOWED_ASSET_TYPES_EP.equals(extensionPoint)) {
+            allowedAssetTypeRegistry.addContribution((AllowedAssetTypeDescriptor) contribution);
         }
     }
 
@@ -72,6 +86,8 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
             throws Exception {
         if (ASSET_LIBRARY_EP.equals(extensionPoint)) {
             assetLibrary = null;
+        } else if (ALLOWED_ASSET_TYPES_EP.equals(extensionPoint)) {
+            allowedAssetTypeRegistry.removeContribution((AllowedAssetTypeDescriptor) contribution);
         }
     }
 }

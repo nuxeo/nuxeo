@@ -14,4 +14,14 @@
 
   </extension>
 
+  <extension target="org.nuxeo.dam.DamService"
+    point="allowedAssetTypes">
+
+    <allowedAssetType name="Picture" />
+    <allowedAssetType name="Video" />
+    <allowedAssetType name="Audio" />
+    <allowedAssetType name="File" />
+
+  </extension>
+
 </component>
