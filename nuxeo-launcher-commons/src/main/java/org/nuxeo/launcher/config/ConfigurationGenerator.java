@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -54,6 +55,11 @@ import org.nuxeo.log4j.Log4JHelper;
  * @author jcarsique
  */
 public class ConfigurationGenerator {
+
+    /**
+     * @since 5.7
+     */
+    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.6" };
 
     private static final Log log = LogFactory.getLog(ConfigurationGenerator.class);
 
@@ -924,10 +930,23 @@ public class ConfigurationGenerator {
      */
     public void verifyInstallation() throws ConfigurationException {
         String version = System.getProperty("java.version");
-        if (!version.startsWith("1.6") && !version.startsWith("1.7")) {
-            String message = "Nuxeo requires Java 6 or 7 (detected " + version
-                    + ").";
-            if ("nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
+        boolean isCompliant = false;
+        boolean isGreater = false;
+        for (String compliantJava : COMPLIANT_JAVA_VERSIONS) {
+            if (version.startsWith(compliantJava)) {
+                isCompliant = true;
+                break;
+            } else if (version.compareTo(compliantJava) > 0) {
+                isGreater = true;
+            }
+        }
+        if (!isCompliant) {
+            String message = String.format(
+                    "Nuxeo requires Java %s (detected %s).",
+                    ArrayUtils.toString(COMPLIANT_JAVA_VERSIONS), version);
+            if (isGreater
+                    || "nofail".equalsIgnoreCase(System.getProperty("jvmcheck",
+                            "fail"))) {
                 log.error(message);
             } else {
                 throw new ConfigurationException(message);
