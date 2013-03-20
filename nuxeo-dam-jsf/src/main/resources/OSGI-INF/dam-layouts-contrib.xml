@@ -270,6 +270,11 @@
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
       </controls>
+      <properties widgetMode="any">
+        <property name="placeholder">
+          #{messages['label.add.tag.placeholder']}
+        </property>
+      </properties>
     </widget>
 
     <widget name="damAssetViewStates" type="summary_current_document_states" />
