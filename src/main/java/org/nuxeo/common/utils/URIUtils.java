@@ -99,11 +99,14 @@ public final class URIUtils {
         Map<String, String> parameters = null;
         if (uriQuery != null && uriQuery.length() > 0) {
             try {
-                int index = uriQuery.indexOf("?");
+                String strippedQuery;
+                int index = uriQuery.indexOf('?');
                 if (index != -1) {
-                    uriQuery = uriQuery.substring(index + 1);
+                    strippedQuery = uriQuery.substring(index + 1);
+                } else {
+                    strippedQuery = uriQuery;
                 }
-                String[] items = uriQuery.split("&");
+                String[] items = strippedQuery.split("&");
                 if (items != null && items.length > 0) {
                     parameters = new LinkedHashMap<String, String>();
                     for (String item : items) {
