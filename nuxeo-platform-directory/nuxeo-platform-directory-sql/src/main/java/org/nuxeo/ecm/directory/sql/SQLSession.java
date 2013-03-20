@@ -225,9 +225,12 @@ public class SQLSession extends BaseSession implements EntrySource {
         PreparedStatement ps = null;
         Statement st = null;
         try {
-            ps = sqlConnection.prepareStatement(sql,
-                    autoincrementIdField ? Statement.RETURN_GENERATED_KEYS
-                            : Statement.NO_GENERATED_KEYS);
+            if (autoincrementIdField) {
+                ps = sqlConnection.prepareStatement(sql,
+                        new String[] { idField });
+            } else {
+                ps = sqlConnection.prepareStatement(sql);
+            }
             int index = 1;
             for (Column column : columnList) {
                 Object value = fieldMap.get(column.getKey());
@@ -1155,7 +1158,7 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Public getter to allow custom {@link Reference} implementation to access
      * the current connection even if it lives in a separate java package,
      * typically: com.company.custom.nuxeo.project.MyCustomReference
-     * 
+     *
      * @return the current {@link Connection} instance
      */
     public Connection getSqlConnection() {
