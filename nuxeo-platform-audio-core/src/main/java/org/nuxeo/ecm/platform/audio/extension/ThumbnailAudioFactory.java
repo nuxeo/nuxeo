@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.runtime.api.Framework;
@@ -54,6 +55,25 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
             throw new ClientException("Document is not audio type");
         }
         Blob thumbnailBlob = null;
+        try {
+            if (doc.hasFacet(AudioThumbnailConstants.THUMBNAIL_FACET)) {
+                thumbnailBlob = (Blob) doc.getPropertyValue(AudioThumbnailConstants.THUMBNAIL_PROPERTY_NAME);
+            }
+        } catch (ClientException e) {
+            log.warn("Could not fetch the thumbnail blob", e);
+        }
+        if (thumbnailBlob == null) {
+            TypeInfo docType = doc.getAdapter(TypeInfo.class);
+            return new FileBlob(
+                    FileUtils.getResourceFileFromContext("nuxeo.war"
+                            + File.separator + docType.getBigIcon()));
+        }
+        return thumbnailBlob;
+    }
+
+    @Override
+    public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
+        Blob thumbnailBlob = null;
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         FileBlob fileBlob;
         try {
@@ -71,7 +91,8 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
                 // Convert the cover art into thumbnail
                 BlobHolder tmpBh = new SimpleBlobHolder(thumbnailBlob);
                 ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-                tmpBh = conversionService.convert("thumbnailDocumentConverter",
+                tmpBh = conversionService.convert(
+                        AudioThumbnailConstants.THUMBNAIL_CONVERTER_NAME,
                         tmpBh, null);
                 if (tmpBh != null) {
                     thumbnailBlob = tmpBh.getBlob();
@@ -85,19 +106,11 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
             log.warn("Unable to get the audio file cover art", e);
         } catch (ReadOnlyFileException e) {
             log.warn("Unable to get the audio file cover art", e);
-        } finally {
-            if (thumbnailBlob == null) {
-                TypeInfo docType = doc.getAdapter(TypeInfo.class);
-                return new FileBlob(
-                        FileUtils.getResourceFileFromContext("nuxeo.war"
-                                + File.separator + docType.getBigIcon()));
-            }
+        } catch (ConversionException e) {
+            log.warn("Unable to get audio cover converted", e);
+        } catch (ClientException e) {
+            log.warn("Unable to get audio cover converted", e);
         }
         return thumbnailBlob;
-    }
-
-    @Override
-    public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
-        return null;
     }
 }
