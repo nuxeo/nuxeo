@@ -22,6 +22,7 @@
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-intuition</module>
     <module>nuxeo-groups-rights-audit</module>
+    <module>nuxeo-drive</module>
   </modules>
 
 </project>
