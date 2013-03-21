@@ -19,15 +19,19 @@ package org.nuxeo.ecm.webapp.dnd;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
@@ -52,16 +56,58 @@ public class DndFormActionBean implements Serializable {
 
     protected Map<String, Map<String, Serializable>> metadataCollector;
 
+    /**
+     * @deprecated since 5.7
+     */
+    @Deprecated
     protected String currentSchema;
 
+    /**
+     * @deprecated since 5.7
+     */
+    @Deprecated
     protected String currentLayout;
 
+    /**
+     * @deprecated since 5.7
+     */
     @RequestParameter
+    @Deprecated
     protected String schema;
 
+    /**
+     * @deprecated since 5.7
+     */
     @RequestParameter
+    @Deprecated
     protected String layout;
 
+    /**
+     * @since 5.7
+     */
+    protected List<String> currentSchemas;
+
+    /**
+     * @since 5.7
+     */
+    protected String currentLayouts;
+
+    /**
+     * @since 5.7
+     */
+    @RequestParameter
+    protected String schemas;
+
+    /**
+     * @since 5.7
+     */
+    @RequestParameter
+    protected String layouts;
+
+    /**
+     * @deprecated since 5.7. Use {@link #getSchemas()}.
+     */
+    @Deprecated
     public String getSchema() {
         if (schema != null && !schema.isEmpty()) {
             currentSchema = schema;
@@ -69,6 +115,10 @@ public class DndFormActionBean implements Serializable {
         return currentSchema;
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link #getLayouts()}.
+     */
+    @Deprecated
     public String getLayout() {
         if (layout != null && !layout.isEmpty()) {
             currentLayout = layout;
@@ -76,12 +126,33 @@ public class DndFormActionBean implements Serializable {
         return currentLayout;
     }
 
+    public List<String> getSchemas() {
+        currentSchemas = new ArrayList<>();
+        if (StringUtils.isNotBlank(schemas)) {
+            currentSchemas.addAll(Arrays.asList(schemas.split(",")));
+        } else if (StringUtils.isNotBlank(schema)) {
+            currentSchemas.add(schema);
+        }
+        return currentSchemas;
+    }
+
+    public String getLayouts() {
+        if (StringUtils.isNotBlank(layouts)) {
+            currentLayouts = layouts;
+        } else if (StringUtils.isNotBlank(layout)) {
+            currentLayouts = layout;
+        }
+        return currentLayouts;
+    }
+
     @Factory(value = "dataCollector", scope = ScopeType.PAGE)
     public Map<String, Map<String, Serializable>> getCollector() {
         if (metadataCollector == null) {
             metadataCollector = new HashMap<String, Map<String, Serializable>>();
-            metadataCollector.put(getSchema(),
-                    new HashMap<String, Serializable>());
+            for (String schema : getSchemas()) {
+                metadataCollector.put(schema,
+                        new HashMap<String, Serializable>());
+            }
         }
         return metadataCollector;
     }

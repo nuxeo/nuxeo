@@ -288,7 +288,13 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
          iframe.attr("width", "330px");
          iframe.attr("height", "550px");
          iframe.attr("frameborder", "0");
-         iframe.attr("src", this.operationsDef[i].link);
+         var src = this.operationsDef[i].link;
+         if (src.indexOf("?") != -1) {
+           src += "&conversationId=" + currentConversationId;
+         } else {
+           src += "?conversationId=" + currentConversationId;
+         }
+         iframe.attr("src", src);
          desc.append(iframe);
          var handler = this;
          window.dndFormFunctionCB=function(fData) {handler.executeBatch(value, fData);};
