@@ -8,7 +8,8 @@ author: lkemen@nuxeo.com
 */
 
 /* =Grid */
-.nxMainContainer { background-color: "neutral.lighter (__FLAVOR__ background)"; }
+.nxMainContainer {
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
 
 .nxDamSearchForm {
   background-color: #fff;
@@ -50,6 +51,9 @@ author: lkemen@nuxeo.com
   border-bottom: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)"; }
 
+.nxDamAssetView .globalActionBar {
+  padding: .2em }
+
 .nxDamSearchResults .globalActionBar {
   text-align: left }
 
@@ -86,7 +90,7 @@ author: lkemen@nuxeo.com
 .nxDamSearchResults .bubbleBox:hover {
   background-color: "color.major.light (__FLAVOR__ background)";
   box-shadow: 0 1px 2px 2px #fff }
-.nxDamSearchResults .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)"; }
+.nxDamSearchResults .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
 
 .nxDamSearchResults .bubbleBox .bubbleHeader input {
   margin-right: .3em }
@@ -111,7 +115,7 @@ author: lkemen@nuxeo.com
 /* Pictures and video thumbnails in bubbleBoxes */
 .thumbnailContainer { text-align: center;
   height: 75px }
-.thumbnailContainer img { border: 2px solid #fff;
+.thumbnailContainer img {
   max-height: 70px }
 .bubbleBox:hover .thumbnailContainer img {
 	background-color: #fff }
