@@ -169,19 +169,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 	float: right }
 
 /* Compact Action bar*/
-.compactLayout .actionsWidgetPanel .actionsWidgetPanel {
-  background-color: "color.major.light (__FLAVOR__ background)";
-  border-width: 1px;
-  border-color: "color.major.medium (__FLAVOR__ border)";
-  border-style: solid none;
-  color: "default (__FLAVOR__ color)";
-  padding: .2em .4em;
-  text-align: right }
-
-.compactLayout .actionsWidgetPanel .foldableBox .actionsWidgetPanel {
-  background-color: transparent;
-  border: none transparent }
-
 .compactLayout .contextActions .actionsWidgetPanel {
 	margin: 0 }
 
@@ -192,6 +179,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   font-weight: bold;
   margin: .2em 0 .2em .5em;
   padding: .3em .7em }
+
+.compactLayout .searchFilterActions {
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-style: solid none;
+  border-width: 2px 0 1px;
+  font-size: 1.15em;
+  padding: .3em .1em;
+  text-align: right }
 
 /* Compact Widgets */
 .compactLayout .widgetPanel {
