@@ -17,6 +17,14 @@ public class AllowedAssetTypeDescriptor {
     @XNode("@enabled")
     boolean enabled = true;
 
+    public AllowedAssetTypeDescriptor() {
+    }
+
+    public AllowedAssetTypeDescriptor(AllowedAssetTypeDescriptor other) {
+        name = other.name;
+        enabled = other.enabled;
+    }
+
     public String getName() {
         return name;
     }
@@ -33,11 +41,4 @@ public class AllowedAssetTypeDescriptor {
         this.enabled = enabled;
     }
 
-    @Override
-    public AllowedAssetTypeDescriptor clone() {
-        AllowedAssetTypeDescriptor clone = new AllowedAssetTypeDescriptor();
-        clone.setName(getName());
-        clone.setEnabled(isEnabled());
-        return clone;
-    }
 }

@@ -50,7 +50,7 @@ public class AllowedAssetTypeRegistry extends
 
     @Override
     public AllowedAssetTypeDescriptor clone(AllowedAssetTypeDescriptor orig) {
-        return orig.clone();
+        return new AllowedAssetTypeDescriptor(orig);
     }
 
     @Override
