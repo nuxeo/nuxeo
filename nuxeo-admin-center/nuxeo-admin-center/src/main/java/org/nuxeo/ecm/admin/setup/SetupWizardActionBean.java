@@ -139,7 +139,7 @@ public class SetupWizardActionBean implements Serializable {
         this.needsRestart = needsRestart;
     }
 
-    @Factory(value = "setupConfigGenerator", scope = ScopeType.EVENT)
+    @Factory(value = "setupConfigGenerator", scope = ScopeType.PAGE)
     public ConfigurationGenerator getConfigurationGenerator() {
         if (setupConfigGenerator == null) {
             setupConfigGenerator = new ConfigurationGenerator();
@@ -213,6 +213,8 @@ public class SetupWizardActionBean implements Serializable {
         saveParameters();
         setNeedsRestart(true);
         resetParameters();
+        // initialize setupConfigurator again, as it's in scope page
+        getConfigurationGenerator();
         facesMessages.add(StatusMessage.Severity.INFO,
                 messages.get("label.parameters.saved"));
     }
