@@ -49,10 +49,7 @@ import static org.junit.Assert.assertTrue;
         "org.nuxeo.ecm.platform.audio.jsf:OSGI-INF/ecm-types-contrib.xml",
         "org.nuxeo.dam.jsf:OSGI-INF/dam-service.xml",
         "org.nuxeo.dam.jsf:OSGI-INF/dam-service-contrib.xml" })
-public class TestDamService {
-
-    @Inject
-    protected RuntimeHarness harness;
+public class TestDamContributions {
 
     @Inject
     protected DamService damService;
@@ -71,21 +68,6 @@ public class TestDamService {
     }
 
     @Test
-    public void testAssetLibraryOverride() throws Exception {
-        URL url = TestDamService.class.getClassLoader().getResource(
-                "dam-service-contrib-test.xml");
-        harness.deployTestContrib("org.nuxeo.ecm.core", url);
-
-        AssetLibrary assetLibrary = damService.getAssetLibrary();
-        assertNotNull(assetLibrary);
-
-        assertEquals(DamConstants.ASSET_LIBRARY_TYPE, assetLibrary.getDocType());
-        assertEquals("Media Library", assetLibrary.getTitle());
-        assertEquals("/media-library", assetLibrary.getPath());
-        assertEquals("desc", assetLibrary.getDescription());
-    }
-
-    @Test
     public  void testAllowedAssetTypes() {
         List<Type> types = damService.getAllowedAssetTypes();
         assertNotNull(types);
@@ -93,23 +75,6 @@ public class TestDamService {
         assertEquals(4, types.size());
 
         List<String> expectedTypes = Arrays.asList("Picture", "Video", "Audio", "File");
-        for (Type type: types) {
-            assertTrue(expectedTypes.contains(type.getId()));
-        }
-    }
-
-    @Test
-    public  void testAllowedAssetTypesOverride() throws Exception {
-        URL url = TestDamService.class.getClassLoader().getResource(
-                "dam-service-contrib-test.xml");
-        harness.deployTestContrib("org.nuxeo.ecm.core", url);
-
-        List<Type> types = damService.getAllowedAssetTypes();
-        assertNotNull(types);
-        assertFalse(types.isEmpty());
-        assertEquals(3, types.size());
-
-        List<String> expectedTypes = Arrays.asList("Audio", "File", "Folder");
         for (Type type: types) {
             assertTrue(expectedTypes.contains(type.getId()));
         }
