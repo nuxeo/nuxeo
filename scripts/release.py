@@ -107,11 +107,12 @@ class Release(object):
 
     See 'self.perpare()', 'self.perform()'."""
     def __init__(self, repo, branch, tag, next_snapshot, maintenance="auto",
-                 is_final=False):
+                 is_final=False, skipTests=False):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
         self.maintenance = maintenance
+        self.skipTests = skipTests
         # Evaluate default values, if not provided
         self.set_snapshot()
         self.set_tag(tag)
@@ -156,14 +157,17 @@ class Release(object):
             log("No maintenance branch".ljust(25))
         else:
             log("Maintenance version:".ljust(25) + self.maintenance)
+        if self.skipTests:
+            log("Tests execution is skipped")
         if store_params:
             release_log = os.path.abspath(os.path.join(self.repo.basedir, os.pardir,
                                                    "release.log"))
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
-                        "MAINTENANCE=%s\nFINAL=%s" %
+                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s" %
                         (self.repo.alias, self.branch, self.tag,
-                         self.next_snapshot, self.maintenance, self.is_final))
+                         self.next_snapshot, self.maintenance, self.is_final,
+                         self.skipTests))
             log("Parameters stored in %s" % release_log)
         log("")
 
@@ -316,10 +320,10 @@ class Release(object):
         # Build and package
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         if dodeploy == True:
-            self.repo.mvn("clean deploy", skip_tests=True,
+            self.repo.mvn("clean deploy", skip_tests=self.skipTests,
                         profiles="release,-qa,nightly")
         else:
-            self.repo.mvn("clean install", skip_tests=True,
+            self.repo.mvn("clean install", skip_tests=self.skipTests,
                         profiles="release,-qa")
         self.package_all()
         # TODO NXP-8571 package sources
@@ -404,6 +408,9 @@ mode.""")
         parser.add_option('-d', '--deploy', action="store_true",
                           dest='deploy', default=False,
                           help="""deploy artifacts to nightly repository""")
+        parser.add_option('--skipTests', action="store_true",
+                          dest='skipTests', default=False,
+                          help="""skip tests execution (but compile them)""")
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
@@ -424,6 +431,7 @@ mode.""")
                 options.next_snapshot = f.readline().split("=")[1].strip()
                 options.maintenance = f.readline().split("=")[1].strip()
                 options.is_final = f.readline().split("=")[1].strip() == "True"
+                options.skipTests = f.readline().split("=")[1].strip() == "True"
 
         repo = Repository(os.getcwd(), options.remote_alias)
         if options.branch == "auto":
@@ -432,7 +440,7 @@ mode.""")
         repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance,
-                          options.is_final)
+                          options.is_final, options.skipTests)
         release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
@@ -442,7 +450,9 @@ mode.""")
             release.perform()
         elif command == "package":
             repo.clone()
-            repo.mvn("clean package", skip_tests=True, profiles="qa")
+            # workaround for NXBT-121: use install instead of package
+            repo.mvn("clean install", skip_tests=options.skipTests,
+                     profiles="qa")
             release.package_all(release.snapshot)
         elif command == "test":
             release.test()
