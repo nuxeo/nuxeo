@@ -901,6 +901,8 @@ public class TestFileSystemItemOperations {
         assertFalse(String.format(
                 "Conflicted filenames should be different. Got '%s' twice.",
                 pstName), bstName.equals(pstName));
+
+        deleteUser("joe");
     }
 
     protected void createUser(String userName, String password)
