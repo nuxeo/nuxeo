@@ -113,7 +113,6 @@
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-web-mobile</module>
-    <module>nuxeo-drive</module>
   </modules>
 
   <dependencyManagement>
