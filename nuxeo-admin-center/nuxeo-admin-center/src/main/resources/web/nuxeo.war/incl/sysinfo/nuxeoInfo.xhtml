@@ -6,34 +6,34 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
 
- <table class="dataOutput">
+ <table class="dataTable">
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoName']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.applicationName}" /></td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoName']}" /></td>
+      <td class="boldColumn"><h:outputText value="#{nuxeoServerInfo.applicationName}" /></td>
  </tr>
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoVersion']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.applicationVersion}" /></td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.nuxeoVersion']}" /></td>
+      <td class="boldColumn"><h:outputText value="#{nuxeoServerInfo.applicationVersion}" /></td>
  </tr>
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribName']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.distributionName}" /></td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.distribName']}" /></td>
+      <td class="boldColumn"><h:outputText value="#{nuxeoServerInfo.distributionName}" /></td>
  </tr>
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribVersion']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.distributionVersion}" /></td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.distribVersion']}" /></td>
+      <td class="boldColumn"><h:outputText value="#{nuxeoServerInfo.distributionVersion}" /></td>
  </tr>
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribHost']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.distributionHost}" /></td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.distribHost']}" /></td>
+      <td class="boldColumn"><h:outputText value="#{nuxeoServerInfo.distributionHost}" /></td>
  </tr>
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.distribDate']}" /></td>
-      <td><h:outputText value="#{nuxeoServerInfo.distributionDate}" /></td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.distribDate']}" /></td>
+      <td class="boldColumn"><h:outputText value="#{nuxeoServerInfo.distributionDate}" /></td>
  </tr>
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.warnings']}" /></td>
-      <td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.warnings']}" /></td>
+      <td class="boldColumn">
 
        <c:if test="#{nuxeoServerInfo.hasWarnings()}">
         <table>
@@ -51,8 +51,8 @@
       </td>
  </tr>
  <tr>
-      <td><h:outputText value="#{messages['adminsubtab.sysinfo.bundles']}" /></td>
-      <td>
+      <td class="focusColumn"><h:outputText value="#{messages['adminsubtab.sysinfo.bundles']}" /></td>
+      <td class="boldColumn">
         <div>
         <table>
           <ui:repeat value="#{nuxeoServerInfo.bundleInfos}" var="bi">
