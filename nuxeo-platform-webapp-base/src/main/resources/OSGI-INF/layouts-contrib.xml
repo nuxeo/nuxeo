@@ -2228,7 +2228,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout name="generic_actions_widget_type_properties_any">
+            <layout name="actions_widget_type_properties_any">
               <rows>
                 <row>
                   <widget>actions</widget>
@@ -2279,7 +2279,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/actions/generic_actions_widget_template.xhtml
+        /widgets/actions/actions_widget_template.xhtml
       </property>
     </widgetType>
 
@@ -2311,7 +2311,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout name="generic_action_widget_type_properties_any">
+            <layout name="action_widget_type_properties_any">
               <rows>
                 <row>
                   <widget>action</widget>
@@ -2353,7 +2353,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/actions/generic_action_widget_template.xhtml
+        /widgets/actions/action_widget_template.xhtml
       </property>
     </widgetType>
 
