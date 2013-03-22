@@ -20,9 +20,7 @@ package org.nuxeo.ecm.platform.oauth2.openid.auth;
 
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,14 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,13 +45,15 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
     private static final Log log = LogFactory.getLog(OpenIDConnectAuthenticator.class);
 
+    public static final String STATE_URL_PARAM_NAME = "state";
+
+    public static final String STATE_SESSION_ATTRIBUTE = STATE_URL_PARAM_NAME;
+
     public static final String CODE_URL_PARAM_NAME = "code";
 
     public static final String ERROR_URL_PARAM_NAME = "error";
 
     public static final String PROVIDER_URL_PARAM_NAME = "provider";
-
-    protected UserResolverHelper userResolver = new UserResolverHelper();
 
     protected void sendError(HttpServletRequest req, String msg) {
         req.setAttribute(LOGIN_ERROR, msg);
@@ -103,6 +99,11 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
                 return null;
             }
 
+            // Check the state token
+            if (!provider.verifyStateToken(req)) {
+                sendError(req, "Invalid state parameter.");
+            }
+
             // Validate the token
             String accessToken = provider.getAccessToken(req, code);
 
@@ -110,12 +111,15 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
                 return null;
             }
 
-            OpenIdUserInfo info = provider.getUserInfo(accessToken);
+            OpenIDUserInfo info = provider.getUserInfo(accessToken);
+
+            UserResolver userResolver = provider.getUserResolver();
 
             String userId = userResolver.findNuxeoUser(info);
 
             if (userId == null) {
-                sendError(req, "No user found with email: \"" + info.email
+
+                sendError(req, "No user found with email: \"" + info.getEmail()
                         + "\".");
                 return null;
             }
@@ -129,6 +133,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
         return null;
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return new ArrayList<String>();
     }

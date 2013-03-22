@@ -31,25 +31,32 @@ import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * Helper class to manage mapping between identification info comming from the
- * OpenID provider and Nuxeo UserManager
- *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * @since 5.7
- */
-public class UserResolverHelper extends UserResolver {
+
+public class StoredUserInfoResolver extends UserResolver {
+
+    private OpenIDUserInfoStore userInfoStore;
 
     private static final Log log = LogFactory.getLog(UserResolverHelper.class);
 
-    UserResolverHelper(OpenIDConnectProvider provider) {
+    StoredUserInfoResolver(OpenIDConnectProvider provider) {
         super(provider);
+    }
+
+    public OpenIDUserInfoStore getUserInfoStore() {
+        if (userInfoStore == null) {
+            userInfoStore = new OpenIDUserInfoStoreImpl(getProvider().getName());
+        }
+        return userInfoStore;
     }
 
     @Override
     public String findNuxeoUser(OpenIDUserInfo userInfo) {
 
         try {
+
+            getUserInfoStore().getNuxeoLogin(userInfo);
+
+
             UserManager userManager = Framework.getLocalService(UserManager.class);
             Map<String, Serializable> query = new HashMap<String, Serializable>();
             query.put(userManager.getUserEmailField(), userInfo.getEmail());
@@ -79,3 +86,4 @@ public class UserResolverHelper extends UserResolver {
         return user;
     }
 }
+

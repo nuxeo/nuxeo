@@ -50,6 +50,10 @@ public class OpenIDProviderFragmentRegistry extends
         copy.userInfoURL = source.userInfoURL;
         copy.label = source.label;
         copy.description = source.description;
+        copy.redirectUriResolver = source.redirectUriResolver;
+        copy.userResolverClass = source.userResolverClass;
+        copy.accessTokenKey = source.accessTokenKey;
+        copy.userInfoClass = source.userInfoClass;
         return copy;
     }
 
@@ -107,6 +111,15 @@ public class OpenIDProviderFragmentRegistry extends
         if (dst.description == null || dst.description.isEmpty()) {
             dst.description = src.description;
         }
+
+
+        dst.accessTokenKey = src.accessTokenKey;
+
+        dst.userInfoClass = src.userInfoClass;
+
+        dst.redirectUriResolver = src.redirectUriResolver;
+
+        dst.userResolverClass = src.userResolverClass;
 
         dst.enabled = src.enabled;
     }

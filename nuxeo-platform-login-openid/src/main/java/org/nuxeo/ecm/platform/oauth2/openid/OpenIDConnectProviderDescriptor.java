@@ -23,6 +23,10 @@ import java.io.Serializable;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolverHelper;
 
 @XObject("provider")
 public class OpenIDConnectProviderDescriptor implements Serializable {
@@ -43,6 +47,9 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     @XNode("userInfoURL")
     protected String userInfoURL;
 
+    @XNode("accessTokenKey")
+    protected String accessTokenKey = "access_token";
+
     @XNode("clientId")
     protected String clientId;
 
@@ -60,6 +67,15 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
 
     @XNode("description")
     protected String description;
+
+    @XNode("userResolverClass")
+    protected Class<? extends UserResolver> userResolverClass = UserResolverHelper.class;
+
+    @XNode("redirectUriResolver")
+    protected Class<? extends RedirectUriResolver> redirectUriResolver = RedirectUriResolverHelper.class;
+
+    @XNode("userInfoClass")
+    protected Class<? extends OpenIDUserInfo> userInfoClass = DefaultOpenIDUserInfo.class;
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -93,6 +109,10 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
         return userInfoURL;
     }
 
+    public String getAccessTokenKey () {
+        return accessTokenKey;
+    }
+
     public String getIcon() {
         return icon;
     }
@@ -111,6 +131,18 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+    
+    public Class<? extends UserResolver> getUserResolverClass() {
+        return userResolverClass;
+    }
+
+    public Class<? extends RedirectUriResolver> getRedirectUriResolver() {
+        return redirectUriResolver;
+    }
+
+    public Class<? extends OpenIDUserInfo> getUserInfoClass() {
+        return userInfoClass;
     }
 
 }
