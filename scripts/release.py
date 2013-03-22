@@ -153,7 +153,7 @@ class Release(object):
         """Log summary of configuration for current release."""
         log("Releasing from branch:".ljust(25) + self.branch)
         log("Current version:".ljust(25) + self.snapshot)
-        log("Tag:".ljust(25) + self.tag)
+        log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
         if self.maintenance == "auto":
             log("No maintenance branch".ljust(25))
@@ -182,8 +182,8 @@ class Release(object):
             for dir in set(dirs) & set([".git", "target"]):
                 dirs.remove(dir)
             for name in files:
+                replaced = False
                 if fnmatch.fnmatch(name, "pom*.xml"):
-                    log(os.path.join(root, name))
                     tree = etree.parse(os.path.join(root, name))
                     # Parent POM version
                     parent = tree.getroot().find("pom:parent", namespaces)
@@ -191,10 +191,12 @@ class Release(object):
                         elem = parent.find("pom:version", namespaces)
                         if elem is not None and elem.text == old_version:
                             elem.text = new_version
+                            replaced = True
                     # POM version
                     elem = tree.getroot().find("pom:version", namespaces)
                     if elem is not None and elem.text == old_version:
                         elem.text = new_version
+                        replaced = True
                     # Properties like nuxeo.*.version
                     prop_pattern = re.compile("{" + namespaces.get("pom") +
                                               "}nuxeo\..*version")
@@ -206,14 +208,18 @@ class Release(object):
                                 and prop_pattern.match(property.tag)
                                 and property.text == old_version):
                                 property.text = new_version
+                                replaced = True
                     tree.write_c14n(os.path.join(root, name))
                 elif pattern.match(name):
-                    log(os.path.join(root, name))
                     with open(os.path.join(root, name), "rb") as f:
                         content = f.read()
+                        if content.find(old_version) > -1:
+                            replaced = True
                         content = content.replace(old_version, new_version)
                     with open(os.path.join(root, name), "wb") as f:
                         f.write(content)
+                if replaced:
+                    log(os.path.join(root, name))
 
     def test(self):
         """For current script development purpose."""
