@@ -119,11 +119,18 @@ class Release(object):
         self.set_snapshot()
         self.set_tag(tag)
         self.set_next_snapshot(next_snapshot)
+        # Detect if working on Nuxeo main sources
+        tree = etree.parse(os.path.join(self.repo.basedir, "pom.xml"))
+        artifact_id = tree.getroot().find("pom:artifactId", namespaces)
+        self.repo.is_nuxeoecm = "nuxeo-ecm" == artifact_id
 
     def set_snapshot(self):
         """Set current version from root POM."""
         tree = etree.parse(os.path.join(self.repo.basedir, "pom.xml"))
         version_elem = tree.getroot().find("pom:version", namespaces)
+        if version_elem is None:
+            version_elem = tree.getroot().find("pom:parent/pom:version",
+                                               namespaces)
         self.snapshot = version_elem.text
 
     def set_tag(self, tag="auto"):
@@ -230,6 +237,9 @@ class Release(object):
 
         'version': version to package; defaults to the current tag (without the
         'release-' prefix."""
+        if not self.repo.is_nuxeoecm:
+            log("Skip packaging step (not a main Nuxeo repository).")
+            return
         self.archive_dir = os.path.abspath(os.path.join(self.repo.basedir,
                                                    os.pardir, "archives"))
         if os.path.isdir(self.archive_dir):

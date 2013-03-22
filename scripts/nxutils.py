@@ -124,13 +124,13 @@ class Repository(object):
         os.chdir(self.basedir)
         log("[.]")
         system(command)
-        if not self.modules:
+        if not self.modules and self.is_nuxeoecm:
             self.eval_modules()
         for module in self.modules:
             os.chdir(os.path.join(self.basedir, module))
             log("[%s]" % module)
             system(command)
-        if not self.addons:
+        if not self.addons and self.is_nuxeoecm:
             self.eval_addons(with_optionals)
         for addon in self.addons:
             os.chdir(os.path.join(self.basedir, "addons", addon))
@@ -218,23 +218,27 @@ class Repository(object):
             version = self.get_current_version()
         self.git_update(version, fallback_branch)
 
-        # Main modules
-        self.eval_modules()
-        for module in self.modules:
-            self.git_pull(module, version, fallback_branch)
+        if self.is_nuxeoecm:
+            # Main modules
+            self.eval_modules()
+            for module in self.modules:
+                # Ignore modules which are not Git sub-repositories
+                if (not os.path.isdir(module) or
+                os.path.isdir(os.path.join(module, ".git"))):
+                    self.git_pull(module, version, fallback_branch)
 
-        # Addons
-        os.chdir(os.path.join(self.basedir, "addons"))
-        self.eval_addons(with_optionals)
-        if not self.is_online:
-            self.url_pattern = self.url_pattern.replace("module",
-                                                        "addons/module")
-        for addon in self.addons:
-            self.git_pull(addon, version, fallback_branch)
-        if not self.is_online:
-            self.url_pattern = self.url_pattern.replace("addons/module",
-                                                        "module")
-        os.chdir(cwd)
+            # Addons
+            os.chdir(os.path.join(self.basedir, "addons"))
+            self.eval_addons(with_optionals)
+            if not self.is_online:
+                self.url_pattern = self.url_pattern.replace("module",
+                                                            "addons/module")
+            for addon in self.addons:
+                self.git_pull(addon, version, fallback_branch)
+            if not self.is_online:
+                self.url_pattern = self.url_pattern.replace("addons/module",
+                                                            "module")
+            os.chdir(cwd)
 
     def get_current_version(self):
         """Return branch or tag version of current Git workspace."""
