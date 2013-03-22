@@ -252,6 +252,8 @@ class Repository(object):
         skip_tests_param = ""
         if skip_tests:
             skip_tests_param = "-DskipTests=true"
+        else:
+            skip_tests_param = "-Dmaven.test.haltafterfailure=true"
         profiles_param = ""
         if profiles is not None:
             profiles_param = "-P%s" % profiles
