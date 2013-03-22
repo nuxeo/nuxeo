@@ -764,7 +764,7 @@ public class ConfigurationGenerator {
             if (isGreater
                     || "nofail".equalsIgnoreCase(System.getProperty("jvmcheck",
                             "fail"))) {
-                log.error(message);
+                log.warn(message);
             } else {
                 throw new ConfigurationException(message);
             }
