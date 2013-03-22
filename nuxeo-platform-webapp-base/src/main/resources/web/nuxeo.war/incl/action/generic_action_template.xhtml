@@ -68,8 +68,8 @@ TODO:
       <ui:include src="widget_action_template.xhtml" />
     </c:when>
 
-    <c:when test="#{action.type == 'document_tab' or (empty action.type and actionType == 'document_tab')}">
-      <ui:include src="document_tab_action_template.xhtml" />
+    <c:when test="#{action.type == 'rest_document_link' or (empty action.type and actionType == 'rest_document_link')}">
+      <ui:include src="rest_document_link_action_template.xhtml" />
     </c:when>
 
     <c:when test="#{action.type == 'template' or (empty action.type and actionType == 'template')}">
