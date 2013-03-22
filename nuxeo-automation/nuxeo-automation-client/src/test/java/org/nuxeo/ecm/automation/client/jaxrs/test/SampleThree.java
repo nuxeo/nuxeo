@@ -11,8 +11,10 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.test;
 
+import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
@@ -45,7 +47,8 @@ public class SampleThree {
 
             // now list the children in /default-domain/workspaces
             Documents docs = (Documents) session.newRequest(
-                    "Document.GetChildren").setInput(doc).execute();
+                    DocumentService.GetDocumentChildren).setInput(doc).setHeader(
+                    Constants.HEADER_NX_SCHEMAS, "*").execute();
             System.out.println(docs);
 
             // list children titles
