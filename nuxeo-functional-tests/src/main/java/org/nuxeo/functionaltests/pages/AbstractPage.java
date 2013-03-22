@@ -31,6 +31,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -200,8 +201,8 @@ public abstract class AbstractPage {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -233,8 +234,8 @@ public abstract class AbstractPage {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -271,6 +272,7 @@ public abstract class AbstractPage {
     public void waitUntilURLDifferentFrom(String url) {
         final String refurl = url;
         ExpectedCondition<Boolean> urlchanged = new ExpectedCondition<Boolean>() {
+            @Override
             public Boolean apply(WebDriver d) {
                 return !d.getCurrentUrl().equals(refurl);
             }
@@ -282,4 +284,23 @@ public abstract class AbstractPage {
         }
     }
 
+    /**
+     * Selects item in drop down menu
+     *
+     * @since 5.7
+     */
+    public void selectItemInDropDownMenu(WebElement selector, String optionLabel) {
+        Select select = new Select(selector);
+        select.selectByVisibleText(optionLabel);
+    }
+
+    /**
+     * @since 5.7
+     * @param id
+     */
+    public WebDriver loadIFrame(String id) {
+        driver.switchTo().defaultContent(); // you are now outside both
+        // frames
+        return driver.switchTo().frame(id);
+    }
 }

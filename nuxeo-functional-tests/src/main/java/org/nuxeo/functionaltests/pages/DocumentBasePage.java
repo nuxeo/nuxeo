@@ -30,6 +30,7 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -38,7 +39,7 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * The nuxeo main document base page
- * 
+ *
  * @author Sun Seng David TAN <stan@nuxeo.com>
  */
 public class DocumentBasePage extends AbstractPage {
@@ -91,7 +92,7 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * Click on the content tab and return the subpage of this page.
-     * 
+     *
      */
     public ContentTabSubPage getContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
@@ -131,7 +132,7 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * For workspace type, the content tab is a bit different.
-     * 
+     *
      */
     public WorkspacesContentTabSubPage getWorkspacesContentTab() {
         clickOnLinkIfNotSelected(contentTabLink);
@@ -141,7 +142,7 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * Check if the user is connected by looking for the text: You are logged as
      * Username
-     * 
+     *
      * @param username
      * @throws UserNotConnectedException
      */
@@ -155,7 +156,7 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * Check if the title of the current document page is equal to the
      * {@code expectedTitle}.
-     * 
+     *
      * @param expectedTitle the expected title
      */
     public void checkDocTitle(String expectedTitle) {
@@ -194,7 +195,7 @@ public class DocumentBasePage extends AbstractPage {
 
     /**
      * Exception occurred a user is expected to be connected but it isn't.
-     * 
+     *
      */
     public class UserNotConnectedException extends Exception {
         /**
@@ -213,6 +214,14 @@ public class DocumentBasePage extends AbstractPage {
         return asPage(AdminCenterBasePage.class);
     }
 
+    /**
+     * @since 5.7
+     */
+    public UserHomePage getUserHome() {
+        findElementWithTimeout(By.linkText("Home")).click();
+        return asPage(UserHomePage.class);
+    }
+
     public ContextualActions getContextualActions() {
         return asPage(ContextualActions.class);
     }
@@ -222,8 +231,8 @@ public class DocumentBasePage extends AbstractPage {
         return asPage(DocumentBasePage.class);
     }
 
-    public DocumentBasePage getWorkflow() {
+    public WorkflowTabSubPage getWorkflow() {
         workflowLink.click();
-        return asPage(DocumentBasePage.class);
+        return asPage(WorkflowTabSubPage.class);
     }
 }
