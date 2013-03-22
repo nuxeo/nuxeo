@@ -70,11 +70,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, AutomationFeature.class })
+@Features({ TransactionalFeature.class, CoreFeature.class,
+        AutomationFeature.class })
 @Deploy({
         "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
