@@ -2279,7 +2279,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/generic_actions_widget_template.xhtml
+        /widgets/actions/generic_actions_widget_template.xhtml
       </property>
     </widgetType>
 
@@ -2353,7 +2353,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/generic_action_widget_template.xhtml
+        /widgets/actions/generic_action_widget_template.xhtml
       </property>
     </widgetType>
 
