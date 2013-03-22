@@ -466,6 +466,23 @@
       </fields>
     </widget>
 
+    <widget name="ajaxReRender" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Ajax reRender</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Ajax rerender ids, separated by commas.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>ajaxReRender</field>
+      </fields>
+    </widget>
+
     <widget name="actionsDisplay" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -1578,9 +1595,12 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The given ajax reRender ids will be added to the zones to
-                    reRender on some actions (page navigation, result layout
-                    selection, selection actions...). Available since 5.7.
+                    The given ajax reRender ids will be added to
+                    the zones to
+                    reRender on some actions (page navigation,
+                    result layout
+                    selection, selection actions...). Available
+                    since 5.7.
                   </label>
                 </helpLabels>
                 <fields>
@@ -1850,12 +1870,12 @@
         <title>Save box</title>
         <description>
           <p>This widget displays a save box with one input for the title and
-          one button to save.</p>
+            one button to save.</p>
 
           <p>The input is mapped to the field of the widget.</p>
 
           <p>It needs the action id as property "actionId" for
-          the "save" button.</p>
+            the "save" button.</p>
         </description>
         <categories>
           <category>tab_designer</category>
@@ -2254,6 +2274,9 @@
                 <row>
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
               </rows>
               <widget name="actions" type="actions">
                 <labels>
@@ -2327,6 +2350,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
               <widget name="action" type="action">
@@ -2412,6 +2438,9 @@
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">actions_disableFiltered</widget>
                 </row>
               </rows>
@@ -2459,8 +2488,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout
-              name="currentDocumentActions_with_forms_widget_type_properties_any">
+            <layout name="currentDocumentActionsWithForms_widget_type_properties_any">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">actions_category</widget>
@@ -2482,6 +2510,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_disableFiltered</widget>
@@ -2548,6 +2579,9 @@
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">actions_disableFiltered</widget>
                 </row>
               </rows>
@@ -2594,8 +2628,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout
-              name="currentDocumentAction_with_forms_widget_type_properties_any">
+            <layout name="currentDocumentActionWithForms_widget_type_properties_any">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">actions_actionId</widget>
@@ -2613,6 +2646,9 @@
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">actions_disableFiltered</widget>
                 </row>
               </rows>
@@ -2625,6 +2661,141 @@
       </handler-class>
       <property name="template">
         /widgets/actions/current_document_action_with_forms_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="tabs">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Tabs</title>
+        <description>
+          <p>This widget displays tabs.</p>
+          <p>
+            It needs the list of actions as property "actions".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+        </description>
+        <categories>
+          <category>hidden</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="tabs_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>actions</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+              </rows>
+              <widget name="actions" type="actions">
+                <labels>
+                  <label mode="any">Actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The list of actions to display.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>actions</field>
+                </fields>
+                <widgetModes>
+                  <mode value="edit_demo_preview">hidden</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/tabs_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentTabsWithForms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Document tabs</title>
+        <description>
+          <p>This widget displays tabs filtered on current document context</p>
+          <p>
+            It needs the action id as property "actionId".
+            <br />
+            Its bound value is used for actions with type "widget".
+          </p>
+          <p>
+            The fact that action is surrounded by its own form makes it
+            possible to use fancybox actions for instance, whose popup content
+            would use a different form.
+          </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="currentDocumentTabsWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/current_document_tabs_with_forms_widget_template.xhtml
       </property>
     </widgetType>
 
@@ -2788,7 +2959,8 @@
         <description>
           <p>
             The dropZone widget wraps its subwidgets with a div acting as
-            the drop zone to be able to drop files inside.
+            the
+            drop zone to be able to drop files inside.
           </p>
         </description>
         <categories>
@@ -3012,7 +3184,8 @@
         </fields>
         <widgetModes>
           <mode value="edit">
-            #{nxu:test(webActions.checkFilter('usersGroupsManagementAccess'), 'edit', 'view')}
+            #{nxu:test(webActions.checkFilter('usersGroupsManagementAccess'),
+            'edit', 'view')}
           </mode>
           <mode value="editPassword">hidden</mode>
         </widgetModes>

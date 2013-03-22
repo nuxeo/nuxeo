@@ -26,7 +26,7 @@
     <h:outputText value=" " />
   </c:if>
   <c:if test="#{not hideLabel}">
-    <h:outputText value=" #{messages[action.label]}"
+    <h:outputText value="#{messages[action.label]}"
       styleClass="actionLabel #{action.properties.labelStyleClass}" />
   </c:if>
 

@@ -17,7 +17,7 @@
           <li>
             <ui:decorate template="/widgets/incl/form_template.xhtml">
               <ui:param name="addForm" value="#{widgetProperty_addForm}" />
-              <ui:param name="formId" value="#{widget.id}_#{action.id}_form" />
+              <ui:param name="formId" value="#{nxu:jsfTagIdEscape(widget.id)}_#{nxu:jsfTagIdEscape(action.id)}_form" />
               <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
               <ui:param name="formStyleClass" value="subWidgetForm" />
               <ui:define name="form_template_content">

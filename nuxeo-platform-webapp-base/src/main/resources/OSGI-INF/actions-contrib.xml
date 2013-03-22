@@ -245,6 +245,10 @@
       <category>SUBVIEW_UPPER_LIST_HREF</category>
     </typeCompatibility>
 
+    <typeCompatibility type="document_tab">
+      <category>VIEW_ACTION_LIST</category>
+    </typeCompatibility>
+
   </extension>
 
 </component>
