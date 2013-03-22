@@ -338,7 +338,7 @@ def long_path_workaround_init(basedir, dirmapping=True):
 
 def long_path_workaround_cleanup(driveletter, basedir):
     """Windows only. Cleanup the directory mapping if any."""
-    if driveletter != None:
+    if driveletter is not None:
         os.chdir(basedir)
         system("SUBST %s: /D" % (driveletter,), failonerror=False)
 
@@ -347,7 +347,7 @@ def check_output(cmd):
     """Return Shell command output."""
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p.communicate()
-    if err != None:
+    if err is not None:
         log("[ERROR] Command", str(cmd), " returned an error:", sys.stderr)
         log(err, sys.stderr)
     return out.strip()

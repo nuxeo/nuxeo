@@ -38,25 +38,27 @@ import time
 
 def main():
     try:
-        usage = "usage: %prog [options] version"
-        parser = optparse.OptionParser(usage=usage, description=
-"""clone or update Nuxeo source code.""")
+        usage = "usage: %prog [options] [version|branch|tag]"
+        parser = optparse.OptionParser(usage=usage, description="""Clone or
+update Nuxeo source code.""")
         parser.add_option('-r', action="store", type="string",
-                          dest='remote_alias', default='origin', help=
-"""the Git alias of remote URL (default: %default)""")
+                          dest='remote_alias', default='origin', help="""the
+Git alias of remote URL (default: %default)""")
         parser.add_option("-a", "--all", action="store_true",
                           dest="with_optionals", default=False,
                           help="include 'optional' addons (default: %default)")
         parser.add_option('-f', "--fallback", action="store", type="string",
-                          dest='fallback_branch', default=None, help=
-"""a branch to fallback on when the wanted branch doesn't exist locally neither
+                          dest='fallback_branch', default=None, help="""a
+branch to fallback on when the wanted branch doesn't exist locally neither
 remotely (default: %default)""")
         parser.add_option('-n', "--nodrivemapping", action="store_true",
-                          dest='no_drive_mapping', default=False, 
-                          help="desactivate current directory mapping to a virtual drive on Windows")
+                          dest='no_drive_mapping', default=False,
+                          help="""deactivate current directory mapping to a
+virtual drive on Windows""")
 
         (options, args) = parser.parse_args()
-        repo = Repository(os.getcwd(), options.remote_alias, not options.no_drive_mapping)
+        repo = Repository(os.getcwd(), options.remote_alias,
+                          not options.no_drive_mapping)
         if len(args) == 0:
             version = None
         elif len(args) == 1:

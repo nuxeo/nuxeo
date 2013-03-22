@@ -103,6 +103,7 @@ PKG_RENAMINGS_OPTIONALS = {
     "nuxeo-cap-%s-tomcat-sdk"
 }
 
+
 class Release(object):
     """Nuxeo release manager.
 
@@ -161,8 +162,9 @@ class Release(object):
         if self.skipTests:
             log("Tests execution is skipped")
         if store_params:
-            release_log = os.path.abspath(os.path.join(self.repo.basedir, os.pardir,
-                                                   "release.log"))
+            release_log = os.path.abspath(os.path.join(self.repo.basedir,
+                                                       os.pardir,
+                                                       "release.log"))
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
                         "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s" %
@@ -286,7 +288,7 @@ class Release(object):
         sources_archive_name = "nuxeo-%s-sources.zip" % version
         self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
 
-    def prepare(self, dodeploy):
+    def prepare(self, dodeploy=False):
         """ Prepare the release: build, change versions, tag and package source
         and distributions."""
         cwd = os.getcwd()
@@ -323,7 +325,7 @@ class Release(object):
 
         # Build and package
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        if dodeploy == True:
+        if dodeploy:
             self.repo.mvn("clean deploy", skip_tests=self.skipTests,
                         profiles="release,-qa,nightly")
         else:
