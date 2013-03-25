@@ -49,11 +49,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     public static final String TOP_LEVEL_FOLDER_ITEM_FACTORY_EP = "topLevelFolderItemFactory";
 
-    protected final FileSystemItemFactoryRegistry fileSystemItemFactoryRegistry = new FileSystemItemFactoryRegistry();
+    protected FileSystemItemFactoryRegistry fileSystemItemFactoryRegistry;
 
-    protected final TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
+    protected TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry;
 
-    protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories = new ArrayList<FileSystemItemFactoryWrapper>();
+    protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories;
 
     /*------------------------ DefaultComponent -----------------------------*/
     @Override
@@ -89,6 +89,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
+    public void activate(ComponentContext context) {
+        fileSystemItemFactoryRegistry = new FileSystemItemFactoryRegistry();
+        topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
+        fileSystemItemFactories = new ArrayList<FileSystemItemFactoryWrapper>();
+    }
     public void deactivate(ComponentContext context) throws Exception {
         fileSystemItemFactories = null;
         super.deactivate(context);
