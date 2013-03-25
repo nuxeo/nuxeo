@@ -17,6 +17,8 @@
 package org.nuxeo.drive.service.impl;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
@@ -29,6 +31,8 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  */
 public class TopLevelFolderItemFactoryRegistry extends
         ContributionFragmentRegistry<TopLevelFolderItemFactoryDescriptor> {
+
+    private static final Log log = LogFactory.getLog(TopLevelFolderItemFactoryRegistry.class);
 
     protected static final String CONTRIBUTION_ID = "topLevelFolderItemFactoryContrib";
 
@@ -44,6 +48,9 @@ public class TopLevelFolderItemFactoryRegistry extends
             TopLevelFolderItemFactoryDescriptor contrib,
             TopLevelFolderItemFactoryDescriptor newOrigContrib) {
         try {
+            log.trace(String.format(
+                    "Setting top level folder item factory to class %s",
+                    contrib.getName()));
             factory = contrib.getFactory();
         } catch (Exception e) {
             throw new ClientRuntimeException(
@@ -54,12 +61,15 @@ public class TopLevelFolderItemFactoryRegistry extends
     @Override
     public void contributionRemoved(String id,
             TopLevelFolderItemFactoryDescriptor origContrib) {
+        log.trace("Removing top level folder item factory (setting it to null)");
         factory = null;
     }
 
     @Override
     public TopLevelFolderItemFactoryDescriptor clone(
             TopLevelFolderItemFactoryDescriptor orig) {
+        log.trace(String.format("Cloning contribution with class name %s",
+                orig.getName()));
         TopLevelFolderItemFactoryDescriptor clone = new TopLevelFolderItemFactoryDescriptor();
         clone.factoryClass = orig.factoryClass;
         return clone;

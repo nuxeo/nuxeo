@@ -61,15 +61,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
-            FileSystemItemFactoryDescriptor fsItemFactoryDesc = (FileSystemItemFactoryDescriptor) contribution;
-            log.trace(String.format("Adding contribution to %s: %s",
-                    FILE_SYSTEM_ITEM_FACTORY_EP, fsItemFactoryDesc));
-            fileSystemItemFactoryRegistry.addContribution(fsItemFactoryDesc);
+            fileSystemItemFactoryRegistry.addContribution((FileSystemItemFactoryDescriptor) contribution);
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
-            TopLevelFolderItemFactoryDescriptor topLevelItemFactoryDesc = (TopLevelFolderItemFactoryDescriptor) contribution;
-            log.trace(String.format("Adding contribution to %s: %s",
-                    TOP_LEVEL_FOLDER_ITEM_FACTORY_EP, topLevelItemFactoryDesc));
-            topLevelFolderItemFactoryRegistry.addContribution(topLevelItemFactoryDesc);
+            topLevelFolderItemFactoryRegistry.addContribution((TopLevelFolderItemFactoryDescriptor) contribution);
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
