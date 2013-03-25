@@ -27,16 +27,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.javasimon.SimonManager;
 import org.javasimon.Split;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
@@ -57,9 +62,6 @@ public class BulkRestartWorkflow {
 
     private static final Log log = LogFactory.getLog(BulkRestartWorkflow.class);
 
-    @Context
-    protected CoreSession session;
-
     @Param(name = "workflowId", required = true)
     protected String workflowId;
 
@@ -72,49 +74,57 @@ public class BulkRestartWorkflow {
     @Param(name = "batchSize", required = false)
     protected Integer batchSize;
 
+    @Context
+    protected OperationContext ctx;
+
     public static final int DEFAULT_BATCH_SIZE = 1000;
 
     @OperationMethod
     public void run() throws ClientException {
-        Split split = SimonManager.getStopwatch(ID).start();
-        // Fetching all routes
-        // If the nodeId parameter is null, fetch all the workflow routes with
-        // the given workflowId
-        String query = "Select %s from DocumentRoute where (ecm:name like '%s.%%' OR  ecm:name like '%s') and ecm:currentLifeCycleState = 'running'";
-        String key = "ecm:uuid";
-        if (StringUtils.isEmpty(nodeId)) {
-            if (StringUtils.isEmpty(workflowId)) {
-                log.error("Need to specify either the workflowModelId either the nodeId to query the workflows");
-                return;
-            }
-            query = String.format(query, key, workflowId, workflowId);
-        } else {
-            query = "Select %s from RouteNode  where rnode:nodeId = '%s' and ecm:currentLifeCycleState = 'suspended'";
-            key = "ecm:parentId";
-            if (StringUtils.isEmpty(nodeId)) {
-                log.error("Need to specify either the workflowModelId either the nodeId to query the workflows");
-                return;
-            }
-            query = String.format(query, key, nodeId);
-        }
-
-        IterableQueryResult results = session.queryAndFetch(query, "NXQL");
-        List<String> routeIds = new ArrayList<String>();
-        for (Map<String, Serializable> result : results) {
-            routeIds.add(result.get(key).toString());
-        }
-        results.close();
-        DocumentRoutingService routingService = Framework.getLocalService(DocumentRoutingService.class);
-        // Batching initialization
-        if (batchSize == null) {
-            batchSize = DEFAULT_BATCH_SIZE;
-        }
+        CoreSession session = null;
         boolean transactionStarted = false;
-        if (!TransactionHelper.isTransactionActive()) {
-            TransactionHelper.startTransaction();
-            transactionStarted = true;
-        }
+        Split split = SimonManager.getStopwatch(ID).start();
         try {
+            session = openSession();
+
+            // Fetching all routes
+            // If the nodeId parameter is null, fetch all the workflow routes
+            // with
+            // the given workflowId
+            String query = "Select %s from DocumentRoute where (ecm:name like '%s.%%' OR  ecm:name like '%s') and ecm:currentLifeCycleState = 'running'";
+            String key = "ecm:uuid";
+            if (StringUtils.isEmpty(nodeId)) {
+                if (StringUtils.isEmpty(workflowId)) {
+                    log.error("Need to specify either the workflowModelId either the nodeId to query the workflows");
+                    return;
+                }
+                query = String.format(query, key, workflowId, workflowId);
+            } else {
+                query = "Select %s from RouteNode  where rnode:nodeId = '%s' and ecm:currentLifeCycleState = 'suspended'";
+                key = "ecm:parentId";
+                if (StringUtils.isEmpty(nodeId)) {
+                    log.error("Need to specify either the workflowModelId either the nodeId to query the workflows");
+                    return;
+                }
+                query = String.format(query, key, nodeId);
+            }
+
+            IterableQueryResult results = session.queryAndFetch(query, "NXQL");
+            List<String> routeIds = new ArrayList<String>();
+            for (Map<String, Serializable> result : results) {
+                routeIds.add(result.get(key).toString());
+            }
+            results.close();
+            DocumentRoutingService routingService = Framework.getLocalService(DocumentRoutingService.class);
+            // Batching initialization
+            if (batchSize == null) {
+                batchSize = DEFAULT_BATCH_SIZE;
+            }
+
+            if (!TransactionHelper.isTransactionActive()) {
+                TransactionHelper.startTransaction();
+                transactionStarted = true;
+            }
             long routesRestartedCount = 0;
             for (String routeId : routeIds) {
                 try {
@@ -140,8 +150,10 @@ public class BulkRestartWorkflow {
 
                     routesRestartedCount++;
                     if (routesRestartedCount % batchSize == 0) {
+                        CoreInstance.getInstance().close(session);
                         TransactionHelper.commitOrRollbackTransaction();
                         TransactionHelper.startTransaction();
+                        session = openSession();
                     }
                 } catch (Exception e) {
                     Throwable t = unwrapException(e);
@@ -153,6 +165,9 @@ public class BulkRestartWorkflow {
                 }
             }
         } finally {
+            if (session != null) {
+                CoreInstance.getInstance().close(session);
+            }
             TransactionHelper.commitOrRollbackTransaction();
             if (!transactionStarted) {
                 TransactionHelper.startTransaction();
@@ -183,4 +198,13 @@ public class BulkRestartWorkflow {
         }
     }
 
+    protected CoreSession openSession() {
+        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+        Repository repo = rm.getDefaultRepository();
+        try {
+            return repo.open();
+        } catch (Exception e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
 }

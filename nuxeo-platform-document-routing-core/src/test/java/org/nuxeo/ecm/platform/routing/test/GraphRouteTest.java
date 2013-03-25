@@ -1288,6 +1288,8 @@ public class GraphRouteTest {
         OperationChain chain = new OperationChain("testChain");
         chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle());
         automationService.run(ctx, chain);
+        //process invalidations from automation context
+        session.save();
         // query for all the workflows
         DocumentModelList workflows = session.query(String.format(
                 "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
@@ -1299,6 +1301,8 @@ public class GraphRouteTest {
         chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set(
                 "nodeId", "node2");
         automationService.run(ctx, chain);
+        //process invalidations from automation context
+        session.save();
         // query for all the workflows
         workflows = session.query(String.format(
                 "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
