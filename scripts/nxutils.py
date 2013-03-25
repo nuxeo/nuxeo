@@ -60,6 +60,7 @@ class Repository(object):
             self.url_pattern = remote_url + "/module"
         self.modules = []
         self.addons = []
+        self.is_nuxeoecm = True
 
     def cleanup(self):
         long_path_workaround_cleanup(self.driveletter, self.oldbasedir)
