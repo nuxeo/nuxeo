@@ -29,6 +29,7 @@ import org.nuxeo.template.api.context.DocumentWrapper;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 import org.nuxeo.template.context.AbstractContextBuilder;
+import org.nuxeo.template.processors.IdentityProcessor;
 
 /**
  * Runtime Component used to handle Extension Points and expose the
@@ -201,8 +202,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     @Override
     public TemplateProcessor getProcessor(String name) {
         if (name == null) {
-            log.warn("Can not get a TemplateProcessor with null name !!!");
-            return null;
+            log.info("no defined processor name, using Identity as default");
+            name = IdentityProcessor.NAME;
         }
         TemplateProcessorDescriptor desc = processorRegistry.getProcessorByName(name);
         if (desc != null) {
@@ -375,6 +376,5 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             return docAfterDetach;
         }
         return targetDoc;
-    }
-
+    } 
 }

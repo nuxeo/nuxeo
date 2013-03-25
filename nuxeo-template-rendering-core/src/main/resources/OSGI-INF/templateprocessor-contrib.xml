@@ -25,6 +25,15 @@
 
   </extension>
 
+ <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>Identity processor</documentation>
+
+    <templateProcessor name="Identity" label="Identity" default="false" class="org.nuxeo.template.processors.IdentityProcessor">
+    </templateProcessor>
+
+  </extension>
+
   <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="contextExtension">
 
     <documentation>Adds utility functions in the context
