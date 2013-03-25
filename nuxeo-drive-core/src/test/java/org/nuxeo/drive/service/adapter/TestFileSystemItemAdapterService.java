@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
@@ -561,5 +560,10 @@ public class TestFileSystemItemAdapterService {
         assertTrue(topLevelFactory.getClass().getName().endsWith(
                 "DummyTopLevelFolderItemFactory"));
         assertTrue(topLevelFactory instanceof DummyTopLevelFolderItemFactory);
+
+        harness.undeployContrib("org.nuxeo.drive.core.test",
+                "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
+        Framework.getLocalService(ReloadService.class).reload();
     }
+
 }
