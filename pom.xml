@@ -3453,6 +3453,11 @@
         <version>1.1.1</version>
       </dependency>
       <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>2.7.1</version>
+      </dependency>
+      <dependency>
         <groupId>org.owasp.antisamy</groupId>
         <artifactId>antisamy</artifactId>
         <version>1.4.4</version>
