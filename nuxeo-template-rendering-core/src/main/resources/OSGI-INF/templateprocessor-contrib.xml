@@ -25,6 +25,15 @@
 
   </extension>
 
+ <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="processor">
+
+    <documentation>Identity processor</documentation>
+
+    <templateProcessor name="Identity" label="Identity" default="false" class="org.nuxeo.template.processors.IdentityProcessor">
+    </templateProcessor>
+
+  </extension>
+
   <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="contextExtension">
 
     <documentation>
@@ -76,7 +85,7 @@
 
   <extension target="org.nuxeo.template.service.TemplateProcessorComponent" point="outputFormat">
 
-    <documentation>Adds outputFormat for the following mime type 
+    <documentation>Adds outputFormat for the following mime type
       <ul>
         <li>pdf</li>
         <li>odt</li>
