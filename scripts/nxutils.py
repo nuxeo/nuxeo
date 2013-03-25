@@ -241,7 +241,9 @@ class Repository(object):
         'profiles': comma-separated additional Maven profiles to use."""
         skip_tests_param = ""
         if skip_tests:
-            skip_tests_param = "-Dmaven.test.skip=true"
+            skip_tests_param = "-DskipTests=true"
+        else:
+            skip_tests_param = "-fae"
         profiles_param = ""
         if profiles is not None:
             profiles_param = "-P%s" % profiles
@@ -329,7 +331,7 @@ def long_path_workaround_init():
 
 def long_path_workaround_cleanup(driveletter, basedir):
     """Windows only. Cleanup the directory mapping if any."""
-    if driveletter != None:
+    if driveletter is not None:
         os.chdir(basedir)
         system("SUBST %s: /D" % (driveletter,), failonerror=False)
 
@@ -338,7 +340,7 @@ def check_output(cmd):
     """Return Shell command output."""
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, err = p.communicate()
-    if err != None:
+    if err is not None:
         log("[ERROR] Command", str(cmd), " returned an error:", sys.stderr)
         log(err, sys.stderr)
     return out.strip()
