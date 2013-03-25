@@ -122,7 +122,11 @@ class Release(object):
         # Detect if working on Nuxeo main sources
         tree = etree.parse(os.path.join(self.repo.basedir, "pom.xml"))
         artifact_id = tree.getroot().find("pom:artifactId", namespaces)
-        self.repo.is_nuxeoecm = "nuxeo-ecm" == artifact_id
+        self.repo.is_nuxeoecm = "nuxeo-ecm" == artifact_id.text
+        if self.repo.is_nuxeoecm:
+            log("Releasing Nuxeo main repository...")
+        else:
+            log("Releasing custom repository...")
 
     def set_snapshot(self):
         """Set current version from root POM."""
