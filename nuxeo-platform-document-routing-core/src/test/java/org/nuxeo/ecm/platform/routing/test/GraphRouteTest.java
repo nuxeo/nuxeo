@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -70,7 +71,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 
 import com.google.inject.Inject;
 
@@ -1260,7 +1260,7 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRestratWorkflowOperation() throws Exception {
+    public void testRestartWorkflowOperation() throws Exception {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
