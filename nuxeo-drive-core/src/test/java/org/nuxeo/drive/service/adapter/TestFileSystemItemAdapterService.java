@@ -561,5 +561,10 @@ public class TestFileSystemItemAdapterService {
         assertTrue(topLevelFactory.getClass().getName().endsWith(
                 "DummyTopLevelFolderItemFactory"));
         assertTrue(topLevelFactory instanceof DummyTopLevelFolderItemFactory);
+
+        harness.undeployContrib("org.nuxeo.drive.core.test",
+                "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
+        Framework.getLocalService(ReloadService.class).reload();
     }
+
 }
