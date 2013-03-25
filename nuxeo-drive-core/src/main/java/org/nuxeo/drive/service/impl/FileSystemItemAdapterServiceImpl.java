@@ -94,9 +94,13 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
         fileSystemItemFactories = new ArrayList<FileSystemItemFactoryWrapper>();
     }
+
+    @Override
     public void deactivate(ComponentContext context) throws Exception {
-        fileSystemItemFactories = null;
         super.deactivate(context);
+        fileSystemItemFactoryRegistry = null;
+        topLevelFolderItemFactoryRegistry = null;
+        fileSystemItemFactories = null;
     }
 
     /**
