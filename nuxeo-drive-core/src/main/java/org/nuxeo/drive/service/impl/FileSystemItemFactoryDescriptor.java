@@ -69,16 +69,57 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
         return enabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public int getOrder() {
         return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     public String getDocType() {
         return docType;
     }
 
+    public void setDocType(String docType) {
+        this.docType = docType;
+    }
+
     public String getFacet() {
         return facet;
+    }
+
+    public void setFacet(String facet) {
+        this.facet = facet;
+    }
+
+    public Class<? extends FileSystemItemFactory> getFactoryClass() {
+        return factoryClass;
+    }
+
+    public void setFactoryClass(
+            Class<? extends FileSystemItemFactory> factoryClass) {
+        this.factoryClass = factoryClass;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public String getparameter(String name) {
+        return parameters.get(name);
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
     }
 
     public FileSystemItemFactory getFactory() throws InstantiationException,
@@ -87,10 +128,6 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
         factory.setName(name);
         factory.handleParameters(parameters);
         return factory;
-    }
-
-    public Map<String, String> getParameters() {
-        return parameters;
     }
 
     @Override

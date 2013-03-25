@@ -54,8 +54,33 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
         return factory;
     }
 
+    public Class<? extends TopLevelFolderItemFactory> getFactoryClass() {
+        return factoryClass;
+    }
+
+    public void setFactoryClass(
+            Class<? extends TopLevelFolderItemFactory> factoryClass) {
+        this.factoryClass = factoryClass;
+    }
+
     public Map<String, String> getParameters() {
         return parameters;
+    }
+
+    public String getparameter(String name) {
+        return parameters.get(name);
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
+    }
+
+    public String getName() {
+        return factoryClass.getName();
     }
 
     @Override
