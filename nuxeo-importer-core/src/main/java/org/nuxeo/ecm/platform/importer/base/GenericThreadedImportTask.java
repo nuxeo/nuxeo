@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -333,7 +334,12 @@ public class GenericThreadedImportTask implements Runnable {
             if (task != null) {
                 // force comit before starting new thread
                 commit(true);
-                GenericMultiThreadedImporter.getExecutor().execute(task);
+                try {
+                    GenericMultiThreadedImporter.getExecutor().execute(task);
+                } catch (RejectedExecutionException e) {
+                    log.error("Import task rejected", e);
+                }
+
             } else {
                 Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.node_get_children");
                 Split split = stopwatch.start();

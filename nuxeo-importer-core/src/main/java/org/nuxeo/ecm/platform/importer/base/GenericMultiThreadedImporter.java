@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.work.WorkManagerImpl.NamedThreadFactory;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -277,7 +278,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         nbCreatedDocsByThreads = new ConcurrentHashMap<String, Long>();
 
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100));
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100),
+                new NamedThreadFactory("Nuxeo-Importer-"));
 
         initRootTask(importSource, targetContainer, skipRootContainerCreation,
                 log, batchSize, jobName);
