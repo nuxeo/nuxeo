@@ -1,11 +1,11 @@
 <!--
   (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
-  
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
-  
+
   Contributors:
   Nuxeo - initial API and implementation
 -->
@@ -203,7 +203,9 @@
           If no action id is given, the corresponding category is reset (for
           instance using 'CATEGORY:').
         </p>
-        <p>If the action information is '*:', all categories will be reset.</p>
+        <p>
+          If the action information is '*:', all categories will be reset.
+        </p>
         <p>
           The resulting string looks like:
           CATEGORY_1:ACTION_ID_1,CATEGORY_2:ACTION_ID_2_SUB_ACTION_ID_2,...
@@ -237,6 +239,26 @@
         Boolean stating if the default tab information should be added to the
         generated URL. Default tab information is used to reset current tab
         value.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        String used as variable name to expose the built URL when using
+        attribute resolveOnly set to true. Available since 5.7.
+      </description>
+    </attribute>
+    <attribute>
+      <name>resolveOnly</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>
+        Boolean used to state that the built URL should be exposed in the
+        context (using the "var" attribute value) instead of displaying the
+        resulting link. This is useful to benefit from the tag features when
+        building complex document URLs. Defaults to false, available since 5.7.
       </description>
     </attribute>
   </tag>

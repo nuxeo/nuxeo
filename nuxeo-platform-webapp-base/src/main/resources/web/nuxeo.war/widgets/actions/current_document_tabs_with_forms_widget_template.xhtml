@@ -1,4 +1,5 @@
 <c:if test="#{not empty widgetProperty_category}"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
@@ -23,9 +24,27 @@
         ajaxReRender="#{nxl:joinReRender(ajaxReRender, widgetProperty_ajaxReRender)}"
         actions="#{actions}"
         currentTabAction="#{currentAction}"
+        fullCategory="#{nxu:test(empty widgetProperty_fullCategory, widgetProperty_category, widgetPropery_fullCategory)}"
         ignoreTemplateProperty="true"
         subWidgets="#{widget.subWidgets}"
-        addForm="true" />
+        addForm="true">
+
+        <ui:define name="tab_content">
+          <c:if test="#{not empty widgetProperty_currentTabAction.link}">
+            <ui:include src="#{widgetProperty_currentTabAction.link}"/>
+          </c:if>
+
+          <c:if test="#{empty widgetProperty_currentTabAction.link and widgetProperty_currentTabAction.properties.isParentTab == true}">
+            <nxl:widgetType name="currentDocumentTabsWithForms"
+              mode="#{widget.mode}"
+              widgetName="#{widget.name}_sub_tab"
+              value="#{fieldOrValue}"
+              category="#{widgetProperty_currentTabAction}_sub_tab"
+              fullCategory="#{widgetProperty_fullCategory}:#{widgetProperty_currentTabAction}_sub_tab" />
+          </c:if>
+        </ui:define>
+
+      </nxl:widgetType>
     </nxu:set>
     </nxu:set>
   </a4j:outputPanel>

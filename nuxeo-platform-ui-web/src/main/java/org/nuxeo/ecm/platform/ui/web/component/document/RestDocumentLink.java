@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.document;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,15 +27,18 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.component.ContextCallback;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
 import javax.faces.component.html.HtmlOutputLink;
 import javax.faces.context.FacesContext;
+import javax.faces.event.FacesEvent;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.component.VariableManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
@@ -79,6 +83,16 @@ public class RestDocumentLink extends HtmlOutputLink {
     protected String pattern;
 
     protected Boolean newConversation;
+
+    /**
+     * @since 5.7
+     */
+    protected String var;
+
+    /**
+     * @since 5.7
+     */
+    protected Boolean resolveOnly;
 
     @Override
     public String getFamily() {
@@ -388,13 +402,142 @@ public class RestDocumentLink extends HtmlOutputLink {
         this.tabs = tabs;
     }
 
+    public Boolean getResolveOnly() {
+        if (resolveOnly != null) {
+            return resolveOnly;
+        }
+        ValueExpression ve = getValueExpression("resolveOnly");
+        if (ve != null) {
+            try {
+                return Boolean.valueOf(!Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext())));
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            // default value
+            return Boolean.FALSE;
+        }
+    }
+
+    public void setResolveOnly(Boolean resolveOnly) {
+        this.resolveOnly = resolveOnly;
+    }
+
+    public String getVar() {
+        if (var != null) {
+            return var;
+        }
+        ValueExpression ve = getValueExpression("var");
+        if (ve != null) {
+            try {
+                return (String) ve.getValue(getFacesContext().getELContext());
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public void setVar(String var) {
+        this.var = var;
+    }
+
+    // "resolveOnly" attribute management: expose value instead of rendering
+    // the tag
+
+    /**
+     * Saves the current value exposed as param to the request, and put new
+     * variable value instead.
+     * <p>
+     * Returns the original value exposed to the request.
+     *
+     * @since 5.7
+     */
+    protected Object beforeRender() {
+        String var = getVar();
+        Object orig = VariableManager.saveRequestMapVarValue(var);
+        if (Boolean.TRUE.equals(getResolveOnly())) {
+            VariableManager.putVariableToRequestParam(var, getValue());
+        }
+        return orig;
+    }
+
+    /**
+     * Restored the original value exposed as param to the request, and remove
+     * current variable value.
+     *
+     * @since 5.7
+     */
+    protected void afterRender(Object origVarValue) {
+        String var = getVar();
+        VariableManager.restoreRequestMapVarValue(var, origVarValue);
+    }
+
+    /**
+     * @since 5.7
+     */
+    @Override
+    public boolean invokeOnComponent(FacesContext context, String clientId,
+            ContextCallback callback) throws FacesException {
+        Object varValue = beforeRender();
+        try {
+            return super.invokeOnComponent(context, clientId, callback);
+        } finally {
+            afterRender(varValue);
+        }
+    }
+
+    /**
+     * @since 5.7
+     */
+    @Override
+    public void broadcast(FacesEvent event) {
+        Object varValue = beforeRender();
+        try {
+            super.broadcast(event);
+        } finally {
+            afterRender(varValue);
+        }
+    }
+
+    /**
+     * @since 5.7
+     */
+    @Override
+    public void encodeBegin(FacesContext context) throws IOException {
+        if (!Boolean.TRUE.equals(getResolveOnly())) {
+            super.encodeBegin(context);
+        }
+    }
+
+    @Override
+    public void encodeChildren(FacesContext context) throws IOException {
+        Object varValue = beforeRender();
+        try {
+            super.encodeChildren(context);
+        } finally {
+            afterRender(varValue);
+        }
+    }
+
+    /**
+     * @since 5.7
+     */
+    @Override
+    public void encodeEnd(FacesContext context) throws IOException {
+        if (!Boolean.TRUE.equals(getResolveOnly())) {
+            super.encodeEnd(context);
+        }
+    }
+
     // state holder
 
     @Override
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), document,
                 documentIdRef, view, tab, subTab, tabs, addTabInfo, pattern,
-                newConversation };
+                newConversation, var, resolveOnly };
     }
 
     @Override
@@ -410,5 +553,8 @@ public class RestDocumentLink extends HtmlOutputLink {
         addTabInfo = (Boolean) values[7];
         pattern = (String) values[8];
         newConversation = (Boolean) values[9];
+        var = (String) values[10];
+        resolveOnly = (Boolean) values[11];
     }
+
 }
