@@ -17,7 +17,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -50,18 +51,22 @@ public class PostCommitEventExecutor {
 
     public static final String BULK_TIMEOUT_PROP = "org.nuxeo.ecm.core.event.tx.BulkExecutor.timeout";
 
+    private static final long KEEP_ALIVE_TIME_SECOND = 10;
+
+    private static final int MAX_POOL_SIZE = 100;
+
     protected final ExecutorService executor;
 
     public PostCommitEventExecutor() {
-        int corePoolSize = 4;
-        // Won't grow to its max because we wait for tasks to finish
-        // synchronously, but we have to be big enough for all sessions.
-        int maxPoolSize = 100;
+        // use as much thread as needed up to MAX_POOL_SIZE
+        // keep them alive a moment for reuse
+        // have all threads torn down when there is no work to do
         ThreadFactory threadFactory = new NamedThreadFactory(
                 "Nuxeo-Event-PostCommit-");
-        executor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, 0,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-                threadFactory);
+        executor = new ThreadPoolExecutor(0, MAX_POOL_SIZE,
+                KEEP_ALIVE_TIME_SECOND, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(), threadFactory);
+        ((ThreadPoolExecutor) executor).allowCoreThreadTimeOut(true);
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
@@ -109,7 +114,12 @@ public class PostCommitEventExecutor {
         Callable<Boolean> callable = !bulk ? new EventBundleRunner(listeners,
                 bundle) : new EventBundleBulkRunner(listeners, bundle);
         FutureTask<Boolean> futureTask = new FutureTask<Boolean>(callable);
-        executor.execute(futureTask);
+        try {
+            executor.execute(futureTask);
+        } catch (RejectedExecutionException e) {
+            log.error("Events postcommit execution rejected", e);
+            return;
+        }
         try {
             // wait for runner to be finished, with timeout
             Boolean ok = futureTask.get(timeoutMillis, TimeUnit.MILLISECONDS);
