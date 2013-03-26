@@ -31,13 +31,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
-import org.nuxeo.ecm.core.convert.api.ConversionException;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Audio thumbnail factory
@@ -87,30 +83,10 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
                 InputStream is = new ByteArrayInputStream(
                         framePic.getImageData());
                 thumbnailBlob = new FileBlob(is);
-
-                // Convert the cover art into thumbnail
-                BlobHolder tmpBh = new SimpleBlobHolder(thumbnailBlob);
-                ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-                tmpBh = conversionService.convert(
-                        AudioThumbnailConstants.THUMBNAIL_CONVERTER_NAME,
-                        tmpBh, null);
-                if (tmpBh != null) {
-                    thumbnailBlob = tmpBh.getBlob();
-                }
             }
-        } catch (IOException e) {
+        } catch (IOException | TagException | InvalidAudioFrameException |  ReadOnlyFileException | ClientException e) {
             log.warn("Unable to get the audio file cover art", e);
-        } catch (TagException e) {
-            log.warn("Unable to get the audio file cover art", e);
-        } catch (InvalidAudioFrameException e) {
-            log.warn("Unable to get the audio file cover art", e);
-        } catch (ReadOnlyFileException e) {
-            log.warn("Unable to get the audio file cover art", e);
-        } catch (ConversionException e) {
-            log.warn("Unable to get audio cover converted", e);
-        } catch (ClientException e) {
-            log.warn("Unable to get audio cover converted", e);
-        }
+        } 
         return thumbnailBlob;
     }
 }
