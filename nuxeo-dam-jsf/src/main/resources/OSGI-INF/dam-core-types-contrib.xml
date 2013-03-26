@@ -6,6 +6,7 @@
   <require>org.nuxeo.ecm.platform.picture.coreTypes</require>
   <require>org.nuxeo.nuxeo.ecm.platform.audio.doctype</require>
   <require>org.nuxeo.nuxeo.ecm.platform.video.doctype</require>
+  <require>org.nuxeo.ecm.platform.faceted.search.jsf.core.types</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="dam_common" prefix="damc" src="schemas/dam_common.xsd" />
@@ -66,6 +67,13 @@
     <doctype name="ImportSet" extends="Folder">
       <schema name="file"/>
       <schema name="dam_common"/>
+    </doctype>
+
+    <!-- Add content view display schema to store content view search -->
+    <doctype name="FacetedSearchDefault" extends="FacetedSearch">
+      <schema name="faceted_search_default" />
+      <facet name="HiddenInNavigation" />
+      <schema name="content_view_display" />
     </doctype>
 
   </extension>
