@@ -110,12 +110,19 @@
           </condition>
         </rule>
       </filter>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="isParentTab">true</property>
+      </properties>
     </action>
 
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" order="0"
       label="action.view.summary" icon="/icons/file.gif" accessKey="v">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_CONTENT" link="/incl/tabs/document_content.xhtml"
@@ -123,6 +130,9 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>outSection</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
@@ -130,6 +140,9 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>inSection</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_TRASH_CONTENT" link="/incl/tabs/document_trash_content.xhtml"
@@ -142,6 +155,9 @@
           <condition>#{deleteActions.trashManagementEnabled}</condition>
         </rule>
       </filter>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="print" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
@@ -154,6 +170,9 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
@@ -162,6 +181,9 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_FILES_EDIT" link="/incl/tabs/document_files_edit.xhtml"
@@ -171,12 +193,18 @@
       <filter-id>mutable_document</filter-id>
       <filter-id>hasAttachedFiles</filter-id>
       <filter-id>denyFilesTab</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml"
       order="50" label="action.view.rights" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <!-- Manage the sub tabs -->
@@ -532,6 +560,9 @@
       order="70" label="action.view.local.configuration" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>has_local_configuration_available</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <!-- actions on document create and edit pages -->
