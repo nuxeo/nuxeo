@@ -37,6 +37,10 @@ function refreshPage()
     Seam.Component.getInstance("popupHelper").getCurrentURL(navigationCB);
 }
 
+function reloadPage() {
+  document.location.reload();
+}
+
 function refreshPageAfterDelete()
 {
   Seam.Component.getInstance("popupHelper").getCurrentURLAfterDelete(navigationCB);
@@ -45,7 +49,7 @@ function refreshPageAfterDelete()
 // menu actions callbacks
 function doCopy(docid)
 {
- Seam.Component.getInstance("clipboardActions").putInClipboard(docid,refreshPage);
+ Seam.Component.getInstance("clipboardActions").putInClipboard(docid,reloadPage);
 }
 
 function doPaste(docid)
