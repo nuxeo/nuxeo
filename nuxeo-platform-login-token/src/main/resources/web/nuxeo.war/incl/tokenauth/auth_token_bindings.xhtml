@@ -10,6 +10,9 @@
     function confirmRevokeTokenBinding() {
       return confirm("#{messages['label.tokenauth.revoke.confirm']}");
     }
+    function confirmRevokeAllTokenBindings() {
+        return confirm("#{messages['label.tokenauth.revokeAll.confirm']}");
+    }
   </script>
 
   <a4j:outputPanel id="authTokenBindingsPanel">
@@ -47,7 +50,15 @@
         action="#{tokenAuthenticationActions.refreshAuthTokenBindings}"
         immediate="true"
         reRender="authTokenBindingsPanel" />
-
+      <c:if test="#{!empty currentUserAuthTokenBindings}">
+      <a4j:commandButton value="#{messages['label.tokenauth.revokeAll']}"
+        id="#{layout.id}_deleteAllButton"
+        styleClass="button"
+        action="#{tokenAuthenticationActions.deleteAllAuthTokenBinding(value.id)}"
+        onclick="if (!confirmRevokeAllTokenBindings()) { return false; }"
+        immediate="true"
+        reRender="authTokenBindingsPanel" />
+      </c:if>
     </a4j:form>
 
     </nxu:set>

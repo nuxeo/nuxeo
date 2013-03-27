@@ -26,8 +26,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -68,6 +71,20 @@ public class TokenAuthenticationActionsBean implements Serializable {
         TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
         tokenAuthenticationService.revokeToken(tokenId);
 
+        reset();
+        facesMessages.add(StatusMessage.Severity.INFO,
+                messages.get("label.tokenauth.revoked"));
+    }
+
+    public void deleteAllTokenBindings() throws PropertyException,
+            ClientException {
+        reset();
+        TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
+        for (DocumentModel tokenBinding : getCurrentUserAuthTokenBindings()) {
+            String tokenId = (String) tokenBinding.getPropertyValue("authtoken:token");
+            tokenAuthenticationService.revokeToken(tokenId);
+
+        }
         reset();
         facesMessages.add(StatusMessage.Severity.INFO,
                 messages.get("label.tokenauth.revoked"));
