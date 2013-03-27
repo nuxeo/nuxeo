@@ -18,6 +18,7 @@
 package org.nuxeo.drive.seam;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -206,9 +207,10 @@ public class NuxeoDriveActions implements Serializable {
     public String synchronizeCurrentDocument() throws ClientException,
             SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        String userName = documentManager.getPrincipal().getName();
+        Principal principal = documentManager.getPrincipal();
+        String userName = principal.getName();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
-        driveManager.registerSynchronizationRoot(userName, newSyncRoot,
+        driveManager.registerSynchronizationRoot(principal, newSyncRoot,
                 documentManager);
         TokenAuthenticationService tokenService = Framework.getLocalService(TokenAuthenticationService.class);
         boolean hasOneNuxeoDriveToken = false;
@@ -229,9 +231,9 @@ public class NuxeoDriveActions implements Serializable {
 
     public void unsynchronizeCurrentDocument() throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        String userName = documentManager.getPrincipal().getName();
+        Principal principal = documentManager.getPrincipal();
         DocumentModel syncRoot = navigationContext.getCurrentDocument();
-        driveManager.unregisterSynchronizationRoot(userName, syncRoot,
+        driveManager.unregisterSynchronizationRoot(principal, syncRoot,
                 documentManager);
     }
 
@@ -256,8 +258,8 @@ public class NuxeoDriveActions implements Serializable {
     public void unsynchronizeRoot(DocumentModel syncRoot)
             throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        String userName = documentManager.getPrincipal().getName();
-        driveManager.unregisterSynchronizationRoot(userName, syncRoot,
+        Principal principal = documentManager.getPrincipal();
+        driveManager.unregisterSynchronizationRoot(principal, syncRoot,
                 documentManager);
     }
 

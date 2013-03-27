@@ -122,9 +122,10 @@ public class TestFileSystemItemManagerService {
                 "syncRoot1", "Folder"));
         syncRoot2 = session.createDocument(session.createDocumentModel("/",
                 "syncRoot2", "Folder"));
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+        Principal administrator = session.getPrincipal();
+        nuxeoDriveManager.registerSynchronizationRoot(administrator,
                 syncRoot1, session);
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+        nuxeoDriveManager.registerSynchronizationRoot(administrator,
                 syncRoot2, session);
 
         // Folder

@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.List;
 
 import org.junit.Before;
@@ -85,9 +86,10 @@ public class TestDefaultTopLevelFolderItemFactory {
                 "syncRoot1", "Folder"));
         syncRoot2 = session.createDocument(session.createDocumentModel("/",
                 "syncRoot2", "Folder"));
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+        Principal administrator = session.getPrincipal();
+        nuxeoDriveManager.registerSynchronizationRoot(administrator,
                 syncRoot1, session);
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+        nuxeoDriveManager.registerSynchronizationRoot(administrator,
                 syncRoot2, session);
 
         // Add a child file to syncRoot1

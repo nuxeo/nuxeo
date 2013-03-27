@@ -35,11 +35,11 @@ public class NuxeoDriveSetSynchronizationOperation {
             SecurityException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         if (enable) {
-            driveManager.registerSynchronizationRoot(
-                    session.getPrincipal().getName(), doc, session);
+            driveManager.registerSynchronizationRoot(session.getPrincipal(),
+                    doc, session);
         } else {
-            driveManager.unregisterSynchronizationRoot(
-                    session.getPrincipal().getName(), doc, session);
+            driveManager.unregisterSynchronizationRoot(session.getPrincipal(),
+                    doc, session);
         }
 
         // Commit transaction explicitly to ensure client-side consistency

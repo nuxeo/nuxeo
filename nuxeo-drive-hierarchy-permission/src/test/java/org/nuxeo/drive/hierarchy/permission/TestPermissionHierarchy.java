@@ -235,9 +235,9 @@ public class TestPermissionHierarchy {
         setPermission(user2Folder3, "user1", SecurityConstants.READ_WRITE, true);
 
         // Register shared folders as synchronization roots for user1
-        nuxeoDriveManager.registerSynchronizationRoot("user1",
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
                 session1.getDocument(user2Folder1.getRef()), session1);
-        nuxeoDriveManager.registerSynchronizationRoot("user1",
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
                 session1.getDocument(user2Folder3.getRef()), session1);
 
         // Get an Automation client session for each user
@@ -309,8 +309,8 @@ public class TestPermissionHierarchy {
          *
          * </pre>
          */
-        nuxeoDriveManager.registerSynchronizationRoot("user1", userWorkspace1,
-                session1);
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
+                userWorkspace1, session1);
 
         // ---------------------------------------------
         // Check top level folder children
@@ -499,8 +499,8 @@ public class TestPermissionHierarchy {
          *
          * </pre>
          */
-        nuxeoDriveManager.unregisterSynchronizationRoot("user1",
-                userWorkspace1, session1);
+        nuxeoDriveManager.unregisterSynchronizationRoot(
+                session1.getPrincipal(), userWorkspace1, session1);
 
         // ---------------------------------------------
         // Check "My Docs"
@@ -558,10 +558,10 @@ public class TestPermissionHierarchy {
          *
          * </pre>
          */
-        nuxeoDriveManager.registerSynchronizationRoot("user1", user1Folder3,
-                session1);
-        nuxeoDriveManager.registerSynchronizationRoot("user1", user1Folder4,
-                session1);
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
+                user1Folder3, session1);
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
+                user1Folder4, session1);
 
         // --------------------------------------------
         // Check user synchronization roots
@@ -618,7 +618,8 @@ public class TestPermissionHierarchy {
          *
          * </pre>
          */
-        nuxeoDriveManager.unregisterSynchronizationRoot("user1",
+        nuxeoDriveManager.unregisterSynchronizationRoot(
+                session1.getPrincipal(),
                 session1.getDocument(user2Folder1.getRef()), session1);
 
         // ---------------------------------------------
