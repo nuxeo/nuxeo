@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.runtime.api.Framework;
 
@@ -54,6 +55,8 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
     public static final String ERROR_URL_PARAM_NAME = "error";
 
     public static final String PROVIDER_URL_PARAM_NAME = "provider";
+
+    public static final String USERINFO_KEY = "OPENID_USERINFO";
 
     protected void sendError(HttpServletRequest req, String msg) {
         req.setAttribute(LOGIN_ERROR, msg);
@@ -112,6 +115,9 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
             }
 
             OpenIDUserInfo info = provider.getUserInfo(accessToken);
+
+            // Store the user info as a key in the request so apps can use it later in the chain
+            req.setAttribute(USERINFO_KEY, info);
 
             UserResolver userResolver = provider.getUserResolver();
 

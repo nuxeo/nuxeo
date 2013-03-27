@@ -1,8 +1,29 @@
+/*
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
+ *     Nuxeo
+ */
 package org.nuxeo.ecm.platform.oauth2.openid.auth.facebook;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
+
 import com.google.api.client.util.Key;
 
 public class FacebookUserInfo extends DefaultOpenIDUserInfo {
@@ -47,5 +68,17 @@ public class FacebookUserInfo extends DefaultOpenIDUserInfo {
         return verified;
     }
 
+    @Override
+    public Date getUpdatedTime() {
+        Date date;
+        try {
+            DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+            DateTime dateTime = parser.parseDateTime(updatedTime);
+            date = dateTime.toDate();
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+        return date;
+    }
 
 }

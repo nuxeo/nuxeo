@@ -2,6 +2,9 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
   targetNamespace="http://nuxeo.org/schemas/openid/userinfo">
 
+  <!-- subject@provider -->
+  <xs:element name="id" type="xs:string" />
+
   <xs:element name="nuxeoLogin" type="xs:string" />
   <xs:element name="provider" type="xs:string" />
   
@@ -23,7 +26,7 @@
   <xs:element name="zoneinfo" type="xs:string"/>
   <xs:element name="locale" type="xs:string"/>
   <xs:element name="phone_number" type="xs:string"/>
-  <xs:element name="add" type="xs:string"/>
+  <xs:element name="address" type="xs:string"/>
   <xs:element name="updated_time" type="xs:date"/>
 
 </xs:schema>

@@ -18,15 +18,10 @@
 
 package org.nuxeo.ecm.platform.oauth2.openid.auth;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -36,9 +31,9 @@ public class StoredUserInfoResolver extends UserResolver {
 
     private OpenIDUserInfoStore userInfoStore;
 
-    private static final Log log = LogFactory.getLog(UserResolverHelper.class);
+    private static final Log log = LogFactory.getLog(StoredUserInfoResolver.class);
 
-    StoredUserInfoResolver(OpenIDConnectProvider provider) {
+    public StoredUserInfoResolver(OpenIDConnectProvider provider) {
         super(provider);
     }
 
@@ -51,39 +46,36 @@ public class StoredUserInfoResolver extends UserResolver {
 
     @Override
     public String findNuxeoUser(OpenIDUserInfo userInfo) {
-
+        String nuxeoLogin = getUserInfoStore().getNuxeoLogin(userInfo);
+        // Check if the user exists
         try {
-
-            getUserInfoStore().getNuxeoLogin(userInfo);
-
-
             UserManager userManager = Framework.getLocalService(UserManager.class);
-            Map<String, Serializable> query = new HashMap<String, Serializable>();
-            query.put(userManager.getUserEmailField(), userInfo.getEmail());
-
-            DocumentModelList users = userManager.searchUsers(query, null);
-
-            if (users.isEmpty()) {
-                return null;
+            if (userManager.getUserModel(nuxeoLogin) == null) {
+                nuxeoLogin = null;
             }
-
-            DocumentModel user = users.get(0);
-            return (String) user.getPropertyValue(userManager.getUserIdField());
 
         } catch (ClientException e) {
             log.error("Error while search user in UserManager using email "
                     + userInfo.getEmail(), e);
             return null;
         }
+        return nuxeoLogin;
     }
 
-    public String findOrCreateNuxeoUser(String providerName, OpenIDUserInfo userInfo) {
-        String user = findNuxeoUser(userInfo);
-        if (user == null) {
-            throw new UnsupportedOperationException(
-                    "User creation is not implemented for now");
+    @Override
+    public DocumentModel updateUserInfo(DocumentModel user, OpenIDUserInfo userInfo) {
+        try {
+            UserManager userManager = Framework.getLocalService(UserManager.class);
+            String userId = (String) user.getPropertyValue(userManager.getUserIdField());
+            getUserInfoStore().storeUserInfo(userId, userInfo);
+        } catch (ClientException e) {
+            log.error("Error while updating user info for user "
+                    + userInfo.getEmail(), e);
+            return null;
         }
         return user;
+
     }
+
 }
 

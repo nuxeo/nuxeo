@@ -111,7 +111,18 @@ public class OpenIDProviderFragmentRegistry extends
         if (dst.description == null || dst.description.isEmpty()) {
             dst.description = src.description;
         }
-
+        if (!src.accessTokenKey.equals(OpenIDConnectProviderDescriptor.DEFAULT_ACCESS_TOKEN_KEY)) {
+            dst.accessTokenKey = src.accessTokenKey;
+        }
+        if (src.userInfoClass != OpenIDConnectProviderDescriptor.DEFAULT_USER_INFO_CLASS) {
+            dst.userInfoClass = src.userInfoClass;
+        }
+        if (src.redirectUriResolver != OpenIDConnectProviderDescriptor.DEFAULT_REDIRECT_URI_RESOLVER_CLASS) {
+            dst.redirectUriResolver = src.redirectUriResolver;
+        }
+        if (src.userResolverClass != OpenIDConnectProviderDescriptor.DEFAULT_USER_RESOLVER_CLASS) {
+            dst.userResolverClass = src.userResolverClass;
+        }
 
         dst.accessTokenKey = src.accessTokenKey;
 

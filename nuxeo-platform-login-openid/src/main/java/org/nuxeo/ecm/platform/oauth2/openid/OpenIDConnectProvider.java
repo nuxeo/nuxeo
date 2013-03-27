@@ -19,12 +19,14 @@
 package org.nuxeo.ecm.platform.oauth2.openid;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIdUserInfo;
@@ -97,7 +99,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
             Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[]{OpenIDConnectProvider.class});
             userResolver = c.newInstance(new Object[]{this});
         } catch (Exception e) {
-            log.error("Failed to instanciate UserResolver");
+            log.error("Failed to instanciate UserResolver " + e.getMessage());
         }
 
     }
@@ -210,13 +212,18 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         try {
             HttpRequest request = requestFactory.buildGetRequest(url);
             HttpResponse response = request.execute();
-            userInfo = response.parseAs(openIdUserInfoClass);
+            String body = IOUtils.toString(response.getContent(), "UTF-8");
+            userInfo = parseUserInfo(body);
 
         } catch (IOException e) {
             log.error("Unable to parse server response", e);
         }
 
         return userInfo;
+    }
+
+    public OpenIDUserInfo parseUserInfo(String userInfoJSON) throws IOException {
+        return new JsonObjectParser(JSON_FACTORY).parseAndClose(new StringReader(userInfoJSON), openIdUserInfoClass);
     }
 
     public boolean isEnabled() {

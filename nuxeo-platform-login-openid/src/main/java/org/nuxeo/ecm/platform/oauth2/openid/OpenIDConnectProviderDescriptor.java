@@ -26,11 +26,19 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
-import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolverHelper;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.EmailBasedUserResolver;
 
 @XObject("provider")
 public class OpenIDConnectProviderDescriptor implements Serializable {
     protected static final long serialVersionUID = 1L;
+
+    public static final String DEFAULT_ACCESS_TOKEN_KEY = "access_token";
+
+    public static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
+
+    public static final Class<? extends RedirectUriResolver> DEFAULT_REDIRECT_URI_RESOLVER_CLASS = RedirectUriResolverHelper.class;
+
+    public static final Class<? extends OpenIDUserInfo> DEFAULT_USER_INFO_CLASS = DefaultOpenIDUserInfo.class;
 
     @XNode("@enabled")
     protected boolean enabled = true;
@@ -48,7 +56,7 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     protected String userInfoURL;
 
     @XNode("accessTokenKey")
-    protected String accessTokenKey = "access_token";
+    protected String accessTokenKey = DEFAULT_ACCESS_TOKEN_KEY;
 
     @XNode("clientId")
     protected String clientId;
@@ -69,13 +77,13 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     protected String description;
 
     @XNode("userResolverClass")
-    protected Class<? extends UserResolver> userResolverClass = UserResolverHelper.class;
+    protected Class<? extends UserResolver> userResolverClass = DEFAULT_USER_RESOLVER_CLASS;
 
     @XNode("redirectUriResolver")
-    protected Class<? extends RedirectUriResolver> redirectUriResolver = RedirectUriResolverHelper.class;
+    protected Class<? extends RedirectUriResolver> redirectUriResolver = DEFAULT_REDIRECT_URI_RESOLVER_CLASS;
 
     @XNode("userInfoClass")
-    protected Class<? extends OpenIDUserInfo> userInfoClass = DefaultOpenIDUserInfo.class;
+    protected Class<? extends OpenIDUserInfo> userInfoClass = DEFAULT_USER_INFO_CLASS;
 
     public static long getSerialversionuid() {
         return serialVersionUID;

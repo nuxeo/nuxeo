@@ -36,6 +36,12 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
     public static final String DIRECTORY_NAME = "openIdUserInfos";
     public static final String SCHEMA_NAME = "openIdUserInfo";
 
+    public static final String NUXEO_LOGIN_KEY = "nuxeoLogin";
+    public static final String OPENID_SUBJECT_KEY = "subject";
+    public static final String OPENID_PROVIDER_KEY = "provider";
+
+    public static final String ID = "id";
+
     private String providerName;
 
     public OpenIDUserInfoStoreImpl(String providerName) {
@@ -48,8 +54,37 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             session = ds.open(DIRECTORY_NAME);
-            DocumentModel entry = session.createEntry(userInfo);
-            session.updateEntry(entry);
+            Map<String, Object> data = new HashMap<String, Object>();
+
+            // Generate an ID
+            data.put(ID, getID(providerName, userInfo.getSubject()));
+
+            data.put(NUXEO_LOGIN_KEY, userId);
+            data.put(OPENID_PROVIDER_KEY, providerName);
+
+            // Copy the standard fields
+            data.put(OPENID_SUBJECT_KEY, userInfo.getSubject());
+            data.put("name", userInfo.getName());
+            data.put("given_name", userInfo.getGivenName());
+            data.put("family_name", userInfo.getFamilyName());
+            data.put("middle_name", userInfo.getMiddleName());
+            data.put("nickname", userInfo.getNickname());
+            data.put("preferred_username", userInfo.getPreferredUsername());
+            data.put("profile", userInfo.getProfile());
+            data.put("picture", userInfo.getPicture());
+            data.put("website", userInfo.getWebsite());
+            data.put("email", userInfo.getEmail());
+            data.put("email_verified", userInfo.isEmailVerified());
+            data.put("gender", userInfo.getGender());
+            data.put("birthdate", userInfo.getBirthdate());
+            data.put("zoneinfo", userInfo.getZoneInfo());
+            data.put("locale", userInfo.getLocale());
+            data.put("phone_number", userInfo.getPhoneNumber());
+            data.put("address", userInfo.getAddress());
+            data.put("updated_time", userInfo.getUpdatedTime());
+
+            session.createEntry(data);
+
         } catch (Exception e) {
             log.error("Error during token storage", e);
         } finally {
@@ -61,21 +96,18 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
         }
     }
 
+    @Override
     public String getNuxeoLogin(OpenIDUserInfo userInfo) {
 
         Session session = null;
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             session = ds.open(DIRECTORY_NAME);
-            Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("provider", providerName);
-            filter.put("subject", userInfo.getSubject());
-            DocumentModelList entries = session.query(filter);
-            if (entries.size() == 0) {
+            DocumentModel entry = session.getEntry(getID(providerName, userInfo.getSubject()));
+            if (entry == null) {
                 return null;
             }
-            DocumentModel entry = entries.get(0);
-            return (String) entry.getPropertyValue(SCHEMA_NAME + ":" + "subject");
+            return (String) entry.getPropertyValue(SCHEMA_NAME + ":" + NUXEO_LOGIN_KEY);
         } catch (Exception e) {
             log.error("Error retrieving OpenID user info", e);
             return null;
@@ -88,6 +120,7 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
         }
     }
 
+    @Override
     public OpenIDUserInfo getUserInfo(String nuxeoLogin) {
 
         Session session = null;
@@ -95,8 +128,8 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
             DirectoryService ds = Framework.getService(DirectoryService.class);
             session = ds.open(DIRECTORY_NAME);
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            filter.put("provider", providerName);
-            filter.put("nuxeoLogin", nuxeoLogin);
+            filter.put(OPENID_PROVIDER_KEY, providerName);
+            filter.put(NUXEO_LOGIN_KEY, nuxeoLogin);
             DocumentModelList entries = session.query(filter);
             if (entries.size() == 0) {
                 return null;
@@ -115,6 +148,10 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
                 } catch (DirectoryException e) {}
             }
         }
+    }
+
+    protected String getID(String provider, String subject) {
+        return subject + "@" + provider;
     }
 
 }

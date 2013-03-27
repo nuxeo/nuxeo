@@ -38,11 +38,11 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
-public class UserResolverHelper extends UserResolver {
+public class EmailBasedUserResolver extends UserResolver {
 
-    private static final Log log = LogFactory.getLog(UserResolverHelper.class);
+    private static final Log log = LogFactory.getLog(EmailBasedUserResolver.class);
 
-    UserResolverHelper(OpenIDConnectProvider provider) {
+    public EmailBasedUserResolver(OpenIDConnectProvider provider) {
         super(provider);
     }
 
@@ -70,12 +70,17 @@ public class UserResolverHelper extends UserResolver {
         }
     }
 
-    public String findOrCreateNuxeoUser(String providerName, OpenIDUserInfo userInfo) {
-        String user = findNuxeoUser(userInfo);
-        if (user == null) {
-            throw new UnsupportedOperationException(
-                    "User creation is not implemented for now");
+    @Override
+    public DocumentModel updateUserInfo(DocumentModel user, OpenIDUserInfo userInfo) {
+        try {
+            UserManager userManager = Framework.getLocalService(UserManager.class);
+            user.setPropertyValue(userManager.getUserEmailField(), userInfo.getEmail());
+        } catch (ClientException e) {
+            log.error("Error while search user in UserManager using email "
+                    + userInfo.getEmail(), e);
+            return null;
         }
         return user;
     }
+
 }

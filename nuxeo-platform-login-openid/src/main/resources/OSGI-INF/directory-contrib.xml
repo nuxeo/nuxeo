@@ -10,7 +10,7 @@
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>openIdUserInfo</table>
-      <idField>nuxeoLogin</idField>
+      <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
