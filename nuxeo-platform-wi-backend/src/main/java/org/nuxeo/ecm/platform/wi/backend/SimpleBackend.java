@@ -353,8 +353,9 @@ public class SimpleBackend extends AbstractCoreBackend {
         source.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
         if (source.isFolder()) {
             source.setPropertyValue("dc:title", destinationName);
-            getSession().saveDocument(source);
             moveItem(source, source.getParentRef(), destinationName);
+            source.putContextData("renameSource", "webdav");
+            getSession().saveDocument(source);
         } else {
             source.setPropertyValue("dc:title", destinationName);
             BlobHolder bh = source.getAdapter(BlobHolder.class);
@@ -370,8 +371,8 @@ public class SimpleBackend extends AbstractCoreBackend {
             }
             if (!blobUpdated) {
                 source.setPropertyValue("dc:title", destinationName);
-                source = getSession().saveDocument(source);
                 moveItem(source, source.getParentRef(), destinationName);
+                source = getSession().saveDocument(source);
             }
         }
     }
