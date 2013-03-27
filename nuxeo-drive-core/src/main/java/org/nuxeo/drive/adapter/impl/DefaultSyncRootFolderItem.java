@@ -56,7 +56,7 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
         Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(
-                principal.getName(), doc, session);
+                principal, doc, session);
     }
 
     @Override

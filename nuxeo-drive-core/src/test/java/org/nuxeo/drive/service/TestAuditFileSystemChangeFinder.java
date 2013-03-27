@@ -131,10 +131,10 @@ public class TestAuditFileSystemChangeFinder {
         assertTrue(changes.isEmpty());
 
         // Sync roots but no changes
-        nuxeoDriveManager.registerSynchronizationRoot(
-                session.getPrincipal().getName(), folder1, session);
-        nuxeoDriveManager.registerSynchronizationRoot(
-                session.getPrincipal().getName(), folder2, session);
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                folder1, session);
+        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
+                folder2, session);
         changes = getChanges();
         assertTrue(changes.isEmpty());
 
@@ -184,7 +184,7 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
 
         nuxeoDriveManager.unregisterSynchronizationRoot(
-                session.getPrincipal().getName(), folder2, session);
+                session.getPrincipal(), folder2, session);
         changes = getChanges();
         assertEquals(2, changes.size());
         // the root unregistration is mapped to a fake deletion from the
@@ -223,7 +223,7 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
 
         nuxeoDriveManager.registerSynchronizationRoot(
-                session.getPrincipal().getName(), folder2, session);
+                session.getPrincipal(), folder2, session);
         changes = getChanges();
         assertEquals(2, changes.size());
         change = changes.get(0);
@@ -276,10 +276,8 @@ public class TestAuditFileSystemChangeFinder {
         // Register sync roots => should find changes: the newly
         // synchronized root folders as they are updated by the synchronization
         // registration process
-        nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder1,
-                session);
-        nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder2,
-                session);
+        nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
+        nuxeoDriveManager.registerSynchronizationRoot(admin, folder2, session);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
@@ -399,8 +397,8 @@ public class TestAuditFileSystemChangeFinder {
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Register a root for someone else
-        nuxeoDriveManager.registerSynchronizationRoot(otherUser.getName(),
-                folder1, session);
+        nuxeoDriveManager.registerSynchronizationRoot(otherUser, folder1,
+                session);
 
         // Administrator does not see any change
         activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
@@ -413,8 +411,7 @@ public class TestAuditFileSystemChangeFinder {
         assertFalse(changeSummary.getHasTooManyChanges());
 
         // Register a new sync root
-        nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder1,
-                session);
+        nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
@@ -438,8 +435,7 @@ public class TestAuditFileSystemChangeFinder {
                 fsItemChange.getFileSystemItem().getId());
 
         // Check that root unregistration is detected as a deletion
-        nuxeoDriveManager.unregisterSynchronizationRoot(admin.getName(),
-                folder1, session);
+        nuxeoDriveManager.unregisterSynchronizationRoot(admin, folder1, session);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
 
@@ -456,8 +452,7 @@ public class TestAuditFileSystemChangeFinder {
                 fsItemChange.getFileSystemItemId());
 
         // Register back the root, it's activity is again detected by the client
-        nuxeoDriveManager.registerSynchronizationRoot(admin.getName(), folder1,
-                session);
+        nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
         activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
@@ -509,9 +504,9 @@ public class TestAuditFileSystemChangeFinder {
         // to a visible change for the client.
         TransactionHelper.startTransaction();
         Principal someUser = new NuxeoPrincipalImpl("some-user");
-        nuxeoDriveManager.registerSynchronizationRoot(someUser.getName(),
+        nuxeoDriveManager.registerSynchronizationRoot(someUser,
                 folder1, session);
-        nuxeoDriveManager.unregisterSynchronizationRoot(someUser.getName(),
+        nuxeoDriveManager.unregisterSynchronizationRoot(someUser,
                 folder1, session);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
@@ -522,10 +517,10 @@ public class TestAuditFileSystemChangeFinder {
 
         // Do it a second time to check that the client did not receive bad
         // active root markers
-        nuxeoDriveManager.registerSynchronizationRoot(someUser.getName(),
-                folder1, session);
-        nuxeoDriveManager.unregisterSynchronizationRoot(someUser.getName(),
-                folder1, session);
+        nuxeoDriveManager.registerSynchronizationRoot(someUser, folder1,
+                session);
+        nuxeoDriveManager.unregisterSynchronizationRoot(someUser, folder1,
+                session);
         commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
         changeSummary = getChangeSummary(someUser);

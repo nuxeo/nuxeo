@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -61,6 +63,8 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -138,6 +142,8 @@ public class TestFileSystemItemOperations {
     @Before
     public void init() throws Exception {
 
+        TransactionHelper.startTransaction();
+        Principal administrator = session.getPrincipal();
         // Create 2 sync roots
         syncRoot1 = session.createDocument(session.createDocumentModel("/",
                 "folder1", "Folder"));
@@ -145,9 +151,9 @@ public class TestFileSystemItemOperations {
                 "folder2", "Folder"));
 
         // Register sync roots
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+        nuxeoDriveManager.registerSynchronizationRoot(administrator,
                 syncRoot1, session);
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator",
+        nuxeoDriveManager.registerSynchronizationRoot(administrator,
                 syncRoot2, session);
 
         // Create 1 file in each sync root
@@ -185,6 +191,7 @@ public class TestFileSystemItemOperations {
         file4 = session.createDocument(file4);
 
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
 
         // Get an Automation client session
         clientSession = automationClient.getSession("Administrator",
@@ -712,7 +719,7 @@ public class TestFileSystemItemOperations {
         // --------------------------------------------------------
         // No REMOVE permission on the source backing doc => false
         // --------------------------------------------------------
-        createUser("joe", "joe");
+        Principal joe = createUser("joe", "joe");
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
         clientSession = automationClient.getSession("joe", "joe");
@@ -758,7 +765,7 @@ public class TestFileSystemItemOperations {
         // syncRoot2 is not registered as a sync root for joe
         assertEquals("false", canMoveFSItem);
 
-        nuxeoDriveManager.registerSynchronizationRoot("joe", syncRoot2, session);
+        nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot2, session);
         session.save();
         canMoveFSItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveCanMove.ID).set("srcId",
@@ -905,12 +912,12 @@ public class TestFileSystemItemOperations {
         deleteUser("joe");
     }
 
-    protected void createUser(String userName, String password)
+    protected NuxeoPrincipal createUser(String userName, String password)
             throws ClientException {
-        createUser(userName, password, null, null);
+        return createUser(userName, password, null, null);
     }
 
-    protected void createUser(String userName, String password,
+    protected NuxeoPrincipal createUser(String userName, String password,
             String firstName, String lastName) throws ClientException {
         org.nuxeo.ecm.directory.Session userDir = directoryService.getDirectory(
                 "userDirectory").getSession();
@@ -924,6 +931,8 @@ public class TestFileSystemItemOperations {
         } finally {
             userDir.close();
         }
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        return userManager.getPrincipal(userName);
     }
 
     protected void deleteUser(String userName) throws ClientException {

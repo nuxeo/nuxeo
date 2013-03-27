@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -106,9 +108,11 @@ public class TestGetChangeSummary {
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Register sync roots and create 2 documents => should find 2 changes
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder1,
+        TransactionHelper.startTransaction();
+        Principal administrator = session.getPrincipal();
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1,
                 session);
-        nuxeoDriveManager.registerSynchronizationRoot("Administrator", folder2,
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2,
                 session);
 
         DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
@@ -124,6 +128,7 @@ public class TestGetChangeSummary {
         doc2 = session.createDocument(doc2);
 
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
 
         changeSummary = getChangeSummary();
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
