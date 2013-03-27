@@ -521,4 +521,28 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertEquals(6, ct.getFieldsCount());
     }
 
+    @Test
+    public void testXSDRebase() throws Exception {
+
+        URL url = getResource("schema/testExtension.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("extension", "", url, "employee");
+
+        assertNotNull(schema);
+
+        // additional fields
+        assertTrue(schema.hasField("address"));
+        assertTrue(schema.hasField("city"));
+        assertTrue(schema.hasField("country"));
+
+        // inherited fields
+        assertTrue(schema.hasField("firstname"));
+        assertTrue(schema.hasField("lastname"));
+
+        // super parent inherited fields
+        assertTrue(schema.hasField("race"));
+
+        assertEquals(6, schema.getFieldsCount());
+    }
+
 }

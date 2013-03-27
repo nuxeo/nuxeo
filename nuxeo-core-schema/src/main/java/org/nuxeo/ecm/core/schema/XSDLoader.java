@@ -180,6 +180,14 @@ public class XSDLoader {
     // called by SchemaManagerImpl
     public Schema loadSchema(String name, String prefix, File file,
             boolean override) throws SAXException, IOException, TypeException {
+        return loadSchema(name, prefix, file, override, null);
+    }
+
+    // called by SchemaManagerImpl
+    // @since 5.7
+    public Schema loadSchema(String name, String prefix, File file,
+            boolean override, String xsdElement) throws SAXException,
+            IOException, TypeException {
         XSOMParser parser = getParser();
         String systemId = file.toURI().toURL().toExternalForm();
         if (file.getPath().startsWith("\\\\")) { // Windows UNC share
@@ -196,7 +204,7 @@ public class XSDLoader {
         if (collectReferencedXSD) {
             collectReferencedXSD(xsSchemas);
         }
-        return loadSchema(name, prefix, xsSchemas, override);
+        return loadSchema(name, prefix, xsSchemas, override, xsdElement);
     }
 
     protected void collectReferencedXSD(XSSchemaSet xsSchemas) {
@@ -220,18 +228,40 @@ public class XSDLoader {
 
     }
 
-    // called by tests
-    public Schema loadSchema(String name, String prefix, URL url)
-            throws SAXException, TypeException {
+    /**
+     * Create Nuxeo schema from a XSD resource. If xsdElement is non null and
+     * correspont to the name of a complex element, the schema is created from
+     * the target complex type instead of from the global schema
+     * 
+     * @since 5.7
+     * 
+     * @param name schema name
+     * @param prefix schema prefix
+     * @param url url to load the XSD resource
+     * @param xsdElement name of the complex element to use as root of the
+     *            schema
+     * @return
+     * @throws SAXException
+     * @throws TypeException
+     * @since 5.7
+     */
+    public Schema loadSchema(String name, String prefix, URL url,
+            String xsdElement) throws SAXException, TypeException {
         XSOMParser parser = getParser();
         parser.parse(url);
         XSSchemaSet xsSchemas = parser.getResult();
-        return loadSchema(name, prefix, xsSchemas, false);
+        return loadSchema(name, prefix, xsSchemas, false, xsdElement);
+    }
+
+    // called by tests
+    public Schema loadSchema(String name, String prefix, URL url)
+            throws SAXException, TypeException {
+        return loadSchema(name, prefix, url, null);
     }
 
     protected Schema loadSchema(String name, String prefix,
-            XSSchemaSet schemaSet, boolean override) throws SAXException,
-            TypeException {
+            XSSchemaSet schemaSet, boolean override, String xsdElement)
+            throws SAXException, TypeException {
         if (schemaSet == null) {
             return null;
         }
@@ -284,6 +314,23 @@ public class XSDLoader {
             } else {
                 log.warn("Failed to load field from attribute " + att.getName()
                         + " : " + att.getType());
+            }
+        }
+
+        if (xsdElement != null) {
+            Field singleComplexField = ecmSchema.getField(xsdElement);
+            if (singleComplexField == null) {
+                log.warn("Unable to find element " + xsdElement
+                        + " to rebase schema " + name);
+            } else {
+                if (singleComplexField.getType().isComplexType()) {
+                    ComplexType singleComplexFieldType = (ComplexType) singleComplexField.getType();
+                    ecmSchema = new SchemaImpl(singleComplexFieldType, name,
+                            new Namespace(ns, prefix));
+                } else {
+                    log.warn("can not rebase schema " + name + " on "
+                            + xsdElement + " that is not a complex type");
+                }
             }
         }
 

@@ -85,6 +85,12 @@
       The schema namespace is the targetNamespace defined inside the XSD file
       <p/>
       Note that multiple schemas can share the same target namespace and prefix
+      <p/>
+      You can also create a Nuxeo Schema from a sub part of the XSD schema.
+      For that you can use the xsdRootElement attribute to indicate the complex type to use.
+      <code>
+        <schema name="employeeSchema" src="schema/testExtension.xsd" xsdRootElement="employee"/>
+      </code>
     </documentation>
 
     <object

@@ -334,4 +334,29 @@ public class TestSchemaManager extends NXRuntimeTestCase {
                 2,
                 ((ComplexType) schema.getField("field4").getType()).getFieldsCount());
     }
+
+    @Test
+    public void testDeploySchemaWithRebase() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/testSchemaRebase.xml");
+
+        Schema schema = schemaManager.getSchema("employeeSchema");
+        assertNotNull(schema);
+
+        // additional fields
+        assertTrue(schema.hasField("address"));
+        assertTrue(schema.hasField("city"));
+        assertTrue(schema.hasField("country"));
+
+        // inherited fields
+        assertTrue(schema.hasField("firstname"));
+        assertTrue(schema.hasField("lastname"));
+
+        // super parent inherited fields
+        assertTrue(schema.hasField("race"));
+
+        assertEquals(6, schema.getFieldsCount());
+
+    }
+
 }

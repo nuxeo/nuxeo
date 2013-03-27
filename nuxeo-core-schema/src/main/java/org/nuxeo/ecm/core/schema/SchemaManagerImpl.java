@@ -286,7 +286,8 @@ public class SchemaManagerImpl implements SchemaManager {
             Schema oldschema = schemas.get(sd.name);
             // loadSchema calls this.registerSchema
             XSDLoader schemaLoader = new XSDLoader(this, sd);
-            schemaLoader.loadSchema(sd.name, sd.prefix, file, sd.override);
+            schemaLoader.loadSchema(sd.name, sd.prefix, file, sd.override,
+                    sd.xsdRootElement);
 
             if (oldschema == null) {
                 log.info("Registered schema: " + sd.name + " from "

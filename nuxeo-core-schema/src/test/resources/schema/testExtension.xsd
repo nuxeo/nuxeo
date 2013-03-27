@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:xxs="http://modelcentral.fico.com/schemas/xtension/"
-           targetNamespace="http://modelcentral.fico.com/schemas/xtension/">
+           xmlns:xxs="http://something.com/schemas/xtension/"
+           targetNamespace="http://something.com/schemas/xtension/">
 
 <xs:complexType name="animalinfo">
   <xs:sequence>
