@@ -551,6 +551,15 @@ public class XSDLoader {
                 }
             }
         }
+
+        // add fields from Parent
+        if (superType != null && superType.isComplexType()) {
+            for (Field parentField : superType.getFields()) {
+                ct.addField(parentField.getName().getLocalName(),
+                        parentField.getType(),
+                        (String) parentField.getDefaultValue(), 0);
+            }
+        }
         return ct;
     }
 

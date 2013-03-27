@@ -452,4 +452,73 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
     }
 
+    @Test
+    public void testClassifier() throws Exception {
+
+        URL url = getResource("schema/test-classifier.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("classifier", "", url);
+
+        assertNotNull(schema);
+
+        Field field1 = schema.getField("integerBins");
+        assertNotNull(field1);
+
+        Field field2 = schema.getField("stringBins");
+        assertNotNull(field2);
+
+        // integerBins
+        assertTrue(field1.getType().isListType());
+        ListType ltype = (ListType) field1.getType();
+
+        Type integerBinType = ltype.getField().getType();
+
+        assertTrue(integerBinType.isComplexType());
+        assertEquals("integerBin", integerBinType.getName());
+
+        Field matchingValuesField = ((ComplexType) integerBinType).getField("matchingValues");
+        assertNotNull(matchingValuesField);
+
+        assertEquals("integerValues", matchingValuesField.getType().getName());
+
+        assertTrue(matchingValuesField.getType().isListType());
+
+        ListType integerValuesType = (ListType) matchingValuesField.getType();
+
+        assertTrue(integerValuesType.getField().getType().isSimpleType());
+        assertEquals("long", integerValuesType.getField().getType().getName());
+
+    }
+
+    @Test
+    public void testXSExtension() throws Exception {
+
+        URL url = getResource("schema/testExtension.xsd");
+        assertNotNull(url);
+        Schema schema = reader.loadSchema("extension", "", url);
+
+        assertNotNull(schema);
+
+        Field field = schema.getField("employee");
+        assertNotNull(field);
+
+        assertTrue(field.getType().isComplexType());
+
+        ComplexType ct = (ComplexType) field.getType();
+
+        // additional fields
+        assertTrue(ct.hasField("address"));
+        assertTrue(ct.hasField("city"));
+        assertTrue(ct.hasField("country"));
+
+        // inherited fields
+        assertTrue(ct.hasField("firstname"));
+        assertTrue(ct.hasField("lastname"));
+
+        // super parent inherited fields
+        assertTrue(ct.hasField("race"));
+
+        assertEquals(6, ct.getFieldsCount());
+    }
+
 }
