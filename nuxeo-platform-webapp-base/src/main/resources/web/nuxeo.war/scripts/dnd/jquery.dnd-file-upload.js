@@ -10,6 +10,7 @@
   var uploadStack = new Array();
   var uploadIdx=0;
   var nbUploadInprogress=0;
+  var completedUploads = new Array();
 
   $.fn.dropzone = function(options) {
 
@@ -181,9 +182,17 @@
 
       // add listeners
       upload.addEventListener("progress", function(event) {progress(event,opts)}, false);
+
       // The "load" event doesn't work correctly on WebKit (Chrome, Safari),
       // it fires too early, before the server has returned its response.
-      // upload.addEventListener("load", function(event) {load(event,opts)}, false);
+      // still it is required for Firefox
+      if (navigator.userAgent.indexOf('Firefox') > -1) {
+        upload.addEventListener("load", function(event) {log("trigger load"); log(event); load(event.target,opts)}, false);
+      }
+
+      // on ready state change is not fired in all cases on webkit
+      // - on webkit we rely on progress lister to detected upload end
+      // - but on Firefox the event we need it
       xhr.onreadystatechange = function() {readyStateChange(xhr, opts)};
 
       // propagate callback
@@ -198,6 +207,7 @@
       }
       targetUrl =  targetUrl + "batch/upload";
 
+      log("starting upload for file " + uploadIdx);
       xhr.open(opts.method, targetUrl);
       xhr.setRequestHeader("Cache-Control", "no-cache");
       xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -218,7 +228,7 @@
 
       if (nbUploadInprogress>=opts.numConcurrentUploads) {
         sendingRequestsInProgress=false;
-        log("pausing upload");
+        log("delaying upload for next file(s) " + uploadIdx + "+ since there are already " + nbUploadInprogress + " active uploads");
         return;
       }
     }
@@ -226,25 +236,34 @@
   }
 
   function readyStateChange(xhr, opts) {
+    var upload = xhr.upload;
+    log("readyStateChange event on file upload " + upload.fileIndex + " (state : " + xhr.readyState + ")");
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
-        load(xhr, opts);
+        load(upload, opts);
       } else {
         log("Upload failed, status: " + xhr.status);
       }
     }
   }
 
-  function load(xhr, opts) {
+  function load(upload, opts) {
+    var fileIdx = upload.fileIndex;
+    log("Received loaded event on  file " + fileIdx);
+    if (completedUploads.indexOf(fileIdx)<0) {
+      completedUploads.push(fileIdx);
+    } else {
+       log("Event already processsed for file " + fileIdx + ", exiting");
+       return;
+    }
     var now = new Date().getTime();
-    var upload = xhr.upload;
     var timeDiff = now - upload.downloadStartTime;
     opts.handler.uploadFinished(upload.fileIndex, upload.fileObj, timeDiff);
-    log("finished loading of file " + upload.fileIndex);
+    log("upload of file " + upload.fileIndex + " completed");
     nbUploadInprogress--;
     if (!sendingRequestsInProgress && uploadStack.length>0) {
       // restart upload
-      log("restart upload");
+      log("restart pending uploads");
       upload.uploadFiles(opts)
     }
     else if (nbUploadInprogress==0) {
@@ -253,11 +272,12 @@
   }
 
   function progress(event, opts) {
+    log(event);
     if (event.lengthComputable) {
       var percentage = Math.round((event.loaded * 100) / event.total);
       if (event.target.currentProgress != percentage) {
 
-        log(event.target.fileIndex + " --> " + percentage + "%");
+        log("progress event on upload of file " + event.target.fileIndex + " --> " + percentage + "%");
 
         event.target.currentProgress = percentage;
         opts.handler.fileUploadProgressUpdated(event.target.fileIndex, event.target.fileObj, event.target.currentProgress);
@@ -273,6 +293,12 @@
           event.target.startData = event.loaded;
           event.target.currentStart = elapsed;
         }
+      if (event.loaded == event.total) {
+        log("file " + event.target.fileIndex + " detected upload complete");
+        load(event.target, opts);
+      } else {
+        log("file " + event.target.fileIndex + " not completed :" + event.loaded + "/" + event.total);
+      }
       }
     }
   }
