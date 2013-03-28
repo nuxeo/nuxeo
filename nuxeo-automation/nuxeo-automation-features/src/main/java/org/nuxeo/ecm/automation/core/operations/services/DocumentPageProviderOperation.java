@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Operation to execute a query or a named provider with support for Pagination
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
@@ -82,6 +82,12 @@ public class DocumentPageProviderOperation {
 
     @Param(name = "documentLinkBuilder", required = false)
     protected String documentLinkBuilder;
+
+    /**
+     * @since 5.7
+     */
+    @Param(name = "maxResults", required = false)
+    protected String maxResults = "100";
 
     @SuppressWarnings("unchecked")
     @OperationMethod
@@ -142,6 +148,11 @@ public class DocumentPageProviderOperation {
         if (query != null) {
             CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
+            if (maxResults != null && !maxResults.isEmpty()
+                    && !maxResults.equals("-1")) {
+                // set the maxResults to avoid slowing down queries
+                desc.getProperties().put("maxResults", maxResults);
+            }
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
                             sortInfos, targetPageSize, targetPage, props,
@@ -154,5 +165,4 @@ public class DocumentPageProviderOperation {
         }
 
     }
-
 }

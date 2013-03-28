@@ -85,6 +85,12 @@ public class ResultSetPageProviderOperation {
     @Param(name = "documentLinkBuilder", required = false)
     protected String documentLinkBuilder;
 
+    /**
+     * @since 5.7
+     */
+    @Param(name = "maxResults", required = false)
+    protected String maxResults = "100";
+
     @SuppressWarnings("unchecked")
     @OperationMethod
     public RecordSet run() throws Exception {
@@ -159,6 +165,11 @@ public class ResultSetPageProviderOperation {
         if (query != null) {
             QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();
             desc.setPattern(query);
+            if (maxResults != null && !maxResults.isEmpty()
+                    && !maxResults.equals("-1")) {
+                // set the maxResults to avoid slowing down queries
+                desc.getProperties().put("maxResults", maxResults);
+            }
             pp = (CoreQueryAndFetchPageProvider) pps.getPageProvider("", desc,
                     sortInfos, targetPageSize, targetPage, props, parameters);
 

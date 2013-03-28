@@ -44,7 +44,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.automation.features" })
-@LocalDeploy( { "org.nuxeo.ecm.automation.core:test-providers.xml",
+@LocalDeploy({ "org.nuxeo.ecm.automation.core:test-providers.xml",
         "org.nuxeo.ecm.automation.core:test-operations.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class CoreProviderTest {
@@ -212,4 +212,30 @@ public class CoreProviderTest {
         DocumentModelList list = (DocumentModelList) context.get("result");
         assertEquals(3, list.size());
     }
+
+    @Test
+    public void testDirectNXQLWithMaxResults() throws Exception {
+
+        OperationContext ctx = new OperationContext(session);
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        params.put("query", "select * from Document");
+        params.put("pageSize", 2);
+        params.put("maxResults", "2");
+
+        OperationChain chain = new OperationChain("fakeChain");
+        OperationParameters oparams = new OperationParameters(
+                DocumentPageProviderOperation.ID, params);
+        chain.add(oparams);
+
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(
+                ctx, chain);
+
+        assertEquals(2, result.getPageSize());
+        // number of pages should not be set !!!
+        assertEquals(0, result.getNumberOfPages());
+
+    }
+
 }
