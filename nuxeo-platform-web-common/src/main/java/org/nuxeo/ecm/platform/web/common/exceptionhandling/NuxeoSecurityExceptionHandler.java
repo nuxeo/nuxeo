@@ -86,6 +86,7 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
      */
     protected boolean handleAnonymousException(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
+        getAuthenticationService().invalidateSession(request);
         Map<String, String> urlParameters = new HashMap<String, String>();
         urlParameters.put(SECURITY_ERROR, "true");
         urlParameters.put(FORCE_ANONYMOUS_LOGIN, "true");
