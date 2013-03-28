@@ -86,6 +86,8 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
      */
     protected boolean handleAnonymousException(HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
+        initAuthenticationService();
+        service.invalidateSession(request);
         Map<String, String> urlParameters = new HashMap<String, String>();
         urlParameters.put(NXAuthConstants.SECURITY_ERROR, "true");
         urlParameters.put(NXAuthConstants.FORCE_ANONYMOUS_LOGIN, "true");
@@ -99,7 +101,7 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
         }
         // Redirect to login with urlParameters
         if (!response.isCommitted()) {
-            String baseURL = initAuthenticationService().getBaseURL(request)
+            String baseURL = service.getBaseURL(request)
                     + NXAuthConstants.LOGOUT_PAGE;
             request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY,
                     true);
