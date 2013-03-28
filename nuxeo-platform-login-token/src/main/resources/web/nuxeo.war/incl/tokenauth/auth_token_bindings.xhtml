@@ -54,7 +54,7 @@
       <a4j:commandButton value="#{messages['label.tokenauth.revokeAll']}"
         id="#{layout.id}_deleteAllButton"
         styleClass="button"
-        action="#{tokenAuthenticationActions.deleteAllAuthTokenBinding(value.id)}"
+        action="#{tokenAuthenticationActions.deleteAllTokenBindings()}"
         onclick="if (!confirmRevokeAllTokenBindings()) { return false; }"
         immediate="true"
         reRender="authTokenBindingsPanel" />
