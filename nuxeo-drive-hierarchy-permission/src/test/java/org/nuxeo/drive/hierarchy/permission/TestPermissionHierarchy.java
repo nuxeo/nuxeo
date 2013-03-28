@@ -71,6 +71,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -234,12 +235,6 @@ public class TestPermissionHierarchy {
         setPermission(user2Folder1, "user1", SecurityConstants.READ_WRITE, true);
         setPermission(user2Folder3, "user1", SecurityConstants.READ_WRITE, true);
 
-        // Register shared folders as synchronization roots for user1
-        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
-                session1.getDocument(user2Folder1.getRef()), session1);
-        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
-                session1.getDocument(user2Folder3.getRef()), session1);
-
         // Get an Automation client session for each user
         clientSession1 = automationClient.getSession("user1", "user1");
 
@@ -260,6 +255,13 @@ public class TestPermissionHierarchy {
 
     @Test
     public void testClientSideUser1() throws Exception {
+        // Register shared folders as synchronization roots for user1
+        assertTrue("Transaction context is missing.",
+                TransactionHelper.startTransaction());
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
+                session1.getDocument(user2Folder1.getRef()), session1);
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
+                session1.getDocument(user2Folder3.getRef()), session1);
 
         // ---------------------------------------------
         // Check top level folder: "Nuxeo Drive"
@@ -687,6 +689,7 @@ public class TestPermissionHierarchy {
                 });
         assertNotNull(sharedSyncRoots);
         assertEquals(0, sharedSyncRoots.size());
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
     protected void checkFileItem(FileItem fileItem, String fileItemIdPrefix,
