@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
+ *     Stephane Lacoin
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.persistence;
 
@@ -32,6 +33,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.ConnectionReleaseMode;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
@@ -49,7 +51,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"
  */
 @XObject("hibernateConfiguration")
 public class HibernateConfiguration implements EntityManagerFactoryProvider {
@@ -124,15 +125,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         }
         properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
         if (txType.equals(JTA)) {
-            Class<?> klass;
-            try {
-                // Hibernate 4.1
-                klass = Class.forName("org.hibernate.engine.transaction.internal.jta.CMTTransactionFactory");
-            } catch (ClassNotFoundException e) {
-                // Hibernate 3.4
-                klass = JoinableCMTTransactionFactory.class;
-            }
-            properties.put(Environment.TRANSACTION_STRATEGY, klass.getName());
+            properties.put(Environment.TRANSACTION_STRATEGY, NuxeoTransactionFactory.class.getName());
             properties.put(Environment.TRANSACTION_MANAGER_STRATEGY, NuxeoTransactionManagerLookup.class.getName());
         } else if (txType.equals(RESOURCE_LOCAL)) {
             properties.put(Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName());
@@ -152,6 +145,18 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
             props.remove(Environment.DATASOURCE);
         }
         return createEntityManagerFactory(properties);
+    }
+
+    /**
+     * Don't close the connection aggressively after each statement.
+     */
+    // needs to be public as hibernate calls newInstance
+    public static class NuxeoTransactionFactory extends
+            JoinableCMTTransactionFactory {
+        @Override
+        public ConnectionReleaseMode getDefaultReleaseMode() {
+            return ConnectionReleaseMode.AFTER_TRANSACTION;
+        }
     }
 
     // this must be executed always outside a transaction

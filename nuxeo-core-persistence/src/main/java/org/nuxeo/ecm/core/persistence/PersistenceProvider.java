@@ -160,6 +160,7 @@ public class PersistenceProvider {
         myThread.setContextClassLoader(getClass().getClassLoader());
         try { // insure context class loader restoring
             EntityManager em = doAcquireEntityManager();
+            needActiveSession = Boolean.TRUE;
             if (needActiveSession) {
                 doBegin(em);
             }
@@ -184,6 +185,7 @@ public class PersistenceProvider {
         myThread.setContextClassLoader(getClass().getClassLoader());
         try { // insure context class loader restoring
             EntityManager em = doAcquireEntityManager();
+            needActiveSession = Boolean.TRUE;
             if (needActiveSession) {
                 doBegin(em);
             }
