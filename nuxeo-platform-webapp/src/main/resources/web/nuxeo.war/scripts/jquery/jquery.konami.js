@@ -22,7 +22,7 @@
         kkeys=[];
         $(this).unbind(e);
       }
-    }, true);
+    });
   }
 
 })(jQuery);
