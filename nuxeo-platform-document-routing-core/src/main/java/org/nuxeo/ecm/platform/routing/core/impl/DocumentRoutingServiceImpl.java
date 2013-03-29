@@ -775,6 +775,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+        if (list.size() == 0) {
+            throw new ClientRuntimeException("No route found for id: " + id);
+        }
         if (list.size() != 1) {
             throw new ClientRuntimeException(
                     "More than one route model found with id: " + id);
