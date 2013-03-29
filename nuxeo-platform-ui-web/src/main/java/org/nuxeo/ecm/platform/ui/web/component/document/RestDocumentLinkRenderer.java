@@ -111,7 +111,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 
         writer.writeURIAttribute("href", urlNewConversation, "href");
 
-        String onclickJS = "if(!event.ctrlKey){this.href='"
+        String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
                 + urlCurrentConversation + "'}";
 
         writer.writeAttribute("onclick", onclickJS, "onclick");
