@@ -42,6 +42,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -256,12 +257,24 @@ public class TreeActionsBean implements TreeActions, Serializable {
             try {
                 return documentManager.exists(new PathRef(
                         currentPersonalWorkspacePath)) ? currentPersonalWorkspacePath
-                        : currentDocumentPath;
+                        : findFarthestContainerPath(currentDocumentPath);
             } catch (ClientException e) {
                 return currentDocumentPath;
             }
         }
         return userWorkspacePath;
+    }
+
+    protected String findFarthestContainerPath(String documentPath)
+            throws ClientException {
+        Path containerPath = new Path(documentPath);
+        String result;
+        do {
+            result = containerPath.toString();
+            containerPath = containerPath.removeLastSegments(1);
+        } while (!containerPath.isRoot()
+                && documentManager.exists(new PathRef(containerPath.toString())));
+        return result;
     }
 
     public Boolean adviseNodeOpened(UITree treeComponent) {
