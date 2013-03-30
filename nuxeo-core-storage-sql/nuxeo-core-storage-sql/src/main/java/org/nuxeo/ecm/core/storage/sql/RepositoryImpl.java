@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -551,6 +552,20 @@ public class RepositoryImpl implements Repository {
             SessionImpl conn = getConnection();
             try {
                 conn.markReferencedBinaries(gc);
+            } finally {
+                conn.close();
+            }
+        } catch (ResourceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
+        try {
+            SessionImpl conn = getConnection();
+            try {
+                return conn.cleanupDeletedDocuments(max, beforeTime);
             } finally {
                 conn.close();
             }

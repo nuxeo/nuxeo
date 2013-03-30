@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -1296,6 +1297,15 @@ public class SessionImpl implements Session, XAResource {
         checkLive();
         try {
             mapper.markReferencedBinaries(gc);
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
+        checkLive();
+        try {
+            return mapper.cleanupDeletedRows(max, beforeTime);
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }

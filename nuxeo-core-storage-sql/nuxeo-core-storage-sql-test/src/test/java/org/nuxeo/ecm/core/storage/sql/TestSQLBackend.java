@@ -533,7 +533,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         session.save();
 
-        BinaryManagerStatus status = runBinariesGC(0, null);
+        BinaryManagerStatus status = runBinariesGC(0, null, true);
         assertEquals(4, status.numBinaries); // ABC, DEF, GHI, JKL
         assertEquals(4 * 3, status.sizeBinaries);
         assertEquals(0, status.numBinariesGC);
@@ -545,18 +545,39 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.removeNode(session.getNodeByPath("/DEF", null));
         session.removeNode(session.getNodeByPath("/DEF2", null));
         session.removeNode(session.getNodeByPath("/GHI", null)); // GHI2 remains
+        // JKL and JKL2 remain
         session.save();
 
-        // add a new binary during GC and revive one which was about to die
+        // run GC in non-delete mode
         Thread.sleep(3 * 1000); // sleep before GC to pass its time threshold
-        status = runBinariesGC(1, session);
+        status = runBinariesGC(0, null, false);
+        if (isSoftDeleteEnabled()) {
+            // with soft delete nothing is actually deleted yet
+            assertEquals(4, status.numBinaries);
+            assertEquals(4 * 3, status.sizeBinaries);
+            assertEquals(0, status.numBinariesGC);
+            assertEquals(0 * 3, status.sizeBinariesGC);
+            // do hard delete
+            RepositoryManagement repoMgmt = RepositoryResolver.getRepository(repository.getName());
+            repoMgmt.cleanupDeletedDocuments(0, null);
+            // rerun GC in non-delete mode
+            Thread.sleep(3 * 1000);
+            status = runBinariesGC(0, null, false);
+        }
+        assertEquals(2, status.numBinaries); // GHI, JKL
+        assertEquals(2 * 3, status.sizeBinaries);
+        assertEquals(2, status.numBinariesGC); // ABC, DEF
+        assertEquals(2 * 3, status.sizeBinariesGC);
+
+        // add a new binary during GC and revive one which was about to die
+        status = runBinariesGC(1, session, true);
         assertEquals(4, status.numBinaries); // DEF3, GHI2, JKL, MNO
         assertEquals(4 * 3, status.sizeBinaries);
         assertEquals(1, status.numBinariesGC); // ABC
         assertEquals(1 * 3, status.sizeBinariesGC);
 
         Thread.sleep(3 * 1000);
-        status = runBinariesGC(0, null);
+        status = runBinariesGC(0, null, true);
         assertEquals(4, status.numBinaries); // DEF3, GHI2, JKL, MNO
         assertEquals(4 * 3, status.sizeBinaries);
         assertEquals(0, status.numBinariesGC);
@@ -571,8 +592,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 false).setSimpleProperty("tst:bin", bin);
     }
 
-    protected BinaryManagerStatus runBinariesGC(int moreWork, Session session)
-            throws Exception {
+    protected BinaryManagerStatus runBinariesGC(int moreWork, Session session,
+            boolean delete) throws Exception {
         BinaryGarbageCollector gc = repository.getBinaryGarbageCollector();
         assertFalse(gc.isInProgress());
         gc.start();
@@ -588,7 +609,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             addBinary(session, "DEF", "DEF3");
             session.save();
         }
-        gc.stop(true);
+        gc.stop(delete);
         return gc.getStatus();
     }
 
@@ -1977,10 +1998,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        Serializable ida = nodea.getId();
         nodea.setSimpleProperty("tst:title", "foo");
         Node nodeb = session.addChildNode(nodea, "bar", null, "TestDoc", false);
+        Serializable idb = nodeb.getId();
         nodeb.setSimpleProperty("tst:title", "bar");
         Node nodec = session.addChildNode(nodeb, "gee", null, "TestDoc", false);
+        Serializable idc = nodec.getId();
         nodec.setSimpleProperty("tst:title", "gee");
         session.save();
         // delete foo after having modified some of the deleted children
@@ -1989,6 +2013,29 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodec.setSimpleProperty("tst:title", "gee2");
         session.removeNode(nodea);
         session.save();
+
+        // now from another session
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+
+        // no more docs
+        nodea = session.getChildNode(root, "foo", false);
+        assertNull(nodea);
+        nodea = session.getNodeById(ida);
+        assertNull(nodea);
+        nodeb = session.getNodeById(idb);
+        assertNull(nodeb);
+        nodec = session.getNodeById(idc);
+        assertNull(nodec);
+
+        // and with a query
+        PartialList<Serializable> res;
+        res = session.query("SELECT * FROM TestDoc WHERE ecm:isProxy = 0",
+                QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+        res = session.query("SELECT * FROM TestDoc", QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
     }
 
     @Test

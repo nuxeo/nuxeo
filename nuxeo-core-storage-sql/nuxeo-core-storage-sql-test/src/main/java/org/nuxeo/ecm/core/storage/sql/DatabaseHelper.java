@@ -268,4 +268,8 @@ public abstract class DatabaseHelper {
         return true;
     }
 
+    public boolean supportsSoftDelete() {
+        return false;
+    }
+
 }

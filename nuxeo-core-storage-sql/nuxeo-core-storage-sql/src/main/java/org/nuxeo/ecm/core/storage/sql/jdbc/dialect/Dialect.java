@@ -139,6 +139,11 @@ public abstract class Dialect {
      */
     protected boolean clusteringEnabled;
 
+    /**
+     * @since 5.7
+     */
+    protected boolean softDeleteEnabled;
+
     protected final int readAclMaxSize;
 
     /**
@@ -227,12 +232,14 @@ public abstract class Dialect {
             aclOptimizationsConcurrentUpdate = false;
             readAclMaxSize = 0;
             clusteringEnabled = false;
+            softDeleteEnabled = false;
         } else {
             fulltextDisabled = repositoryDescriptor.fulltextDisabled;
             aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
             aclOptimizationsConcurrentUpdate = repositoryDescriptor.aclOptimizationsConcurrentUpdate;
             readAclMaxSize = repositoryDescriptor.readAclMaxSize;
             clusteringEnabled = repositoryDescriptor.clusteringEnabled;
+            softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
         }
     }
 
@@ -344,10 +351,11 @@ public abstract class Dialect {
         ps.setString(index, v);
     }
 
-    protected void setToPreparedStatementTimestamp(PreparedStatement ps,
+    public void setToPreparedStatementTimestamp(PreparedStatement ps,
             int index, Serializable value, Column column) throws SQLException {
         Calendar cal = (Calendar) value;
-        Timestamp ts = new Timestamp(cal.getTimeInMillis());
+        Timestamp ts = cal == null ? null
+                : new Timestamp(cal.getTimeInMillis());
         ps.setTimestamp(index, ts, cal); // cal passed for timezone
     }
 
@@ -1508,6 +1516,22 @@ public abstract class Dialect {
      */
     public List<String> getCustomPostCreateSqls(Table table) {
         return Collections.emptyList();
+    }
+
+    /**
+     * SQL to soft delete documents. SQL returned has free parameters for the
+     * array of ids and time.
+     */
+    public String getSoftDeleteSql() {
+        throw new UnsupportedOperationException("Soft deletes not supported");
+    }
+
+    /**
+     * SQL to clean soft-delete documents. SQL returned has free parameters
+     * max and beforeTime.
+     */
+    public String getSoftDeleteCleanupSql() {
+        throw new UnsupportedOperationException("Soft deletes not supported");
     }
 
 }

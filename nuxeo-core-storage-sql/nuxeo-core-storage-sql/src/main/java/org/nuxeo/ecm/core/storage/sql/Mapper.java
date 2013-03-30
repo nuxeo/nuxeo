@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
@@ -257,6 +258,17 @@ public interface Mapper extends RowMapper, XAResource {
      * @param gc the binary garbage collector
      */
     void markReferencedBinaries(BinaryGarbageCollector gc)
+            throws StorageException;
+
+    /**
+     * Cleans up (hard-delete) any rows that have been soft-deleted in the
+     * database.
+     *
+     * @param max the maximum number of rows to delete at a time
+     * @param beforeTime the maximum deletion time of the rows to delete
+     * @return the number of rows deleted
+     */
+    int cleanupDeletedRows(int max, Calendar beforeTime)
             throws StorageException;
 
 }
