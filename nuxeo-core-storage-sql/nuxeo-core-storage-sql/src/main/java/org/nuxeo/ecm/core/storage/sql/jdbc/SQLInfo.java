@@ -1004,7 +1004,9 @@ public class SQLInfo {
                         null, null, hierTable.getColumn(model.MAIN_KEY),
                         table.getColumn(model.MAIN_KEY));
                 from += join.toSql(dialect);
-                clauses = Collections.singletonList(getSoftDeleteClause());
+                String clause = getSoftDeleteClause();
+                clauses = clause == null ? null
+                        : Collections.singletonList(clause);
             }
             if (selType.criterionKey == null) {
                 selectAll = makeSelect(table, from, clauses, NO_ORDER_BY,
