@@ -141,12 +141,13 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     public void testBinariesAreIndexed() throws Exception {
         createDocument();
         blockFulltextUpdating();
-
-        flush();
-        assertEquals(1, jobDocs());
-        assertEquals(0, indexedDocs());
-
-        allowFulltextUpdating();
+        try {
+            flush();
+            assertEquals(1, jobDocs());
+            assertEquals(0, indexedDocs());
+        } finally {
+            allowFulltextUpdating();
+        }
 
         flush();
         assertEquals(0, jobDocs());
@@ -157,18 +158,19 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     public void testCopiesAreIndexed() throws Exception {
         createDocument();
         blockFulltextUpdating();
+        try {
+            flush();
+            assertEquals(1, jobDocs());
+            assertEquals(0, indexedDocs());
 
-        flush();
-        assertEquals(1, jobDocs());
-        assertEquals(0, indexedDocs());
+            session.copy(docRef, session.getRootDocument().getRef(), "copy").getRef();
 
-        session.copy(docRef, session.getRootDocument().getRef(), "copy").getRef();
-
-        // check copy is part of requested
-        flush();
-        assertEquals(2, jobDocs());
-
-        allowFulltextUpdating();
+            // check copy is part of requested
+            flush();
+            assertEquals(2, jobDocs());
+        } finally {
+            allowFulltextUpdating();
+        }
 
         // check copy is indexed also
         flush();
@@ -189,15 +191,16 @@ public class TestSQLBinariesIndexing extends TXSQLRepositoryTestCase {
     public void testVersionsAreIndexed() throws Exception {
         createDocument();
         blockFulltextUpdating();
+        try {
+            flush();
+            assertEquals(1, jobDocs());
+            assertEquals(0, indexedDocs());
 
-        flush();
-        assertEquals(1, jobDocs());
-        assertEquals(0, indexedDocs());
-
-        session.checkIn(docRef, null, null);
-        flush();
-
-        allowFulltextUpdating();
+            session.checkIn(docRef, null, null);
+            flush();
+        } finally {
+            allowFulltextUpdating();
+        }
 
         assertEquals(2, indexedDocs());
     }
