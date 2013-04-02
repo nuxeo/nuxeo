@@ -19,8 +19,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * 
  */
 @XObject("schema")
 public class SchemaBindingDescriptor {
@@ -37,11 +37,15 @@ public class SchemaBindingDescriptor {
     @XNode("@override")
     public boolean override = false;
 
+    @XNode("@xsdRootElement")
+    public String xsdRootElement;
 
-    // this is set by the type service to the context that knows how to locate the schema file
+    // this is set by the type service to the context that knows how to locate
+    // the schema file
     public RuntimeContext context;
 
-    public SchemaBindingDescriptor() { }
+    public SchemaBindingDescriptor() {
+    }
 
     public SchemaBindingDescriptor(String name, String prefix) {
         this.name = name;
@@ -50,7 +54,7 @@ public class SchemaBindingDescriptor {
 
     @Override
     public String toString() {
-        return "Schema: "+name;
+        return "Schema: " + name;
     }
 
 }

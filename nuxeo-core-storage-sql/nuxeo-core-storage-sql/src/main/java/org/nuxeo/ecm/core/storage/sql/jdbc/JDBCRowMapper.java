@@ -12,12 +12,15 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -736,6 +739,125 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
+    protected void deleteRowsSoft(List<NodeInfo> nodeInfos)
+            throws StorageException {
+        try {
+            int size = nodeInfos.size();
+            List<Serializable> ids = new ArrayList<Serializable>(size);
+            for (NodeInfo info : nodeInfos) {
+                ids.add(info.id);
+            }
+            int chunkSize = sqlInfo.getMaximumArgsForIn();
+            if (size <= chunkSize) {
+                doSoftDeleteRows(ids);
+            } else {
+                for (int start = 0; start < size;) {
+                    int end = start + chunkSize;
+                    if (end > size) {
+                        end = size;
+                    }
+                    doSoftDeleteRows(ids.subList(start, end));
+                    start = end;
+                }
+            }
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Could not soft delete", e);
+        }
+    }
+
+    // not chunked
+    protected void doSoftDeleteRows(List<Serializable> ids) throws SQLException {
+        Serializable whereIds = newIdArray(ids);
+        Calendar now = Calendar.getInstance();
+        String sql = sqlInfo.getSoftDeleteSql();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Arrays.asList(whereIds, now));
+        }
+        PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            setToPreparedStatementIdArray(ps, 1, whereIds);
+            dialect.setToPreparedStatementTimestamp(ps, 2, now, null);
+            ps.execute();
+            countExecute();
+            return;
+        } finally {
+            closeStatement(ps);
+        }
+    }
+
+    protected Serializable newIdArray(Collection<Serializable> ids) {
+        if (dialect.supportsArrays()) {
+            return ids.toArray(); // Object[]
+        } else {
+            // join with '|'
+            StringBuilder b = new StringBuilder();
+            for (Serializable id : ids) {
+                b.append(id);
+                b.append('|');
+            }
+            b.setLength(b.length() - 1);
+            return b.toString();
+        }
+    }
+
+    protected void setToPreparedStatementIdArray(PreparedStatement ps,
+            int index, Serializable idArray) throws SQLException {
+        if (idArray instanceof String) {
+            ps.setString(index, (String) idArray);
+        } else {
+            Array array = dialect.createArrayOf(Types.OTHER,
+                    (Object[]) idArray, connection);
+            ps.setArray(index, array);
+        }
+    }
+
+    /**
+     * Clean up soft-deleted rows.
+     * <p>
+     * Rows deleted more recently than the beforeTime are left alone. Only a
+     * limited number of rows may be deleted, to prevent transaction during too
+     * long.
+     * @param max the maximum number of rows to delete at a time
+     * @param beforeTime the maximum deletion time of the rows to delete
+     *
+     * @return the number of rows deleted
+     * @throws StorageException
+     */
+    public int cleanupDeletedRows(int max, Calendar beforeTime)
+            throws StorageException {
+        if (max < 0) {
+            max = 0;
+        }
+        String sql = sqlInfo.getSoftDeleteCleanupSql();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(
+                    sql,
+                    Arrays.<Serializable> asList(beforeTime,
+                            Long.valueOf(max)));
+        }
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                ps.setInt(1, max);
+                dialect.setToPreparedStatementTimestamp(ps, 2, beforeTime, null);
+                ResultSet rs = ps.executeQuery();
+                countExecute();
+                if (!rs.next()) {
+                    throw new StorageException("Cannot get result");
+                }
+                int count = rs.getInt(1);
+                logger.logCount(count);
+                return count;
+            } finally {
+                closeStatement(ps);
+            }
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Could not purge soft delete", e);
+        }
+    }
+
     protected void deleteRowsDirect(String tableName,
             Collection<Serializable> ids) throws StorageException {
         try {
@@ -1171,7 +1293,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         Serializable rootId = rootInfo.id;
         List<NodeInfo> info = getDescendantsInfo(rootId);
         info.add(rootInfo);
-        deleteRowsDirect(model.HIER_TABLE_NAME, Collections.singleton(rootId));
+        if (sqlInfo.softDeleteEnabled) {
+            deleteRowsSoft(info);
+        } else {
+            deleteRowsDirect(model.HIER_TABLE_NAME, Collections.singleton(rootId));
+        }
         return info;
     }
 

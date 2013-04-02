@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:xxs="http://something.com/schemas/xtension/"
+           targetNamespace="http://something.com/schemas/xtension/">
+
+<xs:complexType name="animalinfo">
+  <xs:sequence>
+    <xs:element name="race" type="xs:string"/>
+  </xs:sequence>
+</xs:complexType>
+
+
+<xs:complexType name="personinfo">
+  <xs:complexContent>
+    <xs:extension base="xxs:animalinfo">
+    <xs:sequence>
+      <xs:element name="firstname" type="xs:string"/>
+      <xs:element name="lastname" type="xs:string"/>
+    </xs:sequence>
+    </xs:extension>
+  </xs:complexContent>
+</xs:complexType>
+
+<xs:element name="simpleemployee" type="xxs:personinfo"/>
+
+<xs:complexType name="fullpersoninfo">
+  <xs:complexContent>
+    <xs:extension base="xxs:personinfo">
+      <xs:sequence>
+        <xs:element name="address" type="xs:string"/>
+        <xs:element name="city" type="xs:string"/>
+        <xs:element name="country" type="xs:string"/>
+      </xs:sequence>
+    </xs:extension>
+  </xs:complexContent>
+</xs:complexType>
+
+<xs:element name="employee" type="xxs:fullpersoninfo"/>
+
+</xs:schema>

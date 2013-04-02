@@ -116,6 +116,18 @@ public class Model {
 
     public static final String MAIN_IS_VERSION_KEY = "isversion";
 
+    // for soft-delete
+    public static final String MAIN_IS_DELETED_PROP = "ecm:isDeleted";
+
+    // for soft-delete
+    public static final String MAIN_IS_DELETED_KEY = "isdeleted";
+
+    // for soft-delete
+    public static final String MAIN_DELETED_TIME_PROP = "ecm:deletedTime";
+
+    // for soft-delete
+    public static final String MAIN_DELETED_TIME_KEY = "deletedtime";
+
     public static final String UID_SCHEMA_NAME = "uid";
 
     public static final String UID_MAJOR_VERSION_KEY = "major_version";
@@ -258,6 +270,8 @@ public class Model {
     public static final String[] ALWAYS_PREFETCHED_FRAGMENTS = {
             ACL_TABLE_NAME, VERSION_TABLE_NAME, MISC_TABLE_NAME };
 
+    protected final boolean softDeleteEnabled;
+
     /** Type of ids as seen by the VCS Java layer. */
     public enum IdType {
         STRING, //
@@ -383,6 +397,7 @@ public class Model {
         default:
             throw new AssertionError(idType.toString());
         }
+        softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
 
         documentTypesSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
@@ -1350,6 +1365,15 @@ public class Model {
         addPropertyInfo(null, MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN,
                 HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        if (softDeleteEnabled) {
+            addPropertyInfo(null, MAIN_IS_DELETED_PROP, PropertyType.BOOLEAN,
+                    HIER_TABLE_NAME, MAIN_IS_DELETED_KEY, true,
+                    BooleanType.INSTANCE, ColumnType.BOOLEAN);
+            addPropertyInfo(null, MAIN_DELETED_TIME_PROP,
+                    PropertyType.DATETIME, HIER_TABLE_NAME,
+                    MAIN_DELETED_TIME_KEY, true, DateType.INSTANCE,
+                    ColumnType.TIMESTAMP);
+        }
     }
 
     /**

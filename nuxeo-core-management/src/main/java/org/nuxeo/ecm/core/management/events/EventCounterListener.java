@@ -22,7 +22,9 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
-import org.nuxeo.runtime.management.counters.CounterHelper;
+
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
 
 /**
  *
@@ -34,9 +36,12 @@ import org.nuxeo.runtime.management.counters.CounterHelper;
 public class EventCounterListener implements PostCommitEventListener {
 
     // Counters used
-    public static final String EVENT_CREATE_COUNTER = "org.nuxeo.event.create";
-    public static final String EVENT_UPDATE_COUNTER = "org.nuxeo.event.update";
-    public static final String EVENT_REMOVE_COUNTER = "org.nuxeo.event.remove";
+    public final Counter createCount = Metrics.defaultRegistry().newCounter(
+            EventCounterListener.class, "create");
+    public final Counter updateCount = Metrics.defaultRegistry().newCounter(
+            EventCounterListener.class, "update");
+    public final Counter removeCount = Metrics.defaultRegistry().newCounter(
+            EventCounterListener.class, "remove");
 
     // Event tracked
     protected static final List<String> createEvents = Arrays.asList(new String[] {
@@ -87,13 +92,13 @@ public class EventCounterListener implements PostCommitEventListener {
         }
 
         if (created>0) {
-            CounterHelper.increaseCounter(EVENT_CREATE_COUNTER, created);
+            createCount.inc(created);
         }
         if (updated>0) {
-            CounterHelper.increaseCounter(EVENT_UPDATE_COUNTER, updated);
+            updateCount.inc(updated);
         }
         if (removed>0) {
-            CounterHelper.increaseCounter(EVENT_REMOVE_COUNTER, removed);
+            removeCount.inc(removed);
         }
     }
 

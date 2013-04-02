@@ -963,6 +963,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
+        properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
@@ -1206,6 +1207,16 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public DialectIdType getIdType() {
         return idType;
+    }
+
+    @Override
+    public String getSoftDeleteSql() {
+        return "SELECT NX_DELETE(?, ?)";
+    }
+
+    @Override
+    public String getSoftDeleteCleanupSql() {
+        return "SELECT NX_DELETE_PURGE(?, ?)";
     }
 
 }

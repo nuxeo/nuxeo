@@ -892,19 +892,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         if (select == null) {
             return getAncestorsIdsIterative(ids);
         }
-        Serializable whereIds;
-        if (dialect.supportsArrays()) {
-            whereIds = ids.toArray(); // Object[]
-        } else {
-            // join with '|'
-            StringBuilder b = new StringBuilder();
-            for (Serializable id : ids) {
-                b.append(id);
-                b.append('|');
-            }
-            b.setLength(b.length() - 1);
-            whereIds = b.toString();
-        }
+        Serializable whereIds = newIdArray(ids);
         Set<Serializable> res = new HashSet<Serializable>();
         PreparedStatement ps = null;
         try {
@@ -913,13 +901,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             Column what = select.whatColumns.get(0);
             ps = connection.prepareStatement(select.sql);
-            if (whereIds instanceof Object[]) {
-                Array array = dialect.createArrayOf(Types.OTHER,
-                        (Object[]) whereIds, connection);
-                ps.setArray(1, array);
-            } else {
-                ps.setString(1, (String) whereIds);
-            }
+            setToPreparedStatementIdArray(ps, 1, whereIds);
             ResultSet rs = ps.executeQuery();
             countExecute();
             List<Serializable> debugIds = null;

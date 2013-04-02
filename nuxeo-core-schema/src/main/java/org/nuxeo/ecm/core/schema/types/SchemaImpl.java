@@ -36,6 +36,26 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
                 ns == null ? Namespace.DEFAULT_NS : ns);
     }
 
+    /**
+     * 
+     * Create a schema from a ComplexType
+     * 
+     * @since 5.7
+     * 
+     * @param complexType
+     * @param name
+     * @param ns
+     */
+    public SchemaImpl(ComplexType complexType, String name, Namespace ns) {
+        super(null, SchemaNames.SCHEMAS, name,
+                ns == null ? Namespace.DEFAULT_NS : ns);
+        if (complexType != null) {
+            for (Field field : complexType.getFields()) {
+                addField(field);
+            }
+        }
+    }
+
     @Override
     public Type getType(String typeName) {
         return types.get(typeName);

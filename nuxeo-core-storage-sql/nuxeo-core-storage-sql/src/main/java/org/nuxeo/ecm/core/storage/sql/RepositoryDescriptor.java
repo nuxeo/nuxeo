@@ -136,6 +136,9 @@ public class RepositoryDescriptor {
     @XNode("noDDL")
     public boolean noDDL = false;
 
+    @XNode("softDelete@enabled")
+    public boolean softDeleteEnabled;
+
     @XNode("idType")
     public String idType; // "varchar", "uuid", "sequence"
 
@@ -220,6 +223,7 @@ public class RepositoryDescriptor {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         noDDL = other.noDDL;
+        softDeleteEnabled = other.softDeleteEnabled;
         schemaFields = other.schemaFields;
         fulltextDisabled = other.fulltextDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;

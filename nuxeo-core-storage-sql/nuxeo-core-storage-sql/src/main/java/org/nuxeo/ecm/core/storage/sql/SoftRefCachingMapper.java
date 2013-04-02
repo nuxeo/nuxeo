@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -163,6 +164,12 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     @Override
     public void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException {
         mapper.markReferencedBinaries(gc);
+    }
+
+    @Override
+    public int cleanupDeletedRows(int max, Calendar beforeTime)
+            throws StorageException {
+        return mapper.cleanupDeletedRows(max, beforeTime);
     }
 
     @Override

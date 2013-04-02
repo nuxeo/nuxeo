@@ -18,9 +18,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -211,7 +211,8 @@ public class FulltextExtractorWork extends AbstractWork {
                 strings.add(string);
             } catch (Exception e) {
                 String msg = "Could not extract fulltext of file '"
-                        + blob.getFilename() + "' for document: " + docId;
+                        + blob.getFilename() + "' for document: " + docId
+                        + ": " + e;
                 log.warn(msg);
                 log.debug(msg, e);
                 continue;
