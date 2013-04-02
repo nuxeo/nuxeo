@@ -9,8 +9,8 @@
 
 
     <rich:modalPanel id="importFile" autosized="true"
-    onmaskclick="Richfaces.hideModalPanel('importFile')">
-    
+    onmaskclick="Richfaces.hideModalPanel('importFile');"
+    onbeforehide="${rich:component('upload')}.stop();${rich:component('upload')}.clear();">    
     
     <f:facet name="header">
       <h:outputText value="#{messages['title.create.file']}"/>
@@ -45,6 +45,7 @@
           action="#{FileManageActions.validate}" />
         <h:commandButton class="button"
           value="#{messages['command.cancel']}"
+          onclick="${rich:component('upload')}.stop();${rich:component('upload')}.clear();"
           action="#{navigationContext.goBack()}" immediate="true" />
       </h:form>
     </div>
