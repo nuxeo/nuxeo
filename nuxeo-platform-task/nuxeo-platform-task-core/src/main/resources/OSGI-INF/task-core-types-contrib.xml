@@ -30,6 +30,7 @@
       <schema name="dublincore" />
       <facet name="Task" />
       <facet name="HiddenInNavigation" />
+      <prefetch>task</prefetch>
     </doctype>
 
   </extension>
