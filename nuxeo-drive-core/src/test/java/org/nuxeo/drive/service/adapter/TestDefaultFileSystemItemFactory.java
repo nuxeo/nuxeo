@@ -65,6 +65,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -344,6 +345,13 @@ public class TestDefaultFileSystemItemFactory {
         nuxeoDriveManager.registerSynchronizationRoot(
                 joeSession.getPrincipal(), syncRootFolder, session);
 
+        // Under Oracle, the READ ACL optims are not visible from the joe
+        // session while the transaction has not been committed.
+        CoreInstance.getInstance().close(joeSession);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        joeSession = repository.openSessionAs("joe");
+
         note = joeSession.getDocument(note.getRef());
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
         assertFalse(fsItem.getCanRename());
@@ -485,6 +493,13 @@ public class TestDefaultFileSystemItemFactory {
         nuxeoDriveManager.registerSynchronizationRoot(
                 joeSession.getPrincipal(), syncRootFolder, session);
 
+        // Under Oracle, the READ ACL optims are not visible from the joe
+        // session while the transaction has not been committed.
+        CoreInstance.getInstance().close(joeSession);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        joeSession = repository.openSessionAs("joe");
+
         file = joeSession.getDocument(file.getRef());
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         assertFalse(fileItem.getCanUpdate());
@@ -619,6 +634,12 @@ public class TestDefaultFileSystemItemFactory {
         // As a user with READ permission
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+
+        // Under Oracle, the READ ACL optims are not visible from the joe
+        // session while the transaction has not been committed.
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         CoreSession joeSession = repository.openSessionAs("joe");
         folder = joeSession.getDocument(folder.getRef());
 

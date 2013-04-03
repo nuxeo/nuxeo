@@ -59,6 +59,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -360,6 +361,11 @@ public class TestFileSystemItemManagerService {
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
         nuxeoDriveManager.registerSynchronizationRoot(joePrincipal, syncRoot1,
                 session);
+
+        // Under Oracle, the READ ACL optims are not visible from the joe
+        // session while the transaction has not been committed.
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         destFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId();
         assertFalse(fileSystemItemManagerService.canMove(srcFsItemId,
