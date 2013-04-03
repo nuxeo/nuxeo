@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -90,11 +91,19 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
 
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger == null) {
-            // The log is not deployed (probably in unittest
+            // The log is not deployed (probably in unittest)
             return;
         }
-        FileSystemItem fsItem = Framework.getLocalService(
-                FileSystemItemAdapterService.class).getFileSystemItem(doc, true);
+        FileSystemItem fsItem = null;
+        try {
+            fsItem = Framework.getLocalService(
+                    FileSystemItemAdapterService.class).getFileSystemItem(doc,
+                    true);
+        } catch (RootlessItemException e) {
+            // can happen when deleting a folder under and unregistered root:
+            // nothing to do
+            return;
+        }
         if (fsItem == null) {
             return;
         }
