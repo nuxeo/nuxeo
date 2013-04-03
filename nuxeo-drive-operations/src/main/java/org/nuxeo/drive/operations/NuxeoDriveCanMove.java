@@ -16,7 +16,10 @@
  */
 package org.nuxeo.drive.operations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -37,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = NuxeoDriveCanMove.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Can move")
 public class NuxeoDriveCanMove {
 
+    private static final Log log = LogFactory.getLog(NuxeoDriveCanMove.class);
+
     public static final String ID = "NuxeoDrive.CanMove";
 
     @Context
@@ -50,10 +55,18 @@ public class NuxeoDriveCanMove {
 
     @OperationMethod
     public Blob run() throws Exception {
-
-        FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        boolean canMove = fileSystemItemManager.canMove(srcId,
-                destId, ctx.getPrincipal());
+        boolean canMove = false;
+        try {
+            FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+            canMove = fileSystemItemManager.canMove(srcId, destId,
+                    ctx.getPrincipal());
+        } catch (RootlessItemException e) {
+            // can happen if srcId or destId no longer match a document under an
+            // active sync root: just return false in that case.
+            log.debug(
+                    String.format("Cannot move %s to %s: %s", srcId, destId,
+                            e.getMessage()), e);
+        }
         return NuxeoDriveOperationHelper.asJSONBlob(canMove);
     }
 

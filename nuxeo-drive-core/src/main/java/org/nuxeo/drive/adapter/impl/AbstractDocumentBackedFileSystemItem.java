@@ -16,14 +16,13 @@
  */
 package org.nuxeo.drive.adapter.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
-import org.nuxeo.drive.service.FileSystemItemManager;
+import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -61,8 +60,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = docSession.getParentDocument(doc.getRef());
         if (parentDoc == null) {
-            parentId = null;
-            path = '/' + id;
+            // We reached the root of the repo without being adapted to a
+            // (possibly virtual) descendant of the the top level folder item.
+            // Let's raise a marker exception and let the caller give more
+            // information on the source document.
+            throw new RootlessItemException();
         } else {
             FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
                     parentDoc, true);
@@ -72,7 +74,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     }
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            String parentId, DocumentModel doc) throws ClientException {
+            FolderItem parentItem, DocumentModel doc) throws ClientException {
 
         super(factoryName, doc.getCoreSession().getPrincipal());
 
@@ -84,7 +86,6 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
         // FileSystemItem attributes
         id = computeId(docId);
-        this.parentId = parentId;
         creator = (String) doc.getPropertyValue("dc:creator");
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
@@ -97,19 +98,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                         SecurityConstants.REMOVE_CHILDREN);
 
         String parentPath;
-        if (parentId != null) {
-            // TODO: provide an alternative constructor to directly pass the
-            // parent item to avoid having to this unnecessary lookup
-            FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
-            Principal principal = doc.getCoreSession().getPrincipal();
-            FileSystemItem parent = fsManager.getFileSystemItemById(parentId,
-                    principal);
-            if (parent == null) {
-                throw new ClientException("Could not find FS item with id "
-                        + parentId + " for user: " + principal.getName());
-            }
-            parentPath = parent.getPath();
+        if (parentItem != null) {
+            parentId = parentItem.getId();
+            parentPath = parentItem.getPath();
         } else {
+            parentId = null;
             parentPath = "";
         }
         path = parentPath + '/' + id;
@@ -163,7 +156,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
                     null);
             session.save();
             return getFileSystemItemAdapterService().getFileSystemItem(
-                    movedDoc, dest.getId());
+                    movedDoc, dest);
         } else {
             // TODO: implement move to another repository
             throw new UnsupportedOperationException(

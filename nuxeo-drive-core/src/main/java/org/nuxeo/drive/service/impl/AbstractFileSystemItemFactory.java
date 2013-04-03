@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -59,7 +60,7 @@ public abstract class AbstractFileSystemItemFactory implements
      * @see #getFileSystemItem(DocumentModel, boolean, String, boolean)
      */
     protected abstract FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException;
+            boolean forceParentItem, FolderItem parentItem) throws ClientException;
 
     @Override
     public String getName() {
@@ -88,15 +89,15 @@ public abstract class AbstractFileSystemItemFactory implements
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
             throws ClientException {
-        return getFileSystemItem(doc, parentId, false);
+        return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, true, parentId, includeDeleted);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted);
     }
 
     @Override
@@ -154,7 +155,7 @@ public abstract class AbstractFileSystemItemFactory implements
 
     /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentId, String parentId, boolean includeDeleted)
+            boolean forceParentItem, FolderItem parentItem, boolean includeDeleted)
             throws ClientException {
 
         // If the doc is not adaptable as a FileSystemItem return null
@@ -164,7 +165,7 @@ public abstract class AbstractFileSystemItemFactory implements
                     doc.getId()));
             return null;
         }
-        return adaptDocument(doc, forceParentId, parentId);
+        return adaptDocument(doc, forceParentItem, parentItem);
     }
 
     protected String[] parseFileSystemId(String id) throws ClientException {

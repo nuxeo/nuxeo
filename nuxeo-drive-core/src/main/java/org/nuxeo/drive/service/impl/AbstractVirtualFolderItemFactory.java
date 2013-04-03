@@ -99,13 +99,13 @@ public abstract class AbstractVirtualFolderItemFactory implements
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
             throws ClientException {
-        return getFileSystemItem(doc, parentId, false);
+        return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException {
         return null;
     }

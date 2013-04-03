@@ -722,6 +722,12 @@ public class TestFileSystemItemOperations {
         Principal joe = createUser("joe", "joe");
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+
+        TransactionHelper.startTransaction();
+        nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot1, session);
+        nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot2, session);
+        TransactionHelper.commitOrRollbackTransaction();
+
         clientSession = automationClient.getSession("joe", "joe");
         canMoveFSItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveCanMove.ID).set("srcId",
@@ -753,6 +759,10 @@ public class TestFileSystemItemOperations {
         // backing doc => true
         // ----------------------------------------------------------------------
         setPermission(syncRoot2, "joe", SecurityConstants.WRITE, true);
+        TransactionHelper.startTransaction();
+        nuxeoDriveManager.unregisterSynchronizationRoot(joe, syncRoot2, session);
+        TransactionHelper.commitOrRollbackTransaction();
+
         canMoveFSItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveCanMove.ID).set("srcId",
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
@@ -765,8 +775,10 @@ public class TestFileSystemItemOperations {
         // syncRoot2 is not registered as a sync root for joe
         assertEquals("false", canMoveFSItem);
 
+        TransactionHelper.startTransaction();
         nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot2, session);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+
         canMoveFSItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveCanMove.ID).set("srcId",
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(

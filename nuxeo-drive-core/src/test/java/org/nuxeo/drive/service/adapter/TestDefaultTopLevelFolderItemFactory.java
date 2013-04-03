@@ -257,9 +257,6 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertFalse(defaultTopLevelFolderItemFactory.isFileSystemItem(fakeDoc));
         // #getFileSystemItem(DocumentModel doc)
         assertNull(defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc));
-        // #getFileSystemItem(DocumentModel doc, String parentId)
-        assertNull(defaultTopLevelFolderItemFactory.getFileSystemItem(fakeDoc,
-                "testParentId"));
         // #canHandleFileSystemItemId(String id)
         assertTrue(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#"));
         assertFalse(defaultTopLevelFolderItemFactory.canHandleFileSystemItemId("org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory#"));

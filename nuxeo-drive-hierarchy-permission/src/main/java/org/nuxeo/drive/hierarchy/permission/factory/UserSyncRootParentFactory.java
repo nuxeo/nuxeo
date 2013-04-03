@@ -94,8 +94,9 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException {
-        return new UserSyncRootParentFolderItem(getName(), doc, parentId,
+            boolean forceParentItem, FolderItem parentItem)
+            throws ClientException {
+        return new UserSyncRootParentFolderItem(getName(), doc, parentItem,
                 folderName);
     }
 
@@ -107,7 +108,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
         Principal principal = doc.getCoreSession().getPrincipal();
-        return getFileSystemItem(doc, getTopLevelFolderItemId(principal),
+        return getFileSystemItem(doc, getTopLevelFolderItem(principal),
                 includeDeleted);
     }
 
@@ -130,15 +131,18 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
     }
 
     /*------------------- Protected ------------------- */
-    protected String getTopLevelFolderItemId(Principal principal)
+    protected FolderItem getTopLevelFolderItem(Principal principal)
             throws ClientException {
         FolderItem topLevelFolder = getFileSystemItemManager().getTopLevelFolder(
                 principal);
         if (topLevelFolder == null) {
             throw new ClientException(
-                    "Found no top level folder item. Please check your contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
+                    "Found no top level folder item. Please check your "
+                            + "contribution to the following extension point:"
+                            + " <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\""
+                            + " point=\"topLevelFolderItemFactory\">.");
         }
-        return topLevelFolder.getId();
+        return topLevelFolder;
     }
 
     protected DocumentModel getUserPersonalWorkspace(Principal principal)

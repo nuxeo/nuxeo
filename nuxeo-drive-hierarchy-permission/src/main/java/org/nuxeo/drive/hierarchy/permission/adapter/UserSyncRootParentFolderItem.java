@@ -52,8 +52,8 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
     protected boolean isUserWorkspaceSyncRoot = false;
 
     public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc,
-            String parentId, String folderName) throws ClientException {
-        super(factoryName, parentId, doc);
+            FolderItem parentItem, String folderName) throws ClientException {
+        super(factoryName, parentItem, doc);
         name = folderName;
         canRename = false;
         canDelete = false;
@@ -116,7 +116,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                             doc.getPropertyValue("dc:creator"))) {
                         // TODO: handle null FileSystemItem
                         children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                                doc, getId()));
+                                doc, this));
                     }
                 }
             }

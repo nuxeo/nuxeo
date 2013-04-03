@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -107,7 +108,7 @@ public interface FileSystemItemFactory {
      * @see #isFileSystemItem(DocumentModel)
      * @see #getFileSystemItem(DocumentModel, String, boolean)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
             throws ClientException;
 
     /**
@@ -121,7 +122,7 @@ public interface FileSystemItemFactory {
      *         is not adaptable as a {@link FileSystemItem}
      * @see #isFileSystemItem(DocumentModel, boolean)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException;
 
     /**

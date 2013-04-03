@@ -19,6 +19,7 @@ package org.nuxeo.drive.service.adapter;
 import java.security.Principal;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -45,15 +46,15 @@ public class DummyFileItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
             throws ClientException {
-        return new DummyFileItem(this, parentId, doc);
+        return new DummyFileItem(this, parentItem, doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, parentId);
+        return getFileSystemItem(doc, parentItem);
     }
 
     @Override

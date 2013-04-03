@@ -20,6 +20,7 @@ import java.security.Principal;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -50,15 +51,15 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
             throws ClientException {
-        return new DummyFolderItem(name, parentId, doc);
+        return new DummyFolderItem(name, parentItem, doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, parentId);
+        return getFileSystemItem(doc, parentItem);
     }
 
     @Override

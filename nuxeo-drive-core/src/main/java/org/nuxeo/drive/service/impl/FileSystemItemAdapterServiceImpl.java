@@ -25,6 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
@@ -119,15 +121,15 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
             throws ClientException {
-        return getFileSystemItem(doc, true, parentId, false);
+        return getFileSystemItem(doc, true, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, true, parentId, includeDeleted);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted);
     }
 
     /**
@@ -224,7 +226,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * </ul>
      */
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentId, String parentId, boolean includeDeleted)
+            boolean forceParentItem, FolderItem parentItem, boolean includeDeleted)
             throws ClientException {
 
         FileSystemItem fileSystemItem = null;
@@ -236,14 +238,31 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                     || docTypeFactoryMatches(factory, doc)
                     || facetFactoryMatches(factory, doc)) {
                 matchingFactory = factory;
-                if (forceParentId) {
-                    fileSystemItem = factory.getFactory().getFileSystemItem(
-                            doc, parentId, includeDeleted);
-                } else {
-                    fileSystemItem = factory.getFactory().getFileSystemItem(
-                            doc, includeDeleted);
+                try {
+                    if (forceParentItem) {
+                        fileSystemItem = factory.getFactory().getFileSystemItem(
+                                doc, parentItem, includeDeleted);
+                    } else {
+                        fileSystemItem = factory.getFactory().getFileSystemItem(
+                                doc, includeDeleted);
+                    }
+                } catch (RootlessItemException e) {
+                    // Give more information in the exception message on the
+                    // document whose adaption failed to recursively find the
+                    // top level item.
+                    throw new RootlessItemException(String.format(
+                            "Cannot find path to registered top"
+                                    + " level when adapting document "
+                                    + " '%s' (path: %s) with factory %s",
+                            doc.getTitle(), doc.getPathAsString(),
+                            factory.getFactory().getName()), e);
                 }
                 if (fileSystemItem != null) {
+                    log.debug(String.format(
+                            "Adapted document '%s' (path: %s) to item with path %s with factory %s",
+                            doc.getTitle(), doc.getPathAsString(),
+                            fileSystemItem.getPath(),
+                            factory.getFactory().getName()));
                     return fileSystemItem;
                 }
             }

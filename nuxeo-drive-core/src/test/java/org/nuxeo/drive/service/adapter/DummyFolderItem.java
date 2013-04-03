@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service.adapter;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,9 +36,9 @@ public class DummyFolderItem extends DocumentBackedFolderItem {
         super(factoryName, doc);
     }
 
-    public DummyFolderItem(String factoryName, String parentId,
+    public DummyFolderItem(String factoryName, FolderItem parentItem,
             DocumentModel doc) throws ClientException {
-        super(factoryName, parentId, doc);
+        super(factoryName, parentItem, doc);
     }
 
     @Override

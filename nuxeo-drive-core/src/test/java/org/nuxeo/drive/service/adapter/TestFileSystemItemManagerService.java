@@ -79,6 +79,8 @@ public class TestFileSystemItemManagerService {
 
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
+    private static final String DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
+
     @Inject
     protected CoreSession session;
 
@@ -89,8 +91,6 @@ public class TestFileSystemItemManagerService {
     protected NuxeoDriveManager nuxeoDriveManager;
 
     protected Principal principal;
-
-    protected String rootDocFileSystemItemId;
 
     protected DocumentModel syncRoot1;
 
@@ -114,8 +114,6 @@ public class TestFileSystemItemManagerService {
     public void createTestDocs() throws Exception {
 
         principal = session.getPrincipal();
-        rootDocFileSystemItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + session.getRootDocument().getId();
 
         // Create and register 2 synchronization roots for Administrator
         syncRoot1 = session.createDocument(session.createDocumentModel("/",
@@ -129,24 +127,28 @@ public class TestFileSystemItemManagerService {
                 syncRoot2, session);
 
         // Folder
-        folder = session.createDocumentModel("/", "aFolder", "Folder");
+        folder = session.createDocumentModel(syncRoot1.getPathAsString(),
+                "aFolder", "Folder");
         folder.setPropertyValue("dc:title", "Jack's folder");
         folder = session.createDocument(folder);
 
         // File
-        file = session.createDocumentModel("/aFolder", "aFile", "File");
+        file = session.createDocumentModel(folder.getPathAsString(), "aFile",
+                "File");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe.odt");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
 
         // Note
-        note = session.createDocumentModel("/aFolder", "aNote", "Note");
+        note = session.createDocumentModel(folder.getPathAsString(), "aNote",
+                "Note");
         note.setPropertyValue("note:note", "Content of Bob's note.");
         note = session.createDocument(note);
 
         // Custom doc type with the "file" schema
-        custom = session.createDocumentModel("/aFolder", "aCustomDoc", "Custom");
+        custom = session.createDocumentModel(folder.getPathAsString(),
+                "aCustomDoc", "Custom");
         blob = new StringBlob("Content of Bonnie's file.");
         blob.setFilename("Bonnie's file.odt");
         custom.setPropertyValue("file:content", (Serializable) blob);
@@ -154,20 +156,21 @@ public class TestFileSystemItemManagerService {
 
         // FolderishFile: doc type with the "file" schema and the "Folderish"
         // facet
-        folderishFile = session.createDocumentModel("/aFolder",
+        folderishFile = session.createDocumentModel(folder.getPathAsString(),
                 "aFolderishFile", "FolderishFile");
         folderishFile.setPropertyValue("dc:title", "Sarah's folderish file");
         folderishFile = session.createDocument(folderishFile);
 
         // Doc not adaptable as a FileSystemItem (not Folderish nor a
         // BlobHolder)
-        notAFileSystemItem = session.createDocumentModel("/aFolder",
-                "notAFileSystemItem", "NotSynchronizable");
+        notAFileSystemItem = session.createDocumentModel(
+                folder.getPathAsString(), "notAFileSystemItem",
+                "NotSynchronizable");
         notAFileSystemItem = session.createDocument(notAFileSystemItem);
 
         // Sub folder
-        subFolder = session.createDocumentModel("/aFolder", "aSubFolder",
-                "Folder");
+        subFolder = session.createDocumentModel(folder.getPathAsString(),
+                "aSubFolder", "Folder");
         subFolder.setPropertyValue("dc:title", "Tony's sub folder");
         subFolder = session.createDocument(subFolder);
 
@@ -236,7 +239,8 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem instanceof FolderItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(),
                 fsItem.getId());
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        String expectedSyncRoot1Id = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX + syncRoot1.getId();
+        assertEquals(expectedSyncRoot1Id, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertTrue(fsItem.getCanRename());
@@ -354,6 +358,9 @@ public class TestFileSystemItemManagerService {
         Principal joePrincipal = new NuxeoPrincipalImpl("joe");
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
+        nuxeoDriveManager.registerSynchronizationRoot(joePrincipal, syncRoot1,
+                session);
+
         destFsItemId = DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId();
         assertFalse(fileSystemItemManagerService.canMove(srcFsItemId,
                 destFsItemId, joePrincipal));
@@ -440,7 +447,7 @@ public class TestFileSystemItemManagerService {
         DocumentModel newFile = folderChildren.get(0);
         assertEquals("File", newFile.getType());
         assertEquals("New file.odt", newFile.getTitle());
-        assertEquals("/aFolder/A new folder/New file.odt",
+        assertEquals("/syncRoot1/aFolder/A new folder/New file.odt",
                 newFile.getPathAsString());
         Blob newFileBlob = (Blob) newFile.getPropertyValue("file:content");
         assertEquals("New file.odt", newFileBlob.getFilename());
@@ -475,7 +482,7 @@ public class TestFileSystemItemManagerService {
         DocumentModel updatedFile = folderChildren.get(0);
         assertEquals("File", updatedFile.getType());
         assertEquals("New file.odt", updatedFile.getTitle());
-        assertEquals("/aFolder/A new folder/New file.odt",
+        assertEquals("/syncRoot1/aFolder/A new folder/New file.odt",
                 updatedFile.getPathAsString());
         Blob updatedFileBlob = (Blob) updatedFile.getPropertyValue("file:content");
         assertEquals("New file.odt", updatedFileBlob.getFilename());
@@ -507,7 +514,8 @@ public class TestFileSystemItemManagerService {
         FileSystemItem fsItem = fileSystemItemManagerService.rename(fsItemId,
                 "Jack's folder has a new name", principal);
         assertEquals(fsItemId, fsItem.getId());
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        String expectedSyncRoot1Id = DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX + syncRoot1.getId();
+        assertEquals(expectedSyncRoot1Id, fsItem.getParentId());
         assertEquals("Jack's folder has a new name", fsItem.getName());
         folder = session.getDocument(folder.getRef());
         assertEquals("Jack's folder has a new name", folder.getTitle());
@@ -544,7 +552,7 @@ public class TestFileSystemItemManagerService {
                 newFolderItem.getId(), blob, principal);
         // Note that the PathSegmentService truncates doc title at 24 characters
         newFile = session.getDocument(new PathRef(
-                "/aFolder/A new folder/Title-filename equality."));
+                "/syncRoot1/aFolder/A new folder/Title-filename equality."));
         assertEquals("Title-filename equality.odt", newFile.getTitle());
         assertEquals("Title-filename equality.odt",
                 ((Blob) newFile.getPropertyValue("file:content")).getFilename());
@@ -589,7 +597,7 @@ public class TestFileSystemItemManagerService {
         assertEquals(destFsItemId, movedFsItem.getParentId());
         assertEquals("aNote.txt", movedFsItem.getName());
         note = session.getDocument(note.getRef());
-        assertEquals("/aFolder/aSubFolder/aNote", note.getPathAsString());
+        assertEquals("/syncRoot1/aFolder/aSubFolder/aNote", note.getPathAsString());
         assertEquals("aNote", note.getTitle());
     }
 
