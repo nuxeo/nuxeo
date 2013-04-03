@@ -47,7 +47,7 @@ public class TestWordGen {
         }
 
         System.out.println("generated files in " + ((t3 - t2) / 1000) + "s");
-        float rate = nbFiles / ((t3 - t2) / 1000);
+        float rate = nbFiles * 1000 / (t3 - t2);
         System.out.println(rate + " files/s");
     }
 
