@@ -24,6 +24,8 @@ import java.io.File;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -69,7 +71,8 @@ public class TrialAclProcessingExceedingDocuments extends AbstractAclLayoutTest 
             + TrialAclProcessingExceedingDocuments.class.getSimpleName()
             + ".xls");
 
-    //@Test
+    @Test
+    @Ignore
     public void testTooManyDocuments() throws Exception {
         // edit max number of rows for the purpose of our test
         int realMaxRow = ExcelBuilder.MAX_ROW;

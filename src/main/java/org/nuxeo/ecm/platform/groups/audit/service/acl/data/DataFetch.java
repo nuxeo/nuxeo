@@ -92,7 +92,7 @@ public class DataFetch {
         String parentPath = doc.getPathAsString();
 
         String request = "SELECT * FROM Document WHERE "
-                + "ecm:path STARTSWITH '" + parentPath + "'" + " AND "
+                + "ecm:path STARTSWITH '" + parentPath + "'" + " AND ecm:mixinType = 'Folderish' AND "
                 + baseRequest();
         if (ordered)
             return request + " ORDER BY ecm:path";

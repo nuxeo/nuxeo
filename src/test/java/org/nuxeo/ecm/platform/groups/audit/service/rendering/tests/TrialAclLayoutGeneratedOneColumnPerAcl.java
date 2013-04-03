@@ -21,6 +21,7 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
@@ -63,7 +64,7 @@ public class TrialAclLayoutGeneratedOneColumnPerAcl extends AbstractAclLayoutTes
     protected static File testFile = new File(folder
             + TrialAclLayoutGeneratedOneColumnPerAcl.class.getSimpleName() + ".xls");
 
-    //@Test
+    @Test
     public void testExcelExportReport() throws Exception {
         // doc tree
         int depth = 3;
