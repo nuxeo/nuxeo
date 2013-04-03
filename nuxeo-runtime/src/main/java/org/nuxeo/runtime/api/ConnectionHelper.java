@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -65,6 +67,12 @@ public class ConnectionHelper {
     private static ConcurrentMap<Transaction, SharedConnection> sharedConnections = new ConcurrentHashMap<Transaction, SharedConnection>();
 
     /**
+     * SharedConnectionSynchronization registered for the transaction, when
+     * sharing.
+     */
+    private static ConcurrentMap<Transaction, SharedConnectionSynchronization> sharedSynchronizations = new ConcurrentHashMap<Transaction, SharedConnectionSynchronization>();
+
+    /**
      * Property holding a datasource name to use to replace all database
      * accesses.
      */
@@ -89,7 +97,7 @@ public class ConnectionHelper {
      * Sharing is started on setAutoCommit(true), and ends on
      * setAutoCommit(false) or close().
      */
-    private static class ConnectionDispatcher implements InvocationHandler {
+    private static class ConnectionHandle implements InvocationHandler {
 
         private boolean closed;
 
@@ -104,7 +112,7 @@ public class ConnectionHelper {
          * <p>
          * The sharedConnection is allocated on first use after that.
          */
-        private Transaction sharedInTransaction;
+        private Transaction transactionForShare;
 
         /**
          * A local connection, allocated when the connection is used when
@@ -124,7 +132,7 @@ public class ConnectionHelper {
          */
         private boolean began;
 
-        public ConnectionDispatcher() {
+        public ConnectionHandle() {
             autoCommit = true;
             if (log.isDebugEnabled()) {
                 log.debug("Construct " + this);
@@ -165,15 +173,15 @@ public class ConnectionHelper {
             }
 
             Connection connection;
-            if (sharedInTransaction != null) {
+            if (transactionForShare != null) {
                 // check that we're still in the same transaction
                 // this also enforces single-threaded use of
                 // the shared connection
                 Transaction transaction = getTransaction();
-                if (transaction != sharedInTransaction) {
+                if (transaction != transactionForShare) {
                     throw new SQLException("Calling method " + methodName
                             + ", connection sharing started in transaction "
-                            + sharedInTransaction
+                            + transactionForShare
                             + " but it is now used in transaction "
                             + transaction);
                 }
@@ -242,7 +250,7 @@ public class ConnectionHelper {
             }
             if (!autoCommit) {
                 // setting autoCommit = false
-                if (sharedInTransaction != null) {
+                if (transactionForShare != null) {
                     throw new AssertionError(
                             "autoCommit=false when already sharing");
                 }
@@ -251,7 +259,7 @@ public class ConnectionHelper {
                 if (transaction != null
                         && transactionStatus(transaction) == Status.STATUS_ACTIVE) {
                     // start sharing
-                    sharedInTransaction = transaction;
+                    transactionForShare = transaction;
                     if (localConnection != null) {
                         // share using the previous local connection
                         logInvoke("setAutoCommit false");
@@ -275,7 +283,7 @@ public class ConnectionHelper {
                 }
             } else {
                 // setting autoCommit = true
-                if (sharedInTransaction != null) {
+                if (transactionForShare != null) {
                     if (began) {
                         // do automatic commit
                         log.debug("setAutoCommit true committing shared");
@@ -283,7 +291,7 @@ public class ConnectionHelper {
                     }
                     // stop sharing
                     sharedConnection = null;
-                    sharedInTransaction = null;
+                    transactionForShare = null;
                 } else if (localConnection != null) {
                     logInvoke("setAutoCommit true");
                     localConnection.setAutoCommit(true);
@@ -311,7 +319,7 @@ public class ConnectionHelper {
         // allocation on first use
         private void sharedConnectionAllocate() throws SQLException {
             if (sharedConnection == null) {
-                if (transactionStatus(sharedInTransaction) == Status.STATUS_ACTIVE) {
+                if (transactionStatus(transactionForShare) == Status.STATUS_ACTIVE) {
                     sharedConnection = getSharedConnection(null);
                     // autoCommit mode set by SharedConnection.allocate()
                 } else {
@@ -328,10 +336,10 @@ public class ConnectionHelper {
             if (sharedConnection == null) {
                 throw new SQLException("Cannot call " + methodName
                         + " with transaction in state "
-                        + transactionStatus(sharedInTransaction), "25000");
+                        + transactionStatus(transactionForShare), "25000");
             }
             if (!autoCommit && !began) {
-                sharedConnection.begin();
+                sharedConnection.begin(this);
                 began = true;
             }
         }
@@ -341,16 +349,22 @@ public class ConnectionHelper {
                 if (log.isDebugEnabled()) {
                     log.debug("Committing shared " + this);
                 }
-                sharedConnection.commit();
+                sharedConnection.commit(this);
                 began = false;
             }
         }
 
         private void sharedConnectionRollback() throws SQLException {
             if (began) {
-                sharedConnection.rollback();
+                sharedConnection.rollback(this);
                 began = false;
             }
+        }
+
+        /** Called back from SharedConnection close. */
+        protected void closeFromSharedConnection() {
+            sharedConnection = null;
+            transactionForShare = null;
         }
 
         private Boolean isClosed() {
@@ -362,7 +376,7 @@ public class ConnectionHelper {
                 if (log.isDebugEnabled()) {
                     log.debug("close() " + this);
                 }
-                if (sharedInTransaction != null) {
+                if (transactionForShare != null) {
                     if (sharedConnection != null) {
                         if (began) {
                             // connection closed before commit/rollback
@@ -372,7 +386,7 @@ public class ConnectionHelper {
                         }
                         sharedConnection = null;
                     }
-                    sharedInTransaction = null;
+                    transactionForShare = null;
                 } else {
                     if (localConnection != null) {
                         logInvoke("close");
@@ -398,23 +412,6 @@ public class ConnectionHelper {
             return connection;
         }
 
-        private static Transaction getTransaction() {
-            try {
-                return TransactionHelper.lookupTransactionManager().getTransaction();
-            } catch (NamingException | SystemException e) {
-                return null;
-            }
-        }
-
-        private int transactionStatus(Transaction transaction) {
-            try {
-                return transaction.getStatus();
-            } catch (SystemException e) {
-                log.error("Cannot get transaction status", e);
-                return Status.STATUS_UNKNOWN;
-            }
-        }
-
         /**
          * Gets the shared connection for the shared transaction, or allocates a
          * new one. If allocating a new one, registers a synchronizer in order
@@ -424,7 +421,7 @@ public class ConnectionHelper {
          */
         private SharedConnection getSharedConnection(Connection connection)
                 throws SQLException {
-            SharedConnection sharedConnection = sharedConnections.get(sharedInTransaction);
+            SharedConnection sharedConnection = sharedConnections.get(transactionForShare);
             if (sharedConnection == null) {
                 // allocate a new shared connection
                 sharedConnection = new SharedConnection(connection);
@@ -432,7 +429,7 @@ public class ConnectionHelper {
                     log.debug("Allocating new shared connection "
                             + sharedConnection + " for " + this);
                 }
-                if (sharedConnections.putIfAbsent(sharedInTransaction,
+                if (sharedConnections.putIfAbsent(transactionForShare,
                         sharedConnection) != null) {
                     // race condition but we are single-threaded in this
                     // transaction!
@@ -441,8 +438,10 @@ public class ConnectionHelper {
                 }
                 // register a synchronizer to clear the map
                 try {
-                    sharedInTransaction.registerSynchronization(new SharedConnectionCloser(
-                            sharedInTransaction));
+                    SharedConnectionSynchronization scs = new SharedConnectionSynchronization(
+                            transactionForShare);
+                    sharedSynchronizations.put(transactionForShare, scs);
+                    transactionForShare.registerSynchronization(scs);
                 } catch (IllegalStateException | RollbackException
                         | SystemException e) {
                     throw new RuntimeException(
@@ -486,14 +485,15 @@ public class ConnectionHelper {
         /** The JDBC connection. */
         private Connection connection;
 
+        /** The connection handles associated to this shared connection. */
+        private final List<ConnectionHandle> handles;
+
         /** Whether the final commit must actually do a rollback. */
         private boolean mustRollback;
 
-        /** The number of references to the JDBC connection. */
-        private int ref;
-
         public SharedConnection(Connection connection) {
             this.connection = connection;
+            handles = new ArrayList<ConnectionHandle>(3);
         }
 
         private void logInvoke(String message) {
@@ -507,14 +507,14 @@ public class ConnectionHelper {
         }
 
         /** Called just before first use. */
-        public void begin() throws SQLException {
-            ref();
+        public void begin(ConnectionHandle handle) throws SQLException {
+            ref(handle);
         }
 
         /** Finishes connection use by commit. */
-        public void commit() throws SQLException {
+        public void commit(ConnectionHandle handle) throws SQLException {
             try {
-                if (ref == 1) {
+                if (handles.size() == 1) {
                     if (mustRollback) {
                         logInvoke("rollback");
                         connection.rollback();
@@ -529,14 +529,14 @@ public class ConnectionHelper {
                     }
                 }
             } finally {
-                unref();
+                unref(handle);
             }
         }
 
         /** Finishes connection use by rollback. */
-        public void rollback() throws SQLException {
+        public void rollback(ConnectionHandle handle) throws SQLException {
             try {
-                if (ref == 1) {
+                if (handles.size() == 1) {
                     logInvoke("rollback");
                     connection.rollback();
                     mustRollback = false;
@@ -547,32 +547,34 @@ public class ConnectionHelper {
                     mustRollback = true;
                 }
             } finally {
-                unref();
+                unref(handle);
             }
         }
 
-        private void ref() throws SQLException {
-            if (ref == 0) {
+        private void ref(ConnectionHandle handle) throws SQLException {
+            if (handles.isEmpty()) {
                 if (connection == null) {
                     allocate();
                 }
             }
-            ref++;
+            handles.add(handle);
             if (log.isDebugEnabled()) {
-                log.debug("Reference added (" + ref + ") for " + this);
+                log.debug("Reference added for " + this);
             }
         }
 
-        private void unref() throws SQLException {
-            ref--;
+        private void unref(ConnectionHandle handle) throws SQLException {
+            handles.remove(handle);
             if (log.isDebugEnabled()) {
-                log.debug("Reference removed (" + ref + ") for " + this);
+                log.debug("Reference removed for " + this);
             }
-            if (ref == 0) {
+            if (handles.isEmpty()) {
                 deallocate();
             }
         }
 
+        // Note that this is not called when a local connection was upgraded to
+        // a shared one, and is reused.
         private void allocate() throws SQLException {
             if (log.isDebugEnabled()) {
                 log.debug("Constructing physical connection " + this);
@@ -594,25 +596,35 @@ public class ConnectionHelper {
                             new Exception("debug"));
                 }
             }
-            logInvoke("close");
-            connection.close();
-            connection = null;
+            close();
         }
 
-        /** Called when removing from per-transaction map. */
-        public void close() {
+        /** Called after transaction completion to free resources. */
+        public void closeAfterTransaction() {
+            if (!handles.isEmpty()) {
+                log.error("Transaction ended with " + handles.size()
+                        + " connections not committed " + this + " " + handles);
+            }
             if (connection != null) {
-                log.error("Transaction ended with " + ref
-                        + " connections not committed " + this);
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    log.error(
-                            "Could not close stray connection at transaction end",
-                            e);
-                } finally {
-                    connection = null;
+                close();
+            }
+        }
+
+        /** Closes and dereferences from all handles to this. */
+        private void close() {
+            try {
+                logInvoke("close");
+                connection.close();
+            } catch (SQLException e) {
+                log.error(
+                        "Could not close leftover connection at transaction end",
+                        e);
+            } finally {
+                connection = null;
+                for (ConnectionHandle h : handles) {
+                    h.closeFromSharedConnection();
                 }
+                handles.clear();
             }
         }
 
@@ -623,31 +635,99 @@ public class ConnectionHelper {
         }
     }
 
-    private static class SharedConnectionCloser implements Synchronization {
+    /**
+     * In addition to closing the shared connection, also acts as a delegate for
+     * other synchronizers that must run before it.
+     */
+    private static class SharedConnectionSynchronization implements
+            Synchronization {
 
         private final Transaction transaction;
 
-        public SharedConnectionCloser(Transaction transaction) {
+        private final List<Synchronization> syncsFirst;
+
+        public SharedConnectionSynchronization(Transaction transaction) {
             this.transaction = transaction;
+            syncsFirst = new ArrayList<Synchronization>(5);
+        }
+
+        /**
+         * Registers a synchronization that must run before us.
+         */
+        public void registerSynchronization(Synchronization sync) {
+            syncsFirst.add(sync);
         }
 
         @Override
         public void beforeCompletion() {
+            beforeCompletionFirst();
+        }
+
+        private void beforeCompletionFirst() {
+            // beforeCompletion hooks may add other syncs,
+            // so we must be careful when iterating on the list
+            RuntimeException exc = null;
+            for (int i = 0; i < syncsFirst.size(); i++) {
+                try {
+                    syncsFirst.get(i).beforeCompletion();
+                } catch (RuntimeException e) {
+                    log.error("Exception during beforeCompletion hook", e);
+                    if (exc == null) {
+                        exc = e;
+                        try {
+                            transaction.setRollbackOnly();
+                        } catch (SystemException se) {
+                            log.error("Cannot set rollback only", e);
+                        }
+                    }
+                }
+            }
+            if (exc != null) {
+                throw exc;
+            }
         }
 
         /**
-         * After completion, remove the shared connection from the map.
-         * <p>
-         * When this is called, a commit or rollback was already done on each
-         * connection, so they already back in local mode and nobody uses the
-         * shared connection anymore.
+         * After completion, removes the shared connection from the map and
+         * closes it.
          */
         @Override
         public void afterCompletion(int status) {
+            sharedSynchronizations.remove(transaction);
+            afterCompletionFirst(status);
             SharedConnection sharedConnection = sharedConnections.remove(transaction);
             if (sharedConnection != null) {
-                sharedConnection.close();
+                sharedConnection.closeAfterTransaction();
             }
+        }
+
+        private void afterCompletionFirst(int status) {
+            for (Synchronization sync : syncsFirst) {
+                try {
+                    sync.afterCompletion(status);
+                } catch (RuntimeException e) {
+                    log.warn(
+                            "Unexpected exception from afterCompletion; continuing",
+                            e);
+                }
+            }
+        }
+    }
+
+    private static Transaction getTransaction() {
+        try {
+            return TransactionHelper.lookupTransactionManager().getTransaction();
+        } catch (NamingException | SystemException e) {
+            return null;
+        }
+    }
+
+    private static int transactionStatus(Transaction transaction) {
+        try {
+            return transaction.getStatus();
+        } catch (SystemException e) {
+            log.error("Cannot get transaction status", e);
+            return Status.STATUS_UNKNOWN;
         }
     }
 
@@ -663,8 +743,8 @@ public class ConnectionHelper {
     public static Connection unwrap(Connection connection) throws SQLException {
         if (Proxy.isProxyClass(connection.getClass())) {
             InvocationHandler handler = Proxy.getInvocationHandler(connection);
-            if (handler instanceof ConnectionDispatcher) {
-                ConnectionDispatcher h = (ConnectionDispatcher) handler;
+            if (handler instanceof ConnectionHandle) {
+                ConnectionHandle h = (ConnectionHandle) handler;
                 connection = h.getUnwrappedConnection();
             }
         }
@@ -778,7 +858,7 @@ public class ConnectionHelper {
         }
         return (Connection) Proxy.newProxyInstance(
                 Connection.class.getClassLoader(),
-                new Class[] { Connection.class }, new ConnectionDispatcher());
+                new Class[] { Connection.class }, new ConnectionHandle());
     }
 
     private static Connection getPhysicalConnection() throws SQLException {
@@ -869,9 +949,33 @@ public class ConnectionHelper {
      */
     public static void clearConnectionReferences() {
         for (SharedConnection sharedConnection : sharedConnections.values()) {
-            sharedConnection.close();
+            sharedConnection.closeAfterTransaction();
         }
         sharedConnections.clear();
+    }
+
+    /**
+     * If sharing is in effect, registers a synchronization with the current
+     * transaction, making sure it runs before the
+     * {@link SharedConnectionSynchronization}.
+     *
+     * @return {@code true} if registration was done, {@code false} if caller
+     *         must do registration itself (no sharing)
+     */
+    public static boolean registerSynchronization(Synchronization sync)
+            throws SystemException {
+        Transaction transaction = getTransaction();
+        if (transaction == null) {
+            throw new SystemException(
+                    "Cannot register synchronization: no transaction");
+        }
+        SharedConnectionSynchronization scs = sharedSynchronizations.get(transaction);
+        if (scs != null) {
+            scs.registerSynchronization(sync);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
