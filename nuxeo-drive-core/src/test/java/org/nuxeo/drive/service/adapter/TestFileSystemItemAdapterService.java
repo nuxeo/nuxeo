@@ -35,6 +35,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
+import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
@@ -84,7 +85,9 @@ public class TestFileSystemItemAdapterService {
     @Inject
     protected RuntimeHarness harness;
 
-    protected String rootDocFileSystemItemId;
+    protected String syncRootItemId;
+
+    protected FolderItem syncRootItem;
 
     protected DocumentModel file;
 
@@ -92,25 +95,35 @@ public class TestFileSystemItemAdapterService {
 
     protected DocumentModel custom;
 
+    protected DocumentModel syncRootFolder;
+
     @Before
-    public void createTestDocs() throws Exception {
+    public void registerRootAndCreateSomeDocs() throws Exception {
 
-        rootDocFileSystemItemId = "dummyFacetFactory#test#"
-                + session.getRootDocument().getId();
+        syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
+        syncRootFolder = session.createDocument(syncRootFolder);
 
-        file = session.createDocumentModel("/", "aFile", "File");
+        // Register the root folder as sync root
+        NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
+        driveManager.registerSynchronizationRoot(session.getPrincipal(),
+                syncRootFolder, session);
+
+        syncRootItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItem(syncRootFolder);
+        syncRootItemId = syncRootItem.getId();
+
+        file = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFile", "File");
         file.setPropertyValue("dc:creator", "Joe");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe's file.txt");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
 
-        folder = session.createDocumentModel("/", "aFolder", "Folder");
+        folder = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolder", "Folder");
         folder.setPropertyValue("dc:title", "Jack's folder");
         folder.setPropertyValue("dc:creator", "Jack");
         folder = session.createDocument(folder);
 
-        custom = session.createDocumentModel("/", "aCustom", "Custom");
+        custom = session.createDocumentModel(syncRootFolder.getPathAsString(), "aCustom", "Custom");
         custom.setPropertyValue("dc:creator", "Bonnie");
         blob = new StringBlob("Content of the custom document's blob.");
         blob.setFilename("Bonnie's file.txt");
@@ -249,7 +262,7 @@ public class TestFileSystemItemAdapterService {
         assertNotNull(fsItem);
         assertTrue(fsItem instanceof DummyFileItem);
         assertEquals("dummyDocTypeFactory#test#" + file.getId(), fsItem.getId());
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Dummy file with id " + file.getId(), fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Joe", fsItem.getCreator());
@@ -261,7 +274,7 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItem instanceof DummyFolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertEquals("dummyFacetFactory#test#" + folder.getId(), fsItem.getId());
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Dummy folder with id " + folder.getId(), fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
@@ -273,9 +286,11 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItem instanceof FileItem);
         assertEquals("defaultFileSystemItemFactory#test#" + custom.getId(),
                 fsItem.getId());
-        assertEquals("/" + rootDocFileSystemItemId + "/" + fsItem.getId(),
+        assertEquals(
+                "/org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#/"
+                        + syncRootItemId + "/" + fsItem.getId(),
                 fsItem.getPath());
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Bonnie's file.txt", fsItem.getName());
         assertFalse(fsItem.isFolder());
         assertEquals("Bonnie", fsItem.getCreator());
@@ -285,14 +300,14 @@ public class TestFileSystemItemAdapterService {
                 fileFsItemBlob.getString());
 
         // ------------------------------------------------------
-        // Check #getFileSystemItem(DocumentModel doc, String parentId)
+        // Check #getFileSystemItem(DocumentModel doc, FolderItem parentItem)
         // ------------------------------------------------------
         // File => should use the dummyDocTypeFactory bound to the
         // DummyFileItemFactory class
         fsItem = fileSystemItemAdapterService.getFileSystemItem(file,
-                rootDocFileSystemItemId);
+                syncRootItem);
         assertNotNull(fsItem);
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
 
         // -------------------------------------------------------------
         // Check #getFileSystemItemFactoryForId(String id)
@@ -389,6 +404,10 @@ public class TestFileSystemItemAdapterService {
         harness.deployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
         Framework.getLocalService(ReloadService.class).reload();
+
+        // Re-adapt the sync root to take the override into account
+        syncRootItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItem(syncRootFolder);
+        syncRootItemId = syncRootItem.getId();
 
         // ------------------------------------------------------
         // Check file system item factory descriptors
@@ -489,7 +508,7 @@ public class TestFileSystemItemAdapterService {
         assertTrue(fsItem instanceof FolderItem);
         assertTrue(((FolderItem) fsItem).getCanCreateChild());
         assertEquals("dummyFacetFactory#test#" + folder.getId(), fsItem.getId());
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
         assertEquals("Jack", fsItem.getCreator());
@@ -506,9 +525,9 @@ public class TestFileSystemItemAdapterService {
         // Folder => should use the dummyFacetFactory bound to the
         // DefaultFileSystemItemFactory class
         fsItem = fileSystemItemAdapterService.getFileSystemItem(folder,
-                rootDocFileSystemItemId);
+                syncRootItem);
         assertNotNull(fsItem);
-        assertEquals(rootDocFileSystemItemId, fsItem.getParentId());
+        assertEquals(syncRootItemId, fsItem.getParentId());
 
         // -------------------------------------------------------------
         // Check #getFileSystemItemFactoryForId(String id)

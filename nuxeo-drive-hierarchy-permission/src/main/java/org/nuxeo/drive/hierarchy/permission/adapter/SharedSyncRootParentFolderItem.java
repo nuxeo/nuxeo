@@ -90,7 +90,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
                         doc.getPropertyValue("dc:creator"))) {
                     // TODO: handle null FileSystemItem
                     children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                            doc, getId()));
+                            doc, this));
                 }
             }
         }

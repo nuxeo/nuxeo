@@ -42,9 +42,9 @@ public abstract class AbstractSyncRootFolderItemFactory extends
     private static final Log log = LogFactory.getLog(AbstractSyncRootFolderItemFactory.class);
 
     /**
-     * Returns the id of the parent {@link FileSystemItem}.
+     * Returns the parent {@link FileSystemItem}.
      */
-    protected abstract String getParentId(DocumentModel doc)
+    protected abstract FolderItem getParentItem(DocumentModel doc)
             throws ClientException;
 
     /**
@@ -134,7 +134,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, getParentId(doc), includeDeleted);
+        return getFileSystemItem(doc, getParentItem(doc), includeDeleted);
     }
 
 }

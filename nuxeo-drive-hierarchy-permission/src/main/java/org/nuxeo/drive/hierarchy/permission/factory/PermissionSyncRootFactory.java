@@ -121,13 +121,13 @@ public class PermissionSyncRootFactory extends
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException {
-        return new DefaultSyncRootFolderItem(name, parentId, doc);
+            boolean forceParentId, FolderItem parentItem) throws ClientException {
+        return new DefaultSyncRootFolderItem(name, parentItem, doc);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
-    protected String getParentId(DocumentModel doc) throws ClientException {
+    protected FolderItem getParentItem(DocumentModel doc) throws ClientException {
         Principal principal = doc.getCoreSession().getPrincipal();
         String docCreator = (String) doc.getPropertyValue("dc:creator");
         if (principal.getName().equals(docCreator)) {
@@ -140,7 +140,7 @@ public class PermissionSyncRootFactory extends
                                 "Cannot find the parent of document %s: virtual folder from factory %s.",
                                 doc.getId(), userSyncRootParentFactoryName));
             }
-            return parent.getId();
+            return parent;
         } else {
             FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(
                     sharedSyncRootParentFactoryName).getVirtualFolderItem(
@@ -151,7 +151,7 @@ public class PermissionSyncRootFactory extends
                                 "Cannot find the parent of document %s: virtual folder from factory %s.",
                                 doc.getId(), sharedSyncRootParentFactoryName));
             }
-            return parent.getId();
+            return parent;
         }
     }
 

@@ -57,9 +57,9 @@ public class DocumentBackedFolderItem extends
         initialize(doc);
     }
 
-    public DocumentBackedFolderItem(String factoryName, String parentId,
+    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem,
             DocumentModel doc) throws ClientException {
-        super(factoryName, parentId, doc);
+        super(factoryName, parentItem, doc);
         initialize(doc);
     }
 
@@ -98,7 +98,7 @@ public class DocumentBackedFolderItem extends
                 dmChildren.size());
         for (DocumentModel dmChild : dmChildren) {
             FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
-                    dmChild, id);
+                    dmChild, this);
             if (child != null) {
                 children.add(child);
             }
@@ -123,7 +123,7 @@ public class DocumentBackedFolderItem extends
                                 name, docPath));
             }
             return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(
-                    folder, id);
+                    folder, this);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
@@ -143,7 +143,7 @@ public class DocumentBackedFolderItem extends
                                 fileName, docPath));
             }
             return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(
-                    file, id);
+                    file, this);
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }

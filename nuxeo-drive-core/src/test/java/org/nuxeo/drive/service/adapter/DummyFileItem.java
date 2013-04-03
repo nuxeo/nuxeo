@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service.adapter;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -37,8 +38,8 @@ public class DummyFileItem extends DocumentBackedFileItem {
     }
 
     public DummyFileItem(VersioningFileSystemItemFactory factory,
-            String parentId, DocumentModel doc) throws ClientException {
-        super(factory, parentId, doc);
+            FolderItem parentItem, DocumentModel doc) throws ClientException {
+        super(factory, parentItem, doc);
     }
 
     @Override

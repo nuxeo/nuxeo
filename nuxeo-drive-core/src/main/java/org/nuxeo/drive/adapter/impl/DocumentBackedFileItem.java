@@ -19,6 +19,7 @@ package org.nuxeo.drive.adapter.impl;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.FileItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -56,8 +57,8 @@ public class DocumentBackedFileItem extends
     }
 
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
-            String parentId, DocumentModel doc) throws ClientException {
-        super(factory.getName(), parentId, doc);
+            FolderItem parentItem, DocumentModel doc) throws ClientException {
+        super(factory.getName(), parentItem, doc);
         initialize(factory, doc);
     }
 

@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
@@ -126,19 +127,20 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentId, String parentId) throws ClientException {
+            boolean forceParentItem, FolderItem parentItem)
+            throws ClientException {
         // Doc is either Folderish
         if (doc.isFolder()) {
-            if (forceParentId) {
-                return new DocumentBackedFolderItem(name, parentId, doc);
+            if (forceParentItem) {
+                return new DocumentBackedFolderItem(name, parentItem, doc);
             } else {
                 return new DocumentBackedFolderItem(name, doc);
             }
         }
         // or a BlobHolder with a blob
         else {
-            if (forceParentId) {
-                return new DocumentBackedFileItem(this, parentId, doc);
+            if (forceParentItem) {
+                return new DocumentBackedFileItem(this, parentItem, doc);
             } else {
                 return new DocumentBackedFileItem(this, doc);
             }

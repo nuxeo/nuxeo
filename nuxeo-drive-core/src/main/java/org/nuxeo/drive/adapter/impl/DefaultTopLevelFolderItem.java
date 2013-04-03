@@ -82,7 +82,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
                 DocumentModel doc = session.getDocument(idRef);
                 // TODO: handle null FileSystemItem
                 children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                        doc, getId()));
+                        doc, this));
             }
         }
         Collections.sort(children);

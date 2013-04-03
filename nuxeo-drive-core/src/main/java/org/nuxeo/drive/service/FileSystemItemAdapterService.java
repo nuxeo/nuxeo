@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -67,7 +68,7 @@ public interface FileSystemItemAdapterService {
      *         is not adaptable as a {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, String parentId)
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
             throws ClientException;
 
     /**
@@ -81,7 +82,7 @@ public interface FileSystemItemAdapterService {
      *         is not adaptable as a {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, String parentId,
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException;
 
     /**
