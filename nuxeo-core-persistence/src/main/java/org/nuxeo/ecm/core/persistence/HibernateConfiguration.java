@@ -28,6 +28,8 @@ import java.util.Properties;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
@@ -38,14 +40,18 @@ import org.hibernate.HibernateException;
 import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.ejb.transaction.JoinableCMTTransaction;
 import org.hibernate.ejb.transaction.JoinableCMTTransactionFactory;
+import org.hibernate.jdbc.JDBCContext;
 import org.hibernate.transaction.JDBCTransactionFactory;
+import org.hibernate.transaction.TransactionFactory;
 import org.hibernate.transaction.TransactionManagerLookup;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -156,6 +162,44 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         @Override
         public ConnectionReleaseMode getDefaultReleaseMode() {
             return ConnectionReleaseMode.AFTER_TRANSACTION;
+        }
+
+        @Override
+        public org.hibernate.Transaction createTransaction(
+                JDBCContext jdbcContext,
+                TransactionFactory.Context transactionContext)
+                throws HibernateException {
+            return new NuxeoHibernateTransaction(jdbcContext,
+                    transactionContext);
+        }
+    }
+
+    /**
+     * Hibernate transaction that will register a synchronization that runs
+     * before the one from ConnectionHelper in single-datasource mode.
+     * <p>
+     * Needed because the sync from org.hibernate.ejb.EntityManagerImpl#close
+     * must run before the one from ConnectionHelper.
+     */
+    public static class NuxeoHibernateTransaction extends
+            JoinableCMTTransaction {
+        public NuxeoHibernateTransaction(JDBCContext jdbcContext,
+                TransactionFactory.Context transactionContext) {
+            super(jdbcContext, transactionContext);
+        }
+
+        @Override
+        public void registerSynchronization(Synchronization sync)
+                throws HibernateException {
+            boolean registered;
+            try {
+                registered = ConnectionHelper.registerSynchronization(sync);
+            } catch (SystemException e) {
+                throw new HibernateException(e);
+            }
+            if (!registered) {
+                super.registerSynchronization(sync);
+            }
         }
     }
 

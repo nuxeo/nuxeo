@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,11 +23,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.transaction.Transaction;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
@@ -40,8 +40,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class TestSingleDataSource extends SQLRepositoryTestCase {
 
+    @Before
     @Override
     public void setUp() throws Exception {
+        // set up single-datasource mode
         // the name doesn't actually matter, as code in
         // ConnectionHelper.getDataSource ignores it and uses
         // nuxeo.test.vcs.url etc. for connections in test mode
@@ -49,6 +51,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         System.setProperty(ConnectionHelper.SINGLE_DS, dataSourceName);
 
         super.setUp(); // database setUp deletes all tables
+
         fireFrameworkStarted();
         NuxeoContainer.install();
         TransactionHelper.startTransaction();
@@ -56,6 +59,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         // no openSession() done here
     }
 
+    @After
     @Override
     public void tearDown() throws Exception {
         try {
@@ -76,8 +80,12 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         }
     }
 
-    protected boolean useSingleConnectionMode() {
-        return ConnectionHelper.useSingleConnection(null);
+    /**
+     * H2 cannot have one connection doing an insert in a tx and annother using
+     * the same table, as it waits for a lock.
+     */
+    protected boolean canUseTwoConnections() {
+        return !(DatabaseHelper.DATABASE instanceof DatabaseH2);
     }
 
     protected String getValidationQuery(Connection connection)
@@ -94,21 +102,23 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         rs.close();
     }
 
+    protected static void assertSharedConnectionCount(int n) {
+        assertEquals(n, ConnectionHelper.countConnectionReferences());
+    }
+
     @Test
-    public void testOneConnectionNoTxNoBegin() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testNoTxNoBegin() throws Exception {
         TransactionHelper.commitOrRollbackTransaction(); // end tx
         Connection connection = ConnectionHelper.getConnection(null);
         try {
+            assertTrue(connection.getAutoCommit());
             connection.setAutoCommit(true); // already true, no effect
             connection.setAutoCommit(false);
             connection.setAutoCommit(true);
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
         } finally {
             assertFalse(connection.isClosed());
             connection.close();
@@ -126,10 +136,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testOneConnectionNoTxBegin() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testNoTxBegin() throws Exception {
         TransactionHelper.commitOrRollbackTransaction(); // end tx
         Connection connection = ConnectionHelper.getConnection(null);
         try {
@@ -139,7 +146,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             connection.commit(); // needed for DB2 before close
             connection.setAutoCommit(true);
         } finally {
@@ -151,10 +158,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      * Transaction in non-ACTIVE state.
      */
     @Test
-    public void testOneConnectionBadTxBegin() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testBadTxBegin() throws Exception {
         TransactionHelper.setTransactionRollbackOnly(); // not ACTIVE
         Connection connection = ConnectionHelper.getConnection(null);
         try {
@@ -164,7 +168,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             connection.commit(); // needed for DB2 before close
         } finally {
             connection.close();
@@ -172,10 +176,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testOneConnectionNoTxSwitchAutoCommit() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testNoTxSwitchAutoCommit() throws Exception {
         TransactionHelper.commitOrRollbackTransaction(); // end tx
         Connection connection = ConnectionHelper.getConnection(null);
         try {
@@ -187,7 +188,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             connection.commit(); // needed for DB2 before close
             connection.setAutoCommit(true);
         } finally {
@@ -196,16 +197,13 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testOneConnectionNoBegin() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testNoBegin() throws Exception {
         Connection connection = ConnectionHelper.getConnection(null);
         try {
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
         } finally {
             assertFalse(connection.isClosed());
             connection.close();
@@ -217,96 +215,115 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      * Does begin as the first thing the connection does.
      */
     @Test
-    public void testOneConnectionManualBegin1() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testManualBegin1() throws Exception {
         Connection connection = ConnectionHelper.getConnection(null);
         try {
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // first thing set autoCommit=false => starts sharing
             connection.setAutoCommit(false);
             // lazy, still not created
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             Statement st = connection.createStatement();
             // shared connection created
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             connection.commit();
             // shared connection kept around, may have other uses
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
         } finally {
             assertFalse(connection.isClosed());
             connection.close();
             assertTrue(connection.isClosed());
         }
-        assertEquals(1, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(1);
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
-        assertEquals(0, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(0);
     }
 
     /*
      * Does begin after the connection has already been used.
      */
     @Test
-    public void testOneConnectionManualBegin2() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testManualBegin2() throws Exception {
         Connection connection = ConnectionHelper.getConnection(null);
         try {
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // first thing use connection with autoCommit=true
             String sql = getValidationQuery(connection);
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // switch to shared
             connection.setAutoCommit(false);
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             Statement st = connection.createStatement();
             st.execute(sql);
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             connection.commit();
             // shared connection kept around, may have other uses
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
         } finally {
             assertFalse(connection.isClosed());
             connection.close();
             assertTrue(connection.isClosed());
         }
-        assertEquals(1, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(1);
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
-        assertEquals(0, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(0);
+    }
+
+    /*
+     * Does work, commit, then more work.
+     */
+    @Test
+    public void testCommitThenMoreWork() throws Exception {
+        Connection connection = ConnectionHelper.getConnection(null);
+        try {
+            assertSharedConnectionCount(0);
+            connection.setAutoCommit(false);
+            assertSharedConnectionCount(0);
+            connection.createStatement();
+            assertSharedConnectionCount(1);
+            connection.commit();
+            assertSharedConnectionCount(1);
+            // keep working in transaction mode after commit
+            connection.createStatement();
+            assertSharedConnectionCount(1);
+        } finally {
+            assertFalse(connection.isClosed());
+            connection.close();
+            assertTrue(connection.isClosed());
+        }
+        assertSharedConnectionCount(1);
+        TransactionHelper.commitOrRollbackTransaction();
+        // tx synchronizer removes the shared connection
+        assertSharedConnectionCount(0);
     }
 
     /*
      * Does begin, no commit, then close; checks that close auto-commits.
      */
     @Test
-    public void testOneConnectionCloseWithoutCommit() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testCloseWithoutCommit() throws Exception {
         Connection connection = ConnectionHelper.getConnection(null);
         try {
             connection.setAutoCommit(false);
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // don't commit, close() will do it automatically
         } finally {
             assertFalse(connection.isClosed());
             connection.close();
             assertTrue(connection.isClosed());
         }
-        assertEquals(1, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(1);
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
-        assertEquals(0, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(0);
     }
 
     /*
@@ -314,17 +331,14 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      * change auto-commits.
      */
     @Test
-    public void testOneConnectionEndWithoutCommit() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testEndWithoutCommit() throws Exception {
         Connection connection = ConnectionHelper.getConnection(null);
         try {
             connection.setAutoCommit(false);
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // don't commit
             connection.setAutoCommit(true); // commits automatically
         } finally {
@@ -332,10 +346,36 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             connection.close();
             assertTrue(connection.isClosed());
         }
-        assertEquals(1, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(1);
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
-        assertEquals(0, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(0);
+    }
+
+    /*
+     * Test shared connection use after the transaction has ended.
+     */
+    @Test
+    public void testUseAfterTxEnd() throws Exception {
+        Connection connection = ConnectionHelper.getConnection(null);
+        try {
+            connection.setAutoCommit(false);
+            Statement st = connection.createStatement();
+            String sql = getValidationQuery(connection);
+            st.execute(sql);
+            assertSharedConnectionCount(1);
+            // tx just commits now
+            // this will log an ERROR
+            TransactionHelper.commitOrRollbackTransaction();
+            assertSharedConnectionCount(0);
+            // now keep using the connection
+            connection.createStatement();
+        } finally {
+            assertFalse(connection.isClosed());
+            connection.close();
+            assertTrue(connection.isClosed());
+        }
+        assertSharedConnectionCount(0);
     }
 
     /*
@@ -343,21 +383,18 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      * previous transaction.
      */
     @Test
-    public void testOneConnectionSeveralTx() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+    public void testSeveralTx() throws Exception {
         Connection connection = ConnectionHelper.getConnection(null);
         try {
             connection.setAutoCommit(false);
             Statement st = connection.createStatement();
             String sql = getValidationQuery(connection);
             st.execute(sql);
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             connection.commit();
             connection.setAutoCommit(true);
             TransactionHelper.commitOrRollbackTransaction();
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
 
             // new tx
 
@@ -365,11 +402,11 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             connection.setAutoCommit(false);
             st = connection.createStatement();
             st.execute(sql);
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             connection.commit();
             connection.setAutoCommit(true);
             TransactionHelper.commitOrRollbackTransaction();
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
         } finally {
             assertFalse(connection.isClosed());
             connection.close();
@@ -385,9 +422,6 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testXAResourceBeginDoStuffCommit() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
         Connection connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -395,10 +429,10 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
                     connection);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // use connection
             connection.createStatement();
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // then commit
             TransactionHelper.commitOrRollbackTransaction();
         } finally {
@@ -415,9 +449,6 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testXAResourceBeginDoNothingCommit() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
         Connection connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -425,7 +456,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
                     connection);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // do nothing between start and end
             TransactionHelper.commitOrRollbackTransaction();
         } finally {
@@ -442,9 +473,6 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testXAResourceBeginDoNothingRollback() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
         Connection connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -452,7 +480,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
                     connection);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // do nothing between start and end
             // provoke rollback
             TransactionHelper.setTransactionRollbackOnly();
@@ -466,9 +494,8 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
 
     @Test
     public void testTwoConnections() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+        assumeTrue(canUseTwoConnections());
+
         // separate connection to check results
         Connection checker = ConnectionHelper.getConnection(null, true);
         Statement chst = checker.createStatement();
@@ -477,16 +504,16 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         Connection connection = ConnectionHelper.getConnection(null);
         Connection connection2 = ConnectionHelper.getConnection(null);
         try {
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // first thing set autoCommit=false => starts sharing
             connection.setAutoCommit(false);
             connection2.setAutoCommit(false);
             // lazy, still not created
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
 
             Statement st = connection.createStatement();
             // shared connection created
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             st.execute("INSERT INTO foo (i) VALUES (1)");
 
             // not committed yet
@@ -494,16 +521,16 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
 
             Statement st2 = connection2.createStatement();
             // really shared
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             st2.execute("INSERT INTO foo (i) VALUES (2)");
 
             connection.commit();
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // still not committed yet
             assertEqualsInt(0, chst.executeQuery("SELECT COUNT(*) FROM foo"));
 
             connection2.commit();
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // last commit() committed all statements
             assertEqualsInt(2, chst.executeQuery("SELECT COUNT(*) FROM foo"));
         } finally {
@@ -511,10 +538,10 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             connection2.close();
             checker.close();
         }
-        assertEquals(1, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(1);
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
-        assertEquals(0, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(0);
     }
 
     /*
@@ -522,9 +549,8 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testTwoConnectionsWithFirstRollback() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+        assumeTrue(canUseTwoConnections());
+
         // separate connection to check results
         Connection checker = ConnectionHelper.getConnection(null, true);
         Statement chst = checker.createStatement();
@@ -533,16 +559,16 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         Connection connection = ConnectionHelper.getConnection(null);
         Connection connection2 = ConnectionHelper.getConnection(null);
         try {
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // first thing set autoCommit=false => starts sharing
             connection.setAutoCommit(false);
             connection2.setAutoCommit(false);
             // lazy, still not created
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
 
             Statement st = connection.createStatement();
             // shared connection created
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             st.execute("INSERT INTO foo (i) VALUES (1)");
 
             // not committed yet
@@ -550,11 +576,11 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
 
             Statement st2 = connection2.createStatement();
             // really shared
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             st2.execute("INSERT INTO foo (i) VALUES (2)");
 
             connection.rollback();
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // still not committed yet
             assertEqualsInt(0, chst.executeQuery("SELECT COUNT(*) FROM foo"));
 
@@ -563,7 +589,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             connection2.createStatement();
 
             connection2.commit();
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // last commit() does actually rollback
             assertEqualsInt(0, chst.executeQuery("SELECT COUNT(*) FROM foo"));
         } finally {
@@ -571,10 +597,10 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             connection2.close();
             checker.close();
         }
-        assertEquals(1, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(1);
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
-        assertEquals(0, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(0);
     }
 
     /*
@@ -582,9 +608,8 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testTwoConnectionsWithSecondRollback() throws Exception {
-        if (!useSingleConnectionMode()) {
-            return;
-        }
+        assumeTrue(canUseTwoConnections());
+
         // separate connection to check results
         Connection checker = ConnectionHelper.getConnection(null, true);
         Statement chst = checker.createStatement();
@@ -593,16 +618,16 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         Connection connection = ConnectionHelper.getConnection(null);
         Connection connection2 = ConnectionHelper.getConnection(null);
         try {
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
             // first thing set autoCommit=false => starts sharing
             connection.setAutoCommit(false);
             connection2.setAutoCommit(false);
             // lazy, still not created
-            assertEquals(0, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(0);
 
             Statement st = connection.createStatement();
             // shared connection created
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             st.execute("INSERT INTO foo (i) VALUES (1)");
 
             // not committed yet
@@ -610,16 +635,16 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
 
             Statement st2 = connection2.createStatement();
             // really shared
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             st2.execute("INSERT INTO foo (i) VALUES (2)");
 
             connection.commit();
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // still not committed yet
             assertEqualsInt(0, chst.executeQuery("SELECT COUNT(*) FROM foo"));
 
             connection2.rollback();
-            assertEquals(1, ConnectionHelper.countConnectionReferences());
+            assertSharedConnectionCount(1);
             // last rollback() does actually rollback
             assertEqualsInt(0, chst.executeQuery("SELECT COUNT(*) FROM foo"));
         } finally {
@@ -627,10 +652,10 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             connection2.close();
             checker.close();
         }
-        assertEquals(1, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(1);
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
-        assertEquals(0, ConnectionHelper.countConnectionReferences());
+        assertSharedConnectionCount(0);
     }
 
 }
