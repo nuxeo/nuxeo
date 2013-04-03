@@ -436,7 +436,7 @@ public abstract class NuxeoLauncher {
     }
 
     private ProcessManager getOSProcessManager() {
-        if (PlatformUtils.isLinux()) {
+        if (PlatformUtils.isLinux() || isAix()) {
             UnixProcessManager unixProcessManager = new UnixProcessManager();
             return unixProcessManager;
         } else if (PlatformUtils.isMac()) {
@@ -450,6 +450,11 @@ public abstract class NuxeoLauncher {
             // because of the 80-char limit on ps output there
             return new PureJavaProcessManager();
         }
+    }
+
+    // code similar to PlatformUtils
+    private boolean isAix() {
+        return System.getProperty("os.name").toLowerCase().startsWith("aix");
     }
 
     /**
