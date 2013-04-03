@@ -82,7 +82,7 @@
 
 <c:if test="#{contentView != null}">
 
-  <c:if test="#{contentView.cacheSize &lt;= 0}">
+  <c:if test="#{contentView.cacheSize &lt;= 0 and request.getParameter('AJAXREQUEST') == null}">
     <nxu:set var="forceRefreshSoonEnough"
       value="#{contentView.refreshPageProvider()}"
       cache="true" />
