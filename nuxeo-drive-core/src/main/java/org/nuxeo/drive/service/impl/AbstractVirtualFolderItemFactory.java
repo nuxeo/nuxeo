@@ -48,6 +48,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
 
     protected String folderName = DEFAULT_FOLDER_NAME;
 
+    @Override
     public abstract FolderItem getVirtualFolderItem(Principal principal)
             throws ClientException;
 
@@ -70,7 +71,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
             folderName = folderNameParam;
         } else {
             log.info(String.format(
-                    "Factory %s has no %s parameter, please provide one in the factory contribution to avoid using the default value '%s'.",
+                    "Factory %s has no %s parameter, you can provide one in the factory contribution to avoid using the default value '%s'.",
                     getName(), FOLDER_NAME_PARAM, DEFAULT_FOLDER_NAME));
         }
     }

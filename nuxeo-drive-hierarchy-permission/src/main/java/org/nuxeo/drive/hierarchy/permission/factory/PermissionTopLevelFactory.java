@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.PermissionTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
-import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
+import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
@@ -37,7 +37,8 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * @author Antoine Taillefer
  */
-public class PermissionTopLevelFactory extends DefaultTopLevelFolderItemFactory {
+public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory
+        implements TopLevelFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(PermissionTopLevelFactory.class);
 
@@ -45,8 +46,11 @@ public class PermissionTopLevelFactory extends DefaultTopLevelFolderItemFactory 
 
     protected List<String> childrenFactoryNames = new ArrayList<String>();
 
+    /*---------------------- FileSystemItemFactory ---------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters) {
+    public void handleParameters(Map<String, String> parameters)
+            throws ClientException {
+        super.handleParameters(parameters);
         // Look for the "childrenFactories" parameter
         String childrenFactoriesParam = parameters.get(CHILDREN_FACTORIES_PARAM);
         if (!StringUtils.isEmpty(childrenFactoriesParam)) {
@@ -58,6 +62,14 @@ public class PermissionTopLevelFactory extends DefaultTopLevelFolderItemFactory 
         }
     }
 
+    /*---------------------- VirtualFolderItemFactory ---------------*/
+    @Override
+    public FolderItem getVirtualFolderItem(Principal principal)
+            throws ClientException {
+        return getTopLevelFolderItem(principal);
+    }
+
+    /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
     public FolderItem getTopLevelFolderItem(Principal principal)
             throws ClientException {

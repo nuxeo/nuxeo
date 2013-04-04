@@ -14,4 +14,3 @@ Nuxeo-Component: OSGI-INF/nuxeodrive-service.xml,
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.drive.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-

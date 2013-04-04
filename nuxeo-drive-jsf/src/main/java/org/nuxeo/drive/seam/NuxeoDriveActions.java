@@ -38,6 +38,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -190,8 +191,9 @@ public class NuxeoDriveActions implements Serializable {
         return currentDocRef.equals(currentSyncRoot.getRef());
     }
 
-    @Factory(value = "canUnSynchronizeContainer", scope = ScopeType.EVENT)
-    public boolean getCanUnSynchronizeContainer() throws ClientException {
+    @Factory(value = "canNavigateToCurrentSynchronizationRoot", scope = ScopeType.EVENT)
+    public boolean getCanNavigateToCurrentSynchronizationRoot()
+            throws ClientException {
         if (navigationContext == null) {
             return false;
         }
@@ -202,6 +204,15 @@ public class NuxeoDriveActions implements Serializable {
             return false;
         }
         return !currentDocRef.equals(currentSyncRoot.getRef());
+    }
+
+    @Factory(value = "currentDocumentUserWorkspace", scope = ScopeType.PAGE)
+    public boolean isCurrentDocumentUserWorkspace() throws ClientException {
+        if (navigationContext == null) {
+            return false;
+        }
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
 
     public String synchronizeCurrentDocument() throws ClientException,
@@ -277,4 +288,5 @@ public class NuxeoDriveActions implements Serializable {
         }
         return packages;
     }
+
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.drive.actions.hierarchy.userworkspace">
+
+  <require>org.nuxeo.drive.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="driveSynchronizeCurrentDocument">
+      <filter-id>not_user_workspace</filter-id>
+    </action>
+
+    <action id="driveUnsynchronizeCurrentDocument">
+      <filter-id>not_user_workspace</filter-id>
+    </action>
+
+    <action id="driveNavigateToCurrentSynchronizationRoot">
+      <filter-id>not_user_workspace</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="not_user_workspace">
+      <rule grant="false">
+        <condition>#{currentDocumentUserWorkspace}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
