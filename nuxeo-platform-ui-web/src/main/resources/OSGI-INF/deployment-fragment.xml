@@ -310,6 +310,17 @@
       </param-value>
     </context-param>
 
+    <!-- use NEKO instead of default tidy parser, see NXP-11272 -->
+    <context-param>
+      <param-name>org.ajax4jsf.xmlparser.ORDER</param-name>
+      <param-value>NEKO</param-value>
+    </context-param>
+    <!-- needed for good script evaluation when using NEKO -->
+    <context-param>
+      <param-name>com.sun.faces.externalizeJavaScript</param-name>
+      <param-value>true</param-value>
+    </context-param>
+
   </extension>
 
   <extension target="faces-config#APPLICATION">
