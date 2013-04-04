@@ -113,6 +113,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     }
 
     /*--------------------- FileSystemItem ---------------------*/
+    @Override
     public void delete() throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         DocumentModel doc = getDocument(getSession());
@@ -120,6 +121,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         getTrashService().trashDocuments(docs);
     }
 
+    @Override
     public boolean canMove(FolderItem dest) throws ClientException {
         // Check source doc deletion
         if (!canDelete) {
@@ -143,6 +145,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         return true;
     }
 
+    @Override
     public FileSystemItem move(FolderItem dest) throws ClientException {
         DocumentRef sourceDocRef = new IdRef(docId);
         AbstractDocumentBackedFileSystemItem docBackedDest = (AbstractDocumentBackedFileSystemItem) dest;
