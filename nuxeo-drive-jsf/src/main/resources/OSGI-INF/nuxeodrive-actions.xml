@@ -11,8 +11,9 @@
       <filter-id>can_sync_current_doc</filter-id>
     </action>
 
-    <action id="driveUnsynchronizeCurrentDocument" link="#{nuxeoDriveActions.unsynchronizeCurrentDocument}"
-      order="25" label="command.driveUnsynchronizeFolder" type="link"
+    <action id="driveUnsynchronizeCurrentDocument"
+      link="#{nuxeoDriveActions.unsynchronizeCurrentDocument}" order="25"
+      label="command.driveUnsynchronizeFolder" type="link"
       icon="/icons/drive_synced.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>can_unsync_current_doc</filter-id>
