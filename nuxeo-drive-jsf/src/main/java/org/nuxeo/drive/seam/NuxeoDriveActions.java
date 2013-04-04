@@ -190,8 +190,9 @@ public class NuxeoDriveActions implements Serializable {
         return currentDocRef.equals(currentSyncRoot.getRef());
     }
 
-    @Factory(value = "canUnSynchronizeContainer", scope = ScopeType.EVENT)
-    public boolean getCanUnSynchronizeContainer() throws ClientException {
+    @Factory(value = "canNavigateToCurrentSynchronizationRoot", scope = ScopeType.EVENT)
+    public boolean getCanNavigateToCurrentSynchronizationRoot()
+            throws ClientException {
         if (navigationContext == null) {
             return false;
         }

@@ -4,11 +4,11 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="driveSynchronize" link="#{nuxeoDriveActions.synchronizeCurrentDocument}"
+    <action id="driveSynchronizeCurrentDocument" link="#{nuxeoDriveActions.synchronizeCurrentDocument}"
       order="25" label="command.driveSynchronizeFolder" type="link"
       icon="/icons/drive_unsynced.png">
       <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>can_sync</filter-id>
+      <filter-id>can_sync_current_doc</filter-id>
     </action>
 
     <action id="driveUnsynchronizeCurrentDocument" link="#{nuxeoDriveActions.unsynchronizeCurrentDocument}"
@@ -18,12 +18,13 @@
       <filter-id>can_unsync_current_doc</filter-id>
     </action>
 
-    <action id="driveUnsynchronizeRoot"
-      link="#{nuxeoDriveActions.navigateToCurrentSynchronizationRoot}" order="25"
-      label="command.navigateToSynchronizationRoot" type="link"
+    <action id="driveNavigateToCurrentSynchronizationRoot"
+      link="#{nuxeoDriveActions.navigateToCurrentSynchronizationRoot}"
+      order="25" label="command.navigateToSynchronizationRoot" type="link"
       icon="/icons/drive_synced_under_root.png">
       <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>can_unsync_container</filter-id>
+      <filter-id>can_navigate_to_current_synchronization_root
+      </filter-id>
     </action>
 
     <action id="driveEdit" link="#{nuxeoDriveActions.driveEditURL}"
@@ -43,7 +44,7 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 
-    <filter id="can_sync">
+    <filter id="can_sync_current_doc">
       <rule grant="true">
         <condition>#{canSynchronizeCurrentDocument}</condition>
       </rule>
@@ -55,9 +56,10 @@
       </rule>
     </filter>
 
-    <filter id="can_unsync_container">
+    <filter id="can_navigate_to_current_synchronization_root">
       <rule grant="true">
-        <condition>#{canUnSynchronizeContainer}</condition>
+        <condition>#{canNavigateToCurrentSynchronizationRoot}
+        </condition>
       </rule>
     </filter>
 
