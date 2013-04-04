@@ -61,8 +61,7 @@
           <h3 class="folded">
             <a4j:commandLink
               action="#{templateActions.setShowUsageListing(false)}"
-              immediate="true" reRender="templateUsageListingPanel"
-              eventsQueue="templateUsageQueue">
+              immediate="true" reRender="templateUsageListingPanel">
               <h:outputText
                 value="#{messages['label.template.usage.title']}" />
             </a4j:commandLink>
@@ -72,8 +71,7 @@
           <h3 class="unfolded">
             <a4j:commandLink
               action="#{templateActions.setShowUsageListing(true)}"
-              immediate="true" reRender="templateUsageListingPanel"
-              eventsQueue="templateUsageQueue">
+              immediate="true" reRender="templateUsageListingPanel">
               <h:outputText
                 value="#{messages['label.template.usage.title']}" />
             </a4j:commandLink>
