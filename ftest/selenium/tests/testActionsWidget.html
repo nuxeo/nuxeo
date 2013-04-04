@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/nuxeo/" />
+<title>testActionsWidget</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">testActionsWidget</td></tr>
+</thead><tbody>
+<tr>
+	<td>setTimeout</td>
+	<td>120000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/actionsWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>assertTextNotPresent</td>
+	<td>ERROR</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoLink']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//span[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_panel']/div/div[2]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoFancyBox_subview:nxw_actionsWidget_1_layoutDemoFancyBox_link']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionTextWidget_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=actionsWidgetLayout_edit_form:actionsWidgetLayout_edit_form_submitButton</td>
+	<td>Submit</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=actionsWidgetLayout_edit_form:nxl_actionsWidgetLayout:nxw_actionTextWidget_message</td>
+	<td>Value is required</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=actionsWidgetLayout_edit_form:nxl_actionsWidgetLayout:nxw_actionTextWidget</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>watchA4jRequests</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=actionsWidgetLayout_edit_form:actionsWidgetLayout_edit_form_submitButton</td>
+	<td>Submit</td>
+</tr>
+<tr>
+	<td>waitForA4jRequest</td>
+	<td>10000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>Value is required</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoLink']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//span[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_panel']/div/div[2]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoFancyBox_subview:nxw_actionsWidget_1_layoutDemoFancyBox_link']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionTextWidget_1</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>link=Actions</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Actions</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoLink']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//span[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_panel']/div/div[2]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoFancyBox_subview:nxw_actionsWidget_1_layoutDemoFancyBox_link']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoFancyBox_subview:nxw_actionsWidget_1_layoutDemoFancyBox_link']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>css=#nxw_actionsWidget_1_layoutDemoFancyBox_box &gt; div &gt; h3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>css=#nxw_actionsWidget_1_layoutDemoFancyBox_box &gt; div &gt; h3</td>
+	<td>Fancy box sample</td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>id=fancybox-close</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=fancybox-close</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextNotPresent</td>
+	<td>Fancy box sample</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionTextWidget_1</td>
+	<td>test</td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>layoutDemo/actionsWidget</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoLink']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//span[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_panel']/div/div[2]/a/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyElementPresent</td>
+	<td>//a[@id='actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionsWidget_1_layoutDemoFancyBox_subview:nxw_actionsWidget_1_layoutDemoFancyBox_link']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyText</td>
+	<td>id=actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:nxw_actionTextWidget_1</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
