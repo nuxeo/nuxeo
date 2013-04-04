@@ -22,10 +22,10 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.UserSyncRootParentFolderItem;
+import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
@@ -71,10 +71,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
             throws ClientException {
         // Check user workspace
-        Path path = doc.getPath();
-        int pathLength = path.segmentCount();
-        boolean isUserWorkspace = pathLength > 1
-                && "UserWorkspaces".equals(path.segment(pathLength - 2));
+        boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
             log.trace(String.format(
                     "Document %s is not a user workspace, it cannot be adapted as a FileSystemItem.",
