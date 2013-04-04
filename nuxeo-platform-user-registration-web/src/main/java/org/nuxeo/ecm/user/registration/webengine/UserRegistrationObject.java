@@ -64,8 +64,6 @@ public class UserRegistrationObject extends ModuleRoot {
             return getView("ValidationErrorTemplate").arg("error", e);
         }
 
-        getContext().getRequest().getSession().setAttribute(
-                START_PAGE_SAVE_KEY, redirectUrl);
         return redirect("/" + BaseURL.getWebAppName() + "/logout");
     }
 
