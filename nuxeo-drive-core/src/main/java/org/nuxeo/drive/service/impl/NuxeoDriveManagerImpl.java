@@ -285,6 +285,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 syncDate, hasTooManyChanges);
     }
 
+    @Override
     public Map<String, SynchronizationRoots> getSynchronizationRoots(
             Principal principal) throws ClientException {
         // cache uses soft keys hence physical equality: intern key before
@@ -306,6 +307,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         return syncRoots;
     }
 
+    @Override
     public boolean isSynchronizationRoot(Principal principal, DocumentModel doc)
             throws ClientException {
         String repoName = doc.getRepositoryName();
@@ -347,6 +349,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
     // TODO: make changeFinder overridable with an extension point and
     // remove setter
+    @Override
     public void setChangeFinder(FileSystemChangeFinder changeFinder) {
         this.changeFinder = changeFinder;
     }

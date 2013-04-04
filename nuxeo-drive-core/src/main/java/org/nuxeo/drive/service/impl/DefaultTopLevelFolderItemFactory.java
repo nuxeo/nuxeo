@@ -32,6 +32,7 @@ public class DefaultTopLevelFolderItemFactory extends
         AbstractVirtualFolderItemFactory implements TopLevelFolderItemFactory {
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
+    @Override
     public FolderItem getVirtualFolderItem(Principal principal)
             throws ClientException {
         return getTopLevelFolderItem(principal);

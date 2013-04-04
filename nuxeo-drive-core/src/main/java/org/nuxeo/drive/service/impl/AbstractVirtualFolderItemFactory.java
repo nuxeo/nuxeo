@@ -48,6 +48,7 @@ public abstract class AbstractVirtualFolderItemFactory implements
 
     protected String folderName = DEFAULT_FOLDER_NAME;
 
+    @Override
     public abstract FolderItem getVirtualFolderItem(Principal principal)
             throws ClientException;
 
