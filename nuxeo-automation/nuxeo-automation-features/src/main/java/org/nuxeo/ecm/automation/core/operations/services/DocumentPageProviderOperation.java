@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     Thierry Delprat
+ *     Marwane Kalam-Alami
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
@@ -52,6 +53,8 @@ public class DocumentPageProviderOperation {
     public static final String CURRENT_USERID_PATTERN = "$currentUser";
 
     public static final String CURRENT_REPO_PATTERN = "$currentRepository";
+
+    private static final String SORT_PARAMETER_SEPARATOR = " ";
 
     @Context
     protected OperationContext context;
@@ -100,8 +103,8 @@ public class DocumentPageProviderOperation {
             sortInfos = new ArrayList<SortInfo>();
             for (String sortInfoDesc : sortInfoAsStringList) {
                 SortInfo sortInfo;
-                if (sortInfoDesc.contains("|")) {
-                    String[] parts = sortInfoDesc.split("|");
+                if (sortInfoDesc.contains(SORT_PARAMETER_SEPARATOR)) {
+                    String[] parts = sortInfoDesc.split(SORT_PARAMETER_SEPARATOR);
                     sortInfo = new SortInfo(parts[0],
                             Boolean.parseBoolean(parts[1]));
                 } else {
