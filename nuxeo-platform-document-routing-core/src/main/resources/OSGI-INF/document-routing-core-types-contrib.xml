@@ -103,6 +103,7 @@
       <facet name="NotFulltextIndexable" />
       <schema name="dublincore" />
       <schema name="route_node" />
+      <prefetch>rnode:nodeId</prefetch>
     </doctype>
 
   </extension>
