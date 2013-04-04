@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Thomas Roger
+ *     Marwane Kalam-Alami
  */
 
 package org.nuxeo.ecm.platform.publisher.web;
