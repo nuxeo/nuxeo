@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
@@ -28,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -45,6 +48,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
 
     private static final long serialVersionUID = 1L;
 
+    private static final Log log = LogFactory.getLog(AbstractDocumentBackedFileSystemItem.class);
+
     /** Backing {@link DocumentModel} attributes */
     protected String repositoryName;
 
@@ -58,10 +63,19 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             DocumentModel doc) throws ClientException {
         this(factoryName, null, doc);
         CoreSession docSession = doc.getCoreSession();
-        DocumentModel parentDoc = docSession.getParentDocument(doc.getRef());
+        DocumentModel parentDoc = null;
+        try {
+            parentDoc = docSession.getParentDocument(doc.getRef());
+        } catch (DocumentSecurityException e) {
+            log.debug(String.format(
+                    "User %s has no READ access on parent of document %s (%s), will throw RootlessItemException.",
+                    principal.getName(), doc.getPathAsString(), doc.getId()));
+        }
         if (parentDoc == null) {
-            // We reached the root of the repo without being adapted to a
-            // (possibly virtual) descendant of the the top level folder item.
+            // We either reached the root of the repository or a document for
+            // which the current user doesn't have read access to its parent,
+            // without being adapted to a (possibly virtual) descendant of the
+            // the top level folder item.
             // Let's raise a marker exception and let the caller give more
             // information on the source document.
             throw new RootlessItemException();
@@ -113,6 +127,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     }
 
     /*--------------------- FileSystemItem ---------------------*/
+    @Override
     public void delete() throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         DocumentModel doc = getDocument(getSession());
@@ -120,6 +135,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         getTrashService().trashDocuments(docs);
     }
 
+    @Override
     public boolean canMove(FolderItem dest) throws ClientException {
         // Check source doc deletion
         if (!canDelete) {
@@ -143,6 +159,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         return true;
     }
 
+    @Override
     public FileSystemItem move(FolderItem dest) throws ClientException {
         DocumentRef sourceDocRef = new IdRef(docId);
         AbstractDocumentBackedFileSystemItem docBackedDest = (AbstractDocumentBackedFileSystemItem) dest;
