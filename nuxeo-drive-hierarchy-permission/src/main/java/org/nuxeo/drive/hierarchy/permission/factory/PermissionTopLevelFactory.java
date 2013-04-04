@@ -46,7 +46,8 @@ public class PermissionTopLevelFactory extends DefaultTopLevelFolderItemFactory 
     protected List<String> childrenFactoryNames = new ArrayList<String>();
 
     @Override
-    public void handleParameters(Map<String, String> parameters) {
+    public void handleParameters(Map<String, String> parameters)
+            throws ClientException {
         // Look for the "childrenFactories" parameter
         String childrenFactoriesParam = parameters.get(CHILDREN_FACTORIES_PARAM);
         if (!StringUtils.isEmpty(childrenFactoriesParam)) {
