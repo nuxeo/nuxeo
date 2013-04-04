@@ -151,10 +151,10 @@ public class TestFileSystemItemOperations {
                 "folder2", "Folder"));
 
         // Register sync roots
-        nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                syncRoot1, session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                syncRoot2, session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot1,
+                session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot2,
+                session);
 
         // Create 1 file in each sync root
         file1 = session.createDocumentModel("/folder1", "file1", "File");
