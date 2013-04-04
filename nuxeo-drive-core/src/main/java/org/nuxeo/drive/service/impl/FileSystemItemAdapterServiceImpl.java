@@ -215,9 +215,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /**
-     * Iterates on the ordered contributed file system item factories until it
-     * finds one that matches and retrieves a non null {@link FileSystemItem}
-     * for the given doc. A factory matches if:
+     * Tries to adapt the given document as the top level {@link FolderItem}. If
+     * it doesn't match, iterates on the ordered contributed file system item
+     * factories until it finds one that matches and retrieves a non null
+     * {@link FileSystemItem} for the given document. A file system item factory
+     * matches if:
      * <ul>
      * <li>It is not bound to any docType nor facet (this is the case for the
      * default factory contribution {@code defaultFileSystemItemFactory} bound
@@ -231,6 +233,25 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             boolean includeDeleted) throws ClientException {
 
         FileSystemItem fileSystemItem = null;
+
+        // Try the topLevelFolderItemFactory
+        TopLevelFolderItemFactory topLevelFolderItemFactory = getTopLevelFolderItemFactory();
+        if (forceParentItem) {
+            fileSystemItem = topLevelFolderItemFactory.getFileSystemItem(doc,
+                    parentItem, includeDeleted);
+        } else {
+            fileSystemItem = topLevelFolderItemFactory.getFileSystemItem(doc,
+                    includeDeleted);
+        }
+        if (fileSystemItem != null) {
+            return fileSystemItem;
+        } else {
+            log.debug(String.format(
+                    "The topLevelFolderItemFactory is not able to adapt document %s as a FileSystemItem => trying fileSystemItemFactories.",
+                    doc.getId()));
+        }
+
+        // Try the fileSystemItemFactories
         FileSystemItemFactoryWrapper matchingFactory = null;
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
@@ -268,13 +289,14 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                 }
             }
         }
+
         if (matchingFactory == null) {
             log.debug(String.format(
-                    "No fileSystemItemFactory found matching with document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
+                    "None of the fileSystemItemFactories matches document %s => returning null. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
                     doc.getId()));
         } else {
             log.debug(String.format(
-                    "None of the fileSystemItemFactories were able to get a FileSystemItem adapter for document %s => returning null.",
+                    "None of the fileSystemItemFactories matching document %s were able to adapt this document as a FileSystemItem => returning null.",
                     doc.getId()));
         }
         return fileSystemItem;
