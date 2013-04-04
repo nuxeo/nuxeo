@@ -121,14 +121,15 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
-            throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem) throws ClientException {
         return getFileSystemItem(doc, true, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem, boolean includeDeleted)
+            throws ClientException {
         return getFileSystemItem(doc, true, parentItem, includeDeleted);
     }
 
@@ -226,8 +227,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * </ul>
      */
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem, boolean includeDeleted)
-            throws ClientException {
+            boolean forceParentItem, FolderItem parentItem,
+            boolean includeDeleted) throws ClientException {
 
         FileSystemItem fileSystemItem = null;
         FileSystemItemFactoryWrapper matchingFactory = null;
