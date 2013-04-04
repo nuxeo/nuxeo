@@ -8,4 +8,3 @@ Nuxeo-Component: OSGI-INF/nuxeodrive-hierarchy-permission-adapter-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.drive.hierarchy.permission;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-
