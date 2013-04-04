@@ -102,7 +102,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
 
     /*------------------- FileSystemItemFactory ------------------- */
     /**
-     * Force parent id using {@link #getTopLevelFolderItemId(Principal)}.
+     * Force parent item using {@link #getTopLevelFolderItem(Principal)}.
      */
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
