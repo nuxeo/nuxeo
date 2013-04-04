@@ -553,12 +553,9 @@ public class TestFileSystemItemOperations {
         // FileSystemItemManager#getSession(String
         // repositoryName, Principal principal)
         TransactionHelper.startTransaction();
-        try {
-            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(
-                    session).contains(new IdRef(syncRoot2.getId())));
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+        assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session).contains(
+                new IdRef(syncRoot2.getId())));
+        TransactionHelper.commitOrRollbackTransaction();
 
         // ------------------------------------------------------
         // Delete top level folder: should be unsupported
