@@ -43,14 +43,12 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -92,7 +90,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public void registerSynchronizationRoot(Principal principal,
             DocumentModel newRootContainer, CoreSession session)
-            throws PropertyException, ClientException, SecurityException {
+            throws ClientException {
         // Unregister any sub-folder of the new root
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
         SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
@@ -154,7 +152,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     @Override
     public void unregisterSynchronizationRoot(Principal principal,
             DocumentModel rootContainer, CoreSession session)
-            throws PropertyException, ClientException {
+            throws ClientException {
         if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             rootContainer.addFacet(NUXEO_DRIVE_FACET);
         }

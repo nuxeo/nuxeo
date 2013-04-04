@@ -44,7 +44,7 @@ public interface NuxeoDriveManager {
      */
     public void registerSynchronizationRoot(Principal principal,
             DocumentModel newRootContainer, CoreSession session)
-            throws ClientException, SecurityException;
+            throws ClientException;
 
     /**
      * @param principal the Nuxeo Drive user
