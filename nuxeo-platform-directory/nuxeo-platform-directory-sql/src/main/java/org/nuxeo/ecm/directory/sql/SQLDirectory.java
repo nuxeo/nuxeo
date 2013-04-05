@@ -54,6 +54,12 @@ public class SQLDirectory extends AbstractDirectory {
 
     public static final String TENANT_ID_FIELD = "tenantId";
 
+    /**
+     * Maximum number of times we retry a connection if the server says it's
+     * overloaded.
+     */
+    public static final int MAX_CONNECTION_TRIES = 5;
+
     private final SQLDirectoryDescriptor config;
 
     private final boolean nativeCase;
@@ -203,12 +209,55 @@ public class SQLDirectory extends AbstractDirectory {
         }
     }
 
-    private Connection getConnection() throws DirectoryException {
+    protected Connection getConnection() throws DirectoryException {
         try {
-            return getDataSource().getConnection();
+            return getConnection(getDataSource());
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '"
                     + getName() + "': " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Gets a physical connection from a datasource.
+     * <p>
+     * A few retries are done to work around databases that have problems with
+     * many open/close in a row.
+     *
+     * @param dataSource the datasource
+     * @return the connection
+     */
+    protected Connection getConnection(DataSource dataSource)
+            throws SQLException {
+        for (int tryNo = 0;; tryNo++) {
+            try {
+                return dataSource.getConnection();
+            } catch (SQLException e) {
+                if (tryNo >= MAX_CONNECTION_TRIES) {
+                    throw e;
+                }
+                if (e.getErrorCode() != 12519) {
+                    throw e;
+                }
+                // Oracle: Listener refused the connection with the
+                // following error: ORA-12519, TNS:no appropriate
+                // service handler found SQLState = "66000"
+                // Happens when connections are open too fast (unit tests)
+                // -> retry a few times after a small delay
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Connections open too fast, retrying in %ds: %s",
+                            Integer.valueOf(tryNo),
+                            e.getMessage().replace("\n", " ")));
+                }
+                try {
+                    Thread.sleep(1000 * tryNo);
+                } catch (InterruptedException ie) {
+                    // restore interrupted status
+                    Thread.currentThread().interrupt();
+                    throw new SQLException("interrupted");
+                }
+            }
         }
     }
 
