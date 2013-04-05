@@ -255,7 +255,13 @@
   <category name="org.nuxeo">
     <priority value="WARN" />
   </category>
-  <!-- Uncomment for fragments pre-processing -->
+  <!-- Uncomment to debug SQL statements -->
+  <!--
+  <category name="org.nuxeo.ecm.core.storage.sql.jdbc">
+    <priority value="TRACE" />
+  </category>
+  -->
+  <!-- Uncomment to debug fragments pre-processing -->
   <!--
   <category name="org.nuxeo.runtime.deployment.preprocessor">
     <priority value="INFO" />
