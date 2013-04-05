@@ -213,8 +213,13 @@ public class WidgetTagHandler extends MetaTagHandler {
             VariableMapper orig = ctx.getVariableMapper();
             if (widgetInstanceBuilt) {
                 // expose widget variable to the context as layout row has not
-                // done it already => this could be an issue for widget
-                // templates referring to it.
+                // done it already, and set unique id on widget and sub widgets
+                // before exposing them to the context
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx,
+                        config);
+                WidgetTagHandler.generateWidgetIdsRecursive(helper,
+                        widgetInstance);
+
                 VariableMapper vm = new VariableMapperWrapper(orig);
                 ctx.setVariableMapper(vm);
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
