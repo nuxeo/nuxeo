@@ -10,9 +10,10 @@
   <property name="classifier" value="nuxeo-cap" />
   <property name="nuxeo.wizard.done" value="true" />
 
+  <property name= "mail.transport.port" value="2525" />
+  <property name= "mail.transport.host" value="localhost" />
   <unzip dest="${out.dir}/" overwrite="false">
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
-
 </project>

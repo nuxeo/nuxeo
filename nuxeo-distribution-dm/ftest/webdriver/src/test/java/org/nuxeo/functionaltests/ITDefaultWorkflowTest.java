@@ -20,6 +20,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.UserHomePage;
@@ -27,10 +28,16 @@ import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBas
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 
 /**
  * @since 5.7
  */
+
+@RunWith(FeaturesRunner.class)
+@Features({ FakeSmtpMailServerFeature.class})
 public class ITDefaultWorkflowTest extends AbstractTest {
 
     @Override
