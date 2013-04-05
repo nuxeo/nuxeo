@@ -73,18 +73,18 @@ public class NuxeoConnectionProvider implements ConnectionProvider {
             // standard datasource usage
             connection = dscp.getConnection();
         }
-        begin(connection);
+        // begin(connection);
         return connection;
     }
 
     @Override
     public void closeConnection(Connection connection) throws SQLException {
         try {
-            commit(connection);
+            // commit(connection);
         } finally {
             connection.close();
         }
-    }
+  }
 
     /**
      * If there is a transaction active, make the connection use it by switching
@@ -129,9 +129,8 @@ public class NuxeoConnectionProvider implements ConnectionProvider {
 
     @Override
     public boolean supportsAggressiveRelease() {
-        // don't try to close the connection after each statement
-        // (not used if connection release mode is auto)
-        return false;
+        // close the connection after each statement
+        return true;
     }
 
 }

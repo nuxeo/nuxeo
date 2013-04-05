@@ -131,7 +131,8 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
         }
         properties.put(HibernatePersistence.TRANSACTION_TYPE, txType);
         if (txType.equals(JTA)) {
-            properties.put(Environment.TRANSACTION_STRATEGY, NuxeoTransactionFactory.class.getName());
+            // properties.put(Environment.TRANSACTION_STRATEGY, NuxeoTransactionFactory.class.getName());
+            properties.put(Environment.TRANSACTION_STRATEGY, JoinableCMTTransactionFactory.class.getName());
             properties.put(Environment.TRANSACTION_MANAGER_STRATEGY, NuxeoTransactionManagerLookup.class.getName());
         } else if (txType.equals(RESOURCE_LOCAL)) {
             properties.put(Environment.TRANSACTION_STRATEGY, JDBCTransactionFactory.class.getName());
