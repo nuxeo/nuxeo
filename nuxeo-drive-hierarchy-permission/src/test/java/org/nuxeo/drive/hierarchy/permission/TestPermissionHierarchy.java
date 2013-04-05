@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -746,12 +747,12 @@ public class TestPermissionHierarchy {
         blob.setFilename(fileName);
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
-        // If the test is run against MySQL, because of its milliseconds
-        // limitation, we need to wait for 1 second between each document
-        // creation to ensure correct ordering when fetching a folder's
+        // If the test is run against MySQL or SQL Server, because of its
+        // milliseconds limitation, we need to wait for 1 second between each
+        // document creation to ensure correct ordering when fetching a folder's
         // children, the default page provider query being ordered by ascendant
         // creation date.
-        waitIfMySQL();
+        waitIfMySQLOrSQLServer();
         return file;
     }
 
@@ -761,12 +762,12 @@ public class TestPermissionHierarchy {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
-        // If the test is run against MySQL, because of its milliseconds
-        // limitation, we need to wait for 1 second between each document
-        // creation to ensure correct ordering when fetching a folder's
+        // If the test is run against MySQL or SQL Server, because of its
+        // milliseconds limitation, we need to wait for 1 second between each
+        // document creation to ensure correct ordering when fetching a folder's
         // children, the default page provider query being ordered by ascendant
         // creation date.
-        waitIfMySQL();
+        waitIfMySQLOrSQLServer();
         return folder;
     }
 
@@ -818,8 +819,9 @@ public class TestPermissionHierarchy {
         session.save();
     }
 
-    protected void waitIfMySQL() throws InterruptedException {
-        if (DatabaseHelper.DATABASE instanceof DatabaseMySQL) {
+    protected void waitIfMySQLOrSQLServer() throws InterruptedException {
+        if (DatabaseHelper.DATABASE instanceof DatabaseMySQL
+                || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
             Thread.sleep(1000);
         }
     }
