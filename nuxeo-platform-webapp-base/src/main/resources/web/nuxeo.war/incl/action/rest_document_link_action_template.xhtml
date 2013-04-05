@@ -9,26 +9,26 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<nxu:set var="actionReRender"
-  value="#{action.properties.ajaxReRender}"
-  resolveTwice="true" cache="true">
-<nxu:set var="elementsToReRender"
-  value="#{nxl:joinReRender(ajaxReRender, actionReRender)}"
-  cache="true">
+<c:if test="#{not useAjaxForm}">
+  <nxd:restDocumentLink
+    document="#{fieldOrValue}"
+    tabs="#{fullCategory}:#{action.id}"
+    addTabInfo="false"
+    accesskey="#{action.accessKey}"
+    id="#{idPrefix}#{action.id}_restLink">
+    <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+    <ui:insert name="inside_action" />
+  </nxd:restDocumentLink>
+</c:if>
 
-  <c:if test="#{not useAjaxForm}">
-    <nxd:restDocumentLink
-      document="#{fieldOrValue}"
-      tabs="#{fullCategory}:#{action.id}"
-      addTabInfo="false"
-      accesskey="#{action.accessKey}"
-      id="#{idPrefix}#{action.id}_restLink">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-      <ui:insert name="inside_action" />
-    </nxd:restDocumentLink>
-  </c:if>
+<c:if test="#{useAjaxForm}">
 
-  <c:if test="#{useAjaxForm}">
+  <nxu:set var="actionReRender"
+    value="#{action.properties.ajaxReRender}"
+    resolveTwice="true" cache="true">
+  <nxu:set var="elementsToReRender"
+    value="#{nxl:joinReRender(ajaxReRender, actionReRender)}"
+    cache="true">
 
     <nxd:restDocumentLink
       document="#{fieldOrValue}"
@@ -66,9 +66,9 @@
 
     </nxd:restDocumentLink>
 
-  </c:if>
+  </nxu:set>
+  </nxu:set>
 
-</nxu:set>
-</nxu:set>
+</c:if>
 
 </ui:composition>
