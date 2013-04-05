@@ -66,6 +66,11 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
+    
+    <dependency>
+     <groupId>dumbster</groupId>
+     <artifactId>dumbster</artifactId>
+    </dependency>
 
     <!-- test-only dependencies -->
 
