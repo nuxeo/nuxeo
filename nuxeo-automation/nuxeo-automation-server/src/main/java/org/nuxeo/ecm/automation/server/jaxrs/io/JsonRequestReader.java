@@ -21,6 +21,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
@@ -68,11 +69,13 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         throw new IllegalArgumentException("Unsupported managed object. Don't know how to get referebce from: "+input);
     }
 
+    @Override
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
         return (targetMediaType.isCompatible(arg3) && ExecutionRequest.class.isAssignableFrom(arg0));
     }
 
+    @Override
     public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1,
             Annotation[] arg2, MediaType arg3,
             MultivaluedMap<String, String> headers, InputStream in)
@@ -81,12 +84,15 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
     }
 
     public static ExecutionRequest readRequest(InputStream in,
-            MultivaluedMap<String, String> headers) throws IOException {
+            MultivaluedMap<String, String> headers) throws IOException, WebApplicationException {
         // As stated in http://tools.ietf.org/html/rfc4627.html UTF-8 is the
         // default encoding for JSON content
         // TODO: add introspection on the first bytes to detect other admissible
         // json encodings, namely: UTF-8, UTF-16 (BE or LE), or UTF-32 (BE or LE)
         String content = IOUtils.toString(in, "UTF-8");
+        if (content.isEmpty()) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
         return readRequest(content, headers);
     }
 
