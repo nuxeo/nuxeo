@@ -1,6 +1,6 @@
-# Nuxeo platform 5.6.0-HF14-SNAPSHOT Release Notes
+# Nuxeo platform 5.6.0-HF14 Release Notes
 
-Welcome to the Nuxeo Platform 5.6.0-HF14-SNAPSHOT.
+Welcome to the Nuxeo Platform 5.6.0-HF14.
 
 You can always download the latest releases of Nuxeo modules
 on the Nuxeo Platform from
