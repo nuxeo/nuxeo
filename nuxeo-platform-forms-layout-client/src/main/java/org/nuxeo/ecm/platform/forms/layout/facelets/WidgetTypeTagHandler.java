@@ -238,6 +238,10 @@ public class WidgetTypeTagHandler extends TagHandler {
                         Integer.valueOf(widget.getLevel())), widgetVe);
         // TODO: expose widget controls too?
         try {
+            // set unique id on widget and sub widgets before exposing them to
+            // the context
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+            WidgetTagHandler.generateWidgetIdsRecursive(helper, widget);
             WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget,
                     value, true, nextHandler);
         } finally {

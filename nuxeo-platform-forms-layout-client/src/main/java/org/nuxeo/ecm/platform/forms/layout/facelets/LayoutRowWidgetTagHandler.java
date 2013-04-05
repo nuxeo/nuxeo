@@ -100,6 +100,10 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
 
         int widgetCounter = 0;
         for (Widget widget : widgets) {
+            // set unique id on widget and sub widgets before exposing them to
+            // the context
+            WidgetTagHandler.generateWidgetIdsRecursive(helper, widget);
+
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
             ExpressionFactory eFactory = ctx.getExpressionFactory();
