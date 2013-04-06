@@ -17,69 +17,132 @@
 
 package org.nuxeo.opensocial.container.client;
 
-import com.google.gwt.i18n.client.Constants;
+import com.google.gwt.i18n.client.Dictionary;
 
 /**
  * @author Stéphane Fourrier
  */
-public interface ContainerConstants extends Constants {
-    String windowTitle();
+public class ContainerConstants {
 
-    String containerSizeTitle();
+    Dictionary dic = Dictionary.getDictionary("opensocial_messages");
 
-    String sizeInPixel();
+    public String windowTitle() {
+        return dic.get("windowTitle");
+    }
 
-    String sideBarTitle();
+    public String containerSizeTitle() {
+        return dic.get("containerSizeTitle");
+    }
 
-    String customContentTitle();
+    public String sizeInPixel() {
+        return dic.get("sizeInPixel");
+    }
 
-    String unknown();
+    public String customSize() {
+        return dic.get("customSize");
+    }
 
-    String addRow();
+    public String unknown() {
+        return dic.get("unknown");
+    }
 
-    String headerNFooterTitle();
+    public String sideBarTitle() {
+        return dic.get("sideBarTitle");
+    }
 
-    String enableHeader();
+    public String customContentTitle() {
+        return dic.get("customContentTitle");
+    }
 
-    String enableFooter();
+    public String addRow() {
+        return dic.get("addRow");
+    }
 
-    String showCodeTitle();
+    public String headerNFooterTitle() {
+        return dic.get("headerNFooterTitle");
+    }
 
-    String showCode();
+    public String enableHeader() {
+        return dic.get("enableHeader");
+    }
 
-    String closeTitle();
+    public String enableFooter() {
+        return dic.get("enableFooter");
+    }
 
-    String close();
+    public String showCodeTitle() {
+        return dic.get("showCodeTitle");
+    }
 
-    String customSize();
+    public String showCode() {
+        return dic.get("showCode");
+    }
 
-    String preferences();
+    public String closeTitle() {
+        return dic.get("closeTitle");
+    }
 
-    String title();
+    public String close() {
+        return dic.get("close");
+    }
 
-    String headerColor();
+    public String preferences() {
+        return dic.get("preferences");
+    }
 
-    String titleColor();
+    public String title() {
+        return dic.get("title");
+    }
 
-    String borderColor();
+    public String headerColor() {
+        return dic.get("headerColor");
+    }
 
-    String save();
+    public String titleColor() {
+        return dic.get("titleColor");
+    }
 
-    String choose();
+    public String borderColor() {
+        return dic.get("borderColor");
+    }
 
-    String createdBy();
+    public String save() {
+        return dic.get("save");
+    }
 
-    String folderSelection();
+    public String choose() {
+        return dic.get("choose");
+    }
 
-    String cantDeleteLastZoneError();
+    public String createdBy() {
+        return dic.get("createdBy");
+    }
 
-    String fold();
+    public String folderSelection() {
+        return dic.get("folderSelection");
+    }
 
-    String unfold();
+    public String cantDeleteLastZoneError() {
+        return dic.get("cantDeleteLastZoneError");
+    }
 
-    String configure();
+    public String fold() {
+        return dic.get("fold");
+    }
 
-    String maximize();
+    public String unfold() {
+        return dic.get("unfold");
+    }
 
-    String minimize();
+    public String configure() {
+        return dic.get("configure");
+    }
+
+    public String maximize() {
+        return dic.get("maximize");
+    }
+
+    public String minimize() {
+        return dic.get("minimize");
+    }
 }

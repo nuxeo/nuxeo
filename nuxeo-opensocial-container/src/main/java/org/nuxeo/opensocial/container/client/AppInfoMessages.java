@@ -17,13 +17,19 @@
 
 package org.nuxeo.opensocial.container.client;
 
-import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.i18n.client.Dictionary;
 
 /**
  * @author Stéphane Fourrier
  */
-public interface AppInfoMessages extends Messages {
-    String isLoading();
+public class AppInfoMessages {
+    Dictionary dic = Dictionary.getDictionary("opensocial_messages");
 
-    String isSureToDeleteGadget();
+    public String isLoading() {
+        return dic.get("isLoading");
+    }
+
+    public String isSureToDeleteGadget() {
+        return dic.get("isSureToDeleteGadget");
+    }
 }

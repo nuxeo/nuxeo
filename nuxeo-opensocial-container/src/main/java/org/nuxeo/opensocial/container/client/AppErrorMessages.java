@@ -17,53 +17,100 @@
 
 package org.nuxeo.opensocial.container.client;
 
-import com.google.gwt.i18n.client.Messages;
+import com.google.gwt.i18n.client.Dictionary;
 
 /**
  * @author Stéphane Fourrier
  */
-public interface AppErrorMessages extends Messages {
-    String unitIsNotEmpty();
+public class AppErrorMessages {
 
-    String zoneIsNotEmpty();
+    Dictionary dic = Dictionary.getDictionary("opensocial_messages");
 
-    String noZoneCreated();
+    public String unitIsNotEmpty() {
+        return dic.get("unitIsNotEmpty");
+    }
 
-    String cannotLoadLayout();
+    public String zoneIsNotEmpty() {
+        return dic.get("zoneIsNotEmpty");
+    }
 
-    String cannotReachServer();
+    public String noZoneCreated() {
+        return dic.get("noZoneCreated");
+    }
 
-    String applicationNotCorrectlySet();
+    public String cannotLoadLayout() {
+        return dic.get("cannotLoadLayout");
+    }
 
-    String cannotUpdateLayout();
+    public String cannotReachServer() {
+        return dic.get("cannotReachServer");
+    }
 
-    String cannotUpdateFooter();
+    public String applicationNotCorrectlySet() {
+        return dic.get("applicationNotCorrectlySet");
+    }
 
-    String cannotCreateZone();
+    public String cannotUpdateLayout() {
+        return dic.get("cannotUpdateLayout");
+    }
 
-    String cannotUpdateZone();
+    public String cannotUpdateFooter() {
+        return dic.get("cannotUpdateFooter");
+    }
 
-    String cannotUpdateSideBar();
+    public String cannotCreateZone() {
+        return dic.get("cannotCreateZone");
+    }
 
-    String cannotUpdateHeader();
+    public String cannotUpdateZone() {
+        return dic.get("cannotUpdateZone");
+    }
 
-    String cannotDeleteZone();
+    public String cannotUpdateSideBar() {
+        return dic.get("cannotUpdateSideBar");
+    }
 
-    String cannotCreateWebContent();
+    public String cannotUpdateHeader() {
+        return dic.get("cannotUpdateHeader");
+    }
 
-    String cannotLoadWebContents();
+    public String cannotDeleteZone() {
+        return dic.get("cannotDeleteZone");
+    }
 
-    String cannotUpdateAllWebContents();
+    public String cannotCreateWebContent() {
+        return dic.get("cannotCreateWebContent");
+    }
 
-    String cannotUpdateWebContent();
+    public String cannotLoadWebContents() {
+        return dic.get("cannotLoadWebContents");
+    }
 
-    String cannotDeleteWebContent();
+    public String cannotUpdateAllWebContents() {
+        return dic.get("cannotUpdateAllWebContents");
+    }
 
-    String cannotLoadContainerBuilder();
+    public String cannotUpdateWebContent() {
+        return dic.get("cannotUpdateWebContent");
+    }
 
-    String cannotAddExternalWebContent(String type);
+    public String cannotDeleteWebContent() {
+        return dic.get("cannotDeleteWebContent");
+    }
 
-    String cannotFindWebContent();
+    public String cannotLoadContainerBuilder() {
+        return dic.get("cannotLoadContainerBuilder");
+    }
 
-    String preferenceDoesNotExist(String name);
+    public String cannotAddExternalWebContent(String type) {
+        return dic.get("cannotAddExternalWebContent") + type;
+    }
+
+    public String cannotFindWebContent() {
+        return dic.get("cannotFindWebContent");
+    }
+
+    public String preferenceDoesNotExist(String name) {
+        return dic.get("preferenceDoesNotExist") + name;
+    }
 }
