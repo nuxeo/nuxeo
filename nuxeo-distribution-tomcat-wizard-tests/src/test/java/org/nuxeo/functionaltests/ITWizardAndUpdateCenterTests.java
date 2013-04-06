@@ -40,7 +40,7 @@ import org.openqa.selenium.WebElement;
 
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
-    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.4";
+    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.5";
 
     private static final String STUDIO_PACKAGE_ID_FIRST = "junit4tester-SANDBOX-0.0.1";
 
@@ -396,7 +396,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         SystemHomePage systemHomePage = adminHome.getSystemHomePage();
         systemHomePage.selectSubTab("Nuxeo distribution");
 
-        WebElement bundle = findElementWithTimeout(By.xpath("//td[text()='org.nuxeo.ecm.platform.audit.web.access']"));
+        WebElement bundle = findElementWithTimeout(By.xpath("//td[text()[normalize-space()='org.nuxeo.ecm.platform.audit.web.access']]"));
         assertNotNull(bundle);
 
         // Need to make HeaderLinksSubPage#logout work and use it
