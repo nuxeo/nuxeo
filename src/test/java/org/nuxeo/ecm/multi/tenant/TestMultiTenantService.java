@@ -98,7 +98,7 @@ public class TestMultiTenantService {
     protected UserManager userManager;
 
     @After
-    public void deleteAllUsers() throws ClientException {
+    public void deleteAllUsersAndGroups() throws ClientException {
         if (userManager.getPrincipal("bender") != null) {
             userManager.deleteUser("bender");
         }
@@ -114,6 +114,10 @@ public class TestMultiTenantService {
             dir.deleteEntry(doc.getId());
         }
         multiTenantService.disableTenantIsolation(session);
+        List<DocumentModel> groups = userManager.searchGroups(null);
+        for (DocumentModel group : groups) {
+            userManager.deleteGroup(group);
+        }
     }
 
     @Test
