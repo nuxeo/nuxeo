@@ -34,10 +34,6 @@
     <div class="userClipboardContent">
 
       <c:choose>
-       <c:when test="#{multiNavTreeManager.selectedNavigationTree == 'CONTENT_TREE'}">
-         <ui:include src="/incl/tree_explorer.xhtml"/>
-       </c:when>
-
        <c:when test="#{selectedNavigationTreeDescriptor.directoryTreeBased}">
         <ui:include src="/incl/single_directory_tree_explorer.xhtml">
           <ui:param name="treeModel" value="#{directoryTreeManager.selectedTree}" />
@@ -47,7 +43,6 @@
        <c:when test="#{selectedNavigationTreeDescriptor.xhtmlview != null}">
          <ui:include src="#{selectedNavigationTreeDescriptor.xhtmlview}"/>
        </c:when>
-
       </c:choose>
 
     </div>

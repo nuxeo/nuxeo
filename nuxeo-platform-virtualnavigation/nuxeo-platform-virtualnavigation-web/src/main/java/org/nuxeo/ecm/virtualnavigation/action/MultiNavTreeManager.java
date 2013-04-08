@@ -54,8 +54,6 @@ public class MultiNavTreeManager implements Serializable {
 
     public static final String STD_NAV_TREE = "CONTENT_TREE";
 
-    public static final String STD_NAV_TREE_LABEL = "label.content.tree";
-
     protected List<NavTreeDescriptor> availableNavigationTrees;
 
     protected Long availableNavigationTreesTimestamp;
@@ -76,9 +74,6 @@ public class MultiNavTreeManager implements Serializable {
     public List<NavTreeDescriptor> getAvailableNavigationTrees() {
         if (availableNavigationTrees == null || shouldResetCache()) {
             availableNavigationTrees = new ArrayList<NavTreeDescriptor>();
-            // default tree
-            availableNavigationTrees.add(new NavTreeDescriptor(STD_NAV_TREE,
-                    STD_NAV_TREE_LABEL));
 
             // add registred additional tress
             NavTreeService navTreeService = Framework.getLocalService(NavTreeService.class);
@@ -90,7 +85,7 @@ public class MultiNavTreeManager implements Serializable {
 
     /**
      * Checks timestamp on service to handle cache reset when using hot reload
-     *
+     * 
      * @since 5.6
      */
     protected boolean shouldResetCache() {
@@ -106,7 +101,12 @@ public class MultiNavTreeManager implements Serializable {
     @Factory(value = "selectedNavigationTree", scope = ScopeType.EVENT)
     public String getSelectedNavigationTree() {
         if (selectedNavigationTree == null) {
-            setSelectedNavigationTree(STD_NAV_TREE);
+            List<NavTreeDescriptor> trees = getAvailableNavigationTrees();
+            if (trees != null && trees.size() > 0) {
+                setSelectedNavigationTree(trees.get(0).getTreeId());
+            } else {
+                setSelectedNavigationTree(STD_NAV_TREE); // !
+            }
         }
         return selectedNavigationTree;
     }
