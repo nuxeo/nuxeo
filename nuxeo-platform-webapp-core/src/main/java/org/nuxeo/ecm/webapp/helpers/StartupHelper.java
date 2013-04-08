@@ -106,7 +106,7 @@ public class StartupHelper implements Serializable {
      * Initializes the context with the principal id, and try to connect to the
      * default server if any. If several servers are available, let the user
      * choose.
-     *
+     * 
      * @return the view_id of the contextually computed startup page
      */
     public String initServerAndFindStartupPage() throws ClientException {
@@ -158,7 +158,7 @@ public class StartupHelper implements Serializable {
      * domain with title 'domainTitle' and redirect to it on viewId.
      * <p>
      * If several servers are available, let the user choose.
-     *
+     * 
      * @return the view id of the contextually computed startup page
      */
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
@@ -178,7 +178,9 @@ public class StartupHelper implements Serializable {
             String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_MIXINTYPE
                     + " <> '" + FacetNames.HIDDEN_IN_NAVIGATION + "' AND "
                     + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                    + LifeCycleConstants.DELETED_STATE + "'";
+                    + LifeCycleConstants.DELETED_STATE + "'"
+                    + " AND ecm:isCheckedInVersion = 0 "
+                    + " AND ecm:isProxy = 0 ";
             DocumentModelList domains = documentManager.query(query);
             if (domains.size() == 1) {
                 // select and go to the unique domain
