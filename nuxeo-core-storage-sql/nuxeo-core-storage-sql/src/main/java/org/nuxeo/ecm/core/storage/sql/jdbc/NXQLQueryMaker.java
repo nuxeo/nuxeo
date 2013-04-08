@@ -269,6 +269,14 @@ public class NXQLQueryMaker implements QueryMaker {
          * Find whether to check proxies, relations.
          */
 
+        if (!model.getRepositoryDescriptor().proxiesEnabled) {
+            if (proxyClause == Boolean.TRUE) {
+                throw new StorageException(
+                        "Proxies are disabled by configuration, a query with "
+                                + NXQL.ECM_ISPROXY + " = 1 is disallowed");
+            }
+            proxyClause = Boolean.FALSE;
+        }
         if (onlyRelations) {
             if (proxyClause == Boolean.TRUE) {
                 // no proxies to relations, query cannot match

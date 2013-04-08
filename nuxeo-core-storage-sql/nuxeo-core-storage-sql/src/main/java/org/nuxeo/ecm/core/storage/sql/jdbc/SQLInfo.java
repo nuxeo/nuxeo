@@ -61,6 +61,8 @@ public class SQLInfo {
 
     public final Dialect dialect;
 
+    public final boolean proxiesEnabled;
+
     private final Model model;
 
     private String selectRootIdSql;
@@ -111,6 +113,7 @@ public class SQLInfo {
     public SQLInfo(Model model, Dialect dialect) throws StorageException {
         this.model = model;
         this.dialect = dialect;
+        proxiesEnabled = model.getRepositoryDescriptor().proxiesEnabled;
 
         database = new Database(dialect);
 
@@ -487,9 +490,11 @@ public class SQLInfo {
          * proxies
          */
 
-        Table proxyTable = database.getTable(model.PROXY_TABLE_NAME);
-        proxyTable.addIndex(model.PROXY_VERSIONABLE_KEY);
-        proxyTable.addIndex(model.PROXY_TARGET_KEY);
+        if (proxiesEnabled) {
+            Table proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+            proxyTable.addIndex(model.PROXY_VERSIONABLE_KEY);
+            proxyTable.addIndex(model.PROXY_TARGET_KEY);
+        }
 
         initSelectDescendantsSQL();
 
@@ -593,14 +598,19 @@ public class SQLInfo {
 
     protected void initSelectDescendantsSQL() {
         Table hierTable = database.getTable(model.HIER_TABLE_NAME);
-        Table proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+        Table proxyTable = null;
+        if (proxiesEnabled) {
+            proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+        }
         Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
-        List<Column> whatCols = Arrays.asList(mainColumn,
+        List<Column> whatCols = new ArrayList<Column>(Arrays.asList(mainColumn,
                 hierTable.getColumn(model.HIER_PARENT_KEY),
                 hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY),
-                hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY),
-                proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY),
-                proxyTable.getColumn(model.PROXY_TARGET_KEY));
+                hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY)));
+        if (proxiesEnabled) {
+            whatCols.add(proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY));
+            whatCols.add(proxyTable.getColumn(model.PROXY_TARGET_KEY));
+        }
         // no mixins, not used to decide if we have a version or proxy
         List<String> whats = new ArrayList<String>(6);
         for (Column col : whatCols) {
@@ -608,10 +618,12 @@ public class SQLInfo {
         }
         Select select = new Select(null);
         select.setWhat(StringUtils.join(whats, ", "));
-        String from = hierTable.getQuotedName() + " LEFT JOIN "
-                + proxyTable.getQuotedName() + " ON "
-                + mainColumn.getFullQuotedName() + " = "
-                + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+        String from = hierTable.getQuotedName();
+        if (proxiesEnabled) {
+            from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON "
+                    + mainColumn.getFullQuotedName() + " = "
+                    + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+        }
         select.setFrom(from);
         String where = dialect.getInTreeSql(mainColumn.getFullQuotedName());
         select.setWhere(where);
@@ -655,6 +667,10 @@ public class SQLInfo {
 
     protected void initSelections() {
         for (SelectionType selType : SelectionType.values()) {
+            if (!proxiesEnabled
+                    && selType.tableName.equals(Model.PROXY_TABLE_NAME)) {
+                continue;
+            }
             selections.put(selType, new SQLInfoSelection(selType));
         }
     }

@@ -263,6 +263,8 @@ public class Model {
     public static final String[] ALWAYS_PREFETCHED_FRAGMENTS = {
             ACL_TABLE_NAME, VERSION_TABLE_NAME, MISC_TABLE_NAME };
 
+    protected final boolean proxiesEnabled;
+
     protected final RepositoryDescriptor repositoryDescriptor;
 
     private final AtomicLong temporaryIdCounter = new AtomicLong(0);
@@ -355,6 +357,7 @@ public class Model {
     public Model(ModelSetup modelSetup) throws StorageException {
         repositoryDescriptor = modelSetup.repositoryDescriptor;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
+        proxiesEnabled = repositoryDescriptor.proxiesEnabled;
 
         documentTypesSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
@@ -390,7 +393,9 @@ public class Model {
 
         initMainModel();
         initVersionsModel();
-        initProxiesModel();
+        if (proxiesEnabled) {
+            initProxiesModel();
+        }
         initLocksModel();
         initAclModel();
         initMiscModel();

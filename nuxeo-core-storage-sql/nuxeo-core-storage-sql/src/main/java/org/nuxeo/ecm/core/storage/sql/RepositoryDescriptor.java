@@ -136,6 +136,9 @@ public class RepositoryDescriptor {
     @XNode("noDDL")
     public boolean noDDL = false;
 
+    @XNode("proxies@enabled")
+    public boolean proxiesEnabled = true;
+
     @XNode("clustering@enabled")
     public boolean clusteringEnabled;
 
@@ -217,6 +220,7 @@ public class RepositoryDescriptor {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         noDDL = other.noDDL;
+        proxiesEnabled = other.proxiesEnabled;
         schemaFields = other.schemaFields;
         fulltextDisabled = other.fulltextDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;

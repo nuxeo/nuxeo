@@ -92,4 +92,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         }
     }
 
+    public boolean isProxiesEnabled() {
+        return ((RepositoryImpl) repository).getRepositoryDescriptor().proxiesEnabled;
+    }
+
 }

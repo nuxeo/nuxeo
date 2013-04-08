@@ -845,6 +845,9 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public Node addProxy(Serializable targetId, Serializable versionableId,
             Node parent, String name, Long pos) throws StorageException {
+        if (!repository.getRepositoryDescriptor().proxiesEnabled) {
+            throw new StorageException("Proxies are disabled by configuration");
+        }
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
         proxy.setSimpleProperty(model.PROXY_TARGET_PROP, targetId);
         proxy.setSimpleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
@@ -856,6 +859,9 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public void setProxyTarget(Node proxy, Serializable targetId)
             throws StorageException {
+        if (!repository.getRepositoryDescriptor().proxiesEnabled) {
+            throw new StorageException("Proxies are disabled by configuration");
+        }
         SimpleProperty prop = proxy.getSimpleProperty(Model.PROXY_TARGET_PROP);
         Serializable oldTargetId = prop.getValue();
         if (!oldTargetId.equals(targetId)) {
@@ -1029,6 +1035,9 @@ public class SessionImpl implements Session, XAResource {
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         checkLive();
+        if (!repository.getRepositoryDescriptor().proxiesEnabled) {
+            return Collections.emptyList();
+        }
 
         List<Serializable> ids;
         if (document.isVersion()) {
