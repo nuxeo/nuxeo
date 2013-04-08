@@ -46,6 +46,16 @@
     point="filters">
 
     <filter id="can_sync_current_doc">
+      <rule grand="false">
+        <type>Domain</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+        <type>WorkspaceRoot</type>
+        <type>Forum</type>
+
+        <!-- Section sync is disabled untill we implement proper support for proxies sync -->
+        <type>Section</type>
+      </rule>
       <rule grant="true">
         <condition>#{canSynchronizeCurrentDocument}</condition>
       </rule>
