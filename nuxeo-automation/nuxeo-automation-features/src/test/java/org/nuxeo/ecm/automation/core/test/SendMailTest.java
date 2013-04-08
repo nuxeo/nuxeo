@@ -11,15 +11,11 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import java.io.File;
-import java.io.InputStream;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -30,9 +26,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 
 import com.google.inject.Inject;
 
@@ -40,12 +38,11 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.notification.core",
+@Features({ CoreFeature.class, AutomationFeature.class,
+        FakeSmtpMailServerFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.notification.core",
         "org.nuxeo.ecm.platform.notification.api",
-        "org.nuxeo.ecm.platform.url.api",
-        "org.nuxeo.ecm.platform.url.core" })
+        "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core" })
 public class SendMailTest {
 
     protected DocumentModel src;
@@ -66,20 +63,10 @@ public class SendMailTest {
         src = session.createDocument(src);
         session.save();
         src = session.getDocument(src.getRef());
-
-        InputStream in = SendMailTest.class.getClassLoader().getResourceAsStream(
-                "example.mail.properties");
-        File file = new File(Environment.getDefault().getConfig(),
-                "mail.properties");
-        file.getParentFile().mkdirs();
-        FileUtils.copyToFile(in, file);
-        in.close();
-
     }
 
     // ------ Tests comes here --------
 
-    @Ignore("This test is disabled since the mail configuration may not work correctly on hudson. and anyway we need to check the received mail format.")
     @Test
     public void testSendMail() throws Exception {
         // add some blobs and then send an email
@@ -95,14 +82,11 @@ public class SendMailTest {
         chain.add(FetchContextDocument.ID);
         chain.add(SetDocumentBlob.ID).set("file", blob);
         chain.add(SendMail.ID).set("from", "test@nuxeo.org").set("to",
-                "bs@nuxeo.com").set("subject", "test mail")
-                .set("asHTML", true)
-                .set("files", "file:content")
-                .set(
+                "bs@nuxeo.com").set("subject", "test mail").set("asHTML", true).set(
+                "files", "file:content").set(
                 "message",
                 "<h3>Current doc: ${Document.path}</h3> title: ${Document['dc:title']}<p>Doc link: <a href=\"${docUrl}\">${Document.title}</a>");
         service.run(ctx, chain);
-
+        assertTrue(FakeSmtpMailServerFeature.server.getReceivedEmailSize() == 1);
     }
-
 }
