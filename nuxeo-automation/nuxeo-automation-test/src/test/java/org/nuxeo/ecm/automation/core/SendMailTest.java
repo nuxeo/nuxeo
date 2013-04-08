@@ -9,7 +9,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.automation.core.test;
+package org.nuxeo.ecm.automation.core;
 
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +22,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -30,7 +31,6 @@ import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.ecm.automation.test.AutomationFeature;
 
 import com.google.inject.Inject;
 
@@ -38,8 +38,8 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, AutomationFeature.class,
-        FakeSmtpMailServerFeature.class })
+@Features({ CoreFeature.class, FakeSmtpMailServerFeature.class,
+        AutomationFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.notification.core",
         "org.nuxeo.ecm.platform.notification.api",
         "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core" })

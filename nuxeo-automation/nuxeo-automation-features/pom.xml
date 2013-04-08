@@ -187,9 +187,5 @@
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-server</artifactId>
     </dependency>
-      <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-test</artifactId>
-    </dependency>  
   </dependencies>
 </project>
