@@ -206,7 +206,8 @@ public class DocumentBackedFileItem extends
         downloadURLSb.append("blobholder:0");
         downloadURLSb.append("/");
         // Remove chars that are invalid in filesystem names
-        String escapedFilename = name.replaceAll("(/|\\\\|\\*)", "-");
+        String escapedFilename = name.replaceAll(
+                "(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
         downloadURLSb.append(URIUtils.quoteURIPathComponent(escapedFilename,
                 true));
         downloadURL = downloadURLSb.toString();
