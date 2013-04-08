@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -92,7 +93,7 @@ public class PersistenceContext {
     // selection context for proxies by target
     private final SelectionContext targetProxies;
 
-    private final SelectionContext[] selections;
+    private final List<SelectionContext> selections;
 
     /**
      * The pristine fragments. All held data is identical to what is present in
@@ -139,12 +140,19 @@ public class PersistenceContext {
                 Boolean.FALSE, mapper, this);
         seriesVersions = new SelectionContext(SelectionType.SERIES_VERSIONS,
                 null, mapper, this);
-        seriesProxies = new SelectionContext(SelectionType.SERIES_PROXIES,
-                null, mapper, this);
-        targetProxies = new SelectionContext(SelectionType.TARGET_PROXIES,
-                null, mapper, this);
-        selections = new SelectionContext[] { hierComplex, hierNonComplex,
-                seriesVersions, seriesProxies, targetProxies };
+        selections = new ArrayList<SelectionContext>(Arrays.asList(hierComplex,
+                hierNonComplex, seriesVersions));
+        if (model.proxiesEnabled) {
+            seriesProxies = new SelectionContext(SelectionType.SERIES_PROXIES,
+                    null, mapper, this);
+            targetProxies = new SelectionContext(SelectionType.TARGET_PROXIES,
+                    null, mapper, this);
+            selections.add(seriesProxies);
+            selections.add(targetProxies);
+        } else {
+            seriesProxies = null;
+            targetProxies = null;
+        }
 
         // use a weak reference for the values, we don't hold them longer than
         // they need to be referenced, as the underlying mapper also has its own
@@ -744,24 +752,32 @@ public class PersistenceContext {
         SimpleFragment fragment = createSimpleFragment(row);
         seriesVersions.recordCreated(fragment);
         // no proxies for this new version
-        targetProxies.newSelection(fragment.getId());
+        if (model.proxiesEnabled) {
+            targetProxies.newSelection(fragment.getId());
+        }
         return fragment;
     }
 
     public void createdProxyFragment(SimpleFragment fragment)
             throws StorageException {
-        seriesProxies.recordCreated(fragment);
-        targetProxies.recordCreated(fragment);
+        if (model.proxiesEnabled) {
+            seriesProxies.recordCreated(fragment);
+            targetProxies.recordCreated(fragment);
+        }
     }
 
     public void removedProxyTarget(SimpleFragment fragment)
             throws StorageException {
-        targetProxies.recordRemoved(fragment);
+        if (model.proxiesEnabled) {
+            targetProxies.recordRemoved(fragment);
+        }
     }
 
     public void addedProxyTarget(SimpleFragment fragment)
             throws StorageException {
-        targetProxies.recordCreated(fragment);
+        if (model.proxiesEnabled) {
+            targetProxies.recordCreated(fragment);
+        }
     }
 
     private SimpleFragment createSimpleFragment(Row row)
@@ -896,10 +912,14 @@ public class PersistenceContext {
             hierComplex.recordRemovedSelection(id);
             hierNonComplex.recordRemovedSelection(id);
             // no more a version series
-            seriesProxies.recordRemovedSelection(id);
+            if (model.proxiesEnabled) {
+                seriesProxies.recordRemovedSelection(id);
+            }
             seriesVersions.recordRemovedSelection(id);
             // no more a target
-            targetProxies.recordRemovedSelection(id);
+            if (model.proxiesEnabled) {
+                targetProxies.recordRemovedSelection(id);
+            }
         }
     }
 
@@ -1006,6 +1026,7 @@ public class PersistenceContext {
         return fragmentsIds(fragments);
     }
 
+    // called only when proxies enabled
     public List<Serializable> getSeriesProxyIds(Serializable versionSeriesId)
             throws StorageException {
         List<SimpleFragment> fragments = seriesProxies.getSelectionFragments(
@@ -1013,6 +1034,7 @@ public class PersistenceContext {
         return fragmentsIds(fragments);
     }
 
+    // called only when proxies enabled
     public List<Serializable> getTargetProxyIds(Serializable targetId)
             throws StorageException {
         List<SimpleFragment> fragments = targetProxies.getSelectionFragments(

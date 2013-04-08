@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -950,6 +951,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testCrossSessionProxiesInvalidationAdd() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
         // in first session, create base stuff
         Session session1 = repository.getConnection();
         Node root1 = session1.getRootNode();
@@ -976,6 +979,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testCrossSessionProxiesInvalidationRemove() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
         // in first session, create base stuff
         Session session1 = repository.getConnection();
         Node root1 = session1.getRootNode();
@@ -1788,6 +1793,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testProxies() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node foldera = session.addChildNode(root, "foldera", null, "TestDoc",
@@ -1848,6 +1855,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testProxyFetching() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
@@ -1911,6 +1920,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testProxyDeepRemoval() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
@@ -1952,6 +1963,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testProxyDeepCopy() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
@@ -2165,6 +2178,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testBulkFetchProxies() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
         Session session = repository.getConnection();
         Node root = session.getRootNode();
 

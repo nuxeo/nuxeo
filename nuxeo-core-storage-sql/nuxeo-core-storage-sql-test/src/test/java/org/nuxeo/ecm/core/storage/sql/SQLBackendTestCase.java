@@ -96,4 +96,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         return ((RepositoryImpl) repository).getRepositoryDescriptor().softDeleteEnabled;
     }
 
+    public boolean isProxiesEnabled() {
+        return ((RepositoryImpl) repository).getRepositoryDescriptor().proxiesEnabled;
+    }
+
 }

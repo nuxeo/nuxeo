@@ -272,6 +272,8 @@ public class Model {
 
     protected final boolean softDeleteEnabled;
 
+    protected final boolean proxiesEnabled;
+
     /** Type of ids as seen by the VCS Java layer. */
     public enum IdType {
         STRING, //
@@ -398,6 +400,7 @@ public class Model {
             throw new AssertionError(idType.toString());
         }
         softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
+        proxiesEnabled = repositoryDescriptor.proxiesEnabled;
 
         documentTypesSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
@@ -434,7 +437,9 @@ public class Model {
 
         initMainModel();
         initVersionsModel();
-        initProxiesModel();
+        if (proxiesEnabled) {
+            initProxiesModel();
+        }
         initLocksModel();
         initAclModel();
         initMiscModel();
