@@ -191,6 +191,20 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         return cmds;
     }
 
+    @Override
+    public boolean isValidParameter(String parameter) {
+        return VALID_PARAMETER_PATTERN.matcher(parameter).matches();
+    }
+
+    @Override
+    public void checkParameter(String parameter) {
+        if (!isValidParameter(parameter)) {
+            throw new IllegalArgumentException(String.format(
+                    "'%s' contains illegal characters. It should match: %s",
+                    parameter, VALID_PARAMETER_PATTERN));
+        }
+    }
+
     // ******************************************
     // for testing
 
