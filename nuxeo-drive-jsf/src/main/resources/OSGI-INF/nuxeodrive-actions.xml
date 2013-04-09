@@ -53,7 +53,7 @@
         <type>WorkspaceRoot</type>
         <type>Forum</type>
 
-        <!-- Section sync is disabled untill we implement proper support for proxies sync -->
+        <!-- Section sync is disabled until we implement proper support for proxies sync -->
         <type>Section</type>
       </rule>
       <rule grant="true">
