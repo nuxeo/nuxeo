@@ -28,6 +28,7 @@
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
 # softDeleteEnabled
+# proxiesEnabled
 
 ############################################################
 
@@ -852,6 +853,7 @@ LOG.INFO Soft delete enabled
 
 
 #IF: softDeleteEnabled
+#IF: proxiesEnabled
 CREATE OR REPLACE FUNCTION NX_DELETE(ids ${idType}[], nowTime TIMESTAMP)
 RETURNS void
 AS $$
@@ -866,6 +868,23 @@ BEGIN
     WHERE id = ANY(ids);
   -- do hard delete for foreign key proxies.targetid
   DELETE FROM proxies WHERE proxies.targetid = ANY(ids);
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+#IF: softDeleteEnabled
+#IF: ! proxiesEnabled
+CREATE OR REPLACE FUNCTION NX_DELETE(ids ${idType}[], nowTime TIMESTAMP)
+RETURNS void
+AS $$
+-- Marks the given ids as deleted at the given time (null means now)
+BEGIN
+  IF nowTime IS NULL THEN
+    nowTime := CURRENT_TIMESTAMP;
+  END IF;
+  UPDATE hierarchy
+    SET isdeleted = true, deletedtime = nowTime
+    WHERE id = ANY(ids);
 END $$
 LANGUAGE plpgsql
 VOLATILE;

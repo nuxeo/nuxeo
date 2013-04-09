@@ -144,6 +144,8 @@ public abstract class Dialect {
      */
     protected boolean softDeleteEnabled;
 
+    protected boolean proxiesEnabled;
+
     protected final int readAclMaxSize;
 
     /**
@@ -233,6 +235,7 @@ public abstract class Dialect {
             readAclMaxSize = 0;
             clusteringEnabled = false;
             softDeleteEnabled = false;
+            proxiesEnabled = true;
         } else {
             fulltextDisabled = repositoryDescriptor.fulltextDisabled;
             aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
@@ -240,6 +243,7 @@ public abstract class Dialect {
             readAclMaxSize = repositoryDescriptor.readAclMaxSize;
             clusteringEnabled = repositoryDescriptor.clusteringEnabled;
             softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
+            proxiesEnabled = repositoryDescriptor.proxiesEnabled;
         }
     }
 

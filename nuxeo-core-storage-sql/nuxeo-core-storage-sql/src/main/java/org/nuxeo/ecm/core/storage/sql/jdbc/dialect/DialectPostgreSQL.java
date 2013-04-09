@@ -963,6 +963,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
+        properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
