@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
@@ -832,7 +834,13 @@ public class RestTest {
     public void testSendMail() throws Exception {
 
         // Set bad SMTP configuration
-        SendMail.COMPOSER.getMailer().setServer("badHostName", "0000");
+        File file = new File(Environment.getDefault().getConfig(),
+                "mail.properties");
+        file.getParentFile().mkdirs();
+        List<String> mailProperties = new ArrayList<String>();
+        mailProperties.add(String.format("mail.smtp.host = %s", "badHostName"));
+        mailProperties.add(String.format("mail.smtp.port = %s", "2525"));
+        FileUtils.writeLines(file, mailProperties);
 
         Document rootDoc = (Document) session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
