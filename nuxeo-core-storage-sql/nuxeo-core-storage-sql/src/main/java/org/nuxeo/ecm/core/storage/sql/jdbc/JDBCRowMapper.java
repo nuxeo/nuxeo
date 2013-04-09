@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 import java.io.Serializable;
 import java.sql.Array;
 import java.sql.BatchUpdateException;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -747,7 +748,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             for (NodeInfo info : nodeInfos) {
                 ids.add(info.id);
             }
-            int chunkSize = sqlInfo.getMaximumArgsForIn();
+            int chunkSize = 100; // max size of ids array
             if (size <= chunkSize) {
                 doSoftDeleteRows(ids);
             } else {
@@ -837,20 +838,39 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                             Long.valueOf(max)));
         }
         try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                ps.setInt(1, max);
-                dialect.setToPreparedStatementTimestamp(ps, 2, beforeTime, null);
-                ResultSet rs = ps.executeQuery();
-                countExecute();
-                if (!rs.next()) {
-                    throw new StorageException("Cannot get result");
+            if (sql.startsWith("{?=")) {
+                // callable statement
+                CallableStatement cs = connection.prepareCall(sql);
+                try {
+                    cs.registerOutParameter(1, Types.INTEGER);
+                    cs.setInt(2, max);
+                    dialect.setToPreparedStatementTimestamp(cs, 3, beforeTime,
+                            null);
+                    cs.execute();
+                    int count = cs.getInt(1);
+                    logger.logCount(count);
+                    return count;
+                } finally {
+                    cs.close();
                 }
-                int count = rs.getInt(1);
-                logger.logCount(count);
-                return count;
-            } finally {
-                closeStatement(ps);
+            } else {
+                // standard prepared statement with result set
+                PreparedStatement ps = connection.prepareStatement(sql);
+                try {
+                    ps.setInt(1, max);
+                    dialect.setToPreparedStatementTimestamp(ps, 2, beforeTime,
+                            null);
+                    ResultSet rs = ps.executeQuery();
+                    countExecute();
+                    if (!rs.next()) {
+                        throw new StorageException("Cannot get result");
+                    }
+                    int count = rs.getInt(1);
+                    logger.logCount(count);
+                    return count;
+                } finally {
+                    closeStatement(ps);
+                }
             }
         } catch (Exception e) {
             checkConnectionReset(e);

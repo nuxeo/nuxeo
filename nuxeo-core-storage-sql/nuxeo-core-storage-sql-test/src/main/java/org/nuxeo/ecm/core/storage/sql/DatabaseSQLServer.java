@@ -173,4 +173,9 @@ public class DatabaseSQLServer extends DatabaseHelper {
         return supportsXA;
     }
 
+    @Override
+    public boolean supportsSoftDelete() {
+        return true;
+    }
+
 }

@@ -554,6 +554,7 @@ public class DialectSQLServer extends Dialect {
                 Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
+        properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(
                 SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<String>();
@@ -759,6 +760,16 @@ public class DialectSQLServer extends Dialect {
         String sql = String.format("CREATE UNIQUE CLUSTERED INDEX [%s] ON %s ([%s])",
                 quotedIndexName, table.getQuotedName(), CLUSTER_INDEX_COL);
         return Collections.singletonList(sql);
+    }
+
+    @Override
+    public String getSoftDeleteSql() {
+        return "EXEC dbo.NX_DELETE ?, ?";
+    }
+
+    @Override
+    public String getSoftDeleteCleanupSql() {
+        return "{?= call dbo.NX_DELETE_PURGE(?, ?)}";
     }
 
 }

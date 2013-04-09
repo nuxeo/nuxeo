@@ -27,6 +27,7 @@
 # fulltextEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
+# softDeleteEnabled
 # proxiesEnabled
 
 ############################################################
@@ -200,6 +201,136 @@ BEGIN
   END;
   CLOSE @cur;
   DEALLOCATE @cur;
+END;
+
+
+# ##### soft delete #####
+
+
+#IF: softDeleteEnabled
+LOG.INFO Soft delete enabled
+
+
+#IF: softDeleteEnabled
+IF OBJECT_ID('dbo.NX_DELETE', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_DELETE;
+
+
+#IF: softDeleteEnabled
+#IF: proxiesEnabled
+CREATE PROCEDURE NX_DELETE(@ids NVARCHAR(4000), @nowTime DATETIME)
+AS
+-- Marks the given ids as deleted at the given time (null means now)
+-- Simulates foreign keys except for the parent-child one which is done in Java
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  DECLARE @idtable TABLE (id ${idType});
+  -- split @ids into @idtable
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    INSERT INTO @idtable (id) VALUES (@id);
+  END;
+  IF @nowTime IS NULL BEGIN
+    SET @nowTime = CURRENT_TIMESTAMP;
+  END;
+  -- soft delete
+  UPDATE h
+    SET h.isdeleted = 1, h.deletedtime = @nowTime
+    FROM hierarchy h
+    JOIN @idtable ids ON h.id = ids.id;
+  -- do hard delete for foreign key proxies.targetid
+  DELETE p
+    FROM proxies p
+    JOIN @idtable ids ON p.targetid = ids.id;
+END;
+
+#IF: softDeleteEnabled
+#IF: ! proxiesEnabled
+CREATE PROCEDURE NX_DELETE(@ids NVARCHAR(4000), @nowTime DATETIME)
+AS
+-- Marks the given ids as deleted at the given time (null means now)
+BEGIN
+  DECLARE @pos INT;
+  DECLARE @next INT;
+  DECLARE @end INT;
+  DECLARE @id ${idType};
+  DECLARE @idtable TABLE (id ${idType});
+  -- split @ids into @idtable
+  SET @pos = 0;
+  SET @next = 1;
+  WHILE @next > 0 BEGIN
+    SET @next = CHARINDEX('|', @ids, @pos + 1);
+    SET @end = CASE WHEN @next > 0 THEN @next ELSE len(@ids) + 1 END;
+    SET @id = SUBSTRING(@ids, @pos + 1, @end - @pos - 1);
+    SET @pos = @next;
+    INSERT INTO @idtable (id) VALUES (@id);
+  END;
+  IF @nowTime IS NULL BEGIN
+    SET @nowTime = CURRENT_TIMESTAMP;
+  END;
+  -- soft delete
+  UPDATE h
+    SET h.isdeleted = 1, h.deletedtime = @nowTime
+    FROM hierarchy h
+    JOIN @idtable ids ON h.id = ids.id;
+END;
+
+
+#IF: softDeleteEnabled
+IF OBJECT_ID('dbo.NX_DELETE_PURGE', 'P') IS NOT NULL
+  DROP PROCEDURE dbo.NX_DELETE_PURGE;
+
+#IF: softDeleteEnabled
+CREATE PROCEDURE NX_DELETE_PURGE(@max INT, @beforeTime DATETIME)
+AS
+-- Does hard delete on soft-deleted rows earlier than beforeTime (null means all).
+-- A maximum number of rows to delete can be provided (null means no limit).
+-- Returns the number of rows actually deleted.
+-- Rows are deleted leaves first.
+BEGIN
+  DECLARE @ndel INT;
+  DECLARE @total INT;
+  SET @total = 0;
+  IF @beforeTime IS NULL BEGIN
+    SET @beforeTime = DATEADD(day, 1, CURRENT_TIMESTAMP);
+  END;
+  IF @max = 0 BEGIN
+    SET @max = NULL;
+  END;
+  WHILE 1=1 BEGIN
+    -- delete some leaves in the tree of soft-deleted documents
+    IF @max IS NULL
+      DELETE FROM hierarchy
+        WHERE isdeleted = 1 AND deletedtime < @beforeTime
+        AND id NOT IN (
+          -- not leaves: deleted nodes that have deleted children
+          SELECT DISTINCT hpar.id FROM hierarchy hpar
+            JOIN hierarchy h ON h.parentid = hpar.id
+            WHERE hpar.isdeleted = 1 AND h.isdeleted = 1)
+    ELSE
+      DELETE FROM hierarchy WHERE id IN (
+        SELECT TOP(@max) id FROM hierarchy
+        WHERE isdeleted = 1 AND deletedtime < @beforeTime
+        AND id NOT IN (
+          -- not leaves: deleted nodes that have deleted children
+          SELECT DISTINCT hpar.id FROM hierarchy hpar
+            JOIN hierarchy h ON h.parentid = hpar.id
+            WHERE hpar.isdeleted = 1 AND h.isdeleted = 1))
+    ;
+    SET @ndel = @@ROWCOUNT;
+    IF @ndel = 0 BREAK;
+    SET @total = @total + @ndel;
+    IF @total >= @max BREAK;     -- no exit when @max = NULL
+  END;
+  RETURN @total;
 END;
 
 

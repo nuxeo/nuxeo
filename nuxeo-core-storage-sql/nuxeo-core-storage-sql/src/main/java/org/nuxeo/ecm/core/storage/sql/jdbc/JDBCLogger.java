@@ -141,9 +141,16 @@ public class JDBCLogger {
         logSQL(sql, values);
     }
 
+    // callable statement with one return value
+    private static final String CALLABLE_START = "{?=";
+
     public void logSQL(String sql, Collection<Serializable> values) {
         StringBuilder buf = new StringBuilder();
         int start = 0;
+        if (sql.startsWith(CALLABLE_START)) {
+            buf.append(CALLABLE_START);
+            start = CALLABLE_START.length();
+        }
         for (Serializable v : values) {
             int index = sql.indexOf('?', start);
             if (index == -1) {
