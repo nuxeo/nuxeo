@@ -211,7 +211,7 @@ public class SQLDirectory extends AbstractDirectory {
         }
     }
 
-    protected Connection getConnection() throws DirectoryException {
+    public Connection getConnection() throws DirectoryException {
         try {
             // try single-datasource non-XA mode
             Connection connection = ConnectionHelper.getConnection(config.dataSourceName);
