@@ -127,4 +127,15 @@ public class TestService extends NXRuntimeTestCase {
         }
     }
 
+    @Test
+    public void testIllegalCharactersInParameters() {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        assertTrue(cles.isValidParameter("only/valid:%chars."));
+        assertTrue(cles.isValidParameter("Non-latin words such as \u0625\u0646\u062a\u0631\u0646\u062a are valid."));
+
+        assertFalse(cles.isValidParameter("\"quotes\" are invalid characters"));
+        assertFalse(cles.isValidParameter("(parens) are invalid characters"));
+        assertFalse(cles.isValidParameter("exclamation marks! are invalid characters"));
+    }
+
 }
