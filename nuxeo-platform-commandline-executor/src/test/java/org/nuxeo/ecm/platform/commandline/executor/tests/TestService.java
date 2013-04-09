@@ -130,8 +130,7 @@ public class TestService extends NXRuntimeTestCase {
 
     @Test
     public void testIllegalCharactersInParameters() {
-        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-        assertTrue(cles.isAbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
+        assertTrue(AbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
                 "only/valid:%chars.").matches());
         assertTrue(AbstractExecutor.VALID_PARAMETER_PATTERN.matcher(
                 "Non-latin words such as \u0625\u0646\u062a\u0631\u0646\u062a are valid.").matches());

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  */
 public interface CommandLineExecutorService {
 
-    Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[a-zA-Z_0-9-.%:/\\\\ ]+");
+    Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
 
     CommandAvailability getCommandAvailability(String commandName);
 

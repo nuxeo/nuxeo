@@ -40,7 +40,7 @@ public abstract class AbstractExecutor {
      * @deprecated since 5.7. See {@link CommandLineExecutorService#checkParameter(String)}.
      */
     @Deprecated
-    private static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[a-zA-Z_0-9-.%:/\\\\ ]+");
+    public static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
 
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
