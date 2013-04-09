@@ -48,9 +48,13 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         CommandLineExecutorService {
 
     public static final String EP_ENV = "environment";
+
     public static final String EP_CMD = "command";
+
     public static final String EP_CMDTESTER = "commandTester";
+
     public static final String DEFAULT_TESTER = "SystemPathTester";
+
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
     protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<String, CommandLineDescriptor>();
