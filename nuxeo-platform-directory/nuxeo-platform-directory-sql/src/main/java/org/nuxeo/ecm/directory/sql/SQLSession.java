@@ -204,7 +204,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         PreparedStatement ps = null;
         Statement st = null;
         try {
-            if (autoincrementIdField) {
+            if (autoincrementIdField && dialect.hasIdentityGeneratedKey()) {
                 ps = sqlConnection.prepareStatement(sql,
                         new String[] { idField });
             } else {
