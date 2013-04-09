@@ -31,7 +31,8 @@ public interface CommandLineExecutorService {
 
     CommandAvailability getCommandAvailability(String commandName);
 
-    ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable;
+    ExecResult execCommand(String commandName, CmdParameters params)
+            throws CommandNotAvailable;
 
     List<String> getRegistredCommands();
 
