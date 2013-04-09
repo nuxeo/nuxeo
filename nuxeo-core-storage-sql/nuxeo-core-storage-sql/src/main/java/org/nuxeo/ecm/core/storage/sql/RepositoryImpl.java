@@ -562,6 +562,9 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
+        if (!repositoryDescriptor.softDeleteEnabled) {
+            return 0;
+        }
         try {
             SessionImpl conn = getConnection();
             try {

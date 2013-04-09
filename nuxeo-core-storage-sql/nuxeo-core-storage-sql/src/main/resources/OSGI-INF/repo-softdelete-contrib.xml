@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.sql.softdelete">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="softDeleteCleanup">
+      <event>softDeleteCleanup</event>
+      <!-- cleanup every 15 minutes -->
+      <cronExpression>0 0/15 * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="softDeleteCleanup" async="false"
+      class="org.nuxeo.ecm.core.storage.sql.SoftDeleteCleanupListener">
+      <event>softDeleteCleanup</event>
+    </listener>
+  </extension>
+
+</component>

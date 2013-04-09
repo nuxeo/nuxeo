@@ -1313,6 +1313,9 @@ public class SessionImpl implements Session, XAResource {
 
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
         checkLive();
+        if (!repository.getRepositoryDescriptor().softDeleteEnabled) {
+            return 0;
+        }
         try {
             return mapper.cleanupDeletedRows(max, beforeTime);
         } catch (StorageException e) {
