@@ -21,6 +21,7 @@
 package org.nuxeo.ecm.platform.commandline.executor.api;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Interface for the service that manages commandline execution.
@@ -28,6 +29,8 @@ import java.util.List;
  * @author tiry
  */
 public interface CommandLineExecutorService {
+
+    Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[a-zA-Z_0-9-.%:/\\\\ ]+");
 
     CommandAvailability getCommandAvailability(String commandName);
 
@@ -37,5 +40,22 @@ public interface CommandLineExecutorService {
     List<String> getRegistredCommands();
 
     List<String> getAvailableCommands();
+
+    /**
+     * Returns true if the given {@code parameter} is valid to be used in a
+     * command.
+     *
+     * @since 5.7
+     */
+    boolean isValidParameter(String parameter);
+
+    /**
+     * Checks if the given {@code parameter} is valid to be used in a command.
+     * <p>
+     * If not, throws an {@code IllegalArgumentException}.
+     *
+     * @since 5.7
+     */
+    void checkParameter(String parameter);
 
 }

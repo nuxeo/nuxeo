@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for {@link Executor}.
@@ -34,7 +36,11 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  */
 public abstract class AbstractExecutor {
 
-    public static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
+    /**
+     * @deprecated since 5.7. See {@link CommandLineExecutorService#checkParameter(String)}.
+     */
+    @Deprecated
+    private static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[a-zA-Z_0-9-.%:/\\\\ ]+");
 
     public static boolean isWindows() {
         String osName = System.getProperty("os.name");
@@ -79,16 +85,12 @@ public abstract class AbstractExecutor {
 
     private static String replaceParams(Map<String, String> paramsValues,
             String paramString) {
+        CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
         for (String pname : paramsValues.keySet()) {
             String param = "#{" + pname + "}";
             if (paramString.contains(param)) {
                 String value = paramsValues.get(pname);
-                if (!VALID_PARAMETER_PATTERN.matcher(value).matches()) {
-                    throw new IllegalArgumentException(
-                            String.format(
-                                    "'%s' contains illegal characters. It should match: %s",
-                                    value, VALID_PARAMETER_PATTERN));
-                }
+                commandLineExecutorService.checkParameter(value);
                 paramString = paramString.replace("#{" + pname + "}",
                         String.format("\"%s\"", value));
             }
