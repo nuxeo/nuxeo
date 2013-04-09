@@ -220,6 +220,16 @@
         Available since 5.6.
       </description>
     </attribute>
+    <attribute>
+      <name>resolveOnly</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean stating that the widget to render should be resolved and
+        exposed in the context, but not displayed. Useful to generate the widget
+        instance without rendering it right away. Available since 5.7.
+      </description>
+    </attribute>
     <example>
       <![CDATA[
 <nxl:widgetType name="text" mode="#{myMode}" value="#{myText}" required="true" /> or
@@ -325,7 +335,7 @@
     </attribute>
     <attribute>
       <name>value</name>
-      <required>true</required>
+      <required>false</required>
       <description>
         The value on which widget will apply. If the widget holds field
         definitions, they will be resolved based on this value. For instance, if

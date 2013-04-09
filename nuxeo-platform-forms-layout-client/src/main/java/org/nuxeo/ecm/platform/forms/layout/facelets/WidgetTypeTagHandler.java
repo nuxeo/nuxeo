@@ -103,10 +103,14 @@ public class WidgetTypeTagHandler extends TagHandler {
      */
     protected final TagAttribute subWidgets;
 
+    protected final TagAttribute resolveOnly;
+
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name", "mode", "type",
-            "properties", "ignoreTemplateProperty", "subWidgets", "widgetName" };
+    protected final String[] reservedVarsArray = { "id", "name", "mode",
+            "type", "field", "fields", "widgetName", "label", "helpLabel",
+            "translated", "properties", "ignoreTemplateProperty", "subWidgets",
+            "resolveOnly" };
 
     public WidgetTypeTagHandler(TagConfig config) {
         super(config);
@@ -123,6 +127,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         properties = getAttribute("properties");
         ignoreTemplateProperty = getAttribute("ignoreTemplateProperty");
         subWidgets = getAttribute("subWidgets");
+        resolveOnly = getAttribute("resolveOnly");
         vars = tag.getAttributes().getAll();
     }
 
@@ -242,8 +247,17 @@ public class WidgetTypeTagHandler extends TagHandler {
             // the context
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
             WidgetTagHandler.generateWidgetIdsRecursive(helper, widget);
-            WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget,
-                    value, true, nextHandler);
+
+            boolean resolveOnlyBool = false;
+            if (resolveOnly != null) {
+                resolveOnlyBool = resolveOnly.getBoolean(ctx);
+            }
+            if (resolveOnlyBool) {
+                nextHandler.apply(ctx, parent);
+            } else {
+                WidgetTagHandler.applyWidgetHandler(ctx, parent, config,
+                        widget, value, true, nextHandler);
+            }
         } finally {
             ctx.setVariableMapper(orig);
         }

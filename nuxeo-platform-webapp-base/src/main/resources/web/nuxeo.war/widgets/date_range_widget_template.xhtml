@@ -20,6 +20,27 @@
   </c:if>
 
   <c:if test="#{widget.mode == 'edit'}">
+
+    <nxu:set var="parentWidgetName" value="#{widget.name}" cache="true">
+    <nxu:set var="parentWidgetMode" value="#{widget.mode}" cache="true">
+    <nxu:set var="parentProperties" value="#{widget.properties}" cache="true">
+
+    <nxl:widgetType name="datetime"
+      widgetName="#{parentWidgetName}_start"
+      mode="#{parentWidgetMode}"
+      value="#{field_0}"
+      properties="#{parentProperties}"
+      resolveOnly="true">
+    <nxu:set var="widgetStart" value="#{widget}" cache="true">
+
+    <nxl:widgetType name="datetime"
+      widgetName="#{parentWidgetName}_end"
+      value="#{field_1}"
+      mode="#{parentWidgetMode}"
+      properties="#{parentProperties}"
+      resolveOnly="true">
+    <nxu:set var="widgetEnd" value="#{widget}" cache="true">
+
     <div>
       <table class="nowrap">
         <tbody>
@@ -30,8 +51,7 @@
               </span>
             </td>
             <td>
-              <nxl:widgetType name="datetime" widgetName="#{widget.name}_startInputDate" mode="#{widget.mode}" label="#{widget.label}"
-                value="#{field_0}" properties="#{widget.properties}" />
+              <nxl:widget widget="#{widgetStart}" />
             </td>
           </tr>
           <tr>
@@ -41,24 +61,35 @@
               </span>
             </td>
             <td>
-              <nxl:widgetType name="datetime" widgetName="#{widget.name}_endInputDate" mode="#{widget.mode}" label="#{widget.label}"
-               value="#{field_1}" properties="#{widget.properties}" />
+              <nxl:widget widget="#{widgetEnd}" />
             </td>
           </tr>
           <tr>
             <td colspan="2">
-              <h:inputHidden value="dateRangeValidator" validator="#{dateRangeValidator.validateDateRange}"
+              <h:inputHidden value="dateRangeValidator"
+                validator="#{dateRangeValidator.validateDateRange}"
                 id="#{widget.id}_dateRangeValidator">
-                <f:attribute name="startDateComponentId" value="nxw_#{widget.name}_startInputDate" />
-                <f:attribute name="endDateComponentId" value="nxw_#{widget.name}_endInputDate" />
+                <f:attribute name="startDateComponentId" value="#{widgetStart.id}" />
+                <f:attribute name="endDateComponentId" value="#{widgetEnd.id}" />
               </h:inputHidden>
-              <h:message for="#{widget.id}_dateRangeValidator" styleClass="errorMessage" />
+              <h:message for="#{widget.id}_dateRangeValidator"
+                styleClass="errorMessage" />
             </td>
           </tr>
         </tbody>
       </table>
-
     </div>
+
+    </nxu:set>
+    </nxl:widgetType>
+
+    </nxu:set>
+    </nxl:widgetType>
+
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+
   </c:if>
 
 </c:if> 

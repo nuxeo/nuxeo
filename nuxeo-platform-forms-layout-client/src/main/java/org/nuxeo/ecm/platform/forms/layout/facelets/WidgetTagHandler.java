@@ -117,7 +117,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         layoutName = getAttribute("layoutName");
         resolveOnly = getAttribute("resolveOnly");
 
-        value = getRequiredAttribute("value");
+        value = getAttribute("value");
         vars = tag.getAttributes().getAll();
 
         // additional checks
@@ -148,7 +148,10 @@ public class WidgetTagHandler extends MetaTagHandler {
             throws IOException, FacesException, ELException {
         // compute value name to set on widget instance in case it's changed
         // from first computation
-        String valueName = value.getValue();
+        String valueName = null;
+        if (value != null) {
+            valueName = value.getValue();
+        }
         if (ComponentTagUtils.isStrictValueReference(valueName)) {
             valueName = ComponentTagUtils.getBareValueName(valueName);
         }
@@ -158,7 +161,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         Widget widgetInstance = null;
         if (widget != null) {
             widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
-            if (widgetInstance != null) {
+            if (widgetInstance != null && value != null) {
                 widgetInstance.setValueName(valueName);
             }
         } else {
