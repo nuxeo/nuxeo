@@ -204,7 +204,7 @@
     <!-- for previous tasks layout -->
     <widget name="task_title" type="text">
       <labels>
-        <label mode="any">Name</label>
+        <label mode="any">label.workflow.task.Name</label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -216,7 +216,7 @@
     </widget>
     <widget name="task_directive" type="text">
       <labels>
-        <label mode="any">Directive</label>
+        <label mode="any">label.workflow.task.directive</label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -228,7 +228,7 @@
     </widget>
     <widget name="task_assignee" type="multiplePrefixedUsersSuggestion">
       <labels>
-        <label mode="any">Assignee</label>
+        <label mode="any">label.document.route.content.header.actors</label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -237,7 +237,7 @@
     </widget>
     <widget name="task_comments" type="list">
       <labels>
-        <label mode="any">Comments</label>
+        <label mode="any">label.content.header.comments</label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -256,7 +256,7 @@
     </widget>
     <widget name="task_start_date" type="datetime">
       <labels>
-        <label mode="any">Start date</label>
+        <label mode="any">label.workflow.task.startdate</label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -265,7 +265,7 @@
     </widget>
     <widget name="task_due_date" type="datetime">
       <labels>
-        <label mode="any">Due date</label>
+        <label mode="any">label.workflow.task.duedate</label>
       </labels>
       <translated>true</translated>
       <fields>
