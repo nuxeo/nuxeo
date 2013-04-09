@@ -26,6 +26,7 @@
 # fulltextEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
+# proxiesEnabled
 
 ############################################################
 
@@ -51,10 +52,12 @@ CREATE FULLTEXT CATALOG [${fulltextCatalog}];
 IF OBJECT_ID('dbo.nxTrigCascadeDelete', 'TR') IS NOT NULL
   DROP TRIGGER dbo.nxTrigCascadeDelete;
 
+#IF: proxiesEnabled
 CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy]
 INSTEAD OF DELETE AS
 BEGIN
   SET NOCOUNT ON;
+  -- proxies.targetid -> hierarchy.id
   WITH subtree(id, parentid) AS (
     SELECT id, parentid
     FROM deleted
@@ -67,6 +70,27 @@ BEGIN
     FROM [proxies] p
     JOIN subtree
     ON subtree.id = p.targetid;
+  -- hierarchy.parentid -> hierarchy.id
+  WITH subtree(id, parentid) AS (
+    SELECT id, parentid
+    FROM deleted
+  UNION ALL
+    SELECT h.id, h.parentid
+    FROM [hierarchy] h
+    JOIN subtree ON subtree.id = h.parentid
+  )
+  DELETE FROM [hierarchy]
+    FROM [hierarchy] h
+    JOIN subtree
+    ON subtree.id = h.id;
+END;
+
+#IF: ! proxiesEnabled
+CREATE TRIGGER nxTrigCascadeDelete ON [hierarchy]
+INSTEAD OF DELETE AS
+BEGIN
+  SET NOCOUNT ON;
+  -- hierarchy.parentid -> hierarchy.id
   WITH subtree(id, parentid) AS (
     SELECT id, parentid
     FROM deleted

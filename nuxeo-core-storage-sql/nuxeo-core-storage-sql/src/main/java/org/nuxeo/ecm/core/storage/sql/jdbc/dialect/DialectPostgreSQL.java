@@ -841,6 +841,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
+        properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
