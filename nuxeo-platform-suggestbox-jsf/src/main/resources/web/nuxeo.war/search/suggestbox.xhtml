@@ -18,16 +18,25 @@
   <a4j:region renderRegionOnly="true">
     <h:panelGrid id="#{widget.id}_suggestbox_panel" columns="3">
       <h:panelGroup>
-        <h:inputText id="faceted_search_suggest_box"
-            class="search_suggest_box directoryFilter"
-            onkeydown="if (event.keyCode == 13) {return false;}"
-            value="#{suggestboxActions.searchKeywords}" />
         <script type="text/javascript">
         <!--
         function focus_searchbox(event) {
            event.preventDefault();
            jQuery('input.search_suggest_box').focus();
            return false;
+        }
+        function call_suggestion(value) {
+          if (value != '') {
+            #{rich:component('faceted_search_suggestionBox')}.callSuggestion(true);
+          }
+        }
+        function simple_search() {
+          var box = jQuery(document.getElementById('userServicesSearchForm:faceted_search_suggestionBox'));
+          if (!box.is(':visible')) {
+            // use default navigation without waiting for the suggestions to display
+            document.getElementById('userServicesSearchForm:simpleSearchSubmitButton').click();
+          }
+          return false;
         }
         // bind the '/' key to focus the searchbox
         jQuery(document).bind('keydown', '/', focus_searchbox);
@@ -36,6 +45,11 @@
         jQuery(document).bind('keydown', 'Shift+/', focus_searchbox);
         -->
         </script>
+        <h:inputText id="faceted_search_suggest_box"
+            class="search_suggest_box directoryFilter"
+            onkeydown="if (event.keyCode == 13) {return simple_search();}"
+            onfocus="call_suggestion(jQuery(this).attr('value'))"
+            value="#{suggestboxActions.searchKeywords}" />
         <rich:suggestionbox
           id="faceted_search_suggestionBox"
           for="faceted_search_suggest_box" tokens=""
@@ -69,5 +83,4 @@
     </h:panelGrid>
 
   </a4j:region>
-
 </div>
