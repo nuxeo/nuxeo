@@ -1367,6 +1367,28 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(0, proxies.size());
     }
 
+    public void testProxyQueryStartsWith() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
+                false);
+        Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc",
+                false);
+        // create node in folder1
+        Node node = session.addChildNode(folder1, "node", null, "TestDoc",
+                false);
+        // create proxy in folder2
+        Node ver = session.checkIn(node, "foolab1", "desc1");
+        session.addProxy(ver.getId(), node.getId(), folder2, "proxy2", null);
+        session.save();
+
+        // search for it
+        PartialList<Serializable> res = session.query(
+                "SELECT * FROM TestDoc WHERE ecm:path STARTSWITH '/folder2'",
+                QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
     public void testDelete() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
