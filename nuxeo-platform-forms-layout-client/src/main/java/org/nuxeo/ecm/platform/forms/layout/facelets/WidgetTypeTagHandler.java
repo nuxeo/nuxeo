@@ -108,9 +108,9 @@ public class WidgetTypeTagHandler extends TagHandler {
     protected final TagAttribute[] vars;
 
     protected final String[] reservedVarsArray = { "id", "name", "mode",
-            "type", "field", "fields", "widgetName", "label", "helpLabel",
-            "translated", "properties", "ignoreTemplateProperty", "subWidgets",
-            "resolveOnly" };
+            "value", "type", "field", "fields", "widgetName", "label",
+            "helpLabel", "translated", "properties", "ignoreTemplateProperty",
+            "subWidgets", "resolveOnly" };
 
     public WidgetTypeTagHandler(TagConfig config) {
         super(config);
@@ -145,40 +145,7 @@ public class WidgetTypeTagHandler extends TagHandler {
             throw new FacesException("Layout service not found");
         }
 
-        // build handler
-        List<String> reservedVars = Arrays.asList(reservedVarsArray);
-        Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
-        if (properties != null) {
-            Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(
-                    ctx, Map.class);
-            if (propertiesValue != null) {
-                widgetProps.putAll(propertiesValue);
-            }
-        }
-        for (TagAttribute var : vars) {
-            String localName = var.getLocalName();
-            if (!reservedVars.contains(localName)) {
-                widgetProps.put(localName, var.getValue());
-            }
-        }
-
-        boolean ignoreTemplatePropValue = false;
-        if (ignoreTemplateProperty != null) {
-            ignoreTemplatePropValue = ignoreTemplateProperty.getBoolean(ctx);
-        }
-        if (ignoreTemplatePropValue) {
-            widgetProps.remove(TemplateWidgetTypeHandler.TEMPLATE_PROPERTY_NAME);
-        }
-
-        String typeValue = name.getValue(ctx);
-        String modeValue = mode.getValue(ctx);
-        String valueName = null;
-        if (value != null) {
-            valueName = value.getValue();
-            if (ComponentTagUtils.isStrictValueReference(valueName)) {
-                valueName = ComponentTagUtils.getBareValueName(valueName);
-            }
-        }
+        // compute field definitions
         List<FieldDefinition> fieldsValue = new ArrayList<FieldDefinition>();
         if (field != null) {
             Object fieldValue = field.getValue(ctx);
@@ -201,6 +168,47 @@ public class WidgetTypeTagHandler extends TagHandler {
                 } else {
                     log.error("Invalid field item => discard: " + item);
                 }
+            }
+        }
+
+        // build handler
+        List<String> reservedVars = Arrays.asList(reservedVarsArray);
+        Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
+        if (properties != null) {
+            Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(
+                    ctx, Map.class);
+            if (propertiesValue != null) {
+                widgetProps.putAll(propertiesValue);
+            }
+        }
+
+        // do not propagate value the value attribute to the widget
+        // properties if field definitions should be taken into account
+        // instead
+        boolean includeValueInProps = fieldsValue.isEmpty();
+        for (TagAttribute var : vars) {
+            String localName = var.getLocalName();
+            if ((!reservedVars.contains(localName))
+                    || ("value".equals(localName) && includeValueInProps)) {
+                widgetProps.put(localName, var.getValue());
+            }
+        }
+
+        boolean ignoreTemplatePropValue = false;
+        if (ignoreTemplateProperty != null) {
+            ignoreTemplatePropValue = ignoreTemplateProperty.getBoolean(ctx);
+        }
+        if (ignoreTemplatePropValue) {
+            widgetProps.remove(TemplateWidgetTypeHandler.TEMPLATE_PROPERTY_NAME);
+        }
+
+        String typeValue = name.getValue(ctx);
+        String modeValue = mode.getValue(ctx);
+        String valueName = null;
+        if (value != null) {
+            valueName = value.getValue();
+            if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                valueName = ComponentTagUtils.getBareValueName(valueName);
             }
         }
         String widgetNameValue = null;
@@ -262,5 +270,4 @@ public class WidgetTypeTagHandler extends TagHandler {
             ctx.setVariableMapper(orig);
         }
     }
-
 }
