@@ -415,7 +415,7 @@ public class DialectOracle extends Dialect {
     public String getInTreeSql(String idColumnName) {
         if (pathOptimizationsVersion == 2) {
             return String.format(
-                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = hierarchy.id AND ancestor = ?)",
+                    "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
                     idColumnName);
         } else if (pathOptimizationsVersion == 1) {
             // using nested table optim
