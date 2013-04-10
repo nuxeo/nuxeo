@@ -10,7 +10,7 @@
 #     Benoit Delbosc
 
 # Variables used:
-# ${idType} VARCHAR(36)
+# ${idType} NVARCHAR(36)
 # ${md5HashString}
 #   for SQL Server 2005:
 #     SUBSTRING(master.dbo.fn_varbintohexstr(HashBytes('MD5', @string)), 3, 32)
@@ -130,8 +130,8 @@ BEGIN
   DECLARE @curid ${idType};
   DECLARE @newid ${idType};
   DECLARE @gr TINYINT;
-  DECLARE @pe VARCHAR(1000);
-  DECLARE @us VARCHAR(1000);
+  DECLARE @pe NVARCHAR(1000);
+  DECLARE @us NVARCHAR(1000);
   SET @allusers = N'|' + @users + N'|';
   SET @allperms = N'|' + @perms + N'|';
   SET @first = 1;
@@ -186,7 +186,7 @@ IF OBJECT_ID('dbo.NX_CLUSTER_INVAL', 'P') IS NOT NULL
   DROP PROCEDURE dbo.NX_CLUSTER_INVAL;
 
 #IF: clusteringEnabled
-CREATE PROCEDURE NX_CLUSTER_INVAL(@i ${idType}, @f VARCHAR(8000), @k TINYINT)
+CREATE PROCEDURE NX_CLUSTER_INVAL(@i ${idType}, @f NVARCHAR(4000), @k TINYINT)
 AS
 BEGIN
   DECLARE @nid SMALLINT;
@@ -557,7 +557,7 @@ IF OBJECT_ID('dbo.NX_ANCESTORS', 'TF') IS NOT NULL
   DROP FUNCTION dbo.NX_ANCESTORS;
 
 #IF: pathOptimizationsEnabled
-CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+CREATE FUNCTION NX_ANCESTORS(@ids NVARCHAR(4000))
 RETURNS @output TABLE (id ${idType}) AS
 BEGIN
   DECLARE @pos INT;
@@ -578,7 +578,7 @@ BEGIN
 END;
 
 #IF: !pathOptimizationsEnabled
-CREATE FUNCTION NX_ANCESTORS(@ids VARCHAR(4000))
+CREATE FUNCTION NX_ANCESTORS(@ids NVARCHAR(4000))
 RETURNS @output TABLE (id ${idType}) AS
 BEGIN
   DECLARE @pos INT;
@@ -722,7 +722,7 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_permission' AN
 
 #IF: emptyResult
 CREATE TABLE aclr_permission (
-  permission VARCHAR(256)
+  permission NVARCHAR(256)
 )
 
 # add index
@@ -841,7 +841,7 @@ BEGIN
   SET @cur = CURSOR FAST_FORWARD FOR
     SELECT permission  FROM aclr_permission;
   OPEN @cur;
-  DECLARE @perm VARCHAR(250);
+  DECLARE @perm NVARCHAR(250);
   FETCH FROM @cur INTO @perm;
   WHILE @@FETCH_STATUS = 0 BEGIN
     SET @ret = @ret + N'|' + @perm;
@@ -874,7 +874,7 @@ CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(4000))
 RETURNS @output TABLE (acl_id CHAR(32)) AS
   -- List matching read acl ids for a list of user/groups
 BEGIN
-  DECLARE @permissions VARCHAR(4000);
+  DECLARE @permissions NVARCHAR(4000);
   SET @permissions = dbo.nx_get_read_permissions();
   INSERT INTO @output (acl_id)
     SELECT acl_id FROM hierarchy_read_acl
@@ -953,7 +953,7 @@ CREATE TRIGGER nx_trig_aclr_modified ON [aclr]
 AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
-  DECLARE @permissions VARCHAR(4000);
+  DECLARE @permissions NVARCHAR(4000);
   SET @permissions = dbo.nx_get_read_permissions();
   INSERT INTO aclr_user_map
     SELECT u.user_id, NEW.acl_id
@@ -1153,7 +1153,7 @@ BEGIN
     END;
     SET @major = CASE WHEN @curmin = 0 THEN 1 ELSE 0 END;
     UPDATE versions SET
-        label = CONVERT(VARCHAR, @curmaj) + '.' + CONVERT(VARCHAR, @curmin),
+        label = CONVERT(NVARCHAR, @curmaj) + '.' + CONVERT(NVARCHAR, @curmin),
         islatest = @latest,
         islatestmajor = CASE WHEN @major = 1 and @latestmajor = 1 THEN 1 ELSE 0 END
       WHERE id = @curid;

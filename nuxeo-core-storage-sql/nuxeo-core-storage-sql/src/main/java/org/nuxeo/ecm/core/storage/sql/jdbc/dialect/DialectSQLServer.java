@@ -233,7 +233,7 @@ public class DialectSQLServer extends Dialect {
         case TIMESTAMP:
             return jdbcInfo("DATETIME", Types.TIMESTAMP);
         case BLOBID:
-            return jdbcInfo("VARCHAR(40)", Types.VARCHAR);
+            return jdbcInfo("NVARCHAR(40)", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:
@@ -244,13 +244,13 @@ public class DialectSQLServer extends Dialect {
         case NODEVAL:
             switch (idType) {
             case VARCHAR:
-                return jdbcInfo("VARCHAR(36)", Types.VARCHAR);
+                return jdbcInfo("NVARCHAR(36)", Types.VARCHAR);
             case SEQUENCE:
                 return jdbcInfo("BIGINT", Types.BIGINT);
             }
         case SYSNAME:
         case SYSNAMEARRAY:
-            return jdbcInfo("VARCHAR(256)", Types.VARCHAR);
+            return jdbcInfo("NVARCHAR(256)", Types.VARCHAR);
         case TINYINT:
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:
@@ -264,7 +264,7 @@ public class DialectSQLServer extends Dialect {
         case CLUSTERNODE:
             return jdbcInfo("SMALLINT", Types.SMALLINT);
         case CLUSTERFRAGS:
-            return jdbcInfo("VARCHAR(8000)", Types.VARCHAR);
+            return jdbcInfo("NVARCHAR(4000)", Types.VARCHAR);
         }
         throw new AssertionError(type);
     }
@@ -531,8 +531,8 @@ public class DialectSQLServer extends Dialect {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         switch (idType) {
         case VARCHAR:
-            properties.put("idType", "VARCHAR(36)");
-            properties.put("idTypeParam", "VARCHAR");
+            properties.put("idType", "NVARCHAR(36)");
+            properties.put("idTypeParam", "NVARCHAR");
             properties.put("idNotPresent", "'-'");
             properties.put("sequenceEnabled", Boolean.FALSE);
             break;
