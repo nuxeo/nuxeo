@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -171,8 +172,9 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentModel> children = getChildrenFor(container.getId());
-        int selectedDocumentIndex = children.indexOf(selectedDocument);
+        List<DocumentRef> children = documentManager.getChildrenRefs(
+                container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int nextIndex = selectedDocumentIndex + 1;
         if (nextIndex == children.size()) {
             // can't move down the last document
@@ -211,12 +213,14 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         DocumentModel selectedDocument = documentsListsManager.getWorkingList(
                 documentsListName).get(0);
 
-        List<DocumentModel> children = getChildrenFor(container.getId());
-        int selectedDocumentIndex = children.indexOf(selectedDocument);
+        List<DocumentRef> children = documentManager.getChildrenRefs(
+                container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int nextIndex = selectedDocumentIndex + 1;
-        DocumentModel nextDocument = children.get(nextIndex);
+        DocumentRef nextDocumentRef = children.get(nextIndex);
 
-        documentManager.orderBefore(container.getRef(), nextDocument.getName(),
+        documentManager.orderBefore(container.getRef(),
+                documentManager.getDocument(nextDocumentRef).getName(),
                 selectedDocument.getName());
         documentManager.save();
 
@@ -254,8 +258,8 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentModel> children = getChildrenFor(container.getId());
-        int selectedDocumentIndex = children.indexOf(selectedDocument);
+        List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int previousIndex = selectedDocumentIndex - 1;
         if (previousIndex < 0) {
             // can't move up the first document
@@ -281,13 +285,15 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         DocumentModel selectedDocument = documentsListsManager.getWorkingList(
                 documentsListName).get(0);
 
-        List<DocumentModel> children = getChildrenFor(container.getId());
-        int selectedDocumentIndex = children.indexOf(selectedDocument);
+        List<DocumentRef> children = documentManager.getChildrenRefs(
+                container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         int previousIndex = selectedDocumentIndex - 1;
-        DocumentModel previousDocument = children.get(previousIndex);
+        DocumentRef previousDocumentRef = children.get(previousIndex);
 
         documentManager.orderBefore(container.getRef(),
-                selectedDocument.getName(), previousDocument.getName());
+                selectedDocument.getName(),
+                documentManager.getDocument(previousDocumentRef).getName());
         documentManager.save();
 
         notifyChildrenChanged(container);
@@ -316,8 +322,9 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentModel> children = getChildrenFor(container.getId());
-        int selectedDocumentIndex = children.indexOf(selectedDocument);
+        List<DocumentRef> children = documentManager.getChildrenRefs(
+                container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         if (selectedDocumentIndex <= 0) {
             // can't move to top the first document
             return false;
@@ -342,11 +349,13 @@ public class OrderableDocumentActions implements SelectDataModelListener,
             throws ClientException {
         DocumentModel selectedDocument = documentsListsManager.getWorkingList(
                 documentsListName).get(0);
-        List<DocumentModel> children = getChildrenFor(container.getId());
-        DocumentModel firstDocument = children.get(0);
+        List<DocumentRef> children = documentManager.getChildrenRefs(
+                container.getRef(), null);
+        DocumentRef firstDocumentRef = children.get(0);
 
         documentManager.orderBefore(container.getRef(),
-                selectedDocument.getName(), firstDocument.getName());
+                selectedDocument.getName(),
+                documentManager.getDocument(firstDocumentRef).getName());
         documentManager.save();
 
         notifyChildrenChanged(container);
@@ -376,8 +385,9 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         }
 
         DocumentModel selectedDocument = docs.get(0);
-        List<DocumentModel> children = getChildrenFor(container.getId());
-        int selectedDocumentIndex = children.indexOf(selectedDocument);
+        List<DocumentRef> children = documentManager.getChildrenRefs(
+                container.getRef(), null);
+        int selectedDocumentIndex = children.indexOf(new IdRef(selectedDocument.getId()));
         if (selectedDocumentIndex >= children.size() - 1) {
             // can't move to bottom the last document
             return false;
