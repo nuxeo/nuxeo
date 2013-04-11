@@ -502,7 +502,10 @@ END;
 CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
 RETURN NX_STRING_TABLE PIPELINED IS
 BEGIN
-   FOR r in (SELECT DISTINCT(ancestor) AS ancestor FROM ancestors WHERE hierarchy_id MEMBER OF ids) LOOP
+   FOR r in (SELECT DISTINCT(ancestor) AS ancestor FROM ancestors
+     -- don't use MEMBER OF, it causes a full table scan
+     WHERE hierarchy_id IN (SELECT COLUMN_VALUE FROM TABLE(ids)))
+   LOOP
       PIPE ROW(r.ancestor);
    END LOOP;
 END;
