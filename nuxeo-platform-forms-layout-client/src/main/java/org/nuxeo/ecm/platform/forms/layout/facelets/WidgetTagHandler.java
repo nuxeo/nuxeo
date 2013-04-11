@@ -161,7 +161,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         Widget widgetInstance = null;
         if (widget != null) {
             widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
-            if (widgetInstance != null && value != null) {
+            if (widgetInstance != null && valueName != null) {
                 widgetInstance.setValueName(valueName);
             }
         } else {
