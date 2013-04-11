@@ -79,7 +79,7 @@ public class JBossConfiguratorTest {
         // Windows path
         propertyToGenerate2 = "<config-property name=\""
                 + "property\" type=\"java.lang.String\">URL=jdbc:h2:"
-                + "C:\\nuxeo-dm-5.4.2.1-SNAPSHOT-jboss\\server\\default\\data\\NXRuntime\\data"
+                + "C:\\nuxeo-dm-5.4.2-jboss\\server\\default\\data\\NXRuntime\\data"
                 + File.separator + "h2" + File.separator
                 + "testinclude;AUTO_SERVER=true</config-property>";
 
