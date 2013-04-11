@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -54,6 +55,7 @@ public class TestDrivers extends AbstractTest {
         stopProxy();
     }
 
+    @Ignore("Chrome not used in tests + chromedriver being a bit too finicky")
     @Test
     public void testGoogleChrome() throws Exception {
         initChromeDriver();
