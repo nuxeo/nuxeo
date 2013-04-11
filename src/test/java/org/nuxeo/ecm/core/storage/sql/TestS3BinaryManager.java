@@ -34,6 +34,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -208,6 +209,27 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         assertEquals(1, status.numBinariesGC);
         assertEquals(4, status.sizeBinariesGC);
         assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
+    }
+
+    @Test
+    public void testS3BinaryManagerOverwrite() throws Exception {
+        if (DISABLED) {
+            return; // test disabled
+        }
+
+        // store binary
+        byte[] bytes = CONTENT.getBytes("UTF-8");
+        Binary binary = binaryManager.getBinary(new ByteArrayInputStream(bytes));
+        assertNotNull(binary);
+        assertEquals(bytes.length, binary.getLength());
+        assertNull(Framework.getProperty("cachedBinary"));
+
+        // store the same content again
+        Binary binary2 = binaryManager.getBinary(new ByteArrayInputStream(bytes));
+        assertNotNull(binary2);
+        assertEquals(bytes.length, binary2.getLength());
+        // check that S3 bucked was not called for no valid reason
+        assertEquals(binary2.digest, Framework.getProperty("cachedBinary"));
     }
 
     /**

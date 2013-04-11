@@ -287,6 +287,14 @@ public class S3BinaryManager extends BinaryCachingManager {
             out.close();
         }
 
+        File cachedFile = fileCache.getFile(digest);
+        if (cachedFile != null) {
+            if (Framework.isTestModeSet()) {
+                Framework.getProperties().setProperty("cachedBinary", digest);
+            }
+            return new Binary(cachedFile, digest, repositoryName);
+        }
+
         // Store the blob in the S3 bucket if not already there
         String etag;
         try {
