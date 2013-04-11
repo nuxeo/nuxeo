@@ -466,16 +466,21 @@ public class S3BinaryManager extends BinaryCachingManager {
         @Override
         public void start() {
             if (startTime != 0) {
-                throw new RuntimeException("Alread started");
+                throw new RuntimeException("Already started");
             }
             startTime = System.currentTimeMillis();
             status = new BinaryManagerStatus();
             marked = new HashSet<String>();
+
+            // XXX : we should be able to do better
+            // and only remove the cache entry that will be removed from S3
+            binaryManager.fileCache().clear();
         }
 
         @Override
         public void mark(String digest) {
             marked.add(digest);
+            // TODO : should clear the specific cache entry
         }
 
         @Override
