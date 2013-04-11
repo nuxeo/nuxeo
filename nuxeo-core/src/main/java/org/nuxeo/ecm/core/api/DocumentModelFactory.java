@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeProvider;
-import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -294,9 +293,10 @@ public class DocumentModelFactory {
         }
 
         // write data models
-        DocumentPart[] parts = docModel.getParts(); // TODO only loaded ones
-        for (DocumentPart part : parts) {
-            if (part.isDirty()) {
+        // check only the loaded ones to find the dirty ones
+        for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
+            if (dm.isDirty()) {
+                DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
                 try {
                     doc.writeDocumentPart(part);
                 } catch (ClientException e) {

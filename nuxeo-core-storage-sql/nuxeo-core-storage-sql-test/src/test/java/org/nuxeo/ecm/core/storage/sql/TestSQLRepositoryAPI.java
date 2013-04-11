@@ -3738,13 +3738,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         set = (Set<String>) event.getContext().getProperty(
                 EventConstants.INVAL_MODIFIED_DOC_IDS);
         assertEquals(1, set.size()); // doc created seen as modified
+        assertEquals(doc.getId(), set.iterator().next());
         set = (Set<String>) event.getContext().getProperty(
                 EventConstants.INVAL_MODIFIED_PARENT_IDS);
-        assertEquals(2, set.size());
-        // spurious doc "parent" modified, due to its complex property
-        assertEquals(
-                new HashSet<String>(Arrays.asList(doc.getId(), root.getId())),
-                set);
+        assertEquals(1, set.size()); // root has a new child
+        assertEquals(root.getId(), set.iterator().next());
 
         // change just one property
         doc.setProperty("dublincore", "title", "t1");
