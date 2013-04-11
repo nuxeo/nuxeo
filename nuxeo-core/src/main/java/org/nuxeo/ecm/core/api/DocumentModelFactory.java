@@ -293,10 +293,9 @@ public class DocumentModelFactory {
         }
 
         // write data models
-        // check only the loaded ones to find the dirty ones
-        for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
-            if (dm.isDirty()) {
-                DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
+        DocumentPart[] parts = docModel.getParts(); // TODO only loaded ones
+        for (DocumentPart part : parts) {
+            if (part.isDirty()) {
                 try {
                     doc.writeDocumentPart(part);
                 } catch (ClientException e) {
