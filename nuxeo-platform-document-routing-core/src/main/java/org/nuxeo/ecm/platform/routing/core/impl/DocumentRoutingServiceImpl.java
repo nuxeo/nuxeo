@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.FileUtils;
@@ -84,7 +84,9 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
-import com.google.common.collect.MapMaker;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * The implementation of the routing service.
@@ -132,7 +134,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     protected RepositoryInitializationHandler repositoryInitializationHandler;
 
-    private ConcurrentMap<String, DocumentRoute> modelsChache;
+    private Cache<String, String> modelsChache;
 
     @Override
     public void registerContribution(Object contribution,
@@ -177,8 +179,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
                 @Override
                 public void run() throws ClientException {
-                    DocumentModel model = getRouteModelWithId(session,
-                            routeModelId).getDocument();
+                    String routeDocId = getRouteModelDocIdWithId(session,
+                            routeModelId);
+                    DocumentModel model = session.getDocument(new IdRef(
+                            routeDocId));
                     DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(
                             model, session);
                     route = instance.getAdapter(DocumentRoute.class);
@@ -683,7 +687,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             }
             // remove model from cache if any model with the same id existed
             if (modelsChache != null) {
-                modelsChache.remove(doc.getName());
+                modelsChache.invalidate(doc.getName());
             }
 
             return doc.getAdapter(DocumentRoute.class);
@@ -709,7 +713,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        modelsChache = new MapMaker().weakValues().makeMap();
+        modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(
+                10, TimeUnit.MINUTES).build();
         repositoryInitializationHandler = new RouteModelsInitializator();
         repositoryInitializationHandler.install();
     }
@@ -717,7 +722,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
-        modelsChache = new MapMaker().weakValues().makeMap();
         if (repositoryInitializationHandler != null) {
             repositoryInitializationHandler.uninstall();
         }
@@ -784,24 +788,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public DocumentRoute getRouteModelWithId(CoreSession session, String id)
             throws ClientException {
-        if (modelsChache != null && modelsChache.get(id) != null) {
-            return modelsChache.get(id);
-        }
-        // if not in cache, fetch it
         String routeDocModelId = getRouteModelDocIdWithId(session, id);
         DocumentModel routeDoc = session.getDocument(new IdRef(routeDocModelId));
-        if (modelsChache == null) {
-            modelsChache = new MapMaker().weakValues().makeMap();
-        }
-        DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
-        modelsChache.put(id, route);
-        return route;
+        return routeDoc.getAdapter(DocumentRoute.class);
     }
 
     @Override
     public String getRouteModelDocIdWithId(CoreSession session, String id)
             throws ClientException {
-
+        if (modelsChache != null) {
+            String routeDocId = modelsChache.getIfPresent(id);
+            if (routeDocId != null) {
+                return routeDocId;
+            }
+        }
         String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY,
                 NXQL.escapeString(id));
         IterableQueryResult results = session.queryAndFetch(query, "NXQL");
@@ -817,7 +817,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             routeIds.add(map.get("ecm:uuid").toString());
         }
         results.close();
-        return routeIds.get(0);
+        String routeDocId = routeIds.get(0);
+        if (modelsChache == null) {
+            modelsChache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(
+                    10, TimeUnit.MINUTES).build();
+        }
+        modelsChache.put(id, routeDocId);
+        return routeDocId;
     }
 
     @Override
