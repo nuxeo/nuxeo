@@ -19,32 +19,30 @@
           It needs the following properties configuration:
           <ul>
             <li>
-              currentLifeCycleState: the current state from where to start
-              finding
-              the available transitions.
+              lifeCycleName: represents the life cycle from which to retrieve
+              the transitions.
             </li>
             <li>
-              lifeCycleName: represents the life cycle from which to retrieve
-              the
-              transitions.
+              currentLifeCycleState: the current state from where to start
+              finding the available transitions.
             </li>
           </ul>
           <br />
           A standard definition could be:
-          <pre>
-            <widget name="life_cycle_transitions" type="life_cycle_transitions">
-              <labels>
-                <label mode="any"></label>
-              </labels>
-              <fields>
-                <field>contextData['request/lifeCycleTransition']</field>
-              </fields>
-              <properties widgetMode="edit">
-                <property name="currentLifeCycleState">#{layoutValue.currentLifeCycleState}</property>
-                <property name="lifeCycleName">#{layoutValue.lifeCyclePolicy}</property>
-              </properties>
-            </widget>
-          </pre>
+          <div class="pre">
+            &lt;widget name="life_cycle_transitions" type="life_cycle_transitions"&gt;
+              &lt;labels&gt;
+                &lt;label mode="any"&gt;&lt;/label&gt;
+              &lt;/labels&gt;
+              &lt;fields&gt;
+                &lt;field&gt;contextData['request/lifeCycleTransition']&lt;/field&gt;
+              &lt;/fields&gt;
+              &lt;properties widgetMode="edit"&gt;
+                &lt;property name="currentLifeCycleState"&gt;#{layoutValue.currentLifeCycleState}&lt;/property&gt;
+                &lt;property name="lifeCycleName"&gt;#{layoutValue.lifeCyclePolicy}&lt;/property&gt;
+              &lt;/properties&gt;
+            &lt;/widget&gt;
+          </div>
         </description>
         <categories>
           <category>document</category>
