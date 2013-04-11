@@ -416,6 +416,14 @@ public interface DocumentRoutingService {
     // copied from the deprecated RoutingTaskService
 
     /**
+     * Returns the doc id of the route model with the given id
+     *
+     * @since 5.7
+     */
+    String getRouteModelDocIdWithId(CoreSession session, String id)
+            throws ClientException;
+
+    /**
      * Marks the tasks as Routing tasks.
      * <p>
      * This allows the related documents to be adapted to {@link RoutingTask}.

@@ -49,6 +49,10 @@
      <groupId>org.nuxeo.runtime</groupId>
      <artifactId>nuxeo-runtime-reload</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
     <!-- test deps -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.FileUtils;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -82,6 +84,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
+import com.google.common.collect.MapMaker;
 
 /**
  * The implementation of the routing service.
@@ -96,7 +99,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     /** Route models that have been validated. */
     private static final String ROUTE_MODEL_WITH_ID_QUERY = String.format(
-            "SELECT * FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated'",
+            "SELECT * FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isCheckedInVersion  = 0  AND ecm:isProxy = 0 ",
+            DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
+
+    /** Route models that have been validated. */
+    private static final String ROUTE_MODEL_DOC_ID_WITH_ID_QUERY = String.format(
+            "SELECT ecm:uuid FROM %s WHERE ecm:name = %%s AND ecm:currentLifeCycleState = 'validated' AND ecm:isCheckedInVersion  = 0  AND ecm:isProxy = 0 ",
             DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE);
 
     private static final String ORDERED_CHILDREN_QUERY = "SELECT * FROM Document WHERE"
@@ -123,6 +131,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     protected RouteTemplateResourceRegistry routeResourcesRegistry = new RouteTemplateResourceRegistry();
 
     protected RepositoryInitializationHandler repositoryInitializationHandler;
+
+    private ConcurrentMap<String, DocumentRoute> modelsChache;
 
     @Override
     public void registerContribution(Object contribution,
@@ -671,6 +681,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             if (doc == null) {
                 throw new ClientException("Can not import document");
             }
+            // remove model from cache if any model with the same id existed
+            if (modelsChache != null) {
+                modelsChache.remove(doc.getName());
+            }
+
             return doc.getAdapter(DocumentRoute.class);
         } catch (Exception e) {
             throw new ClientException(e);
@@ -694,6 +709,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
+        modelsChache = new MapMaker().weakValues().makeMap();
         repositoryInitializationHandler = new RouteModelsInitializator();
         repositoryInitializationHandler.install();
     }
@@ -701,6 +717,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
+        modelsChache = new MapMaker().weakValues().makeMap();
         if (repositoryInitializationHandler != null) {
             repositoryInitializationHandler.uninstall();
         }
@@ -767,22 +784,40 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public DocumentRoute getRouteModelWithId(CoreSession session, String id)
             throws ClientException {
-        DocumentModelList list = null;
-        String query = String.format(ROUTE_MODEL_WITH_ID_QUERY,
-                NXQL.escapeString(id));
-        try {
-            list = session.query(query);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        if (modelsChache != null && modelsChache.get(id) != null) {
+            return modelsChache.get(id);
         }
-        if (list.size() == 0) {
+        // if not in cache, fetch it
+        String routeDocModelId = getRouteModelDocIdWithId(session, id);
+        DocumentModel routeDoc = session.getDocument(new IdRef(routeDocModelId));
+        if (modelsChache == null) {
+            modelsChache = new MapMaker().weakValues().makeMap();
+        }
+        DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
+        modelsChache.put(id, route);
+        return route;
+    }
+
+    @Override
+    public String getRouteModelDocIdWithId(CoreSession session, String id)
+            throws ClientException {
+
+        String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY,
+                NXQL.escapeString(id));
+        IterableQueryResult results = session.queryAndFetch(query, "NXQL");
+        if (results.size() == 0) {
             throw new ClientRuntimeException("No route found for id: " + id);
         }
-        if (list.size() != 1) {
+        if (results.size() != 1) {
             throw new ClientRuntimeException(
                     "More than one route model found with id: " + id);
         }
-        return list.get(0).getAdapter(DocumentRoute.class);
+        List<String> routeIds = new ArrayList<String>();
+        for (Map<String, Serializable> map : results) {
+            routeIds.add(map.get("ecm:uuid").toString());
+        }
+        results.close();
+        return routeIds.get(0);
     }
 
     @Override

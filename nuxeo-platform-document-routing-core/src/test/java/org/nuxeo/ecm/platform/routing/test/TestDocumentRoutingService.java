@@ -364,7 +364,10 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         assertTrue(routeInstance.isDone());
 
         // check that we don't get route instances when querying for models
-        route = service.getRouteModelWithId(session, ROUTE1);
+        String routeDocId = service.getRouteModelDocIdWithId(session, ROUTE1);
+        DocumentModel doc = session.getDocument(new IdRef(routeDocId));
+        route = doc.getAdapter(DocumentRoute.class);
+
         assertNotNull(route);
         // this API does not restrict itself to models actually
         routes = service.getAvailableDocumentRouteModel(session);
@@ -904,7 +907,10 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 "/document-route-models-root/myRoute"));
         assertNotNull(route);
 
-        DocumentRoute model = service.getRouteModelWithId(session, "myRoute");
+        String routeDocId = service.getRouteModelDocIdWithId(session, "myRoute");
+        DocumentModel doc = session.getDocument(new IdRef(routeDocId));
+        DocumentRoute model = doc.getAdapter(DocumentRoute.class);
+
         assertEquals(route.getId(), model.getDocument().getId());
         // test that document was overriden
 
