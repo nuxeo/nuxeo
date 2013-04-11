@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
@@ -362,7 +363,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             return CoreInstance.getInstance().getSession(sid);
         } catch (RuntimeException e) {
             String messageTemp = "Try to get session closed %s. Document path %s, user connected %s";
-            String username = ClientLoginModule.getCurrentPrincipal().getName();
+            NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+            String username = principal == null ? "null" : principal.getName();
             String message = String.format(messageTemp, sid,
                     this.getPathAsString(), username);
             log.error(message);
