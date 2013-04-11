@@ -114,8 +114,8 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         DocumentModel comment2 = session.createDocumentModel("Comment");
         comment2.setProperty("comment", "text", "This is another  comment for "
                 + docToComment.getTitle());
-        comment.setProperty("comment", "author", "the other author");
-        comment2 = cDoc.addComment(comment);
+        comment2.setProperty("comment", "author", "the other author");
+        comment2 = cDoc.addComment(comment2);
     }
 
     protected void addSomeRelations(Resource documentResource)

@@ -91,7 +91,7 @@ public class SimpleListenerTest extends RepositoryOSGITestCase {
         // Create a second commentary
         DocumentModel comment2 = getCoreSession().createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
         comment2.setProperty("comment", "text", "This is another  comment");
-        comment2 = cDoc.addComment(comment);
+        comment2 = cDoc.addComment(comment2);
         return doc;
     }
 
