@@ -37,40 +37,5 @@
           showPDFExport="false" />
       </resultLayouts>
     </contentView>
-
-    <contentView name="previous_routes">
-      <title>Previous Routes</title>
-      <translateTitle>false</translateTitle>
-      <showTitle>true</showTitle>
-      <genericPageProvider
-        class="org.nuxeo.ecm.platform.routing.web.PreviousRoutesPageProvider">
-        <property name="coreSession">#{documentManager}</property>
-        <property name="generateUIComments">false</property>
-        <property name="documentID">#{currentDocument.id}</property>
-        <whereClause docType="BasicAuditSearch">
-          <fixedPart>
-            log.category = 'eventDocumentCategory' AND log.eventId='auditLogRoute' AND
-            log.extendedInfos['attachDocumentID'].stringValue = '?'
-          </fixedPart>
-        </whereClause>
-        <sort column="log.eventDate" ascending="false" />
-        <pageSize>10</pageSize>
-        <maxPageSize>1000</maxPageSize>
-      </genericPageProvider>
-      <showFilterForm>false</showFilterForm>
-      <showPageSizeSelector>true</showPageSizeSelector>
-      <useGlobalPageSize>true</useGlobalPageSize>
-      <refresh>
-        <event>documentChanged</event>
-        <event>documentCreated</event>
-      </refresh>
-      <cacheSize>10</cacheSize>
-      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
-      </cacheKey>
-      <resultLayouts>
-        <layout name="previous_routes_content_view_layout" title="Previous Routes"
-          translateTitle="true" showCSVExport="false" showPDFExport="false" />
-      </resultLayouts>
-    </contentView>
   </extension>
 </component>

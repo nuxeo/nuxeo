@@ -121,61 +121,6 @@
         </property>
       </properties>
     </widget>
-    <!-- Widget set for route content view layout route_content_view_layout -->
-    <widget name="workflow_name" type="text">
-      <labels>
-        <label mode="any">Workflow Name</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>data.extendedInfos['workflowName'].serializableValue</field>
-      </fields>
-    </widget>
-    <widget name="workflow_name" type="text">
-      <labels>
-        <label mode="any">Workflow Name</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>data.extendedInfos['workflowName'].serializableValue</field>
-      </fields>
-    </widget>
-    <widget name="workflow_description" type="text">
-      <labels>
-        <label mode="any">Description</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>data.extendedInfos['workflowDescription'].serializableValue</field>
-      </fields>
-    </widget>
-    <widget name="workflow_initiator" type="text">
-      <labels>
-        <label mode="any">Initiator</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>data.extendedInfos['workflowInitiator'].serializableValue</field>
-      </fields>
-    </widget>
-    <widget name="workflow_start_date" type="datetime">
-      <labels>
-        <label mode="any">Start Date</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>data.extendedInfos['workflowStartDate'].serializableValue</field>
-      </fields>
-    </widget>
-    <widget name="workflow_end_date" type="datetime">
-      <labels>
-        <label mode="any">End Date</label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field>data.extendedInfos['workflowEndDate'].serializableValue</field>
-      </fields>
-    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"

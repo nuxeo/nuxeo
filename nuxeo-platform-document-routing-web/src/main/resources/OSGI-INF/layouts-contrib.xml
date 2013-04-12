@@ -407,54 +407,6 @@
         </row>
       </rows>
     </layout>
-
-    <!-- Previous routes layout -->
-    <layout name="previous_routes_content_view_layout">
-      <templates>
-        <template mode="any">/layouts/layout_listing_ajax_template.xhtml
-        </template>
-        <template mode="csv">/layouts/layout_listing_csv_template.xhtml
-        </template>
-        <template mode="pdf">/layouts/layout_listing_pdf_template.xhtml
-        </template>
-      </templates>
-      <properties mode="any">
-        <property name="showListingHeader">true</property>
-        <property name="showRowEvenOddClass">true</property>
-      </properties>
-      <columns>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>workflow_name</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>workflow_description</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>workflow_initiator</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>workflow_start_date</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>workflow_end_date</widget>
-        </column>
-      </columns>
-    </layout>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

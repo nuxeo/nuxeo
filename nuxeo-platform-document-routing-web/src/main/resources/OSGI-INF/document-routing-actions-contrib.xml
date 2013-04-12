@@ -155,13 +155,6 @@
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
 
-    <!-- 'Workflow' sub tab: previous routes -->
-    <!--<action id="TAB_PREVIOUS_ROUTE" enabled="true"
-      link="/incl/tabs/previous_routes.xhtml" order="30"
-      label="label.document.routing.previous.routes">
-      <category>TAB_ROUTE_WORKFLOW_sub_tab</category>
-    </action>
-    -->
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
