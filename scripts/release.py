@@ -109,12 +109,14 @@ class Release(object):
 
     See 'self.perpare()', 'self.perform()'."""
     def __init__(self, repo, branch, tag, next_snapshot, maintenance="auto",
-                 is_final=False, skipTests=False):
+                 is_final=False, skipTests=False, other_version=None):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
         self.maintenance = maintenance
         self.skipTests = skipTests
+        if other_version is not None and other_version != "None":
+            self.o_old_version, self.o_new_version = other_version.split('/', 1)
         # Evaluate default values, if not provided
         self.set_snapshot()
         self.set_tag(tag)
@@ -172,16 +174,23 @@ class Release(object):
             log("Maintenance version:".ljust(25) + self.maintenance)
         if self.skipTests:
             log("Tests execution is skipped")
+        if hasattr(self, 'o_old_version'):
+            log("Also replace version:".ljust(25) + self.o_old_version)
+            log("with ".rjust(25) + self.o_new_version)
+            other_version = self.o_old_version + '/' + self.o_new_version
+        else:
+            other_version = None
         if store_params:
             release_log = os.path.abspath(os.path.join(self.repo.basedir,
                                                        os.pardir,
                                                        "release.log"))
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
-                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s" %
+                        "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
+                        "OTHER_VERSION=%s" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance, self.is_final,
-                         self.skipTests))
+                         self.skipTests, other_version))
             log("Parameters stored in %s" % release_log)
         log("")
 
@@ -321,6 +330,8 @@ class Release(object):
         # Create release branches, update version, commit and tag
         self.repo.system_recurse("git checkout -b %s" % self.tag)
         self.update_versions(self.snapshot, self.tag)
+        if hasattr(self, 'o_old_version'):
+            self.update_versions(self.o_old_version, self.o_new_version)
         self.repo.system_recurse("git commit -m'Release %s' -a" % self.tag)
         self.repo.system_recurse("git tag release-%s" % self.tag)
 
@@ -437,6 +448,10 @@ mode.""")
         parser.add_option('--skipTests', action="store_true",
                           dest='skipTests', default=False,
                           help="""skip tests execution (but compile them)""")
+        parser.add_option('--arv', '--also-replace-version', action="store",
+                          dest='other_version', default=None,
+                          help="""other version to replace; use a slash ('/') as
+a separator between old and new version: '1.0-SNAPSHOT/1.0-beta'""")
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
@@ -458,6 +473,7 @@ mode.""")
                 options.maintenance = f.readline().split("=")[1].strip()
                 options.is_final = f.readline().split("=")[1].strip() == "True"
                 options.skipTests = f.readline().split("=")[1].strip() == "True"
+                options.other_version = f.readline().split("=")[1].strip()
 
         repo = Repository(os.getcwd(), options.remote_alias)
         if options.branch == "auto":
@@ -466,7 +482,8 @@ mode.""")
         repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance,
-                          options.is_final, options.skipTests)
+                          options.is_final, options.skipTests,
+                          options.other_version)
         release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
