@@ -219,7 +219,7 @@ class Release(object):
                         replaced = True
                     # Properties like nuxeo.*.version
                     prop_pattern = re.compile("{" + namespaces.get("pom") +
-                                              "}nuxeo\..*version")
+                                              "}(nuxeo|marketplace)\..*version")
                     properties = tree.getroot().find("pom:properties",
                                                      namespaces)
                     if properties is not None:
