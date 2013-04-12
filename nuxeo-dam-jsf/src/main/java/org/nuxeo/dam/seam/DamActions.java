@@ -189,4 +189,9 @@ public class DamActions implements Serializable {
         setSelectedNewAssetType(null);
     }
 
+    public String viewInDM() throws ClientException {
+        webActions.setCurrentTabIds("MAIN_TABS:documents");
+        return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
+    }
+
 }

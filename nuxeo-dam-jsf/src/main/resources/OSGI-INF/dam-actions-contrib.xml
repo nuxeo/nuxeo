@@ -89,6 +89,14 @@
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
+    <action id="damViewInDM"
+      link="#{damActions.viewInDM()}"
+      label="label.dam.action.viewInDM"
+      icon="/icons/switch.png"
+      order="65">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
     <!-- Search results actions -->
     <action id="damNewAsset" order="100" label="label.dam.new.asset"
       type="fancybox">
