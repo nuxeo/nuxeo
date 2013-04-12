@@ -3,6 +3,7 @@ Override from RichFaces components styles
 =Tree -> rich:tree Tree styles override
 =FileUpload -> rich:fileUpload styles override
 =Modal Panel -> RichFaces Modal Panel container styles override
+=Suggestion Box -> suggestion list from search inputs
 author: lkemen@nuxeo.com
 */
 
@@ -53,3 +54,4 @@ a.documentTypeLink { color: "link (__FLAVOR__ color)"; font-weight: bold; text-d
 
 /* Suggestion Box */
 .suggestionBoxResult .rich-sb-cell-padding img { max-height: 16px; max-width: 16px }
+.suggestionBoxResult .rich-sb-cell-padding span { display: block; width: 250px; overflow: hidden; text-overflow: ellipsis }
