@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-20113Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,10 +14,14 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.ConflictOperationException;
+import org.nuxeo.ecm.automation.InvalidOperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -28,7 +32,9 @@ import org.nuxeo.ecm.core.model.NoSuchDocumentException;
  */
 public class ExceptionHandler {
 
-    protected int status = 500;
+    protected static final Log log = LogFactory.getLog(ExceptionHandler.class);
+
+    protected int status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
     protected String type;
 
@@ -70,37 +76,45 @@ public class ExceptionHandler {
     }
 
     public static boolean isSecurityError(Throwable t) {
-        return getStatus(t) == 401;
+        return getStatus(t) == HttpServletResponse.SC_UNAUTHORIZED;
     }
 
     public static int getStatus(Throwable cause, int depth) {
         if (depth == 0) {
-            return 500;
+            log.warn("Possible infinite loop! Check the exception wrapping.");
+            return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
         if ((cause instanceof DocumentSecurityException)
                 || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
-            return 401;
+            return HttpServletResponse.SC_UNAUTHORIZED;
         } else if (cause instanceof NoSuchDocumentException) {
-            return 404;
+            return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof ClientException) {
-            Throwable ccause = cause.getCause();
-            if (ccause != null && ccause.getMessage() != null) {
-                if (ccause.getMessage().contains(
-                        "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
-                    return 404;
-                }
-            }
+            log.debug("Found a ClientException, looking deeply for a known wrapped exception...");
         } else if (cause instanceof OperationNotFoundException) {
-            return 404;
+            return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof ConflictOperationException) {
-            return 409;
+            return HttpServletResponse.SC_CONFLICT;
+        } else if (cause instanceof InvalidOperationException) {
+            return HttpServletResponse.SC_BAD_REQUEST;
         }
         Throwable parent = cause.getCause();
+        if (parent == cause) {
+            log.warn("Infinite loop detected! Check the exception wrapping.");
+            return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        }
         if (parent != null) {
             return getStatus(parent, depth - 1);
         }
-        return 500;
+        if (cause.getMessage() != null
+                && cause.getMessage().contains(
+                        "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
+            log.warn("Badly wrapped exception: found a NoSuchDocumentException"
+                    + " message but no NoSuchDocumentException", cause);
+            return HttpServletResponse.SC_NOT_FOUND;
+        }
+        return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     }
 
     public ExceptionHandler(String message, Throwable cause) {

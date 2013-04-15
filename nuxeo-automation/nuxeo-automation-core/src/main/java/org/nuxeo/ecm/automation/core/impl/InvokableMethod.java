@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,6 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.InvalidOperationException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
@@ -24,6 +27,8 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class InvokableMethod implements Comparable<InvokableMethod> {
+
+    protected static final Log log = LogFactory.getLog(InvokableMethod.class);
 
     public static final int VOID_PRIORITY = 1;
 
@@ -45,7 +50,6 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
     protected Class<?> consume;
 
     protected int priority;
-
 
     public InvokableMethod(OperationType op, Method method, OperationMethod anno) {
         produce = method.getReturnType();
@@ -108,17 +112,15 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         return 0;
     }
 
-
-    protected Object doInvoke(OperationContext ctx, Map<String, Object> args, Object input)
-            throws Exception {
+    protected Object doInvoke(OperationContext ctx, Map<String, Object> args,
+            Object input) throws Exception {
         Object target = op.newInstance(ctx, args);
         if (consume == Void.TYPE) {
             // preserve last output for void methods
             Object out = method.invoke(target);
             return produce == Void.TYPE ? input : out;
         } else {
-            if (input != null
-                    && !consume.isAssignableFrom(input.getClass())) {
+            if (input != null && !consume.isAssignableFrom(input.getClass())) {
                 // try to adapt
                 input = op.getService().getAdaptedValue(ctx, input, consume);
             }
@@ -135,10 +137,21 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
             if (t instanceof OperationException) {
-                throw (OperationException)t;
+                throw (OperationException) t;
+            } else if (t instanceof UnsupportedOperationException) {
+                /**
+                 * Mapping UnsupportedOperationException to
+                 * InvalidOperationException for proper management in
+                 * org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler
+                 */
+                log.warn(op.getId()
+                        + " threw a java.lang.UnsupportedOperationException: "
+                        + "it should directly throw an InvalidOperationException");
+                throw new InvalidOperationException(
+                        "Failed to invoke operation " + op.getId(), t);
             } else {
                 throw new OperationException("Failed to invoke operation "
-                    + op.getId(), t);
+                        + op.getId(), t);
             }
         } catch (Throwable t) {
             throw new OperationException("Failed to invoke operation "
