@@ -17,7 +17,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.InvalidOperationException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
@@ -138,17 +137,6 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
             Throwable t = e.getTargetException();
             if (t instanceof OperationException) {
                 throw (OperationException) t;
-            } else if (t instanceof UnsupportedOperationException) {
-                /**
-                 * Mapping UnsupportedOperationException to
-                 * InvalidOperationException for proper management in
-                 * org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler
-                 */
-                log.warn(op.getId()
-                        + " threw a java.lang.UnsupportedOperationException: "
-                        + "it should directly throw an InvalidOperationException");
-                throw new InvalidOperationException(
-                        "Failed to invoke operation " + op.getId(), t);
             } else {
                 throw new OperationException("Failed to invoke operation "
                         + op.getId(), t);

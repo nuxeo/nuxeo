@@ -90,8 +90,6 @@ public class ExceptionHandler {
             return HttpServletResponse.SC_UNAUTHORIZED;
         } else if (cause instanceof NoSuchDocumentException) {
             return HttpServletResponse.SC_NOT_FOUND;
-        } else if (cause instanceof ClientException) {
-            log.debug("Found a ClientException, looking deeply for a known wrapped exception...");
         } else if (cause instanceof OperationNotFoundException) {
             return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof ConflictOperationException) {
@@ -113,6 +111,10 @@ public class ExceptionHandler {
             log.warn("Badly wrapped exception: found a NoSuchDocumentException"
                     + " message but no NoSuchDocumentException", cause);
             return HttpServletResponse.SC_NOT_FOUND;
+        }
+        if (cause instanceof ClientException) {
+            // Generic ClientException with no root cause
+            return HttpServletResponse.SC_BAD_REQUEST;
         }
         return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     }
