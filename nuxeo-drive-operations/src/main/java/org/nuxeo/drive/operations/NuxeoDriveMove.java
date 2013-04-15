@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -18,6 +18,7 @@ package org.nuxeo.drive.operations;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
+import org.nuxeo.ecm.automation.InvalidOperationException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -50,10 +51,14 @@ public class NuxeoDriveMove {
 
     @OperationMethod
     public Blob run() throws Exception {
-
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FileSystemItem fsItem = fileSystemItemManager.move(srcId, destId,
-                ctx.getPrincipal());
+        FileSystemItem fsItem;
+        try {
+            fsItem = fileSystemItemManager.move(srcId, destId,
+                    ctx.getPrincipal());
+        } catch (UnsupportedOperationException e) {
+            throw new InvalidOperationException(e);
+        }
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
