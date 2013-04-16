@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -50,8 +51,8 @@ public class PageProviderServiceImpl extends DefaultComponent implements
     public PageProvider<?> getPageProvider(String name,
             PageProviderDefinition desc, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException {
+            Map<String, Serializable> properties, DocumentModel searchDocument,
+            Object... parameters) throws ClientException {
         if (desc == null) {
             return null;
         }
@@ -92,6 +93,9 @@ public class PageProviderServiceImpl extends DefaultComponent implements
         pageProvider.setProperties(allProps);
         pageProvider.setSortable(desc.isSortable());
         pageProvider.setParameters(parameters);
+        if (searchDocument != null) {
+            pageProvider.setSearchDocumentModel(searchDocument);
+        }
 
         Long maxPageSize = desc.getMaxPageSize();
         if (maxPageSize != null) {
@@ -117,12 +121,31 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     @Override
     public PageProvider<?> getPageProvider(String name,
+            PageProviderDefinition desc, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters)
+            throws ClientException {
+        return getPageProvider(name, desc, sortInfos, pageSize, currentPage,
+                properties, null, parameters);
+    }
+
+    @Override
+    public PageProvider<?> getPageProvider(String name,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, DocumentModel searchDocument,
+            Object... parameters) throws ClientException {
+        PageProviderDefinition desc = providerReg.getPageProvider(name);
+        return getPageProvider(name, desc, sortInfos, pageSize, currentPage,
+                properties, searchDocument, parameters);
+    }
+
+    @Override
+    public PageProvider<?> getPageProvider(String name,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Map<String, Serializable> properties, Object... parameters)
             throws ClientException {
-        PageProviderDefinition desc = providerReg.getPageProvider(name);
-        return getPageProvider(name, desc, sortInfos, pageSize, currentPage,
-                properties, parameters);
+        return getPageProvider(name, sortInfos, pageSize, currentPage,
+                properties, null, parameters);
     }
 
     @Override

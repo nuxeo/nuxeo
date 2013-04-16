@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
@@ -54,16 +55,30 @@ public interface PageProviderService extends Serializable {
      * computed in the XML file. If not null, currentPage will override default
      * current page (0).
      *
-     * @since 5.4
      * @param name the name that will be set on the provider.
      * @param desc the definition used to build the provider instance.
      * @param sortInfos sort information to set on the provider instance.
      * @param pageSize the provider page size.
      * @param currentPage the provider current page index.
      * @param properties the provider properties
+     * @param searchDocument the search document to be used by the provider.
      * @param parameters the provider parameters.
      * @return the page provider instance.
      * @throws ClientException if the page provider instantiation fails.
+     * @since 5.7
+     */
+    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, DocumentModel searchDocument,
+            Object... parameters) throws ClientException;
+
+    /**
+     * Returns an instance of page provider with given name and definition.
+     *
+     * @see #getPageProvider(String, PageProviderDefinition, List, Long, Long,
+     *      Map, DocumentModel, Object...)
+     * @throws ClientException if the page provider instantiation fails.
+     * @since 5.4
      */
     PageProvider<?> getPageProvider(String name, PageProviderDefinition desc,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
@@ -71,11 +86,25 @@ public interface PageProviderService extends Serializable {
             throws ClientException;
 
     /**
+     * Returns an instance of page provider with given name and search document
+     * model.
+     *
+     * @see #getPageProvider(String, PageProviderDefinition, List, Long, Long,
+     *      Map, DocumentModel, Object...)
+     * @throws ClientException if the page provider instantiation fails.
+     * @since 5.7
+     */
+    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, DocumentModel searchDocument,
+            Object... parameters) throws ClientException;
+
+    /**
      * Returns an instance of page provider with given name.
      *
      * @see #getPageProvider(String, PageProviderDefinition, List, Long, Long,
-     *      Map, Object...)
-     * @throws ClientException
+     *      Map, DocumentModel, Object...)
+     * @throws ClientException if the page provider instantiation fails.
      */
     PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage,
