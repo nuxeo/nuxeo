@@ -9,6 +9,9 @@
     <contentView name="CURRENT_DOCUMENT_CHILDREN">
       <title>current document children overriden</title>
       <selectionList>CURRENT_SELECTION_2</selectionList>
+      <emptySentence>label.my.empty.cv.sentence</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+      <showTitle>true</showTitle>
       <pagination>simple_2</pagination>
       <actions category="CURRENT_SELECTION_LIST_2" />
       <actions category="CURRENT_SELECTION_LIST_3" />
@@ -26,6 +29,11 @@
     <!-- NXP-9333: check that result layouts are not emptied at merge -->
     <contentView name="CURRENT_DOCUMENT_CHILDREN_REF">
       <title>current document children overriden</title>
+      <pageProvider name="CURRENT_DOCUMENT_CHILDREN_PP_2">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+        <parameter>#{currentDocument.id}</parameter>
+      </pageProvider>
     </contentView>
 
     <contentView name="CURRENT_DOCUMENT_CHILDREN_FETCH" enabled="false" />
@@ -45,6 +53,17 @@
         <pageSize>2</pageSize>
       </genericPageProvider>
     </contentView>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_PP_2">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ?
+      </pattern>
+    </coreQueryPageProvider>
 
   </extension>
 

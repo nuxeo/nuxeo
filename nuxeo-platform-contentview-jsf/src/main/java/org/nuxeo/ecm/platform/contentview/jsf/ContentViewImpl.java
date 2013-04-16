@@ -317,6 +317,8 @@ public class ContentViewImpl implements ContentView {
                 if (finalSearchDocument != null) {
                     pageProvider.setSearchDocumentModel(finalSearchDocument);
                 }
+            } catch (ClientException e) {
+                throw e;
             } catch (Exception e) {
                 throw new ClientException(e);
             }

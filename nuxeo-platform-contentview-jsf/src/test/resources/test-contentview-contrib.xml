@@ -165,6 +165,12 @@
       </coreQueryPageProvider>
     </contentView>
 
+    <contentView name="UNKNOWN_REF_PP">
+      <pageProvider name="foo">
+        <property name="coreSession">#{documentManager}</property>
+      </pageProvider>
+    </contentView>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
