@@ -93,7 +93,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 auditQuerySb.append("or ");
             }
             if (!lastActiveRootRefs.isEmpty()) {
-                // detect root unregistrition changes for the roots previously
+                // detect root un-registration changes for the roots previously
                 // seen by the current user
                 auditQuerySb.append("log.category = '");
                 auditQuerySb.append(NuxeoDriveEvents.EVENT_CATEGORY);
