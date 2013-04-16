@@ -135,6 +135,10 @@ public class PageProviderServiceImpl extends DefaultComponent implements
             Map<String, Serializable> properties, DocumentModel searchDocument,
             Object... parameters) throws ClientException {
         PageProviderDefinition desc = providerReg.getPageProvider(name);
+        if (desc == null) {
+            throw new ClientException(String.format(
+                    "Could not resolve page provider with name '%s'", name));
+        }
         return getPageProvider(name, desc, sortInfos, pageSize, currentPage,
                 properties, searchDocument, parameters);
     }
