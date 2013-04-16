@@ -24,6 +24,7 @@ import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
@@ -83,10 +84,12 @@ public interface ContentViewService extends Serializable {
      * current page (0).
      *
      * @throws ClientException
+     * @since 5.7
      */
     PageProvider<?> getPageProvider(String contentViewName,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Object... parameters) throws ClientException;
+            DocumentModel searchDocument, Object... parameters)
+            throws ClientException;
 
     /**
      * Returns the state of this content view.

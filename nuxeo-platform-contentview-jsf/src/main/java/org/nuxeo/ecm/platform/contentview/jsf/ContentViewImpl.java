@@ -300,11 +300,7 @@ public class ContentViewImpl implements ContentView,
                             "Could not resolve ContentViewService");
                 }
                 pageProvider = service.getPageProvider(getName(), sortInfos,
-                        pageSize, currentPage, params);
-                // set search doc on newly created page provider
-                if (finalSearchDocument != null) {
-                    pageProvider.setSearchDocumentModel(finalSearchDocument);
-                }
+                        pageSize, currentPage, finalSearchDocument, params);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
@@ -469,7 +465,7 @@ public class ContentViewImpl implements ContentView,
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public List<String> getCurrentResultLayoutColumns() {
         if (currentResultLayoutColumns != null) {
             return currentResultLayoutColumns;
@@ -496,7 +492,7 @@ public class ContentViewImpl implements ContentView,
         currentResultLayoutColumns = resultColumns;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected List<SortInfo> resolveSortInfos() {
         if (sortInfosBinding == null) {
             return null;
@@ -684,11 +680,13 @@ public class ContentViewImpl implements ContentView,
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public void pageChanged(PageProvider pageProvider) {
         raiseEvent(CONTENT_VIEW_PAGE_CHANGED_EVENT);
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public void refreshed(PageProvider pageProvider) {
         raiseEvent(CONTENT_VIEW_REFRESH_EVENT);
     }

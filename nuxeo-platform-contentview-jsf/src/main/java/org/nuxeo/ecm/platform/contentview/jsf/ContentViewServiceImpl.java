@@ -213,7 +213,8 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     public PageProvider<?> getPageProvider(String name,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Object... parameters) throws ClientException {
+            DocumentModel searchDocument, Object... parameters)
+            throws ClientException {
         ContentViewDescriptor contentViewDesc = contentViewReg.getContentView(name);
         if (contentViewDesc == null) {
             return null;
@@ -252,7 +253,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
                 provider = ppService.getPageProvider(refDesc.getName(),
                         sortInfos, pageSize, currentPage,
                         resolvePageProviderProperties(refDesc.getProperties()),
-                        parameters);
+                        searchDocument, parameters);
             } catch (Exception e) {
                 throw new ClientException(e);
             }
@@ -260,12 +261,12 @@ public class ContentViewServiceImpl extends DefaultComponent implements
             provider = ppService.getPageProvider(name, coreDesc, sortInfos,
                     pageSize, currentPage,
                     resolvePageProviderProperties(coreDesc.getProperties()),
-                    parameters);
+                    searchDocument, parameters);
         } else if (genDesc != null && genDesc.isEnabled()) {
             provider = ppService.getPageProvider(name, genDesc, sortInfos,
                     pageSize, currentPage,
                     resolvePageProviderProperties(genDesc.getProperties()),
-                    parameters);
+                    searchDocument, parameters);
         }
 
         return provider;

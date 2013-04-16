@@ -16,6 +16,13 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +32,9 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -419,6 +424,50 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertNotNull(resultColumns);
         assertEquals(1, resultColumns.size());
         assertEquals("column_1", resultColumns.get(0));
+    }
+
+    /**
+     * Non regression test for NXP-11419, showing an issue when restoring with
+     * a search doc and a current page > 0
+     */
+    @Test
+    public void testRestoreContentViewWithSearchDocAndCurrentPage()
+            throws Exception {
+        ContentViewService service = Framework.getService(ContentViewService.class);
+        assertNotNull(service);
+
+        assertNull(service.restoreContentView(null));
+
+        // build state
+        ContentViewState state = new ContentViewStateImpl();
+        state.setContentViewName("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
+        // set current page to the first one
+        state.setCurrentPage(new Long(1));
+        state.setPageSize(new Long(2));
+        state.setResultColumns(Arrays.asList(new String[] { "column_1" }));
+        state.setResultLayout(new ContentViewLayoutImpl("document_listing",
+                "label.document_listing.layout", true, "/icons/myicon.png",
+                true));
+        List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+        sortInfos.add(new SortInfo("dc:modified", false));
+        state.setSortInfos(sortInfos);
+        state.setSearchDocumentModel(searchDocument);
+
+        ContentView contentView = service.restoreContentView(state);
+        assertNotNull(contentView);
+
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
+                contentView.getName());
+        assertEquals(new Long(2), contentView.getCurrentPageSize());
+
+        PageProvider<?> pp = contentView.getCurrentPageProvider();
+        assertNotNull(pp);
+
+        DocumentModel searchDoc = pp.getSearchDocumentModel();
+        assertNotNull(searchDoc);
+        assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
+        assertNull(searchDoc.getPropertyValue("dc:description"));
+        assertEquals(new Long(1), new Long(pp.getCurrentPageIndex()));
     }
 
     @Test
