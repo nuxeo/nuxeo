@@ -1,5 +1,3 @@
-test to delete
-
 About the Nuxeo Platform Project
 ==========================
 
