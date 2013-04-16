@@ -16,7 +16,7 @@
   <licenses>
     <license>
       <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
-      <url>http://www.gnu.org/copyleft/lesser.txt</url>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
     </license>
   </licenses>
 
@@ -104,6 +104,13 @@
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <it.jacoco.destFile>${java.io.tmpdir}/jacoco-it.dump</it.jacoco.destFile>
     <sonar.jacoco.itReportPath>${it.jacoco.destFile}</sonar.jacoco.itReportPath>
+
+    <!-- License Maven Plugin -->
+    <license.excludedGroups>org\.nuxeo.*</license.excludedGroups>
+    <!-- Not implemented: useRepositoryMissingFiles -->
+    <!-- Can't use common missingFile -->
+    <!-- <license.useMissingFile>true</license.useMissingFile> -->
+    <!-- <license.missingFile>src/main/license/THIRD-PARTY.properties</license.missingFile> -->
 
     <nuxeo.common.version>5.7-SNAPSHOT</nuxeo.common.version>
     <nuxeo.runtime.version>5.7-SNAPSHOT</nuxeo.runtime.version>
@@ -3300,14 +3307,14 @@
         <artifactId>google-http-client</artifactId>
         <version>${google.client.version}</version>
         <exclusions>
-         <exclusion>
-           <groupId>com.google.guava</groupId>
-           <artifactId>guava-jdk5</artifactId>
-         </exclusion>
-         <exclusion>
-           <groupId>xpp3</groupId>
-           <artifactId>xpp3</artifactId>
-         </exclusion>
+          <exclusion>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-jdk5</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -3320,10 +3327,10 @@
         <artifactId>google-oauth-client</artifactId>
         <version>${google.client.version}</version>
         <exclusions>
-         <exclusion>
-           <groupId>com.google.guava</groupId>
-           <artifactId>guava-jdk5</artifactId>
-         </exclusion>
+          <exclusion>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-jdk5</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -4399,6 +4406,69 @@
           <artifactId>maven-report</artifactId>
           <version>0.1</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>1.4</version>
+          <configuration>
+            <!-- <generateBundle>true</generateBundle> -->
+            <!-- <verbose>true</verbose> -->
+            <!-- Default template: https://fisheye.codehaus.org/browse/mojo/trunk/mojo/license-maven-plugin/src/main/resources/org/codehaus/mojo/license/third-party-file.ftl?hb=true -->
+            <!-- <fileTemplate>/tmp/template.ftl</fileTemplate> -->
+            <licenseMerges>
+              <licenseMerge>AL 1.0
+                |Apache License, Version 1.0|apache-1.0</licenseMerge>
+              <licenseMerge>AL 1.1
+                |Apache License, Version 1.1
+                |Apache Software License, version 1.1</licenseMerge>
+              <licenseMerge>AL 2.0
+                |Apache License, Version 2.0|Apache 2.0 License|Apache 2
+                |Apache License|Apache License V2.0|ASF 2.0
+                |Apache License Version 2.0|Apache Public License 2.0
+                |Apache Software License - Version 2.0
+                |Google Web Toolkit Terms
+                |The Apache Software License, Version 2.0</licenseMerge>
+              <licenseMerge>BSD 3
+                |BSD|BSD License
+                |The BSD License</licenseMerge>
+              <licenseMerge>CDDL 1.0
+                |CDDL license
+                |Common Development and Distribution License (CDDL) v1.0
+                |COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0</licenseMerge>
+              <licenseMerge>CPL 1.0
+                |Common Public License (CPL), Version 1.0
+                |Common Public License - v 1.0
+                |Common Public License Version 1.0</licenseMerge>
+              <licenseMerge>EPL 1.0
+                |Eclipse Public License 1.0|Eclipse Public License (EPL)
+                |Eclipse Public License - v 1.0</licenseMerge>
+              <licenseMerge>LGPL 2.1
+                |GNU Lesser General Public License v2.1
+                |GNU Lesser General Public License Version 2.1
+                |GNU Lesser General Public License, 2.1
+                |GNU Lesser GPL 2.1|LGPL, version 2.1</licenseMerge>
+              <licenseMerge>LGPL 3
+                |GNU Lesser General Public License (LGPL)|lgpl|LGPL
+                |GNU LESSER GENERAL PUBLIC LICENSE
+                |GNU Lesser General Public License
+                |GNU Lesser General Public License, Version 3
+                |GNU Lesser General Public License, Version 3 or later
+                |Gnu Lesser Public License</licenseMerge>
+              <licenseMerge>GPL 2
+                |GNU General Public License v2
+                |GNU General Public License Version 2
+                |The GNU General Public License, Version 2</licenseMerge>
+              <licenseMerge>MIT
+                |MIT License|The MIT License</licenseMerge>
+              <licenseMerge>MPL 1.1
+                |Mozilla Public License version 1.1</licenseMerge>
+              <licenseMerge>MPL 2.0
+                |Mozilla Public License</licenseMerge>
+              <licenseMerge>W3C
+                |The W3C Software License</licenseMerge>
+            </licenseMerges>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -4454,6 +4524,11 @@
         <groupId>org.codehaus.sonar-plugins</groupId>
         <artifactId>maven-report</artifactId>
         <version>0.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.4</version>
       </plugin>
     </plugins>
   </reporting>
@@ -4515,6 +4590,19 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-third-party</id>
+                <goals>
+                  <goal>add-third-party</goal>
+                  <goal>aggregate-add-third-party</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -4545,6 +4633,19 @@
                 <configuration>
                   <draftCompile>false</draftCompile>
                 </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-third-party</id>
+                <goals>
+                  <goal>add-third-party</goal>
+                  <goal>aggregate-add-third-party</goal>
+                </goals>
               </execution>
             </executions>
           </plugin>
