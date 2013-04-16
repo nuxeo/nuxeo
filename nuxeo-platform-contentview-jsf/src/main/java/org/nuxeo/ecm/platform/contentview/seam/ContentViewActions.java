@@ -33,9 +33,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
-import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 
 /**
  * Handles cache and refresh for named content views.
@@ -274,6 +271,20 @@ public class ContentViewActions implements Serializable {
 
     public void resetAll() {
         cache.resetAll();
+    }
+
+    /**
+     * @since 5.7
+     */
+    public void refreshAll() {
+        cache.refreshAll();
+    }
+
+    /**
+     * @since 5.7
+     */
+    public void refreshAndRewindAll() {
+        cache.refreshAndRewindAll();
     }
 
 }

@@ -265,4 +265,38 @@ public class ContentViewCache implements Serializable {
         resetEventToContentViewName.clear();
     }
 
+    /**
+     * Iterates over all cached content view instances to refresh them.
+     * <p>
+     * Can be costly if some page providers need to fetch content or perform
+     * costly operations at refresh.
+     *
+     * @since 5.7
+     */
+    public void refreshAll() {
+        refreshAll(false);
+    }
+
+    /**
+     * Iterates over all cached content view instances to refresh them.
+     * <p>
+     * Can be costly if some page providers need to fetch content or perform
+     * costly operations at refresh.
+     *
+     * @since 5.7
+     */
+    public void refreshAndRewindAll() {
+        refreshAll(true);
+    }
+
+    /**
+     * @since 5.7
+     */
+    protected void refreshAll(boolean rewind) {
+        Set<String> cvNames = namedContentViews.keySet();
+        for (String cvName : cvNames) {
+            refresh(cvName, rewind);
+        }
+    }
+
 }
