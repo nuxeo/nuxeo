@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.core.GenericPageProviderDescriptor;
+import org.nuxeo.ecm.platform.query.core.ReferencePageProviderDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -132,6 +133,16 @@ public class ContentViewRegistry extends
             oldDesc.translateTitle = translateTitle;
         }
 
+        String emptySentence = newDesc.getEmptySentence();
+        if (emptySentence != null) {
+            oldDesc.emptySentence = emptySentence;
+        }
+
+        Boolean translateEmptySentence = newDesc.getTranslateEmptySentence();
+        if (translateEmptySentence != null) {
+            oldDesc.translateEmptySentence = translateEmptySentence;
+        }
+
         String iconPath = newDesc.getIconPath();
         if (iconPath != null) {
             oldDesc.iconPath = iconPath;
@@ -155,15 +166,25 @@ public class ContentViewRegistry extends
         CoreQueryPageProviderDescriptor coreDesc = newDesc.getCoreQueryPageProvider();
         if (coreDesc != null && coreDesc.isEnabled()) {
             oldDesc.coreQueryPageProvider = coreDesc;
-            // make sure the generic page provider is reset
+            // make sure other page providers are reset
             oldDesc.genericPageProvider = null;
+            oldDesc.referencePageProvider = null;
         }
 
         GenericPageProviderDescriptor genDesc = newDesc.getGenericPageProvider();
         if (genDesc != null && genDesc.isEnabled()) {
             oldDesc.genericPageProvider = genDesc;
-            // make sure the core query page provider is reset
+            // make sure other page providers are reset
             oldDesc.coreQueryPageProvider = null;
+            oldDesc.referencePageProvider = null;
+        }
+
+        ReferencePageProviderDescriptor refDesc = newDesc.getReferencePageProvider();
+        if (refDesc != null && refDesc.isEnabled()) {
+            oldDesc.referencePageProvider = refDesc;
+            // make sure other page providers are reset
+            oldDesc.coreQueryPageProvider = null;
+            oldDesc.genericPageProvider = null;
         }
 
         String pagination = newDesc.getPagination();
@@ -216,6 +237,11 @@ public class ContentViewRegistry extends
             oldDesc.useGlobalPageSize = useGlobalPageSize;
         }
 
+        Boolean showTitle = newDesc.getShowTitle();
+        if (showTitle != null) {
+            oldDesc.showTitle = showTitle;
+        }
+
         Boolean showPageSizeSelector = newDesc.getShowPageSizeSelector();
         if (showPageSizeSelector != null) {
             oldDesc.showPageSizeSelector = showPageSizeSelector;
@@ -234,6 +260,11 @@ public class ContentViewRegistry extends
         String searchDocument = newDesc.getSearchDocumentBinding();
         if (searchDocument != null) {
             oldDesc.searchDocument = searchDocument;
+        }
+
+        String resultCols = newDesc.getResultColumnsBinding();
+        if (resultCols != null) {
+            oldDesc.resultColumns = resultCols;
         }
     }
 

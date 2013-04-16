@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -91,6 +93,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("search_layout", contentView.getSearchLayout().getName());
         assertNull(contentView.getSearchLayout().getTitle());
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
+        assertNull(contentView.getEmptySentence());
+        assertFalse(contentView.getTranslateEmptySentence());
+        assertFalse(contentView.getShowTitle());
         assertNull(contentView.getSearchLayout().getIconPath());
         assertFalse(contentView.getSearchLayout().getShowCSVExport());
         assertEquals("quick",
@@ -144,6 +149,10 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("current document children overriden",
                 contentView.getTitle());
         assertFalse(contentView.getTranslateTitle());
+        assertEquals("label.my.empty.cv.sentence",
+                contentView.getEmptySentence());
+        assertTrue(contentView.getTranslateEmptySentence());
+        assertTrue(contentView.getShowTitle());
         assertEquals("/icons/document_listing_icon.png",
                 contentView.getIconPath());
         assertEquals("CURRENT_SELECTION_LIST_2",
@@ -209,7 +218,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewNames() throws Exception {
         Set<String> names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(8, names.size());
+        assertEquals(9, names.size());
         List<String> orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -228,7 +237,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
 
         names = service.getContentViewNames();
         assertNotNull(names);
-        assertEquals(7, names.size());
+        assertEquals(8, names.size());
         orderedNames = new ArrayList<String>();
         orderedNames.addAll(names);
         Collections.sort(orderedNames);
@@ -245,7 +254,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testGetContentViewHeaders() throws Exception {
         Set<ContentViewHeader> headers = service.getContentViewHeaders();
         assertNotNull(headers);
-        assertEquals(8, headers.size());
+        assertEquals(9, headers.size());
         List<ContentViewHeader> sortedHeaders = new ArrayList<ContentViewHeader>();
         sortedHeaders.addAll(headers);
         Collections.sort(sortedHeaders);
@@ -354,10 +363,24 @@ public class TestContentViewService extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testUnknownRefPP() throws Exception {
+        ContentView cv = service.getContentView("UNKNOWN_REF_PP");
+        try {
+            PageProvider<?> pp = cv.getPageProvider(null, null, -1L, -1L, null);
+            Assert.fail("Should have triggered an exception");
+        } catch (Exception e) {
+            assertTrue(e instanceof ClientException);
+            assertEquals("Could not resolve page provider with name 'foo'",
+                    e.getMessage());
+        }
+    }
+
+    @Test
     public void testOverrideWithGenericPP() throws Exception {
         ContentView cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
         PageProvider<?> pp = cv.getPageProvider(null, null, -1L, -1L, null);
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
+        assertEquals("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC", pp.getName());
 
         // check after override too
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
@@ -366,6 +389,24 @@ public class TestContentViewService extends NXRuntimeTestCase {
         cv = service.getContentView("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC");
         pp = cv.getPageProvider(null, null, -1L, -1L, null);
         assertTrue(pp instanceof CoreQueryAndFetchPageProvider);
+        assertEquals("OVERRIDE_PAGE_PROVIDER_WITH_GENERIC", pp.getName());
+    }
+
+    @Test
+    public void testOverrideWithRefPP() throws Exception {
+        ContentView cv = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
+        PageProvider<?> pp = cv.getPageProvider(null, null, -1L, -1L, null);
+        assertTrue(pp instanceof CoreQueryDocumentPageProvider);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_PP", pp.getName());
+
+        // check after override too
+        deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
+                "test-contentview-override-contrib.xml");
+
+        cv = service.getContentView("CURRENT_DOCUMENT_CHILDREN_REF");
+        pp = cv.getPageProvider(null, null, -1L, -1L, null);
+        assertTrue(pp instanceof CoreQueryDocumentPageProvider);
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_PP_2", pp.getName());
     }
 
     @Test

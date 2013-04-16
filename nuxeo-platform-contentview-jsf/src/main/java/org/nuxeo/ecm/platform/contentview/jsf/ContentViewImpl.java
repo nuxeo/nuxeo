@@ -301,6 +301,8 @@ public class ContentViewImpl implements ContentView,
                 }
                 pageProvider = service.getPageProvider(getName(), sortInfos,
                         pageSize, currentPage, finalSearchDocument, params);
+            } catch (ClientException e) {
+                throw e;
             } catch (Exception e) {
                 throw new ClientException(e);
             }
