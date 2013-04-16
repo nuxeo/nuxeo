@@ -18,7 +18,6 @@ package org.nuxeo.drive.operations;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
-import org.nuxeo.ecm.automation.InvalidOperationException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -52,12 +51,8 @@ public class NuxeoDriveRename {
     public Blob run() throws Exception {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FileSystemItem fsItem;
-        try {
-            fsItem = fileSystemItemManager.rename(id, name, ctx.getPrincipal());
-        } catch (UnsupportedOperationException e) {
-            throw new InvalidOperationException(e);
-        }
+        FileSystemItem fsItem = fileSystemItemManager.rename(id, name,
+                ctx.getPrincipal());
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed
