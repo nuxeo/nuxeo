@@ -107,6 +107,7 @@
 
     <!-- License Maven Plugin -->
     <license.excludedGroups>org\.nuxeo.*</license.excludedGroups>
+    <license.acceptPomPackaging>true</license.acceptPomPackaging>
     <!-- Not implemented: useRepositoryMissingFiles -->
     <!-- Can't use common missingFile -->
     <!-- <license.useMissingFile>true</license.useMissingFile> -->
@@ -4597,19 +4598,21 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>aggregate-add-third-party</id>
-                <goals>
-                  <goal>aggregate-add-third-party</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+          <!-- http://jira.codehaus.org/browse/MLICENSE-76 prevents automated run -->
+          <!-- <plugin> -->
+          <!-- <groupId>org.codehaus.mojo</groupId> -->
+          <!-- <artifactId>license-maven-plugin</artifactId> -->
+          <!-- <inherited>false</inherited> -->
+          <!-- <executions> -->
+          <!-- <execution> -->
+          <!-- <id>aggregate-add-third-party</id> -->
+          <!-- <goals> -->
+          <!-- <goal>aggregate-add-third-party</goal> -->
+          <!-- </goals> -->
+          <!-- <phase>verify</phase> -->
+          <!-- </execution> -->
+          <!-- </executions> -->
+          <!-- </plugin> -->
         </plugins>
       </build>
     </profile>
@@ -4643,19 +4646,21 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>aggregate-add-third-party</id>
-                <goals>
-                  <goal>aggregate-add-third-party</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+          <!-- http://jira.codehaus.org/browse/MLICENSE-76 prevents automated run -->
+          <!-- <plugin> -->
+          <!-- <groupId>org.codehaus.mojo</groupId> -->
+          <!-- <artifactId>license-maven-plugin</artifactId> -->
+          <!-- <inherited>false</inherited> -->
+          <!-- <executions> -->
+          <!-- <execution> -->
+          <!-- <id>aggregate-add-third-party</id> -->
+          <!-- <goals> -->
+          <!-- <goal>aggregate-add-third-party</goal> -->
+          <!-- </goals> -->
+          <!-- <phase>verify</phase> -->
+          <!-- </execution> -->
+          <!-- </executions> -->
+          <!-- </plugin> -->
         </plugins>
       </build>
       <repositories>
