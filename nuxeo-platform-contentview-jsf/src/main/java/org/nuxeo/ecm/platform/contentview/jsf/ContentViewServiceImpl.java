@@ -104,21 +104,21 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         ReferencePageProviderDescriptor refDesc = desc.getReferencePageProvider();
         String[] refQueryParams = null;
         if (refDesc != null && refDesc.isEnabled()) {
-            try {
-                PageProviderService ppService = Framework.getService(PageProviderService.class);
-                PageProviderDefinition def = ppService.getPageProviderDefinition(refDesc.getName());
-                if (def == null) {
-                    log.error("Could not resolve page provider with name "
-                            + refDesc.getName());
-                } else if (def instanceof CoreQueryPageProviderDescriptor) {
-                    coreDesc = (CoreQueryPageProviderDescriptor) def;
-                    refQueryParams = refDesc.getQueryParameters();
-                } else if (def instanceof GenericPageProviderDescriptor) {
-                    genDesc = (GenericPageProviderDescriptor) def;
-                    refQueryParams = refDesc.getQueryParameters();
-                }
-            } catch (Exception e) {
-                throw new ClientException(e);
+            PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+            if (ppService == null) {
+                throw new ClientException(
+                        "Page provider service cannot be resolved");
+            }
+            PageProviderDefinition def = ppService.getPageProviderDefinition(refDesc.getName());
+            if (def == null) {
+                log.error("Could not resolve page provider with name "
+                        + refDesc.getName());
+            } else if (def instanceof CoreQueryPageProviderDescriptor) {
+                coreDesc = (CoreQueryPageProviderDescriptor) def;
+                refQueryParams = refDesc.getQueryParameters();
+            } else if (def instanceof GenericPageProviderDescriptor) {
+                genDesc = (GenericPageProviderDescriptor) def;
+                refQueryParams = refDesc.getQueryParameters();
             }
         }
         WhereClauseDefinition whereClause = null;
@@ -219,12 +219,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements
         if (contentViewDesc == null) {
             return null;
         }
-        PageProviderService ppService = null;
-        try {
-            ppService = Framework.getService(PageProviderService.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
         if (ppService == null) {
             throw new ClientException("Page provider service is null");
         }
@@ -265,17 +260,12 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
     public Map<String, Serializable> resolvePageProviderProperties(
             Map<String, String> stringProps) throws ClientException {
-        try {
-            // resolve properties
-            Map<String, Serializable> resolvedProps = new HashMap<String, Serializable>();
-            for (Map.Entry<String, String> prop : stringProps.entrySet()) {
-                resolvedProps.put(prop.getKey(),
-                        resolveProperty(prop.getValue()));
-            }
-            return resolvedProps;
-        } catch (Exception e) {
-            throw new ClientException(e);
+        // resolve properties
+        Map<String, Serializable> resolvedProps = new HashMap<String, Serializable>();
+        for (Map.Entry<String, String> prop : stringProps.entrySet()) {
+            resolvedProps.put(prop.getKey(), resolveProperty(prop.getValue()));
         }
+        return resolvedProps;
     }
 
     protected Serializable resolveProperty(String elExpression) {

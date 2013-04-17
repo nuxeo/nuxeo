@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderChangedListener;
@@ -294,7 +295,7 @@ public class ContentViewImpl implements ContentView,
         if (pageProvider == null || pageProvider.hasChangedParameters(params)) {
             try {
                 // make the service build the provider
-                ContentViewService service = Framework.getService(ContentViewService.class);
+                ContentViewService service = Framework.getLocalService(ContentViewService.class);
                 if (service == null) {
                     throw new ClientException(
                             "Could not resolve ContentViewService");
@@ -303,8 +304,6 @@ public class ContentViewImpl implements ContentView,
                         pageSize, currentPage, finalSearchDocument, params);
             } catch (ClientException e) {
                 throw e;
-            } catch (Exception e) {
-                throw new ClientException(e);
             }
         } else {
             if (pageSize != null) {
@@ -523,7 +522,7 @@ public class ContentViewImpl implements ContentView,
                     if (listItem instanceof MapProperty) {
                         try {
                             listItem = ((MapProperty) listItem).getValue();
-                        } catch (Exception e) {
+                        } catch (ClassCastException | PropertyException e) {
                             log.error("Cannot resolve sort info item: "
                                     + listItem, e);
                         }

@@ -56,13 +56,7 @@ public class ContentViewBusinessDelegate implements Serializable {
     @Unwrap
     public ContentViewService getService() throws ClientException {
         if (contentViewService == null) {
-            try {
-                contentViewService = Framework.getService(ContentViewService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to ContentViewService. "
-                        + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
+            contentViewService = Framework.getLocalService(ContentViewService.class);
             if (contentViewService == null) {
                 throw new ClientException(
                         "ContentViewService service not bound");
