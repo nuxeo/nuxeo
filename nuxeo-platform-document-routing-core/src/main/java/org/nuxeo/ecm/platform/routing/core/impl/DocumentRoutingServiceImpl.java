@@ -746,7 +746,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         @SuppressWarnings({ "unchecked", "boxing" })
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null,
-                0L, props, String.format("%s%%", searchString));
+                0L, props, null, String.format("%s%%", searchString));
         return pageProvider.getCurrentPage();
     }
 

@@ -74,7 +74,7 @@ public class DocumentRoutingSuggestionActionsBean extends
         @SuppressWarnings("unchecked")
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC, null, null, 0L, props,
-                String.format("%s%%", input));
+                null, String.format("%s%%", input));
         return pageProvider.getCurrentPage();
     }
 
