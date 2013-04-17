@@ -163,7 +163,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put("myprop", "foo");
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pps.getPageProvider(
-                CURRENT_DOCUMENT_CHILDREN, null, null, null, props);
+                CURRENT_DOCUMENT_CHILDREN, null, null, null, props, null);
         assertTrue(pp.getProperties().containsKey("myprop"));
         assertTrue(pp.getProperties().containsKey("dummy"));
     }

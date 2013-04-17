@@ -144,15 +144,6 @@ public class PageProviderServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public PageProvider<?> getPageProvider(String name,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException {
-        return getPageProvider(name, sortInfos, pageSize, currentPage,
-                properties, null, parameters);
-    }
-
-    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {

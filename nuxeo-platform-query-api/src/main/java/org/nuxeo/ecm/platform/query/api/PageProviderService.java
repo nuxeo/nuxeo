@@ -99,16 +99,4 @@ public interface PageProviderService extends Serializable {
             Map<String, Serializable> properties, DocumentModel searchDocument,
             Object... parameters) throws ClientException;
 
-    /**
-     * Returns an instance of page provider with given name.
-     *
-     * @see #getPageProvider(String, PageProviderDefinition, List, Long, Long,
-     *      Map, DocumentModel, Object...)
-     * @throws ClientException if the page provider instantiation fails.
-     */
-    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException;
-
 }
