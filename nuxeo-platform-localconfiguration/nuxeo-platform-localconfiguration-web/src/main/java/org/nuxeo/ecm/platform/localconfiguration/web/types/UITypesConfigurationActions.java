@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.types.Type;
@@ -158,9 +159,11 @@ public class UITypesConfigurationActions implements Serializable {
 
         DocumentModel parent = documentManager.getRootDocument();
 
-        DocumentRef ref = currentDoc.getRef();
-        if (ref != null) {
-            parent = documentManager.getParentDocument(ref);
+        DocumentRef parentRef = currentDoc.getParentRef();
+        if (parentRef != null
+                && documentManager.hasPermission(parentRef,
+                        SecurityConstants.READ)) {
+            parent = documentManager.getDocument(parentRef);
         }
 
         for (Type type : typeManager.findAllAllowedSubTypesFrom(
