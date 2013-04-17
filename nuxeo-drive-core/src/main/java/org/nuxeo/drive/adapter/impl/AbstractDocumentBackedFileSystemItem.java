@@ -82,6 +82,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         } else {
             FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
                     parentDoc, true);
+            // TODO: handle NPE on parent
             parentId = parent.getId();
             path = parent.getPath() + '/' + id;
         }
