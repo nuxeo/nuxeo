@@ -98,6 +98,7 @@
                   <arg value="fetch-binaries" />
                   <arg value="--msi-url=${msi.url}" />
                   <arg value="--dmg-url=${dmg.url}" />
+                  <arg value="--base-folder=." />
                 </exec>
               </tasks>
             </configuration>
