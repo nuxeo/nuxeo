@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -443,11 +444,18 @@ public class DamSearchActions implements Serializable {
         String currentContentViewName = getCurrentContentViewName();
         if (currentContentViewName != null
                 && currentContentViewName.equals(contentViewName)) {
-            String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-            // FIXME find a better way to update the current document only if we
-            // are on DAM
-            if ("/dam/assets.xhtml".equals(viewId)) {
-                updateCurrentDocument();
+            if (FacesContext.getCurrentInstance() == null) {
+                return;
+            }
+
+            UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
+            if (viewRoot != null) {
+                String viewId = viewRoot.getViewId();
+                // FIXME find a better way to update the current document only if we
+                // are on DAM
+                if ("/dam/assets.xhtml".equals(viewId)) {
+                    updateCurrentDocument();
+                }
             }
         }
     }
