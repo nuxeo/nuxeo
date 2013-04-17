@@ -257,7 +257,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                     }
                     PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
                             pageProviderName, sortInfos, null, null, props,
-                            new Object[] { getId() });
+                            null, new Object[] { getId() });
                     documents = pp.getCurrentPage();
                     documents = filterAndSort(documents, !isOrderable);
                 } catch (Exception e) {
