@@ -81,7 +81,7 @@ public class DocumentLookupSuggester implements Suggester {
             List<Suggestion> suggestions = new ArrayList<Suggestion>();
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
                     providerName, null, null, null, props,
-                    new Object[] { userInput });
+                    null, new Object[] { userInput });
             for (DocumentModel doc : pp.getCurrentPage()) {
                 suggestions.add(DocumentSuggestion.fromDocumentModel(doc));
             }
