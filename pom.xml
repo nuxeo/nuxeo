@@ -107,7 +107,8 @@
 
     <!-- License Maven Plugin -->
     <license.excludedGroups>org\.nuxeo.*</license.excludedGroups>
-    <license.acceptPomPackaging>true</license.acceptPomPackaging>
+    <!-- Can't parse POMs because of http://jira.codehaus.org/browse/MLICENSE-77 -->
+    <!-- <license.acceptPomPackaging>true</license.acceptPomPackaging> -->
     <!-- Not implemented: useRepositoryMissingFiles -->
     <!-- Can't use common missingFile -->
     <!-- <license.useMissingFile>true</license.useMissingFile> -->
