@@ -44,8 +44,12 @@ public class TestWordGen {
         long t3 = System.currentTimeMillis();
 
         System.out.println("generated files in " + ((t3 - t2) / 1000) + "s");
-        float rate = nbFiles / ((t3 - t2) / 1000);
-        System.out.println(rate + " files/s");
+        if (t3 - t2 > 0) {
+            float rate = nbFiles * 1000 / (t3 - t2);
+            System.out.println(rate + " files/s");
+        } else {
+            System.out.println("0ms to generate => \u221e rate");
+        }
     }
 
     @Test
