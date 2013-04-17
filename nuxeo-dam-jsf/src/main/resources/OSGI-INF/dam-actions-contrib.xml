@@ -12,7 +12,7 @@
 
     <!-- Search actions -->
 
-    <action id="saveSearchAction" link="#{damSearchActions.saveSearch()}"
+    <action id="damSaveSearchAction" link="#{damSearchActions.saveSearch()}"
       label="command.save" order="10">
       <properties>
         <property name="ajaxSupport">true</property>

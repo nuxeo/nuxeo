@@ -140,7 +140,7 @@
             <property name="required">true</property>
             <property name="placeholder">#{messages['label.dam.search.save.placeholder']}</property>
             <property name="description">label.dam.search.save.description</property>
-            <property name="actionId">saveSearchAction</property>
+            <property name="actionId">damSaveSearchAction</property>
           </properties>
         </widget>
       </subWidgets>
