@@ -48,7 +48,7 @@ public class DocumentHistoryReaderImpl implements DocumentHistoryReader {
         PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(
                 "DOCUMENT_HISTORY_PROVIDER", null, Long.valueOf(pageSize),
                 Long.valueOf(pageIndex), new HashMap<String, Serializable>(),
-                doc);
+                null, doc);
         return pp;
     }
 

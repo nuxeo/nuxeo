@@ -176,7 +176,7 @@ public class ResultSetPageProviderOperation {
         } else {
             pp = (PageProvider<Map<String, Serializable>>) pps.getPageProvider(
                     providerName, sortInfos, targetPageSize, targetPage, props,
-                    parameters);
+                    null, parameters);
         }
         return new PaginableRecordSetImpl(pp);
 

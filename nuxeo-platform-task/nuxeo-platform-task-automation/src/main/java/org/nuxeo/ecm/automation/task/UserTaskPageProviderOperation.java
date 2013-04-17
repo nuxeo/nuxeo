@@ -86,7 +86,7 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
         }
         PageProvider<DashBoardItem> pageProvider = (PageProvider<DashBoardItem>) pps.getPageProvider(
                 USER_TASKS_PAGE_PROVIDER, null, targetPageSize, targetPage,
-                props);
+                props, null);
 
         Locale locale = language != null && !language.isEmpty() ? new Locale(
                 language) : Locale.ENGLISH;
