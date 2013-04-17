@@ -4529,6 +4529,13 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>1.4</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>third-party-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
     </plugins>
   </reporting>
@@ -4593,11 +4600,11 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>license-maven-plugin</artifactId>
+            <inherited>false</inherited>
             <executions>
               <execution>
-                <id>add-third-party</id>
+                <id>aggregate-add-third-party</id>
                 <goals>
-                  <goal>add-third-party</goal>
                   <goal>aggregate-add-third-party</goal>
                 </goals>
               </execution>
@@ -4639,11 +4646,11 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>license-maven-plugin</artifactId>
+            <inherited>false</inherited>
             <executions>
               <execution>
-                <id>add-third-party</id>
+                <id>aggregate-add-third-party</id>
                 <goals>
-                  <goal>add-third-party</goal>
                   <goal>aggregate-add-third-party</goal>
                 </goals>
               </execution>
