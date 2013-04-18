@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Operation to execute a query or a named provider with support for Pagination
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.7
  */
@@ -171,7 +171,8 @@ public class ResultSetPageProviderOperation {
                 desc.getProperties().put("maxResults", maxResults);
             }
             pp = (CoreQueryAndFetchPageProvider) pps.getPageProvider("", desc,
-                    sortInfos, targetPageSize, targetPage, props, parameters);
+                    sortInfos, targetPageSize, targetPage, props, null,
+                    parameters);
 
         } else {
             pp = (PageProvider<Map<String, Serializable>>) pps.getPageProvider(

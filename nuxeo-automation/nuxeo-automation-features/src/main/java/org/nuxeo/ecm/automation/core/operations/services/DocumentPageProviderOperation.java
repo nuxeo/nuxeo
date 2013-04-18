@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Operation to execute a query or a named provider with support for Pagination
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
@@ -158,13 +158,14 @@ public class DocumentPageProviderOperation {
             }
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
-                            sortInfos, targetPageSize, targetPage, props,
+                            sortInfos, targetPageSize, targetPage, props, null,
                             parameters), documentLinkBuilder);
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
                             providerName, sortInfos, targetPageSize,
-                            targetPage, props, null, parameters), documentLinkBuilder);
+                            targetPage, props, null, parameters),
+                    documentLinkBuilder);
         }
 
     }
