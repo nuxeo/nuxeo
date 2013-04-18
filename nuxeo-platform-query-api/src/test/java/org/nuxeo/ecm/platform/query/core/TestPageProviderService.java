@@ -146,7 +146,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (AbstractSession) session);
         PageProvider<?> pp = pps.getPageProvider(CURRENT_DOCUMENT_CHILDREN,
-                ppd, null, Long.valueOf(1), Long.valueOf(0), props);
+                ppd, null, Long.valueOf(1), Long.valueOf(0), props, null);
 
         assertNotNull(pp);
 

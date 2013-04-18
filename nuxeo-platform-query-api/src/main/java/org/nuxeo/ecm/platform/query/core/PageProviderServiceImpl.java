@@ -121,16 +121,6 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     @Override
     public PageProvider<?> getPageProvider(String name,
-            PageProviderDefinition desc, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters)
-            throws ClientException {
-        return getPageProvider(name, desc, sortInfos, pageSize, currentPage,
-                properties, null, parameters);
-    }
-
-    @Override
-    public PageProvider<?> getPageProvider(String name,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage,
             Map<String, Serializable> properties, DocumentModel searchDocument,
             Object... parameters) throws ClientException {
