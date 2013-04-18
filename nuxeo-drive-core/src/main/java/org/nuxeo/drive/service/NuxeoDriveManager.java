@@ -142,4 +142,14 @@ public interface NuxeoDriveManager {
      */
     public void setChangeFinder(FileSystemChangeFinder changeFinder);
 
+
+    /**
+     * Invalidate the synchronization roots cache for a given user so as to
+     * query the repository next time {@code getSynchronizationRoots} is called.
+     *
+     * @param userName the principal name of the user to invalidate the cache
+     *            for.
+     */
+    void invalidateSynchronizationRootsCache(String userName);
+
 }

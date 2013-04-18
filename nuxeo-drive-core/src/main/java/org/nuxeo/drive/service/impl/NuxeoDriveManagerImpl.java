@@ -31,6 +31,8 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
@@ -63,6 +65,8 @@ import com.google.common.collect.MapMaker;
 public class NuxeoDriveManagerImpl extends DefaultComponent implements
         NuxeoDriveManager {
 
+    private static final Log log = LogFactory.getLog(NuxeoDriveManagerImpl.class);
+
     public static final String NUXEO_DRIVE_FACET = "DriveSynchronized";
 
     public static final String DRIVE_SUBSCRIPTIONS_PROPERTY = "drv:subscriptions";
@@ -73,13 +77,25 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * Cache holding the synchronization roots for a given user (first map key)
      * and repository (second map key).
      */
-    // TODO: upgrade to latest version of google collections to be able to limit
-    // the size with a LRU policy
-    ConcurrentMap<String, Map<String, SynchronizationRoots>> cache = new MapMaker().concurrencyLevel(
-            4).softKeys().softValues().expiration(10, TimeUnit.MINUTES).makeMap();
+    ConcurrentMap<String, Map<String, SynchronizationRoots>> cache;
 
     // TODO: make this overridable with an extension point
     protected FileSystemChangeFinder changeFinder = new AuditChangeFinder();
+
+    public NuxeoDriveManagerImpl() {
+        cache = new MapMaker().concurrencyLevel(4).softKeys().softValues().expiration(
+                10, TimeUnit.MINUTES).makeMap();
+    }
+
+    protected void clearCache() {
+        log.debug("Invalidating synchronization root cache for all users");
+        cache.clear();
+    }
+
+    public void invalidateSynchronizationRootsCache(String userName) {
+        log.debug("Invalidating synchronization root cache for user: " + userName);
+        cache.remove(userName.intern());
+    }
 
     @Override
     public void registerSynchronizationRoot(Principal principal,
@@ -138,7 +154,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         newRootContainer = session.saveDocument(newRootContainer);
         session.save();
-        cache.clear();
+        invalidateSynchronizationRootsCache(userName);
         fireEvent(newRootContainer, session, NuxeoDriveEvents.ROOT_REGISTERED,
                 userName);
     }
@@ -167,7 +183,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         session.saveDocument(rootContainer);
         session.save();
-        cache.clear();
+        invalidateSynchronizationRootsCache(userName);
         fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED,
                 userName);
     }
