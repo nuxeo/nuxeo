@@ -91,7 +91,7 @@ public class DocumentBackedFolderItem extends
         props.put(CORE_SESSION_PROPERTY, (Serializable) getSession());
         PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props,
-                docId);
+                null, docId);
         List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>(
