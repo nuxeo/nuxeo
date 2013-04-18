@@ -78,7 +78,7 @@ public class DataFetch {
                 (Serializable) session);
 
         PageProvider<?> provider = pps.getPageProvider("", desc, sortInfos,
-                targetPageSize, targetPage, props, parameters);
+                targetPageSize, targetPage, props, null, parameters);
         // TODO: edit pps implementation to really set parameters!
         provider.setPageSize(pageSize);
         provider.setMaxPageSize(pageSize);
@@ -91,9 +91,10 @@ public class DataFetch {
     public String getChildrenDocQuery(DocumentModel doc, boolean ordered) {
         String parentPath = doc.getPathAsString();
 
-        String request = "SELECT * FROM Document WHERE "
-                + "ecm:path STARTSWITH '" + parentPath + "'" + " AND ecm:mixinType = 'Folderish' AND "
-                + baseRequest();
+        String request = String.format(
+                "SELECT * FROM Document WHERE ecm:path STARTSWITH '%s' AND "
+                        + "ecm:mixinType = 'Folderish' AND %s", parentPath,
+                baseRequest());
         if (ordered)
             return request + " ORDER BY ecm:path";
         else
