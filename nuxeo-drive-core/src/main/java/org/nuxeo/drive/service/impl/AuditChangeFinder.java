@@ -16,11 +16,11 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +55,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     private static final Log log = LogFactory.getLog(AuditChangeFinder.class);
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
             Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots,
             long lastSuccessfulSyncDate, long syncDate, int limit)
@@ -67,10 +68,16 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // roots
         if (!activeRoots.paths.isEmpty() || !lastActiveRootRefs.isEmpty()) {
             AuditReader auditService = Framework.getLocalService(AuditReader.class);
-            StringBuilder auditQuerySb = new StringBuilder();
-            auditQuerySb.append("log.repositoryId = '");
-            auditQuerySb.append(session.getRepositoryName());
-            auditQuerySb.append("' and ");
+
+            // Set fixed query parameters
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("repositoryId", session.getRepositoryName());
+
+            // Build query and set dynamic parameters
+            StringBuilder auditQuerySb = new StringBuilder(
+                    "from LogEntry log where ");
+            auditQuerySb.append("log.repositoryId = :repositoryId");
+            auditQuerySb.append(" and ");
             auditQuerySb.append("(");
             if (!activeRoots.paths.isEmpty()) {
                 // detect changes under the currently active roots for the
@@ -86,7 +93,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 auditQuerySb.append(NuxeoDriveEvents.EVENT_CATEGORY);
                 auditQuerySb.append("'");
                 auditQuerySb.append(") and (");
-                auditQuerySb.append(getCurrentRootFilteringClause(activeRoots.paths));
+                auditQuerySb.append(getCurrentRootFilteringClause(
+                        activeRoots.paths, params));
                 auditQuerySb.append(")");
             }
             if (!activeRoots.paths.isEmpty() && !lastActiveRootRefs.isEmpty()) {
@@ -98,17 +106,19 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 auditQuerySb.append("log.category = '");
                 auditQuerySb.append(NuxeoDriveEvents.EVENT_CATEGORY);
                 auditQuerySb.append("' and ");
-                auditQuerySb.append(getLastRootFilteringClause(lastActiveRootRefs));
+                auditQuerySb.append(getLastRootFilteringClause(
+                        lastActiveRootRefs, params));
             }
             auditQuerySb.append(") and (");
             auditQuerySb.append(getJPADateClause(lastSuccessfulSyncDate,
-                    syncDate));
+                    syncDate, params));
             auditQuerySb.append(") order by log.repositoryId asc, log.eventDate desc");
-
             String auditQuery = auditQuerySb.toString();
-            log.debug("Querying audit logs for document changes: " + auditQuery);
-            List<LogEntry> entries = auditService.nativeQueryLogs(auditQuery,
-                    1, limit);
+
+            log.debug("Querying audit logs for document changes: " + auditQuery
+                    + " with params: " + params);
+            List<LogEntry> entries = (List<LogEntry>) auditService.nativeQuery(
+                    auditQuery, params, 1, limit);
             if (entries.size() >= limit) {
                 throw new TooManyChangesException(
                         "Too many changes found in the audit logs.");
@@ -164,39 +174,48 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return changes;
     }
 
-    protected String getCurrentRootFilteringClause(Set<String> rootPaths) {
+    protected String getCurrentRootFilteringClause(Set<String> rootPaths,
+            Map<String, Object> params) {
         StringBuilder rootPathClause = new StringBuilder();
+        int rootPathCount = 0;
         for (String rootPath : rootPaths) {
+            rootPathCount++;
+            String rootPathParam = "rootPath" + rootPathCount;
             if (rootPathClause.length() > 0) {
                 rootPathClause.append(" or ");
             }
-            rootPathClause.append(String.format("log.docPath like '%s%%'",
-                    rootPath));
+            rootPathClause.append(String.format("log.docPath like :%s",
+                    rootPathParam));
+            params.put(rootPathParam, rootPath + '%');
+
         }
         return rootPathClause.toString();
     }
 
-    protected String getLastRootFilteringClause(Set<IdRef> lastActiveRootRefs) {
+    protected String getLastRootFilteringClause(Set<IdRef> lastActiveRootRefs,
+            Map<String, Object> params) {
         StringBuilder rootPathClause = new StringBuilder();
         if (!lastActiveRootRefs.isEmpty()) {
-            List<String> ids = new ArrayList<String>();
+            List<String> idParams = new ArrayList<String>();
+            int rootIdCount = 0;
             for (IdRef ref : lastActiveRootRefs) {
-                ids.add(ref.toString());
+                rootIdCount++;
+                String idParam = "rootId" + rootIdCount;
+                idParams.add(':' + idParam);
+                params.put(idParam, ref.toString());
             }
-            rootPathClause.append("log.docUUID in ('");
-            rootPathClause.append(StringUtils.join(ids, "', '"));
-            rootPathClause.append("')");
+            rootPathClause.append("log.docUUID in (");
+            rootPathClause.append(StringUtils.join(idParams, ", "));
+            rootPathClause.append(")");
         }
         return rootPathClause.toString();
     }
 
-    // Round dates to the lower second to ensure consistency
-    // in the case of databases that don't support milliseconds
-    protected String getJPADateClause(long lastSuccessfulSyncDate, long syncDate) {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return String.format("log.eventDate >= '%s' and log.eventDate < '%s'",
-                sdf.format(new Date(lastSuccessfulSyncDate)),
-                sdf.format(new Date(syncDate)));
+    protected String getJPADateClause(long lastSuccessfulSyncDate,
+            long syncDate, Map<String, Object> params) {
+        params.put("lastSuccessfulSyncDate", new Date(lastSuccessfulSyncDate));
+        params.put("syncDate", new Date(syncDate));
+        return "log.eventDate >= :lastSuccessfulSyncDate and log.eventDate < :syncDate";
     }
 
     /**
