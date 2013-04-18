@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
@@ -63,6 +65,8 @@ import com.google.common.cache.CacheBuilder;
 public class NuxeoDriveManagerImpl extends DefaultComponent implements
         NuxeoDriveManager {
 
+    private static final Log log = LogFactory.getLog(NuxeoDriveManagerImpl.class);
+
     public static final String NUXEO_DRIVE_FACET = "DriveSynchronized";
 
     public static final String DRIVE_SUBSCRIPTIONS_PROPERTY = "drv:subscriptions";
@@ -79,12 +83,18 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     protected FileSystemChangeFinder changeFinder = new AuditChangeFinder();
 
     public NuxeoDriveManagerImpl() {
-        clearCache();
+        cache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(
+                1, TimeUnit.MINUTES).build();
     }
 
     protected void clearCache() {
-        cache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(
-                10, TimeUnit.MINUTES).build();
+        log.debug("Invalidating synchronization root cache for all users");
+        cache.invalidateAll();
+    }
+
+    public void invalidateSynchronizationRootsCache(String userName) {
+        log.debug("Invalidating synchronization root cache for user: " + userName);
+        cache.invalidate(userName);
     }
 
     @Override
@@ -144,7 +154,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         newRootContainer = session.saveDocument(newRootContainer);
         session.save();
-        clearCache();
+        invalidateSynchronizationRootsCache(userName);
         fireEvent(newRootContainer, session, NuxeoDriveEvents.ROOT_REGISTERED,
                 userName);
     }
@@ -173,7 +183,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         session.saveDocument(rootContainer);
         session.save();
-        clearCache();
+        invalidateSynchronizationRootsCache(userName);
         fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED,
                 userName);
     }
