@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.datasource.tests">
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/foo" xaDataSource="org.postgresql.xa.PGXADataSource"
+      maxActive="20" maxIdle="1">
+      <property name="serverName">localhost</property>
+      <property name="databaseName">nuxeojunittests</property>
+      <property name="username">nuxeo</property>
+      <property name="password">nuxeo</property>
+    </datasource>
+  </extension>
+</component>

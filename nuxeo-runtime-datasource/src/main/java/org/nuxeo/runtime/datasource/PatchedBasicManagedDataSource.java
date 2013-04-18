@@ -16,17 +16,24 @@
  */
 package org.nuxeo.runtime.datasource;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
+
+import javax.sql.XADataSource;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.dbcp.AbandonedConfig;
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.managed.BasicManagedDataSource;
+import org.apache.commons.dbcp.managed.LocalXAConnectionFactory;
+import org.apache.commons.dbcp.managed.TransactionRegistry;
 import org.apache.commons.dbcp.managed.XAConnectionFactory;
 import org.apache.commons.pool.KeyedObjectPoolFactory;
 
 /**
  * Patched to use PatchedPoolableManagedConnectionFactory
+ * and PatchedDataSourceXAConnectionFactory.
  */
 public class PatchedBasicManagedDataSource extends BasicManagedDataSource {
 
@@ -38,6 +45,66 @@ public class PatchedBasicManagedDataSource extends BasicManagedDataSource {
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected ConnectionFactory createConnectionFactory() throws SQLException {
+        // locally fetch private fields through getters
+        TransactionManager transactionManager = getTransactionManager();
+        String xaDataSource = getXADataSource();
+        XADataSource xaDataSourceInstance = getXaDataSourceInstance();
+
+        if (transactionManager == null) {
+            throw new SQLException("Transaction manager must be set before a connection can be created");
+        }
+
+        // If xa data source is not specified a DriverConnectionFactory is created and wrapped with a LocalXAConnectionFactory
+        if (xaDataSource == null) {
+            ConnectionFactory connectionFactory = super.createConnectionFactory();
+            XAConnectionFactory xaConnectionFactory = new LocalXAConnectionFactory(getTransactionManager(), connectionFactory);
+            setTransactionRegistry(xaConnectionFactory.getTransactionRegistry());
+            return xaConnectionFactory;
+        }
+
+        // Create the XADataSource instance using the configured class name if it has not been set
+        if (xaDataSourceInstance == null) {
+            Class<?> xaDataSourceClass = null;
+            try {
+                xaDataSourceClass = Class.forName(xaDataSource);
+            } catch (Throwable t) {
+                String message = "Cannot load XA data source class '" + xaDataSource + "'";
+                throw (SQLException)new SQLException(message).initCause(t);
+            }
+
+            try {
+                xaDataSourceInstance = (XADataSource) xaDataSourceClass.newInstance();
+            } catch (Throwable t) {
+                String message = "Cannot create XA data source of class '" + xaDataSource + "'";
+                throw (SQLException)new SQLException(message).initCause(t);
+            }
+        }
+
+        // finally, create the XAConectionFactory using the XA data source
+        // PATCH: use PatchedDataSourceXAConnectionFactory
+        XAConnectionFactory xaConnectionFactory = new PatchedDataSourceXAConnectionFactory(transactionManager, xaDataSourceInstance, username, password);
+        setTransactionRegistry(xaConnectionFactory.getTransactionRegistry());
+        return xaConnectionFactory;
+    }
+
+    // field transactionRegistry is private in the stupid superclass...
+    protected void setTransactionRegistry(
+            TransactionRegistry transactionRegistry) {
+        try {
+            Field field = getClass().getSuperclass().getDeclaredField("transactionRegistry");
+            field.setAccessible(true);
+            field.set(this, transactionRegistry);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
