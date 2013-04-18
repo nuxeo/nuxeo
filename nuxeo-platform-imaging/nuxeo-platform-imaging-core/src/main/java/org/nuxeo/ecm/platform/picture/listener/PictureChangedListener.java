@@ -69,8 +69,8 @@ public class PictureChangedListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(PICTURE_FACET)) {
             Property fileProp = doc.getProperty("file:content");
-            Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
             if (fileProp.isDirty()) {
+                Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
                 // if the views are dirty, assume they're up to date
                 if (viewsProp == null || !viewsProp.isDirty()) {
                     preFillPictureViews(docCtx.getCoreSession(), doc);
