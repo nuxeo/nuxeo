@@ -26,7 +26,7 @@
             <c:choose>
               <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
                 <div class="widgetPanel actionsWidgetPanel">
-                  <c:forEach var="action" items="#{widgetProperty_actions}"
+                  <nxu:repeat var="action" items="#{widgetProperty_actions}"
                     begin="0"
                     end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
                     step="1">
@@ -42,7 +42,7 @@
                         </ui:decorate>
                       </ui:define>
                     </ui:decorate>
-                  </c:forEach>
+                  </nxu:repeat>
 
                   <ui:include src="./actions_more_menu.xhtml" />
 
@@ -51,7 +51,7 @@
 
               <c:when test="#{widgetProperty_overallDisplay == 'menu'}">
                 <ul>
-                  <c:forEach var="action" items="#{widgetProperty_actions}"
+                  <nxu:repeat var="action" items="#{widgetProperty_actions}"
                     begin="0"
                     end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
                     step="1">
@@ -69,7 +69,7 @@
                         </ui:define>
                       </ui:decorate>
                     </li>
-                  </c:forEach>
+                  </nxu:repeat>
                 </ul>
 
                 <ui:include src="./actions_more_menu.xhtml" />
@@ -78,7 +78,7 @@
               <!-- TODO: add rollover menu? -->
 
               <c:otherwise>
-                <c:forEach var="action" items="#{widgetProperty_actions}"
+                <nxu:repeat var="action" items="#{widgetProperty_actions}"
                   begin="0"
                   end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
                   step="1">
@@ -96,7 +96,7 @@
                       </ui:define>
                     </ui:decorate>
                   </div>
-                </c:forEach>
+                </nxu:repeat>
 
                 <ui:include src="./actions_more_menu.xhtml" />
 
@@ -110,9 +110,9 @@
 
         </a4j:outputPanel>
 
-        <c:forEach var="action" items="#{widgetProperty_actions}">
+        <nxu:repeat var="action" items="#{widgetProperty_actions}">
           <ui:include src="/incl/action/generic_after_action_template.xhtml" />
-        </c:forEach>
+        </nxu:repeat>
 
       </nxu:valueHolder>
     </nxu:set>

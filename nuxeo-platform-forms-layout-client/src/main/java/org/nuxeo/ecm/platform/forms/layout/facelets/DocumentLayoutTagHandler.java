@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;

@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -333,9 +334,9 @@ public final class FaceletHandlerHelper {
      * @param bindFirstFieldDefinition if true, the first field definition will
      *            be bound to the tag attribute named "value"
      * @param defaultToValue if true, and there are no field definitions, tag
-     *            attribute namped "value" will be mapped to the current widget
+     *            attribute named "value" will be mapped to the current widget
      *            value name (e.g the layout value in most cases, or the parent
-     *            widget value if widget is a sub widdget)
+     *            widget value if widget is a sub widget)
      */
     public TagAttributes getTagAttributes(Widget widget,
             List<String> excludedProperties, boolean bindFirstFieldDefinition,

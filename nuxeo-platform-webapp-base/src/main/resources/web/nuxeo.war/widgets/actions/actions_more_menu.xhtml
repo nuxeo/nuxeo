@@ -12,7 +12,7 @@
     <li class="dropDownMenu button dropdown">
       <h:outputText value="#{empty widgetProperty_moreMenuLabel ? messages['label.summary.actions.more'] : widgetProperty_moreMenuLabel}" />
       <ul class="actionSubList">
-        <c:forEach var="action" begin="#{widgetProperty_maxActionsNumber}"
+        <nxu:repeat var="action" begin="#{widgetProperty_maxActionsNumber}"
           end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
           <li>
             <ui:decorate template="/widgets/incl/form_template.xhtml">
@@ -27,7 +27,7 @@
               </ui:define>
             </ui:decorate>
           </li>
-        </c:forEach>
+        </nxu:repeat>
       </ul>
     </li>
   </ul>

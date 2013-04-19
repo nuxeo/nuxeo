@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.common.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.el.DocumentModelResolver;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
