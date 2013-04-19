@@ -4275,7 +4275,7 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                 </excludes>
               </requireReleaseDeps>
