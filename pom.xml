@@ -61,6 +61,7 @@
     <nuxeo.agenda.version>5.7-SNAPSHOT</nuxeo.agenda.version>
     <nuxeo.templates.version>5.7-SNAPSHOT</nuxeo.templates.version>
     <nuxeo.csv.version>5.7-SNAPSHOT</nuxeo.csv.version>
+    <nuxeo.drive.version>5.7-SNAPSHOT</nuxeo.drive.version>
   </properties>
 
   <modules>
@@ -1073,17 +1074,17 @@
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
+        <version>${nuxeo.drive.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-jsf</artifactId>
-        <version>${nuxeo.addons.version}</version>
+        <version>${nuxeo.drive.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-operations</artifactId>
-        <version>${nuxeo.addons.version}</version>
+        <version>${nuxeo.drive.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
