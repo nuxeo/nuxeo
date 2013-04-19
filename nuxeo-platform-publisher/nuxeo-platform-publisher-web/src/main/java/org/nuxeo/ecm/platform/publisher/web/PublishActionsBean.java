@@ -359,6 +359,9 @@ public class PublishActionsBean extends AbstractPublishActions implements
         if (tree != null) {
             tree.unpublish(publishedDocument);
         }
+        // raise event without the container document as user may not have read
+        // rights on it
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
         return null;
     }
 
@@ -374,7 +377,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
         facesMessages.add(
                 StatusMessage.Severity.ERROR,
-                resourcesAccessor.getMessages().get("error.document_republished"));
+                resourcesAccessor.getMessages().get(
+                        "error.document_republished"));
         return null;
     }
 
@@ -682,7 +686,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
                             "selection_contains_non_publishable_docs"));
         }
 
-        EventManager.raiseEventsOnDocumentChildrenChange(navigationContext.getCurrentDocument());
+        EventManager.raiseEventsOnDocumentChildrenChange(target);
         return null;
     }
 
