@@ -277,6 +277,12 @@ public class LayoutFunctions {
         }
         builder.append(";");
 
+        Map<String, Map<String, Serializable>> controls = widgetDef.getControls();
+        if (controls != null) {
+            builder.append(controls.toString());
+        }
+        builder.append(";");
+
         Integer intValue = new Integer(builder.toString().hashCode());
         return intValue.toString();
     }
