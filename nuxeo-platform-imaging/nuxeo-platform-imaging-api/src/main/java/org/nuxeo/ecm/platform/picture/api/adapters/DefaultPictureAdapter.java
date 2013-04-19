@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureTemplate;
@@ -113,8 +114,8 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureTemplates) throws IOException,
-            ClientException {
+            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
+            throws IOException, ClientException {
         List<PictureTemplate> templates = new ArrayList<PictureTemplate>();
         if (pictureTemplates != null) {
             for (Map<String, Object> template : pictureTemplates) {
@@ -129,7 +130,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
         ImagingService imagingService = getImagingService();
         List<PictureView> pictureViews = imagingService.computeViewsFor(blob,
-                templates, false);
+                templates, imageInfo, false);
         List<Map<String, Serializable>> views = new ArrayList<Map<String, Serializable>>();
         for (PictureView pictureView : pictureViews) {
             views.add(pictureView.asMap());

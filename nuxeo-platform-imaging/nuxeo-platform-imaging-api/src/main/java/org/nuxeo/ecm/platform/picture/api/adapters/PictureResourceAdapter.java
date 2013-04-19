@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 
 public interface PictureResourceAdapter {
 
@@ -47,8 +48,7 @@ public interface PictureResourceAdapter {
      * Fill this Picture views using the given {@code pictureTemplates} and
      * {@code blob} to compute the picture views.
      * <p>
-     * The {@code blob} is converted to fit the defined
-     * {@code pictureTemplates}.
+     * The {@code blob} is converted to fit the defined {@code pictureTemplates}.
      *
      * @since 5.7
      */
@@ -66,8 +66,8 @@ public interface PictureResourceAdapter {
      * @since 5.7
      */
     void preFillPictureViews(Blob blob,
-            List<Map<String, Object>> pictureTemplates) throws IOException,
-            ClientException;
+            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo)
+            throws IOException, ClientException;
 
     void doRotate(int angle) throws ClientException;
 

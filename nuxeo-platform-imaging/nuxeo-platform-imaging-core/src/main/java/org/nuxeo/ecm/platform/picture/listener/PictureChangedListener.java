@@ -43,6 +43,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.PictureViewsGenerationWork;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
@@ -58,6 +60,8 @@ public class PictureChangedListener implements EventListener {
     public static final String EMPTY_PICTURE_PATH = "nuxeo.war/img/empty_picture.png";
 
     private static final Log log = LogFactory.getLog(PictureChangedListener.class);
+
+    private static ImageInfo emptyPictureImageInfo;
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -115,8 +119,14 @@ public class PictureChangedListener implements EventListener {
                 }
             }
 
+            if (emptyPictureImageInfo == null) {
+                ImagingService imagingService = Framework.getLocalService(ImagingService.class);
+                emptyPictureImageInfo = imagingService.getImageInfo(blob);
+            }
+
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
-            adapter.preFillPictureViews(blob, pictureTemplates);
+            adapter.preFillPictureViews(blob, pictureTemplates,
+                    emptyPictureImageInfo);
         } catch (Exception e) {
             log.debug(e, e);
             log.error("Error while pre-filling picture views: "
