@@ -14,6 +14,9 @@
   <description>Convenient parent POM for building optional addons (they are not
   included in the default full build). Thus they are not deprecated.</description>
 
+  <!-- dependencyManagement of optional addons must also be defined in pom.xml but
+    they must use a dedicated property, not nuxeo.addons.version -->
+
   <modules>
     <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-platform-splitpane</module>
