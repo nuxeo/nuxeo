@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -179,8 +180,10 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         auditQuerySb.append(") order by log.repositoryId asc, log.eventDate desc");
         String auditQuery = auditQuerySb.toString();
 
-        log.debug("Querying audit logs for document changes: " + auditQuery
-                + " with params: " + params);
+        if (log.isDebugEnabled()) {
+            log.debug("Querying audit log: " + auditQuery + " with params: "
+                    + params);
+        }
         List<LogEntry> entries = (List<LogEntry>) auditService.nativeQuery(
                 auditQuery, params, 1, limit);
 
@@ -195,6 +198,10 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     && !principalName.equals(impactedUserInfo.getValue(String.class))) {
                 // ignore event that only impact other users
                 continue;
+            }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Change detected at %s: %s on %s", entry.getEventDate(),
+                        entry.getEventId(), entry.getDocPath()));
             }
             postFilteredEntries.add(entry);
         }
