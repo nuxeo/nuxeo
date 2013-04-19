@@ -59,7 +59,7 @@
     <nuxeo.rating.version>5.6.0-HF16-SNAPSHOT</nuxeo.rating.version>
     <nuxeo.agenda.version>5.6.0-HF16-SNAPSHOT</nuxeo.agenda.version>
     <nuxeo.templates.version>5.6.0-HF16-SNAPSHOT</nuxeo.templates.version>
-    <nuxeo.drive.version>5.7-SNAPSHOT</nuxeo.drive.version>
+    <nuxeo.drive.version>5.6.0-HF16-SNAPSHOT</nuxeo.drive.version>
   </properties>
 
   <modules>
@@ -1058,8 +1058,12 @@
         <artifactId>nuxeo-drive-operations</artifactId>
         <version>${nuxeo.drive.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-hierarchy-permission</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
 
-      <!-- Groups Rights Audit -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-groups-rights-audit</artifactId>
