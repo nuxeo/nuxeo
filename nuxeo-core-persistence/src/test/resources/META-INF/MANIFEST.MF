@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-SymbolicName: org.nuxeo.ecm.core.persistence.test
