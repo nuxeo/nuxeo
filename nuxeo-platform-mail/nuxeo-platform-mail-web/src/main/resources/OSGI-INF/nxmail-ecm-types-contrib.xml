@@ -36,6 +36,11 @@
       <contentViews category="content">
         <contentView>mail_document_content</contentView>
       </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
       <subtypes>
         <type>MailMessage</type>
       </subtypes>
