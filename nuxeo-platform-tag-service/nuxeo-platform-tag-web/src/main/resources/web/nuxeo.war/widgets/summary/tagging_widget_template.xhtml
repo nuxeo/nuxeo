@@ -61,7 +61,7 @@
         suggestionAction="#{tagActions.getSuggestions}"
         var="sugtag" fetchValue=""
         nothingLabel="#{messages['label.suggestion.noSearchResults']}"
-        minChars="3" frequency="0" requestDelay="100">
+        minChars="1" frequency="0" requestDelay="100">
         <f:param name="canAddNewTag" value="true" />
         <a4j:support event="onselect"
           focus="#{widget.id}_suggest"
