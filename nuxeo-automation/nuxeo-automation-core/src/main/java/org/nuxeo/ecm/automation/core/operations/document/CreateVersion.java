@@ -50,9 +50,9 @@ public class CreateVersion {
                             doc.getId(), doc.getTitle()));
         }
         VersioningOption vo;
-        if ("Minor".equals(snapshot)) {
+        if ("Minor".equalsIgnoreCase(snapshot)) {
             vo = VersioningOption.MINOR;
-        } else if ("Major".equals(snapshot)) {
+        } else if ("Major".equalsIgnoreCase(snapshot)) {
             vo = VersioningOption.MAJOR;
         } else {
             vo = null;
