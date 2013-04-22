@@ -29,12 +29,16 @@ import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 import org.apache.commons.dbcp.managed.DataSourceXAConnectionFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Patched to do proper close. See DBCP-355.
  */
 public class PatchedDataSourceXAConnectionFactory extends
         DataSourceXAConnectionFactory {
+
+    private static final Log log = LogFactory.getLog(PatchedDataSourceXAConnectionFactory.class);
 
     public PatchedDataSourceXAConnectionFactory(
             TransactionManager transactionManager, XADataSource xaDataSource,
@@ -72,8 +76,7 @@ public class PatchedDataSourceXAConnectionFactory extends
                 try {
                     pc.close();
                 } catch (SQLException e) {
-                    System.err.println("Failed to close XAConnection");
-                    e.printStackTrace();
+                    log.error("Failed to close XAConnection", e);
                 }
             }
 

@@ -71,16 +71,19 @@ public class PatchedBasicManagedDataSource extends BasicManagedDataSource {
             Class<?> xaDataSourceClass = null;
             try {
                 xaDataSourceClass = Class.forName(xaDataSource);
-            } catch (Throwable t) {
+            } catch (ClassNotFoundException t) {
                 String message = "Cannot load XA data source class '" + xaDataSource + "'";
-                throw (SQLException)new SQLException(message).initCause(t);
+                throw new SQLException(message, t);
             }
 
             try {
                 xaDataSourceInstance = (XADataSource) xaDataSourceClass.newInstance();
-            } catch (Throwable t) {
+            } catch (InstantiationException t) {
                 String message = "Cannot create XA data source of class '" + xaDataSource + "'";
-                throw (SQLException)new SQLException(message).initCause(t);
+                throw new SQLException(message, t);
+            } catch (IllegalAccessException t) {
+                String message = "Cannot create XA data source of class '" + xaDataSource + "'";
+                throw new SQLException(message, t);
             }
         }
 
