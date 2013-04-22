@@ -156,8 +156,6 @@ public class DamActions implements Serializable {
             return;
         }
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put(CoreEventConstants.PARENT_PATH,
-                navigationContext.getCurrentDocument().getPathAsString());
         DocumentModel changeableDocument = documentManager.createDocumentModel(
                 selectedType, context);
         navigationContext.setChangeableDocument(changeableDocument);
