@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -366,8 +367,12 @@ public class NotificationEventListener implements
         try {
             emailHelper.sendmail(mail);
         } catch (MessagingException e) {
+            String cause = "";
+            if ((e instanceof SendFailedException) && (e.getCause() instanceof SendFailedException)) {
+                cause = " - Cause: " + e.getCause().getMessage();
+            }
             log.warn("Failed to send notification email to '" + email + "': "
-                    + e.getClass().getName() + ": " + e.getMessage());
+                    + e.getClass().getName() + ": " + e.getMessage() + cause);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 StringBuilder sb = new StringBuilder(
