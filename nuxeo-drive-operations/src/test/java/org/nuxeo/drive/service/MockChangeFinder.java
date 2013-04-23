@@ -145,4 +145,10 @@ public class MockChangeFinder implements FileSystemChangeFinder {
         }
     }
 
+    @Override
+    public long getCurrentDate() {
+        long now = System.currentTimeMillis();
+        return now - (now % 1000);
+    }
+
 }

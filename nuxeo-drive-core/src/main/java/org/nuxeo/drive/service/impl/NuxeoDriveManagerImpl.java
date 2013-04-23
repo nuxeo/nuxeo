@@ -243,11 +243,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             throws ClientException {
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
         List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
-        // Update sync date, rounded to the lower second to ensure consistency
-        // in the case of databases that don't support milliseconds
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.set(Calendar.MILLISECOND, 0);
-        long syncDate = cal.getTimeInMillis();
+        long syncDate = changeFinder.getCurrentDate();
         Boolean hasTooManyChanges = Boolean.FALSE;
         int limit = Integer.parseInt(Framework.getProperty(
                 DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
@@ -258,7 +254,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         allRepositories.addAll(roots.keySet());
         allRepositories.addAll(lastActiveRootRefs.keySet());
 
-        if (!allRepositories.isEmpty() && lastSuccessfulSync > 0) {
+        if (!allRepositories.isEmpty() && lastSuccessfulSync > 0
+                && syncDate > lastSuccessfulSync) {
             for (String repositoryName : allRepositories) {
                 try {
                     // Get document changes

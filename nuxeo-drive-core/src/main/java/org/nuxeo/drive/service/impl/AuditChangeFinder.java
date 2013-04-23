@@ -129,6 +129,13 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 // to have a special handling for the roots.
                 FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
                 if (fsItem != null) {
+                    // EventDate is able to reflect the ordering of the events
+                    // inside a transaction (e.g. when several documents are
+                    // created, updated, deleted at once) hence it's useful to
+                    // pass that info to the client even though the change
+                    // detection filtering is using the logDate to have a nearly
+                    // guaranteed monotic behavior that evenDate cannot
+                    // guarantee when facing long transactions.
                     FileSystemItemChange change = new FileSystemItemChange(
                             entry.getEventId(), entry.getEventDate().getTime(),
                             entry.getRepositoryId(), entry.getDocUUID(), fsItem);
@@ -138,6 +145,16 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             }
         }
         return changes;
+    }
+
+    /**
+     * Return the current time to query the logDate field of the audit log.
+     * This time intentionally truncated to 0 milliseconds to have a consistent
+     * behavior across databases.
+     */
+    public long getCurrentDate() {
+        long now = System.currentTimeMillis();
+        return now - (now % 1000);
     }
 
     @SuppressWarnings("unchecked")
@@ -176,6 +193,12 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         auditQuerySb.append("') and (");
         auditQuerySb.append(getJPADateClause(lastSuccessfulSyncDate, syncDate,
                 params));
+        // we intentionally sort by eventDate even if the range filtering is
+        // done on the logDate: eventDate is useful to reflect the ordering of
+        // events occurring inside the same transaction while the nearly
+        // monotonic behavior of logDate is useful for ensuring that consecutive
+        // range queries to the audit won't miss any events even when long
+        // running transactions are logged after a delay.
         auditQuerySb.append(") order by log.repositoryId asc, log.eventDate desc");
         String auditQuery = auditQuerySb.toString();
 
@@ -199,7 +222,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 continue;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Change detected at %s: %s on %s", entry.getEventDate(),
+                log.debug(String.format(
+                        "Change detected at eventDate=%s logDate=%s: %s on %s",
+                        entry.getEventDate(), entry.getLogDate(),
                         entry.getEventId(), entry.getDocPath()));
             }
             postFilteredEntries.add(entry);
@@ -229,7 +254,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             long syncDate, Map<String, Object> params) {
         params.put("lastSuccessfulSyncDate", new Date(lastSuccessfulSyncDate));
         params.put("syncDate", new Date(syncDate));
-        return "log.eventDate >= :lastSuccessfulSyncDate and log.eventDate < :syncDate";
+        return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
     }
 
     /**
