@@ -18,8 +18,11 @@ package org.nuxeo.ecm.platform.audit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -92,5 +95,42 @@ public class TestTransactedAudit {
         assertThat(seenDocUndeleted, is(true));
         assertThat(seenDocDeleted, is(true));
         assertThat(seenDocCreated, is(true));
+    }
+
+    @Test
+    public void testLogDate() throws ClientException, InterruptedException {
+        // generate doc creation events
+        DocumentModel doc = repo.createDocumentModel("/", "a-file", "File");
+        doc = repo.createDocument(doc);
+
+        // simulate a long running process in the same transaction: make the
+        // delay big enough to make logDate not the same as eventDate even on
+        // databases that have a 1s time resolution.
+        Thread.sleep(1000);
+
+        // commit the transaction an let the audit service log the events in the
+        // log
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+
+        // test audit trail
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        List<LogEntry> trail = reader.getLogEntriesFor(doc.getId());
+
+        assertThat(trail, notNullValue());
+        assertThat(trail.size(), is(1));
+
+        Date eventDate = null;
+        Date logDate = null;
+        for (LogEntry entry : trail) {
+            String id = entry.getEventId();
+            if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)) {
+                eventDate = entry.getEventDate();
+                 logDate = entry.getLogDate();
+            }
+        }
+        assertNotNull(eventDate);
+        assertNotNull(logDate);
+        assertTrue(logDate.after(eventDate));
     }
 }
