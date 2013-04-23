@@ -256,20 +256,6 @@ public class Model {
     /** Specified in ext. point to use CLOBs. */
     public static final String FIELD_TYPE_LARGETEXT = "largetext";
 
-    /**
-     * Special (non-schema-based) simple fragments present in all types.
-     * {@link #FULLTEXT_TABLE_NAME} is added to it if not disabled.
-     */
-    public static final List<String> COMMON_SIMPLE_FRAGMENTS = Arrays.asList(
-            VERSION_TABLE_NAME, MISC_TABLE_NAME);
-
-    /** Special (non-schema-based) collection fragments present in all types. */
-    public static final String[] COMMON_COLLECTION_FRAGMENTS = { ACL_TABLE_NAME };
-
-    /** Fragments that are always prefetched. */
-    public static final String[] ALWAYS_PREFETCHED_FRAGMENTS = {
-            ACL_TABLE_NAME, VERSION_TABLE_NAME, MISC_TABLE_NAME };
-
     protected final boolean softDeleteEnabled;
 
     protected final boolean proxiesEnabled;
@@ -292,27 +278,33 @@ public class Model {
     protected final RepositoryDescriptor repositoryDescriptor;
 
     /** Per-doctype list of schemas. */
-    private final Map<String, Set<String>> documentTypesSchemas;
-
-    /** Per-mixin list of document types. */
-    private final Map<String, Set<String>> mixinsDocumentTypes;
+    private final Map<String, Set<String>> allDocTypeSchemas;
 
     /** Per-mixin list of schemas. */
-    private final Map<String, Set<String>> mixinsSchemas;
+    private final Map<String, Set<String>> allMixinSchemas;
+
+    /** Map of mixin to doctypes. */
+    private final Map<String, Set<String>> mixinsDocumentTypes;
+
+    /** Map of doctype to mixins, for search. */
+    protected final Map<String, Set<String>> documentTypesMixins;
 
     /** Shared high-level properties that don't come from the schema manager. */
     private final Map<String, Type> specialPropertyTypes;
 
-    /** Per-schema/type info about properties, using their key. */
-    private final HashMap<String, Map<String, ModelProperty>> schemaPropertyKeyInfos;
+    /** Map of fragment to key to property info. */
+    private final Map<String, Map<String, ModelProperty>> fragmentPropertyInfos;
 
-    /** Per-schema/type info about properties. */
-    private final HashMap<String, Map<String, ModelProperty>> schemaPropertyInfos;
+    /** Map of schema to property to property info. */
+    private final Map<String, Map<String, ModelProperty>> schemaPropertyInfos;
 
-    /** Per-mixin info about properties. */
-    private final HashMap<String, Map<String, ModelProperty>> mixinPropertyInfos;
+    /** Map of docType/complexType to property to property info. */
+    private final Map<String, Map<String, ModelProperty>> typePropertyInfos;
 
-    /** Shared properties. */
+    /** Map of mixin to property to property info. */
+    private final Map<String, Map<String, ModelProperty>> mixinPropertyInfos;
+
+    /** Map of property to property info. */
     private final Map<String, ModelProperty> sharedPropertyInfos;
 
     /** Merged properties (all schemas together + shared). */
@@ -330,11 +322,11 @@ public class Model {
      */
     private final Map<String, ModelProperty> allPathPropertyInfos;
 
-    /** Per-table info about fragments keys type. */
-    private final Map<String, Map<String, ColumnType>> fragmentsKeys;
+    /** Map of fragment to key to column type. */
+    private final Map<String, Map<String, ColumnType>> fragmentKeyTypes;
 
-    /** All binary columns, fragment name -> keys. */
-    private final Map<String, List<String>> binaryPropertyInfos;
+    /** Map of fragment to keys for binary columns. */
+    private final Map<String, List<String>> binaryFragmentKeys;
 
     /** Maps collection table names to their type. */
     private final Map<String, PropertyType> collectionTables;
@@ -342,35 +334,31 @@ public class Model {
     /** Column ordering for collections. */
     private final Map<String, String> collectionOrderBy;
 
+    // -------------------------------------------------------
+
     /**
-     * The fragment for each schema, or {@code null} if the schema doesn't have
-     * a fragment.
+     * Map of schema to simple+collection fragments. Used while computing
+     * document type fragments, and for prefetch.
      */
-    private final Map<String, String> schemaFragment;
+    private final Map<String, Set<String>> schemaFragments;
 
-    /** Maps schema to collection fragments. */
-    protected final Map<String, Set<String>> typeCollectionFragments;
-
-    /** Maps schema to simple+collection fragments. */
+    /** Map of doctype/complextype to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
-    /** Maps mixin to simple+collection fragments. */
+    /** Map of mixin to simple+collection fragments. */
     protected final Map<String, Set<String>> mixinFragments;
 
-    /** Maps document type or schema to prefetched fragments. */
-    protected final Map<String, Set<String>> typePrefetchedFragments;
+    /** Map of doctype to prefetched fragments. */
+    protected final Map<String, Set<String>> docTypePrefetchedFragments;
 
-    /** Map of doc types to facets, for search. */
-    protected final Map<String, Set<String>> documentTypesFacets;
-
-    /** Map of doc type to its supertype, for search. */
+    /** Map of doctype to its supertype, for search. */
     protected final Map<String, String> documentSuperTypes;
 
-    /** Map of doc type to its subtypes (including itself), for search. */
+    /** Map of doctype to its subtypes (including itself), for search. */
     protected final Map<String, Set<String>> documentSubTypes;
 
-    /** Map of field name to fragments holding them */
-    protected final Map<String, Set<String>> fieldFragments;
+    /** Map of field name to fragment holding it. Used for prefetch. */
+    protected final Map<String, String> fieldFragment;
 
     public final ModelFulltext fulltextInfo;
 
@@ -402,12 +390,14 @@ public class Model {
         softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
         proxiesEnabled = repositoryDescriptor.proxiesEnabled;
 
-        documentTypesSchemas = new HashMap<String, Set<String>>();
+        allDocTypeSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
-        mixinsSchemas = new HashMap<String, Set<String>>();
+        documentTypesMixins = new HashMap<String, Set<String>>();
+        allMixinSchemas = new HashMap<String, Set<String>>();
 
-        schemaPropertyKeyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        fragmentPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         schemaPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        typePropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         mixinPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         sharedPropertyInfos = new HashMap<String, ModelProperty>();
         mergedPropertyInfos = new HashMap<String, ModelProperty>();
@@ -416,20 +406,18 @@ public class Model {
         allPathPropertyInfos = new HashMap<String, ModelProperty>();
         fulltextInfo = new ModelFulltext();
         fulltextInfoByFragment = new HashMap<String, PropertyType>();
-        fragmentsKeys = new HashMap<String, Map<String, ColumnType>>();
-        binaryPropertyInfos = new HashMap<String, List<String>>();
+        fragmentKeyTypes = new HashMap<String, Map<String, ColumnType>>();
+        binaryFragmentKeys = new HashMap<String, List<String>>();
 
         collectionTables = new HashMap<String, PropertyType>();
         collectionOrderBy = new HashMap<String, String>();
 
-        schemaFragment = new HashMap<String, String>();
+        schemaFragments = new HashMap<String, Set<String>>();
         typeFragments = new HashMap<String, Set<String>>();
         mixinFragments = new HashMap<String, Set<String>>();
-        typeCollectionFragments = new HashMap<String, Set<String>>();
-        typePrefetchedFragments = new HashMap<String, Set<String>>();
-        fieldFragments = new HashMap<String, Set<String>>();
+        docTypePrefetchedFragments = new HashMap<String, Set<String>>();
+        fieldFragment = new HashMap<String, String>();
 
-        documentTypesFacets = new HashMap<String, Set<String>>();
         documentSuperTypes = new HashMap<String, String>();
         documentSubTypes = new HashMap<String, Set<String>>();
 
@@ -443,8 +431,11 @@ public class Model {
         initLocksModel();
         initAclModel();
         initMiscModel();
+        // models for all document types and mixins
         initModels(modelSetup.schemaManager);
         if (!repositoryDescriptor.fulltextDisabled) {
+            inferFulltextInfo(modelSetup.schemaManager);
+            inferFulltextInfoByFragment(); // needs mixin schemas
             initFullTextModel();
         }
     }
@@ -487,64 +478,64 @@ public class Model {
     }
 
     /**
-     * Records info about one property, in a schema-based structure and in a
-     * table-based structure.
-     * <p>
-     * If {@literal schemaName} is {@code null}, then the property applies to
-     * all types (system properties).
+     * Records info about a system property (applying to all document types).
      */
-    private void addPropertyInfo(String schemaName, String propertyName,
+    private void addPropertyInfo(String propertyName,
             PropertyType propertyType, String fragmentName, String fragmentKey,
             boolean readonly, Type coreType, ColumnType type) {
-        // per-type
-        Map<String, ModelProperty> propertyKeyInfos;
-        Map<String, ModelProperty> propertyInfos;
-        if (schemaName == null) {
-            propertyKeyInfos = null;
-            propertyInfos = sharedPropertyInfos;
-        } else {
-            propertyKeyInfos = schemaPropertyKeyInfos.get(schemaName);
-            if (propertyKeyInfos == null) {
-                propertyKeyInfos = new HashMap<String, ModelProperty>();
-                schemaPropertyKeyInfos.put(schemaName, propertyKeyInfos);
-            }
-            propertyInfos = schemaPropertyInfos.get(schemaName);
-            if (propertyInfos == null) {
-                propertyInfos = new HashMap<String, ModelProperty>();
-                schemaPropertyInfos.put(schemaName, propertyInfos);
-            }
-        }
+        addPropertyInfo(null, false, propertyName, propertyType, fragmentName,
+                fragmentKey, readonly, coreType, type);
+    }
+
+    /**
+     * Records info about one property (for a given type). Used for proxy
+     * properties.
+     */
+    private void addPropertyInfo(String typeName, String propertyName,
+            PropertyType propertyType, String fragmentName, String fragmentKey,
+            boolean readonly, Type coreType, ColumnType type) {
+        addPropertyInfo(typeName, false, propertyName, propertyType,
+                fragmentName, fragmentKey, readonly, coreType, type);
+    }
+
+
+    /**
+     * Records info about one property from a complex type or schema.
+     */
+    private void addPropertyInfo(ComplexType complexType, String propertyName,
+            PropertyType propertyType, String fragmentName, String fragmentKey,
+            boolean readonly, Type coreType, ColumnType type) {
+        String typeName = complexType.getName();
+        boolean isSchema = complexType instanceof Schema;
+        addPropertyInfo(typeName, isSchema, propertyName, propertyType,
+                fragmentName, fragmentKey, readonly, coreType, type);
+    }
+    /**
+     * Records info about one property, in a schema-based structure and in a
+     * fragment-based structure.
+     */
+    private void addPropertyInfo(String typeName, boolean isSchema,
+            String propertyName, PropertyType propertyType,
+            String fragmentName, String fragmentKey, boolean readonly,
+            Type coreType, ColumnType type) {
+
         ModelProperty propertyInfo = new ModelProperty(propertyType,
                 fragmentName, fragmentKey, readonly);
+
+        // per type/schema property info
+        Map<String, ModelProperty> propertyInfos;
+        if (typeName == null) {
+            propertyInfos = sharedPropertyInfos;
+        } else {
+            Map<String, Map<String, ModelProperty>> map = isSchema ? schemaPropertyInfos
+                    : typePropertyInfos;
+            propertyInfos = map.get(typeName);
+            if (propertyInfos == null) {
+                map.put(typeName,
+                        propertyInfos = new HashMap<String, ModelProperty>());
+            }
+        }
         propertyInfos.put(propertyName, propertyInfo);
-        if (propertyKeyInfos != null && fragmentKey != null) {
-            propertyKeyInfos.put(fragmentKey, propertyInfo);
-        }
-
-        // per-fragment keys type
-        if (fragmentKey != null) {
-            Map<String, ColumnType> fragmentKeys = fragmentsKeys.get(fragmentName);
-            if (fragmentKeys == null) {
-                fragmentsKeys.put(fragmentName,
-                        fragmentKeys = new LinkedHashMap<String, ColumnType>());
-            }
-            fragmentKeys.put(fragmentKey, type);
-
-            // record binary columns for the GC
-            if (type.spec == ColumnSpec.BLOBID) {
-                List<String> keys = binaryPropertyInfos.get(fragmentName);
-                if (keys == null) {
-                    binaryPropertyInfos.put(fragmentName,
-                            keys = new ArrayList<String>(1));
-                }
-                keys.add(fragmentKey);
-            }
-        }
-
-        // system properties
-        if (coreType != null) {
-            specialPropertyTypes.put(propertyName, coreType);
-        }
 
         // merged properties
         ModelProperty previous = mergedPropertyInfos.get(propertyName);
@@ -557,69 +548,74 @@ public class Model {
                     previous.fragmentName, fragmentName, propertyName));
         }
         // compatibility for use of schema name as prefix
-        if (!propertyName.contains(":")) {
+        if (typeName != null && !propertyName.contains(":")) {
             // allow schema name as prefix
-            propertyName = schemaName + ':' + propertyName;
+            propertyName = typeName + ':' + propertyName;
             previous = mergedPropertyInfos.get(propertyName);
             if (previous == null) {
                 mergedPropertyInfos.put(propertyName, propertyInfo);
             }
         }
+
+        // system properties core type (no core schema available)
+        if (coreType != null) {
+            specialPropertyTypes.put(propertyName, coreType);
+        }
+
+        // per-fragment property info
+        Map<String, ModelProperty> fragmentKeyInfos = fragmentPropertyInfos.get(fragmentName);
+        if (fragmentKeyInfos == null) {
+            fragmentPropertyInfos.put(fragmentName,
+                    fragmentKeyInfos = new HashMap<String, ModelProperty>());
+        }
+        if (fragmentKey != null) {
+            fragmentKeyInfos.put(fragmentKey, propertyInfo);
+        }
+
+        // per-fragment keys type
+        if (fragmentKey != null && type != null) {
+            Map<String, ColumnType> fragmentKeys = fragmentKeyTypes.get(fragmentName);
+            if (fragmentKeys == null) {
+                fragmentKeyTypes.put(fragmentName,
+                        fragmentKeys = new LinkedHashMap<String, ColumnType>());
+            }
+            fragmentKeys.put(fragmentKey, type);
+
+            // record binary columns for the GC
+            if (type.spec == ColumnSpec.BLOBID) {
+                List<String> keys = binaryFragmentKeys.get(fragmentName);
+                if (keys == null) {
+                    binaryFragmentKeys.put(fragmentName,
+                            keys = new ArrayList<String>(1));
+                }
+                keys.add(fragmentKey);
+            }
+        } // else collection, uses addCollectionFragmentInfos directly
     }
 
-    /**
-     * Infers type property information from all its schemas.
-     */
-    private void inferTypePropertyInfos(String typeName, String[] schemaNames) {
-        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(typeName);
+    private void addCollectionFragmentInfos(String fragmentName,
+            PropertyType propertyType, String orderBy,
+            Map<String, ColumnType> keysType) {
+        collectionTables.put(fragmentName, propertyType);
+        collectionOrderBy.put(fragmentName, orderBy);
+        fragmentKeyTypes.put(fragmentName, keysType);
+    }
+
+    // fill the map for key with property infos for the given schemas
+    // different maps are used for doctypes or mixins
+    private void inferPropertyInfos(
+            Map<String, Map<String, ModelProperty>> map, String key,
+            Set<String> schemaNames) {
+        Map<String, ModelProperty> propertyInfos = map.get(key);
         if (propertyInfos == null) {
-            propertyInfos = new HashMap<String, ModelProperty>();
-            schemaPropertyInfos.put(typeName, propertyInfos);
+            map.put(key, propertyInfos = new HashMap<String, ModelProperty>());
         }
         for (String schemaName : schemaNames) {
             Map<String, ModelProperty> infos = schemaPropertyInfos.get(schemaName);
-            if (infos == null) {
-                // schema with no properties (complex list)
-                continue;
+            if (infos != null) {
+                propertyInfos.putAll(infos);
             }
-            for (Entry<String, ModelProperty> info : infos.entrySet()) {
-                propertyInfos.put(info.getKey(), info.getValue());
-            }
-        }
-    }
-
-    /**
-     * Infers mixin property information from all its schemas.
-     */
-    private void inferMixinPropertyInfos(String mixin, String[] schemaNames) {
-        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(mixin);
-        if (propertyInfos == null) {
-            mixinPropertyInfos.put(mixin,
-                    propertyInfos = new HashMap<String, ModelProperty>());
-        }
-        for (String schemaName : schemaNames) {
-            Map<String, ModelProperty> infos = schemaPropertyInfos.get(schemaName);
-            if (infos == null) {
-                // schema with no properties (complex list)
-                continue;
-            }
-            for (Entry<String, ModelProperty> info : infos.entrySet()) {
-                propertyInfos.put(info.getKey(), info.getValue());
-            }
-        }
-    }
-
-    /**
-     * Infers all possible paths for properties in a document type.
-     */
-    private void inferTypePropertyPaths(DocumentType documentType) {
-        for (Schema schema : documentType.getSchemas()) {
-            if (schema == null) {
-                // happens when a type refers to a nonexistent schema
-                // TODO log and avoid nulls earlier
-                continue;
-            }
-            inferSchemaPropertyPaths(schema);
+            // else schema with no properties (complex list)
         }
     }
 
@@ -662,7 +658,7 @@ public class Model {
         schemaSimpleTextPaths.put(schemaName, simplePaths);
     }
 
-    // recurses in a complex type
+    // recurses in a schema or complex type
     private void inferTypePropertyPaths(ComplexType complexType, String prefix,
             Map<String, ModelProperty> propertyInfoByPath, Set<String> done) {
         if (done == null) {
@@ -699,11 +695,13 @@ public class Model {
                 // else array
             }
             // else primitive type
-            ModelProperty pi = schemaPropertyInfos.get(typeName).get(
-                    propertyName);
+            // in both cases, record it
+            Map<String, Map<String, ModelProperty>> map = (complexType instanceof Schema) ? schemaPropertyInfos
+                    : typePropertyInfos;
+            ModelProperty pi = map.get(typeName).get(propertyName);
             propertyInfoByPath.put(path, pi);
+            // also add the propname/* path for array elements
             if (pi.propertyType.isArray()) {
-                // also add the propname/* path for array elements
                 propertyInfoByPath.put(path + "/*", pi);
             }
         }
@@ -823,7 +821,7 @@ public class Model {
 
     private void inferFulltextInfoByFragment() {
         // simple fragments
-        for (Entry<String, Map<String, ModelProperty>> es : schemaPropertyKeyInfos.entrySet()) {
+        for (Entry<String, Map<String, ModelProperty>> es : fragmentPropertyInfos.entrySet()) {
             String fragmentName = es.getKey();
             Map<String, ModelProperty> infos = es.getValue();
             if (infos == null) {
@@ -853,15 +851,17 @@ public class Model {
             PropertyType type = es.getValue();
             if (type == PropertyType.ARRAY_STRING
                     || type == PropertyType.ARRAY_BINARY) {
-                fulltextInfoByFragment.put(fragmentName, type.getArrayBaseType());
+                fulltextInfoByFragment.put(fragmentName,
+                        type.getArrayBaseType());
             }
         }
     }
 
+    /** Get doctype/complextype property info. */
     public ModelProperty getPropertyInfo(String typeName, String propertyName) {
-        Map<String, ModelProperty> propertyInfos = schemaPropertyInfos.get(typeName);
+        Map<String, ModelProperty> propertyInfos = typePropertyInfos.get(typeName);
         if (propertyInfos == null) {
-            // no such type/schema
+            // no such doctype/complextype
             return null;
         }
         ModelProperty propertyInfo = propertyInfos.get(propertyName);
@@ -921,14 +921,14 @@ public class Model {
         return paths;
     }
 
-    public Set<String> getAllSchemas(String primaryType, String[] mixinTypes) {
+    private Set<String> getAllSchemas(String primaryType, String[] mixinTypes) {
         Set<String> schemas = new LinkedHashSet<String>();
-        Set<String> s = documentTypesSchemas.get(primaryType);
+        Set<String> s = allDocTypeSchemas.get(primaryType);
         if (s != null) {
             schemas.addAll(s);
         }
         for (String mixin : mixinTypes) {
-            s = mixinsSchemas.get(mixin);
+            s = allMixinSchemas.get(mixin);
             if (s != null) {
                 schemas.addAll(s);
             }
@@ -958,7 +958,7 @@ public class Model {
             }
             return null;
         } else {
-            Map<String, ModelProperty> infos = schemaPropertyKeyInfos.get(fragmentName);
+            Map<String, ModelProperty> infos = fragmentPropertyInfos.get(fragmentName);
             if (infos == null) {
                 return null;
             }
@@ -981,20 +981,6 @@ public class Model {
         return fulltextInfoByFragment.get(fragmentName);
     }
 
-    private void addCollectionFragmentInfos(String fragmentName,
-            PropertyType propertyType, String orderBy,
-            Map<String, ColumnType> keysType) {
-        collectionTables.put(fragmentName, propertyType);
-        collectionOrderBy.put(fragmentName, orderBy);
-        // set all keys types
-        Map<String, ColumnType> old = fragmentsKeys.get(fragmentName);
-        if (old == null) {
-            fragmentsKeys.put(fragmentName, keysType);
-        } else {
-            old.putAll(keysType);
-        }
-    }
-
     public Type getSpecialPropertyType(String propertyName) {
         return specialPropertyTypes.get(propertyName);
     }
@@ -1012,88 +998,63 @@ public class Model {
     }
 
     public Set<String> getFragmentNames() {
-        return fragmentsKeys.keySet();
+        return fragmentKeyTypes.keySet();
     }
 
     public Map<String, ColumnType> getFragmentKeysType(String fragmentName) {
-        return fragmentsKeys.get(fragmentName);
+        return fragmentKeyTypes.get(fragmentName);
     }
 
     public Map<String, List<String>> getBinaryPropertyInfos() {
-        return binaryPropertyInfos;
+        return binaryFragmentKeys;
     }
 
-    protected void addTypeCollectionFragment(String typeName,
-            String fragmentName) {
-        Set<String> fragments = typeCollectionFragments.get(typeName);
-        if (fragments == null) {
-            fragments = new HashSet<String>();
-            typeCollectionFragments.put(typeName, fragments);
-        }
-        fragments.add(fragmentName);
-        addTypeFragment(typeName, fragmentName);
+    private void addTypeFragments(String typeName, Set<String> fragmentNames) {
+        typeFragments.put(typeName, fragmentNames);
     }
 
-    protected void addTypeFragment(String typeName, String fragmentName) {
-        Set<String> fragments = typeFragments.get(typeName);
-        if (fragments == null) {
-            typeFragments.put(typeName, fragments = new HashSet<String>());
-        }
-        // fragmentName may be null, to just create the entry
-        if (fragmentName != null) {
-            fragments.add(fragmentName);
-        }
+    private void addMixinFragments(String mixin, Set<String> fragmentNames) {
+        mixinFragments.put(mixin, fragmentNames);
     }
 
-    protected void addMixinFragment(String mixin, String fragmentName) {
-        Set<String> fragments = mixinFragments.get(mixin);
-        if (fragments == null) {
-            mixinFragments.put(mixin, fragments = new HashSet<String>());
-        }
-        fragments.add(fragmentName);
-    }
-
-    protected void addFieldFragment(Field field, String fragmentName) {
+    private void addFieldFragment(Field field, String fragmentName) {
         String fieldName = field.getName().toString();
-        Set<String> fragments = fieldFragments.get(fieldName);
-        if (fragments == null) {
-            fieldFragments.put(fieldName, fragments = new HashSet<String>());
-        }
-        fragments.add(fragmentName);
+        fieldFragment.put(fieldName, fragmentName);
     }
 
-    protected void addTypePrefetchedFragment(String typeName,
-            String fragmentName) {
-        Set<String> fragments = typePrefetchedFragments.get(typeName);
+    private void addDocTypePrefetchedFragments(String docTypeName,
+            Set<String> fragmentNames) {
+        Set<String> fragments = docTypePrefetchedFragments.get(docTypeName);
         if (fragments == null) {
-            typePrefetchedFragments.put(typeName,
+            docTypePrefetchedFragments.put(docTypeName,
                     fragments = new HashSet<String>());
         }
-        fragments.add(fragmentName);
+        fragments.addAll(fragmentNames);
     }
 
-    public Set<String> getTypeFragments(String typeName) {
-        return typeFragments.get(typeName);
+    /**
+     * Gets the fragments for a type (doctype or complex type).
+     */
+    private Set<String> getTypeFragments(String docTypeName) {
+        return typeFragments.get(docTypeName);
     }
 
-    public Set<String> getMixinFragments(String mixin) {
+    /**
+     * Gets the fragments for a mixin.
+     */
+    private Set<String> getMixinFragments(String mixin) {
         return mixinFragments.get(mixin);
     }
 
-    protected Set<String> getFieldFragments(String fieldName) {
-        return fieldFragments.get(fieldName);
-    }
-
     public Set<String> getTypePrefetchedFragments(String typeName) {
-        return typePrefetchedFragments.get(typeName);
+        return docTypePrefetchedFragments.get(typeName);
     }
 
+    /**
+     * Checks if we have a type (doctype or complex type).
+     */
     public boolean isType(String typeName) {
         return typeFragments.containsKey(typeName);
-    }
-
-    public boolean isDocumentType(String typeName) {
-        return documentTypesFacets.containsKey(typeName);
     }
 
     public String getDocumentSuperType(String typeName) {
@@ -1105,11 +1066,11 @@ public class Model {
     }
 
     public Set<String> getDocumentTypes() {
-        return documentTypesFacets.keySet();
+        return documentTypesMixins.keySet();
     }
 
     public Set<String> getDocumentTypeFacets(String typeName) {
-        Set<String> facets = documentTypesFacets.get(typeName);
+        Set<String> facets = documentTypesMixins.get(typeName);
         return facets == null ? Collections.<String> emptySet() : facets;
     }
 
@@ -1170,174 +1131,150 @@ public class Model {
             throws StorageException {
         log.debug("Schemas fields from descriptor: "
                 + repositoryDescriptor.schemaFields);
-        for (DocumentType documentType : schemaManager.getDocumentTypes()) {
-            String typeName = documentType.getName();
-            addTypeFragment(typeName, null); // create entry
-
-            Set<String> docTypeSchemas = new HashSet<String>();
-            for (Schema schema : documentType.getSchemas()) {
-                if (schema == null) {
-                    // happens when a type refers to a nonexistent schema
-                    // TODO log and avoid nulls earlier
-                    continue;
-                }
-                try {
-                    docTypeSchemas.add(schema.getName());
-                    String fragmentName = initTypeModel(schema);
-                    addTypeFragment(typeName, fragmentName); // may be null
-                    // collection fragments too for this schema
-                    Set<String> cols = typeCollectionFragments.get(schema.getName());
-                    if (cols != null) {
-                        for (String colFrag : cols) {
-                            addTypeCollectionFragment(typeName, colFrag);
-                        }
-                    }
-                } catch (Exception e) {
-                    throw new StorageException(String.format(
-                            "Error initializing schema '%s' "
-                                    + "for document type '%s'",
-                            schema.getName(), typeName), e);
-                }
-            }
-
-            try {
-                documentTypesSchemas.put(typeName, docTypeSchemas);
-                inferTypePropertyInfos(typeName, documentType.getSchemaNames());
-                inferTypePropertyPaths(documentType);
-            } catch (Exception e) {
-                throw new StorageException(String.format(
-                        "Error initializing schemas for document type '%s'",
-                        typeName), e);
-            }
-
-            for (String fragmentName : getCommonSimpleFragments(typeName)) {
-                addTypeFragment(typeName, fragmentName);
-            }
-            for (String fragmentName : COMMON_COLLECTION_FRAGMENTS) {
-                addTypeCollectionFragment(typeName, fragmentName);
-            }
-
-            // find fragments to prefetch
-            PrefetchInfo prefetch = documentType.getPrefetchInfo();
-            if (prefetch != null) {
-                Set<String> typeFragments = getTypeFragments(typeName);
-                for (String fieldName : prefetch.getFields()) {
-                    // prefetch all the relevant fragments
-                    // TODO deal with full xpath
-                    Set<String> fragments = getFieldFragments(fieldName);
-                    if (fragments != null) {
-                        for (String fragment : fragments) {
-                            if (typeFragments.contains(fragment)) {
-                                addTypePrefetchedFragment(typeName, fragment);
-                            }
-                        }
-                    }
-                }
-                for (String schemaName : prefetch.getSchemas()) {
-                    String fragment = schemaFragment.get(schemaName);
-                    if (fragment != null) {
-                        addTypePrefetchedFragment(typeName, fragment);
-                    }
-                    Set<String> collectionFragments = typeCollectionFragments.get(typeName);
-                    if (collectionFragments != null) {
-                        for (String fragmentName : collectionFragments) {
-                            addTypePrefetchedFragment(typeName, fragmentName);
-                        }
-                    }
-                }
-            }
-            // always prefetch ACLs, versions, misc (for lifecycle), locks
-            for (String fragmentName : ALWAYS_PREFETCHED_FRAGMENTS) {
-                addTypePrefetchedFragment(typeName, fragmentName);
-            }
-
-            log.debug("Fragments for type " + typeName + ": "
-                    + getTypeFragments(typeName) + ", prefetch: "
-                    + getTypePrefetchedFragments(typeName));
-
-            // record doc type and facets, super type, sub types
-            Set<String> mixins = documentType.getFacets();
-            documentTypesFacets.put(typeName, new HashSet<String>(mixins));
-            for (String mixin : mixins) {
-                Set<String> mixinTypes = mixinsDocumentTypes.get(mixin);
-                if (mixinTypes == null) {
-                    mixinsDocumentTypes.put(mixin,
-                            mixinTypes = new HashSet<String>());
-                }
-                mixinTypes.add(typeName);
-            }
-            Type superType = documentType.getSuperType();
-            if (superType != null) {
-                String superTypeName = superType.getName();
-                documentSuperTypes.put(typeName, superTypeName);
-            }
+        // document types
+        for (DocumentType docType : schemaManager.getDocumentTypes()) {
+            initDocTypeOrMixinModel(docType, allDocTypeSchemas, typeFragments,
+                    typePropertyInfos);
+            initDocTypePrefetch(docType);
+            initDocTypeMixins(docType);
+            inferSuperType(docType);
         }
-
-        // compute subtypes for all types
-        for (String type : getDocumentTypes()) {
-            String superType = type;
-            do {
-                Set<String> subTypes = documentSubTypes.get(superType);
-                if (subTypes == null) {
-                    subTypes = new HashSet<String>();
-                    documentSubTypes.put(superType, subTypes);
-                }
-                subTypes.add(type);
-                superType = documentSuperTypes.get(superType);
-            } while (superType != null);
-        }
-
-        if (!repositoryDescriptor.fulltextDisabled) {
-            // infer fulltext info
-            inferFulltextInfo(schemaManager);
-        }
-
         // mixins
         for (CompositeType type : schemaManager.getFacets()) {
-            String mixin = type.getName();
-            // some schemas may be referenced only by mixins,
-            // register them here
-            Set<String> mixinSchemas = new HashSet<String>();
-            for (Schema schema : type.getSchemas()) {
-                if (schema == null) {
-                    // happens when a type refers to a nonexistent schema
-                    // TODO log and avoid nulls earlier
-                    continue;
-                }
-                mixinSchemas.add(schema.getName());
-                String fragmentName = initTypeModel(schema);
-                if (fragmentName != null) {
-                    addMixinFragment(mixin, fragmentName);
-                }
-                // collection fragments too
-                Set<String> cols = typeCollectionFragments.get(schema.getName());
-                if (cols != null) {
-                    for (String colFrag : cols) {
-                        addMixinFragment(mixin, colFrag);
-                    }
-                }
-                inferSchemaPropertyPaths(schema);
-            }
-            mixinsSchemas.put(mixin, mixinSchemas);
-            inferMixinPropertyInfos(mixin, type.getSchemaNames());
-            log.debug("Fragments for facet " + mixin + ": "
-                    + getMixinFragments(mixin));
+            initDocTypeOrMixinModel(type, allMixinSchemas, mixinFragments,
+                    mixinPropertyInfos);
+            log.debug("Fragments for facet " + type.getName() + ": "
+                    + getMixinFragments(type.getName()));
         }
-
-        if (!repositoryDescriptor.fulltextDisabled) {
-            // this needs mixin schemas to be computed as well
-            inferFulltextInfoByFragment();
+        // second pass to get subtypes (needs all supertypes)
+        for (DocumentType documentType : schemaManager.getDocumentTypes()) {
+            inferSubTypes(documentType);
         }
     }
 
-    protected List<String> getCommonSimpleFragments(String typeName) {
-        List<String> fragments = COMMON_SIMPLE_FRAGMENTS;
+    private Set<String> getCommonFragments(String typeName) {
+        Set<String> fragments = new HashSet<String>(5);
+        fragments.add(VERSION_TABLE_NAME);
+        fragments.add(ACL_TABLE_NAME);
+        fragments.add(MISC_TABLE_NAME);
         if (!repositoryDescriptor.fulltextDisabled
                 && fulltextInfo.isFulltextIndexable(typeName)) {
-            fragments = new ArrayList<String>(fragments);
             fragments.add(FULLTEXT_TABLE_NAME);
         }
         return fragments;
+    }
+
+    private Set<String> getCommonFragmentsPrefetched() {
+        Set<String> fragments = new HashSet<String>(5);
+        fragments.add(VERSION_TABLE_NAME);
+        fragments.add(ACL_TABLE_NAME);
+        fragments.add(MISC_TABLE_NAME);
+        return fragments;
+    }
+
+    /**
+     * For a doctype or mixin type, init the schemas-related structures.
+     */
+    private void initDocTypeOrMixinModel(CompositeType compositeType,
+            Map<String, Set<String>> schemasMap,
+            Map<String, Set<String>> fragmentsMap,
+            Map<String, Map<String, ModelProperty>> propertyInfoMap)
+            throws StorageException {
+        String typeName = compositeType.getName();
+        Set<String> schemaNames = new HashSet<String>();
+        Set<String> fragmentNames = new HashSet<String>();
+        if (compositeType instanceof DocumentType) {
+            fragmentNames.addAll(getCommonFragments(typeName));
+        }
+        for (Schema schema : compositeType.getSchemas()) {
+            if (schema == null) {
+                // happens when a type refers to a nonexistent schema
+                // TODO log and avoid nulls earlier
+                continue;
+            }
+            schemaNames.add(schema.getName());
+            try {
+                fragmentNames.addAll(initSchemaModel(schema));
+            } catch (StorageException e) {
+                throw new StorageException(
+                        String.format(
+                                "Error initializing schema '%s' for composite type '%s'",
+                                schema.getName(), typeName), e);
+            }
+            inferSchemaPropertyPaths(schema);
+        }
+        schemasMap.put(typeName, schemaNames);
+        fragmentsMap.put(typeName, fragmentNames);
+        inferPropertyInfos(propertyInfoMap, typeName, schemaNames);
+    }
+
+    private void initDocTypePrefetch(DocumentType docType) {
+        String docTypeName = docType.getName();
+        PrefetchInfo prefetch = docType.getPrefetchInfo();
+        if (prefetch != null) {
+            Set<String> documentTypeFragments = getTypeFragments(docTypeName);
+            for (String fieldName : prefetch.getFields()) {
+                // prefetch all the relevant fragments
+                // TODO deal with full xpath
+                String fragment = fieldFragment.get(fieldName);
+                if (fragment != null) {
+                    // checks that the field actually belongs
+                    // to the type
+                    if (documentTypeFragments.contains(fragment)) {
+                        addDocTypePrefetchedFragments(docTypeName,
+                                Collections.singleton(fragment));
+                    }
+                }
+            }
+            for (String schemaName : prefetch.getSchemas()) {
+                Set<String> fragments = schemaFragments.get(schemaName);
+                if (fragments != null) {
+                    addDocTypePrefetchedFragments(docTypeName, fragments);
+                }
+            }
+        }
+        // always prefetch ACLs, versions, misc (for lifecycle)
+        addDocTypePrefetchedFragments(docTypeName,
+                getCommonFragmentsPrefetched());
+
+        log.debug("Fragments for type " + docTypeName + ": "
+                + getTypeFragments(docTypeName) + ", prefetch: "
+                + getTypePrefetchedFragments(docTypeName));
+    }
+
+    private void initDocTypeMixins(DocumentType docType) {
+        String docTypeName = docType.getName();
+        Set<String> mixins = docType.getFacets();
+        documentTypesMixins.put(docTypeName, new HashSet<String>(mixins));
+        for (String mixin : mixins) {
+            Set<String> mixinTypes = mixinsDocumentTypes.get(mixin);
+            if (mixinTypes == null) {
+                mixinsDocumentTypes.put(mixin,
+                        mixinTypes = new HashSet<String>());
+            }
+            mixinTypes.add(docTypeName);
+        }
+    }
+
+    private void inferSuperType(DocumentType docType) {
+        Type superType = docType.getSuperType();
+        if (superType != null) {
+            documentSuperTypes.put(docType.getName(), superType.getName());
+        }
+    }
+
+    private void inferSubTypes(DocumentType docType) {
+        String type = docType.getName();
+        String superType = type;
+        do {
+            Set<String> subTypes = documentSubTypes.get(superType);
+            if (subTypes == null) {
+                documentSubTypes.put(superType,
+                        subTypes = new HashSet<String>());
+            }
+            subTypes.add(type);
+            superType = documentSuperTypes.get(superType);
+        } while (superType != null);
     }
 
     /**
@@ -1349,35 +1286,34 @@ public class Model {
      * table.
      */
     private void initMainModel() {
-        addPropertyInfo(null, MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING,
+        addPropertyInfo(MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING,
                 HIER_TABLE_NAME, MAIN_PRIMARY_TYPE_KEY, true, null,
                 ColumnType.SYSNAME);
-        addPropertyInfo(null, MAIN_MIXIN_TYPES_PROP, PropertyType.STRING,
+        addPropertyInfo(MAIN_MIXIN_TYPES_PROP, PropertyType.STRING,
                 HIER_TABLE_NAME, MAIN_MIXIN_TYPES_KEY, false, null,
                 ColumnType.SYSNAMEARRAY);
-        addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
+        addPropertyInfo(MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
                 HIER_TABLE_NAME, MAIN_CHECKED_IN_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
-        addPropertyInfo(null, MAIN_BASE_VERSION_PROP, idPropertyType,
+        addPropertyInfo(MAIN_BASE_VERSION_PROP, idPropertyType,
                 HIER_TABLE_NAME, MAIN_BASE_VERSION_KEY, false, idCoreType,
                 ColumnType.NODEVAL);
-        addPropertyInfo(null, MAIN_MAJOR_VERSION_PROP, PropertyType.LONG,
+        addPropertyInfo(MAIN_MAJOR_VERSION_PROP, PropertyType.LONG,
                 HIER_TABLE_NAME, MAIN_MAJOR_VERSION_KEY, false,
                 LongType.INSTANCE, ColumnType.INTEGER);
-        addPropertyInfo(null, MAIN_MINOR_VERSION_PROP, PropertyType.LONG,
+        addPropertyInfo(MAIN_MINOR_VERSION_PROP, PropertyType.LONG,
                 HIER_TABLE_NAME, MAIN_MINOR_VERSION_KEY, false,
                 LongType.INSTANCE, ColumnType.INTEGER);
-        addPropertyInfo(null, MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN,
+        addPropertyInfo(MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN,
                 HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
         if (softDeleteEnabled) {
-            addPropertyInfo(null, MAIN_IS_DELETED_PROP, PropertyType.BOOLEAN,
+            addPropertyInfo(MAIN_IS_DELETED_PROP, PropertyType.BOOLEAN,
                     HIER_TABLE_NAME, MAIN_IS_DELETED_KEY, true,
                     BooleanType.INSTANCE, ColumnType.BOOLEAN);
-            addPropertyInfo(null, MAIN_DELETED_TIME_PROP,
-                    PropertyType.DATETIME, HIER_TABLE_NAME,
-                    MAIN_DELETED_TIME_KEY, true, DateType.INSTANCE,
-                    ColumnType.TIMESTAMP);
+            addPropertyInfo(MAIN_DELETED_TIME_PROP, PropertyType.DATETIME,
+                    HIER_TABLE_NAME, MAIN_DELETED_TIME_KEY, true,
+                    DateType.INSTANCE, ColumnType.TIMESTAMP);
         }
     }
 
@@ -1385,11 +1321,12 @@ public class Model {
      * Special model for the "misc" table (lifecycle, dirty.).
      */
     private void initMiscModel() {
-        addPropertyInfo(null, MISC_LIFECYCLE_POLICY_PROP, PropertyType.STRING,
-                MISC_TABLE_NAME, MISC_LIFECYCLE_POLICY_KEY, false,
+        String fragmentName = MISC_TABLE_NAME;
+        addPropertyInfo(MISC_LIFECYCLE_POLICY_PROP, PropertyType.STRING,
+                fragmentName, MISC_LIFECYCLE_POLICY_KEY, false,
                 StringType.INSTANCE, ColumnType.SYSNAME);
-        addPropertyInfo(null, MISC_LIFECYCLE_STATE_PROP, PropertyType.STRING,
-                MISC_TABLE_NAME, MISC_LIFECYCLE_STATE_KEY, false,
+        addPropertyInfo(MISC_LIFECYCLE_STATE_PROP, PropertyType.STRING,
+                fragmentName, MISC_LIFECYCLE_STATE_KEY, false,
                 StringType.INSTANCE, ColumnType.SYSNAME);
     }
 
@@ -1397,38 +1334,38 @@ public class Model {
      * Special model for the versions table.
      */
     private void initVersionsModel() {
-        addPropertyInfo(null, VERSION_VERSIONABLE_PROP, idPropertyType,
+        addPropertyInfo(VERSION_VERSIONABLE_PROP, idPropertyType,
                 VERSION_TABLE_NAME, VERSION_VERSIONABLE_KEY, false, idCoreType,
                 ColumnType.NODEVAL);
-        addPropertyInfo(null, VERSION_CREATED_PROP, PropertyType.DATETIME,
+        addPropertyInfo(VERSION_CREATED_PROP, PropertyType.DATETIME,
                 VERSION_TABLE_NAME, VERSION_CREATED_KEY, false,
                 DateType.INSTANCE, ColumnType.TIMESTAMP);
-        addPropertyInfo(null, VERSION_LABEL_PROP, PropertyType.STRING,
+        addPropertyInfo(VERSION_LABEL_PROP, PropertyType.STRING,
                 VERSION_TABLE_NAME, VERSION_LABEL_KEY, false,
                 StringType.INSTANCE, ColumnType.SYSNAME);
-        addPropertyInfo(null, VERSION_DESCRIPTION_PROP, PropertyType.STRING,
+        addPropertyInfo(VERSION_DESCRIPTION_PROP, PropertyType.STRING,
                 VERSION_TABLE_NAME, VERSION_DESCRIPTION_KEY, false,
                 StringType.INSTANCE, ColumnType.STRING);
-        addPropertyInfo(null, VERSION_IS_LATEST_PROP, PropertyType.BOOLEAN,
+        addPropertyInfo(VERSION_IS_LATEST_PROP, PropertyType.BOOLEAN,
                 VERSION_TABLE_NAME, VERSION_IS_LATEST_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
-        addPropertyInfo(null, VERSION_IS_LATEST_MAJOR_PROP,
-                PropertyType.BOOLEAN, VERSION_TABLE_NAME,
-                VERSION_IS_LATEST_MAJOR_KEY, false, BooleanType.INSTANCE,
-                ColumnType.BOOLEAN);
+        addPropertyInfo(VERSION_IS_LATEST_MAJOR_PROP, PropertyType.BOOLEAN,
+                VERSION_TABLE_NAME, VERSION_IS_LATEST_MAJOR_KEY, false,
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
     }
 
     /**
      * Special model for the proxies table.
      */
     private void initProxiesModel() {
-        addPropertyInfo(PROXY_TYPE, PROXY_TARGET_PROP, idPropertyType,
+        String type = PROXY_TYPE;
+        addPropertyInfo(type, PROXY_TARGET_PROP, idPropertyType,
                 PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, idCoreType,
                 ColumnType.NODEIDFKNP);
-        addPropertyInfo(PROXY_TYPE, PROXY_VERSIONABLE_PROP, idPropertyType,
+        addPropertyInfo(type, PROXY_VERSIONABLE_PROP, idPropertyType,
                 PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false, idCoreType,
                 ColumnType.NODEVAL);
-        addTypeFragment(PROXY_TYPE, PROXY_TABLE_NAME);
+        addTypeFragments(type, Collections.singleton(PROXY_TABLE_NAME));
     }
 
     /**
@@ -1436,10 +1373,9 @@ public class Model {
      * see {@link SQLInfo#initFragmentSQL}.
      */
     private void initLocksModel() {
-        addPropertyInfo(null, LOCK_OWNER_PROP, PropertyType.STRING,
-                LOCK_TABLE_NAME, LOCK_OWNER_KEY, false, StringType.INSTANCE,
-                ColumnType.SYSNAME);
-        addPropertyInfo(null, LOCK_CREATED_PROP, PropertyType.DATETIME,
+        addPropertyInfo(LOCK_OWNER_PROP, PropertyType.STRING, LOCK_TABLE_NAME,
+                LOCK_OWNER_KEY, false, StringType.INSTANCE, ColumnType.SYSNAME);
+        addPropertyInfo(LOCK_CREATED_PROP, PropertyType.DATETIME,
                 LOCK_TABLE_NAME, LOCK_CREATED_KEY, false, DateType.INSTANCE,
                 ColumnType.TIMESTAMP);
     }
@@ -1448,22 +1384,22 @@ public class Model {
      * Special model for the fulltext table.
      */
     private void initFullTextModel() {
-        addPropertyInfo(null, FULLTEXT_JOBID_PROP, PropertyType.STRING,
+        addPropertyInfo(FULLTEXT_JOBID_PROP, PropertyType.STRING,
                 FULLTEXT_TABLE_NAME, FULLTEXT_JOBID_KEY, false,
                 StringType.INSTANCE, ColumnType.SYSNAME);
         for (String indexName : fulltextInfo.indexNames) {
             String suffix = getFulltextIndexSuffix(indexName);
             if (materializeFulltextSyntheticColumn) {
-                addPropertyInfo(null, FULLTEXT_FULLTEXT_PROP + suffix,
+                addPropertyInfo(FULLTEXT_FULLTEXT_PROP + suffix,
                         PropertyType.STRING, FULLTEXT_TABLE_NAME,
                         FULLTEXT_FULLTEXT_KEY + suffix, false,
                         StringType.INSTANCE, ColumnType.FTINDEXED);
             }
-            addPropertyInfo(null, FULLTEXT_SIMPLETEXT_PROP + suffix,
+            addPropertyInfo(FULLTEXT_SIMPLETEXT_PROP + suffix,
                     PropertyType.STRING, FULLTEXT_TABLE_NAME,
                     FULLTEXT_SIMPLETEXT_KEY + suffix, false,
                     StringType.INSTANCE, ColumnType.FTSTORED);
-            addPropertyInfo(null, FULLTEXT_BINARYTEXT_PROP + suffix,
+            addPropertyInfo(FULLTEXT_BINARYTEXT_PROP + suffix,
                     PropertyType.STRING, FULLTEXT_TABLE_NAME,
                     FULLTEXT_BINARYTEXT_KEY + suffix, false,
                     StringType.INSTANCE, ColumnType.FTSTORED);
@@ -1488,39 +1424,55 @@ public class Model {
         String fragmentName = ACL_TABLE_NAME;
         addCollectionFragmentInfos(fragmentName, PropertyType.COLL_ACL,
                 ACL_POS_KEY, keysType);
-        addPropertyInfo(null, ACL_PROP, PropertyType.COLL_ACL, fragmentName,
-                null, false, null, null);
+        addPropertyInfo(ACL_PROP, PropertyType.COLL_ACL, fragmentName, null,
+                false, null, null);
     }
 
     /**
-     * Creates the model for one schema or complex type.
-     *
-     * @return the fragment table name for this type, or {@code null} if this
-     *         type doesn't directly hold data
+     * Creates the model for a schema.
      */
-    private String initTypeModel(ComplexType complexType)
+    private Set<String> initSchemaModel(Schema schema) throws StorageException {
+        initComplexTypeModel(schema);
+        return schemaFragments.get(schema.getName());
+    }
+
+    /**
+     * Creates the model for a complex type or a schema. Recurses in complex
+     * types.
+     * <p>
+     * Adds the simple+collection fragments to {@link #typeFragments} or
+     * {@link #schemaFragments}.
+     */
+    private void initComplexTypeModel(ComplexType complexType)
             throws StorageException {
         String typeName = complexType.getName();
-        if (schemaFragment.containsKey(typeName)) {
-            return schemaFragment.get(typeName); // may be null
+        boolean isSchema = complexType instanceof Schema;
+        if (isSchema && schemaFragments.containsKey(typeName)) {
+            return;
+        } else if (!isSchema && typeFragments.containsKey(typeName)) {
+            return;
         }
+        Set<String> fragmentNames = new HashSet<String>(1);
 
         log.debug("Making model for type " + typeName);
 
         /** Initialized if this type has a table associated. */
-        String thisFragmentName = null;
         for (Field field : complexType.getFields()) {
             Type fieldType = field.getType();
             if (fieldType.isComplexType()) {
                 /*
                  * Complex type.
                  */
-                ComplexType fieldComplexType = (ComplexType) fieldType;
-                String subTypeName = fieldComplexType.getName();
-                String subFragmentName = initTypeModel(fieldComplexType);
-                addTypeFragment(subTypeName, subFragmentName);
+                initComplexTypeModel((ComplexType) fieldType);
             } else {
                 String propertyName = field.getName().getPrefixedName();
+                FieldDescriptor fieldDescriptor = null;
+                for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
+                    if (propertyName.equals(fd.field)) {
+                        fieldDescriptor = fd;
+                        break;
+                    }
+                }
                 if (fieldType.isListType()) {
                     Type listFieldType = ((ListType) fieldType).getFieldType();
                     if (listFieldType.isSimpleType()) {
@@ -1528,66 +1480,59 @@ public class Model {
                          * Array: use a collection table.
                          */
                         String fragmentName = collectionFragmentName(propertyName);
+                        String fragmentKey = COLL_TABLE_VALUE_KEY;
                         PropertyType propertyType = PropertyType.fromFieldType(
                                 listFieldType, true);
                         ColumnType type = ColumnType.fromFieldType(listFieldType);
                         if (type.spec == ColumnSpec.STRING) {
-                            for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
-                                if (propertyName.equals(fd.field)
-                                        && FIELD_TYPE_LARGETEXT.equals(fd.type)) {
-                                    type = ColumnType.CLOB;
-                                    break;
-                                }
+                            if (fieldDescriptor != null
+                                    && FIELD_TYPE_LARGETEXT.equals(fieldDescriptor.type)) {
+                                type = ColumnType.CLOB;
                             }
                             log.debug("  String array field '" + propertyName
                                     + "' using column type " + type);
                         }
-                        addPropertyInfo(typeName, propertyName, propertyType,
-                                fragmentName, COLL_TABLE_VALUE_KEY, false,
-                                null, type);
+                        addPropertyInfo(complexType, propertyName,
+                                propertyType, fragmentName, fragmentKey, false,
+                                null, null);
 
                         Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
                         keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
-                        keysType.put(COLL_TABLE_VALUE_KEY, type);
+                        keysType.put(fragmentKey, type);
                         addCollectionFragmentInfos(fragmentName, propertyType,
                                 COLL_TABLE_POS_KEY, keysType);
 
-                        addTypeCollectionFragment(typeName, fragmentName);
+                        fragmentNames.add(fragmentName);
                         addFieldFragment(field, fragmentName);
                     } else {
                         /*
                          * Complex list.
                          */
-                        String subFragmentName = initTypeModel((ComplexType) listFieldType);
-                        addTypeFragment(listFieldType.getName(),
-                                subFragmentName);
+                        initComplexTypeModel((ComplexType) listFieldType);
                     }
                 } else {
                     /*
                      * Primitive type.
                      */
                     String fragmentName = typeFragmentName(complexType);
+                    String fragmentKey = field.getName().getLocalName();
                     PropertyType propertyType = PropertyType.fromFieldType(
                             fieldType, false);
                     ColumnType type = ColumnType.fromField(field);
                     if (type.spec == ColumnSpec.STRING) {
                         // backward compat with largetext, since 5.4.2
-                        for (FieldDescriptor fd : repositoryDescriptor.schemaFields) {
-                            if (propertyName.equals(fd.field)
-                                    && FIELD_TYPE_LARGETEXT.equals(fd.type)) {
-                                if (!type.isUnconstrained() && !type.isClob()) {
-                                    log.warn("  String field '" + propertyName
-                                            + "' has a schema constraint to "
-                                            + type
-                                            + " but is specified as largetext,"
-                                            + " using CLOB for it");
-                                }
-                                type = ColumnType.CLOB;
-                                break;
+                        if (fieldDescriptor != null
+                                && FIELD_TYPE_LARGETEXT.equals(fieldDescriptor.type)) {
+                            if (!type.isUnconstrained() && !type.isClob()) {
+                                log.warn("  String field '" + propertyName
+                                        + "' has a schema constraint to "
+                                        + type
+                                        + " but is specified as largetext,"
+                                        + " using CLOB for it");
                             }
+                            type = ColumnType.CLOB;
                         }
                     }
-                    String fragmentKey = field.getName().getLocalName();
                     if (MAIN_KEY.equalsIgnoreCase(fragmentKey)) {
                         String msg = "A property cannot be named '"
                                 + fragmentKey
@@ -1598,32 +1543,33 @@ public class Model {
                     if (fragmentName.equals(UID_SCHEMA_NAME)
                             && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
                         // workaround: special-case the "uid" schema, put
-                        // major/minor
-                        // in the hierarchy table
+                        // major/minor in the hierarchy table
+                        fragmentName = HIER_TABLE_NAME;
                         fragmentKey = fragmentKey.equals(UID_MAJOR_VERSION_KEY) ? MAIN_MAJOR_VERSION_KEY
                                 : MAIN_MINOR_VERSION_KEY;
-                        addPropertyInfo(typeName, propertyName, propertyType,
-                                HIER_TABLE_NAME, fragmentKey, false, null, type);
-                    } else {
-                        addPropertyInfo(typeName, propertyName, propertyType,
-                                fragmentName, fragmentKey, false, null, type);
-                        // note that this type has a fragment
-                        thisFragmentName = fragmentName;
                     }
-                    addFieldFragment(field, fragmentName);
+                    addPropertyInfo(complexType, propertyName, propertyType,
+                            fragmentName, fragmentKey, false, null, type);
+                    if (!fragmentName.equals(HIER_TABLE_NAME)) {
+                        fragmentNames.add(fragmentName);
+                        addFieldFragment(field, fragmentName);
+                    }
                 }
             }
         }
 
-        schemaFragment.put(typeName, thisFragmentName); // may be null
-        return thisFragmentName;
+        if (isSchema) {
+            schemaFragments.put(typeName, fragmentNames);
+        } else {
+            addTypeFragments(typeName, fragmentNames);
+        }
     }
 
     private static String typeFragmentName(ComplexType type) {
         return type.getName();
     }
 
-    private String collectionFragmentName(String propertyName) {
+    private static String collectionFragmentName(String propertyName) {
         return propertyName;
     }
 }
