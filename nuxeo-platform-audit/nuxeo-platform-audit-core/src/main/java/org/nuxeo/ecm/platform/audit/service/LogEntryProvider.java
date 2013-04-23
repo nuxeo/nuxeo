@@ -52,6 +52,13 @@ public class LogEntryProvider {
     }
 
     protected void doPersist(LogEntry entry) {
+        // Set the log date in java right before saving to the database. We
+        // cannot set a static column definition to
+        // "TIMESTAMP DEFAULT CURRENT_TIMESTAMP" as MS SQL Server does not
+        // support the TIMESTAMP column type and generating a dynamic
+        // persistence configuration that would depend on the database is too
+        // complicated.
+        entry.setLogDate(new Date());
         em.persist(entry);
     }
 
