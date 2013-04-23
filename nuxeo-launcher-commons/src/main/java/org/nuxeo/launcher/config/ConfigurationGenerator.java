@@ -1351,6 +1351,11 @@ public class ConfigurationGenerator {
      */
     public static void checkPortAvailable(InetAddress address, int port)
             throws ConfigurationException {
+        if ((port == 0) || (port == -1)) {
+            log.warn("Port is set to " + Integer.toString(port) +
+                     " - assuming it is disabled - skipping availability check");
+            return;
+        }
         if (port < MIN_PORT || port > MAX_PORT) {
             throw new IllegalArgumentException("Invalid port: " + port);
         }
