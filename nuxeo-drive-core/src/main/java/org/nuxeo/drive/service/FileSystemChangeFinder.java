@@ -46,9 +46,11 @@ public interface FileSystemChangeFinder extends Serializable {
      * @param lastActiveRootRefs docrefs of the roots as reported by the last
      *            successful synchronization (can be empty or null)
      * @param activeRoots the currently active synchronization roots
-     * @param lastSuccessfulSyncDate the last successful synchronization date of
-     *            the user's device
-     * @param syncDate the current synchronization date
+     * @param lastSuccessfulSyncDate the last successful synchronization date as
+     *            measured on the server for this user device.
+     * @param syncDate the current synchronization date (upper bound on the date
+     *            of the changes to return). This date is typically obtained by
+     *            calling {@code getMostRecentChangeDate}
      * @param limit the maximum number of changes to fetch
      * @return the list of document changes
      * @throws TooManyChangesException if the number of changes found has
@@ -60,5 +62,13 @@ public interface FileSystemChangeFinder extends Serializable {
             Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots,
             long lastSuccessfulSyncDate, long syncDate, int limit)
             throws ClientException, TooManyChangesException;
+
+    /**
+     * Read the current time code to query for changes. The time is truncated to
+     * 0 milliseconds to have a consistent behavior across databases.
+     *
+     * Call to this method should be monotonic (or very nearly monotonic).
+     */
+    long getCurrentDate();
 
 }

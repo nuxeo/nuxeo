@@ -135,8 +135,11 @@ public class TestAuditFileSystemChangeFinder {
                 folder1, session);
         nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
                 folder2, session);
+        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
         changes = getChanges();
-        assertTrue(changes.isEmpty());
+        // Root registration events
+        assertEquals(2, changes.size());
 
         // Create 3 documents, only 2 in sync roots
         DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
@@ -241,12 +244,19 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
 
         changes = getChanges();
-        assertEquals(1, changes.size());
+        assertEquals(2, changes.size());
         change = changes.get(0);
         assertEquals("test", change.getRepositoryId());
         assertEquals("deleted", change.getEventId());
         assertEquals(doc3.getId(), change.getDocUuid());
         assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
+                change.getFileSystemItemId());
+
+        change = changes.get(1);
+        assertEquals("documentModified", change.getEventId());
+        assertEquals(folder2.getId(), change.getDocUuid());
+        assertEquals(
+                "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
                 change.getFileSystemItemId());
 
         // Too many changes
@@ -399,6 +409,8 @@ public class TestAuditFileSystemChangeFinder {
         // Register a root for someone else
         nuxeoDriveManager.registerSynchronizationRoot(otherUser, folder1,
                 session);
+        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         // Administrator does not see any change
         activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);

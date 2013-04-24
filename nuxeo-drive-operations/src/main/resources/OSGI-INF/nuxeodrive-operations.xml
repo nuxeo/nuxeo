@@ -22,6 +22,8 @@
     <operation class="org.nuxeo.drive.operations.NuxeoDriveRename" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveCanMove" />
     <operation class="org.nuxeo.drive.operations.NuxeoDriveMove" />
+    <operation
+      class="org.nuxeo.drive.operations.NuxeoDriveGenerateConflictedItemName" />
     <!-- For test purpose -->
     <operation
       class="org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests" />
@@ -32,7 +34,7 @@
     <operation
       class="org.nuxeo.drive.operations.test.NuxeoDriveSetVersioningOptions" />
     <operation
-      class="org.nuxeo.drive.operations.NuxeoDriveGenerateConflictedItemName" />
+      class="org.nuxeo.drive.operations.test.NuxeoDriveCreateTestDocuments" />
   </extension>
 
 </component>
