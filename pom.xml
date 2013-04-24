@@ -164,9 +164,7 @@
     <nuxeo.platform.version>5.7-SNAPSHOT</nuxeo.platform.version>
     <seam.version>2.1.0.SP1</seam.version>
 
-    <!-- osgi pax test property -->
     <org.ops4j.pax.version>3.0.0</org.ops4j.pax.version>
-    <!-- slf4j property -->
     <org.slf4j.version>1.7.5</org.slf4j.version>
   </properties>
 
@@ -3851,6 +3849,11 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <!-- test scope -->
