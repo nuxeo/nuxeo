@@ -77,8 +77,8 @@ public class DataFetch {
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
 
-        PageProvider<?> provider = pps.getPageProvider("", desc, sortInfos,
-                targetPageSize, targetPage, props, null, parameters);
+        PageProvider<?> provider = pps.getPageProvider("", desc, null,
+                sortInfos, targetPageSize, targetPage, props, parameters);
         // TODO: edit pps implementation to really set parameters!
         provider.setPageSize(pageSize);
         provider.setMaxPageSize(pageSize);
