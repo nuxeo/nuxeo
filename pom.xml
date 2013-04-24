@@ -163,6 +163,11 @@
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>5.7-SNAPSHOT</nuxeo.platform.version>
     <seam.version>2.1.0.SP1</seam.version>
+
+    <!-- osgi pax test property -->
+    <org.ops4j.pax.version>3.0.0</org.ops4j.pax.version>
+    <!-- slf4j property -->
+    <org.slf4j.version>1.7.5</org.slf4j.version>
   </properties>
 
   <dependencyManagement>
@@ -2340,8 +2345,22 @@
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-parent</artifactId>
-        <version>1.7.5</version>
+        <artifactId>slf4j-api</artifactId>
+        <version>${org.slf4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${org.slf4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.cal10n</groupId>
+        <artifactId>cal10n-api</artifactId>
+        <version>0.7.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -3766,12 +3785,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient-osgi</artifactId>
-        <version>4.2.4</version>
+        <version>${apache.httpcomponents.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-osgi</artifactId>
-        <version>4.2.4</version>
+        <version>${apache.httpcomponents.version}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -3787,19 +3806,19 @@
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-junit4</artifactId>
-        <version>3.0.0</version>
+        <version>${org.ops4j.pax.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-link-mvn</artifactId>
-        <version>3.0.0</version>
+        <version>${org.ops4j.pax.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-container-native</artifactId>
-        <version>3.0.0</version>
+        <version>${org.ops4j.pax.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
