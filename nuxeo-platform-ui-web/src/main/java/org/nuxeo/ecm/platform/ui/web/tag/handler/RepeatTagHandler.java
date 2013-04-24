@@ -36,7 +36,6 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
@@ -55,6 +54,11 @@ public class RepeatTagHandler extends TagHandler {
 
     protected static final DataModel EMPTY_MODEL = new ListDataModel(
             Collections.emptyList());
+
+    /**
+     * @since 5.7
+     */
+    protected static final String ITERATION_VAR_PREFIX = "nxuRepeat_";
 
     /**
      * @since 5.7
@@ -118,13 +122,7 @@ public class RepeatTagHandler extends TagHandler {
         itemsId = getAttribute("itemsId");
         value = getAttribute("value");
         var = getAttribute("var");
-        if (var != null && !var.isLiteral()) {
-            throw new TagAttributeException(tag, var, "Must be literal");
-        }
         index = getAttribute("index");
-        if (index != null && !index.isLiteral()) {
-            throw new TagAttributeException(tag, index, "Must be literal");
-        }
         status = getAttribute("status");
         begin = getAttribute("begin");
         end = getAttribute("end");
@@ -176,11 +174,43 @@ public class RepeatTagHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        FaceletHandler nextHandler = this.nextHandler;
+        TagAttribute varStatusAttr = varStatus;
+        if (index != null) {
+            // wrap the next handler in a set tag handler to expose the index
+            // value from the varStatus attribute.
+            String indexValue = index.getValue(ctx);
+            if (!StringUtils.isBlank(indexValue)) {
+                String varStatusValue = varStatus != null ? varStatus.getValue(ctx)
+                        : null;
+                if (StringUtils.isBlank(varStatusValue)) {
+                    // need to create and set it as an attribute for the index
+                    // to be exposed
+                    varStatusAttr = createAttribute(this.config, "varStatus",
+                            getVarName(String.format("%s_%s", indexValue,
+                                    "varStatus")));
+                } else {
+                    varStatusAttr = createAttribute(this.config, "varStatus",
+                            varStatusValue);
+                }
+                TagAttributes indexVarAttrs = new TagAttributes(
+                        new TagAttribute[] {
+                                createAttribute(this.config, "var", indexValue),
+                                createAttribute(this.config, "value",
+                                        String.format("#{%s.index}",
+                                                varStatusAttr.getValue())) });
+                TagConfig indexVarConfig = TagConfigFactory.createTagConfig(
+                        this.config, this.tagId, indexVarAttrs,
+                        this.nextHandler);
+                nextHandler = new SetTagHandler(indexVarConfig);
+            }
+        }
+
         List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
         forEachAttrs.add(createAttribute(this.config, "items",
-                "#{nuxRepeatItems}"));
+                String.format("#{%s}", getVarName("items"))));
         forEachAttrs.addAll(copyAttributes(this.config, var, begin, end, step,
-                varStatus, tranzient));
+                varStatusAttr, tranzient));
         TagConfig forEachConfig = TagConfigFactory.createTagConfig(this.config,
                 this.tagId,
                 new TagAttributes(forEachAttrs.toArray(new TagAttribute[] {})),
@@ -190,7 +220,7 @@ public class RepeatTagHandler extends TagHandler {
         String setTagConfigId = getTagConfigId(ctx);
         TagAttribute itemsAttr = getItemsAttribute();
         TagAttributes aliasAttrs = new TagAttributes(new TagAttribute[] {
-                createAttribute(this.config, "var", "nuxRepeatItems"),
+                createAttribute(this.config, "var", getVarName("items")),
                 createAttribute(this.config, "value",
                         itemsAttr != null ? itemsAttr.getValue() : null),
                 createAttribute(this.config, "cache", "true") });
@@ -200,6 +230,10 @@ public class RepeatTagHandler extends TagHandler {
 
         // apply
         handler.apply(ctx, parent);
+    }
+
+    protected String getVarName(String id) {
+        return String.format("%s%s", ITERATION_VAR_PREFIX, id);
     }
 
     protected TagAttribute createAttribute(TagConfig tagConfig, String name,
