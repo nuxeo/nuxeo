@@ -171,13 +171,13 @@ public class ResultSetPageProviderOperation {
                 desc.getProperties().put("maxResults", maxResults);
             }
             pp = (CoreQueryAndFetchPageProvider) pps.getPageProvider("", desc,
-                    sortInfos, targetPageSize, targetPage, props, null,
+                    null, sortInfos, targetPageSize, targetPage, props,
                     parameters);
 
         } else {
             pp = (PageProvider<Map<String, Serializable>>) pps.getPageProvider(
-                    providerName, sortInfos, targetPageSize, targetPage, props,
-                    null, parameters);
+                    providerName, null, sortInfos, targetPageSize, targetPage,
+                    props, parameters);
         }
         return new PaginableRecordSetImpl(pp);
 

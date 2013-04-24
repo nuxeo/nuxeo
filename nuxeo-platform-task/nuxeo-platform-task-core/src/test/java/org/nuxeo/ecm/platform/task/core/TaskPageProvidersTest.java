@@ -116,8 +116,8 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
-                "current_user_tasks", null, null, null, properties,
-                null, (Object[]) null);
+                "current_user_tasks", null, null, null, null,
+                properties, (Object[]) null);
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals(1, tasks.size());

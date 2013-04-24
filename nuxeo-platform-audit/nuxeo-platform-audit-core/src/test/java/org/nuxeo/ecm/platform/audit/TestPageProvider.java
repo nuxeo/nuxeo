@@ -133,8 +133,8 @@ public class TestPageProvider extends RepositoryOSGITestCase {
                 gppdef.getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("GetAllEntries", null,
-                Long.valueOf(5), Long.valueOf(0),
-                new HashMap<String, Serializable>(), null);
+                null, Long.valueOf(5),
+                Long.valueOf(0), new HashMap<String, Serializable>());
 
         assertNotNull(pp);
 
@@ -182,8 +182,8 @@ public class TestPageProvider extends RepositoryOSGITestCase {
                 gppdef.getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("GetAllEntriesInCategory",
-                null, Long.valueOf(2), Long.valueOf(0),
-                new HashMap<String, Serializable>(), null, "category7");
+                null, null, Long.valueOf(2),
+                Long.valueOf(0), new HashMap<String, Serializable>(), "category7");
 
         assertNotNull(pp);
 
@@ -226,8 +226,8 @@ public class TestPageProvider extends RepositoryOSGITestCase {
                 gppdef.getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider(
-                "GetAllEntriesForDocumentInCategory", null, Long.valueOf(2),
-                Long.valueOf(0), new HashMap<String, Serializable>(), null, "uuid");
+                "GetAllEntriesForDocumentInCategory", null, null,
+                Long.valueOf(2), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
@@ -278,8 +278,8 @@ public class TestPageProvider extends RepositoryOSGITestCase {
                 gppdef.getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider(
-                "GetAllEntriesForDocumentInCategories", null, Long.valueOf(2),
-                Long.valueOf(0), new HashMap<String, Serializable>(), null, "uuid");
+                "GetAllEntriesForDocumentInCategories", null, null,
+                Long.valueOf(2), Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
@@ -327,8 +327,8 @@ public class TestPageProvider extends RepositoryOSGITestCase {
                 gppdef.getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("GetAllEntriesBetween2Dates",
-                null, Long.valueOf(6), Long.valueOf(0),
-                new HashMap<String, Serializable>(), null, "uuid");
+                null, null, Long.valueOf(6),
+                Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("File");
@@ -439,8 +439,8 @@ public class TestPageProvider extends RepositoryOSGITestCase {
                 gppdef.getPageProviderClass().getSimpleName());
 
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER",
-                null, Long.valueOf(6), Long.valueOf(0),
-                new HashMap<String, Serializable>(), null, "uuid");
+                null, null, Long.valueOf(6),
+                Long.valueOf(0), new HashMap<String, Serializable>(), "uuid");
 
         openSession();
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
