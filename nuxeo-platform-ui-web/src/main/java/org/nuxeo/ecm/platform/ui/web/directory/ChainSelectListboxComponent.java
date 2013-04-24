@@ -39,7 +39,6 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
  */
 public class ChainSelectListboxComponent extends UIInput {
 
@@ -253,7 +252,6 @@ public class ChainSelectListboxComponent extends UIInput {
     }
 
     /**
-     *
      * @return position of this component in the parent children list
      */
     public Integer getIndex() {
@@ -311,7 +309,9 @@ public class ChainSelectListboxComponent extends UIInput {
         index = getIndex();
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        if (!displayObsoleteEntries) {
+        Boolean displayObsolete = getBooleanProperty("displayObsoleteEntries",
+                Boolean.FALSE);
+        if (!displayObsolete) {
             filter.put("obsolete", 0);
         }
 
@@ -352,17 +352,21 @@ public class ChainSelectListboxComponent extends UIInput {
             String id = (String) item.getValue();
             String label = item.getLabel();
             String translatedLabel = label;
+            Boolean localize = getBooleanProperty("localize", Boolean.FALSE);
             if (localize) {
                 translatedLabel = translate(label);
             }
             item.setLocalizedLabel(translatedLabel);
 
             String displayedLabel = translatedLabel;
+            Boolean displayIdAndLabel = getBooleanProperty("displayIdAndLabel",
+                    Boolean.FALSE);
             if (displayIdAndLabel) {
                 displayedLabel = id + displayIdAndLabelSeparator + label;
             }
             item.setDisplayedLabel(displayedLabel);
         }
+        String ordering = getStringProperty("ordering", "");
         if (ordering != null && !"".equals(ordering)) {
             Collections.sort(list, new DirectorySelectItemComparator(ordering));
         }
