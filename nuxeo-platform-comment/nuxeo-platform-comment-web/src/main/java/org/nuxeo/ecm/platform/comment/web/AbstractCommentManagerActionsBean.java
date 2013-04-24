@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -523,6 +524,9 @@ public abstract class AbstractCommentManagerActionsBean implements
         commentStarted = false;
         savedReplyCommentId = null;
         newContent = null;
+        // NXP-11462: reset factory to force comment fetching after the new
+        // comment is added
+        Contexts.getEventContext().remove("documentThreadedComments");
     }
 
 }
