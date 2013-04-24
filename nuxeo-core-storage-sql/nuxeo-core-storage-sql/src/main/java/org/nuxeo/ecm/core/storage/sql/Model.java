@@ -275,6 +275,12 @@ public class Model {
     // type for core properties
     protected final Type idCoreType;
 
+    /**
+     * If true, the misc columns are added to hierarchy, not to a separate misc
+     * table.
+     */
+    protected final boolean miscInHierarchy;
+
     protected final RepositoryDescriptor repositoryDescriptor;
 
     /** Per-doctype list of schemas. */
@@ -422,6 +428,8 @@ public class Model {
         documentSubTypes = new HashMap<String, Set<String>>();
 
         specialPropertyTypes = new HashMap<String, Type>();
+
+        miscInHierarchy = false;
 
         initMainModel();
         initVersionsModel();
@@ -1156,7 +1164,9 @@ public class Model {
         Set<String> fragments = new HashSet<String>(5);
         fragments.add(VERSION_TABLE_NAME);
         fragments.add(ACL_TABLE_NAME);
-        fragments.add(MISC_TABLE_NAME);
+        if (!miscInHierarchy) {
+            fragments.add(MISC_TABLE_NAME);
+        }
         if (!repositoryDescriptor.fulltextDisabled
                 && fulltextInfo.isFulltextIndexable(typeName)) {
             fragments.add(FULLTEXT_TABLE_NAME);
@@ -1168,7 +1178,9 @@ public class Model {
         Set<String> fragments = new HashSet<String>(5);
         fragments.add(VERSION_TABLE_NAME);
         fragments.add(ACL_TABLE_NAME);
-        fragments.add(MISC_TABLE_NAME);
+        if (!miscInHierarchy) {
+            fragments.add(MISC_TABLE_NAME);
+        }
         return fragments;
     }
 
@@ -1321,7 +1333,8 @@ public class Model {
      * Special model for the "misc" table (lifecycle, dirty.).
      */
     private void initMiscModel() {
-        String fragmentName = MISC_TABLE_NAME;
+        String fragmentName = miscInHierarchy ? HIER_TABLE_NAME
+                : MISC_TABLE_NAME;
         addPropertyInfo(MISC_LIFECYCLE_POLICY_PROP, PropertyType.STRING,
                 fragmentName, MISC_LIFECYCLE_POLICY_KEY, false,
                 StringType.INSTANCE, ColumnType.SYSNAME);

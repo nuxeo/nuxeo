@@ -2321,16 +2321,27 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // check computed prefetch info
         Model model = ((SessionImpl) session).getModel();
-        assertEquals(
-                new HashSet<String>(Arrays.asList("testschema", "tst:subjects",
-                        "tst:bignotes", "tst:tags", //
-                        "acls", "versions", "misc")),
+        HashSet<String> expectedFragments = new HashSet<String>(Arrays.asList(
+                "testschema", "tst:subjects", "tst:bignotes", "tst:tags",
+                "acls", "versions"));
+        if (!model.miscInHierarchy) {
+            expectedFragments.add(Model.MISC_TABLE_NAME);
+        }
+        assertEquals(expectedFragments,
                 model.getTypePrefetchedFragments("TestDoc"));
-        assertEquals(new HashSet<String>(Arrays.asList("testschema2", //
-                "acls", "versions", "misc")),
+        expectedFragments = new HashSet<String>(Arrays.asList("testschema2",
+                "acls", "versions"));
+        if (!model.miscInHierarchy) {
+            expectedFragments.add(Model.MISC_TABLE_NAME);
+        }
+        assertEquals(expectedFragments,
                 model.getTypePrefetchedFragments("TestDoc2"));
-        assertEquals(new HashSet<String>(Arrays.asList("tst:subjects", //
-                "acls", "versions", "misc")),
+        expectedFragments = new HashSet<String>(Arrays.asList("tst:subjects",
+                "acls", "versions"));
+        if (!model.miscInHierarchy) {
+            expectedFragments.add(Model.MISC_TABLE_NAME);
+        }
+        assertEquals(expectedFragments,
                 model.getTypePrefetchedFragments("TestDoc3"));
 
         Node root = session.getRootNode();

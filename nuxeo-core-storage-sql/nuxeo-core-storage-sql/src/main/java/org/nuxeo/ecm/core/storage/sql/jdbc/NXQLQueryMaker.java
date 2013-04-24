@@ -1316,9 +1316,9 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected Column getSpecialColumn(String name) {
+            String propertyName = null;
             Table table = null;
-            String fragmentName = null;
-            String fragmentKey;
+            String fragmentKey = null;
             if (NXQL.ECM_UUID.equals(name)) {
                 table = hierTable;
                 fragmentKey = model.MAIN_KEY;
@@ -1342,35 +1342,22 @@ public class NXQLQueryMaker implements QueryMaker {
                 throw new QueryMakerException("Cannot use non-toplevel " + name
                         + " in query");
             } else if (NXQL.ECM_LIFECYCLESTATE.equals(name)) {
-                fragmentName = model.MISC_TABLE_NAME;
-                fragmentKey = model.MISC_LIFECYCLE_STATE_KEY;
+                propertyName = model.MISC_LIFECYCLE_STATE_PROP;
             } else if (NXQL.ECM_VERSIONLABEL.equals(name)) {
-                fragmentName = model.VERSION_TABLE_NAME;
-                fragmentKey = model.VERSION_LABEL_KEY;
+                propertyName = model.VERSION_LABEL_PROP;
             } else if (NXQL.ECM_LOCK.equals(name)
                     || NXQL.ECM_LOCK_OWNER.equals(name)) {
-                fragmentName = model.LOCK_TABLE_NAME;
-                fragmentKey = model.LOCK_OWNER_KEY;
+                propertyName = model.LOCK_OWNER_PROP;
             } else if (NXQL.ECM_LOCK_CREATED.equals(name)) {
-                fragmentName = model.LOCK_TABLE_NAME;
-                fragmentKey = model.LOCK_CREATED_KEY;
+                propertyName = model.LOCK_CREATED_PROP;
             } else if (NXQL.ECM_PROXY_TARGETID.equals(name)) {
-                if (proxyTable != null) {
-                    table = proxyTable;
-                } else {
-                    fragmentName = model.PROXY_TABLE_NAME;
-                }
+                table = proxyTable;
                 fragmentKey = model.PROXY_TARGET_KEY;
             } else if (NXQL.ECM_PROXY_VERSIONABLEID.equals(name)) {
-                if (proxyTable != null) {
-                    table = proxyTable;
-                } else {
-                    fragmentName = model.PROXY_TABLE_NAME;
-                }
+                table = proxyTable;
                 fragmentKey = model.PROXY_VERSIONABLE_KEY;
             } else if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
-                fragmentName = model.FULLTEXT_TABLE_NAME;
-                fragmentKey = model.FULLTEXT_JOBID_KEY;
+                propertyName = model.FULLTEXT_JOBID_PROP;
             } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " must be used as left-hand operand");
@@ -1401,7 +1388,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 Table rel = getFragmentTable(Join.INNER, dataHierTable,
                         relContextKey, RELATION_TABLE, "source", -1, false,
                         null);
-                fragmentName = model.HIER_TABLE_NAME;
+                String fragmentName = model.HIER_TABLE_NAME;
                 fragmentKey = model.HIER_CHILD_NAME_KEY;
                 String hierContextKey = "_tag_hierarchy" + suffix;
                 table = getFragmentTable(Join.INNER, rel, hierContextKey,
@@ -1410,8 +1397,15 @@ public class NXQLQueryMaker implements QueryMaker {
                 throw new QueryMakerException("No such property: " + name);
             }
             if (table == null) {
-                table = getFragmentTable(dataHierTable, fragmentName,
-                        fragmentName, -1, false);
+                ModelProperty propertyInfo = model.getPropertyInfo(propertyName);
+                String fragmentName = propertyInfo.fragmentName;
+                fragmentKey = propertyInfo.fragmentKey;
+                if (fragmentName.equals(model.HIER_TABLE_NAME)) {
+                    table = dataHierTable;
+                } else {
+                    table = getFragmentTable(dataHierTable, fragmentName,
+                            fragmentName, -1, false);
+                }
             }
             return table.getColumn(fragmentKey);
         }
