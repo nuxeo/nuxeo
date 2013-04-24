@@ -82,7 +82,7 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.ALL_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, properties, null, "");
+                PROVIDER_NAME, null, null, null, null, properties, "");
         List<DocumentModel> users = usersProvider.getCurrentPage();
         assertNotNull(users);
         assertEquals(6, users.size());
@@ -106,7 +106,7 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
        Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, properties, null, "j");
+                PROVIDER_NAME, null, null, null, null, properties, "j");
         List<DocumentModel> users = usersProvider.getCurrentPage();
         assertNotNull(users);
         assertEquals(2, users.size());
@@ -121,7 +121,7 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.TABBED_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, properties, null, "B");
+                PROVIDER_NAME, null, null, null, null, properties, "B");
         List<DocumentModel> users = usersProvider.getCurrentPage();
         assertNotNull(users);
         assertEquals(1, users.size());

@@ -57,33 +57,33 @@ public interface PageProviderService extends Serializable {
      *
      * @param name the name that will be set on the provider.
      * @param desc the definition used to build the provider instance.
+     * @param searchDocument the search document to be used by the provider.
      * @param sortInfos sort information to set on the provider instance.
      * @param pageSize the provider page size.
      * @param currentPage the provider current page index.
      * @param properties the provider properties
-     * @param searchDocument the search document to be used by the provider.
      * @param parameters the provider parameters.
      * @return the page provider instance.
      * @throws ClientException if the page provider instantiation fails.
      * @since 5.7
      */
     PageProvider<?> getPageProvider(String name, PageProviderDefinition desc,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, DocumentModel searchDocument,
+            DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Map<String, Serializable> properties,
             Object... parameters) throws ClientException;
 
     /**
      * Returns an instance of page provider with given name and search document
      * model.
      *
-     * @see #getPageProvider(String, PageProviderDefinition, List, Long, Long,
-     *      Map, DocumentModel, Object...)
+     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long,
+     *      Long, Map, Object...)
      * @throws ClientException if the page provider instantiation fails.
      * @since 5.7
      */
-    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos,
-            Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, DocumentModel searchDocument,
+    PageProvider<?> getPageProvider(String name, DocumentModel searchDocument,
+            List<SortInfo> sortInfos, Long pageSize,
+            Long currentPage, Map<String, Serializable> properties,
             Object... parameters) throws ClientException;
 
 }
