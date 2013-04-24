@@ -1546,6 +1546,14 @@ public class Model {
                             type = ColumnType.CLOB;
                         }
                     }
+                    if (fieldDescriptor != null) {
+                        if (fieldDescriptor.table != null) {
+                            fragmentName = fieldDescriptor.table;
+                        }
+                        if (fieldDescriptor.column != null) {
+                            fragmentKey = fieldDescriptor.column;
+                        }
+                    }
                     if (MAIN_KEY.equalsIgnoreCase(fragmentKey)) {
                         String msg = "A property cannot be named '"
                                 + fragmentKey

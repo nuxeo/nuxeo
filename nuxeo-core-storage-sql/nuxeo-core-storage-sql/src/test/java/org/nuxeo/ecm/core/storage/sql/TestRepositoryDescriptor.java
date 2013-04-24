@@ -95,16 +95,25 @@ public class TestRepositoryDescriptor {
     }
 
     @Test
-    public void testLargeTextFields() throws Exception {
+    public void testSchemaFields() throws Exception {
         assertNotNull(desc.schemaFields);
-        assertEquals(2, desc.schemaFields.size());
+        assertEquals(3, desc.schemaFields.size());
         FieldDescriptor fd;
         fd = desc.schemaFields.get(0);
         assertEquals("my:bignote", fd.field);
         assertEquals("biig", fd.type);
+        assertNull(fd.table);
+        assertNull(fd.column);
         fd = desc.schemaFields.get(1);
         assertEquals("foo", fd.field);
         assertEquals("xyz", fd.type);
+        assertNull(fd.table);
+        assertNull(fd.column);
+        fd = desc.schemaFields.get(2);
+        assertEquals("bar", fd.field);
+        assertEquals("bartype", fd.type);
+        assertEquals("bartable", fd.table);
+        assertEquals("barcol", fd.column);
     }
 
     @Test

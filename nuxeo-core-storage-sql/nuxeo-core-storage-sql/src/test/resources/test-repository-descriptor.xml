@@ -18,8 +18,9 @@
     <path>/nuxeo2</path>
   </connect>
   <schema>
-    <field type="biig">my:bignote</field>
-    <field type="xyz">foo</field>
+    <field type="biig">my:bignote</field> <!-- old syntax -->
+    <field name="foo" type="xyz" /> <!-- new syntax -->
+    <field name="bar" type="bartype" table="bartable" column="barcol" />
   </schema>
   <indexing>
     <excludedTypes>

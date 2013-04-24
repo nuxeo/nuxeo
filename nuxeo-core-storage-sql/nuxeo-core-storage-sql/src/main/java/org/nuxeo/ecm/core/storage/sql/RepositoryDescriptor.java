@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -69,21 +70,34 @@ public class RepositoryDescriptor {
         public FieldDescriptor() {
         }
 
-        public FieldDescriptor(String field, String type) {
-            this.field = field;
-            this.type = type;
-        }
-
         @XNode("@type")
         public String type;
 
-        @XNode
+        @XNode("@name")
         public String field;
+
+        public void setName(String name) {
+            if (!StringUtils.isBlank(name) && field == null) {
+                this.field = name;
+            }
+        }
+
+        // compat with older syntax
+        @XNode
+        public void setXNodeContent(String name) {
+            setName(name);
+        }
+
+        @XNode("@table")
+        public String table;
+
+        @XNode("@column")
+        public String column;
 
         @Override
         public String toString() {
             return this.getClass().getSimpleName() + '(' + field + ",type="
-                    + type + ")";
+                    + type + ",table=" + table + ",column=" + column + ")";
         }
     }
 
