@@ -289,7 +289,7 @@ public class DamSearchActions implements Serializable {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("coreSession", (Serializable) documentManager);
         return ((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                pageProviderName, null, null, null, properties, null, parameters)).getCurrentPage();
+                pageProviderName, null, null, null, properties, parameters)).getCurrentPage();
     }
 
     protected List<SelectItem> convertToSelectItems(List<DocumentModel> docs)
@@ -451,8 +451,8 @@ public class DamSearchActions implements Serializable {
             UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
             if (viewRoot != null) {
                 String viewId = viewRoot.getViewId();
-                // FIXME find a better way to update the current document only if we
-                // are on DAM
+                // FIXME find a better way to update the current document only
+                // if we are on DAM
                 if ("/dam/assets.xhtml".equals(viewId)) {
                     updateCurrentDocument();
                 }
