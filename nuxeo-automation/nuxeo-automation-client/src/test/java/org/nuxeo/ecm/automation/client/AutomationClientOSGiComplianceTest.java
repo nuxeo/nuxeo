@@ -14,6 +14,9 @@ package org.nuxeo.ecm.automation.client;
 
 import static org.ops4j.pax.exam.CoreOptions.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,33 +30,39 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.ExamReactorStrategy;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.options.DefaultCompositeOption;
 import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 /**
  * @since 5.7 Automation Client OSGi compliance test
  */
 @RunWith(JUnit4TestRunner.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
-public class ACOSGiComplianceTest {
+public class AutomationClientOSGiComplianceTest {
 
     @Inject
     private BundleContext bc;
 
     @Configuration
-    public Option[] config() {
+    public Option[] config() throws FileNotFoundException {
+        return options(baseBundle(), junitBundles(),
+                bundle("reference:file:target/classes"));
+    }
 
-        return options(
-                vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-                mavenBundle("org.nuxeo.ecm.automation",
-                        "nuxeo-automation-client", "5.7-SNAPSHOT"),
-                junitBundles());
+    // Inject all automation client dependencies
+    public DefaultCompositeOption baseBundle() throws FileNotFoundException {
+        DefaultCompositeOption options = new DefaultCompositeOption();
+        File dependenciesDir = new File("target/dependency");
+        for (File dependency : dependenciesDir.listFiles()) {
+            options.add(streamBundle(new FileInputStream(dependency)));
+        }
+        return options;
     }
 
     @Test
-    public void getHelloService() {
+    public void checkAutomationClientActive() {
         // Check if automation client bundle is loaded
         List<Bundle> bundleList = Arrays.asList(bc.getBundles());
         Bundle acBundle = null;
@@ -66,7 +75,5 @@ public class ACOSGiComplianceTest {
         Assert.assertNotNull(acBundle);
         // Check if automation client bundle is active
         Assert.assertTrue(org.osgi.framework.Bundle.ACTIVE == acBundle.getState());
-        // Check services from automation client
-        ServiceReference[] serviceReferences = acBundle.getRegisteredServices();
     }
 }
