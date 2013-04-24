@@ -87,7 +87,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
                 GroupsPageProvider.ALL_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, null, properties, "");
+                PROVIDER_NAME, null, null, null, properties, "");
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(5, groups.size());
@@ -111,7 +111,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         properties.put(GroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
                 GroupsPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, null, properties, "gr");
+                PROVIDER_NAME, null, null, null, properties, "gr");
         List<DocumentModel> groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(2, groups.size());
@@ -122,7 +122,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
 
         // check computed groups
         groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, null, properties, "Grp");
+                PROVIDER_NAME, null, null, null, properties, "Grp");
         groups = groupsProvider.getCurrentPage();
         assertNotNull(groups);
         assertEquals(2, groups.size());

@@ -1,22 +1,26 @@
 package org.nuxeo.ecm.platform.usermanager.providers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.usermanager.UserManager;import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase; /**
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+/**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class TestUsersPageProvider extends NXRuntimeTestCase {
@@ -80,9 +84,10 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
     @Test
     public void testUsersPageProviderAllMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.ALL_MODE);
+        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY,
+                UsersPageProvider.ALL_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, null, properties, "");
+                PROVIDER_NAME, null, null, null, properties, "");
         List<DocumentModel> users = usersProvider.getCurrentPage();
         assertNotNull(users);
         assertEquals(6, users.size());
@@ -103,10 +108,11 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
 
     @Test
     public void testUsersPageProviderSearchMode() throws ClientException {
-       Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.SEARCH_ONLY_MODE);
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY,
+                UsersPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, null, properties, "j");
+                PROVIDER_NAME, null, null, null, properties, "j");
         List<DocumentModel> users = usersProvider.getCurrentPage();
         assertNotNull(users);
         assertEquals(2, users.size());
@@ -119,9 +125,10 @@ public class TestUsersPageProvider extends NXRuntimeTestCase {
     @Test
     public void testUsersPageProviderTabbedMode() throws ClientException {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.TABBED_MODE);
+        properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY,
+                UsersPageProvider.TABBED_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                PROVIDER_NAME, null, null, null, null, properties, "B");
+                PROVIDER_NAME, null, null, null, properties, "B");
         List<DocumentModel> users = usersProvider.getCurrentPage();
         assertNotNull(users);
         assertEquals(1, users.size());

@@ -45,6 +45,21 @@ public interface PageProviderService extends Serializable {
     PageProviderDefinition getPageProviderDefinition(String name);
 
     /**
+     * Returns an instance of a page provider with given name and definition.
+     *
+     * @since 5.4
+     * @throws ClientException
+     * @deprecated since 5.7: use
+     *             {@link #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)}
+     *             with search document model as additional parameter
+     */
+    @Deprecated
+    PageProvider<?> getPageProvider(String name, PageProviderDefinition desc,
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters)
+            throws ClientException;
+
+    /**
      * Returns an instance of page provider with given name and definition.
      * <p>
      * Useful to share the definition between the page provider service, and
@@ -68,22 +83,40 @@ public interface PageProviderService extends Serializable {
      * @since 5.7
      */
     PageProvider<?> getPageProvider(String name, PageProviderDefinition desc,
-            DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties,
-            Object... parameters) throws ClientException;
+            DocumentModel searchDocument, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters)
+            throws ClientException;
 
     /**
-     * Returns an instance of page provider with given name and search document
-     * model.
+     * Returns an instance of page provider with given name.
      *
-     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long,
-     *      Long, Map, Object...)
+     * @param name the page provider name
+     * @param sortInfos sort information to set on the provider instance.
+     * @param pageSize the provider page size.
+     * @param currentPage the provider current page index.
+     * @param properties the provider properties
+     * @param parameters the provider parameters.
+     * @return the page provider instance.
+     * @throws ClientException if the page provider instantiation fails.
+     * @since 5.4
+     */
+    PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos,
+            Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters)
+            throws ClientException;
+
+    /**
+     * Returns an instance of page provider with given name.
+     *
+     * @see #getPageProvider(String, PageProviderDefinition, DocumentModel,
+     *      List, Long, Long, Map, Object...)
      * @throws ClientException if the page provider instantiation fails.
      * @since 5.7
      */
     PageProvider<?> getPageProvider(String name, DocumentModel searchDocument,
-            List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties,
-            Object... parameters) throws ClientException;
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage,
+            Map<String, Serializable> properties, Object... parameters)
+            throws ClientException;
 
 }
