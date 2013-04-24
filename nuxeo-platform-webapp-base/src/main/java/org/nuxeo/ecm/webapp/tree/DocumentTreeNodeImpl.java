@@ -256,8 +256,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                         sortInfos.add(new SortInfo("ecm:pos", true));
                     }
                     PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                            pageProviderName, sortInfos, null, null, props,
-                            null, new Object[] { getId() });
+                            pageProviderName, null, sortInfos, null, null,
+                            props, new Object[] { getId() });
                     documents = pp.getCurrentPage();
                     documents = filterAndSort(documents, !isOrderable);
                 } catch (Exception e) {

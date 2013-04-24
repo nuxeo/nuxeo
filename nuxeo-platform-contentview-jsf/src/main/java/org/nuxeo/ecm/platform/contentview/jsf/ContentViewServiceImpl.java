@@ -239,20 +239,20 @@ public class ContentViewServiceImpl extends DefaultComponent implements
 
         PageProvider<?> provider = null;
         if (refDesc != null && refDesc.isEnabled()) {
-            provider = ppService.getPageProvider(refDesc.getName(), sortInfos,
-                    pageSize, currentPage,
-                    resolvePageProviderProperties(refDesc.getProperties()),
-                    searchDocument, parameters);
+            provider = ppService.getPageProvider(refDesc.getName(), searchDocument,
+                    sortInfos, pageSize,
+                    currentPage,
+                    resolvePageProviderProperties(refDesc.getProperties()), parameters);
         } else if (coreDesc != null && coreDesc.isEnabled()) {
-            provider = ppService.getPageProvider(name, coreDesc, sortInfos,
-                    pageSize, currentPage,
-                    resolvePageProviderProperties(coreDesc.getProperties()),
-                    searchDocument, parameters);
+            provider = ppService.getPageProvider(name, coreDesc, searchDocument,
+                    sortInfos, pageSize,
+                    currentPage,
+                    resolvePageProviderProperties(coreDesc.getProperties()), parameters);
         } else if (genDesc != null && genDesc.isEnabled()) {
-            provider = ppService.getPageProvider(name, genDesc, sortInfos,
-                    pageSize, currentPage,
-                    resolvePageProviderProperties(genDesc.getProperties()),
-                    searchDocument, parameters);
+            provider = ppService.getPageProvider(name, genDesc, searchDocument,
+                    sortInfos, pageSize,
+                    currentPage,
+                    resolvePageProviderProperties(genDesc.getProperties()), parameters);
         }
 
         return provider;

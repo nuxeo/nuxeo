@@ -120,7 +120,7 @@ public class DocumentSuggestionActions implements Serializable {
                         context, params[i]);
             }
             PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    ppName, null, null, null, props, null, resolvedParams);
+                    ppName, null, null, null, null, props, resolvedParams);
             if (pp == null) {
                 throw new ClientException("Page provider not found: " + ppName);
             }
