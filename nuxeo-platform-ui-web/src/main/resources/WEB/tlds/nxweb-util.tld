@@ -306,29 +306,61 @@
       Facelet tag handler that performs an iteration.
       </p>
       <p>
-      This handler is different from the standard one because it performs a real
-      iteration on the tree structure, instead of keeping the same components and
-      saving their state in each of the iteration.
-      </p>
-      <p>
-      A real iteration is the only viable solution when using variables that will
-      have an impact on the tree structure, like a layout name and mode.
+      This handler is very close to the facelets c:forEach tag handler. It
+      holds additional configuration to handle ajax re-rendering of lists,
+      avoiding potential JSF duplicate id issues when the iteration list
+      changes.
       </p>
       ]]>
     </description>
-    <attribute>
-      <name>value</name>
-      <required>false</required>
-      <description>
-        Value binding representing the object to iterate on.
-      </description>
-    </attribute>
     <attribute>
       <name>var</name>
       <required>false</required>
       <type>java.lang.String</type>
       <description>
         Name of the variable representing each iteration item. Must be a string.
+      </description>
+    </attribute>
+    <attribute>
+      <name>items</name>
+      <required>false</required>
+      <description>
+        Value binding representing the object to iterate on. Available since
+        5.7.
+      </description>
+    </attribute>
+    <attribute>
+      <name>itemsId</name>
+      <required>false</required>
+      <description>
+        Identifier for the the iteration loop: if this id changes on ajax
+        re-render, JSF subcomponents will be re-created. When this attribute
+        is not filled, the string representation of the iteration list is
+        used instead. Available since 5.7.
+      </description>
+    </attribute>
+    <attribute>
+      <name>begin</name>
+      <required>false</required>
+      <description>
+        Element to start with (0 = first item, 1 = second item, ...). Available
+        since 5.7.
+      </description>
+    </attribute>
+    <attribute>
+      <name>end</name>
+      <required>false</required>
+      <description>
+        Element to end with (0 = first item, 1 = second item, ...). Available
+        since 5.7.
+      </description>
+    </attribute>
+    <attribute>
+      <name>step</name>
+      <required>false</required>
+      <description>
+        Iteration will only process every step items of the collection,
+        starting with the first one. Available since 5.7.
       </description>
     </attribute>
     <attribute>
@@ -339,9 +371,26 @@
         Name of the variable representing the iteration index. Must be a string.
       </description>
     </attribute>
+    <attribute>
+      <name>varStatus</name>
+      <required>false</required>
+      <description>
+        Name of the exported scoped variable for the status of the iteration.
+        Object exported is of type javax.servlet.jsp.jstl.core.LoopTagStatus.
+        This scoped variable has nested visibility. Available since 5.7.
+      </description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <description>
+        Value binding representing the object to iterate on. Deprecated since
+        5.7, use "items" attribute instead.
+      </description>
+    </attribute>
     <example>
       <![CDATA[
-<nxu:repeat value="#{layoutNames}" var="layout">
+<nxu:repeat items="#{layoutNames}" var="layout">
   <nxl:layout name="#{layout}" value="#{document}" />
 </nxu:repeat>
       ]]>
