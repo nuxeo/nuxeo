@@ -12,10 +12,14 @@
  */
 package org.nuxeo.ecm.automation.client;
 
-import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,11 +28,16 @@ import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.ExamReactorStrategy;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
+/**
+ * @since 5.7 Automation Client OSGi compliance test
+ */
 @RunWith(JUnit4TestRunner.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
-public class TestOSGi {
+public class ACOSGiComplianceTest {
 
     @Inject
     private BundleContext bc;
@@ -37,6 +46,7 @@ public class TestOSGi {
     public Option[] config() {
 
         return options(
+                vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
                 mavenBundle("org.nuxeo.ecm.automation",
                         "nuxeo-automation-client", "5.7-SNAPSHOT"),
                 junitBundles());
@@ -44,8 +54,19 @@ public class TestOSGi {
 
     @Test
     public void getHelloService() {
-        String symboName = bc.getBundle().getSymbolicName();
-        System.out.println(symboName);
-        fail();
+        // Check if automation client bundle is loaded
+        List<Bundle> bundleList = Arrays.asList(bc.getBundles());
+        Bundle acBundle = null;
+        for (Bundle bundle : bundleList) {
+            if ("org.nuxeo.ecm.automation.client".equals(bundle.getSymbolicName())) {
+                acBundle = bundle;
+                break;
+            }
+        }
+        Assert.assertNotNull(acBundle);
+        // Check if automation client bundle is active
+        Assert.assertTrue(org.osgi.framework.Bundle.ACTIVE == acBundle.getState());
+        // Check services from automation client
+        ServiceReference[] serviceReferences = acBundle.getRegisteredServices();
     }
 }
