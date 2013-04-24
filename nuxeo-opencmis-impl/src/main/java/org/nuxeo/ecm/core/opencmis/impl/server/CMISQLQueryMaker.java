@@ -420,9 +420,10 @@ public class CMISQLQueryMaker implements QueryMaker {
             // lifecycle not deleted filter
 
             if (skipDeleted) {
-                Table misc = getTable(database.getTable(model.MISC_TABLE_NAME),
-                        qual);
-                Column lscol = misc.getColumn(model.MISC_LIFECYCLE_STATE_KEY);
+                ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
+                Column lscol = getTable(
+                        database.getTable(propertyInfo.fragmentName), qual).getColumn(
+                        propertyInfo.fragmentKey);
                 whereClauses.add(String.format("%s <> ?",
                         lscol.getFullQuotedName()));
                 whereParams.add(LifeCycleConstants.DELETED_STATE);
@@ -619,8 +620,9 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             if (skipDeleted || lifecycleWhereClauseQualifiers.contains(qual)) {
                 // add lifecycle state column
+                ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
                 Table table = getTable(
-                        database.getTable(model.MISC_TABLE_NAME), qual);
+                        database.getTable(propertyInfo.fragmentName), qual);
                 recordFragment(qual, table);
             }
             if (mixinTypeWhereClauseQualifiers.contains(qual)) {
@@ -921,8 +923,9 @@ public class CMISQLQueryMaker implements QueryMaker {
                     model.MAIN_CHECKED_IN_KEY);
         }
         if (id.equals(NuxeoTypeHelper.NX_LIFECYCLE_STATE)) {
-            return database.getTable(model.MISC_TABLE_NAME).getColumn(
-                    model.MISC_LIFECYCLE_STATE_KEY);
+            ModelProperty propertyInfo = model.getPropertyInfo(model.MISC_LIFECYCLE_STATE_PROP);
+            return database.getTable(propertyInfo.fragmentName).getColumn(
+                    propertyInfo.fragmentKey);
         }
         if (id.equals(PropertyIds.NAME)) {
             return database.getTable(DC_FRAGMENT_NAME).getColumn(DC_TITLE_KEY);
