@@ -163,9 +163,8 @@ public class DocumentPageProviderOperation {
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
-                            providerName, null, sortInfos,
-                            targetPageSize, targetPage, props, parameters),
-                    documentLinkBuilder);
+                            providerName, sortInfos, targetPageSize,
+                            targetPage, props, parameters), documentLinkBuilder);
         }
 
     }

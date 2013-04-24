@@ -1,15 +1,16 @@
 package org.nuxeo.ecm.platform.audit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
@@ -180,8 +181,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
         assertNotNull(ppdef);
 
         PageProvider<?> pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER",
-                null, null, Long.valueOf(20),
-                Long.valueOf(0), new HashMap<String, Serializable>(), doc);
+                null, Long.valueOf(20), Long.valueOf(0),
+                new HashMap<String, Serializable>(), doc);
 
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
@@ -205,8 +206,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
         // Get Proxy history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
-                null, Long.valueOf(20),
-                Long.valueOf(0), new HashMap<String, Serializable>(), proxy);
+                Long.valueOf(20), Long.valueOf(0),
+                new HashMap<String, Serializable>(), proxy);
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
@@ -226,8 +227,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
         // Get version 1 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
-                null, Long.valueOf(20),
-                Long.valueOf(0), new HashMap<String, Serializable>(), versions.get(0));
+                Long.valueOf(20), Long.valueOf(0),
+                new HashMap<String, Serializable>(), versions.get(0));
         pp.setSearchDocumentModel(searchDoc);
         entries = (List<LogEntry>) pp.getCurrentPage();
 
@@ -252,8 +253,8 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
         // get version 2 history
         pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", null,
-                null, Long.valueOf(20),
-                Long.valueOf(0), new HashMap<String, Serializable>(), versions.get(1));
+                Long.valueOf(20), Long.valueOf(0),
+                new HashMap<String, Serializable>(), versions.get(1));
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();

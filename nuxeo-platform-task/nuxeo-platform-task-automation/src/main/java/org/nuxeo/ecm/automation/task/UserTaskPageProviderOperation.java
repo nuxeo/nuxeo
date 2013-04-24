@@ -85,8 +85,8 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
             targetPageSize = Long.valueOf(pageSize.longValue());
         }
         PageProvider<DashBoardItem> pageProvider = (PageProvider<DashBoardItem>) pps.getPageProvider(
-                USER_TASKS_PAGE_PROVIDER, null, null, targetPageSize,
-                targetPage, props);
+                USER_TASKS_PAGE_PROVIDER, null, targetPageSize, targetPage,
+                props);
 
         Locale locale = language != null && !language.isEmpty() ? new Locale(
                 language) : Locale.ENGLISH;
@@ -109,6 +109,5 @@ public class UserTaskPageProviderOperation extends AbstractTaskOperation {
         return new InputStreamBlob(new ByteArrayInputStream(
                 json.toString().getBytes("UTF-8")), "application/json");
     }
-
 
 }

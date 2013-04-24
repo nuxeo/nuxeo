@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.platform.task.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,11 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -116,8 +120,8 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
-                "current_user_tasks", null, null, null, null,
-                properties, (Object[]) null);
+                "current_user_tasks", null, null, null, properties,
+                (Object[]) null);
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
