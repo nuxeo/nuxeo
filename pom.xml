@@ -166,6 +166,7 @@
 
     <org.ops4j.pax.version>3.0.0</org.ops4j.pax.version>
     <org.slf4j.version>1.7.5</org.slf4j.version>
+    <ch.qos.logback.version>1.0.11</ch.qos.logback.version>
   </properties>
 
   <dependencyManagement>
@@ -2311,18 +2312,8 @@
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>0.9.14</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>0.9.14</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
         <artifactId>logback-access</artifactId>
-        <version>0.9.14</version>
+        <version>${ch.qos.logback.version}</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -3794,12 +3785,12 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <scope>runtime</scope>
-        <version>1.0.11</version>
+        <version>${ch.qos.logback.version}</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>1.0.11</version>
+        <version>${ch.qos.logback.version}</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
