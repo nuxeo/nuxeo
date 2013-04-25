@@ -67,6 +67,12 @@ public class NXQL {
     /** @since 5.7 */
     public static final String ECM_TAG = "ecm:tag";
 
+    /** @since 5.7 */
+    public static final String ECM_PROXY_TARGETID = "ecm:proxyTargetId";
+
+    /** @since 5.7 */
+    public static final String ECM_PROXY_VERSIONABLEID = "ecm:proxyVersionableId";
+
     /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>

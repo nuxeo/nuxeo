@@ -201,13 +201,23 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected boolean orderByHasWildcardIndex;
 
+    /**
+     * Whether the query must match only proxies (TRUE), no proxies (FALSE), or
+     * not specified (null).
+     */
     protected Boolean proxyClause;
+
+    /** The reason why proxyClause was set to non-null. */
+    protected String proxyClauseReason;
 
     // The hierarchy table for the hierarchy/name, may be an alias table
     protected Table hierTable;
 
     // The hierarchy table of the data
     protected Table dataHierTable;
+
+    // The proxies table if querying for proxies
+    protected Table proxyTable;
 
     protected List<Join> joins;
 
@@ -279,7 +289,7 @@ public class NXQLQueryMaker implements QueryMaker {
             if (proxyClause == Boolean.TRUE) {
                 throw new StorageException(
                         "Proxies are disabled by configuration, a query with "
-                                + NXQL.ECM_ISPROXY + " = 1 is disallowed");
+                                + proxyClauseReason + " is disallowed");
             }
             proxyClause = Boolean.FALSE;
         }
@@ -369,6 +379,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 dataHierTable = hierTable;
                 hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
                 from = hierTable.getQuotedName();
+                proxyTable = null;
                 break;
             case PROXY:
                 hierTable = new TableAlias(hier, TABLE_HIER_ALIAS);
@@ -377,12 +388,12 @@ public class NXQLQueryMaker implements QueryMaker {
                 from = hier.getQuotedName() + " " + hierTable.getQuotedName();
                 hierId = hierTable.getColumn(model.MAIN_KEY).getFullQuotedName();
                 // proxies
-                Table proxies = database.getTable(model.PROXY_TABLE_NAME);
+                proxyTable = database.getTable(model.PROXY_TABLE_NAME);
                 // join all that
-                addJoin(Join.INNER, null, proxies, model.MAIN_KEY, hierTable,
-                        model.MAIN_KEY, null, -1, null);
+                addJoin(Join.INNER, null, proxyTable, model.MAIN_KEY,
+                        hierTable, model.MAIN_KEY, null, -1, null);
                 addJoin(Join.INNER, null, dataHierTable, model.MAIN_KEY,
-                        proxies, model.PROXY_TARGET_KEY, null, -1, null);
+                        proxyTable, model.PROXY_TARGET_KEY, null, -1, null);
                 break;
             default:
                 throw new AssertionError(docKind);
@@ -412,8 +423,8 @@ public class NXQLQueryMaker implements QueryMaker {
             for (int i = 0; i < whatColumns.size(); i++) {
                 Column col = whatColumns.get(i);
                 String key = whatKeys.get(i);
-                String alias = dialect.openQuote() + COL_ALIAS_PREFIX
-                        + (i+1) + dialect.closeQuote();
+                String alias = dialect.openQuote() + COL_ALIAS_PREFIX + (i + 1)
+                        + dialect.closeQuote();
                 aliasesByName.put(key, alias);
                 aliases.add(alias);
                 String whatName = getSelectColName(col);
@@ -497,8 +508,10 @@ public class NXQLQueryMaker implements QueryMaker {
                 Serializable principals = queryFilter.getPrincipals();
                 Serializable permissions = queryFilter.getPermissions();
                 if (!dialect.supportsArrays()) {
-                    principals = StringUtils.join((String[]) principals, Dialect.ARRAY_SEP);
-                    permissions = StringUtils.join((String[]) permissions, Dialect.ARRAY_SEP);
+                    principals = StringUtils.join((String[]) principals,
+                            Dialect.ARRAY_SEP);
+                    permissions = StringUtils.join((String[]) permissions,
+                            Dialect.ARRAY_SEP);
                 }
                 // when using WITH for the query, the main column is referenced
                 // through an alias because of the subselect
@@ -706,8 +719,8 @@ public class NXQLQueryMaker implements QueryMaker {
      */
     protected Table getFragmentTable(Table contextHier, String contextKey,
             String fragmentName, int index, boolean skipJoin) {
-        return getFragmentTable(Join.LEFT, contextHier, contextKey, fragmentName,
-                model.MAIN_KEY, index, skipJoin, null);
+        return getFragmentTable(Join.LEFT, contextHier, contextKey,
+                fragmentName, model.MAIN_KEY, index, skipJoin, null);
     }
 
     /**
@@ -989,6 +1002,10 @@ public class NXQLQueryMaker implements QueryMaker {
                         if (NXQL.ECM_ISPROXY.equals(name)) {
                             analyzeToplevelIsProxy(expr);
                             return;
+                        } else if (NXQL.ECM_PROXY_TARGETID.equals(name)
+                                || NXQL.ECM_PROXY_VERSIONABLEID.equals(name)) {
+                            analyzeToplevelProxyProperty(expr);
+                            // no return, we want the node
                         }
                     }
                 }
@@ -1103,11 +1120,20 @@ public class NXQLQueryMaker implements QueryMaker {
                         + " requires literal 0 or 1 as right argument");
             }
             boolean isEq = expr.operator == Operator.EQ;
-            Boolean pr = Boolean.valueOf((v == 1) == isEq);
-            if (proxyClause != null && proxyClause != pr) {
+            updateProxyClause(Boolean.valueOf((v == 1) == isEq), expr);
+        }
+
+        protected void analyzeToplevelProxyProperty(Expression expr) {
+            // proxies required
+            updateProxyClause(Boolean.TRUE, expr);
+        }
+
+        private void updateProxyClause(Boolean value, Expression expr) {
+            if (proxyClause != null && proxyClause != value) {
                 throw new QueryCannotMatchException();
             }
-            proxyClause = pr;
+            proxyClause = value;
+            proxyClauseReason = expr.toString();
         }
 
         @Override
@@ -1141,6 +1167,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_LOCK.equals(name) || //
                     NXQL.ECM_LOCK_OWNER.equals(name) || //
                     NXQL.ECM_LOCK_CREATED.equals(name) || //
+                    NXQL.ECM_PROXY_TARGETID.equals(name) || //
+                    NXQL.ECM_PROXY_VERSIONABLEID.equals(name) || //
                     NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 // ok
             } else if (NXQL.ECM_TAG.equals(name)
@@ -1326,6 +1354,20 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (NXQL.ECM_LOCK_CREATED.equals(name)) {
                 fragmentName = model.LOCK_TABLE_NAME;
                 fragmentKey = model.LOCK_CREATED_KEY;
+            } else if (NXQL.ECM_PROXY_TARGETID.equals(name)) {
+                if (proxyTable != null) {
+                    table = proxyTable;
+                } else {
+                    fragmentName = model.PROXY_TABLE_NAME;
+                }
+                fragmentKey = model.PROXY_TARGET_KEY;
+            } else if (NXQL.ECM_PROXY_VERSIONABLEID.equals(name)) {
+                if (proxyTable != null) {
+                    table = proxyTable;
+                } else {
+                    fragmentName = model.PROXY_TABLE_NAME;
+                }
+                fragmentKey = model.PROXY_VERSIONABLE_KEY;
             } else if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 fragmentName = model.FULLTEXT_TABLE_NAME;
                 fragmentKey = model.FULLTEXT_JOBID_KEY;
@@ -1351,7 +1393,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     } else {
                         // named
                         suffix = "/*" + suffix;
-                     }
+                    }
                 } else {
                     suffix = "";
                 }
@@ -1569,8 +1611,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     }
                     visitColumnExpression(info.column, op, rvalue, cast);
                 }
-            } else if (op == Operator.BETWEEN
-                    || op == Operator.NOTBETWEEN) {
+            } else if (op == Operator.BETWEEN || op == Operator.NOTBETWEEN) {
                 LiteralList l = (LiteralList) rvalue;
                 if (DATE_CAST.equals(cast)) {
                     checkDateLiteralForCast(l.get(0), node);

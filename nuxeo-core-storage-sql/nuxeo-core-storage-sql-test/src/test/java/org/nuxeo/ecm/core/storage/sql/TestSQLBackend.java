@@ -2135,6 +2135,69 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
     }
 
+    @Test
+    public void testProxyQueryProxyProp() throws Exception {
+        assumeTrue(isProxiesEnabled());
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
+                false);
+        Node folder2 = session.addChildNode(root, "folder2", null, "TestDoc",
+                false);
+        // create node in folder1
+        Node node = session.addChildNode(folder1, "node", null, "TestDoc",
+                false);
+        // create proxy in folder2
+        Node ver = session.checkIn(node, "foolab1", "desc1");
+        Node proxy = session.addProxy(ver.getId(), node.getId(), folder2,
+                "proxy2", null);
+        session.save();
+
+        String sql;
+        PartialList<Serializable> res;
+
+        // query without proxies (no result)
+        sql = String.format(
+                "SELECT * FROM TestDoc WHERE ecm:proxyTargetId = '%s' AND ecm:isProxy = 0",
+                ver.getId());
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+        sql = String.format(
+                "SELECT * FROM TestDoc WHERE ecm:proxyVersionableId = '%s' AND ecm:isProxy = 0",
+                node.getId());
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+
+        // query just proxies
+        sql = String.format(
+                "SELECT * FROM TestDoc WHERE ecm:proxyTargetId = '%s' AND ecm:isProxy = 1",
+                ver.getId());
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        assertEquals(proxy.getId(), res.list.get(0));
+        sql = String.format(
+                "SELECT * FROM TestDoc WHERE ecm:proxyVersionableId = '%s' AND ecm:isProxy = 1",
+                node.getId());
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        assertEquals(proxy.getId(), res.list.get(0));
+
+        // query all
+        sql = String.format(
+                "SELECT * FROM TestDoc WHERE ecm:proxyTargetId = '%s'",
+                ver.getId());
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        assertEquals(proxy.getId(), res.list.get(0));
+        sql = String.format(
+                "SELECT * FROM TestDoc WHERE ecm:proxyVersionableId = '%s'",
+                node.getId());
+        res = session.query(sql, QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+        assertEquals(proxy.getId(), res.list.get(0));
+    }
+
     private static void assertSameSet(Collection<Node> actual, Node... expected) {
         assertEquals(idSet(Arrays.asList(expected)), idSet(actual));
     }
