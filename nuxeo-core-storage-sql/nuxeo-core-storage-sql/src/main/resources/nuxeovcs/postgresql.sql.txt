@@ -1001,6 +1001,14 @@ SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
 CREATE INDEX nxp_logs_log_event_date_idx ON nxp_logs USING btree(log_event_date);
 
 
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'nxp_logs')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='nxp_logs_log_date_idx');
+
+#IF: ! emptyResult
+CREATE INDEX nxp_logs_log_date_idx ON nxp_logs USING btree(log_date);
+
+
 ############################################################
 # Adding miscellaneous indexes
 
