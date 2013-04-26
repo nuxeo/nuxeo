@@ -159,6 +159,7 @@
             <_nouses>true</_nouses>
             <Bundle-SymbolicName>org.nuxeo.ecm.automation.client</Bundle-SymbolicName>
             <Bundle-Version>0.0.0.qualifier</Bundle-Version>
+            <Bundle-Activator>org.nuxeo.ecm.automation.client.jaxrs.impl.AutomationClientActivator</Bundle-Activator>
             <Export-Package>
               org.nuxeo.ecm.automation.client.adapters,org.nuxeo.ecm.automation.client,org.nuxeo.ecm.automation.client.model
             </Export-Package>

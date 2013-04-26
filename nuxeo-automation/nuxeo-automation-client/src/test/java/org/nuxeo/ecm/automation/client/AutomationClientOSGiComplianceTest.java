@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,9 @@ import static org.ops4j.pax.exam.CoreOptions.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,6 +37,7 @@ import org.ops4j.pax.exam.options.DefaultCompositeOption;
 import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * @since 5.7 Automation Client OSGi compliance test
@@ -62,7 +66,8 @@ public class AutomationClientOSGiComplianceTest {
     }
 
     @Test
-    public void checkAutomationClientActive() {
+    public void checkAutomationClientActive() throws MalformedURLException,
+            URISyntaxException {
         // Check if automation client bundle is loaded
         List<Bundle> bundleList = Arrays.asList(bc.getBundles());
         Bundle acBundle = null;
@@ -75,5 +80,14 @@ public class AutomationClientOSGiComplianceTest {
         Assert.assertNotNull(acBundle);
         // Check if automation client bundle is active
         Assert.assertTrue(org.osgi.framework.Bundle.ACTIVE == acBundle.getState());
+        // Check if automation client service is available (as
+        // HttpAutomationClient is an implementation, should be available as a
+        // service)
+        ServiceReference ref = bc.getServiceReference(AutomationClientFactory.class.getName());
+        AutomationClientFactory factory = (AutomationClientFactory) bc.getService(ref);
+        Assert.assertNotNull(factory);
+        AutomationClient client = factory.getClient(new URL(
+                "http://localhost:8080/nuxeo/site/automation"));
+        Assert.assertNotNull(client);
     }
 }
