@@ -154,7 +154,14 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
         MultiStatusResponse[] responses = multiStatus.getResponses();
-        assertTrue(responses.length >= 4);
+        StringBuilder failmsg = new StringBuilder("Failed to get 4 responses, got: ");
+        if (responses.length < 4) {
+            for (MultiStatusResponse response : responses) {
+                failmsg.append(response.getHref());
+                failmsg.append("\n");
+            }
+        }
+        assertTrue(failmsg.toString(), responses.length >= 4);
 
         boolean found = false;
         for (MultiStatusResponse response : responses) {
