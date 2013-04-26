@@ -109,6 +109,9 @@ public class JavaUtilLoggingHelper {
                 return;
             }
             String name = record.getLoggerName();
+            if (name == null) {
+                return;
+            }
             Log log = cache.get(name);
             if (log == null) {
                 log = LogFactory.getLog(name);
