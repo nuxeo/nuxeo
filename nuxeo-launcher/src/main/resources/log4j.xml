@@ -48,6 +48,10 @@
   <logger name="org.eclipse.equinox.p2.cudf">
     <level value="WARN" />
   </logger>
+  <!-- NXP-11424/NXBT-550 Relocated package in nuxeo-connect-client -->
+  <logger name="hidden.org.eclipse.equinox.p2.cudf">
+    <level value="WARN" />
+  </logger>
   <!-- Hide warning from HttpMethodBase: << Going to buffer response body of large
     or unknown size. Using getResponseBodyAsStream instead is recommended. >> -->
   <logger name="org.apache.commons.httpclient.HttpMethodBase">
