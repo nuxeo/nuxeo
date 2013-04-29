@@ -34,8 +34,6 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(
                 file));
 
-        // String[] expectedVars = new String[]{"StringVar","DateVar",
-        // "Description","picture", "BooleanVar"};
         String[] expectedVars = new String[] { "StringVar", "DateVar",
                 "Description", "BooleanVar" };
 
@@ -116,4 +114,36 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
         }
     }
 
+
+
+    @Test
+    public void testDocXBrokenParamExtraction() throws Exception {
+
+        deployContrib("org.nuxeo.template.manager.xdocreport.test",
+                "context-extension-contrib.xml");
+
+        XDocReportProcessor processor = new XDocReportProcessor();
+        File file = FileUtils.getResourceFileFromContext("data/brokenVariables.docx");
+
+        List<TemplateInput> inputs = processor.getInitialParametersDefinition(new FileBlob(
+                file));
+
+        // only one variable because of broken MERGEFIELD
+        String[] expectedVars = new String[] { "func", };
+
+        assertEquals(expectedVars.length, inputs.size());
+        for (String expected : expectedVars) {
+            boolean found = false;
+            for (TemplateInput input : inputs) {
+                if (expected.equals(input.getName())) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue(found);
+        }
+    }
 }
+
+
+

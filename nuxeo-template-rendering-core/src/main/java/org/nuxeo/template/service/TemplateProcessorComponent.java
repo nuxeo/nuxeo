@@ -29,14 +29,15 @@ import org.nuxeo.template.api.context.DocumentWrapper;
 import org.nuxeo.template.api.descriptor.ContextExtensionFactoryDescriptor;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 import org.nuxeo.template.context.AbstractContextBuilder;
+import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.processors.IdentityProcessor;
 
 /**
  * Runtime Component used to handle Extension Points and expose the
  * {@link TemplateProcessorService} interface
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 public class TemplateProcessorComponent extends DefaultComponent implements
         TemplateProcessorService {
@@ -72,6 +73,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             processorRegistry.addContribution((TemplateProcessorDescriptor) contribution);
         } else if (CONTEXT_EXTENSION_XP.equals(extensionPoint)) {
             contextExtensionRegistry.addContribution((ContextExtensionFactoryDescriptor) contribution);
+            // force recompute of reserved keywords
+            FreeMarkerVariableExtractor.resetReservedContextKeywords();
         }
     }
 
@@ -376,5 +379,5 @@ public class TemplateProcessorComponent extends DefaultComponent implements
             return docAfterDetach;
         }
         return targetDoc;
-    } 
+    }
 }

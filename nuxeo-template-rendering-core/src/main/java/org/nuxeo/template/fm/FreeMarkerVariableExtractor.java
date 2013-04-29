@@ -21,6 +21,7 @@ package org.nuxeo.template.fm;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,12 +32,12 @@ import org.nuxeo.template.api.TemplateProcessorService;
 /**
  * Helper class used to extract variable names from a FreeMarker template. This
  * is used to initialize the {@link TemplateInput} parameters.
- * 
+ *
  * Extraction is for now simple and system may not detect all the cases, but
  * user is able to add parameters from the UI.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
- * 
+ *
  */
 public class FreeMarkerVariableExtractor {
 
@@ -52,6 +53,8 @@ public class FreeMarkerVariableExtractor {
     protected final static Pattern[] assignMatchers = new Pattern[] { Pattern.compile("\\[\\#assign\\s(.+)=.*\\]") };
 
     protected static final List<String> reservedContextKeywords = new ArrayList<String>();
+
+    protected static final String[] freeMarkerVariableSuffix = {"_index","_has_next"};
 
     protected static String extractVariableName(String match) {
 
@@ -77,6 +80,12 @@ public class FreeMarkerVariableExtractor {
             }
         }
         return varName;
+    }
+
+    public static void resetReservedContextKeywords() {
+        synchronized (reservedContextKeywords) {
+            reservedContextKeywords.clear();
+        }
     }
 
     protected static List<String> getreservedContextKeywords() {
@@ -125,7 +134,11 @@ public class FreeMarkerVariableExtractor {
                         variables.add(v);
                     }
                     if (dmatcher.groupCount() > 1) {
-                        blackListedVariables.add(extractVariableName(dmatcher.group(2)));
+                        String localVariable = extractVariableName(dmatcher.group(2));
+                        blackListedVariables.add(localVariable);
+                        for (String suffix : freeMarkerVariableSuffix) {
+                            blackListedVariables.add(localVariable + suffix);
+                        }
                     }
                 }
             }
@@ -153,13 +166,17 @@ public class FreeMarkerVariableExtractor {
         }
 
         // remove any non valid variable names
-        Iterator<String> varIter = variables.iterator();
+        ListIterator<String> varIter = variables.listIterator();
         while (varIter.hasNext()) {
             String var = varIter.next();
             if (var.contains("<") || var.contains(">")) {
                 varIter.remove();
             }
+            else if (var.contains("\n")) {
+                varIter.set(var.replaceAll("\n", "").trim());
+            }
         }
+
 
         return variables;
     }
