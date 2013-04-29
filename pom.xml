@@ -107,6 +107,8 @@
 
     <!-- License Maven Plugin -->
     <license.excludedGroups>org\.nuxeo.*</license.excludedGroups>
+    <!-- Can't parse POMs because of http://jira.codehaus.org/browse/MLICENSE-77 -->
+    <!-- <license.acceptPomPackaging>true</license.acceptPomPackaging> -->
     <!-- Not implemented: useRepositoryMissingFiles -->
     <!-- Can't use common missingFile -->
     <!-- <license.useMissingFile>true</license.useMissingFile> -->
@@ -137,7 +139,7 @@
     <apache.axiom.version>1.2.5</apache.axiom.version>
     <chemistry.opencmis.version>0.7.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcomponents.version>4.2.3</apache.httpcomponents.version>
+    <apache.httpcomponents.version>4.2.4</apache.httpcomponents.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
     <xdocreport.version>1.0.0</xdocreport.version>
@@ -161,6 +163,10 @@
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>5.7-SNAPSHOT</nuxeo.platform.version>
     <seam.version>2.1.0.SP1</seam.version>
+
+    <org.ops4j.pax.version>3.0.0</org.ops4j.pax.version>
+    <org.slf4j.version>1.7.5</org.slf4j.version>
+    <ch.qos.logback.version>1.0.11</ch.qos.logback.version>
   </properties>
 
   <dependencyManagement>
@@ -1419,7 +1425,7 @@
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
-        <version>1.4</version>
+        <version>1.4.5</version>
       </dependency>
       <dependency>
         <groupId>javax.persistence</groupId>
@@ -1504,6 +1510,18 @@
           <exclusion>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>avalon-framework</groupId>
+            <artifactId>avalon-framework</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>logkit</groupId>
+            <artifactId>logkit</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -2081,7 +2099,7 @@
       <dependency>
         <groupId>org.artofsolving.jodconverter</groupId>
         <artifactId>jodconverter-core</artifactId>
-        <version>3.0-NX6</version>
+        <version>3.0-NX7</version>
       </dependency>
       <dependency>
         <groupId>net.sf.jodreports</groupId>
@@ -2294,18 +2312,8 @@
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>0.9.14</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>0.9.14</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
         <artifactId>logback-access</artifactId>
-        <version>0.9.14</version>
+        <version>${ch.qos.logback.version}</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -2327,17 +2335,33 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.0</version>
+        <version>${org.slf4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.6.0</version>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${org.slf4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.cal10n</groupId>
+        <artifactId>cal10n-api</artifactId>
+        <version>0.7.4</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.6.0</version>
+        <version>1.7.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.7.5</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -2843,6 +2867,34 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
         <version>${apache.httpcomponents.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient-cache</artifactId>
+        <version>${apache.httpcomponents.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>fluent-hc</artifactId>
+        <version>${apache.httpcomponents.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -3846,6 +3898,67 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- OSGi (automation client) -->
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient-osgi</artifactId>
+        <version>${apache.httpcomponents.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore-osgi</artifactId>
+        <version>${apache.httpcomponents.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${ch.qos.logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${ch.qos.logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-junit4</artifactId>
+        <version>${org.ops4j.pax.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-link-mvn</artifactId>
+        <version>${org.ops4j.pax.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-container-native</artifactId>
+        <version>${org.ops4j.pax.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.url</groupId>
+        <artifactId>pax-url-aether</artifactId>
+        <version>1.5.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.framework</artifactId>
+        <version>3.2.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -3853,6 +3966,11 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <!-- test scope -->
@@ -4402,7 +4520,7 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                 </excludes>
               </requireReleaseDeps>
@@ -4726,19 +4844,21 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>aggregate-add-third-party</id>
-                <goals>
-                  <goal>aggregate-add-third-party</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+          <!-- http://jira.codehaus.org/browse/MLICENSE-76 prevents automated run -->
+          <!-- <plugin> -->
+          <!-- <groupId>org.codehaus.mojo</groupId> -->
+          <!-- <artifactId>license-maven-plugin</artifactId> -->
+          <!-- <inherited>false</inherited> -->
+          <!-- <executions> -->
+          <!-- <execution> -->
+          <!-- <id>aggregate-add-third-party</id> -->
+          <!-- <goals> -->
+          <!-- <goal>aggregate-add-third-party</goal> -->
+          <!-- </goals> -->
+          <!-- <phase>verify</phase> -->
+          <!-- </execution> -->
+          <!-- </executions> -->
+          <!-- </plugin> -->
         </plugins>
       </build>
     </profile>
@@ -4772,19 +4892,21 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <inherited>false</inherited>
-            <executions>
-              <execution>
-                <id>aggregate-add-third-party</id>
-                <goals>
-                  <goal>aggregate-add-third-party</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+          <!-- http://jira.codehaus.org/browse/MLICENSE-76 prevents automated run -->
+          <!-- <plugin> -->
+          <!-- <groupId>org.codehaus.mojo</groupId> -->
+          <!-- <artifactId>license-maven-plugin</artifactId> -->
+          <!-- <inherited>false</inherited> -->
+          <!-- <executions> -->
+          <!-- <execution> -->
+          <!-- <id>aggregate-add-third-party</id> -->
+          <!-- <goals> -->
+          <!-- <goal>aggregate-add-third-party</goal> -->
+          <!-- </goals> -->
+          <!-- <phase>verify</phase> -->
+          <!-- </execution> -->
+          <!-- </executions> -->
+          <!-- </plugin> -->
         </plugins>
       </build>
       <repositories>
