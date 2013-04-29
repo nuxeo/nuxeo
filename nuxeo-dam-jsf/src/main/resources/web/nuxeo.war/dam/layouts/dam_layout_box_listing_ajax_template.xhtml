@@ -20,7 +20,7 @@
 
   <c:if test="#{layoutListingStatus.index == 0}">
     <div class="detail">
-      <a4j:outputPanel id="#{layout.id}_selectAll_panel">
+      <a4j:outputPanel id="#{layout.id}_selectAll_panel" layout="block">
         <nxu:set var="selectAllLabel" value="#{nxu:test(documents.selected, 'label.dam.deselect.all', 'label.dam.select.all')}">
           <span>#{messages[selectAllLabel]}</span>
           <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"

@@ -4,7 +4,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <a4j:outputPanel id="damPermanentLink_panel" ajaxRendered="true">
+  <a4j:outputPanel id="damPermanentLink_panel" ajaxRendered="true" layout="block">
     <script type="text/javascript">
       history.pushState(null, '#{currentDocument.title}', '#{damSearchActions.permanentLinkUrl}');
     </script>
