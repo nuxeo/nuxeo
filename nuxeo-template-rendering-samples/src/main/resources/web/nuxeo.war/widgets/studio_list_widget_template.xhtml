@@ -24,7 +24,7 @@
   <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
 
     <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
-      <a4j:outputPanel ajaxRendered="true">
+      <a4j:outputPanel ajaxRendered="true" layout="block">
 
         <c:set value="#{widget.fieldDefinitions[0].propertyName}"
           var="propValueForTemplate"/>
