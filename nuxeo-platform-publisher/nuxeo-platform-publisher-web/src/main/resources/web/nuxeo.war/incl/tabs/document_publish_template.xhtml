@@ -9,7 +9,7 @@
      xmlns:rich="http://richfaces.org/rich"
      class="menu">
 
-  <a4j:outputPanel ajaxRendered="true">
+  <a4j:outputPanel ajaxRendered="true" layout="block">
     <a4j:form ajaxSubmit="true" id="publishTreeForm">
 
       <h:outputText value="#{messages['label.sections.not.defined']}"
@@ -41,7 +41,7 @@
         <dl>
           <dd class="menuForm">
 
-            <a4j:outputPanel id="sectionTree"
+            <a4j:outputPanel id="sectionTree" layout="block"
                              rendered="#{publishActions.currentPublicationTreeForPublishing != null}">
 
               <rich:tree
@@ -89,8 +89,9 @@
       </h:panelGroup>
 
 
-      <a4j:outputPanel id="publishingInfoList" rendered="#{publishActions.currentPublicationTreeForPublishing != null
-      and !empty publishActions.publishedDocuments}">
+      <a4j:outputPanel id="publishingInfoList"
+        layout="block"
+        rendered="#{publishActions.currentPublicationTreeForPublishing != null and !empty publishActions.publishedDocuments}">
 
         <nxu:dataTable value="#{publishActions.publishedDocuments}"
                        var="publishedDocument"

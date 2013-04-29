@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   class="setupPanel">
 
-<a4j:outputPanel id="setupPanel">
+<a4j:outputPanel id="setupPanel" layout="block">
 
   <c:if test="false">
     <h:outputText value="DEBUG: Configurable: #{setupConfigurable}" />
@@ -64,7 +64,7 @@
         var="advancedParamsPanelStatus"
         defaultValue="off">
 
-        <a4j:outputPanel id="advancedParams_panel">
+        <a4j:outputPanel id="advancedParams_panel" layout="block">
 
           <c:if test="#{advancedParamsPanelStatus != 'on'}">
             <f:subview>

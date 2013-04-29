@@ -43,7 +43,7 @@
         var="selectedFlavorName"
         defaultValue="#{origSelectedFlavorName}"
         submitChanges="false">
-        <a4j:outputPanel id="#{widget.id}_preview">
+        <a4j:outputPanel id="#{widget.id}_preview" layout="block">
           <nxu:set var="selectedFlavor"
             value="#{themeActions.getFlavor(selectedFlavorName)}"
             cache="true">

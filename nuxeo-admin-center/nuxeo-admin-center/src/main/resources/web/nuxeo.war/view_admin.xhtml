@@ -20,7 +20,7 @@
 
   <ui:define name="body">
 
-     <a4j:outputPanel id="admin_divtab">
+     <a4j:outputPanel id="admin_divtab" layout="block">
 
       <table class="adminViewContent">
       <tr>
@@ -30,6 +30,7 @@
         <td class="adminContentColumn">
 
           <a4j:outputPanel id="setupRequiresRestartPanel"
+            layout="block"
             ajaxRendered="true">
             <c:if test="#{setupRequiresRestart}">
               <div class="warningMessage">

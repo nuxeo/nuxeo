@@ -42,7 +42,9 @@
     </div>
     </a4j:form>
 
-    <a4j:outputPanel id="directoryListingPanel" rendered="#{not empty directoryUIActions.selectedDirectoryName}">
+    <a4j:outputPanel id="directoryListingPanel"
+      rendered="#{not empty directoryUIActions.selectedDirectoryName}"
+      layout="block">
       <ui:include src="view_directory.xhtml"/>
     </a4j:outputPanel>
   </c:if>

@@ -8,7 +8,7 @@
      xmlns:rich="http://richfaces.org/rich"
      class="menu">
 
-  <a4j:outputPanel ajaxRendered="true">
+  <a4j:outputPanel ajaxRendered="true" layout="block">
     <a4j:form ajaxSubmit="true" id="publishTreeForm">
       <h:panelGroup rendered="#{!empty defaultPublishingRoots}">
         <h:panelGrid class="dataInput" columnClasses="labelColumn, fieldColumn"
@@ -66,7 +66,7 @@
         </dl>
       </h:panelGroup>
 
-      <a4j:outputPanel id="sectionList">
+      <a4j:outputPanel id="sectionList" layout="block">
         <h:panelGroup rendered="#{!empty adminPublishActions.selectedSections}">
 
           <h:outputText value="#{messages['label.publish.selected.sections']}"/>

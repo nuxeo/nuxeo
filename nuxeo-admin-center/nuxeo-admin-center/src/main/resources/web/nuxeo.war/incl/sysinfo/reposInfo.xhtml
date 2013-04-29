@@ -12,7 +12,7 @@
   <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo.2']}" />: <b> #{systemInfo.listAvailableRepositories().get(0).label}</b> </p>
  </c:if>
 
- <a4j:outputPanel id="repoInfos">
+ <a4j:outputPanel id="repoInfos" layout="block">
   <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.openconnection.1']} #{systemInfo.openSessionNumber} #{messages['adminsubtab.sysinfo.repostat.openconnection.2']}" /></p>
 
   <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.activeconnection']} #{systemInfo.activeSessionNumber}" /></p>

@@ -45,7 +45,7 @@
         </h:form>
       </div>
 
-      <a4j:outputPanel id="content">
+      <a4j:outputPanel id="content" layout="block">
         <c:if test="#{relationActions.popupDisplayed}">
           <ui:decorate template="/incl/content_view.xhtml">
             <ui:param name="useAjaxPagination" value="true" />

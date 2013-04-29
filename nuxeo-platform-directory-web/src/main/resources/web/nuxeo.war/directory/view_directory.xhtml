@@ -14,7 +14,7 @@
     }
   </script>
 
-  <a4j:outputPanel id="viewDirectoryPanel">
+  <a4j:outputPanel id="viewDirectoryPanel" layout="block">
 
   <nxu:set var="currentVoc" cache="true" value="#{directoryUIActions.currentDirectory}">
   <nxu:set var="isReadOnly" cache="true" value="#{directoryUIActions.checkContextualDirectoryFilter('readOnlyDirectory')}">
@@ -23,7 +23,7 @@
 
   <c:if test="#{!isReadOnly}">
     <c:if test="#{directoryUIActions.selectedDirectoryEntry == null}">
-      <a4j:outputPanel id="addDirectoryEntryPanel">
+      <a4j:outputPanel id="addDirectoryEntryPanel" layout="block">
       <h:form id="showHideAddDirectoryEntry">
         <h4>
           <a4j:commandLink
