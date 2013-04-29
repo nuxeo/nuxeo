@@ -4,7 +4,7 @@
      xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <!-- groups listing -->
-  <a4j:outputPanel id="groupsListingPanel">
+  <a4j:outputPanel id="groupsListingPanel" layout="block">
 
     <nxu:set var="listingMode" value="#{nxu:test(shibbGroupManagerActions.listingMode == 'all', 'search_only', shibbGroupManagerActions.listingMode)}">
     <nxu:set var="contentViewName" value="shibb_groups_listing_#{listingMode}">
