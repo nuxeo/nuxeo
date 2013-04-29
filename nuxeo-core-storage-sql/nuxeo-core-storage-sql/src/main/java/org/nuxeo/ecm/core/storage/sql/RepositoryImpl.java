@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -102,6 +104,9 @@ public class RepositoryImpl implements Repository {
 
     /** Single event queue global to the repository. */
     private final InvalidationsQueue repositoryEventQueue;
+
+    /** Lock for calling updateReadAcls. */
+    public final Lock updateReadAclsLock = new ReentrantLock(true);
 
     private Model model;
 

@@ -46,6 +46,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
+import javax.resource.ResourceException;
+import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
@@ -75,12 +77,25 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
 
+    protected Boolean aclOptimizationsConcurrentUpdate;
+
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-backend-core-types-contrib.xml");
+    }
+
+    @Override
+    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
+            boolean fulltextDisabled) {
+        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
+                fulltextDisabled);
+        if (aclOptimizationsConcurrentUpdate != null) {
+            descriptor.aclOptimizationsConcurrentUpdate = aclOptimizationsConcurrentUpdate.booleanValue();
+        }
+        return descriptor;
     }
 
     @Test
@@ -689,6 +704,107 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, res.list.size());
 
         session.close();
+    }
+
+    private static final int ITERATIONS = 5;
+
+    private static final int THREADS = 5;
+
+    @Test
+    public void testUpdateReadAclsDeadlock() throws Exception {
+        repository.close();
+        try {
+            aclOptimizationsConcurrentUpdate = Boolean.FALSE;
+            repository = newRepository(-1, false);
+            repository.getConnection().close(); // create repo
+            for (int i = 0; i < ITERATIONS; i++) {
+                multiThreadedUpdateReadAclsJob(i);
+            }
+        } finally {
+            aclOptimizationsConcurrentUpdate = null;
+        }
+    }
+
+    protected void multiThreadedUpdateReadAclsJob(int i)
+            throws Exception {
+        List<Thread> threads = new ArrayList<Thread>(THREADS);
+        for (int n = 0; n < THREADS; n++) {
+            DocCreator creator = new DocCreator(repository, "doc-" + i + "-"
+                    + n);
+            threads.add(new Thread(creator));
+        }
+        try {
+            for (Thread t : threads) {
+                t.start();
+            }
+        } finally {
+            for (Thread t : threads) {
+                t.join();
+            }
+        }
+        threads.clear();
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        List<Node> children = session.getChildren(root, null, false);
+        assertEquals(THREADS * 2 * (i + 1), children.size());
+        session.close();
+    }
+
+    protected static class DocCreator implements Runnable {
+
+        protected final Repository repository;
+
+        protected final String name;
+
+        protected final Random random;
+
+        protected Session session;
+
+        protected DocCreator(Repository repository, String name) {
+            this.repository = repository;
+            this.name = name;
+            this.random = new Random();
+        }
+
+        @Override
+        public void run() {
+            try {
+                session = repository.getConnection();
+                Xid xid = begin();
+                createDoc();
+                commit(xid);
+                session.close();
+            } catch (ResourceException e) {
+                throw new RuntimeException(e);
+            } catch (XAException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        protected void createDoc() throws StorageException {
+            Node root = session.getRootNode();
+            session.addChildNode(root, name, null, "TestDoc", false);
+            session.save();
+            session.updateReadAcls();
+            // let's create another one in the same transaction
+            session.addChildNode(root, name + "-bis", null, "TestDoc", false);
+            session.save();
+            session.updateReadAcls();
+        }
+
+        protected Xid begin() throws XAException {
+            XAResource xaresource = ((SessionImpl) session).getXAResource();
+            Xid xid = new XidImpl(UUID.randomUUID().toString());
+            xaresource.start(xid, XAResource.TMNOFLAGS);
+            return xid;
+        }
+
+        protected void commit(Xid xid) throws XAException {
+            XAResource xaresource = ((SessionImpl) session).getXAResource();
+            xaresource.end(xid, XAResource.TMSUCCESS);
+            xaresource.commit(xid, true);
+        }
     }
 
     public void XXX_TODO_testConcurrentModification() throws Exception {

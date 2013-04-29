@@ -190,7 +190,7 @@ public class JDBCBackend implements RepositoryBackend {
         // no cluster node handler yet.
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo,
                 xadatasource, clusterNodeHandler, connectionPropagator,
-                noSharing);
+                noSharing, repository);
         if (create) {
             if (repositoryDescriptor.noDDL) {
                 log.info("Skipping database creation");
