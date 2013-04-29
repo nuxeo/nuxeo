@@ -12,7 +12,7 @@
   </c:if>
 
   <!-- groups listing -->
-  <a4j:outputPanel id="groupsListingPanel">
+  <a4j:outputPanel id="groupsListingPanel" layout="block">
 
     <nxu:set var="listingMode"
       value="#{nxu:test(groupManagementActions.listingMode == 'all', 'search_only', groupManagementActions.listingMode)}">
