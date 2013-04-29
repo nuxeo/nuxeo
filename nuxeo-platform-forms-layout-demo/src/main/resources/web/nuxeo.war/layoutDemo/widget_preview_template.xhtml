@@ -65,7 +65,7 @@
         </a4j:region>
       </td>
       <td width="60%" valign="top">
-        <a4j:outputPanel id="layoutDemoPreviewFrame">
+        <a4j:outputPanel id="layoutDemoPreviewFrame" layout="block">
           <c:if test="true">
             <c:set var="frameURL"
               value="#{baseURL}#{layoutPreviewActions.getPreviewLayoutURL(widgetPreviewLayoutDef, widgetPreviewMode, '/layouts/layout_default_template.xhtml')}" />
