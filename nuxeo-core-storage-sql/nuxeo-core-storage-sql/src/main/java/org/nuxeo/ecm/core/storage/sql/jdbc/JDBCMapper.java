@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -55,6 +57,7 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.LockManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
@@ -96,6 +99,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private final PathResolver pathResolver;
 
+    private final RepositoryImpl repository;
+
     private boolean limitedResults;
 
     private long maxResults;
@@ -109,14 +114,16 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param xadatasource the XA datasource to use to get connections
      * @param clusterNodeHandler the cluster node handler
      * @param connectionPropagator the connection propagator
+     * @param repository
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo,
             XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            JDBCConnectionPropagator connectionPropagator)
-            throws StorageException {
+            JDBCConnectionPropagator connectionPropagator,
+            RepositoryImpl repository) throws StorageException {
         super(model, sqlInfo, xadatasource, clusterNodeHandler,
                 connectionPropagator);
         this.pathResolver = pathResolver;
+        this.repository = repository;
         try {
             queryMakerService = Framework.getService(QueryMakerService.class);
         } catch (Exception e) {
@@ -1034,8 +1041,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             } else {
                 // This is not enough to prevent concurrent execution in
                 // cluster mode.
-                synchronized (model) {
-                    st.execute(sql);
+                if (repository.updateReadAclsLock.tryLock(2, TimeUnit.SECONDS)) {
+                    try {
+                        st.execute(sql);
+                    } finally {
+                        repository.updateReadAclsLock.unlock();
+                    }
+                } else {
+                    log.warn("Skipping updateReadAcls after 2s due to lock");
                 }
             }
             countExecute();

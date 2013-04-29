@@ -175,7 +175,7 @@ public class JDBCBackend implements RepositoryBackend {
     protected JDBCMapper createMapper(Model model, PathResolver pathResolver)
             throws StorageException {
         return new JDBCMapper(model, pathResolver, sqlInfo, xadatasource,
-                clusterNodeHandler, connectionPropagator);
+                clusterNodeHandler, connectionPropagator, repository);
     }
 
     @Override
