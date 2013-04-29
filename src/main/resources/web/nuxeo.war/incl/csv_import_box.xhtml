@@ -15,7 +15,7 @@
     <h3><h:outputText value="#{messages['label.csv.import.title']}" /></h3>
 
     <div class="content">
-      <a4j:outputPanel id="csv_import_panel">
+      <a4j:outputPanel id="csv_import_panel" layout="block">
 
         <nxu:set var="importStatus" value="#{csvImportActions.importStatus}">
         <nxu:set var="importScheduled" value="#{not empty importStatus and importStatus.isScheduled()}">
@@ -24,7 +24,7 @@
 
         <a4j:form id="importCsvRichUploadForm" ajaxSingle="true" enctype="multipart/form-data">
 
-          <a4j:outputPanel id="csv_import_form">
+          <a4j:outputPanel id="csv_import_form" layout="block">
             <c:if test="#{not importScheduled and not importRunning and not importComplete}">
               <p class="popUpDescription">
                 <h:outputText value="#{messages['label.csv.import.launch.description']}" />
