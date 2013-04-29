@@ -63,7 +63,8 @@
 
         
        <h:panelGroup>
-         <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_route_region">
+         <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_route_region"
+          layout="block">
           <a4j:commandLink id="#{widget.id}_selection_reset" immediate="true"
           actionListener="#{suggestionActions.clearSingleSelection}"
           ignoreDupResponses="true" ajaxSingle="true" bypassUpdates="true"

@@ -42,7 +42,7 @@
             var="selectedRouteModelId"
             defaultValue="#{routeModels.get(0).id}"
             submitChanges="false">
-            <a4j:outputPanel id="#{widget.id}_preview">
+            <a4j:outputPanel id="#{widget.id}_preview" layout="block">
               <c:if test="#{not empty selectedRouteModelId}">
                 <nxu:set var="selectedRouteModel"
                   value="#{routingActions.getRouteModel(selectedRouteModelId)}"

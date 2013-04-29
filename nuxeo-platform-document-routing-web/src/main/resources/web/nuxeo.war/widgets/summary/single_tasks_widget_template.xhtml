@@ -9,7 +9,7 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
-  <a4j:outputPanel id="#{widget.id}_panel">
+  <a4j:outputPanel id="#{widget.id}_panel" layout="block">
 
     <nxu:set var="currentDashBoardItemsExceptPublishingTasks" value="#{taskActions.getCurrentDashBoardItemsExceptPublishingTasks()}"
       cache="true">
@@ -97,7 +97,7 @@
                 </div>
               </f:subview>
 
-              <a4j:outputPanel id="#{idPrefix}_ajax_panel">
+              <a4j:outputPanel id="#{idPrefix}_ajax_panel" layout="block">
                 <c:if test="#{actionClicked or showFirstForm}">
                   <div>
                     <div id="#{idPrefix}_box">
