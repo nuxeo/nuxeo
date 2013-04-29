@@ -66,6 +66,11 @@ public abstract class AbstractFileImporter implements FileImporter {
 
     protected Integer order = 0;
 
+    public static final String SKIP_UPDATE_AUDIT_LOGGING = "org.nuxeo.filemanager.skip.audit.logging.forupdates";
+
+    // duplicated from Audit module to avoid circular dependency
+    public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
+
     // to be used by plugin implementation to gain access to standard file
     // creation utility methods without having to lookup the service
     protected FileManagerService fileManagerService;
@@ -186,6 +191,10 @@ public abstract class AbstractFileImporter implements FileImporter {
             checkIn(doc);
             // update data
             updateDocument(doc, content);
+            if (Framework.getProperty(SKIP_UPDATE_AUDIT_LOGGING, "false").equalsIgnoreCase("true")) {
+                // skip the update event if configured to do so
+                doc.putContextData(DISABLE_AUDIT_LOGGER, true);
+            }
             // save
             doc = doc.getCoreSession().saveDocument(doc);
         } else {
