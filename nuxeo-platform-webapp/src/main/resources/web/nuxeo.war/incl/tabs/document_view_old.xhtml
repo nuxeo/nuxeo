@@ -14,7 +14,7 @@
 
   <h:form id="document_view">
     <a4j:region id="documentViewRegion">
-      <a4j:outputPanel id="documentViewPanel">
+      <a4j:outputPanel id="documentViewPanel" layout="block">
       <div>
         <ui:include src="/incl/summary/locked.xhtml" />
         <c:if test="#{currentDocument.hasSchema('dublincore')}">

@@ -10,7 +10,7 @@
     value="#{webActions.getActionsList('LOCAL_CONFIGURATION')}">
 
     <c:if test="#{not empty actions}">
-      <a4j:outputPanel id="local_configuration_panel">
+      <a4j:outputPanel id="local_configuration_panel" layout="block">
         <c:forEach var="action" items="#{actions}">
 
           <ui:include src="#{action.link}" />

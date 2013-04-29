@@ -19,7 +19,7 @@
 
       <h:form id="document_view" enctype="multipart/form-data">
         <a4j:region id="documentViewRegion">
-          <a4j:outputPanel id="documentViewPanel">
+          <a4j:outputPanel id="documentViewPanel" layout="block">
             <nxl:documentLayout documentMode="summary" mode="view"
               value="#{currentDocument}"
               includeAnyMode="false" />
@@ -31,7 +31,7 @@
 
     <c:if test="#{empty summaryLayouts}">
       <a4j:region id="documentViewRegion">
-        <a4j:outputPanel id="documentViewPanel">
+        <a4j:outputPanel id="documentViewPanel" layout="block">
           <nxl:documentLayout documentMode="grid_summary" mode="view"
             value="#{currentDocument}" defaultLayout="grid_summary_layout"
             includeAnyMode="false" />

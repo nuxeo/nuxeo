@@ -38,7 +38,7 @@
     </script>
 
     <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
-      <a4j:outputPanel ajaxRendered="true">
+      <a4j:outputPanel ajaxRendered="true" layout="block">
         <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
           template="#{nxd:propertyDefaultValue(widget.fieldDefinitions[0].propertyName)}"
           required="#{widget.required}" diff="#{widget.properties['diff']}">

@@ -61,7 +61,7 @@
   </table>
      </nxdir:chainSelect>
 
-  <a4j:outputPanel id="result_messages">
+  <a4j:outputPanel id="result_messages" layout="block">
   <h:message class="errorMessage" for="resultNewField" />
   </a4j:outputPanel>
 
@@ -84,7 +84,7 @@
   <h:inputHidden id="fieldRef1" value="#{searchColumns.fieldRef1}" />
   <h:inputHidden id="fieldRef2" value="#{searchColumns.fieldRef2}" />
 
-  <a4j:outputPanel id="a4j_resultFieldList">
+  <a4j:outputPanel id="a4j_resultFieldList" layout="block">
   <nxu:dataList id="resultFieldList" var="field" layout="simple"
         value="#{searchColumns.resultColumns}"
     styleClass="resultColumnsContainer">
