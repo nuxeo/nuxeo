@@ -117,6 +117,17 @@ CREATE INDEX ancestors_ancestors_is_null_idx ON ancestors USING btree(ancestors)
 
 
 #IF: pathOptimizationsEnabled
+#TEST:
+SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'ancestors')
+           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='ancestors_ancestors_idx');
+
+
+#IF: pathOptimizationsEnabled
+#IF: ! emptyResult
+CREATE INDEX ancestors_ancestors_idx ON ancestors USING gin(ancestors);
+
+
+#IF: pathOptimizationsEnabled
 CREATE OR REPLACE FUNCTION nx_ancestors_create_triggers()
 RETURNS void
 AS $$
