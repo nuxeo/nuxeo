@@ -8,7 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="http://richfaces.org/a4j">
 
-     <a4j:outputPanel id="user_center_subtab">
+     <a4j:outputPanel id="user_center_subtab" layout="block">
 
       <ui:include src="/incl/message_banner.xhtml"/>
       <c:if test="#{!empty currentUserCenterView.properties.alwaysDisplaySubTabs or userCenterViews.availableSubActions.size > 1}">
