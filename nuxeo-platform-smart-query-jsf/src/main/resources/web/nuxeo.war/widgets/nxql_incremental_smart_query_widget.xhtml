@@ -19,7 +19,7 @@
     </c:if>
 
     <a4j:region id="#{widget.id}_smartSearchAjaxRegion">
-      <a4j:outputPanel id="#{widget.id}_smartSearchAjaxPanel">
+      <a4j:outputPanel id="#{widget.id}_smartSearchAjaxPanel" layout="block">
   
         <table class="dataInput">
           <tbody>
@@ -57,7 +57,7 @@
       <tbody>
         <tr>
           <td class="fieldColumn">
-            <a4j:outputPanel id="#{widget.id}_smartQueryPartPanel">
+            <a4j:outputPanel id="#{widget.id}_smartQueryPartPanel" layout="block">
               <h:inputTextarea id="#{widget.id}_smartQueryPart"
                 value="#{field}"
                 required="#{widget.required and not smartNXQLQueryActions.ajaxRequest}"
@@ -77,7 +77,7 @@
             </a4j:outputPanel>
           </td>
           <td valign="bottom">
-            <a4j:outputPanel id="#{widget.id}_smartQueryUndoPanel">
+            <a4j:outputPanel id="#{widget.id}_smartQueryUndoPanel" layout="block">
               <a4j:commandButton value="#{messages['label.smart.query.undoChanges']}"
                 actionListener="#{smartNXQLQueryActions.undoQueryPartChanges}"
                 reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
