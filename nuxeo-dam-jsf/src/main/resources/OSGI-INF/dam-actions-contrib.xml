@@ -97,6 +97,11 @@
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
+    <action id="damEditCurrentDocument" link="#{damActions.updateCurrentDocument}"
+      order="0" label="command.save">
+      <category>DAM_EDIT_DOCUMENT_FORM</category>
+    </action>
+
     <!-- Search results actions -->
     <action id="damNewAsset" order="100" label="label.dam.new.asset"
       type="fancybox">

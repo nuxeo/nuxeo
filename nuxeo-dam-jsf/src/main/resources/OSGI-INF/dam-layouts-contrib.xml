@@ -51,6 +51,42 @@
         /dam/widgets/dam_asset_view_no_document.xhtml
       </property>
     </widgetType>
+
+    <widgetType name="toggleableDocumentLayoutWithForms">
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Toggleable document layout</title>
+        <description>
+          This widget displays a form layout which mode can be
+          toggled, with forms inside it.
+
+          Note that usually layouts do not contain
+          any forms, but are surrounded by one, and nesting forms breaks the
+          available actions. So you should make sure there is no enclosing form
+          around the layout, or around this widget, when using it.
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /dam/widgets/toggleable_document_layout_with_forms_widget.xhtml
+      </property>
+    </widgetType>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -385,9 +421,9 @@
       </properties>
     </widget>
 
-    <widget name="damAssetViewDublincore" type="toggleableLayoutWithForms">
+    <widget name="damAssetViewMetadata" type="toggleableDocumentLayoutWithForms">
       <labels>
-        <label mode="any">label.schema.dublincore</label>
+        <label mode="any">label.dam.metadata</label>
       </labels>
       <translated>true</translated>
       <controls mode="any">
@@ -397,8 +433,9 @@
         <property name="displayToggleActionInHeader">true</property>
         <property name="foldable">true</property>
         <property name="foldedByDefault">true</property>
-        <property name="initialLayoutName">dublincore</property>
-        <property name="useAjaxForm">true</property>
+        <property name="useAjaxForm">false</property>
+        <property name="hideDefaultActions">true</property>
+        <property name="additionalActionsCategory">DAM_EDIT_DOCUMENT_FORM</property>
       </properties>
     </widget>
 
@@ -693,10 +730,10 @@
       <filter-id>hasTasks</filter-id>
     </action>
 
-    <action id="damAssetViewDublincore" type="widget" order="1300">
-      <category></category>
+    <action id="damAssetViewMetadata" type="widget" order="1300">
+      <category>DAM_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">damAssetViewDublincore</property>
+        <property name="widgetName">damAssetViewMetadata</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>

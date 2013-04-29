@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -68,6 +69,9 @@ public class DamActions implements Serializable {
 
     @In(create = true)
     protected transient WebActions webActions;
+
+    @In(create = true)
+    protected transient DocumentActions documentActions;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
@@ -190,6 +194,11 @@ public class DamActions implements Serializable {
     public String viewInDM() throws ClientException {
         webActions.setCurrentTabIds("MAIN_TABS:documents");
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
+    }
+
+    public String updateCurrentDocument() throws ClientException {
+        documentActions.updateCurrentDocument();
+        return null;
     }
 
 }
