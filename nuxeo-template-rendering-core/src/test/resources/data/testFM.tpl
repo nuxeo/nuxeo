@@ -94,3 +94,9 @@ ${core.getParent().dublincore.title}
   ${(functions.getVocabularyLabel("AllergenUnit",allergen.quantityUnit))!}
 [/#list]
 
+[#list (doc['dc:subjects']) as subject]
+ [#if subject_has_next]
+  ${subject_index}
+ [/#if]
+[/#list]
+

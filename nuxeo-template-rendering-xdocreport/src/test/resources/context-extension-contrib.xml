@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.template.service.test.contrib">
+
+  <extension target="org.nuxeo.template.service.TemplateProcessorComponent"
+    point="contextExtension">
+
+    <contextFactory name="plimfunctions"
+      class="org.nuxeo.ecm.platform.template.tests.FakeContextExtension"
+      merge="true">
+      <aliasName>pfn</aliasName>
+      <aliasName>pFn</aliasName>
+      <aliasName>PFn</aliasName>
+      <aliasName>Pfn</aliasName>
+    </contextFactory>
+
+  </extension>
+
+</component>
