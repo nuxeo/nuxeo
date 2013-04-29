@@ -8,7 +8,7 @@
      xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <!-- users listing -->
-  <a4j:outputPanel id="usersListingPanel">
+  <a4j:outputPanel id="usersListingPanel" layout="block">
 
     <nxu:set var="listingMode" value="#{nxu:test(userManagementActions.listingMode == 'all', 'search_only', userManagementActions.listingMode)}">
     <nxu:set var="contentViewName" value="users_listing_#{listingMode}">

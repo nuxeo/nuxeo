@@ -8,7 +8,7 @@
      xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <!-- groups listing -->
-  <a4j:outputPanel id="groupsListingPanel">
+  <a4j:outputPanel id="groupsListingPanel" layout="block">
 
     <nxu:set var="listingMode" value="#{nxu:test(groupManagementActions.listingMode == 'all', 'search_only', groupManagementActions.listingMode)}">
     <nxu:set var="contentViewName" value="groups_listing_#{listingMode}">

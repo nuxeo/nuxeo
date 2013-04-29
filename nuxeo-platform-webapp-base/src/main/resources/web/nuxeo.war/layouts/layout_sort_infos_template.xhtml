@@ -23,7 +23,7 @@
 </c:if>
 
   <a4j:region renderRegionOnly="true" id="#{layout.id}_region">
-    <a4j:outputPanel id="#{layout.id}_panel">
+    <a4j:outputPanel id="#{layout.id}_panel" layout="block">
 
       <nxu:inputList value="#{layoutValue}" id="#{layout.id}_input" model="model"
         template="#{layoutProperty_newSortInfoTemplate}"

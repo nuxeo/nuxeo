@@ -51,7 +51,7 @@
   <c:set var="defaultAjaxPanelId" value="#{widget.id}_panel"/>
   <c:set var="ajaxPanelId" value="#{nxu:test(empty widgetProperty_ajaxPanelId, defaultAjaxPanelId, widgetProperty_ajaxPanelId)}" />
 
-  <a4j:outputPanel id="#{ajaxPanelId}">
+  <a4j:outputPanel id="#{ajaxPanelId}" layout="block">
 
   <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
     <ui:param name="hideHeader" value="#{not showHeader or empty widget.label}" />

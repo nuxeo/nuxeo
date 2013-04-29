@@ -35,6 +35,7 @@ empty:
     cache="true">
 
   <a4j:outputPanel id="#{quickFilterFormId}_panel"
+    layout="block"
     styleClass="contentViewQuickFilterForm">
     <a4j:region id="#{quickFilterFormId}_region">
 
@@ -114,7 +115,7 @@ empty:
     </a4j:region>
   </a4j:outputPanel>
 
-  <a4j:outputPanel id="#{filterFormId}_panel">
+  <a4j:outputPanel id="#{filterFormId}_panel" layout="block">
     <a4j:region id="#{filterFormId}_region">
       <nxu:valueHolder id="#{cvid}_showFilterFormBox"
         var="showFilterFormBox" defaultValue="#{nxu:hasMessages(filterFormId)}">

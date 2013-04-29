@@ -97,7 +97,10 @@
     </div>
   </div>
 
-  <a4j:outputPanel id="#{widget.id}_multipleValuePanel" ajaxRendered="true" rendered="#{widget.properties.multipleValues}">
+  <a4j:outputPanel id="#{widget.id}_multipleValuePanel"
+    layout="block"
+    ajaxRendered="true"
+    rendered="#{widget.properties.multipleValues}">
     <table class="dataInput thin">
       <nxu:inputList id="#{widget.id}_list" value="#{field}"
         model="model">

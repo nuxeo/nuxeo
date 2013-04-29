@@ -101,7 +101,7 @@
   cache="true">
 
 <a4j:region id="#{contentViewRenderId}_region">
-<a4j:outputPanel id="#{contentViewRenderId}_panel">
+<a4j:outputPanel id="#{contentViewRenderId}_panel" layout="block">
 
   <nxu:set var="provider" value="#{contentView.currentPageProvider}"
     cache="true">
@@ -183,7 +183,7 @@
             </c:if>
           </ui:insert>
 
-          <a4j:outputPanel id="#{resultsPanelId}">
+          <a4j:outputPanel id="#{resultsPanelId}" layout="block">
             <script>
               jQuery(document).ready(function() {
                 initNXDrapAndDropOnPage(jQuery('##{contentViewRenderId}_panel'));
@@ -218,7 +218,9 @@
               </ui:define>
 
               <ui:define name="buttons">
-                <a4j:outputPanel id="ajax_selection_buttons" ajaxRendered="false">
+                <a4j:outputPanel id="ajax_selection_buttons"
+                  layout="block"
+                  ajaxRendered="false">
                   <div id="selection_buttons">
                     <table>
                       <tbody>

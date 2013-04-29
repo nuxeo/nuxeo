@@ -8,7 +8,7 @@
 
   <c:if test="#{not empty widgetProperty_action}">
 
-    <a4j:outputPanel id="#{widget.id}_panel">
+    <a4j:outputPanel id="#{widget.id}_panel" layout="block">
 
       <nxu:set var="action" value="#{widgetProperty_action}"
         cache="true">

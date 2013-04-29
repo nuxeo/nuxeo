@@ -150,7 +150,8 @@
       </h:panelGroup>
 
       <h:panelGroup>
-        <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion">
+        <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion"
+          layout="block">
           <nxu:inputList id="#{widget.id}_list" value="#{field}" model="model"
             required="#{widget.required}">
             <h:panelGroup id="#{widget.id}_listItem">
