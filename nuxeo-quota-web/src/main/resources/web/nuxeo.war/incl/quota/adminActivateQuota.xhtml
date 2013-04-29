@@ -37,7 +37,9 @@
    reRender="setQuotaOnUserWorkspacesPanel, checkQuotaStatus, quotaActivateQueueReg" />
  </h:form>
 
-  <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel" rendered="#{!quotaStatsActions.workQueuesInProgess()}">
+  <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel"
+    layout="block"
+    rendered="#{!quotaStatsActions.workQueuesInProgess()}">
 
   <h:form id="set_quota_userworkspace_form">
 
