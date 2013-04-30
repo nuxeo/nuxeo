@@ -162,6 +162,8 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
             }
         }
         assertTrue(failmsg.toString(), responses.length >= 4);
+        // there may be more than 4 entries if other testCreate* tests
+        // run before this method
 
         boolean found = false;
         for (MultiStatusResponse response : responses) {
@@ -271,6 +273,10 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         assertTrue(session.exists(pathRef)); // in trash
         DocumentModel doc = session.getDocument(pathRef);
         assertEquals("deleted", doc.getCurrentLifeCycleState());
+
+        // recreate it, for other tests using the same repo
+        byte[] bytes = "Hello, world!".getBytes("UTF-8");
+        doTestPutFile(name, bytes, "text/plain", "Note");
     }
 
     @Test
