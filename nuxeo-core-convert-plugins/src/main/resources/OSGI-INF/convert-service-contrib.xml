@@ -11,6 +11,7 @@
 
     <converter name="xml2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.XML2TextConverter">
       <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>application/xml</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
