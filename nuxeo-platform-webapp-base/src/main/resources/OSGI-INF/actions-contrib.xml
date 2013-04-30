@@ -185,6 +185,12 @@
       </rule>
     </filter>
 
+    <filter id="denyForFile">
+      <rule grant="false">
+        <type>File</type>
+      </rule>
+    </filter>
+
     <filter id="hasDublincore">
       <rule grant="true">
         <schema>dublincore</schema>

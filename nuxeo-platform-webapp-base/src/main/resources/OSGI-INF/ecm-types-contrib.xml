@@ -290,8 +290,10 @@
         <layout>file</layout>
         <layout>dublincore</layout>
       </layouts>
-      <!-- all content already on summary page -->
-      <layouts mode="view" />
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
     </type>
 
     <type id="Note">
