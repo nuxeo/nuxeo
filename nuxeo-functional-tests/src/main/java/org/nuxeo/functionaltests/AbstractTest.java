@@ -90,8 +90,7 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
-     * @since 5.7
-     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
      *        doesn't work
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
@@ -377,7 +376,7 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it.
-     *
+     * FIXME: should use HarnessRuntime#getClassLoaderFiles that returns the same thing
      * @return
      * @throws Exception
      */
@@ -400,31 +399,38 @@ public abstract class AbstractTest {
                     + cl.getClass().getName());
             return null;
         }
+
+        JarFile surefirebooterJar = null;
+        for (URL url : urls) {
+            URI uri = url.toURI();
+            if (uri.getPath().matches(".*/nuxeo-runtime-[^/]*\\.jar")) {
+                break;
+            } else if (uri.getScheme().equals("file")
+                    && uri.getPath().contains("surefirebooter")) {
+                surefirebooterJar = new JarFile(new File(uri));
+            }
+        }
+
         // special case for maven surefire with useManifestOnlyJar
-        if (urls.length == 1) {
+        if (surefirebooterJar != null) {
             try {
-                URI uri = urls[0].toURI();
-                if (uri.getScheme().equals("file")
-                        && uri.getPath().contains("surefirebooter")) {
-                    JarFile jar = new JarFile(new File(uri));
-                    try {
-                        String cp = jar.getManifest().getMainAttributes().getValue(
-                                Attributes.Name.CLASS_PATH);
-                        if (cp != null) {
-                            String[] cpe = cp.split(" ");
-                            URL[] newUrls = new URL[cpe.length];
-                            for (int i = 0; i < cpe.length; i++) {
-                                // Don't need to add 'file:' with maven
-                                // surefire >= 2.4.2
-                                String newUrl = cpe[i].startsWith("file:") ? cpe[i]
-                                        : "file:" + cpe[i];
-                                newUrls[i] = new URL(newUrl);
-                            }
-                            urls = newUrls;
+                try {
+                    String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(
+                            Attributes.Name.CLASS_PATH);
+                    if (cp != null) {
+                        String[] cpe = cp.split(" ");
+                        URL[] newUrls = new URL[cpe.length];
+                        for (int i = 0; i < cpe.length; i++) {
+                            // Don't need to add 'file:' with maven
+                            // surefire >= 2.4.2
+                            String newUrl = cpe[i].startsWith("file:") ? cpe[i]
+                                    : "file:" + cpe[i];
+                            newUrls[i] = new URL(newUrl);
                         }
-                    } finally {
-                        jar.close();
+                        urls = newUrls;
                     }
+                } finally {
+                    surefirebooterJar.close();
                 }
             } catch (Exception e) {
                 // skip
@@ -741,8 +747,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -799,8 +805,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
