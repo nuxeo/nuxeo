@@ -66,6 +66,10 @@
         <layout>dam_common</layout>
         <layout>dublincore</layout>
       </layouts>
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>dam_common</layout>
+      </layouts>
     </type>
 
     <type id="Video">
