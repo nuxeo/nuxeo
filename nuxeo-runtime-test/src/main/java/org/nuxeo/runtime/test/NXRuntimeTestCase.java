@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -667,5 +668,19 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     public OSGiAdapter getOSGiAdapter() {
         return osgi;
     }
+
+    /* (non-Javadoc)
+     * @see org.nuxeo.runtime.test.runner.RuntimeHarness#getClassLoaderFiles()
+     */
+    @Override
+    public List<String> getClassLoaderFiles() throws URISyntaxException {
+        List<String> files = new ArrayList<String>(urls.length);
+        for (URL url : urls) {
+            files.add(url.toURI().getPath());
+        }
+        return files;
+    }
+
+
 
 }

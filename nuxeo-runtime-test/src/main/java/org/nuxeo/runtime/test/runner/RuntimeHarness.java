@@ -20,7 +20,9 @@
 package org.nuxeo.runtime.test.runner;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 import org.nuxeo.osgi.OSGiAdapter;
@@ -176,5 +178,13 @@ public interface RuntimeHarness {
      * @throws Exception
      */
     public void restart() throws Exception;
+
+
+    /**
+     * @throws URISyntaxException
+     * @since 5.7
+     *
+     */
+    public List<String> getClassLoaderFiles() throws URISyntaxException;
 
 }
