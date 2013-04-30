@@ -815,6 +815,9 @@
         <artifactId>nuxeo-connect-update</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
+      <!-- Note: nuxeo-automation-client introduces a dependency to Logback. -->
+      <!-- If using Log4J for instance, then exclude logback and add a bridge -->
+      <!-- such as org.slf4j:slf4j-log4j12 -->
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-client</artifactId>
@@ -2306,16 +2309,6 @@
         <version>1.8.0.1</version>
       </dependency>
       <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.16</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-access</artifactId>
-        <version>${ch.qos.logback.version}</version>
-      </dependency>
-      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.8.1</version>
@@ -2334,7 +2327,7 @@
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
+        <artifactId>slf4j-parent</artifactId>
         <version>${org.slf4j.version}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -2343,25 +2336,16 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
         <version>${org.slf4j.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.cal10n</groupId>
-        <artifactId>cal10n-api</artifactId>
-        <version>0.7.4</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.5</version>
+        <version>${org.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.5</version>
+        <version>${org.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -3884,13 +3868,10 @@
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
+        <artifactId>logback-parent</artifactId>
         <version>${ch.qos.logback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${ch.qos.logback.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
