@@ -42,12 +42,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.security.UserManagementActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component to manage user profile editing
- *
+ * 
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  * @since 5.5
  */
@@ -80,12 +81,20 @@ public class UserProfileActions implements Serializable {
     @In(create = true)
     protected transient LocaleSelector localeSelector;
 
+    @In(create = true)
+    protected transient UserManager userManager;
+
     protected String mode = PROFILE_VIEW_MODE;
 
     protected DocumentModel userProfileDocument;
 
     public void updateUser() throws ClientException {
         if (userProfileDocument != null) {
+            // Ensure to remove user schema from datamodel when saving changes
+            // on user profile, otherwise an exception is thrown, see
+            // NXP-11397.
+            userProfileDocument.getDataModels().remove(
+                    userManager.getUserSchemaName());
             documentManager.saveDocument(userProfileDocument);
             documentManager.save();
         }
