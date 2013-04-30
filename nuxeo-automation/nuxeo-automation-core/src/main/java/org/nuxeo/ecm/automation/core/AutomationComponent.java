@@ -42,10 +42,12 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
+import org.nuxeo.ecm.automation.core.operations.document.AddEntryToMultiValuedProperty;
 import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
+import org.nuxeo.ecm.automation.core.operations.document.CreateProxyLive;
 import org.nuxeo.ecm.automation.core.operations.document.CreateVersion;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchByProperty;
@@ -54,6 +56,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FilterDocuments;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChild;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentParent;
+import org.nuxeo.ecm.automation.core.operations.document.GetLiveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MoveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.MultiPublishDocument;
@@ -62,6 +65,7 @@ import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.ReloadDocument;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentACL;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentBlob;
+import org.nuxeo.ecm.automation.core.operations.document.RemoveEntryOfMultiValuedProperty;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveProperty;
 import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentACE;
@@ -202,6 +206,12 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(Logout.class);
 
         service.putOperation(LogOperation.class);
+
+        // From presales toolkit
+        service.putOperation(AddEntryToMultiValuedProperty.class);
+        service.putOperation(CreateProxyLive.class);
+        service.putOperation(GetLiveDocument.class);
+        service.putOperation(RemoveEntryOfMultiValuedProperty.class);
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);

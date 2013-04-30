@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.features;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -169,6 +171,74 @@ public class PlatformFunctions extends CoreFunctions {
 
     public static String htmlEscape(String str) {
         return StringEscapeUtils.escapeHtml(str);
+    }
+
+    /**
+     * Concatenate into the list given as first argument other arguments. Other
+     * arguments will be explosed if it is a list of object. ex:
+     * concatenateInto(myList, a, anotherList) with a is scalar object and
+     * anotherList is a list of object will produced myList.add(a) and the same
+     * for each object contained into the anotherList list.
+     *
+     * @param <T>
+     *
+     * @param list List of values of type A
+     * @param value Value can be instance of java.util.Collection<Object> or an
+     *            array of Objects or simply a scalar Object. If Null, the
+     *            parameter is ignored
+     * @return the list that contains the list contain and value (see value
+     *         description)
+     * @exception ClientException if value if a collection but not contains only
+     *                A values and type that extends A.
+     * @exception ClientException if list is null
+     * @exception xxxxx if in values there is at least one object type not
+     *                compatible with the collection list
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> concatenateIntoList(List<T> list, Object... values)
+            throws ClientException {
+
+        if (list == null) {
+            throw new ClientException("First parameter must not be null");
+        }
+
+        for (Object value : values) {
+            if (value == null) {
+                continue;
+            }
+
+            if (value instanceof Object[]) {
+                for (Object subValue : (Object[]) value) {
+                    if (subValue != null) {
+                        list.add((T) subValue);
+                    }
+                }
+                continue;
+            }
+
+            if (value instanceof Collection) {
+                for (Object subValue : (Collection<Object>) value) {
+                    if (subValue != null) {
+                        list.add((T) subValue);
+                    }
+                }
+                continue;
+            }
+
+            list.add((T) value);
+
+        }
+        return list;
+    }
+
+    /**
+     * Idem than concatenateInto except that a new list is created.
+     */
+    public <T> List<T> concatenateValuesAsNewList(Object... values)
+            throws ClientException {
+
+        List<T> result = new ArrayList<T>();
+        return concatenateIntoList(result, values);
     }
 
 }
