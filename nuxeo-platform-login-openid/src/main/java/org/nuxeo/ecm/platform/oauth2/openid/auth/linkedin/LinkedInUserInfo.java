@@ -30,69 +30,69 @@ public class LinkedInUserInfo extends GenericJson implements OpenIDUserInfo {
     // These fields require the r_basicprofile member permission
 
     @Key("id")
-    public String subject;
+    protected String subject;
 
     @Key("formattedName")
-    public String name;
+    protected String name;
 
     @Key("firstName")
-    public String givenName;
+    protected String givenName;
 
     @Key("lastName")
-    public String familyName;
+    protected String familyName;
 
     @Key("publicProfileUrl")
-    public String profile;
+    protected String profile;
 
     @Key("pictureUrl")
-    public String picture;
+    protected String picture;
 
     // These fields require the r_emailaddress member permission
 
     @Key("emailAddress")
-    public String email;
+    protected String email;
 
     // These fields require the r_fullprofile member permission
 
     @Key("dateOfBirth")
-    public Date birthdate;
+    protected Date birthdate;
 
     // These fields require the r_contactinfo member permission
 
     @Key("phoneNumbers")
-    public List<String> phoneNumbers;
+    protected List<String> phoneNumbers;
 
     @Key("mainAddress")
-    public String address;
+    protected String address;
 
     // These fields are not available
 
     @Key("middle_name")
-    public String middleName;
+    protected String middleName;
 
     @Key("nickname")
-    public String nickname;
+    protected String nickname;
 
     @Key("preferred_username")
-    public String preferredUsername;
+    protected String preferredUsername;
 
     @Key("website")
-    public String website;
+    protected String website;
 
     @Key("verified_email")
-    public boolean verifiedEmail;
+    protected boolean verifiedEmail;
 
     @Key("gender")
-    public String gender;
+    protected String gender;
 
     @Key("zoneinfo")
-    public String zoneInfo;
+    protected String zoneInfo;
 
     @Key("locale")
-    public String locale;
+    protected String locale;
 
     @Key("updated_time")
-    public Date updatedTime;
+    protected Date updatedTime;
 
     @Override
     public String getSubject() {

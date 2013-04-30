@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.oauth2.openid.auth;
 import java.util.Date;
 
 /**
- * UserInfo Claims
+ * UserInfo Claims.
  * OpenID Connect Basic Client Profile 1.0 - draft 24
  * @see http://openid.net/specs/openid-connect-basic-1_0.html
  */

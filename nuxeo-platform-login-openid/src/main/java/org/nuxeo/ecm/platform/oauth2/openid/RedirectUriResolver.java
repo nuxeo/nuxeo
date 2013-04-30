@@ -9,5 +9,5 @@ import javax.servlet.http.HttpServletRequest;
  * @since 5.7
  */
 public interface RedirectUriResolver {
-    public String getRedirectUri(OpenIDConnectProvider openIDConnectProvider, HttpServletRequest request);
+    String getRedirectUri(OpenIDConnectProvider openIDConnectProvider, HttpServletRequest request);
 }

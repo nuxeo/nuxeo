@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper class to manage mapping between identification info comming from the
- * OpenID provider and Nuxeo UserManager
+ * OpenID provider and Nuxeo UserManager.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7

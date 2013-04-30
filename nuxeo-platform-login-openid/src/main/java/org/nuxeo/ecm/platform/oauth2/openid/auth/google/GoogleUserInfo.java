@@ -24,7 +24,7 @@ import com.google.api.client.util.Key;
 public class GoogleUserInfo extends DefaultOpenIDUserInfo {
 
     @Key("id")
-    public String id;
+    protected String id;
 
     @Override
     public String getSubject() {

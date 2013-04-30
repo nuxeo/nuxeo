@@ -29,10 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIdUserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDConnectAuthenticator;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
@@ -51,7 +52,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
 /**
  * Class that holds info about an OpenID provider, this includes an OAuth
  * Provider as well as urls and icons
- * 
+ *
  * @author Nelson Silva <nelson.silva@inevo.pt>
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * 
@@ -83,7 +84,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     private Class<? extends OpenIDUserInfo> openIdUserInfoClass;
 
     public OpenIDConnectProvider(NuxeoOAuth2ServiceProvider oauth2Provider,
-            String accessTokenKey, String userInfoURL, Class< ? extends OpenIDUserInfo> openIdUserInfoClass,
+            String accessTokenKey, String userInfoURL, Class<? extends OpenIDUserInfo> openIdUserInfoClass,
             String icon, boolean enabled,
             RedirectUriResolver redirectUriResolver,
             Class<? extends UserResolver> userResolverClass) {
@@ -99,7 +100,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
             Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[]{OpenIDConnectProvider.class});
             userResolver = c.newInstance(new Object[]{this});
         } catch (Exception e) {
-            log.error("Failed to instanciate UserResolver " + e.getMessage());
+            log.error("Failed to instantiate UserResolver", e);
         }
 
     }

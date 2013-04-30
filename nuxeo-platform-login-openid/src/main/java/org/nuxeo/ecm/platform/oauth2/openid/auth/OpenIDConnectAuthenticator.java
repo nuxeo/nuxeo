@@ -32,15 +32,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.LoginResponseHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Authenticator using OpenID to retrieve user identity
- * 
+ * Authenticator using OpenID to retrieve user identity.
+ *
  * @author Nelson Silva <nelson.silva@inevo.pt>
- * 
+ *
  */
 public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 

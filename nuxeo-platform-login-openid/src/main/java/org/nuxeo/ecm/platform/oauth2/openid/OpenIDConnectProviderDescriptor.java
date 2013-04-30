@@ -65,7 +65,7 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     protected String clientSecret;
 
     @XNodeList(value = "scope", type = String[].class, componentType = String.class)
-    public String[] scopes;
+    protected String[] scopes;
 
     @XNode("icon")
     protected String icon;
@@ -117,7 +117,7 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
         return userInfoURL;
     }
 
-    public String getAccessTokenKey () {
+    public String getAccessTokenKey() {
         return accessTokenKey;
     }
 

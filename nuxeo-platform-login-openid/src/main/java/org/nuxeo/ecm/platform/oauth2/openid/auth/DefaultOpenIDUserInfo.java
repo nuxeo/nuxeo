@@ -26,61 +26,61 @@ import com.google.api.client.util.Key;
 public class DefaultOpenIDUserInfo extends GenericJson implements OpenIDUserInfo {
 
     @Key("sub")
-    public String subject;
+    protected String subject;
 
     @Key("name")
-    public String name;
+    protected String name;
 
     @Key("given_name")
-    public String givenName;
+    protected String givenName;
 
     @Key("family_name")
-    public String familyName;
+    protected String familyName;
 
     @Key("middle_name")
-    public String middleName;
+    protected String middleName;
 
     @Key("nickname")
-    public String nickname;
+    protected String nickname;
 
     @Key("preferred_username")
-    public String preferredUsername;
+    protected String preferredUsername;
 
     @Key("profile")
-    public String profile;
+    protected String profile;
 
     @Key("picture")
-    public String picture;
+    protected String picture;
 
     @Key("website")
-    public String website;
+    protected String website;
 
     @Key("email")
-    public String email;
+    protected String email;
 
     @Key("email_verified")
-    public boolean emailVerified;
+    protected boolean emailVerified;
 
     @Key("gender")
-    public String gender;
+    protected String gender;
 
     @Key("birthdate")
-    public Date birthdate;
+    protected Date birthdate;
 
     @Key("zoneinfo")
-    public String zoneInfo;
+    protected String zoneInfo;
 
     @Key("locale")
-    public String locale;
+    protected String locale;
 
     @Key("phone_number")
-    public String phoneNumber;
+    protected String phoneNumber;
 
     @Key("address")
-    public String address;
+    protected String address;
 
     @Key("updated_time")
-    public String updatedTime;
+    protected String updatedTime;
 
     @Override
     public String getSubject() {

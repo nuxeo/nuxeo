@@ -26,7 +26,6 @@ import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-
 public class StoredUserInfoResolver extends UserResolver {
 
     private OpenIDUserInfoStore userInfoStore;

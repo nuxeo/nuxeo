@@ -82,7 +82,7 @@ public abstract class UserResolver {
             UserManager userManager = Framework.getLocalService(UserManager.class);
             List<String> userIds = userManager.getUserIds();
 
-            while(userId == null || userIds.contains(userId)) {
+            while (userId == null || userIds.contains(userId)) {
                 userId = "user_" + RandomStringUtils.randomNumeric(4);
             }
         } catch (ClientException e) {

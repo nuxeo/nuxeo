@@ -29,19 +29,19 @@ import com.google.api.client.util.Key;
 public class FacebookUserInfo extends DefaultOpenIDUserInfo {
 
     @Key("id")
-    public String id;
+    protected String id;
 
     @Key("first_name")
-    public String firstName;
+    protected String firstName;
 
     @Key("link")
-    public String link;
+    protected String link;
 
     @Key("birthday")
-    public Date birthday;
+    protected Date birthday;
 
     @Key("verified")
-    public boolean verified;
+    protected boolean verified;
 
     @Override
     public String getSubject() {
