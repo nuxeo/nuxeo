@@ -3066,33 +3066,6 @@
         <artifactId>core</artifactId>
         <version>3.1.1-NXP-4284</version>
       </dependency>
-      <!-- Birt -->
-      <dependency>
-        <groupId>org.eclipse.birt</groupId>
-        <artifactId>core-api</artifactId>
-        <version>2.6.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.birt</groupId>
-        <artifactId>report-engine-api</artifactId>
-        <version>2.6.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.birt</groupId>
-        <artifactId>report-model-api</artifactId>
-        <version>2.6.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.birt</groupId>
-        <artifactId>script-api</artifactId>
-        <version>2.6.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.birt</groupId>
-        <artifactId>birt-runtime-all</artifactId>
-        <version>2.6.1</version>
-        <type>zip</type>
-      </dependency>
       <dependency>
         <groupId>rhino</groupId>
         <artifactId>js</artifactId>
@@ -3774,7 +3747,7 @@
         <artifactId>dumbster</artifactId>
         <version>1.6</version>
       </dependency>
-
+      <!-- Birt -->
       <dependency>
         <groupId>org.eclipse.birt.runtime</groupId>
         <artifactId>org.eclipse.birt.runtime</artifactId>
