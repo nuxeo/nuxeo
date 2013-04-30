@@ -563,6 +563,8 @@ public class DialectOracle extends Dialect {
         properties.put("pathOptimizationsVersion2", (pathOptimizationsVersion == 2) ? true : false);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
+        properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
+        properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
@@ -691,4 +693,15 @@ public class DialectOracle extends Dialect {
         }
         return usersSeparator;
     }
+
+    @Override
+    public String getSoftDeleteSql() {
+        return "{CALL NX_DELETE(?, ?)}";
+    }
+
+    @Override
+    public String getSoftDeleteCleanupSql() {
+        return "{CALL NX_DELETE_PURGE(?, ?, ?)}";
+    }
+
 }

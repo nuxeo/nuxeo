@@ -838,16 +838,19 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                             Long.valueOf(max)));
         }
         try {
-            if (sql.startsWith("{?=")) {
+            if (sql.startsWith("{")) {
                 // callable statement
+                boolean outFirst = sql.startsWith("{?=");
+                int outIndex = outFirst ? 1 : 3;
+                int inIndex = outFirst ? 2 : 1;
                 CallableStatement cs = connection.prepareCall(sql);
                 try {
-                    cs.registerOutParameter(1, Types.INTEGER);
-                    cs.setInt(2, max);
-                    dialect.setToPreparedStatementTimestamp(cs, 3, beforeTime,
-                            null);
+                    cs.setInt(inIndex, max);
+                    dialect.setToPreparedStatementTimestamp(cs, inIndex + 1,
+                            beforeTime, null);
+                    cs.registerOutParameter(outIndex, Types.INTEGER);
                     cs.execute();
-                    int count = cs.getInt(1);
+                    int count = cs.getInt(outIndex);
                     logger.logCount(count);
                     return count;
                 } finally {
