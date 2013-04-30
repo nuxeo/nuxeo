@@ -828,6 +828,7 @@
         <property name="widgetName">summary_current_document_view</property>
       </properties>
       <filter-id>notHasNote</filter-id>
+      <filter-id>denyForFile</filter-id>
     </action>
 
     <action id="summary_current_document_dublincore" type="widget" order="350">
