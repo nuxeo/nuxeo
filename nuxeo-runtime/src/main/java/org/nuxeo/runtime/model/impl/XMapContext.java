@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,8 +8,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Benjamin JALON
  */
 
 package org.nuxeo.runtime.model.impl;
@@ -35,6 +35,9 @@ public class XMapContext extends Context {
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
+        if (className.startsWith("[")) {
+            return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+        }
         return ctx.loadClass(className);
     }
 
