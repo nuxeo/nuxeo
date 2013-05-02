@@ -5,6 +5,7 @@
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.6.0-HF16-SNAPSHOT</version>
   </parent>
+  <groupId>org.nuxeo.ecm.automation</groupId>
   <artifactId>nuxeo-automation-client</artifactId>
   <name>Nuxeo Automation Client</name>
   <description>Automation Client for automation REST API.</description>
