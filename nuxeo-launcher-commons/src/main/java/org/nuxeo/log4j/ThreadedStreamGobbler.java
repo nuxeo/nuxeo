@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -38,6 +39,10 @@ import org.apache.commons.logging.impl.SimpleLog;
 public class ThreadedStreamGobbler extends Thread {
     static final Log log = LogFactory.getLog(ThreadedStreamGobbler.class);
 
+    private static final String DEFAULT_PREFIX = "Nuxeo-stream-gobbler-";
+
+    private static AtomicInteger threadNumber = new AtomicInteger();
+
     private InputStream is;
 
     private int logLevel;
@@ -46,10 +51,16 @@ public class ThreadedStreamGobbler extends Thread {
 
     private OutputStream outputStream;
 
-    public ThreadedStreamGobbler(InputStream is, int logLevel) {
+
+    public ThreadedStreamGobbler(String prefix, InputStream is, int logLevel) {
         this.is = is;
         this.logLevel = logLevel;
         this.setDaemon(true);
+        setName(prefix + threadNumber.incrementAndGet());
+    }
+
+    public ThreadedStreamGobbler(InputStream is, int logLevel) {
+        this(DEFAULT_PREFIX, is, logLevel);
     }
 
     /**
