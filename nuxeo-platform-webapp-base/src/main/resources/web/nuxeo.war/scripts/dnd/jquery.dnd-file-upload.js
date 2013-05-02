@@ -193,7 +193,7 @@
       // on ready state change is not fired in all cases on webkit
       // - on webkit we rely on progress lister to detected upload end
       // - but on Firefox the event we need it
-      xhr.onreadystatechange = function() {readyStateChange(xhr, opts)};
+      xhr.onreadystatechange = (function(xhr,opts) { return function() {readyStateChange(xhr, opts)}})(xhr,opts);
 
       // propagate callback
       upload.uploadFiles = uploadFiles;
