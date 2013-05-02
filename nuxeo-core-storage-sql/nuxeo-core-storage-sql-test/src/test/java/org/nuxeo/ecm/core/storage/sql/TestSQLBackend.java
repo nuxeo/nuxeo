@@ -385,6 +385,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
             return;
         }
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_VERSIONS,
+                Boolean.FALSE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
+                Boolean.FALSE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LOCKS, Boolean.FALSE);
         try {
             testBasics();
         } finally {
@@ -2555,6 +2560,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_VERSIONS, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
+                Boolean.FALSE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LOCKS, Boolean.FALSE);
         try {
             Node ver;
             Session session = repository.getConnection();
@@ -2608,6 +2616,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
                 Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_VERSIONS,
+                Boolean.FALSE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LOCKS, Boolean.FALSE);
 
         try {
             Node ver;
@@ -3093,6 +3104,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LOCKS, Boolean.TRUE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_VERSIONS,
+                Boolean.FALSE);
+        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
+                Boolean.FALSE);
         try {
             doTestLocksUpgrade();
         } finally {

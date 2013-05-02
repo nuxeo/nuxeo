@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -23,6 +24,13 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 
 public class TestSQLRepositoryFulltextConfig extends SQLRepositoryTestCase {
+
+    @After
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
 
     protected Calendar getCalendar(int year, int month, int day, int hours,
             int minutes, int seconds) {
