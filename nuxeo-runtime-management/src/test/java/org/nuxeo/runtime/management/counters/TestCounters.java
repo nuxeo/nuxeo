@@ -112,7 +112,7 @@ public class TestCounters {
         CounterHistoryStack history = cm.getCounterHistory(myCounter);
         assertNotNull(history);
 
-        System.out.println(history.toString());
+        // System.out.println(history.toString());
         assertEquals(3, history.get(0)[1]);
         assertEquals(2, history.get(5)[1]);
         assertEquals(1, history.get(8)[1]);

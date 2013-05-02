@@ -31,13 +31,13 @@ public class PackageBuilderTest {
         builder.addLicense("My License");
 
         String xml = builder.buildManifest();
-        System.out.println(xml);
+        // System.out.println(xml);
 
         XMap xmap = StandaloneUpdateService.createXmap();
         try {
             PackageDefinitionImpl pdef = (PackageDefinitionImpl) xmap.load(new ByteArrayInputStream(
                 xml.getBytes()));
-            System.out.println(pdef);
+            // System.out.println(pdef);
         } catch (Exception e) {
             fail("Could not create package definition");
         }
