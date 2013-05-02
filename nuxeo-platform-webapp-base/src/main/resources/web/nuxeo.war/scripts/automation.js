@@ -39,6 +39,7 @@ function AutomationWrapper(operationId,opts) {
       voidOp=false;
     }
     var timeout = 5+ (this.opts.execTimeout/1000)|0;
+    var documentSchemas = this.opts.documentSchemas;
     jQuery.ajax({
         type: 'POST',
         contentType : 'application/json+nxrequest',
@@ -46,6 +47,9 @@ function AutomationWrapper(operationId,opts) {
         beforeSend : function (xhr) {
             xhr.setRequestHeader('X-NXVoidOperation', voidOp);
             xhr.setRequestHeader('Nuxeo-Transaction-Timeout', timeout);
+            if (documentSchemas.length>0) {
+                xhr.setRequestHeader('X-NXDocumentProperties',documentSchemas);
+              }
         },
         url: targetUrl,
         timeout: this.opts.execTimeout,
@@ -84,6 +88,7 @@ function AutomationWrapper(operationId,opts) {
         voidOp=false;
       }
       var timeout = 5+ (this.opts.execTimeout/1000)|0;
+      var documentSchemas = this.opts.documentSchemas;
       jQuery.ajax({
           type: 'POST',
           contentType : 'application/json+nxrequest',
@@ -91,6 +96,9 @@ function AutomationWrapper(operationId,opts) {
           beforeSend : function (xhr) {
               xhr.setRequestHeader('CTYPE_MULTIPART_MIXED', blobOp);
               xhr.setRequestHeader('Nuxeo-Transaction-Timeout', timeout);
+              if (documentSchemas.length>0) {
+                xhr.setRequestHeader('X-NXDocumentProperties',documentSchemas);
+              }
           },
           url: targetUrl,
           timeout: this.opts.execTimeout,
@@ -140,6 +148,7 @@ function AutomationWrapper(operationId,opts) {
       targetUrl = targetUrl + 'batch/execute';
     }
     var timeout = 5+ (this.opts.execTimeout/1000)|0;
+    var documentSchemas = this.opts.documentSchemas;
     jQuery.ajax({
         type: 'POST',
         contentType : 'application/json+nxrequest',
@@ -147,6 +156,9 @@ function AutomationWrapper(operationId,opts) {
         beforeSend : function (xhr) {
             xhr.setRequestHeader('X-NXVoidOperation', voidOp);
             xhr.setRequestHeader('Nuxeo-Transaction-Timeout', timeout);
+            if (documentSchemas.length>0) {
+                xhr.setRequestHeader('X-NXDocumentProperties',documentSchemas);
+              }
         },
         url: targetUrl,
         timeout: this.opts.execTimeout,
@@ -184,8 +196,6 @@ function AutomationWrapper(operationId,opts) {
         }
       })
     }
-
-
 }
 
 (function($) {
@@ -199,6 +209,7 @@ function AutomationWrapper(operationId,opts) {
         url : nxContextPath + "/site/automation",
         execTimeout : 30000,
         uploadTimeout : 30000,
+        documentSchemas : "dublincore",
         automationParams : {
            params : {},
            context : {}
