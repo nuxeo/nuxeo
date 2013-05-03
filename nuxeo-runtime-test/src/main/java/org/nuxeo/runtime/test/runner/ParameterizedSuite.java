@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -124,12 +124,6 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
 
     public ParameterizedSuite(RunnerBuilder builder, Class<?> testClass,
             Class<?>[] classes) throws InitializationError {
-        // this(testClass, builder.runners(null, classes));
-        // }
-        //
-        // protected ParameterizedSuite(Class<?> testClass, List<Runner>
-        // runners)
-        // throws InitializationError {
         super(testClass);
         try {
             this.parametersList = getParametersList(getTestClass());
@@ -140,8 +134,10 @@ public class ParameterizedSuite extends ParentRunner<FeaturesRunner> {
         for (Object[] params : parametersList) {
             List<Runner> runners2 = builder.runners(testClass, classes);
             for (Runner runner : runners2) {
+                if (!(runner instanceof FeaturesRunner)) {
+                    continue;
+                }
                 FeaturesRunner featureRunner = (FeaturesRunner) runner;
-                // featureRunner.getDescription().addChild(new Descriptio)
                 this.runners.add(featureRunner);
                 try {
                     if (parameterizedClass != null) {
