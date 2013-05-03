@@ -16,11 +16,10 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.webengine.test.WebEngineFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
@@ -28,22 +27,30 @@ import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
-/**
- * Shortcut to deploy bundles required by automation in your test
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
-@Deploy({ "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.query.api" })
-@Features({WebEngineFeature.class})
-public class RestFeature extends SimpleFeature  {
+public class RemoteAutomationServerFeature extends SimpleFeature {
 
-    protected HttpAutomationClient client ;
+    protected static final Log log = LogFactory.getLog(RemoteAutomationServerFeature.class);
+
+    protected final String TEST_AUTOMATION_URL = "TEST_AUTOMATION_URL";
+
+    protected HttpAutomationClient client;
 
     protected Session session;
 
-     @Override
+    protected String automationUrl;
+
+    public RemoteAutomationServerFeature() {
+        automationUrl = System.getenv(TEST_AUTOMATION_URL);
+        if (automationUrl == null) {
+            automationUrl = "http://localhost:8080/nuxeo/site/automation";
+            log.info("Could not find " + TEST_AUTOMATION_URL
+                    + " environment variable: fallback to: " + automationUrl);
+        } else {
+            log.info("Testing against: " + automationUrl);
+        }
+    }
+
+    @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
         if (client != null) {
             client.shutdown();
@@ -60,8 +67,8 @@ public class RestFeature extends SimpleFeature  {
                 new Provider<HttpAutomationClient>() {
                     @Override
                     public HttpAutomationClient get() {
-                        if (client ==null) {
-                            client = new HttpAutomationClient("http://localhost:18080/automation");
+                        if (client == null) {
+                            client = new HttpAutomationClient(automationUrl);
                         }
                         return client;
                     }
@@ -70,10 +77,11 @@ public class RestFeature extends SimpleFeature  {
             @Override
             public Session get() {
                 if (client == null) {
-                     client = new HttpAutomationClient("http://localhost:18080/automation");
+                    client = new HttpAutomationClient(automationUrl);
                 }
                 if (session == null) {
-                    session = client.getSession("Administrator", "Administrator");
+                    session = client.getSession("Administrator",
+                            "Administrator");
                 }
                 return session;
             }

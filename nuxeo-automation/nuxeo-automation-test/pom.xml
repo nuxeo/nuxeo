@@ -169,6 +169,7 @@
         <configuration>
           <excludes>
             <exclude>**/UploadBigFileTest.java</exclude>
+            <exclude>**/RemoteAutomationClientTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
