@@ -36,16 +36,28 @@ public class SetDocumentLifeCycle {
     @Param(name = "value")
     protected String value;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @Param(name = "save")
+    protected boolean save;
+
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        session.followTransition(doc.getRef(), value);
-        return session.getDocument(doc.getRef());
+        doc.followTransition(value);
+
+        if (save) {
+            if (session.exists(doc.getRef())) {
+                doc = session.saveDocument(doc);
+            } else {
+                doc = session.createDocument(doc);
+            }
+            session.save();
+        }
+        return doc;
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef doc) throws Exception {
-        session.followTransition(doc, value);
-        return session.getDocument(doc);
+    @OperationMethod(collector = DocumentModelCollector.class)
+    public DocumentModel run(DocumentRef docRef) throws Exception {
+        DocumentModel doc = session.getDocument(docRef);
+        return run(doc);
     }
 
 }

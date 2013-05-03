@@ -18,7 +18,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 /**
  * Abstract Class that exposes some useful method to manage list of values
  *
- * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
 public class AbstractOperationMultiValuedProperty {

@@ -22,7 +22,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.util.StringList;
 
 /**
- * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
+ * @since 5.7
  */
 public class ArrayStringToList implements TypeAdapter {
 
