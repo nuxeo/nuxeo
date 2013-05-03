@@ -753,7 +753,7 @@ public class RestTest {
             session.newRequest(FetchDocument.ID).set("value", "/foo").execute();
             fail("no exception caught");
         } catch (RemoteException e) {
-            System.out.println(e);
+            // expected
         }
 
     }
