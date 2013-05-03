@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
@@ -80,7 +81,7 @@ public class ExceptionHandler {
         if ((cause instanceof DocumentSecurityException)
                 || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
-            return 401;
+            return HttpServletResponse.SC_FORBIDDEN;
         } else if (cause instanceof NoSuchDocumentException) {
             return 404;
         } else if (cause instanceof ClientException) {
