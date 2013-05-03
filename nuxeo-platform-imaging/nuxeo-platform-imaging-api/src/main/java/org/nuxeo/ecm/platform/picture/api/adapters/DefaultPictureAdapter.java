@@ -91,7 +91,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         fileContent = blob;
 
         type = blob.getMimeType();
-        if (type == null) {
+        if (type == null || type.equals("application/octet-stream")) {
             // TODO : use MimetypeRegistry instead
             type = getImagingService().getImageMimeType(file);
             blob.setMimeType(type);
