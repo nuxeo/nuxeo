@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
+ * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
 @Operation(id = RemoveEntryOfMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Remove Entry Of Multivalued Property", description = "Remove the first entry of the giving value in the multivalued xpath, does nothing if does not exist: <ul<li>if 'is Remove All' is check, all entry instance in the list.</li><li>if not will remove just the first one found</li><ul>")
@@ -52,7 +53,7 @@ public class RemoveEntryOfMultiValuedProperty extends
     @Param(name = "save", required = false, values = { "true" })
     protected boolean save = true;
 
-    @Param(name = "remove each occurence", required = false, values = { "true" })
+    @Param(name = "is Remove All", required = false, values = { "true" })
     protected boolean isRemoveAll = true;
 
     @OperationMethod(collector = DocumentModelCollector.class)

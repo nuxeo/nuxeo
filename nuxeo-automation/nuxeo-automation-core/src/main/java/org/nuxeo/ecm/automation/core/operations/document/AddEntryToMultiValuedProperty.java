@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 /**
  * See operation documentation
  *
+ * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>
  * @since 5.7
  */
 @Operation(id = AddEntryToMultiValuedProperty.ID, category = Constants.CAT_DOCUMENT, label = "Add entry into multi-valued metadata", description = "Add value into the field expressed by the xpath parameter. This field must be a multivalued metadata.<p> 'checkExists' parameter enables to add value only if doesn't already exists in the field: <ul><li> if checked, the value will not be added if it exists already in the list</li><li>if not checked the value will be always added</li</ul>.<p> Remark: <b>only works for a field that stores a list of scalars (string, boolean, date, int, long) and not list of complex types.<b>")
