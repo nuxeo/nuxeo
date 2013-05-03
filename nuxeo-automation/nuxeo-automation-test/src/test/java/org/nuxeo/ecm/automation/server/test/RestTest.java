@@ -82,8 +82,12 @@ import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -120,6 +124,12 @@ public class RestTest {
 
     @Inject
     HttpAutomationClient client;
+
+    @Inject
+    CoreSession coreSession;
+
+    @Inject
+    UserManager userManager;
 
     @BeforeClass
     public static void setupCodecs() throws OperationException {
@@ -811,10 +821,11 @@ public class RestTest {
     public void testBadAccess() throws Exception {
         try {
             session.newRequest(FetchDocument.ID).set("value", "/foo").execute();
+            fail("no exception caught");
         } catch (RemoteException e) {
-            return;
+            System.out.println(e);
         }
-        fail("no exception caught");
+
     }
 
     @BeforeClass
@@ -912,4 +923,39 @@ public class RestTest {
         assertEquals(folder.getTitle(), title);
     }
 
+    @Test
+    public void testAuthenticationAndAuthorizationErrors() throws Exception {
+        String testUserName = "automation-test-user";
+        NuxeoPrincipal principal = userManager.getPrincipal(testUserName);
+        if (principal != null) {
+            userManager.deleteUser(testUserName);
+        }
+        try {
+            DocumentModel user = userManager.getBareUserModel();
+            user.setPropertyValue("user:username", testUserName);
+            user.setPropertyValue("user:password", "secret");
+            userManager.createUser(user);
+
+            // check invalid credentials
+            try {
+                client.getSession(testUserName, "badpassword");
+                fail("session should not have be created with bad password");
+            } catch (RemoteException e) {
+                // Bad credentials should be mapped to HTTP 401
+                assertEquals(e.getStatus(), 401);
+            }
+
+            // test user does not have the permission to access the root
+            Session userSession = client.getSession(testUserName, "secret");
+            try {
+                userSession.newRequest(FetchDocument.ID).set("value", "/").execute();
+                fail("test user should not have read access to the root document");
+            } catch (RemoteException e) {
+                // Missing permissions should be mapped to HTTP 401
+                assertEquals(e.getStatus(), 403);
+            }
+        } finally {
+            userManager.deleteUser(testUserName);
+        }
+    }
 }

@@ -87,7 +87,7 @@ public class ExceptionHandler {
         if ((cause instanceof DocumentSecurityException)
                 || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
-            return HttpServletResponse.SC_UNAUTHORIZED;
+            return HttpServletResponse.SC_FORBIDDEN;
         } else if (cause instanceof NoSuchDocumentException) {
             return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof OperationNotFoundException) {
