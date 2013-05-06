@@ -850,15 +850,33 @@ public class RestTest {
                 assertEquals(e.getStatus(), 401);
             }
 
-            // test user does not have the permission to access the root
+            // test user does not have the permission to access the root, with
+            // no property setting the permission exception HTTP status code
             Session userSession = client.getSession(testUserName, "secret");
             try {
                 userSession.newRequest(FetchDocument.ID).set("value", "/").execute();
                 fail("test user should not have read access to the root document");
             } catch (RemoteException e) {
-                // Missing permissions should be mapped to HTTP 401
+                // Missing permissions should be mapped to HTTP 401, which is
+                // the default behavior
+                assertEquals(e.getStatus(), 401);
+            }
+
+            // test user does not have the permission to access the root, with
+            // the org.nuxeo.ecm.automation.server.permission.httpcode property
+            // setting the permission exception HTTP status code to 403
+            Framework.getProperties().put(
+                    "org.nuxeo.ecm.automation.server.permission.httpcode",
+                    "403");
+            try {
+                userSession.newRequest(FetchDocument.ID).set("value", "/").execute();
+                fail("test user should not have read access to the root document");
+            } catch (RemoteException e) {
+                // Missing permissions should be mapped to HTTP 403
                 assertEquals(e.getStatus(), 403);
             }
+            Framework.getProperties().remove(
+                    "org.nuxeo.ecm.automation.server.permission.httpcode");
         } finally {
             userManager.deleteUser(testUserName);
         }
