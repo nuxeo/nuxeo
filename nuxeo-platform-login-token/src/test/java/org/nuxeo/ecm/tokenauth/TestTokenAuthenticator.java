@@ -26,7 +26,7 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
-import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -46,7 +46,7 @@ import com.google.inject.Inject;
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TokenAuthenticationServiceFeature.class, RestFeature.class })
+@Features({ TokenAuthenticationServiceFeature.class, EmbeddedAutomationServerFeature.class })
 @Jetty(port = 18080)
 @RepositoryConfig(init = TokenAuthenticationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-contrib.xml")
