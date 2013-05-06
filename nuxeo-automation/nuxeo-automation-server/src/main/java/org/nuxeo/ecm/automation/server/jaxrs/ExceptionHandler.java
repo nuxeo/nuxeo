@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.model.NoSuchDocumentException;
  */
 public class ExceptionHandler {
 
-    protected int status = 500;
+    protected int status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
     protected String type;
 
@@ -71,37 +71,37 @@ public class ExceptionHandler {
     }
 
     public static boolean isSecurityError(Throwable t) {
-        return getStatus(t) == 401;
+        return getStatus(t) == HttpServletResponse.SC_UNAUTHORIZED;
     }
 
     public static int getStatus(Throwable cause, int depth) {
         if (depth == 0) {
-            return 500;
+            return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
         if ((cause instanceof DocumentSecurityException)
                 || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
             return HttpServletResponse.SC_FORBIDDEN;
         } else if (cause instanceof NoSuchDocumentException) {
-            return 404;
+            return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof ClientException) {
             Throwable ccause = cause.getCause();
             if (ccause != null && ccause.getMessage() != null) {
                 if (ccause.getMessage().contains(
                         "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
-                    return 404;
+                    return HttpServletResponse.SC_NOT_FOUND;
                 }
             }
         } else if (cause instanceof OperationNotFoundException) {
-            return 404;
+            return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof ConflictOperationException) {
-            return 409;
+            return HttpServletResponse.SC_CONFLICT;
         }
         Throwable parent = cause.getCause();
         if (parent != null) {
             return getStatus(parent, depth - 1);
         }
-        return 500;
+        return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     }
 
     public ExceptionHandler(String message, Throwable cause) {
