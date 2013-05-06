@@ -345,7 +345,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 userSession.newRequest(FetchDocument.ID).set("value", "/").execute();
                 fail("test user should not have read access to the root document");
             } catch (RemoteException e) {
-                // Missing permissions should be mapped to HTTP 401
+                // Missing permissions should be mapped to HTTP 403
                 assertEquals(e.getStatus(), 403);
             }
         } finally {

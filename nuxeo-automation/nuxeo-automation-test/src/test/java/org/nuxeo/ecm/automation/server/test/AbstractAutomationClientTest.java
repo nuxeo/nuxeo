@@ -625,39 +625,4 @@ public abstract class AbstractAutomationClientTest {
         assertEquals(folder.getTitle(), title);
     }
 
-    @Test
-    public void testAuthenticationAndAuthorizationErrors() throws Exception {
-        String testUserName = "automation-test-user";
-        NuxeoPrincipal principal = userManager.getPrincipal(testUserName);
-        if (principal != null) {
-            userManager.deleteUser(testUserName);
-        }
-        try {
-            DocumentModel user = userManager.getBareUserModel();
-            user.setPropertyValue("user:username", testUserName);
-            user.setPropertyValue("user:password", "secret");
-            userManager.createUser(user);
-
-            // check invalid credentials
-            try {
-                client.getSession(testUserName, "badpassword");
-                fail("session should not have be created with bad password");
-            } catch (RemoteException e) {
-                // Bad credentials should be mapped to HTTP 401
-                assertEquals(e.getStatus(), 401);
-            }
-
-            // test user does not have the permission to access the root
-            Session userSession = client.getSession(testUserName, "secret");
-            try {
-                userSession.newRequest(FetchDocument.ID).set("value", "/").execute();
-                fail("test user should not have read access to the root document");
-            } catch (RemoteException e) {
-                // Missing permissions should be mapped to HTTP 401
-                assertEquals(e.getStatus(), 403);
-            }
-        } finally {
-            userManager.deleteUser(testUserName);
-        }
-    }
 }
