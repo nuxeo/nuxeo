@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.RemoteException;
+import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -50,8 +51,11 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -59,6 +63,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.google.inject.Inject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -74,6 +80,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
+
+    @Inject
+    UserManager userManager;
 
     @BeforeClass
     public static void setupCodecs() throws OperationException {
@@ -306,6 +315,42 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // => should only log a WARNING
         Object result = operationRequest.set("rollbackOnError", "false").execute();
         assertNotNull(result);
+    }
+
+    @Test
+    public void testAuthenticationAndAuthorizationErrors() throws Exception {
+        String testUserName = "automation-test-user";
+        NuxeoPrincipal principal = userManager.getPrincipal(testUserName);
+        if (principal != null) {
+            userManager.deleteUser(testUserName);
+        }
+        try {
+            DocumentModel user = userManager.getBareUserModel();
+            user.setPropertyValue("user:username", testUserName);
+            user.setPropertyValue("user:password", "secret");
+            userManager.createUser(user);
+
+            // check invalid credentials
+            try {
+                client.getSession(testUserName, "badpassword");
+                fail("session should not have be created with bad password");
+            } catch (RemoteException e) {
+                // Bad credentials should be mapped to HTTP 401
+                assertEquals(e.getStatus(), 401);
+            }
+
+            // test user does not have the permission to access the root
+            Session userSession = client.getSession(testUserName, "secret");
+            try {
+                userSession.newRequest(FetchDocument.ID).set("value", "/").execute();
+                fail("test user should not have read access to the root document");
+            } catch (RemoteException e) {
+                // Missing permissions should be mapped to HTTP 401
+                assertEquals(e.getStatus(), 403);
+            }
+        } finally {
+            userManager.deleteUser(testUserName);
+        }
     }
 
     /* The following tests need automation server 5.7 or later */

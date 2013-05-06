@@ -579,12 +579,11 @@ public abstract class AbstractAutomationClientTest {
     @Test
     public void testBadAccess() throws Exception {
         try {
-            session.newRequest(FetchDocument.ID).set("value",
-                    "/automation-test-folder/foo").execute();
+            session.newRequest(FetchDocument.ID).set("value", "/foo").execute();
+            fail("no exception caught");
         } catch (RemoteException e) {
-            return;
+            // expected
         }
-        fail("no exception caught");
     }
 
     @Test
@@ -654,7 +653,7 @@ public abstract class AbstractAutomationClientTest {
                 userSession.newRequest(FetchDocument.ID).set("value", "/").execute();
                 fail("test user should not have read access to the root document");
             } catch (RemoteException e) {
-                // Missing permissions should be mapped to HTTP 403
+                // Missing permissions should be mapped to HTTP 401
                 assertEquals(e.getStatus(), 403);
             }
         } finally {
