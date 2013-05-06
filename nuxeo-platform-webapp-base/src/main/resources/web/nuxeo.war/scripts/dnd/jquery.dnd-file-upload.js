@@ -114,7 +114,11 @@
     event.preventDefault();
     var files = event.dataTransfer.files;
     for ( var i = 0; i < files.length; i++) {
-      uploadStack.push(files[i]);
+      if (files[i].type=="") {
+        log("Skipping folder");
+      } else {
+        uploadStack.push(files[i]);
+      }
     }
 
     if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
