@@ -5,9 +5,15 @@
     <artifactId>nuxeo-automation-parent</artifactId>
     <version>5.7-SNAPSHOT</version>
   </parent>
+
   <artifactId>nuxeo-automation-test</artifactId>
   <name>Nuxeo Automation Tests</name>
   <description>Automation Tests</description>
+
+  <properties>
+    <nuxeo.tested.version>5.7-I20130415_0116</nuxeo.tested.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
@@ -172,6 +178,58 @@
             <exclude>**/RemoteAutomationClientTest.java</exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>**/RemoteAutomationClientTest.java</include>
+          </includes>
+          <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.properties
+            -Dnuxeo.log.dir=${build.directory}
+          </argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFile>${basedir}/itests.xml</buildFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-tomcat</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>prepare-environment</target>
+                <target>start</target>
+              </targets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-tomcat</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <target>stop</target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
