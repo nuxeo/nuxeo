@@ -109,12 +109,47 @@
     return false;
   }
 
+  function getDirectoryEntries(directoryReader, opts) {
+   var readEntries = function () {
+       directoryReader.readEntries(function (results) {
+           if (!results.length) {
+               if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
+                 uploadFiles(opts);
+               }
+           } else {
+             for (var i = 0; i < (results || []).length; i++) {
+               if (results[i].isDirectory) {
+                 getDirectoryEntries(results[i].createReader(), opts);
+               } else {
+               results[i].file(function (f) {
+                 uploadStack.push(f);
+                 }, function(e){log(e)});
+               }
+             }
+             readEntries();
+           }
+       }, function (e) {log(e)});
+   };
+   readEntries();
+  }
+
   function drop(event, opts) {
 
     event.preventDefault();
     var files = event.dataTransfer.files;
+
     for ( var i = 0; i < files.length; i++) {
-      uploadStack.push(files[i]);
+      var cfile = files[i];
+      if (cfile.type=="") {
+        log("this is a folder");
+        if (event.dataTransfer.items) {
+          var folderEntry = event.dataTransfer.items[i].webkitGetAsEntry();
+          var directoryReader = folderEntry.createReader();
+          getDirectoryEntries(directoryReader, opts);
+        }
+      } else {
+         uploadStack.push(cfile);
+      }
     }
 
     if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
