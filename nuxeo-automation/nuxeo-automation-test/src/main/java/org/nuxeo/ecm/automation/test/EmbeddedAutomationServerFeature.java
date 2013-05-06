@@ -38,7 +38,7 @@ import com.google.inject.Scopes;
         "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.query.api" })
 @Features({WebEngineFeature.class})
-public class RestFeature extends SimpleFeature  {
+public class EmbeddedAutomationServerFeature extends SimpleFeature  {
 
     protected HttpAutomationClient client ;
 

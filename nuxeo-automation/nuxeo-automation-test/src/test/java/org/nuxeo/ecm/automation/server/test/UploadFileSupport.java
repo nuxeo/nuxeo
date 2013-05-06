@@ -38,11 +38,17 @@ import org.nuxeo.ecm.platform.web.common.ServletHelper;
  */
 public class UploadFileSupport {
 
+    protected final String rootPath;
+    protected final Session session;
+
+    public UploadFileSupport(Session session, String rootPath) {
+        this.session = session;
+        this.rootPath = rootPath;
+    }
     public static class MockInputStream extends InputStream {
 
-        long consumed = 0;
-
         final long max;
+        long consumed = 0;
 
         public MockInputStream(long size) {
             max = size;
@@ -61,16 +67,14 @@ public class UploadFileSupport {
             return 0;
         }
     }
-
     public static class DigestMockInputStream extends MockInputStream {
+
+        protected final Random rand = new Random();
+        protected final MessageDigest digest = MessageDigest.getInstance("MD5");
 
         DigestMockInputStream(long size) throws NoSuchAlgorithmException {
             super(size);
         }
-
-        protected final Random rand = new Random();
-
-        protected final MessageDigest digest = MessageDigest.getInstance("MD5");
 
         @Override
         int getByte() {
@@ -96,12 +100,6 @@ public class UploadFileSupport {
        return new MockInputStream(size);
    }
 
-    public UploadFileSupport(Session session) {
-        this.session = session;
-    }
-
-    protected final Session session;
-
     public FileInputStream testUploadFile(InputStream source) throws Exception {
         return testUploadFile(source, 0);
     }
@@ -109,7 +107,7 @@ public class UploadFileSupport {
     public FileInputStream testUploadFile(InputStream source, int timeout) throws Exception {
         Blob blob = new StreamBlob(source, "big-blob", "application/octet-stream");
         Document root = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/").execute();
+                "value", rootPath).execute();
         OperationRequest upload = session.newRequest("Document.Create").setInput(
                 root).set("type", "File").set("name", "bigfile").set(
                 "properties", "dc:title=Big File");
@@ -118,7 +116,7 @@ public class UploadFileSupport {
         }
         Document doc = (Document)upload.execute();
         session.newRequest("Blob.Attach").setHeader(Constants.HEADER_NX_VOIDOP,
-                "true").setInput(blob).set("document", "/bigfile").execute();
+                "true").setInput(blob).set("document", rootPath + "/bigfile").execute();
         FileBlob serverBlob = (FileBlob) session.newRequest("Blob.Get").setInput(
                 doc).set("xpath", "file:content").execute();
         return (FileInputStream)serverBlob.getStream();
