@@ -63,9 +63,11 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
-        // Note: lastActiveRootRefs is not used: we could remove it from the public API
+        // Note: lastActiveRootRefs is not used: we could remove it from the
+        // public API
         // and from the client as well but it might be useful to optimize future
-        // alternative implementations FileSystemChangeFinder component so it might
+        // alternative implementations FileSystemChangeFinder component so it
+        // might
         // be better to leave it part of the public API as currently.
 
         // Find changes from the log under active roots or events that are
@@ -185,10 +187,11 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     }
 
     /**
-     * Return the current time to query the logDate field of the audit log.
-     * This time intentionally truncated to 0 milliseconds to have a consistent
+     * Return the current time to query the logDate field of the audit log. This
+     * time intentionally truncated to 0 milliseconds to have a consistent
      * behavior across databases.
      */
+    @Override
     public long getCurrentDate() {
         long now = System.currentTimeMillis();
         return now - (now % 1000);
