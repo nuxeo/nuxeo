@@ -38,7 +38,7 @@ import org.openqa.selenium.WebElement;
 
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
-    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.5";
+    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.6";
 
     private static final String STUDIO_PACKAGE_ID_FIRST = "junit4tester-SANDBOX-0.0.1";
 
