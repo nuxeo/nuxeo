@@ -19,7 +19,6 @@ package org.nuxeo.ecm.quota;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -43,7 +42,7 @@ public class QuotaUserWorkspaceListener implements EventListener {
         if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
-        if (!DocumentEventTypes.USER_WORKSPACE_CREATED.equals(event.getName())) {
+        if (!"userWorkspaceCreated".equals(event.getName())) {
             return;
         }
         DocumentModel userWorkspace = ((DocumentEventContext) ctx).getSourceDocument();

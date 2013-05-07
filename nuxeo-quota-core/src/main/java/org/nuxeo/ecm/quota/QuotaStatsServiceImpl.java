@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -277,7 +276,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         // it should be only one
         DocumentModel currentUserWorkspace = Framework.getLocalService(
                 UserWorkspaceService.class).getUserPersonalWorkspace(
-                (NuxeoPrincipal) session.getPrincipal(), context);
+                session.getPrincipal().getName(), context);
+
+
         return ((IdRef) currentUserWorkspace.getParentRef()).value;
     }
 
