@@ -138,8 +138,8 @@ public class QuotaAwareDocument implements QuotaAware {
     @Override
     public void addVersionsSize(long additionalSize, boolean save)
             throws ClientException {
-        Long total = getVersionsSize() + additionalSize;
-        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, total);
+        Long versions = getVersionsSize() + additionalSize;
+        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, versions);
         if (save) {
             save(true);
         }

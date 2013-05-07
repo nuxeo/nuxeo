@@ -31,7 +31,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_INITIAL_STATISTICS;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
  * document. This default implementation does not track the space used by
  * versions, or the space used by non-Blob properties
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
@@ -178,7 +177,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void processDocumentCheckedIn(CoreSession session,
             DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException {
-        // on checkin the versions size is incremented (but not the total)
+        // on checkin the versions size is incremented (and also the total)
+
         BlobSizeInfo bsi = computeSizeImpact(doc, false);
         // only process if blobs are present
         if (bsi.getBlobSize() != 0) {
@@ -233,7 +233,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             throws ClientException {
         QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
         if (quotaDoc != null) {
-            long total = quotaDoc.getTotalSize();
+            long total = quotaDoc.getTotalSize() - quotaDoc.getVersionsSize()
+                    - quotaDoc.getTrashSize();
             BlobSizeInfo bsi = new BlobSizeInfo();
             bsi.blobSize = total;
             bsi.blobSizeDelta = total;
@@ -300,9 +301,12 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             parentUUIDs.add(targetDoc.getSourceId());
             parentUUIDs.addAll(getParentUUIDS(session,
                     new IdRef(targetDoc.getSourceId())));
-            BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+
+            // We only have to decrement the inner size of this doc
+            QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                    session, docCtx, bsi.getBlobSize(), ABOUT_TO_REMOVE_VERSION);
+                    session, docCtx, quotaDoc.getInnerSize(),
+                    ABOUT_TO_REMOVE_VERSION);
             asyncEventCtx.setParentUUIds(parentUUIDs);
             sendUpdateEvents(asyncEventCtx);
             return;
@@ -415,7 +419,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     protected BlobSizeInfo computeSizeImpact(DocumentModel doc,
-            boolean onlyChanges) throws ClientException {
+            boolean onlyIfBlobHasChanged) throws ClientException {
 
         BlobSizeInfo result = new BlobSizeInfo();
 
@@ -426,79 +430,66 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             result.blobSize = 0;
         }
 
-        List<Blob> blobs = getBlobs(doc, onlyChanges);
+        List<Blob> blobs = getBlobs(doc, onlyIfBlobHasChanged);
 
-        for (Blob blob : blobs) {
-            if (blob != null) {
-                if (blob.getLength() < 0) {
-                    // Blob is a stream (length =-1)
-                    // => must persist to be able to check size
-                    try {
-                        blob.persist();
-                    } catch (IOException e) {
-                        log.error(
-                                "Unable to persist uploaded Blob to check Quotas",
-                                e);
-                        throw new QuotaExceededException(doc,
-                                "Unable to check size");
-                    }
-                }
-            }
-        }
-
-        if (onlyChanges) {
-            if (blobs.size() == 0) {
+        // If we have no blobs, it can mean
+        if (blobs.size() == 0) {
+            if (onlyIfBlobHasChanged) {
+                // Nothing has changed
                 result.blobSizeDelta = 0;
             } else {
-                long size = 0;
-                for (Blob blob : blobs) {
-                    if (blob != null) {
-                        size += blob.getLength();
-                    }
-                }
-                result.blobSizeDelta = size - result.blobSize;
-                result.blobSize = size;
-            }
-        } else {
-            if (blobs.size() == 0) {
+                // Or the blob have been removed
                 result.blobSizeDelta = -result.blobSize;
                 result.blobSize = 0;
-            } else {
-                long size = 0;
-                for (Blob blob : blobs) {
-                    if (blob != null) {
-                        size += blob.getLength();
-                    }
-                }
-                result.blobSizeDelta = size - result.blobSize;
-                result.blobSize = size;
             }
+        } else {
+            // When we have blobs
+            long size = 0;
+            for (Blob blob : blobs) {
+                if (blob != null) {
+                    size += blob.getLength();
+                }
+            }
+            result.blobSizeDelta = size - result.blobSize;
+            result.blobSize = size;
         }
+
         return result;
     }
 
-    protected List<Blob> getBlobs(DocumentModel doc, boolean onlyChangedBlob)
-            throws ClientException {
+    /**
+     * Return the list of changed blob
+     *
+     * @param doc
+     * @param onlyIfBlobHasChanged
+     * @return
+     * @throws ClientException
+     */
+    protected List<Blob> getBlobs(DocumentModel doc,
+            boolean onlyIfBlobHasChanged) throws ClientException {
 
         try {
             BlobsExtractor extractor = new BlobsExtractor();
             List<Property> blobProperties = extractor.getBlobsProperties(doc);
 
-            boolean needRecompute = !onlyChangedBlob;
-            if (!needRecompute) {
-                if (blobProperties.size() > 0) {
-                    for (Property blobProperty : blobProperties) {
-                        if (blobProperty.isDirty()) {
-                            needRecompute = true;
-                            break;
-                        }
+            boolean needRecompute = !onlyIfBlobHasChanged;
+
+            if (onlyIfBlobHasChanged) {
+                for (Property blobProperty : blobProperties) {
+                    if (blobProperty.isDirty()) {
+                        needRecompute = true;
+                        break;
                     }
                 }
             }
+
             List<Blob> result = new ArrayList<Blob>();
             if (needRecompute) {
                 for (Property blobProperty : blobProperties) {
                     Blob blob = (Blob) blobProperty.getValue();
+                    if (blob != null && blob.getLength() < 0) {
+                        blob.persist();
+                    }
                     result.add(blob);
                 }
             }
@@ -598,15 +589,9 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             }
             quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
                     DOCUMENT_UPDATE_INITIAL_STATISTICS, target);
-            // on checkout we account in the total for the last version size
-            if (target.isCheckedOut()) {
-                quotaCtx.setVersionsSizeOnTotal(lastVersionSize
-                        + lastVersionSize);
-                quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
-            } else {
-                quotaCtx.setVersionsSizeOnTotal(versionsSize);
-                quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
-            }
+            quotaCtx.setVersionsSizeOnTotal(lastVersionSize);
+            quotaCtx.setVersionsSize(versionsSize + lastVersionSize);
+
         }
         return quotaCtx;
     }

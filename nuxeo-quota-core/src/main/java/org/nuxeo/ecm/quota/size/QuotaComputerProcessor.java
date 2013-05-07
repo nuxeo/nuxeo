@@ -174,9 +174,9 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 parents.addAll(getParents(sourceDocument, session));
             }
 
+            QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
             // process Quota on target Document
             if (!DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
-                QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
                 if (quotaDoc == null) {
                     log.debug("  add Quota Facet on "
                             + sourceDocument.getPathAsString());
@@ -188,9 +188,12 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                             + sourceDocument.getPathAsString());
                 }
                 if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
-                    quotaDoc.addVersionsSize(quotaCtx.getBlobSize(), true);
+                    long versionSize = getVersionSizeFromCtx(quotaCtx);
+                    quotaDoc.addVersionsSize(versionSize, false);
+                    quotaDoc.addTotalSize(versionSize, true);
+
                 } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
-                    quotaDoc.addTotalSize(quotaCtx.getBlobSize(), true);
+                    // All quota computation are now handled on Checkin
                 } else if (DELETE_TRANSITION.equals(sourceEvent)
                         || UNDELETE_TRANSITION.equals(sourceEvent)) {
                     quotaDoc.addTrashSize(quotaCtx.getBlobSize(), true);
@@ -205,16 +208,24 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     // DOCUMENT_CREATED
                     quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
                 }
+            } else {
+                //When we copy some doc that are not folderish, we don't
+                //copy the versions so we can't rely on the copied quotaDocInfo
+                if (!sourceDocument.isFolder()) {
+                    quotaDoc.resetInfos(false);
+                    quotaDoc.addInnerSize(quotaCtx.getBlobSize(), true);
+                }
             }
-            // else for DOCUMENT_CREATED_BY_COPY the quota info is already there
+
         }
         if (parents.size() > 0) {
             if (DOCUMENT_CHECKEDIN.equals(sourceEvent)) {
-                processOnParents(parents, 0L, 0L, quotaCtx.getBlobSize(), true,
+                long versionSize = getVersionSizeFromCtx(quotaCtx);
+
+                processOnParents(parents, versionSize, 0L, versionSize, true,
                         false, true);
             } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize(), 0L, true,
-                        false);
+                // All quota computation are now handled on Checkin
             } else if (DELETE_TRANSITION.equals(sourceEvent)
                     || UNDELETE_TRANSITION.equals(sourceEvent)) {
                 processOnParents(parents, quotaCtx.getBlobSize(),
@@ -250,11 +261,22 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                                 + quotaCtx.getVersionsSizeOnTotal(),
                         quotaCtx.getTrashSize(), quotaCtx.getVersionsSize(),
                         true, false, true);
+            } else if (DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
+                processOnParents(parents, quotaCtx.getBlobSize(), 0, true,
+                        false);
             } else {
                 processOnParents(parents, quotaCtx.getBlobDelta(),
                         quotaCtx.getBlobDelta(), true, false);
             }
         }
+    }
+
+    /**
+     * @param quotaCtx
+     * @return
+     */
+    private long getVersionSizeFromCtx(SizeUpdateEventContext quotaCtx) {
+        return quotaCtx.getBlobSize() - quotaCtx.getBlobDelta();
     }
 
     protected void processOnParents(List<DocumentModel> parents, long delta,
@@ -291,7 +313,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
     protected List<DocumentModel> getParents(DocumentModel sourceDocument,
             CoreSession session) throws ClientException {
         List<DocumentModel> parents = new ArrayList<DocumentModel>();
-        //use getParentDocumentRefs instead of getParentDocuments , beacuse
+        // use getParentDocumentRefs instead of getParentDocuments , beacuse
         // getParentDocuments doesn't fetch the root document
         DocumentRef[] parentRefs = session.getParentDocumentRefs(sourceDocument.getRef());
         for (DocumentRef documentRef : parentRefs) {
