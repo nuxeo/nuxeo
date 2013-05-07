@@ -39,7 +39,7 @@ import org.openqa.selenium.WebElement;
 
 public class ITWizardAndUpdateCenter extends AbstractTest {
 
-    private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.0.6";
+    private static final String MARKETPLACE_PACKAGE_ID = "flex-connector-1.1.0";
 
     private static final String SMTP_SERVER_HOST = "someSMTPServer.com";
 
@@ -382,7 +382,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
         SystemHomePage systemHomePage = adminHome.getSystemHomePage();
         AdminCenterBasePage distributions = systemHomePage.selectSubTab("Nuxeo distribution");
 
-        WebElement bundle = findElementWithTimeout(By.xpath("//td[text()='org.nuxeo.ecm.platform.audit.web.access']"));
+        WebElement bundle = findElementWithTimeout(By.xpath("//td[text()='org.nuxeo.ecm.platform.ui.flex']"));
         assertNotNull(bundle);
 
     }
