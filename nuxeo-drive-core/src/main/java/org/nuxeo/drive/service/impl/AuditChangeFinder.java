@@ -26,7 +26,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
@@ -35,7 +37,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -100,22 +101,62 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     "Too many changes found in the audit logs.");
         }
         for (LogEntry entry : entries) {
+            FileSystemItemChange change = null;
+            DocumentRef docRef = new IdRef(entry.getDocUUID());
             ExtendedInfo fsIdInfo = entry.getExtendedInfos().get(
                     "fileSystemItemId");
             if (fsIdInfo != null) {
-                // This document has been deleted and we just know the
-                // fileSystem Id and Name
-                String fsId = fsIdInfo.getValue(String.class);
-                String fsName = entry.getExtendedInfos().get(
-                        "fileSystemItemName").getValue(String.class);
-                FileSystemItemChange change = new FileSystemItemChange(
-                        entry.getEventId(), entry.getEventDate().getTime(),
-                        entry.getRepositoryId(), entry.getDocUUID(), fsId,
-                        fsName);
+                // This document has been deleted or is an unregistered
+                // synchronization root, we just know the FileSystemItem id and
+                // name.
+                log.debug(String.format(
+                        "Found extended info in audit log entry, document %s has been deleted or is an unregistered synchronization root.",
+                        docRef));
+                boolean isChangeSet = false;
+                // First try to adapt the document as a FileSystemItem to
+                // provide it to the FileSystemItemChange entry.
+                // This can succeed for an unregistered synchronization root
+                // that can still be adapted as a FileSystemItem, for example in
+                // the case of the "My Docs" virtual folder in the permission
+                // based hierarchy implementation.
+                if (session.exists(docRef)) {
+                    change = getFileSystemItemChange(session, docRef, entry,
+                            fsIdInfo.getValue(String.class));
+                    if (change != null) {
+                        isChangeSet = true;
+                    }
+                }
+                if (!isChangeSet) {
+                    // If the document is not adaptable as a FileSystemItem,
+                    // typically if it has been deleted or if it is a regular
+                    // unregistered synchronization root, only provide the
+                    // FileSystemItem id and name to the FileSystemItemChange
+                    // entry.
+                    log.debug(String.format(
+                            "Document %s doesn't exist or is not adaptable as a FileSystemItem, only providing the FileSystemItem id and name to the FileSystemItemChange entry.",
+                            docRef));
+                    String fsId = fsIdInfo.getValue(String.class);
+                    String fsName = entry.getExtendedInfos().get(
+                            "fileSystemItemName").getValue(String.class);
+                    change = new FileSystemItemChange(entry.getEventId(),
+                            entry.getEventDate().getTime(),
+                            entry.getRepositoryId(), entry.getDocUUID(), fsId,
+                            fsName);
+                }
+                log.debug(String.format(
+                        "Adding FileSystemItemChange entry for document %s to the change summary.",
+                        docRef));
                 changes.add(change);
             } else {
-                DocumentRef docRef = new IdRef(entry.getDocUUID());
+                // No extended info in the audit log entry, this should not be a
+                // deleted document nor an unregistered synchronization root.
+                log.debug(String.format(
+                        "No extended info found in audit log entry, document %s has not been deleted nor is an unregistered synchronization root.",
+                        docRef));
                 if (!session.exists(docRef)) {
+                    log.debug(String.format(
+                            "Document %s doesn't exist, not adding any entry to the change summary.",
+                            docRef));
                     // deleted documents are mapped to deleted file
                     // system items in a separate event: no need to try
                     // to propagate this event.
@@ -124,24 +165,20 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     // See https://jira.nuxeo.com/browse/NXP-11159
                     continue;
                 }
-                DocumentModel doc = session.getDocument(docRef);
-                // TODO: check the facet, last root change and list of roots
-                // to have a special handling for the roots.
-                FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
-                if (fsItem != null) {
-                    // EventDate is able to reflect the ordering of the events
-                    // inside a transaction (e.g. when several documents are
-                    // created, updated, deleted at once) hence it's useful to
-                    // pass that info to the client even though the change
-                    // detection filtering is using the logDate to have a nearly
-                    // guaranteed monotic behavior that evenDate cannot
-                    // guarantee when facing long transactions.
-                    FileSystemItemChange change = new FileSystemItemChange(
-                            entry.getEventId(), entry.getEventDate().getTime(),
-                            entry.getRepositoryId(), entry.getDocUUID(), fsItem);
+                // Let's try to adapt the document as a FileSystemItem to
+                // provide it to the FileSystemItemChange entry.
+                change = getFileSystemItemChange(session, docRef, entry, null);
+                if (change == null) {
+                    // Non-adaptable documents are ignored
+                    log.debug(String.format(
+                            "Document %s is not adaptable as a FileSystemItem, not adding any entry to the change summary.",
+                            docRef));
+                } else {
+                    log.debug(String.format(
+                            "Adding FileSystemItemChange entry for document %s to the change summary.",
+                            docRef));
                     changes.add(change);
                 }
-                // non-adaptable documents are ignored
             }
         }
         return changes;
@@ -257,34 +294,46 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
     }
 
-    /**
-     * Map the backing document to a FileSystemItem using the adapters when
-     * possible and store the mapping in the FileSystemItemChange instance. If
-     * not possible (because of missing permissions for instance), skip the
-     * change.
-     */
-    protected boolean adaptDocument(FileSystemItemChange change,
-            CoreSession session, SynchronizationRoots synchronizationRoots)
+    protected FileSystemItemChange getFileSystemItemChange(CoreSession session,
+            DocumentRef docRef, LogEntry entry, String expectedFileSystemItemId)
             throws ClientException {
-        IdRef ref = new IdRef(change.getDocUuid());
+        DocumentModel doc = session.getDocument(docRef);
+        // TODO: check the facet, last root change and list of roots
+        // to have a special handling for the roots.
+        FileSystemItem fsItem = null;
         try {
-            DocumentModel doc = session.getDocument(ref);
-            // TODO: check the facet, last root change and list of roots to have
-            // a special handling for the roots.
-            FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
-            if (fsItem == null) {
-                return false;
-            }
-            change.setFileSystemItem(fsItem);
-            return true;
-        } catch (DocumentSecurityException e) {
-            // This event matches a document that is not visible by the
-            // current user, skip it.
-            // TODO: how to detect ACL removal to map those as file system
-            // deletion change
-            // See https://jira.nuxeo.com/browse/NXP-11159
-            return false;
+            fsItem = Framework.getLocalService(
+                    FileSystemItemAdapterService.class).getFileSystemItem(doc);
+        } catch (RootlessItemException e) {
+            // Can happen for an unregistered synchronization root that cannot
+            // be adapted as a FileSystemItem: nothing to do.
         }
+        if (fsItem == null) {
+            log.debug(String.format(
+                    "Document %s is not adaptable as a FileSystemItem, returning null.",
+                    docRef));
+            return null;
+        }
+        if (expectedFileSystemItemId != null
+                && !expectedFileSystemItemId.equals(fsItem.getId())) {
+            log.debug(String.format(
+                    "Id %s of FileSystemItem adapted from document %s doesn't match expected FileSystemItem id %s, returning null.",
+                    fsItem.getId(), docRef, expectedFileSystemItemId));
+            return null;
+        }
+        log.debug(String.format(
+                "Document %s is adaptable as a FileSystemItem, providing it to the FileSystemItemChange entry.",
+                docRef));
+        // EventDate is able to reflect the ordering of the events
+        // inside a transaction (e.g. when several documents are
+        // created, updated, deleted at once) hence it's useful
+        // to pass that info to the client even though the change
+        // detection filtering is using the logDate to have a nearly
+        // guaranteed monotonic behavior that evenDate cannot
+        // guarantee when facing long transactions.
+        return new FileSystemItemChange(entry.getEventId(),
+                entry.getEventDate().getTime(), entry.getRepositoryId(),
+                entry.getDocUUID(), fsItem);
     }
 
 }
