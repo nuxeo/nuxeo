@@ -25,9 +25,6 @@ import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATIST
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,15 +35,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -70,12 +66,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 /**
- * Various test that verify quota Sizes are updated
- * accordingly to various operations.
+ * Various test that verify quota Sizes are updated accordingly to various
+ * operations.
  *
- * Due to the asynchronous nature of size update, these
- * test rely on {@link Thread#sleep(long)} and can fail
- * because of that.
+ * Due to the asynchronous nature of size update, these test rely on
+ * {@link Thread#sleep(long)} and can fail because of that.
  *
  * @since 5.6
  */
@@ -111,29 +106,1078 @@ public class TestDocumentsSizeUpdater {
 
     protected DocumentRef secondFileRef;
 
+    private IsolatedSessionRunner isr;
+
     protected static final boolean verboseMode = false;
 
     @Before
     public void cleanupSessionAssociationBeforeTest() throws Exception {
-        // temp fix to be sure the session tx
-        // will be correctly handled in the test
-        dispose(session);
+        isr = new IsolatedSessionRunner(session, eventService);
     }
 
-    protected void dispose(CoreSession session) throws Exception {
-        if (Proxy.isProxyClass(session.getClass())) {
-            InvocationHandler handler = Proxy.getInvocationHandler(session);
-            if (handler instanceof TransactionalCoreSessionWrapper) {
-                Field field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
-                field.setAccessible(true);
-                session = (CoreSession) field.get(handler);
+
+    @Test
+    public void testQuotaOnAddContent() throws Exception {
+
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                assertQuota(getFirstFile(), 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(getFirstSubFolder(), 0L, 300L);
+                assertQuota(getFirstFolder(), 0L, 300L);
+                assertQuota(getWorkspace(), 0L, 300L);
+
             }
-        }
-        if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
-        }
-        ((LocalSession) session).getSession().dispose();
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnAddAndModifyContent() throws Exception {
+
+        addContent();
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                assertQuota(getFirstFile(), 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(getFirstSubFolder(), 0L, 300L);
+                assertQuota(getFirstFolder(), 0L, 300L);
+                assertQuota(getWorkspace(), 0L, 300L);
+
+            }
+        });
+
+        doUpdateContent();
+
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                assertQuota(getFirstFile(), 380L, 380L);
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(getFirstSubFolder(), 0L, 580L);
+                assertQuota(getFirstFolder(), 0L, 580L);
+                assertQuota(getWorkspace(), 50L, 630L);
+            }
+        });
+
+    }
+
+
+    @Test
+    public void testQuotaInitialCheckIn() throws Exception {
+
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                assertQuota(getFirstFile(), 100, 100, 0, 0);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
+                assertQuota(getFirstFolder(), 0, 300, 0, 0);
+                assertQuota(getWorkspace(), 0, 300, 0, 0);
+            }
+        });
+
+        doCheckIn();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                // checked in: We count immediatly because at user (UI) level
+                // checkout is not a visible action
+                assertQuota(firstFile, 100, 200, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
+                assertQuota(getFirstFolder(), 0, 400, 0, 100);
+                assertQuota(getWorkspace(), 0, 400, 0, 100);
+            }
+        });
+
+        // checkout the doc
+        doCheckOut();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+                assertTrue(firstFile.isCheckedOut());
+                assertEquals("0.1+", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 100, 200, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
+                assertQuota(getFirstFolder(), 0, 400, 0, 100);
+                assertQuota(getWorkspace(), 0, 400, 0, 100);
+            }
+        });
+    }
+
+    @Test
+    public void testQuotaOnCheckInCheckOut() throws Exception {
+
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+            }
+        });
+
+        doCheckIn();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 100, 200, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
+                assertQuota(getFirstFolder(), 0, 400, 0, 100);
+                assertQuota(getWorkspace(), 0, 400, 0, 100);
+            }
+        });
+
+        // checkout the doc
+        doCheckOut();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+                assertTrue(firstFile.isCheckedOut());
+                assertEquals("0.1+", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 100, 200, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 400, 0, 100);
+                assertQuota(getFirstFolder(), 0, 400, 0, 100);
+                assertQuota(getWorkspace(), 0, 400, 0, 100);
+
+            }
+        });
+    }
+
+    @Test
+    public void testQuotaOnVersions() throws Exception {
+
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                assertQuota(getFirstFile(), 100, 100, 0, 0);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
+                assertQuota(getFirstFolder(), 0, 300, 0, 0);
+                assertQuota(getWorkspace(), 0, 300, 0, 0);
+
+            }
+        });
+
+        // update and create a version
+        doUpdateAndVersionContent();
+        // ws + 50, file + 280 + version
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 480, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
+                assertQuota(getFirstFolder(), 0, 680, 0, 100);
+                assertQuota(getWorkspace(), 50, 730, 0, 100);
+
+            }
+        });
+
+        // create another version
+        doSimpleVersion();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.2", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 860, 0, 480);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 1060, 0, 480);
+                assertQuota(getFirstFolder(), 0, 1060, 0, 480);
+                assertQuota(getWorkspace(), 50, 1110, 0, 480);
+
+            }
+        });
+
+        // remove a version
+        doRemoveFirstVersion();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.2", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 760, 0, 380);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
+
+            }
+        });
+        // remove doc and associated version
+
+        doRemoveContent();
+        eventService.waitForAsyncCompletion();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertFalse(session.exists(firstFileRef));
+
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 200, 0, 0);
+                assertQuota(getFirstFolder(), 0, 200, 0, 0);
+                assertQuota(getWorkspace(), 50, 250, 0, 0);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnMoveContent() throws Exception {
+        //Given some content
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+            }
+        });
+
+        //When i Move the content
+        doMoveContent();
+
+
+        //Then the quota ore computed accordingly
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertQuota(getFirstFile(), 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(getFirstSubFolder(), 0L, 200L);
+                assertQuota(getSecondSubFolder(), 0L, 100L);
+                assertQuota(getFirstFolder(), 0L, 300L);
+                assertQuota(getWorkspace(), 0L, 300L);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnRemoveContent() throws Exception {
+
+        addContent();
+        doRemoveContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertFalse(session.exists(firstFileRef));
+
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(getFirstSubFolder(), 0L, 200L);
+                assertQuota(getFirstFolder(), 0L, 200L);
+                assertQuota(getWorkspace(), 0L, 200L);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnCopyContent() throws Exception {
+
+        addContent();
+
+        dump();
+
+        doCopyContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                DocumentModel copiedFile = session.getChildren(
+                        secondSubFolderRef).get(0);
+
+                assertQuota(getFirstFile(), 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(copiedFile, 100L, 100L);
+                assertQuota(getFirstSubFolder(), 0L, 300L);
+                assertQuota(getSecondSubFolder(), 0L, 100L);
+                assertQuota(getFirstFolder(), 0L, 400L);
+                assertQuota(getWorkspace(), 0L, 400L);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnCopyFolderishContent() throws Exception {
+
+        addContent();
+
+        dump();
+
+        doCopyFolderishContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+                DocumentModel copiedFolder = session.getChildren(
+                        secondFolderRef).get(0);
+
+                DocumentModel copiedFirstFile = session.getChild(
+                        copiedFolder.getRef(), "file1");
+                DocumentModel copiedSecondFile = session.getChild(
+                        copiedFolder.getRef(), "file2");
+
+                assertQuota(getFirstFile(), 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(getFirstSubFolder(), 0L, 300L);
+                assertQuota(getFirstFolder(), 0L, 300L);
+                assertQuota(getSecondFolder(), 0L, 300L);
+                assertQuota(copiedFolder, 0L, 300L);
+                assertQuota(copiedFirstFile, 100L, 100L);
+                assertQuota(copiedSecondFile, 200L, 200L);
+                assertQuota(getWorkspace(), 0L, 600L);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnRemoveFoldishContent() throws Exception {
+        addContent();
+
+        dump();
+
+        doRemoveFolderishContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+                assertFalse(session.exists(firstSubFolderRef));
+
+                assertQuota(getFirstFolder(), 0L, 0L);
+                assertQuota(getWorkspace(), 0L, 0L);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnMoveFoldishContent() throws Exception {
+
+        addContent();
+
+        dump();
+
+        doMoveFolderishContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertEquals(1, session.getChildren(firstFolderRef).size());
+
+                assertQuota(getWorkspace(), 0L, 300L);
+                assertQuota(getFirstFolder(), 0L, 0L);
+                assertQuota(getSecondFolder(), 0L, 300L);
+                assertQuota(getFirstSubFolder(), 0L, 300L);
+                assertQuota(getFirstFile(), 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaExceeded() throws Exception {
+
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                // now add quota limit
+                QuotaAware qa = getWorkspace().getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+
+                assertEquals(300L, qa.getTotalSize());
+                assertEquals(-1L, qa.getMaxQuota());
+
+                // set the quota to 400
+                qa.setMaxQuota(400L, true);
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                boolean canNotExceedQuota = false;
+                try {
+                    // now try to update one
+                    DocumentModel firstFile = session.getDocument(firstFileRef);
+                    firstFile.setPropertyValue("file:content",
+                            (Serializable) getFakeBlob(250));
+                    firstFile = session.saveDocument(firstFile);
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("raised expected Execption "
+                                + QuotaExceededException.unwrap(e).getMessage());
+                        canNotExceedQuota = true;
+                    }
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                assertTrue(canNotExceedQuota);
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                // now remove the quota limit
+                QuotaAware qa = getWorkspace().getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+
+                assertEquals(300L, qa.getTotalSize());
+                assertEquals(400L, qa.getMaxQuota());
+
+                // set the quota to -1 / unlimited
+                qa.setMaxQuota(-1L, true);
+
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                Boolean canNotExceedQuota = false;
+                try {
+                    // now try to update one
+                    DocumentModel firstFile = session.getDocument(firstFileRef);
+                    firstFile.setPropertyValue("file:content",
+                            (Serializable) getFakeBlob(250));
+                    firstFile = session.saveDocument(firstFile);
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("raised expected Execption "
+                                + QuotaExceededException.unwrap(e).getMessage());
+                        canNotExceedQuota = true;
+                    }
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                assertFalse(canNotExceedQuota);
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaExceededOnVersion() throws Exception {
+
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                // now add quota limit
+                DocumentModel ws = session.getDocument(wsRef);
+                QuotaAware qa = ws.getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+
+                assertEquals(300L, qa.getTotalSize());
+
+                assertEquals(-1L, qa.getMaxQuota());
+
+                // set the quota to 350
+                qa.setMaxQuota(350L, true);
+
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                // create a version
+                DocumentModel firstFile = session.getDocument(firstFileRef);
+                firstFile.checkIn(VersioningOption.MINOR, null);
+
+                boolean canNotExceedQuota = false;
+                try {
+                    // now try to checkout
+                    firstFile.checkOut();
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("raised expected Execption "
+                                + QuotaExceededException.unwrap(e).getMessage());
+                        canNotExceedQuota = true;
+                    }
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+
+                dump();
+
+                assertTrue(canNotExceedQuota);
+            }
+        });
+
+    }
+
+    @Test
+    public void testComputeInitialStatistics() throws Exception {
+
+        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
+
+        addContent();
+        doCheckIn();
+
+        dump();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel ws = session.getDocument(wsRef);
+                assertFalse(ws.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET));
+
+                String updaterName = "documentsSizeUpdater";
+                quotaStatsService.launchInitialStatisticsComputation(
+                        updaterName, session.getRepositoryName());
+                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
+
+                workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
+
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L, 0L, 0L);
+                assertQuota(getFirstSubFolder(), 0L, 400L, 0L, 100L);
+                assertQuota(getFirstFolder(), 0L, 400L, 0L, 100L);
+                assertQuota(getWorkspace(), 0L, 400L, 0L, 100L);
+
+            }
+        });
+
+        eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel firstFile = getFirstFile();
+                // modify file to checkout
+                firstFile.setPropertyValue("dc:title", "File1");
+                firstFile = session.saveDocument(firstFile);
+                session.save(); // process invalidations
+                assertTrue(firstFile.isCheckedOut());
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L, 0L, 0L);
+                assertQuota(getFirstSubFolder(), 0L, 400L, 0L, 100L);
+                assertQuota(getFirstFolder(), 0L, 400L, 0L, 100L);
+                assertQuota(getWorkspace(), 0L, 400L, 0L, 100L);
+
+            }
+        });
+    }
+
+    @Test
+    public void testQuotaOnDeleteContent() throws Exception {
+        addContent();
+        doDeleteFileContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel ws = session.getDocument(wsRef);
+                DocumentModel firstFolder = session.getDocument(firstFolderRef);
+                DocumentModel firstFile = session.getDocument(firstFileRef);
+
+                assertQuota(firstFile, 100L, 100L, 100L);
+                assertQuota(firstFolder, 0L, 300L, 100L);
+                assertQuota(ws, 0L, 300L, 100L);
+
+            }
+        });
+
+        doUndeleteFileContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                assertQuota(getFirstFile(), 100L, 100L, 0L);
+                assertQuota(getFirstFolder(), 0L, 300L, 0L);
+                assertQuota(getWorkspace(), 0L, 300L, 0L);
+
+            }
+        });
+
+        // sent file to trash
+        doDeleteFileContent();
+        // then permanently delete file when file is in trash
+        doRemoveContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                assertFalse(session.exists(firstFileRef));
+                assertQuota(getFirstFolder(), 0L, 200L, 0L);
+                assertQuota(getWorkspace(), 0L, 200L, 0L);
+
+            }
+        });
+    }
+
+    @Test
+    public void testQuotaOnMoveContentWithVersions() throws Exception {
+
+        addContent();
+        // update and create a version
+        doUpdateAndVersionContent();
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
+                assertQuota(getFirstFolder(), 0, 680, 0, 100);
+                assertQuota(getWorkspace(), 50, 730, 0, 100);
+
+            }
+        });
+
+        doMoveFileContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 200, 0, 0);
+                assertQuota(getFirstFolder(), 0, 200, 0, 0);
+                assertQuota(getSecondFolder(), 0, 480, 0, 100);
+                assertQuota(getWorkspace(), 50, 730, 0, 100);
+
+            }
+        });
+
+    }
+
+    @Test
+    public void testQuotaOnCopyContentWithVersions() throws Exception {
+
+        addContent();
+        // update and create a version
+        doUpdateAndVersionContent();
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
+                assertQuota(getFirstFolder(), 0, 680, 0, 100);
+                assertQuota(getWorkspace(), 50, 730, 0, 100);
+
+            }
+        });
+
+        doCopyContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+                DocumentModel copiedFile = session.getChildren(
+                        secondSubFolderRef).get(0);
+
+                assertQuota(getFirstFile(), 380, 480, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
+                assertQuota(getFirstFolder(), 0, 1060, 0, 100);
+                assertQuota(copiedFile, 380, 380, 0, 0);
+                assertQuota(getSecondSubFolder(), 0, 380, 0, 0);
+                assertQuota(getWorkspace(), 50, 1110, 0, 100);
+
+            }
+        });
+    }
+
+    @Test
+    public void testAllowSettingMaxQuota() throws Exception {
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                // now add quota limit
+                DocumentModel ws = session.getDocument(wsRef);
+                QuotaAware qa = ws.getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+                // set the quota to 400
+                qa.setMaxQuota(400L, true);
+
+                DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
+                QuotaAware qaFSF = firstSubFolder.getAdapter(QuotaAware.class);
+                qaFSF.setMaxQuota(200L, true);
+
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel secondFolder = session.getDocument(secondFolderRef);
+                QuotaAware qaSecFolder = secondFolder.getAdapter(QuotaAware.class);
+                boolean canSetQuota = true;
+                try {
+                    qaSecFolder.setMaxQuota(300L, true);
+                } catch (QuotaExceededException e) {
+                    canSetQuota = false;
+                }
+                assertFalse(canSetQuota);
+                qaSecFolder.setMaxQuota(200L, true);
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                QuotaAware qaSecFolder = getSecondFolder().getAdapter(
+                        QuotaAware.class);
+                assertEquals(200L, qaSecFolder.getMaxQuota());
+
+                QuotaAware qaFirstFolder = getFirstFolder().getAdapter(
+                        QuotaAware.class);
+
+                boolean canSetQuota = true;
+                try {
+                    qaFirstFolder.setMaxQuota(50L, true);
+                } catch (QuotaExceededException e) {
+                    canSetQuota = false;
+                }
+                assertFalse(canSetQuota);
+
+                QuotaAware qaSecSubFolder = getSecondSubFolder().getAdapter(
+                        QuotaAware.class);
+                canSetQuota = true;
+                try {
+                    qaSecSubFolder.setMaxQuota(50L, true);
+                } catch (QuotaExceededException e) {
+                    canSetQuota = false;
+                }
+                assertFalse(canSetQuota);
+            }
+        });
+    }
+
+    @Test
+    public void testQuotaOnRevertVersion() throws Exception {
+
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertQuota(getFirstFile(), 100, 100, 0, 0);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
+                assertQuota(getFirstFolder(), 0, 300, 0, 0);
+                assertQuota(getWorkspace(), 0, 300, 0, 0);
+
+            }
+        });
+
+        // update and create a version
+        doUpdateAndVersionContent();
+        // ws + 50, file + 280 + version
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 480, 0, 100);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 680, 0, 100);
+                assertQuota(getFirstFolder(), 0, 680, 0, 100);
+                assertQuota(getWorkspace(), 50, 730, 0, 100);
+
+            }
+        });
+        // create another version
+        doSimpleVersion();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.2", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 860, 0, 480);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 1060, 0, 480);
+                assertQuota(getFirstFolder(), 0, 1060, 0, 480);
+                assertQuota(getWorkspace(), 50, 1110, 0, 480);
+
+                List<DocumentModel> versions = session.getVersions(firstFileRef);
+                for (DocumentModel documentModel : versions) {
+                    if ("0.1".equals(documentModel.getVersionLabel())) {
+                        firstFile = session.restoreToVersion(firstFileRef,
+                                documentModel.getRef(), true, true);
+                    }
+                }
+                firstFileRef = firstFile.getRef();
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 760, 0, 760);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 760);
+                assertQuota(getFirstFolder(), 0, 960, 0, 760);
+                assertQuota(getWorkspace(), 50, 1010, 0, 760);
+
+            }
+        });
+    }
+
+    @Test
+    public void testQuotaOnAddStreamingContent() throws Exception {
+
+        addContent();
+        dump();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                // now add quota limit
+
+                DocumentModel ws = session.getDocument(wsRef);
+                QuotaAware qa = ws.getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+
+                assertEquals(300L, qa.getTotalSize());
+                assertEquals(-1L, qa.getMaxQuota());
+
+                // set the quota to 400
+                qa.setMaxQuota(400L, true);
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+
+                boolean canNotExceedQuota = false;
+                try {
+                    // now try to update one
+                    DocumentModel firstFile = session.getDocument(firstFileRef);
+                    firstFile.setPropertyValue("file:content",
+                            (Serializable) getStreamBlob(250));
+                    firstFile = session.saveDocument(firstFile);
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("raised expected Execption "
+                                + QuotaExceededException.unwrap(e).getMessage());
+                        canNotExceedQuota = true;
+                    }
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+
+                assertTrue(canNotExceedQuota);
+            }
+        });
+
     }
 
     protected Blob getFakeBlob(int size) {
@@ -166,124 +1210,113 @@ public class TestDocumentsSizeUpdater {
         addContent(false);
     }
 
-    protected void addContent(boolean checkInFirstFile) throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            DocumentModel ws = session.createDocumentModel("/", "ws",
-                    "Workspace");
-            ws = session.createDocument(ws);
-            wsRef = ws.getRef();
+    protected void addContent(final boolean checkInFirstFile) throws Exception {
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                DocumentModel ws = session.createDocumentModel("/", "ws",
+                        "Workspace");
+                ws = session.createDocument(ws);
+                wsRef = ws.getRef();
 
-            DocumentModel firstFolder = session.createDocumentModel(
-                    ws.getPathAsString(), "folder1", "Folder");
-            firstFolder = session.createDocument(firstFolder);
-            firstFolderRef = firstFolder.getRef();
+                DocumentModel firstFolder = session.createDocumentModel(
+                        ws.getPathAsString(), "folder1", "Folder");
+                firstFolder = session.createDocument(firstFolder);
+                firstFolderRef = firstFolder.getRef();
 
-            DocumentModel firstSubFolder = session.createDocumentModel(
-                    firstFolder.getPathAsString(), "subfolder1", "Folder");
-            firstSubFolder = session.createDocument(firstSubFolder);
+                DocumentModel firstSubFolder = session.createDocumentModel(
+                        firstFolder.getPathAsString(), "subfolder1", "Folder");
+                firstSubFolder = session.createDocument(firstSubFolder);
 
-            firstSubFolderRef = firstSubFolder.getRef();
+                firstSubFolderRef = firstSubFolder.getRef();
 
-            DocumentModel firstFile = session.createDocumentModel(
-                    firstSubFolder.getPathAsString(), "file1", "File");
-            firstFile.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(100));
-            firstFile = session.createDocument(firstFile);
-            if (checkInFirstFile) {
-                firstFile.checkIn(VersioningOption.MINOR, null);
+                DocumentModel firstFile = session.createDocumentModel(
+                        firstSubFolder.getPathAsString(), "file1", "File");
+                firstFile.setPropertyValue("file:content",
+                        (Serializable) getFakeBlob(100));
+                firstFile = session.createDocument(firstFile);
+                if (checkInFirstFile) {
+                    firstFile.checkIn(VersioningOption.MINOR, null);
+                }
+
+                firstFileRef = firstFile.getRef();
+
+                DocumentModel secondFile = session.createDocumentModel(
+                        firstSubFolder.getPathAsString(), "file2", "File");
+                secondFile.setPropertyValue("file:content",
+                        (Serializable) getFakeBlob(200));
+
+                secondFile = session.createDocument(secondFile);
+                secondFileRef = secondFile.getRef();
+
+                DocumentModel secondSubFolder = session.createDocumentModel(
+                        firstFolder.getPathAsString(), "subfolder2", "Folder");
+                secondSubFolder = session.createDocument(secondSubFolder);
+                secondSubFolderRef = secondSubFolder.getRef();
+
+                DocumentModel secondFolder = session.createDocumentModel(
+                        ws.getPathAsString(), "folder2", "Folder");
+                secondFolder = session.createDocument(secondFolder);
+                secondFolderRef = secondFolder.getRef();
+
             }
-
-            firstFileRef = firstFile.getRef();
-
-            DocumentModel secondFile = session.createDocumentModel(
-                    firstSubFolder.getPathAsString(), "file2", "File");
-            secondFile.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(200));
-
-            secondFile = session.createDocument(secondFile);
-            secondFileRef = secondFile.getRef();
-
-            DocumentModel secondSubFolder = session.createDocumentModel(
-                    firstFolder.getPathAsString(), "subfolder2", "Folder");
-            secondSubFolder = session.createDocument(secondSubFolder);
-            secondSubFolderRef = secondSubFolder.getRef();
-
-            DocumentModel secondFolder = session.createDocumentModel(
-                    ws.getPathAsString(), "folder2", "Folder");
-            secondFolder = session.createDocument(secondFolder);
-            secondFolderRef = secondFolder.getRef();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Thread.sleep(300);
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        });
     }
 
     protected void doMoveContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            session.move(firstFileRef, secondSubFolderRef, null);
-
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                session.move(firstFileRef, secondSubFolderRef, null);
+            }
+        });
     }
 
     protected void doMoveFolderishContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            session.move(firstSubFolderRef, secondFolderRef, null);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                session.move(firstSubFolderRef, secondFolderRef, null);
+            }
+        });
     }
 
     protected void doMoveFileContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            session.move(firstFileRef, secondFolderRef, null);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                session.move(firstFileRef, secondFolderRef, null);
+            }
+        });
     }
 
     protected void doUpdateContent() throws Exception {
         if (verboseMode) {
             System.out.println("Update content");
         }
-        TransactionHelper.startTransaction();
-        try {
-            DocumentModel ws = session.getDocument(wsRef);
-            DocumentModel firstFile = session.getDocument(firstFileRef);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                DocumentModel ws = session.getDocument(wsRef);
+                DocumentModel firstFile = session.getDocument(firstFileRef);
 
-            ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
-            ws = session.saveDocument(ws);
+                ws.setPropertyValue("file:content",
+                        (Serializable) getFakeBlob(50));
+                ws = session.saveDocument(ws);
 
-            List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+                List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
 
-            for (int i = 1; i < 5; i++) {
-                Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-                files_entry.put("filename", "fakefile" + i);
-                files_entry.put("file", (Serializable) getFakeBlob(70));
-                files.add(files_entry);
+                for (int i = 1; i < 5; i++) {
+                    Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+                    files_entry.put("filename", "fakefile" + i);
+                    files_entry.put("file", (Serializable) getFakeBlob(70));
+                    files.add(files_entry);
+                }
+
+                firstFile.setPropertyValue("files:files", (Serializable) files);
+                firstFile = session.saveDocument(firstFile);
             }
-
-            firstFile.setPropertyValue("files:files", (Serializable) files);
-            firstFile = session.saveDocument(firstFile);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Thread.sleep(1000);
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        });
 
     }
 
@@ -291,177 +1324,159 @@ public class TestDocumentsSizeUpdater {
         if (verboseMode) {
             System.out.println("CheckIn first file");
         }
-        TransactionHelper.startTransaction();
-        try {
-            DocumentModel firstFile = session.getDocument(firstFileRef);
-            firstFile.checkIn(VersioningOption.MINOR, null);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Thread.sleep(2000);
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                DocumentModel firstFile = session.getDocument(firstFileRef);
+                firstFile.checkIn(VersioningOption.MINOR, null);
+            }
+        });
     }
 
     protected void doCheckOut() throws Exception {
         if (verboseMode) {
             System.out.println("CheckOut first file");
         }
-        TransactionHelper.startTransaction();
-        try {
-            DocumentModel firstFile = session.getDocument(firstFileRef);
-            firstFile.checkOut();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel firstFile = session.getDocument(firstFileRef);
+                firstFile.checkOut();
+            }
+        });
     }
 
     protected void doUpdateAndVersionContent() throws Exception {
         if (verboseMode) {
             System.out.println("Update content and create version ");
         }
-        TransactionHelper.startTransaction();
-        try {
-            DocumentModel ws = session.getDocument(wsRef);
-            DocumentModel firstFile = session.getDocument(firstFileRef);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
 
-            ws.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
-            ws = session.saveDocument(ws);
+                DocumentModel ws = session.getDocument(wsRef);
+                DocumentModel firstFile = session.getDocument(firstFileRef);
 
-            List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+                ws.setPropertyValue("file:content",
+                        (Serializable) getFakeBlob(50));
+                ws = session.saveDocument(ws);
 
-            for (int i = 1; i < 5; i++) {
-                Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
-                files_entry.put("filename", "fakefile" + i);
-                files_entry.put("file", (Serializable) getFakeBlob(70));
-                files.add(files_entry);
+                List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+
+                for (int i = 1; i < 5; i++) {
+                    Map<String, Serializable> files_entry = new HashMap<String, Serializable>();
+                    files_entry.put("filename", "fakefile" + i);
+                    files_entry.put("file", (Serializable) getFakeBlob(70));
+                    files.add(files_entry);
+                }
+
+                firstFile.setPropertyValue("files:files", (Serializable) files);
+                // create minor version
+                firstFile.putContextData(VersioningService.VERSIONING_OPTION,
+                        VersioningOption.MINOR);
+                firstFile = session.saveDocument(firstFile);
             }
-
-            firstFile.setPropertyValue("files:files", (Serializable) files);
-            // create minor version
-            firstFile.putContextData(VersioningService.VERSIONING_OPTION,
-                    VersioningOption.MINOR);
-            firstFile = session.saveDocument(firstFile);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Thread.sleep(1000);
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        });
     }
 
     protected void doSimpleVersion() throws Exception {
         if (verboseMode) {
             System.out.println("simply create a version ");
         }
-        TransactionHelper.startTransaction();
-        try {
-            DocumentModel firstFile = session.getDocument(firstFileRef);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
 
-            firstFile.setPropertyValue("dc:title", "a version");
-            firstFile.putContextData(VersioningService.VERSIONING_OPTION,
-                    VersioningOption.MINOR);
-            firstFile = session.saveDocument(firstFile);
-        } catch (Exception e) {
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Thread.sleep(1000);
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+                DocumentModel firstFile = session.getDocument(firstFileRef);
+
+                firstFile.setPropertyValue("dc:title", "a version");
+                firstFile.putContextData(VersioningService.VERSIONING_OPTION,
+                        VersioningOption.MINOR);
+                firstFile = session.saveDocument(firstFile);
+            }
+        });
     }
 
     protected void doRemoveFirstVersion() throws Exception {
         if (verboseMode) {
             System.out.println("remove first created version ");
         }
-        TransactionHelper.startTransaction();
-        try {
-            List<DocumentModel> versions = session.getVersions(firstFileRef);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
 
-            if (verboseMode) {
+                List<DocumentModel> versions = session.getVersions(firstFileRef);
 
+                session.removeDocument(versions.get(0).getRef());
             }
-            session.removeDocument(versions.get(0).getRef());
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Thread.sleep(1000);
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        });
     }
 
     protected void doRemoveContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            session.removeDocument(firstFileRef);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                session.removeDocument(firstFileRef);
+            }
+        });
     }
 
     protected void doRemoveFolderishContent() throws Exception {
-        TransactionHelper.startTransaction();
-        session.removeDocument(firstSubFolderRef);
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                session.removeDocument(firstSubFolderRef);
+            }
+        });
     }
 
     protected void doDeleteFileContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            List<DocumentModel> docs = new ArrayList<DocumentModel>();
-            docs.add(session.getDocument(firstFileRef));
-            Framework.getLocalService(TrashService.class).trashDocuments(docs);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+
+                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                docs.add(session.getDocument(firstFileRef));
+                Framework.getLocalService(TrashService.class).trashDocuments(
+                        docs);
+            }
+        });
     }
 
     protected void doUndeleteFileContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            List<DocumentModel> docs = new ArrayList<DocumentModel>();
-            docs.add(session.getDocument(firstFileRef));
-            Framework.getLocalService(TrashService.class).undeleteDocuments(
-                    docs);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+
+                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                docs.add(session.getDocument(firstFileRef));
+                Framework.getLocalService(TrashService.class).undeleteDocuments(
+                        docs);
+            }
+        });
     }
 
     protected void doCopyContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            session.copy(firstFileRef, secondSubFolderRef, null);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Thread.sleep(1000);
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                session.copy(firstFileRef, secondSubFolderRef, null);
+            }
+        });
     }
 
     protected void doCopyFolderishContent() throws Exception {
-        TransactionHelper.startTransaction();
-        try {
-            session.copy(firstSubFolderRef, secondFolderRef, null);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        eventService.waitForAsyncCompletion();
-        dispose(session);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+
+                session.copy(firstSubFolderRef, secondFolderRef, null);
+            }
+        });
     }
 
-    @SuppressWarnings("unused")
+
     protected void dump() throws Exception {
 
         if (!verboseMode) {
@@ -522,1113 +1537,61 @@ public class TestDocumentsSizeUpdater {
                         + qa.getVersionsSize());
     }
 
-    @Test
-    public void testQuotaOnAddContent() throws Exception {
 
-        addContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
+    /**
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel getWorkspace() throws ClientException {
+        return session.getDocument(wsRef);
     }
 
-    @Test
-    public void testQuotaOnAddAndModifyContent() throws Exception {
-
-        addContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        doUpdateContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 380L, 380L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 580L);
-        assertQuota(firstFolder, 0L, 580L);
-        assertQuota(ws, 50L, 630L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
+    /**
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel getFirstSubFolder() throws ClientException {
+        return session.getDocument(firstSubFolderRef);
     }
 
-    @Test
-    public void testQuotaInitialCheckIn() throws Exception {
-
-        addContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-
-        assertQuota(firstFile, 100, 100, 0, 0);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 300, 0, 0);
-        assertQuota(firstFolder, 0, 300, 0, 0);
-        assertQuota(ws, 0, 300, 0, 0);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-
-        doCheckIn();
-
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.1", firstFile.getVersionLabel());
-
-        // checked in: We count immediatly because at user (UI) level
-        // checkout is not a visible action
-        assertQuota(firstFile, 100, 200, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 400, 0, 100);
-        assertQuota(firstFolder, 0, 400, 0, 100);
-        assertQuota(ws, 0, 400, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        // checkout the doc
-        doCheckOut();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-
-        assertTrue(firstFile.isCheckedOut());
-        assertEquals("0.1+", firstFile.getVersionLabel());
-
-        secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100, 200, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 400, 0, 100);
-        assertQuota(firstFolder, 0, 400, 0, 100);
-        assertQuota(ws, 0, 400, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
+    /**
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel getSecondSubFolder() throws ClientException {
+        return session.getDocument(secondSubFolderRef);
     }
 
-    @Test
-    public void testQuotaOnCheckInCheckOut() throws Exception {
-
-        addContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        doCheckIn();
-
-        TransactionHelper.startTransaction();
-
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.1", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 100, 200, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 400, 0, 100);
-        assertQuota(firstFolder, 0, 400, 0, 100);
-        assertQuota(ws, 0, 400, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        // checkout the doc
-        doCheckOut();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertTrue(firstFile.isCheckedOut());
-        assertEquals("0.1+", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 100, 200, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 400, 0, 100);
-        assertQuota(firstFolder, 0, 400, 0, 100);
-        assertQuota(ws, 0, 400, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
+    /**
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel getFirstFolder() throws ClientException {
+        return session.getDocument(firstFolderRef);
     }
 
-    @Test
-    public void testQuotaOnVersions() throws Exception {
-
-        addContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100, 100, 0, 0);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 300, 0, 0);
-        assertQuota(firstFolder, 0, 300, 0, 0);
-        assertQuota(ws, 0, 300, 0, 0);
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        // update and create a version
-        doUpdateAndVersionContent();
-        // ws + 50, file + 280 + version
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.1", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 380, 480, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 680, 0, 100);
-        assertQuota(firstFolder, 0, 680, 0, 100);
-        assertQuota(ws, 50, 730, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        // create another version
-        doSimpleVersion();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.2", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 380, 860, 0, 480);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 1060, 0, 480);
-        assertQuota(firstFolder, 0, 1060, 0, 480);
-        assertQuota(ws, 50, 1110, 0, 480);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        // remove a version
-        doRemoveFirstVersion();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.2", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 380, 760, 0, 380);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 960, 0, 380);
-        assertQuota(firstFolder, 0, 960, 0, 380);
-        assertQuota(ws, 50, 1010, 0, 380);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        // remove doc and associated version
-
-        doRemoveContent();
-        eventService.waitForAsyncCompletion();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertFalse(session.exists(firstFileRef));
-
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 200, 0, 0);
-        assertQuota(firstFolder, 0, 200, 0, 0);
-        assertQuota(ws, 50, 250, 0, 0);
-
-
-        TransactionHelper.commitOrRollbackTransaction();
-
+    /**
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel getSecondFolder() throws ClientException {
+        return session.getDocument(secondFolderRef);
     }
 
-    @Test
-    public void testQuotaOnMoveContent() throws Exception {
-
-        addContent();
-
-        dump();
-
-        doMoveContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 200L);
-        assertQuota(secondSubFolder, 0L, 100L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(ws, 0L, 300L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
+    /**
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel getSecondFile() throws ClientException {
+        return session.getDocument(secondFileRef);
     }
 
-    @Test
-    public void testQuotaOnRemoveContent() throws Exception {
-
-        addContent();
-        doRemoveContent();
-        dump();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-        assertFalse(session.exists(firstFileRef));
-
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 200L);
-        assertQuota(firstFolder, 0L, 200L);
-        assertQuota(ws, 0L, 200L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
+    /**
+     * @return
+     * @throws ClientException
+     */
+    protected DocumentModel getFirstFile() throws ClientException {
+        return session.getDocument(firstFileRef);
     }
 
-    @Test
-    public void testQuotaOnCopyContent() throws Exception {
-
-        addContent();
-
-        dump();
-
-        doCopyContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-        DocumentModel copiedFile = session.getChildren(secondSubFolderRef).get(
-                0);
-
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(copiedFile, 100L, 100L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(secondSubFolder, 0L, 100L);
-        assertQuota(firstFolder, 0L, 400L);
-        assertQuota(ws, 0L, 400L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-    }
-
-    @Test
-    public void testQuotaOnCopyFolderishContent() throws Exception {
-
-        addContent();
-
-        dump();
-
-        doCopyFolderishContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-        DocumentModel copiedFolder = session.getChildren(secondFolderRef).get(0);
-
-        DocumentModel copiedFirstFile = session.getChild(copiedFolder.getRef(),
-                "file1");
-        DocumentModel copiedSecondFile = session.getChild(
-                copiedFolder.getRef(), "file2");
-
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFolder, 0L, 300L);
-        assertQuota(secondFolder, 0L, 300L);
-        assertQuota(copiedFolder, 0L, 300L);
-        assertQuota(copiedFirstFile, 100L, 100L);
-        assertQuota(copiedSecondFile, 200L, 200L);
-        assertQuota(ws, 0L, 600L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-    }
-
-    @Test
-    public void testQuotaOnRemoveFoldishContent() throws Exception {
-        addContent();
-
-        dump();
-
-        doRemoveFolderishContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        assertFalse(session.exists(firstSubFolderRef));
-
-        assertQuota(firstFolder, 0L, 0L);
-        assertQuota(ws, 0L, 0L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-    }
-
-    @Test
-    public void testQuotaOnMoveFoldishContent() throws Exception {
-
-        addContent();
-
-        dump();
-
-        doMoveFolderishContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
-
-        DocumentModel firstSubFolder = session.getChildren(secondFolderRef).get(
-                0);
-        DocumentModel firstFile = session.getChild(firstSubFolder.getRef(),
-                "file1");
-        DocumentModel secondFile = session.getChild(firstSubFolder.getRef(),
-                "file2");
-
-        assertEquals(1, session.getChildren(firstFolderRef).size());
-
-        assertQuota(ws, 0L, 300L);
-        assertQuota(firstFolder, 0L, 0L);
-        assertQuota(secondFolder, 0L, 300L);
-        assertQuota(firstSubFolder, 0L, 300L);
-        assertQuota(firstFile, 100L, 100L);
-        assertQuota(secondFile, 200L, 200L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-    }
-
-    @Test
-    public void testQuotaExceeded() throws Exception {
-
-        addContent();
-        dump();
-
-        TransactionHelper.startTransaction();
-
-        // now add quota limit
-        DocumentModel ws = session.getDocument(wsRef);
-        QuotaAware qa = ws.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-
-        assertEquals(300L, qa.getTotalSize());
-        assertEquals(-1L, qa.getMaxQuota());
-
-        // set the quota to 400
-        qa.setMaxQuota(400L, true);
-        TransactionHelper.commitOrRollbackTransaction();
-        dump();
-        TransactionHelper.startTransaction();
-
-        boolean canNotExceedQuota = false;
-        try {
-            // now try to update one
-            DocumentModel firstFile = session.getDocument(firstFileRef);
-            firstFile.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(250));
-            firstFile = session.saveDocument(firstFile);
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                System.out.println("raised expected Execption "
-                        + QuotaExceededException.unwrap(e).getMessage());
-                canNotExceedQuota = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        assertTrue(canNotExceedQuota);
-
-        TransactionHelper.startTransaction();
-
-        // now remove the quota limit
-        ws = session.getDocument(wsRef);
-        qa = ws.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-
-        assertEquals(300L, qa.getTotalSize());
-        assertEquals(400L, qa.getMaxQuota());
-
-        // set the quota to -1 / unlimited
-        qa.setMaxQuota(-1L, true);
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        dump();
-
-        TransactionHelper.startTransaction();
-
-        canNotExceedQuota = false;
-        try {
-            // now try to update one
-            DocumentModel firstFile = session.getDocument(firstFileRef);
-            firstFile.setPropertyValue("file:content",
-                    (Serializable) getFakeBlob(250));
-            firstFile = session.saveDocument(firstFile);
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                System.out.println("raised expected Execption "
-                        + QuotaExceededException.unwrap(e).getMessage());
-                canNotExceedQuota = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        assertFalse(canNotExceedQuota);
-
-    }
-
-    @Test
-    public void testQuotaExceededOnVersion() throws Exception {
-
-        addContent();
-
-        dump();
-
-        TransactionHelper.startTransaction();
-
-        // now add quota limit
-        DocumentModel ws = session.getDocument(wsRef);
-        QuotaAware qa = ws.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-
-        assertEquals(300L, qa.getTotalSize());
-
-        assertEquals(-1L, qa.getMaxQuota());
-
-        // set the quota to 350
-        qa.setMaxQuota(350L, true);
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        dump();
-
-        TransactionHelper.startTransaction();
-
-        // create a version
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        firstFile.checkIn(VersioningOption.MINOR, null);
-
-        boolean canNotExceedQuota = false;
-        try {
-            // now try to checkout
-            firstFile.checkOut();
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                System.out.println("raised expected Execption "
-                        + QuotaExceededException.unwrap(e).getMessage());
-                canNotExceedQuota = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-
-        dump();
-
-        assertTrue(canNotExceedQuota);
-
-    }
-
-    @Test
-    public void testComputeInitialStatistics() throws Exception {
-
-        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
-        eventAdmin.setListenerEnabledFlag("quotaStatsListener", false);
-
-        addContent();
-        doCheckIn();
-
-        dump();
-
-        TransactionHelper.startTransaction();
-        DocumentModel ws = session.getDocument(wsRef);
-        assertFalse(ws.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET));
-
-        String updaterName = "documentsSizeUpdater";
-        quotaStatsService.launchInitialStatisticsComputation(updaterName,
-                session.getRepositoryName());
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
-
-        workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
-
-        session.save(); // process invalidations
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        dispose(session);
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100L, 200L, 0L, 100L);
-        assertQuota(secondFile, 200L, 200L, 0L, 0L);
-        assertQuota(firstSubFolder, 0L, 400L, 0L, 100L);
-        assertQuota(firstFolder, 0L, 400L, 0L, 100L);
-        assertQuota(ws, 0L, 400L, 0L, 100L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        session.save();
-        dispose(session);
-        eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
-        TransactionHelper.startTransaction();
-        firstFile = session.getDocument(firstFileRef);
-        // modify file to checkout
-        firstFile.setPropertyValue("dc:title", "File1");
-        firstFile = session.saveDocument(firstFile);
-        session.save(); // process invalidations
-        assertTrue(firstFile.isCheckedOut());
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        dispose(session);
-        TransactionHelper.startTransaction();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100L, 200L, 0L, 100L);
-        assertQuota(secondFile, 200L, 200L, 0L, 0L);
-        assertQuota(firstSubFolder, 0L, 400L, 0L, 100L);
-        assertQuota(firstFolder, 0L, 400L, 0L, 100L);
-        assertQuota(ws, 0L, 400L, 0L, 100L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        session.save();
-        eventService.waitForAsyncCompletion();
-    }
-
-    @Test
-    public void testQuotaOnDeleteContent() throws Exception {
-        addContent();
-        doDeleteFileContent();
-        TransactionHelper.startTransaction();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-
-        assertQuota(firstFile, 100L, 100L, 100L);
-        assertQuota(firstFolder, 0L, 300L, 100L);
-        assertQuota(ws, 0L, 300L, 100L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        doUndeleteFileContent();
-        TransactionHelper.startTransaction();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-
-        assertQuota(firstFile, 100L, 100L, 0L);
-        assertQuota(firstFolder, 0L, 300L, 0L);
-        assertQuota(ws, 0L, 300L, 0L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        // sent file to trash
-        doDeleteFileContent();
-        // then permanently delete file when file is in trash
-        doRemoveContent();
-
-        TransactionHelper.startTransaction();
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-
-        assertFalse(session.exists(firstFileRef));
-        assertQuota(firstFolder, 0L, 200L, 0L);
-        assertQuota(ws, 0L, 200L, 0L);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-    }
-
-    @Test
-    public void testQuotaOnMoveContentWithVersions() throws Exception {
-
-        addContent();
-        // update and create a version
-        doUpdateAndVersionContent();
-        TransactionHelper.startTransaction();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
-
-        assertQuota(firstFile, 380, 480, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 680, 0, 100);
-        assertQuota(firstFolder, 0, 680, 0, 100);
-        assertQuota(ws, 50, 730, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        doMoveFileContent();
-
-        TransactionHelper.startTransaction();
-
-        ws = session.getDocument(wsRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        secondFolder = session.getDocument(secondFolderRef);
-
-        assertQuota(firstFile, 380, 480, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 200, 0, 0);
-        assertQuota(firstFolder, 0, 200, 0, 0);
-        assertQuota(secondFolder, 0, 480, 0, 100);
-        assertQuota(ws, 50, 730, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-    }
-
-
-    @Test
-    public void testQuotaOnCopyContentWithVersions() throws Exception {
-
-        addContent();
-        // update and create a version
-        doUpdateAndVersionContent();
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
-
-        assertQuota(firstFile, 380, 480, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 680, 0, 100);
-        assertQuota(firstFolder, 0, 680, 0, 100);
-        assertQuota(ws, 50, 730, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-
-        doCopyContent();
-
-        TransactionHelper.startTransaction();
-        dump();
-        ws = session.getDocument(wsRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-
-        DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        DocumentModel copiedFile = session.getChildren(secondSubFolderRef).get(
-                0);
-
-        assertQuota(firstFile, 380, 480, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 680, 0, 100);
-        assertQuota(firstFolder, 0, 1060, 0, 100);
-        assertQuota(copiedFile, 380, 380, 0 ,0);
-        assertQuota(secondSubFolder, 0, 380 , 0, 0);
-        assertQuota(ws, 50, 1110, 0, 100);
-
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-    }
-
-
-    @Test
-    public void testAllowSettingMaxQuota() throws Exception {
-        addContent();
-
-
-        TransactionHelper.startTransaction();
-
-        // now add quota limit
-        DocumentModel ws = session.getDocument(wsRef);
-        QuotaAware qa = ws.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-        // set the quota to 400
-        qa.setMaxQuota(400L, true);
-
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        QuotaAware qaFSF = firstSubFolder.getAdapter(QuotaAware.class);
-        qaFSF.setMaxQuota(200L, true);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        dispose(session);
-        TransactionHelper.startTransaction();
-        DocumentModel secondFolder = session.getDocument(secondFolderRef);
-        QuotaAware qaSecFolder = secondFolder.getAdapter(QuotaAware.class);
-        boolean canSetQuota = true;
-        try {
-            qaSecFolder.setMaxQuota(300L, true);
-        } catch (QuotaExceededException e) {
-            canSetQuota = false;
-        }
-        assertFalse(canSetQuota);
-        qaSecFolder.setMaxQuota(200L, true);
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        dispose(session);
-        TransactionHelper.startTransaction();
-
-        secondFolder = session.getDocument(secondFolderRef);
-        qaSecFolder = secondFolder.getAdapter(QuotaAware.class);
-        assertEquals(200L, qaSecFolder.getMaxQuota());
-
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        QuotaAware qaFirstFolder = firstFolder.getAdapter(QuotaAware.class);
-        canSetQuota = true;
-        try {
-            qaFirstFolder.setMaxQuota(50L, true);
-        } catch (QuotaExceededException e) {
-            canSetQuota = false;
-        }
-        assertFalse(canSetQuota);
-
-        DocumentModel secondSubFolder = session.getDocument(secondSubFolderRef);
-        QuotaAware qaSecSubFolder = secondSubFolder.getAdapter(QuotaAware.class);
-        canSetQuota = true;
-        try {
-            qaSecSubFolder.setMaxQuota(50L, true);
-        } catch (QuotaExceededException e) {
-            canSetQuota = false;
-        }
-        assertFalse(canSetQuota);
-        TransactionHelper.commitOrRollbackTransaction();
-    }
-
-    @Test
-    public void testQuotaOnRevertVersion() throws Exception {
-
-        addContent();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        DocumentModel ws = session.getDocument(wsRef);
-        DocumentModel firstFolder = session.getDocument(firstFolderRef);
-        DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
-        DocumentModel firstFile = session.getDocument(firstFileRef);
-        DocumentModel secondFile = session.getDocument(secondFileRef);
-
-        assertQuota(firstFile, 100, 100, 0, 0);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 300, 0, 0);
-        assertQuota(firstFolder, 0, 300, 0, 0);
-        assertQuota(ws, 0, 300, 0, 0);
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        // update and create a version
-        doUpdateAndVersionContent();
-        // ws + 50, file + 280 + version
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.1", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 380, 480, 0, 100);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 680, 0, 100);
-        assertQuota(firstFolder, 0, 680, 0, 100);
-        assertQuota(ws, 50, 730, 0, 100);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-
-        // create another version
-        doSimpleVersion();
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-        secondFile = session.getDocument(secondFileRef);
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.2", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 380, 860, 0, 480);
-        assertQuota(secondFile, 200, 200, 0, 0);
-        assertQuota(firstSubFolder, 0, 1060, 0, 480);
-        assertQuota(firstFolder, 0, 1060, 0, 480);
-        assertQuota(ws, 50, 1110, 0, 480);
-
-        List<DocumentModel> versions = session.getVersions(firstFileRef);
-        for (DocumentModel documentModel : versions) {
-            if ("0.1".equals(documentModel.getVersionLabel())) {
-                firstFile = session.restoreToVersion(firstFileRef,
-                        documentModel.getRef(), true, true);
-            }
-        }
-        firstFileRef = firstFile.getRef();
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        dispose(session);
-
-        TransactionHelper.startTransaction();
-
-        dump();
-
-        ws = session.getDocument(wsRef);
-        firstFolder = session.getDocument(firstFolderRef);
-        firstSubFolder = session.getDocument(firstSubFolderRef);
-        firstFile = session.getDocument(firstFileRef);
-
-        assertFalse(firstFile.isCheckedOut());
-        assertEquals("0.1", firstFile.getVersionLabel());
-
-        assertQuota(firstFile, 380, 760, 0, 760);
-        assertQuota(firstSubFolder, 0, 960, 0, 760);
-        assertQuota(firstFolder, 0, 960, 0, 760);
-        assertQuota(ws, 50, 1010, 0, 760);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-    }
-
-    @Test
-    public void testQuotaOnAddStreamingContent() throws Exception {
-
-        addContent();
-        dump();
-
-        TransactionHelper.startTransaction();
-
-        // now add quota limit
-        DocumentModel ws = session.getDocument(wsRef);
-        QuotaAware qa = ws.getAdapter(QuotaAware.class);
-        assertNotNull(qa);
-
-        assertEquals(300L, qa.getTotalSize());
-        assertEquals(-1L, qa.getMaxQuota());
-
-        // set the quota to 400
-        qa.setMaxQuota(400L, true);
-        TransactionHelper.commitOrRollbackTransaction();
-        dump();
-        TransactionHelper.startTransaction();
-
-        boolean canNotExceedQuota = false;
-        try {
-            // now try to update one
-            DocumentModel firstFile = session.getDocument(firstFileRef);
-            firstFile.setPropertyValue("file:content",
-                    (Serializable) getStreamBlob(250));
-            firstFile = session.saveDocument(firstFile);
-        } catch (Exception e) {
-            if (QuotaExceededException.isQuotaExceededException(e)) {
-                System.out.println("raised expected Execption "
-                        + QuotaExceededException.unwrap(e).getMessage());
-                canNotExceedQuota = true;
-            }
-            TransactionHelper.setTransactionRollbackOnly();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        assertTrue(canNotExceedQuota);
-
-    }
 }
