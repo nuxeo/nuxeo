@@ -57,6 +57,13 @@ public class ClientLoginModule implements LoginModule {
         }
     };
 
+    /**
+     * @since 5.7
+     */
+    public static void clearThreadLocalLogin() {
+        threadInstance.remove();
+    }
+
     public static LoginStack getThreadLocalLogin() {
         return threadInstance.get();
     }
