@@ -51,6 +51,7 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
@@ -337,16 +338,20 @@ public class NuxeoAuthenticationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
-        doInitIfNeeded();
+        try {
+            doInitIfNeeded();
 
-        List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
+            List<NuxeoAuthPreFilter> preFilters = service.getPreFilters();
 
-        if (preFilters == null) {
-            doFilterInternal(request, response, chain);
-        } else {
-            NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
+            if (preFilters == null) {
+                doFilterInternal(request, response, chain);
+            } else {
+                NuxeoAuthFilterChain chainWithPreFilters = new NuxeoAuthFilterChain(
                     preFilters, chain, this);
-            chainWithPreFilters.doFilter(request, response);
+                chainWithPreFilters.doFilter(request, response);
+            }
+        } finally {
+            ClientLoginModule.clearThreadLocalLogin();
         }
     }
 
