@@ -1636,7 +1636,7 @@
                   <field>defaultPageSize</field>
                 </fields>
               </widget>
-              <widget name="showPageSizeSelector" type="checkbox">
+              <widget name="showPageSizeSelector" type="selectOneListbox">
                 <labels>
                   <label mode="any">Show page size selector</label>
                 </labels>
@@ -1650,8 +1650,14 @@
                 <fields>
                   <field>showPageSizeSelector</field>
                 </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
               </widget>
-              <widget name="showRefreshCommand" type="checkbox">
+              <widget name="showRefreshCommand" type="selectOneListbox">
                 <labels>
                   <label mode="any">Show refresh command</label>
                 </labels>
@@ -1665,8 +1671,14 @@
                 <fields>
                   <field>showRefreshCommand</field>
                 </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
               </widget>
-              <widget name="showFilterForm" type="checkbox">
+              <widget name="showFilterForm" type="selectOneListbox">
                 <labels>
                   <label mode="any">Show filter form</label>
                 </labels>
@@ -1680,8 +1692,14 @@
                 <fields>
                   <field>showFilterForm</field>
                 </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
               </widget>
-              <widget name="showSyndicationLinks" type="checkbox">
+              <widget name="showSyndicationLinks" type="selectOneListbox">
                 <labels>
                   <label mode="any">Show syndication links</label>
                 </labels>
@@ -1695,8 +1713,14 @@
                 <fields>
                   <field>showSyndicationLinks</field>
                 </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
               </widget>
-              <widget name="showCSVExport" type="checkbox">
+              <widget name="showCSVExport" type="selectOneListbox">
                 <labels>
                   <label mode="any">Show CSV export</label>
                 </labels>
@@ -1711,8 +1735,14 @@
                 <fields>
                   <field>showCSVExport</field>
                 </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
               </widget>
-              <widget name="showPDFExport" type="checkbox">
+              <widget name="showPDFExport" type="selectOneListbox">
                 <labels>
                   <label mode="any">Show PDF export</label>
                 </labels>
@@ -1727,6 +1757,12 @@
                 <fields>
                   <field>showPDFExport</field>
                 </fields>
+                <selectOptions>
+                  <option itemLabel="(Default value from content view configuration)"
+                    itemValue="" />
+                  <option itemLabel="No" itemValue="false" />
+                  <option itemLabel="Yes" itemValue="true" />
+                </selectOptions>
               </widget>
               <widget name="foldable" type="checkbox">
                 <labels>
