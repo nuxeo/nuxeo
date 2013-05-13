@@ -1,7 +1,7 @@
 package org.nuxeo.dam;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 public class AllowedAssetTypeRegistry extends
         ContributionFragmentRegistry<AllowedAssetTypeDescriptor> {
 
-    protected Map<String, AllowedAssetTypeDescriptor> allowedAssetTypes = new HashMap<String, AllowedAssetTypeDescriptor>();
+    protected Map<String, AllowedAssetTypeDescriptor> allowedAssetTypes = new LinkedHashMap<>();
 
     public List<String> getAllowedAssetTypes() {
         List<String> types = new ArrayList<String>();
