@@ -69,6 +69,7 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
@@ -390,6 +391,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 chainWithPreFilters.doFilter(request, response);
             }
         } finally {
+            ClientLoginModule.clearThreadLocalLogin();
             contextTimer.stop();
             concurrentCount.dec();
         }
