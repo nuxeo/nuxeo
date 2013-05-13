@@ -32,6 +32,7 @@ import com.google.inject.Scopes;
 /**
  * Shortcut to deploy bundles required by automation in your test
  *
+ * @since 5.7
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Deploy({ "org.nuxeo.ecm.automation.core",

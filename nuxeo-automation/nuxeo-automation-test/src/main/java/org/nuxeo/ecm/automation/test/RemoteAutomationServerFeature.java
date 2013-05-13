@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Vladimir Pasquier
  */
 package org.nuxeo.ecm.automation.test;
 
@@ -27,6 +27,13 @@ import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
+/**
+ * Feature to test automation client against an Nuxeo Automation Server running
+ * in a remote JVM.
+ *
+ * @since 5.7
+ *
+ */
 public class RemoteAutomationServerFeature extends SimpleFeature {
 
     protected static final Log log = LogFactory.getLog(RemoteAutomationServerFeature.class);
