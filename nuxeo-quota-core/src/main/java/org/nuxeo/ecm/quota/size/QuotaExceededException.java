@@ -52,8 +52,7 @@ public class QuotaExceededException extends RecoverableClientException {
     public QuotaExceededException(String targetDocumentPath,
             String addedDocumentID, long quotaValue) {
         super("QuotaExceeded", "label.quotaException.QuotaExceeded",
-                new String[] { targetDocumentPath, addedDocumentID,
-                        new Long(quotaValue).toString() });
+                new String[] { targetDocumentPath, addedDocumentID });
         this.quotaValue = quotaValue;
         this.addedDocumentID = addedDocumentID;
         this.targetPath = targetDocumentPath;

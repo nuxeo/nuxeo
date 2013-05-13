@@ -17,15 +17,18 @@
 
 package org.nuxeo.ecm.quota;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,10 +119,16 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
                 processDocumentUpdated(session, doc, docCtx);
             } else if (BEFORE_DOC_UPDATE.equals(eventName)) {
                 processDocumentBeforeUpdate(session, doc, docCtx);
+            } else if (TRANSITION_EVENT.equals(eventName)) {
+                processDocumentTrashOp(session, doc, docCtx);
             } else if (DOCUMENT_CHECKEDIN.equals(eventName)) {
                 processDocumentCheckedIn(session, doc, docCtx);
             } else if (DOCUMENT_CHECKEDOUT.equals(eventName)) {
                 processDocumentCheckedOut(session, doc, docCtx);
+            } else if (DOCUMENT_RESTORED.equals(eventName)) {
+                processDocumentRestored(session, doc, docCtx);
+            } else if (BEFORE_DOC_RESTORE.equals(eventName)) {
+                processDocumentBeforeRestore(session, doc, docCtx);
             }
         } catch (ClientException e) {
             ClientException e2 = handleException(e, event);
@@ -132,7 +141,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     protected List<DocumentModel> getAncestors(CoreSession session,
             DocumentModel doc) throws ClientException {
         List<DocumentModel> ancestors = new ArrayList<DocumentModel>();
-        if (doc != null) {
+        if (doc != null && doc.getParentRef() != null) {
             doc = session.getDocument(doc.getParentRef());
             while (doc != null && !doc.getPath().isRoot()) {
                 ancestors.add(doc);
@@ -140,7 +149,6 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
             }
         }
         return ancestors;
-
     }
 
     protected abstract ClientException handleException(ClientException e,
@@ -179,5 +187,17 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
 
     protected abstract void processDocumentBeforeUpdate(CoreSession session,
             DocumentModel targetDoc, DocumentEventContext docCtx)
+            throws ClientException;
+
+    protected abstract void processDocumentTrashOp(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
+
+    protected abstract void processDocumentRestored(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
+            throws ClientException;
+
+    protected abstract void processDocumentBeforeRestore(CoreSession session,
+            DocumentModel doc, DocumentEventContext docCtx)
             throws ClientException;
 }

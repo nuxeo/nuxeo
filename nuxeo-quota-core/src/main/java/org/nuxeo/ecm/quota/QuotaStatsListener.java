@@ -26,6 +26,12 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,18 +58,34 @@ public class QuotaStatsListener implements EventListener {
             Arrays.asList(DOCUMENT_CREATED, DOCUMENT_CREATED_BY_COPY,
                     DOCUMENT_UPDATED, DOCUMENT_MOVED, ABOUT_TO_REMOVE,
                     BEFORE_DOC_UPDATE, ABOUT_TO_REMOVE_VERSION,
-                    DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT)));
+                    DOCUMENT_CHECKEDIN, DOCUMENT_CHECKEDOUT, TRANSITION_EVENT,
+                    BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
 
     @Override
     public void handleEvent(Event event) throws ClientException {
-        if (EVENTS_TO_HANDLE.contains(event.getName())) {
-            EventContext ctx = event.getContext();
-            if (ctx instanceof DocumentEventContext) {
-                DocumentEventContext docCtx = (DocumentEventContext) ctx;
-                QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-                quotaStatsService.updateStatistics(docCtx, event);
-            }
+        EventContext ctx = event.getContext();
+        if (!(ctx instanceof DocumentEventContext)) {
+            return;
         }
+        if (!EVENTS_TO_HANDLE.contains(event.getName())) {
+            return;
+        }
+        if (TRANSITION_EVENT.equals(event.getName())
+                && !isTrashOpEvent((DocumentEventContext) ctx)) {
+            return;
+        }
+        DocumentEventContext docCtx = (DocumentEventContext) ctx;
+        QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
+        quotaStatsService.updateStatistics(docCtx, event);
     }
 
+    protected boolean isTrashOpEvent(DocumentEventContext eventContext) {
+        String transition = (String) eventContext.getProperties().get(
+                TRANSTION_EVENT_OPTION_TRANSITION);
+        if (transition != null
+                && (DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition))) {
+            return true;
+        }
+        return false;
+    }
 }

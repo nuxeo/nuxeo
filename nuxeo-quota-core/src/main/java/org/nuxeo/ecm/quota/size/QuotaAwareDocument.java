@@ -44,6 +44,10 @@ public class QuotaAwareDocument implements QuotaAware {
 
     public static final String DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY = "dss:totalSize";
 
+    public static final String DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY = "dss:sizeTrash";
+
+    public static final String DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY = "dss:sizeVersions";
+
     public static final String DOCUMENTS_SIZE_MAX_SIZE_PROPERTY = "dss:maxSize";
 
     protected DocumentModel doc;
@@ -80,6 +84,26 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
+    public long getTrashSize() {
+        try {
+            Long total = (Long) doc.getPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY);
+            return total != null ? total : 0;
+        } catch (ClientException e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public long getVersionsSize() {
+        try {
+            Long total = (Long) doc.getPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY);
+            return total != null ? total : 0;
+        } catch (ClientException e) {
+            return 0;
+        }
+    }
+
+    @Override
     public void addInnerSize(long additionalSize, boolean save)
             throws ClientException {
         Long inner = getInnerSize() + additionalSize;
@@ -101,6 +125,27 @@ public class QuotaAwareDocument implements QuotaAware {
         }
     }
 
+    @Override
+    public void addTrashSize(long additionalSize, boolean save)
+            throws ClientException {
+        Long trash = getTrashSize() + additionalSize;
+        doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, trash);
+        if (save) {
+            save(true);
+        }
+    }
+
+    @Override
+    public void addVersionsSize(long additionalSize, boolean save)
+            throws ClientException {
+        Long versions = getVersionsSize() + additionalSize;
+        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, versions);
+        if (save) {
+            save(true);
+        }
+    }
+
+    @Override
     public void save() throws ClientException {
         doc.getContextData().putScopedValue(ScopeType.REQUEST,
                 QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, true);
@@ -130,11 +175,17 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void setMaxQuota(long maxSize, boolean save) throws ClientException {
-        long existingTotal = getTotalSize();
-        if (existingTotal > maxSize && maxSize > 0) {
-            throw new QuotaExceededException(doc,
-                    "canNotSetQuotaToALowerValueThanCurrentSize");
+    public void setMaxQuota(long maxSize, boolean save, boolean skipValidation)
+            throws ClientException {
+        if (!skipValidation) {
+            if (!(Framework.getLocalService(QuotaStatsService.class).canSetMaxQuota(
+                    maxSize, doc, doc.getCoreSession()))) {
+                throw new QuotaExceededException(
+                        doc,
+                        "Can not set "
+                                + maxSize
+                                + ". Quota exceeded because the quota set on one of the children.");
+            }
         }
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, maxSize);
         if (save) {
@@ -143,7 +194,29 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
+    public void setMaxQuota(long maxSize, boolean save) throws ClientException {
+        setMaxQuota(maxSize, save, false);
+    }
+
+    @Override
     public QuotaInfo getQuotaInfo() {
-        return new QuotaInfo(getInnerSize(), getTotalSize(), getMaxQuota());
+        return new QuotaInfo(getInnerSize(), getTotalSize(), getTrashSize(),
+                getVersionsSize(), getMaxQuota());
+    }
+
+    /**
+     * @throws ClientException
+     * @since 5.7
+     */
+    @Override
+    public void resetInfos(boolean save) throws ClientException {
+        doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, 0L);
+        doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, 0L);
+        if (save) {
+            save(true);
+        }
     }
 }

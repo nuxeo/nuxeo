@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * Simple factory for {@link QuotaAwareDocument} document model adapter
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */

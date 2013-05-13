@@ -34,6 +34,11 @@
         <artifactId>nuxeo-quota-web</artifactId>
         <version>${nuxeo.quota.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>13.0.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
