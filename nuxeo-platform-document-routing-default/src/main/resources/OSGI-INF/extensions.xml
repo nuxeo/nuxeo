@@ -3,11 +3,17 @@
 <component name="studio.extensions.nuxeo-routing-default" version="1.0.0">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="initInitiatorComment">
+      <operation id="Context.RunScript">
+        <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
+WorkflowVariables["initiatorComment"]= NodeVariables["comment"];}</param>
+      </operation>
+    </chain>
     <chain id="logInAudit">
       <operation id="Audit.Log">
         <param type="string" name="event">expr:NodeVariables["button"] =="reject"?"Document refused":"Document validated"</param>
         <param type="string" name="category">Review workflow</param>
-        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"Document refused":"validated"} the document with the following comment: @{NodeVariables["assigneeComment"]}</param>
+        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"Document refused":"validated"} the document with the following comment: @{NodeVariables["comment"]}</param>
       </operation>
     </chain>
     <chain id="nextAssignee">
@@ -36,8 +42,8 @@ else if (NodeVariables["button"] == "submit") {
     </chain>
     <chain id="reinitAssigneeComment">
       <operation id="Context.RunScript">
-        <param type="string" name="script">if((NodeVariables["assigneeComment"] != "") AND (NodeVariables["assigneeComment"] != null)){
-NodeVariables["assigneeComment"]= null;}</param>
+        <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
+NodeVariables["comment"]= null;}</param>
       </operation>
     </chain>
     <chain id="terminateWorkflow">
@@ -141,7 +147,7 @@ NodeVariables["assigneeComment"]= null;}</param>
           <properties mode="any">
             <property name="nxl_colspan_0">1</property>
           </properties>
-          <widget>initiatorComment</widget>
+          <widget>comment</widget>
         </row>
       </rows>
       <widget name="participants" type="multiplePrefixedUsersSuggestion">
@@ -178,13 +184,13 @@ NodeVariables["assigneeComment"]= null;}</param>
           <property name="directoryName">WorkflowType</property>
         </properties>
       </widget>
-      <widget name="initiatorComment" type="textarea">
+      <widget name="comment" type="textarea">
         <labels>
           <label mode="any">wf.serialDocumentReview.comment</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['initiatorComment']</field>
+          <field>['comment']</field>
         </fields>
       </widget>
     </layout>
@@ -234,7 +240,7 @@ NodeVariables["assigneeComment"]= null;}</param>
           <properties mode="any">
             <property name="nxl_colspan_0">1</property>
           </properties>
-          <widget>assigneeComment</widget>
+          <widget>comment</widget>
         </row>
       </rows>
       <widget name="participants" type="multiplePrefixedUsersSuggestion">
@@ -261,13 +267,13 @@ NodeVariables["assigneeComment"]= null;}</param>
           <mode value="edit">view</mode>
         </widgetModes>
       </widget>
-      <widget name="assigneeComment" type="textarea">
+      <widget name="comment" type="textarea">
         <labels>
           <label mode="any">wf.serialDocumentReview.YourComment</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['assigneeComment']</field>
+          <field>['comment']</field>
         </fields>
       </widget>
     </layout>
@@ -276,7 +282,7 @@ NodeVariables["assigneeComment"]= null;}</param>
     <template-resource id="SerialDocumentReview" path="data/SerialDocumentReview.zip"/>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
-    <filter id="filter@SerialDocumentReview">
+    <filter id="filter@wf@SerialDocumentReview">
       <rule grant="true">
         <permission>ReadWrite</permission>
         <type>File</type>
