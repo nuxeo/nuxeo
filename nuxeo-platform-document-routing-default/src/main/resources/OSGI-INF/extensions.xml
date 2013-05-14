@@ -3,11 +3,17 @@
 <component name="studio.extensions.nuxeo-routing-default" version="1.0.0">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="initInitiatorComment">
+      <operation id="Context.RunScript">
+        <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
+WorkflowVariables["initiatorComment"]= NodeVariables["comment"];}</param>
+      </operation>
+    </chain>
     <chain id="logInAudit">
       <operation id="Audit.Log">
         <param type="string" name="event">expr:NodeVariables["button"] =="reject"?"Document refused":"Document validated"</param>
         <param type="string" name="category">Review workflow</param>
-        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"Document refused":"validated"} the document with the following comment: @{NodeVariables["assigneeComment"]}</param>
+        <param type="string" name="comment">expr:@{nodeLastActor} @{NodeVariables["button"] =="reject"?"Document refused":"validated"} the document with the following comment: @{NodeVariables["comment"]}</param>
       </operation>
     </chain>
     <chain id="nextAssignee">
@@ -32,6 +38,12 @@ else if (NodeVariables["button"] == "submit") {
         <param type="stringlist" name="to">expr:Fn.getEmail(workflowInitiator)</param>
         <param type="boolean" name="HTML">false</param>
         <param type="string" name="viewId">view_documents</param>
+      </operation>
+    </chain>
+    <chain id="reinitAssigneeComment">
+      <operation id="Context.RunScript">
+        <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
+NodeVariables["comment"]= null;}</param>
       </operation>
     </chain>
     <chain id="terminateWorkflow">
@@ -85,6 +97,34 @@ else if (NodeVariables["button"] == "submit") {
   <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">
     <directory name="WorkflowType" layout="vocabulary" sortField="label"/>
   </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="var_Task375f" prefix="var_Task375f" src="data/schemas/var_Task375f.xsd"/>
+    <schema name="var_Task38e" prefix="var_Task38e" src="data/schemas/var_Task38e.xsd"/>
+    <schema name="var_Task542" prefix="var_Task542" src="data/schemas/var_Task542.xsd"/>
+    <schema name="var_Task5c1" prefix="var_Task5c1" src="data/schemas/var_Task5c1.xsd"/>
+    <schema name="var_Task6d8" prefix="var_Task6d8" src="data/schemas/var_Task6d8.xsd"/>
+    <schema name="var_SerialDocumentReview" prefix="var_SerialDocumentReview" src="data/schemas/var_SerialDocumentReview.xsd"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="facet-var_Task375f">
+      <schema name="var_Task375f"/>
+    </facet>
+    <facet name="facet-var_Task38e">
+      <schema name="var_Task38e"/>
+    </facet>
+    <facet name="facet-var_Task542">
+      <schema name="var_Task542"/>
+    </facet>
+    <facet name="facet-var_Task5c1">
+      <schema name="var_Task5c1"/>
+    </facet>
+    <facet name="facet-var_Task6d8">
+      <schema name="var_Task6d8"/>
+    </facet>
+    <facet name="facet-var_SerialDocumentReview">
+      <schema name="var_SerialDocumentReview"/>
+    </facet>
+  </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
     <layout name="Task38e@taskLayout">
       <templates>
@@ -107,7 +147,7 @@ else if (NodeVariables["button"] == "submit") {
           <properties mode="any">
             <property name="nxl_colspan_0">1</property>
           </properties>
-          <widget>initiatorComment</widget>
+          <widget>comment</widget>
         </row>
       </rows>
       <widget name="participants" type="multiplePrefixedUsersSuggestion">
@@ -144,71 +184,13 @@ else if (NodeVariables["button"] == "submit") {
           <property name="directoryName">WorkflowType</property>
         </properties>
       </widget>
-      <widget name="initiatorComment" type="textarea">
+      <widget name="comment" type="textarea">
         <labels>
           <label mode="any">wf.serialDocumentReview.comment</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['initiatorComment']</field>
-        </fields>
-      </widget>
-    </layout>
-    <layout name="Task6d8@taskLayout">
-      <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
-      </templates>
-      <rows>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">1</property>
-          </properties>
-          <widget>participants</widget>
-        </row>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">1</property>
-          </properties>
-          <widget>initiatorComment</widget>
-        </row>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">1</property>
-          </properties>
-          <widget>assigneeComment</widget>
-        </row>
-      </rows>
-      <widget name="participants" type="multiplePrefixedUsersSuggestion">
-        <labels>
-          <label mode="any">wf.serialDocumentReview.ParticipantsOnTheReview</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>['participants']</field>
-        </fields>
-        <widgetModes>
-          <mode value="edit">view</mode>
-        </widgetModes>
-      </widget>
-      <widget name="initiatorComment" type="textarea">
-        <labels>
-          <label mode="any">wf.serialDocumentReview.InitiatorComment</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>['initiatorComment']</field>
-        </fields>
-        <widgetModes>
-          <mode value="edit">view</mode>
-        </widgetModes>
-      </widget>
-      <widget name="assigneeComment" type="textarea">
-        <labels>
-          <label mode="any">wf.serialDocumentReview.YourComment</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>['assigneeComment']</field>
+          <field>['comment']</field>
         </fields>
       </widget>
     </layout>
@@ -237,40 +219,70 @@ else if (NodeVariables["button"] == "submit") {
         </row>
       </rows>
     </layout>
-  </extension>
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="var_Task38e" prefix="var_Task38e" src="data/schemas/var_Task38e.xsd"/>
-    <schema name="var_Task6d8" prefix="var_Task6d8" src="data/schemas/var_Task6d8.xsd"/>
-    <schema name="var_Task5c1" prefix="var_Task5c1" src="data/schemas/var_Task5c1.xsd"/>
-    <schema name="var_Task542" prefix="var_Task542" src="data/schemas/var_Task542.xsd"/>
-    <schema name="var_Task375f" prefix="var_Task375f" src="data/schemas/var_Task375f.xsd"/>
-    <schema name="var_SerialDocumentReview" prefix="var_SerialDocumentReview" src="data/schemas/var_SerialDocumentReview.xsd"/>
-  </extension>
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-    <facet name="facet-var_Task38e">
-      <schema name="var_Task38e"/>
-    </facet>
-    <facet name="facet-var_Task6d8">
-      <schema name="var_Task6d8"/>
-    </facet>
-    <facet name="facet-var_Task5c1">
-      <schema name="var_Task5c1"/>
-    </facet>
-    <facet name="facet-var_Task542">
-      <schema name="var_Task542"/>
-    </facet>
-    <facet name="facet-var_Task375f">
-      <schema name="var_Task375f"/>
-    </facet>
-    <facet name="facet-var_SerialDocumentReview">
-      <schema name="var_SerialDocumentReview"/>
-    </facet>
+    <layout name="Task6d8@taskLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>participants</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>initiatorComment</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>comment</widget>
+        </row>
+      </rows>
+      <widget name="participants" type="multiplePrefixedUsersSuggestion">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.ParticipantsOnTheReview</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['participants']</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="initiatorComment" type="textarea">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.InitiatorComment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['initiatorComment']</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="comment" type="textarea">
+        <labels>
+          <label mode="any">wf.serialDocumentReview.YourComment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['comment']</field>
+        </fields>
+      </widget>
+    </layout>
   </extension>
   <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
     <template-resource id="SerialDocumentReview" path="data/SerialDocumentReview.zip"/>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
-    <filter id="filter@SerialDocumentReview">
+    <filter id="filter@wf@SerialDocumentReview">
       <rule grant="true">
         <permission>ReadWrite</permission>
         <type>File</type>
