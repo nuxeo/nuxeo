@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,9 +13,8 @@
  *
  * Contributors:
  *     Julien Carsique
- *
+ *     Florent Guillaume
  */
-
 package org.nuxeo.launcher;
 
 import java.io.File;
@@ -29,6 +28,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -39,6 +39,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
@@ -57,6 +58,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -367,13 +369,13 @@ public abstract class NuxeoLauncher {
             return unixProcessManager;
         } else if (PlatformUtils.isMac()) {
             return new MacProcessManager();
+        } else if (isSolaris()) {
+            return new SolarisProcessManager();
         } else if (PlatformUtils.isWindows()) {
             WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
             return windowsProcessManager.isUsable() ? windowsProcessManager
                     : new PureJavaProcessManager();
         } else {
-            // NOTE: UnixProcessManager can't be trusted to work on Solaris
-            // because of the 80-char limit on ps output there
             return new PureJavaProcessManager();
         }
     }
@@ -381,6 +383,95 @@ public abstract class NuxeoLauncher {
     // code similar to PlatformUtils
     private boolean isAix() {
         return System.getProperty("os.name").toLowerCase().startsWith("aix");
+    }
+
+    private boolean isSolaris() {
+        return System.getProperty("os.name").toLowerCase().startsWith("sunos");
+    }
+
+    public static class SolarisProcessManager extends UnixProcessManager {
+
+        protected static final String SOLARIS_11 = "5.11";
+
+        protected static final String SOLARIS_10 = "5.10";
+
+        protected static final String[] SOLARIS_11_PS = { "/usr/bin/ps",
+                "auxww" };
+
+        protected static final String[] SOLARIS_10_PS = { "/usr/ucb/ps",
+        "auxww" };
+
+        protected static final Pattern PS_OUTPUT_LINE = Pattern.compile("^"
+                + "[^\\s]+\\s+" // USER
+                + "([0-9]+)\\s+" // PID
+                + "[0-9.\\s]+" // %CPU %MEM SZ RSS (may be collapsed)
+                + "[^\\s]+\\s+" // TT (no starting digit)
+                + "[^\\s]+\\s+" // S
+                + "[^\\s]+\\s+" // START
+                + "[^\\s]+\\s+" // TIME
+                + "(.*)$" // COMMAND
+        );
+
+        protected String solarisVersion;
+
+        protected String getSolarisVersion() {
+            if (solarisVersion == null) {
+                List<String> lines;
+                try {
+                    lines = execute(new String[] { "/usr/bin/uname",
+                            "-r" });
+                } catch (IOException e) {
+                    log.debug(e.getMessage(), e);
+                    lines = Collections.emptyList();
+                }
+                if (lines.isEmpty()) {
+                    solarisVersion = "?";
+                } else {
+                    solarisVersion = lines.get(0).trim();
+                }
+            }
+            return solarisVersion;
+        }
+
+        @Override
+        protected String[] psCommand() {
+            if (SOLARIS_11.equals(getSolarisVersion())) {
+                return SOLARIS_11_PS;
+            }
+            return null;
+        }
+
+        protected Matcher getLineMatcher(String line) {
+            return PS_OUTPUT_LINE.matcher(line);
+        }
+
+        @Override
+        public String findPid(String regex) throws IOException {
+            if (SOLARIS_11.equals(getSolarisVersion())) {
+                Pattern commandPattern = Pattern.compile(regex);
+                for (String line : execute(psCommand())) {
+                    Matcher lineMatcher = getLineMatcher(line);
+                    if (lineMatcher.matches()) {
+                        String pid = lineMatcher.group(1);
+                        String command = lineMatcher.group(2);
+                        Matcher commandMatcher = commandPattern.matcher(command);
+                        if (commandMatcher.find()) {
+                            return pid;
+                        }
+                    }
+                }
+            } else {
+                log.debug("Unsupported Solaris version: " + solarisVersion);
+            }
+            return null;
+        }
+
+        protected List<String> execute(String... command) throws IOException {
+            Process process = new ProcessBuilder(command).start();
+            @SuppressWarnings("unchecked")
+            List<String> lines = IOUtils.readLines(process.getInputStream());
+            return lines;
+        }
     }
 
     /**
@@ -1373,7 +1464,7 @@ public abstract class NuxeoLauncher {
                         }
                     }
                     // Exit if there's no way to check for server stop
-                    if (processManager instanceof PureJavaProcessManager) {
+                    if (!processManager.canFindPid()) {
                         log.warn("Can't check server status on your OS.");
                         return;
                     }
