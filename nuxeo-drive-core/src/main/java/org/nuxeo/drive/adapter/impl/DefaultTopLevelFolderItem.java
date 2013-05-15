@@ -80,9 +80,17 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
                     continue;
                 }
                 DocumentModel doc = session.getDocument(idRef);
-                // TODO: handle null FileSystemItem
-                children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                        doc, this));
+                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
+                        doc, this);
+                if (child == null) {
+                    log.debug(String.format(
+                            "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
+                            idRef));
+                    continue;
+                }
+                log.debug(String.format(
+                        "Including synchronization root %s in children.", idRef));
+                children.add(child);
             }
         }
         Collections.sort(children);

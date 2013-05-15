@@ -86,9 +86,18 @@ public class UserWorkspaceSyncRootParentFolderItem extends
                 // Don't include user workspace (ie.top level folder) if
                 // registered as a synchronization root to avoid recursion
                 if (!UserWorkspaceHelper.isUserWorkspace(doc)) {
-                    // TODO: handle null FileSystemItem
-                    children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                            doc, this));
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
+                            doc, this);
+                    if (child == null) {
+                        log.debug(String.format(
+                                "Synchronization root %s cannot be adapted as a FileSystemItem, not including it in children.",
+                                idRef));
+                        continue;
+                    }
+                    log.debug(String.format(
+                            "Including synchronization root %s in children.",
+                            idRef));
+                    children.add(child);
                 }
             }
         }
