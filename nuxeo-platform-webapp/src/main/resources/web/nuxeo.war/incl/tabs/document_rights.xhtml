@@ -68,8 +68,10 @@
 
 <p><h:form id="block_inherit">
   <h:selectBooleanCheckbox  class="checkBox" value="#{securityActions.blockRightInheritance}"
-    immediate="true" onclick="this.form.submit();" />
+    immediate="true" onclick="getElementById('block_inherit:submitBlock').click();" />
   <h:outputText value="#{messages['label.security.block.inehritance']}" />
+  <h:commandButton id="submitBlock" value="Block inheritance" action="#{securityActions.blockRightInheritance()}" 
+    style="visibility:hidden;"/>
 </h:form></p>
 <p><h:outputText rendered="${empty securityActions.parentDocumentsUsers}"
   value="#{messages['label.security.noParentDocumentsRights']}" /></p>

@@ -539,8 +539,14 @@ public class SecurityActionsBean extends InputController implements
         return blockRightInheritance;
     }
 
-    public void setBlockRightInheritance(Boolean blockRightInheritance)
-            throws ClientException {
+    public void setBlockRightInheritance(Boolean blockRightInheritance) {
+        this.blockRightInheritance = blockRightInheritance;
+    }
+
+    public String blockRightInheritance() throws ClientException {
+        Boolean blockRightInheritance = this.blockRightInheritance;
+        rebuildSecurityData();
+
         if (blockRightInheritance) {
             // Block
             securityData.addModifiablePrivilege(SecurityConstants.EVERYONE,
@@ -565,6 +571,8 @@ public class SecurityActionsBean extends InputController implements
         }
         updateSecurityOnDocument();
         resetSecurityData();
+        selectedEntries = null;
+        return null;
     }
 
     public Boolean displayInheritedPermissions() throws ClientException {
