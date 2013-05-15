@@ -11,8 +11,14 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -232,6 +238,21 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         Date now = DateUtils.parseDate(DateUtils.formatDate(new Date(0)));
         r = session.newRequest(ReturnOperation.ID).setInput(now).execute();
         assertThat((Date) r, is(now));
+    }
+
+    @Test
+    public void testNumberParamAdapters() throws Exception {
+        Object r;
+        // Long parameter
+        Long longParam = 500L;
+        r = session.newRequest(TestNumberParamAdaptersOperation.ID).set(
+                "longParam", longParam).execute();
+        assertThat((Integer) r, is(500));
+        // Integer parameter
+        Integer integerParam = 500;
+        r = session.newRequest(TestNumberParamAdaptersOperation.ID).set(
+                "longParam", integerParam).execute();
+        assertThat((Integer) r, is(500));
     }
 
     /**
