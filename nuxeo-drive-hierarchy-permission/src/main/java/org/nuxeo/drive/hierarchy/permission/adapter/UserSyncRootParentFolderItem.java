@@ -114,9 +114,18 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
                     // principal)
                     if (session.getPrincipal().getName().equals(
                             doc.getPropertyValue("dc:creator"))) {
-                        // TODO: handle null FileSystemItem
-                        children.add(getFileSystemItemAdapterService().getFileSystemItem(
-                                doc, this));
+                        FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(
+                                doc, this);
+                        if (child == null) {
+                            log.debug(String.format(
+                                    "Synchronization root %s cannot be adapted as a FileSystemItem, maybe because user %s doesn't have the required permission on it (default required permission is ReadWrite). Not including it in children.",
+                                    idRef, session.getPrincipal().getName()));
+                            continue;
+                        }
+                        log.debug(String.format(
+                                "Including synchronization root %s in children.",
+                                idRef));
+                        children.add(child);
                     }
                 }
             }
