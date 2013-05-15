@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.platform.ui.web.component.holder;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
@@ -28,12 +30,12 @@ import javax.faces.component.UIComponent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.ui.web.component.VariableManager;
+import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.jsf.ComponentConfig;
+import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
@@ -56,22 +58,31 @@ public class ValueHolderTagHandler extends HtmlComponentHandler {
     @Override
     protected void applyNextHandler(FaceletContext ctx, UIComponent c)
             throws IOException, FacesException, ELException {
-        VariableMapper orig = ctx.getVariableMapper();
-        Object origVarValue = null;
 
         String varName = null;
         boolean varSet = false;
         if (var != null) {
             varName = var.getValue(ctx);
         }
+
+        VariableMapper orig = ctx.getVariableMapper();
+        AliasVariableMapper alias = new AliasVariableMapper();
+        // XXX: reuse the component id as the alias variable mapper id so that
+        // the value holder JSF component can reuse it at render time to expose
+        // the value it keeps
+        String aliasId = (String) c.getAttributes().get(
+                ComponentSupport.MARK_CREATED);
+        alias.setId(aliasId);
+
         if (!StringUtils.isBlank(varName)) {
             varSet = true;
-            origVarValue = VariableManager.saveRequestMapVarValue(varName);
+            List<String> blockedPatterns = new ArrayList<String>();
+            blockedPatterns.add(varName);
+            alias.setBlockedPatterns(blockedPatterns);
         }
+
         try {
             if (varSet) {
-                VariableMapper vm = new VariableMapperWrapper(orig);
-                ctx.setVariableMapper(vm);
                 Object valueToExpose = null;
                 if (c instanceof UIValueHolder) {
                     UIValueHolder holder = (UIValueHolder) c;
@@ -89,14 +100,17 @@ public class ValueHolderTagHandler extends HtmlComponentHandler {
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
                 ValueExpression valueVe = eFactory.createValueExpression(
                         valueToExpose, Object.class);
-                vm.setVariable(varName, valueVe);
-                VariableManager.putVariableToRequestParam(varName,
-                        valueToExpose);
+                alias.setVariable(varName, valueVe);
+                VariableMapper vm = alias.getVariableMapperForBuild(orig);
+                ctx.setVariableMapper(vm);
+                AliasVariableMapper.exposeAliasesToRequest(
+                        ctx.getFacesContext(), alias);
             }
             super.applyNextHandler(ctx, c);
         } finally {
             if (varSet) {
-                VariableManager.restoreRequestMapVarValue(varName, origVarValue);
+                AliasVariableMapper.removeAliasesExposedToRequest(
+                        ctx.getFacesContext(), aliasId);
                 ctx.setVariableMapper(orig);
             }
         }

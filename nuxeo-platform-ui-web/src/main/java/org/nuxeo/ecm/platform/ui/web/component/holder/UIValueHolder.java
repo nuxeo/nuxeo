@@ -32,7 +32,7 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasEvent;
-import org.nuxeo.ecm.platform.ui.web.component.VariableManager;
+import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 
 import com.sun.facelets.tag.jsf.ComponentSupport;
 
@@ -40,7 +40,8 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Component that keeps and exposes a value to the context during each JSF
  * phase.
  * <p>
- * Can be bound to a value as an input component, or not.
+ * Can be bound to a value as an input component, or not submit the value and
+ * still expose it to the context at build time as well as at render time.
  *
  * @since 5.5
  */
@@ -75,15 +76,17 @@ public class UIValueHolder extends UIInput {
     @Override
     public void broadcast(FacesEvent event) {
         if (event instanceof AliasEvent) {
-            String var = getVar();
-            Object origVarValue = VariableManager.saveRequestMapVarValue(var);
+            FacesContext context = getFacesContext();
+            AliasVariableMapper alias = getAliasVariableMapper(context);
             try {
-                VariableManager.putVariableToRequestParam(var,
-                        getValueToExpose());
+                AliasVariableMapper.exposeAliasesToRequest(context, alias);
                 FacesEvent origEvent = ((AliasEvent) event).getOriginalEvent();
                 origEvent.getComponent().broadcast(origEvent);
             } finally {
-                VariableManager.restoreRequestMapVarValue(var, origVarValue);
+                if (alias != null) {
+                    AliasVariableMapper.removeAliasesExposedToRequest(context,
+                            alias.getId());
+                }
             }
         } else {
             super.broadcast(event);
@@ -98,25 +101,29 @@ public class UIValueHolder extends UIInput {
 
     public boolean invokeOnComponent(FacesContext context, String clientId,
             ContextCallback callback) throws FacesException {
-        String var = getVar();
-        Object origVarValue = VariableManager.saveRequestMapVarValue(var);
+        AliasVariableMapper alias = getAliasVariableMapper(context);
         try {
-            VariableManager.putVariableToRequestParam(var, getValueToExpose());
+            AliasVariableMapper.exposeAliasesToRequest(context, alias);
             return super.invokeOnComponent(context, clientId, callback);
         } finally {
-            VariableManager.restoreRequestMapVarValue(var, origVarValue);
+            if (alias != null) {
+                AliasVariableMapper.removeAliasesExposedToRequest(context,
+                        alias.getId());
+            }
         }
     }
 
     @Override
     public void encodeChildren(final FacesContext context) throws IOException {
-        String var = getVar();
-        Object origVarValue = VariableManager.saveRequestMapVarValue(var);
+        AliasVariableMapper alias = getAliasVariableMapper(context);
         try {
-            VariableManager.putVariableToRequestParam(var, getValueToExpose());
+            AliasVariableMapper.exposeAliasesToRequest(context, alias);
             processFacetsAndChildren(context, PhaseId.RENDER_RESPONSE);
         } finally {
-            VariableManager.restoreRequestMapVarValue(var, origVarValue);
+            if (alias != null) {
+                AliasVariableMapper.removeAliasesExposedToRequest(context,
+                        alias.getId());
+            }
         }
     }
 
@@ -131,16 +138,17 @@ public class UIValueHolder extends UIInput {
             return;
         }
 
-        processFacetsAndChildrenWithVariable(context,
-                PhaseId.APPLY_REQUEST_VALUES);
-
-        // Process this component itself
+        // XXX: decode component itself first, so that potential submitted
+        // value is accurately exposed in context for facets and children
         try {
             decode(context);
         } catch (RuntimeException e) {
             context.renderResponse();
             throw e;
         }
+
+        processFacetsAndChildrenWithVariable(context,
+                PhaseId.APPLY_REQUEST_VALUES);
 
         if (isImmediate()) {
             executeValidate(context);
@@ -220,13 +228,15 @@ public class UIValueHolder extends UIInput {
 
     protected final void processFacetsAndChildrenWithVariable(
             final FacesContext context, final PhaseId phaseId) {
-        String var = getVar();
-        Object origVarValue = VariableManager.saveRequestMapVarValue(var);
+        AliasVariableMapper alias = getAliasVariableMapper(context);
         try {
-            VariableManager.putVariableToRequestParam(var, getValueToExpose());
+            AliasVariableMapper.exposeAliasesToRequest(context, alias);
             processFacetsAndChildren(context, phaseId);
         } finally {
-            VariableManager.restoreRequestMapVarValue(var, origVarValue);
+            if (alias != null) {
+                AliasVariableMapper.removeAliasesExposedToRequest(context,
+                        alias.getId());
+            }
         }
     }
 
@@ -313,14 +323,6 @@ public class UIValueHolder extends UIInput {
         this.submitValue = submitValue;
     }
 
-    protected static Object getCurrentValue(UIInput comp) {
-        Object submitted = comp.getSubmittedValue();
-        if (submitted != null) {
-            return submitted;
-        }
-        return comp.getValue();
-    }
-
     public Object getValueToExpose() {
         Object value = super.getSubmittedValue();
         if (value == null) {
@@ -335,6 +337,21 @@ public class UIValueHolder extends UIInput {
             }
         }
         return value;
+    }
+
+    protected AliasVariableMapper getAliasVariableMapper(FacesContext ctx) {
+        String var = getVar();
+        Object value = getValueToExpose();
+        AliasVariableMapper alias = new AliasVariableMapper();
+        // reuse facelets id set on component
+        String aliasId = (String) getAttributes().get(
+                ComponentSupport.MARK_CREATED);
+        alias.setId(aliasId);
+        alias.setVariable(
+                var,
+                ctx.getApplication().getExpressionFactory().createValueExpression(
+                        value, Object.class));
+        return alias;
     }
 
     // state holder
