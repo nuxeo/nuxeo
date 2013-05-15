@@ -16,8 +16,10 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,7 @@ import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
@@ -209,6 +212,21 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testTxTimeout() throws Exception {
         session.newRequest(WaitForTxTimeoutOperation.ID).setHeader(
                 ServletHelper.TX_TIMEOUT_HEADER_KEY, "1").execute();
+    }
+
+    @Test
+    public void testNumberParamAdapters() throws Exception {
+        Object r;
+        // Long parameter
+        Long longParam = 500L;
+        r = session.newRequest(TestNumberParamAdaptersOperation.ID).set(
+                "longParam", longParam).execute();
+        assertThat((Integer) r, is(500));
+        // Integer parameter
+        Integer integerParam = 500;
+        r = session.newRequest(TestNumberParamAdaptersOperation.ID).set(
+                "longParam", integerParam).execute();
+        assertThat((Integer) r, is(500));
     }
 
     /**
