@@ -188,6 +188,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     protected void createTables() throws SQLException {
+        sqlInfo.executeSQLStatements(null, this); // for missing category
+        sqlInfo.executeSQLStatements("first", this);
         sqlInfo.executeSQLStatements("beforeTableCreation", this);
         if (testProps.containsKey(TEST_UPGRADE)) {
             // create "old" tables
@@ -367,6 +369,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             upgradeTable(tableKey, addedColumns);
         }
         sqlInfo.executeSQLStatements("afterTableCreation", this);
+        sqlInfo.executeSQLStatements("last", this);
         dialect.performAdditionalStatements(connection);
     }
 

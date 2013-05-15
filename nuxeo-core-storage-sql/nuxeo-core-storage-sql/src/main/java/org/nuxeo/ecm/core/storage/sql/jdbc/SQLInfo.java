@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Selection;
 import org.nuxeo.ecm.core.storage.sql.SelectionType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -116,8 +117,9 @@ public class SQLInfo {
     public SQLInfo(Model model, Dialect dialect) throws StorageException {
         this.model = model;
         this.dialect = dialect;
-        softDeleteEnabled = model.getRepositoryDescriptor().softDeleteEnabled;
-        proxiesEnabled = model.getRepositoryDescriptor().proxiesEnabled;
+        RepositoryDescriptor repositoryDescriptor = model.getRepositoryDescriptor();
+        softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
+        proxiesEnabled = repositoryDescriptor.proxiesEnabled;
 
         database = new Database(dialect);
 
@@ -147,7 +149,8 @@ public class SQLInfo {
         initSelections();
 
         try {
-            initSQLStatements(JDBCMapper.testProps);
+            initSQLStatements(JDBCMapper.testProps,
+                    repositoryDescriptor.sqlInitFiles);
         } catch (IOException e) {
             throw new StorageException(e);
         }
@@ -1151,10 +1154,15 @@ public class SQLInfo {
                 whereColumns, opaqueColumns.isEmpty() ? null : opaqueColumns);
     }
 
-    public void initSQLStatements(Map<String, Serializable> testProps)
-            throws IOException {
+    public void initSQLStatements(Map<String, Serializable> testProps,
+            List<String> sqlInitFiles) throws IOException {
         sqlStatements = new HashMap<String, List<SQLStatement>>();
         SQLStatement.read(dialect.getSQLStatementsFilename(), sqlStatements);
+        if (sqlInitFiles != null) {
+            for (String filename : sqlInitFiles) {
+                SQLStatement.read(filename, sqlStatements);
+            }
+        }
         if (!testProps.isEmpty()) {
             SQLStatement.read(dialect.getTestSQLStatementsFilename(),
                     sqlStatements);

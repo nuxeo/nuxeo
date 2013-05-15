@@ -136,6 +136,9 @@ public class RepositoryDescriptor {
     @XNode("noDDL")
     public boolean noDDL = false;
 
+    @XNodeList(value = "sqlInitFile", type = ArrayList.class, componentType = String.class)
+    public List<String> sqlInitFiles;
+
     @XNode("softDelete@enabled")
     public boolean softDeleteEnabled;
 
@@ -226,6 +229,7 @@ public class RepositoryDescriptor {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         noDDL = other.noDDL;
+        sqlInitFiles = other.sqlInitFiles;
         softDeleteEnabled = other.softDeleteEnabled;
         proxiesEnabled = other.proxiesEnabled;
         schemaFields = other.schemaFields;
