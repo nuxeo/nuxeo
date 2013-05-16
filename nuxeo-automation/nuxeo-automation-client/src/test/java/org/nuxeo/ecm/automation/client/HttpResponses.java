@@ -71,5 +71,32 @@ public class HttpResponses {
             + "]"
             + "}";
 
+    public static final String DOC_DEFAULT_DOMAIN = "{"
+            + "  \"entity-type\":\"document\","
+            + "  \"repository\":\"default\","
+            + "  \"uid\":\"6e4ee4b8-af3f-4fb4-ad31-1a0a88720dfb\","
+            + "  \"path\":\"/default-domain\"," + "  \"type\":\"Domain\","
+            + "  \"state\":\"project\"," + "  \"versionLabel\":\"\","
+            + "  \"title\":\"Default Domain\","
+            + "  \"lastModified\":\"2013-05-16T11:35:00.56Z\","
+            + "  \"facets\":[\"SuperSpace\",\"Folderish\"],"
+            + "  \"changeToken\":\"1368704100560\","
+            + "  \"contextParameters\":{}" + "}";
+
+    public static final String DOC_LOCK_AND_VERSIONNED = "{"
+            + "    \"entity-type\":\"document\","
+            + "    \"repository\":\"default\","
+            + "    \"uid\":\"8243123c-34d0-4e33-b4b3-290cef008db0\","
+            + "    \"path\":\"/default-domain/UserWorkspaces/Administrator/My File\","
+            + "    \"type\":\"File\","
+            + "    \"state\":\"project\","
+            + "    \"versionLabel\":\"1.1\","
+            + "    \"lockOwner\":\"Administrator\","
+            + "    \"lockCreated\":\"2013-05-16T17:58:26.618+02:00\","
+            + "    \"title\":\"My File\","
+            + "    \"lastModified\":\"2013-05-16T15:58:19.00Z\","
+            + "    \"facets\":[\"Downloadable\",\"Commentable\",\"Asset\",\"Versionable\",\"Publishable\",\"HasRelatedText\"],"
+            + "    \"changeToken\":\"1368719899000\","
+            + "    \"contextParameters\":{}" + "}";
 
 }
