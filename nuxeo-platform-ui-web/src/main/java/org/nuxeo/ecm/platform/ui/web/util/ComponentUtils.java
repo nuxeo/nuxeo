@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Generic component helper methods.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public final class ComponentUtils {
@@ -85,7 +85,7 @@ public final class ComponentUtils {
      * problem so all possible sub components must be added.
      * <p>
      * By default initiated component are marked as not rendered.
-     * 
+     *
      * @param parent
      * @param child
      * @param facetName facet name to put the child in.
@@ -98,7 +98,7 @@ public final class ComponentUtils {
 
     /**
      * Add a sub component to a UI component, marking is as rendered.
-     * 
+     *
      * @param context
      * @param parent
      * @param child
@@ -240,9 +240,9 @@ public final class ComponentUtils {
 
     /*
      * Internet Explorer file downloads over SSL do not work with certain HTTP
-     * cache control headers See http://support.microsoft.com/kb/323308/ What is
-     * not mentioned in the above Knowledge Base is that "Pragma: no-cache" also
-     * breaks download in MSIE over SSL
+     * cache control headers See http://support.microsoft.com/kb/323308/ What
+     * is not mentioned in the above Knowledge Base is that "Pragma: no-cache"
+     * also breaks download in MSIE over SSL
      */
     private static void addCacheControlHeaders(HttpServletRequest request,
             HttpServletResponse response) {
@@ -277,7 +277,8 @@ public final class ComponentUtils {
             Object... params) {
         String bundleName = context.getApplication().getMessageBundle();
         Locale locale = context.getViewRoot().getLocale();
-        return I18NUtils.getMessageString(bundleName, messageId, params, locale);
+        return I18NUtils.getMessageString(bundleName, messageId,
+                evaluateParams(context, params), locale);
     }
 
     public static void addErrorMessage(FacesContext context,
@@ -289,11 +290,37 @@ public final class ComponentUtils {
             UIComponent component, String message, Object[] params) {
         String bundleName = context.getApplication().getMessageBundle();
         Locale locale = context.getViewRoot().getLocale();
-        message = I18NUtils.getMessageString(bundleName, message, params,
-                locale);
+        message = I18NUtils.getMessageString(bundleName, message,
+                evaluateParams(context, params), locale);
         FacesMessage msg = new FacesMessage(message);
         msg.setSeverity(FacesMessage.SEVERITY_ERROR);
         context.addMessage(component.getClientId(context), msg);
+    }
+
+    /**
+     * Evaluates parameters to pass to translation methods if they are value
+     * expressions.
+     *
+     * @since 5.7
+     */
+    protected static Object[] evaluateParams(FacesContext context,
+            Object[] params) {
+        if (params == null) {
+            return null;
+        }
+        Object[] res = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            Object val = params[i];
+            if (val instanceof String
+                    && ComponentTagUtils.isValueReference((String) val)) {
+                ValueExpression ve = context.getApplication().getExpressionFactory().createValueExpression(
+                        context.getELContext(), (String) val, Object.class);
+                res[i] = ve.getValue(context.getELContext());
+            } else {
+                res[i] = val;
+            }
+        }
+        return res;
     }
 
     /**
@@ -302,7 +329,7 @@ public final class ComponentUtils {
      * Gets out of suggestion box as it's a naming container and we can't get
      * components out of it with a relative path => take above first found
      * container.
-     * 
+     *
      * @since 5.3.1
      */
     public static UIComponent getBase(UIComponent anchor) {
@@ -322,12 +349,12 @@ public final class ComponentUtils {
     }
 
     /**
-     * Returns the component specified by the {@code componentId} parameter from
-     * the {@code base} component.
+     * Returns the component specified by the {@code componentId} parameter
+     * from the {@code base} component.
      * <p>
      * Does not throw any exception if the component is not found, returns
      * {@code null} instead.
-     * 
+     *
      * @since 5.4
      */
     @SuppressWarnings("unchecked")
@@ -436,7 +463,7 @@ public final class ComponentUtils {
      * <p>
      * Again this assumes that selected is an ordered sub-list of all
      * </p>
-     * 
+     *
      * @param selected ids of selected items
      * @param all
      * @return
@@ -462,7 +489,7 @@ public final class ComponentUtils {
      * <p>
      * Again this assumes that selected is an ordered sub-list of all
      * </p>
-     * 
+     *
      * @param selected ids of selected items
      * @param all
      * @return
