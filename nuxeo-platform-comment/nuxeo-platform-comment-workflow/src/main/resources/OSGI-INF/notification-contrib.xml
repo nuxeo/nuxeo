@@ -9,7 +9,7 @@
       point="notifications">
 
     <notification name="CommentPublication" channel="email" enabled="true" availableIn="Workspace"
-      autoSubscribed="false" template="comment" subject="Comment published" label="notifications.name.Comments">
+      autoSubscribed="false" template="comment" subject="Comment published" label="notifications.name.CommentPublication">
       <event name="commentPublished"/>
     </notification>
     
