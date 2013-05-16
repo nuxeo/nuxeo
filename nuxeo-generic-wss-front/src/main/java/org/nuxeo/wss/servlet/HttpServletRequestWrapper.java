@@ -61,7 +61,7 @@ public class HttpServletRequestWrapper extends
     }
 
     @Override
-    public Enumeration<?> getHeaderNames() {
+    public Enumeration<String> getHeaderNames() {
         return new SetEnumeration(headers.keySet());
     }
 

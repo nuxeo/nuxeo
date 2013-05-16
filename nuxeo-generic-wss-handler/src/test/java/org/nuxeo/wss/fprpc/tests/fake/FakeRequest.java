@@ -55,7 +55,7 @@ public class FakeRequest implements HttpServletRequest {
 
     protected final Map<String, Object> attributes = new HashMap<>();
 
-    protected final Map<String, String> parameters = new HashMap<String, String>();
+    protected final Map<String, String[]> parameters = new HashMap<>();
 
     protected final Map<String, String> headers = new HashMap<>();
 
@@ -96,11 +96,10 @@ public class FakeRequest implements HttpServletRequest {
         String[] params = queryString.split("&");
         for (String element : params) {
             String[] tuple = element.split("=");
-            if (tuple.length>1) {
-                parameters.put(tuple[0], tuple[1]);
-            }
-            else {
-                parameters.put(tuple[0], "");
+            if (tuple.length > 1) {
+                parameters.put(tuple[0], new String[] { tuple[1] });
+            } else {
+                parameters.put(tuple[0], new String[] { "" });
             }
         }
     }
@@ -131,9 +130,9 @@ public class FakeRequest implements HttpServletRequest {
                 if (tuple[1].endsWith("\n")) {
                     tuple[1] = tuple[1].substring(0, tuple[1].length() - 2);
                 }
-                parameters.put(tuple[0], tuple[1]);
+                parameters.put(tuple[0], new String[] { tuple[1] });
             } else {
-                parameters.put(tuple[0], "");
+                parameters.put(tuple[0], new String[] { "" });
             }
         }
         this.in = new FakeServletInputStream(data);
@@ -323,19 +322,22 @@ public class FakeRequest implements HttpServletRequest {
         throw new NotImplementedException();
     }
 
-    public Enumeration<String> getLocales() {
+    @Override
+    public Enumeration<Locale> getLocales() {
         throw new NotImplementedException();
     }
 
     @Override
     public String getParameter(String name) {
-        if (parameters==null) {
+        if (parameters == null || parameters.get(name) == null
+                || parameters.get(name).length == 0) {
             return null;
         }
-        return parameters.get(name);
+        return parameters.get(name)[0];
     }
 
-    public Map<String, String> getParameterMap() {
+    @Override
+    public Map<String, String[]> getParameterMap() {
         return parameters;
     }
 
@@ -346,13 +348,12 @@ public class FakeRequest implements HttpServletRequest {
 
     @Override
     public String[] getParameterValues(String name) {
-        Collection<String> values = parameters.values();
-        return values.toArray(new String[values.size()]);
+        return parameters.get(name);
     }
 
     @Override
     public String getProtocol() {
-        return "http";
+        return "http"; // FIXME Should be of the form "HTTP/1.0"
     }
 
     @Override
@@ -420,7 +421,66 @@ public class FakeRequest implements HttpServletRequest {
     @Override
     public void setCharacterEncoding(String env)
             throws UnsupportedEncodingException {
-        //throw new NotImplementedException();
+    }
+
+    @Override
+    public ServletContext getServletContext() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public AsyncContext startAsync() throws IllegalStateException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public AsyncContext startAsync(ServletRequest servletRequest,
+            ServletResponse servletResponse) throws IllegalStateException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean isAsyncStarted() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean isAsyncSupported() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public AsyncContext getAsyncContext() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public DispatcherType getDispatcherType() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean authenticate(HttpServletResponse response)
+            throws IOException, ServletException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void login(String username, String password) throws ServletException {
+    }
+
+    @Override
+    public void logout() throws ServletException {
+    }
+
+    @Override
+    public Collection<Part> getParts() throws IOException, ServletException {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Part getPart(String name) throws IOException, ServletException {
+        throw new NotImplementedException();
     }
 
 }

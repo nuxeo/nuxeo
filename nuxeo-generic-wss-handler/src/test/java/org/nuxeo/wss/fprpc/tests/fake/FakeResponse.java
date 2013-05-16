@@ -220,4 +220,19 @@ public class FakeResponse implements HttpServletResponse {
     public void setLocale(Locale loc) {
     }
 
+    @Override
+    public String getHeader(String name) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaders(String name) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getHeaderNames() {
+        return null;
+    }
+
 }
