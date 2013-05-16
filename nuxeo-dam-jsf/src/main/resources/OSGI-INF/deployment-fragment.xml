@@ -23,4 +23,23 @@
     <delete path="${bundle.fileName}.tmp" />
   </install>
 
+  <extension target="web#FILTER">
+
+    <filter>
+      <display-name>Dam Old Resources Filter</display-name>
+      <filter-name>DamOldResourcesFilter</filter-name>
+      <filter-class>
+        org.nuxeo.dam.filter.DamOldResourcesFilter
+      </filter-class>
+    </filter>
+    <!-- make it match only login request -->
+    <filter-mapping>
+      <filter-name>DamOldResourcesFilter</filter-name>
+      <url-pattern>/dam/icons/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
 </fragment>
