@@ -171,14 +171,17 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         super.registerContribution(contribution, extensionPoint, contributor);
     }
 
+    @Override
     public Map<String, List<String>> getDiffExcludedSchemas() {
         return diffExcludedFieldsContribs;
     }
 
+    @Override
     public List<String> getDiffExcludedFields(String schemaName) {
         return diffExcludedFieldsContribs.get(schemaName);
     }
 
+    @Override
     public List<DiffComplexFieldDefinition> getDiffComplexFields() {
         List<DiffComplexFieldDefinition> diffComplexFields = new ArrayList<DiffComplexFieldDefinition>();
         for (Map<String, DiffComplexFieldDefinition> diffComplexFieldsBySchema : diffComplexFieldsContribs.values()) {
@@ -189,6 +192,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return diffComplexFields;
     }
 
+    @Override
     public DiffComplexFieldDefinition getDiffComplexField(String schemaName,
             String fieldName) {
         Map<String, DiffComplexFieldDefinition> diffComplexFieldsBySchema = diffComplexFieldsContribs.get(schemaName);
@@ -198,23 +202,28 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public Map<String, List<String>> getDiffDisplays() {
         return diffDisplayContribs;
     }
 
+    @Override
     public List<String> getDiffDisplay(String docType) {
         return diffDisplayContribs.get(docType);
 
     }
 
+    @Override
     public Map<String, DiffBlockDefinition> getDiffBlockDefinitions() {
         return diffBlockContribs;
     }
 
+    @Override
     public DiffBlockDefinition getDiffBlockDefinition(String name) {
         return diffBlockContribs.get(name);
     }
 
+    @Override
     public List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff,
             DocumentModel leftDoc, DocumentModel rightDoc)
             throws ClientException {
