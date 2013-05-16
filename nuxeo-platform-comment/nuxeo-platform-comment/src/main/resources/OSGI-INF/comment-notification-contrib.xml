@@ -7,4 +7,30 @@
     <hookListener  name="commentNotification" class="org.nuxeo.ecm.platform.comment.listener.CommentNotificationListener"/>
   </extension>
 
+  <extension
+      target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+      point="notifications">
+
+    <notification name="CommentAdded" channel="email" enabled="true" availableIn="*"
+      subject="New comment on '${docTitle}'"
+      autoSubscribed="false" template="commentAdded" label="notifications.name.CommentAdded">
+      <event name="commentAdded"/>
+    </notification>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+    <template name="commentAdded" src="templates/commentAdded.ftl" />
+  </extension>
+
+  <!-- Add this contribution to prevent from sending notification for Comment creation
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notificationListenerVeto">
+    <veto name="CommentCreationVeto" class="org.nuxeo.ecm.platform.comment.notification.CommentCreationVeto" />
+  </extension>
+   -->
+
 </component>
