@@ -97,7 +97,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             }
             tok = jp.nextToken();
         }
-        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, versionLabel, repository, props, null);
+        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, props, null);
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {
