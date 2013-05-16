@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.wss.fprpc.tests.fake;
@@ -31,11 +30,19 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -46,11 +53,11 @@ import org.apache.commons.lang.NotImplementedException;
  */
 public class FakeRequest implements HttpServletRequest {
 
-    protected final Map<String, Object> attributes = new HashMap<String, Object>();
+    protected final Map<String, Object> attributes = new HashMap<>();
 
     protected final Map<String, String> parameters = new HashMap<String, String>();
 
-    protected final Map<String, String> headers = new HashMap<String, String>();
+    protected final Map<String, String> headers = new HashMap<>();
 
     protected final String method;
 
@@ -120,9 +127,9 @@ public class FakeRequest implements HttpServletRequest {
         String[] params = pData.split("&");
         for (String element : params) {
             String[] tuple = element.split("=");
-            if (tuple.length>1) {
+            if (tuple.length > 1) {
                 if (tuple[1].endsWith("\n")) {
-                    tuple[1]= tuple[1].substring(0,tuple[1].length()-2);
+                    tuple[1] = tuple[1].substring(0, tuple[1].length() - 2);
                 }
                 parameters.put(tuple[0], tuple[1]);
             } else {
@@ -132,64 +139,78 @@ public class FakeRequest implements HttpServletRequest {
         this.in = new FakeServletInputStream(data);
     }
 
-
     // interface implementation
+    @Override
     public String getAuthType() {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getContextPath() {
         return null;
     }
 
+    @Override
     public Cookie[] getCookies() {
         throw new NotImplementedException();
     }
 
+    @Override
     public long getDateHeader(String name) {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getHeader(String name) {
         return headers.get(name);
     }
 
+    @Override
     public Enumeration<String> getHeaderNames() {
         return new SetEnumeration(headers.keySet());
     }
 
+    @Override
     public Enumeration<String> getHeaders(String name) {
         throw new NotImplementedException();
     }
 
+    @Override
     public int getIntHeader(String name) {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getMethod() {
         return method;
     }
 
+    @Override
     public String getPathInfo() {
         return path;
     }
 
+    @Override
     public String getPathTranslated() {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getQueryString() {
         return queryString;
     }
 
+    @Override
     public String getRemoteUser() {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getRequestURI() {
         return path;
     }
 
+    @Override
     public StringBuffer getRequestURL() {
         StringBuffer sb = new StringBuffer();
         sb.append("http://127.0.0.1:8080");
@@ -197,86 +218,107 @@ public class FakeRequest implements HttpServletRequest {
         return sb;
     }
 
+    @Override
     public String getRequestedSessionId() {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getServletPath() {
         return "/dav";
     }
 
+    @Override
     public HttpSession getSession() {
         throw new NotImplementedException();
     }
 
+    @Override
     public HttpSession getSession(boolean create) {
         return null;
     }
 
+    @Override
     public Principal getUserPrincipal() {
         return null;
     }
 
+    @Override
     public boolean isRequestedSessionIdFromCookie() {
         throw new NotImplementedException();
     }
 
+    @Override
     public boolean isRequestedSessionIdFromURL() {
         throw new NotImplementedException();
     }
 
+    @Deprecated
+    @Override
     public boolean isRequestedSessionIdFromUrl() {
         throw new NotImplementedException();
     }
 
+    @Override
     public boolean isRequestedSessionIdValid() {
         throw new NotImplementedException();
     }
 
+    @Override
     public boolean isUserInRole(String role) {
         throw new NotImplementedException();
     }
 
+    @Override
     public Object getAttribute(String name) {
         return attributes.get(name);
     }
 
+    @Override
     public Enumeration<String> getAttributeNames() {
         return new SetEnumeration(attributes.keySet());
     }
 
+    @Override
     public String getCharacterEncoding() {
         throw new NotImplementedException();
     }
 
+    @Override
     public int getContentLength() {
         String cl = headers.get("Content-Length");
-        if (cl!=null) {
+        if (cl != null) {
             return Integer.parseInt(cl);
         }
         return 0;
     }
 
+    @Override
     public String getContentType() {
         return ct;
     }
 
+    @Override
     public ServletInputStream getInputStream() throws IOException {
         return in;
     }
 
+    @Override
     public String getLocalAddr() {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getLocalName() {
         throw new NotImplementedException();
     }
 
+    @Override
     public int getLocalPort() {
         throw new NotImplementedException();
     }
 
+    @Override
     public Locale getLocale() {
         throw new NotImplementedException();
     }
@@ -285,6 +327,7 @@ public class FakeRequest implements HttpServletRequest {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getParameter(String name) {
         if (parameters==null) {
             return null;
@@ -296,68 +339,85 @@ public class FakeRequest implements HttpServletRequest {
         return parameters;
     }
 
+    @Override
     public Enumeration<String> getParameterNames() {
         return new SetEnumeration(parameters.keySet());
     }
 
+    @Override
     public String[] getParameterValues(String name) {
         Collection<String> values = parameters.values();
         return values.toArray(new String[values.size()]);
     }
 
+    @Override
     public String getProtocol() {
         return "http";
     }
 
+    @Override
     public BufferedReader getReader() throws IOException {
         return null;
     }
 
+    @Deprecated
+    @Override
     public String getRealPath(String path) {
         throw new NotImplementedException();
         // return null;
     }
 
+    @Override
     public String getRemoteAddr() {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getRemoteHost() {
         throw new NotImplementedException();
     }
 
+    @Override
     public int getRemotePort() {
         throw new NotImplementedException();
     }
 
+    @Override
     public RequestDispatcher getRequestDispatcher(String path) {
         throw new NotImplementedException();
     }
 
+    @Override
     public String getScheme() {
         return "http";
     }
 
+    @Override
     public String getServerName() {
         return "localhost";
     }
 
+    @Override
     public int getServerPort() {
         return 80;
     }
 
+    @Override
     public boolean isSecure() {
         throw new NotImplementedException();
     }
 
+    @Override
     public void removeAttribute(String name) {
         throw new NotImplementedException();
     }
 
+    @Override
     public void setAttribute(String name, Object o) {
         attributes.put(name, o);
     }
 
+    @Override
     public void setCharacterEncoding(String env)
             throws UnsupportedEncodingException {
         //throw new NotImplementedException();

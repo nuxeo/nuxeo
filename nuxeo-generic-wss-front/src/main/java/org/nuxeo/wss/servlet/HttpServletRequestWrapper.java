@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,9 +28,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 
-public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletRequestWrapper {
+public class HttpServletRequestWrapper extends
+        javax.servlet.http.HttpServletRequestWrapper {
 
-    protected final Map<String, String> headers = new HashMap<String, String>();
+    protected final Map<String, String> headers = new HashMap<>();
 
     public HttpServletRequestWrapper(HttpServletRequest request) {
         super(request);
@@ -66,9 +67,9 @@ public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletReq
 
     @Override
     public Enumeration<String> getHeaders(String name) {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         String value = headers.get(name);
-        if(StringUtils.isNotEmpty(value)){
+        if (StringUtils.isNotEmpty(value)) {
             set.add(value);
         }
         return new SetEnumeration(set);
@@ -79,7 +80,7 @@ public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletReq
         private final Iterator<String> iterator;
 
         public SetEnumeration(Set<String> set) {
-            iterator = new ArrayList<String>(set).iterator();
+            iterator = new ArrayList<>(set).iterator();
         }
 
         @Override
@@ -93,6 +94,5 @@ public class HttpServletRequestWrapper extends javax.servlet.http.HttpServletReq
         }
 
     }
-
 
 }
