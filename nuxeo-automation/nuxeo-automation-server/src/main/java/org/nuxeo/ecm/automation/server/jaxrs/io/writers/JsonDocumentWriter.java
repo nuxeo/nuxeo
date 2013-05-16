@@ -127,6 +127,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.writeStringField("path", doc.getPathAsString());
         jg.writeStringField("type", doc.getType());
         jg.writeStringField("state", doc.getCurrentLifeCycleState());
+        jg.writeStringField("versionLabel", doc.getVersionLabel());
         Lock lock = doc.getLockInfo();
         if (lock != null) {
             jg.writeStringField("lockOwner", lock.getOwner());

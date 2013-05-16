@@ -49,6 +49,8 @@ public class Document extends DocRef {
     
     protected final String lockCreated;
 
+    protected final String versionLabel;
+
     protected final PropertyMap properties;
 
     protected final PropertyMap contextParameters;
@@ -63,7 +65,7 @@ public class Document extends DocRef {
      */
     public Document(String id, String type, PropertyList facets,
             String changeToken, String path, String state, String lockOwner, String lockCreated,
-            String repository, PropertyMap properties,
+            String repository, String versionLabel, PropertyMap properties,
             PropertyMap contextParameters) {
         super(id);
         this.changeToken = changeToken;
@@ -74,6 +76,7 @@ public class Document extends DocRef {
         this.lockOwner = lockOwner;
         this.lockCreated = lockCreated;
         this.repository = repository;
+        this.versionLabel = versionLabel;
         this.properties = properties == null ? new PropertyMap() : properties;
         this.contextParameters = contextParameters == null ? new PropertyMap()
                 : contextParameters;
@@ -121,6 +124,10 @@ public class Document extends DocRef {
     
     public String getState() {
         return state;
+    }
+
+    public String getVersionLabel() {
+        return versionLabel;
     }
 
     public Date getLastModified() {
