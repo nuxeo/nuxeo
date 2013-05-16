@@ -46,7 +46,7 @@
     point="filters">
 
     <filter id="can_sync_current_doc">
-      <rule grand="false">
+      <rule grant="false">
         <type>Domain</type>
         <type>SectionRoot</type>
         <type>TemplateRoot</type>
