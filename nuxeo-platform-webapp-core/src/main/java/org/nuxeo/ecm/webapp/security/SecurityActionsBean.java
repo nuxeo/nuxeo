@@ -544,10 +544,10 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String blockRightInheritance() throws ClientException {
-        Boolean blockRightInheritance = this.blockRightInheritance;
+        Boolean needBlockRightInheritance = this.blockRightInheritance;
         rebuildSecurityData();
 
-        if (blockRightInheritance) {
+        if (needBlockRightInheritance) {
             // Block
             securityData.addModifiablePrivilege(SecurityConstants.EVERYONE,
                     SecurityConstants.EVERYTHING, false);
