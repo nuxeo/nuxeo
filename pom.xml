@@ -120,6 +120,7 @@
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-groups-rights-audit</module>
+    <module>nuxeo-drive</module>
   </modules>
 
   <dependencyManagement>
