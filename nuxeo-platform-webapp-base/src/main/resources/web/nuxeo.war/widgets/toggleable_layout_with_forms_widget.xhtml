@@ -72,6 +72,7 @@
 
           <c:if test="#{widgetProperty_displayToggleActionInHeader}">
             <c:if test="#{layoutWidgetMode == initialMode and canToggleMode}">
+              <h:outputText value=" " />
               <ui:include src="toggleable_layout_with_forms_toggle_button.xhtml">
                 <ui:param name="idPrefix" value="header_" />
                 <ui:param name="display" value="buttons" />
@@ -79,6 +80,7 @@
               </ui:include>
             </c:if>
             <c:if test="#{layoutWidgetMode == toggledMode}">
+              <h:outputText value=" " />
               <a4j:commandLink
                 id="#{widget.id}_header_cancelToggleAction"
                 immediate="true"
