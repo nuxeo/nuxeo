@@ -23,7 +23,6 @@
     <module>nuxeo-sample-project</module>
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-intuition</module>
-    <module>nuxeo-drive</module>
   </modules>
 
 </project>
