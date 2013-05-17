@@ -104,7 +104,7 @@ public class MetricsDescriptor implements Serializable {
         public String getPrefix() {
             if (prefix == null) {
                 prefix = Framework.getProperty(PREFIX_PROPERTY,
-                        "servers.${hostname}.nuxeo.");
+                        "servers.${hostname}.nuxeo");
             }
             String hostname;
             try {
