@@ -13,13 +13,6 @@
   <name>Nuxeo Drive JSF</name>
   <description>JSF web UI for Nuxeo Drive</description>
 
-  <properties>
-    <!-- Installers to fetch and package inside nuxeo-drive-jsf -->
-    <!-- Override properties to change URLs; use -Dnofetch to skip packaging -->
-    <msi.url>http://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-master-msi</msi.url>
-    <dmg.url>http://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-master-dmg</dmg.url>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm</groupId>
@@ -81,30 +74,6 @@
                 <source>src/main/seam</source>
               </sources>
             </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <configuration>
-              <tasks unless="nofetch">
-                <exec executable="python" error="target/fetch.err">
-                  <!-- <env key="PYTHONPATH" path="src/main/python" /> -->
-                  <arg value="../../tools/integration_tests_setup.py" />
-                  <arg value="fetch-binaries" />
-                  <arg value="--msi-url=${msi.url}" />
-                  <arg value="--dmg-url=${dmg.url}" />
-                  <arg value="--base-folder=." />
-                </exec>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>

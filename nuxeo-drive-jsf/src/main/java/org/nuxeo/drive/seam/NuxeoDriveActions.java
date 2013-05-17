@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,10 +17,10 @@
  */
 package org.nuxeo.drive.seam;
 
+import java.io.File;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -37,6 +37,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.nuxeo.common.Environment;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.user.center.UserCenterViewManager;
@@ -274,19 +276,42 @@ public class NuxeoDriveActions implements Serializable {
                 documentManager);
     }
 
+    @Factory(value = "nuxeoDriveClientPackages", scope = ScopeType.CONVERSATION)
     public List<DesktopPackageDefinition> getClientPackages() {
-        FacesContext ctx = FacesContext.getCurrentInstance();
-        Set<String> paths = ctx.getExternalContext().getResourcePaths(
-                "/nuxeo-drive");
-        if (paths == null) {
-            return Collections.emptyList();
-        }
-        String baseURL = VirtualHostHelper.getBaseURL((ServletRequest) ctx.getExternalContext().getRequest());
+
         List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
-        for (String path : paths) {
-            packages.add(new DesktopPackageDefinition(path, baseURL));
+        File clientDir = new File(Environment.getDefault().getServerHome(),
+                "client");
+        if (clientDir.isDirectory()) {
+            for (File file : clientDir.listFiles()) {
+                String fileName = file.getName();
+                boolean isDesktopPackage = false;
+                String platform = null;
+                if (fileName.endsWith(".msi")) {
+                    isDesktopPackage = true;
+                    platform = "windows";
+                } else if (fileName.endsWith(".dmg")) {
+                    isDesktopPackage = true;
+                    platform = "osx";
+                } else if (fileName.endsWith(".deb")) {
+                    isDesktopPackage = true;
+                    platform = "ubuntu";
+                }
+                if (isDesktopPackage) {
+                    packages.add(new DesktopPackageDefinition(file, fileName,
+                            platform));
+                    log.debug(String.format(
+                            "Added %s to the list of desktop packages available for download.",
+                            fileName));
+                }
+            }
         }
         return packages;
+    }
+
+    public String downloadClientPackage(String name, File file) {
+        FacesContext facesCtx = FacesContext.getCurrentInstance();
+        return ComponentUtils.downloadFile(facesCtx, name, file);
     }
 
 }
