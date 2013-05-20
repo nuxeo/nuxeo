@@ -186,6 +186,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     // public for unit tests
     public Prefetch prefetch;
 
+    private String detachedVersionLabel;
+
     protected static Boolean strictSessionManagement;
 
     // ThreadLocal CoreSession used when DocumenModelImpl uses the CoreSession
@@ -442,6 +444,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             if (ref != null) {
                 getACP();
             }
+            detachedVersionLabel = getVersionLabel();
         }
         sid = null;
     }
@@ -763,6 +766,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getVersionLabel() {
+        if (detachedVersionLabel != null) {
+            return detachedVersionLabel;
+        }
+        if (getCoreSession() == null) {
+            return null;
+        }
         try {
             return getCoreSession().getVersionLabel(this);
         } catch (ClientException e) {
@@ -1539,6 +1548,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public void refresh() throws ClientException {
+        detachedVersionLabel = null;
+
         refresh(REFRESH_DEFAULT, null);
     }
 
