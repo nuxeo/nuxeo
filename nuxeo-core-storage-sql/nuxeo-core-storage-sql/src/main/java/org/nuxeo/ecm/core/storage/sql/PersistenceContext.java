@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
@@ -41,6 +42,12 @@ import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment.FieldComparator;
+
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
+import com.yammer.metrics.core.Gauge;
 
 /**
  * This class holds persistence context information.
@@ -128,6 +135,21 @@ public class PersistenceContext {
      */
     private final Set<Serializable> createdIds;
 
+    /**
+     * Cache statistics
+     *
+     * @since 5.7
+     */
+    private final Counter cacheHitCount = Metrics.defaultRegistry().newCounter(
+            PersistenceContext.class, "cache-hit");
+
+    private final Counter cacheSize = Metrics.defaultRegistry().newCounter(
+            PersistenceContext.class, "cache-size");
+
+    private final Timer cacheGetTimer = Metrics.defaultRegistry().newTimer(
+            PersistenceContext.class, "cache-get", TimeUnit.MICROSECONDS,
+            TimeUnit.SECONDS);
+
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
             throws StorageException {
@@ -181,6 +203,7 @@ public class PersistenceContext {
         }
         int n = pristine.size();
         pristine.clear();
+        cacheSize.dec(n);
         return n;
     }
 
@@ -220,6 +243,7 @@ public class PersistenceContext {
             fragment.clearDirty();
             fragment.setPristine();
             pristine.put(rowId, fragment);
+            cacheSize.inc();
         }
         createdIds.clear();
 
@@ -234,6 +258,7 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
+                cacheSize.inc();
                 break;
             case MODIFIED:
                 if (fragment.row.isCollection()) {
@@ -251,6 +276,7 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
+                cacheSize.inc();
                 break;
             case DELETED:
                 // TODO deleting non-hierarchy fragments is done by the database
@@ -406,6 +432,7 @@ public class PersistenceContext {
         RowId rowId = fragment.row;
         modified.remove(rowId);
         pristine.put(rowId, fragment);
+        cacheSize.inc();
     }
 
     /**
@@ -452,6 +479,7 @@ public class PersistenceContext {
                 Fragment fragment = pristine.remove(rowId);
                 if (fragment != null) {
                     fragment.setInvalidatedModified();
+                    cacheSize.dec();
                 }
             }
             for (SelectionContext sel : selections) {
@@ -463,6 +491,7 @@ public class PersistenceContext {
                 Fragment fragment = pristine.remove(rowId);
                 if (fragment != null) {
                     fragment.setInvalidatedDeleted();
+                    cacheSize.dec();
                 }
             }
         }
@@ -502,11 +531,19 @@ public class PersistenceContext {
      * @return the fragment, or {@code null} if not found
      */
     protected Fragment getIfPresent(RowId rowId) {
-        Fragment fragment = pristine.get(rowId);
-        if (fragment != null) {
+        final TimerContext context = cacheGetTimer.time();
+        try {
+            Fragment fragment = pristine.get(rowId);
+            if (fragment == null) {
+                fragment = modified.get(rowId);
+            }
+            if (fragment != null) {
+                cacheHitCount.inc();
+            }
             return fragment;
+        } finally {
+            context.stop();
         }
-        return modified.get(rowId);
     }
 
     /**
@@ -935,9 +972,11 @@ public class PersistenceContext {
         case ABSENT:
         case INVALIDATED_DELETED:
             pristine.remove(rowId);
+            cacheSize.dec();
             break;
         case CREATED:
             modified.remove(rowId);
+            cacheSize.dec();
             break;
         case PRISTINE:
         case INVALIDATED_MODIFIED:
@@ -971,6 +1010,7 @@ public class PersistenceContext {
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
             pristine.remove(rowId);
+            cacheSize.dec();
             break;
         case CREATED:
         case MODIFIED:
@@ -1106,7 +1146,8 @@ public class PersistenceContext {
             hierFragment = (SimpleFragment) getIfPresent(rowId);
             if (hierFragment == null) {
                 // try in mapper cache
-                hierFragment = (SimpleFragment) getFromMapper(rowId, false, true);
+                hierFragment = (SimpleFragment) getFromMapper(rowId, false,
+                        true);
                 if (hierFragment == null) {
                     if (!fetch) {
                         return new PathAndId(null, parentId);
