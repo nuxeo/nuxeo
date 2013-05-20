@@ -38,7 +38,7 @@ public class RemoteAutomationServerFeature extends SimpleFeature {
 
     protected static final Log log = LogFactory.getLog(RemoteAutomationServerFeature.class);
 
-    protected final String TEST_AUTOMATION_URL = "TEST_AUTOMATION_URL";
+    protected static final String TEST_AUTOMATION_URL = "TEST_AUTOMATION_URL";
 
     protected HttpAutomationClient client;
 
