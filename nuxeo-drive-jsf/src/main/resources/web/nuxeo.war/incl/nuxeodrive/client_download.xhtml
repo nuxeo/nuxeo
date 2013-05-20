@@ -33,9 +33,16 @@
 	              <h:outputText value="#{messages[package.platformLabel]}" />
 	            </td>
 	            <td id="nuxeo-drive-download-#{package.platformId}">
-	              <h:commandLink value="#{package.name}"
-	                action="#{nuxeoDriveActions.downloadClientPackage(package.name, package.file)}">
-	              </h:commandLink>
+	              <c:if test="#{package.link}">
+	                <h:outputLink value="#{package.URL}" target="_blank">
+                    <h:outputText value="#{messages[package.name]}" />
+                  </h:outputLink>
+	              </c:if>
+	              <c:if test="#{!package.link}">
+                  <h:commandLink value="#{package.name}"
+                    action="#{nuxeoDriveActions.downloadClientPackage(package.name, package.file)}">
+                  </h:commandLink>
+                </c:if>
 	            </td>
 	          </tr>
 	        </c:forEach>
