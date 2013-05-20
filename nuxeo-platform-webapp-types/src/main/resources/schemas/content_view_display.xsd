@@ -25,10 +25,8 @@
   </xs:complexType>
   <xs:complexType name="sortInfoType">
     <xs:sequence>
-      <xs:element name="sortColumn" type="xs:string" minOccurs="0"
-        maxOccurs="unbounded" />
-      <xs:element name="sortAscending" type="xs:boolean" minOccurs="0"
-        maxOccurs="unbounded" />
+      <xs:element name="sortColumn" type="xs:string" />
+      <xs:element name="sortAscending" type="xs:boolean" />
     </xs:sequence>
   </xs:complexType>
 
