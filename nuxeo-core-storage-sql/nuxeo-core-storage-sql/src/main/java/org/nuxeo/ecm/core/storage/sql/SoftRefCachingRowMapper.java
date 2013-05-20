@@ -323,8 +323,8 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     @Override
     public void clearCache() {
+        cacheSize.dec(cache.size());
         cache.clear();
-        cacheSize.clear();
         localInvalidations.clear();
         rowMapper.clearCache();
     }
@@ -334,8 +334,8 @@ public class SoftRefCachingRowMapper implements RowMapper {
         try {
             rowMapper.rollback(xid);
         } finally {
+            cacheSize.dec(cache.size());
             cache.clear();
-            cacheSize.clear();
             localInvalidations.clear();
         }
     }
