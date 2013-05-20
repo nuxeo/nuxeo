@@ -280,6 +280,7 @@ public class NuxeoDriveActions implements Serializable {
     public List<DesktopPackageDefinition> getClientPackages() {
 
         List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
+        // Add packages from the client directory
         File clientDir = new File(Environment.getDefault().getServerHome(),
                 "client");
         if (clientDir.isDirectory()) {
@@ -306,6 +307,11 @@ public class NuxeoDriveActions implements Serializable {
                 }
             }
         }
+        // Add external links
+        // TODO: remove when Debian package is available
+        packages.add(new DesktopPackageDefinition(
+                "https://github.com/nuxeo/nuxeo-drive/#ubuntudebian-and-other-linux-variants-client",
+                "user.center.nuxeoDrive.platform.ubuntu.docLinkTitle", "ubuntu"));
         return packages;
     }
 

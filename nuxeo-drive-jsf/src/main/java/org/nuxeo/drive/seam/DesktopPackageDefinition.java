@@ -33,10 +33,24 @@ public class DesktopPackageDefinition {
 
     protected final String platform;
 
+    protected final boolean isLink;
+
+    protected final String URL;
+
     public DesktopPackageDefinition(File file, String name, String platform) {
         this.file = file;
         this.name = name;
         this.platform = platform;
+        this.isLink = false;
+        this.URL = null;
+    }
+
+    public DesktopPackageDefinition(String URL, String name, String platform) {
+        this.file = null;
+        this.name = name;
+        this.platform = platform;
+        this.isLink = true;
+        this.URL = URL;
     }
 
     public File getFile() {
@@ -53,6 +67,14 @@ public class DesktopPackageDefinition {
 
     public String getPlatformId() {
         return platform;
+    }
+
+    public boolean isLink() {
+        return isLink;
+    }
+
+    public String getURL() {
+        return URL;
     }
 
 }
