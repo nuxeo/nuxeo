@@ -22,16 +22,16 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 
 /**
  * This veto prevents from sending notifications for document creation when the
- * target document is a Comment or a Post
- * 
+ * target document is a Comment or a Post.
+ *
  * @author Thierry Martins <tmartins@nuxeo.com>
- * 
+ *
  * @since 5.7
  */
 public class CommentCreationVeto implements NotificationListenerVeto {
 
     @Override
-    public boolean accept(Event event) throws Exception {
+    public boolean accept(Event event) {
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
         if ("documentCreated".equals(event.getName())
                 && (docCtx.getSourceDocument().getType().equals("Post") || docCtx.getSourceDocument().getType().equals(
