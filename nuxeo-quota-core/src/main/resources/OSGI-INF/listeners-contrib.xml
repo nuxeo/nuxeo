@@ -24,12 +24,21 @@
       class="org.nuxeo.ecm.quota.size.QuotaComputerProcessor" order="100">
       <event>quotaUpdateNeeded</event>
     </listener>
-    
+
      <listener name="quotaUserWorkspaceSetter" async="false"
       class="org.nuxeo.ecm.quota.QuotaUserWorkspaceListener" order="110">
       <event>userWorkspaceCreated</event>
     </listener>
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="quota">
+      <name>Quota updater queue</name>
+      <maxThreads>1</maxThreads>
+      <category>quotaProcessor</category>
+      <clearCompletedAfterSeconds>3600</clearCompletedAfterSeconds>
+    </queue>
   </extension>
 
 </component>
