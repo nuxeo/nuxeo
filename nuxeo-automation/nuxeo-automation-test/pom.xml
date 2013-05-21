@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
@@ -13,6 +13,7 @@
 
   <properties>
     <nuxeo.tested.version>5.7-I20130415_0116</nuxeo.tested.version>
+    <java7.home>/usr/lib/jvm/java-7-openjdk/</java7.home>
   </properties>
 
   <dependencies>
@@ -248,6 +249,28 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>os-windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <java7.home>C:\Program Files\Java\java-7-openjdk\</java7.home>
+      </properties>
+    </profile>
+    <profile>
+      <id>os-mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <java7.home>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/</java7.home>
+      </properties>
     </profile>
   </profiles>
 

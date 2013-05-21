@@ -11,9 +11,16 @@
     <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
-  <!--<property name="nuxeo.home" value="${out.dir}/tomcat-${test.name}" />-->
-  <!-- Make Launcher JVM check permissive -->
-  <property name="launcher.debug" value="-Djvmcheck=nofail" />
+
+  <target name="set-java-home"
+          depends="_init"
+          description="Force use java 7 to start 5.7 Nuxeo server">
+    <antcall target="set-conf">
+      <param name="name" value="JAVA_HOME" />
+      <param name="value" value="${java7.home}" />
+    </antcall>
+    <echo message="Using JAVA_HOME=${java7.home}" />
+  </target>
 
   <target name="download" unless="no.download">
     <delete failonerror="false" dir="${nuxeo.home}" />
