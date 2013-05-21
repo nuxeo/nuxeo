@@ -221,12 +221,21 @@ public class SuggestionServiceImpl extends DefaultComponent implements
         }
     }
 
-    /*
+    /**
      * Gets the suggester groups registry. Only for test purpose.
      *
      * @return the suggester groups
      */
     public SuggesterGroupRegistry getSuggesterGroups() {
         return suggesterGroups;
+    }
+
+    /**
+     * Gets the suggestion handlers registry. Only for test purpose.
+     *
+     * @return the suggestion handlers
+     */
+    public SuggestionHandlerRegistry getSuggestionHandlers() {
+        return suggestionHandlers;
     }
 }
