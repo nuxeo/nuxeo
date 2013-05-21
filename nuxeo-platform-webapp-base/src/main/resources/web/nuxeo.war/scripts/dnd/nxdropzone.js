@@ -77,7 +77,7 @@ function getReadableDurationString(duration)
 //****************************
 // UI Handler
 // contains UI related methods and CallBacks
-function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
+function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB, cancelCB) {
 
   this.idx=idx;
   this.dropZoneId = dropZoneId;
@@ -93,6 +93,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
   this.extendedMode=false;
   this.executionPending=false;
   this.opts = options;
+  this.cancelCB=cancelCB;
 
   DropZoneUIHandler.prototype.uploadStarted = function(fileIndex, file){
       this.nxUploadStarted++;
@@ -200,6 +201,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
       window.clearTimeout(dragoverTimer);
       dzone.removeData("dragoverTimer");
     }
+    this.cancelCB();
     var targetUrl = this.url + 'batch/drop/' + this.batchId;
     jQuery.ajax({
         type: 'GET',
@@ -288,7 +290,13 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB) {
          iframe.attr("width", "330px");
          iframe.attr("height", "550px");
          iframe.attr("frameborder", "0");
-         iframe.attr("src", this.operationsDef[i].link);
+         var src = this.operationsDef[i].link;
+         if (src.indexOf("?") != -1) {
+           src += "&conversationId=" + currentConversationId;
+         } else {
+           src += "?conversationId=" + currentConversationId;
+         }
+         iframe.attr("src", src);
          desc.append(iframe);
          var handler = this;
          window.dndFormFunctionCB=function(fData) {handler.executeBatch(value, fData);};
@@ -509,7 +517,7 @@ var NXDropZone = {
                        }
                        jQuery("#"+id).unbind('dragleave');
                      });
-                 });
+                 }, function() {NXDropZone.highLightOn=true;NXDropZone.initDone=false;removeHighlights(null,ids)});
                  // copy optionMap
                  var instanceOptions = jQuery.extend({},options);
                  // register callback Handler

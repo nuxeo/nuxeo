@@ -109,13 +109,33 @@
     return false;
   }
 
+
+  function isFolder(fileOb) {
+      // Folder size is 0 under Win / %4096 under Linux / variable under MacOS
+      if (!fileOb.type && fileOb.size<(4096*4+1)) {
+          try {
+              reader = new FileReader();
+              var binary = reader.readAsBinaryString(fileOb);
+              if (binary) {
+                return false;
+              }
+              return true;
+          } catch (err) {
+              return true;
+          }
+      }
+        return false;
+  }
+
   function drop(event, opts) {
 
     event.preventDefault();
     var files = event.dataTransfer.files;
+    var skipedFolder=false;
     for ( var i = 0; i < files.length; i++) {
-      if (files[i].type=="") {
+      if (isFolder(files[i])) {
         log("Skipping folder");
+        skipFolder=true;
       } else {
         uploadStack.push(files[i]);
       }
@@ -123,6 +143,10 @@
 
     if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
       uploadFiles(opts);
+    } else {
+        if (uploadStack.length==0 && skipedFolder) {
+          opts.handler.cancelUpload();
+        }
     }
     return false;
   }
