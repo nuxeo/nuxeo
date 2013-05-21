@@ -274,20 +274,20 @@ public class TestNuxeoDriveManager {
         // unsyncing unsynced folder does nothing
         nuxeoDriveManager.unregisterSynchronizationRoot(
                 user2Session.getPrincipal(),
-                doc("/default-domain/workspaces/workspace-2"), session);
+                doc("/default-domain/workspaces/workspace-2"), user2Session);
         checkRootsCount(user1, 2);
         checkRootsCount(user2, 2);
 
         nuxeoDriveManager.unregisterSynchronizationRoot(
                 user1Session.getPrincipal(),
-                session.getDocument(user1Workspace), session);
+                session.getDocument(user1Workspace), user1Session);
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 2);
 
         nuxeoDriveManager.unregisterSynchronizationRoot(
                 user1Session.getPrincipal(),
                 doc("/default-domain/workspaces/workspace-2/folder-2-1"),
-                session);
+                user1Session);
         checkRootsCount(user1, 0);
         checkRootsCount(user2, 2);
 
@@ -295,7 +295,7 @@ public class TestNuxeoDriveManager {
         nuxeoDriveManager.registerSynchronizationRoot(
                 user1Session.getPrincipal(),
                 doc("/default-domain/workspaces/workspace-2/folder-2-1"),
-                session);
+                user1Session);
         checkRootsCount(user1, 1);
         checkRootsCount(user2, 2);
     }
