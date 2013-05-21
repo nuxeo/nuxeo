@@ -88,8 +88,6 @@
     <operation
       class="org.nuxeo.ecm.automation.server.test.ReturnOperation" />
     <operation
-      class="org.nuxeo.ecm.automation.server.test.TestNumberParamAdaptersOperation" />
-    <operation
       class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
   </extension>
   
