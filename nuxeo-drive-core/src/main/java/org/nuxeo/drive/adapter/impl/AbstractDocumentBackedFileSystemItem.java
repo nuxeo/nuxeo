@@ -82,7 +82,14 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         } else {
             FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
                     parentDoc, true);
-            // TODO: handle NPE on parent
+            if (parent == null) {
+                // We reached a document for which the parent document cannot be
+                // adapted to a (possibly virtual) descendant of the top level
+                // folder item.
+                // Let's raise a marker exception and let the caller give more
+                // information on the source document.
+                throw new RootlessItemException();
+            }
             parentId = parent.getId();
             path = parent.getPath() + '/' + id;
         }
