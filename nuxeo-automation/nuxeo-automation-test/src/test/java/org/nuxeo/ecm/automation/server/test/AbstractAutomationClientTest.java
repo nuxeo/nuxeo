@@ -30,13 +30,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
-import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
-import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
@@ -58,7 +56,6 @@ import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
-import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 
@@ -134,27 +131,6 @@ public abstract class AbstractAutomationClientTest {
             Boolean rollback = otherNodes.get("rollback").getBooleanValue();
             assertThat(rollback, is(Boolean.TRUE));
         }
-    }
-
-    @Test
-    public void testMultiValued() throws Exception {
-        Document root = (Document) session.newRequest(FetchDocument.ID).set(
-                "value", "/").execute();
-
-        Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(root).set("type", "MV").set(
-                "name", "pfff").set("properties",
-                "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n").execute();
-        checkHasCorrectMultiValues(note);
-
-        PaginableDocuments docs = (PaginableDocuments) session.newRequest(
-                DocumentPageProviderOperation.ID).setHeader(
-                "X-NXDocumentProperties", "*").set("query", "SELECT * from MV").set(
-                "pageSize", 2).execute();
-
-        assertThat(docs, notNullValue());
-        assertThat(docs.size(), is(1));
-        checkHasCorrectMultiValues(docs.get(0));
     }
 
     private void checkHasCorrectMultiValues(Document note) {
@@ -573,44 +549,6 @@ public abstract class AbstractAutomationClientTest {
             return;
         }
         fail("no exception caught");
-    }
-
-    @Test
-    public void testBlobSummaries() throws Exception {
-        Blob blob = (Blob) session.newRequest(TestDataCapsule.ID).execute();
-        assertEquals("TestDataCapsule - application/json - 25 B",
-                blob.toString());
-    }
-
-    @Test
-    public void testSendMail() throws Exception {
-
-        // Set bad SMTP configuration
-        SendMail.COMPOSER.getMailer().setServer("badHostName", "0000");
-
-        Document rootDoc = (Document) session.newRequest(FetchDocument.ID).set(
-                "value", "/").execute();
-        assertNotNull(rootDoc);
-
-        OperationRequest operationRequest = session.newRequest(SendMail.ID).setInput(
-                rootDoc).set("from", "sender@nuxeo.com").set("to",
-                "recipient@nuxeo.com").set("subject", "My test mail").set(
-                "message", "The message content.");
-
-        // Call SendMail with rollbackOnError = true (default value)
-        // => should throw a RemoteException
-        try {
-            operationRequest.execute();
-            fail("Call to SendMail operation should have thrown a RemoteException since the SMTP server is not reachable");
-        } catch (RemoteException re) {
-            assertEquals("Failed to invoke operation Notification.SendMail",
-                    re.getCause().getMessage());
-        }
-
-        // Call SendMail with rollbackOnError = false
-        // => should only log a WARNING
-        Object result = operationRequest.set("rollbackOnError", "false").execute();
-        assertNotNull(result);
     }
 
     @Test
