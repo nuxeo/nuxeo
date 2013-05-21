@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
@@ -200,55 +199,38 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFile>${basedir}/itests.xml</buildFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-tomcat</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>prepare-environment</target>
+                <target>start</target>
+              </targets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-tomcat</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <target>stop</target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>withIT</id>
-      <activation>
-        <property>
-          <!-- Skip exec if skipTests is defined. Using NXBT-568 would be better. -->
-          <name>!skipTests</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.nuxeo.build</groupId>
-            <artifactId>nuxeo-distribution-tools</artifactId>
-            <configuration>
-              <buildFile>${basedir}/itests.xml</buildFile>
-            </configuration>
-            <executions>
-              <execution>
-                <id>start-tomcat</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <configuration>
-                  <targets>
-                    <target>prepare-environment</target>
-                    <target>start</target>
-                  </targets>
-                </configuration>
-              </execution>
-              <execution>
-                <id>stop-tomcat</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <configuration>
-                  <target>stop</target>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>
