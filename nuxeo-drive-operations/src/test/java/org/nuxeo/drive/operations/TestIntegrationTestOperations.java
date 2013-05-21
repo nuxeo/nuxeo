@@ -149,7 +149,7 @@ public class TestIntegrationTestOperations {
         // ----------------------------------------------------------------------
         testUserCredentialsBlob = (Blob) clientSession.newRequest(
                 NuxeoDriveSetupIntegrationTests.ID).set("userNames", "sarah").set(
-                        "useMembersGroup", true).execute();
+                "useMembersGroup", true).execute();
         assertNotNull(testUserCredentialsBlob);
 
         // Check cleanup

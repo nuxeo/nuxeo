@@ -168,9 +168,9 @@ public class TestGetChangeSummary {
     }
 
     /**
-     * Gets the changes summary for the user bound to the
-     * {@link #session} using the {@link NuxeoDriveGetChangeSummary}
-     * automation operation and updates the {@link #lastSuccessfulSync} date.
+     * Gets the changes summary for the user bound to the {@link #session} using
+     * the {@link NuxeoDriveGetChangeSummary} automation operation and updates
+     * the {@link #lastSuccessfulSync} date.
      */
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
