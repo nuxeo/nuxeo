@@ -75,7 +75,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             // We either reached the root of the repository or a document for
             // which the current user doesn't have read access to its parent,
             // without being adapted to a (possibly virtual) descendant of the
-            // the top level folder item.
+            // top level folder item.
             // Let's raise a marker exception and let the caller give more
             // information on the source document.
             throw new RootlessItemException();

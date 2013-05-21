@@ -92,8 +92,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         cache.invalidateAll();
     }
 
+    @Override
     public void invalidateSynchronizationRootsCache(String userName) {
-        log.debug("Invalidating synchronization root cache for user: " + userName);
+        log.debug("Invalidating synchronization root cache for user: "
+                + userName);
         cache.invalidate(userName);
     }
 
