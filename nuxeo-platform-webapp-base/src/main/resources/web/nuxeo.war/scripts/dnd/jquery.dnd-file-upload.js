@@ -110,6 +110,8 @@
   }
 
   function getDirectoryEntries(directoryReader, opts) {
+   // this function is async !
+   var nbReads = 0;
    var readEntries = function () {
        directoryReader.readEntries(function (results) {
            if (!results.length) {
@@ -122,6 +124,7 @@
                  getDirectoryEntries(results[i].createReader(), opts);
                } else {
                results[i].file(function (f) {
+               nbReads++;
                  uploadStack.push(f);
                  }, function(e){log(e)});
                }
@@ -131,21 +134,52 @@
        }, function (e) {log(e)});
    };
    readEntries();
+   return nbReads;
+  }
+
+  function isFolder(fileOb) {
+    // Folder size is 0 under Win / %4096 under Linux / variable under MacOS
+    if (!fileOb.type && fileOb.size<(4096*4+1)) {
+        try {
+            reader = new FileReader();
+            var binary = reader.readAsBinaryString(fileOb);
+            if (binary) {
+              return false;
+            }
+            return true;
+        } catch (err) {
+            return true;
+        }
+    }
+      return false;
   }
 
   function drop(event, opts) {
 
     event.preventDefault();
     var files = event.dataTransfer.files;
-
+    var skipedFolder=false;
     for ( var i = 0; i < files.length; i++) {
       var cfile = files[i];
-      if (cfile.type=="") {
+      if (isFolder(cfile)) {
         log("this is a folder");
-        if (event.dataTransfer.items) {
+        // disable folder upload for now
+        if (false && event.dataTransfer.items && event.dataTransfer.items[i].webkitGetAsEntry) {
           var folderEntry = event.dataTransfer.items[i].webkitGetAsEntry();
           var directoryReader = folderEntry.createReader();
-          getDirectoryEntries(directoryReader, opts);
+          if (directoryReader) {
+             if (getDirectoryEntries(directoryReader, opts)==0) {
+               log("folder is empty");
+               skipedFolder=true;
+             };
+          } else {
+           skipedFolder=true;
+          }
+        } else {
+          skipedFolder=true;
+        }
+        if (skipedFolder)  {
+          log("Skiped folder");
         }
       } else {
          uploadStack.push(cfile);
@@ -154,6 +188,10 @@
 
     if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
       uploadFiles(opts);
+    } else {
+        if (uploadStack.length==0 && skipedFolder) {
+          opts.handler.cancelUpload();
+        }
     }
     return false;
   }
@@ -195,7 +233,7 @@
    }
 
   function log(logMsg) {
-      //console && console.log(logMsg);
+      // console && console.log(logMsg);
   }
 
   function uploadFiles(opts) {
