@@ -104,13 +104,16 @@ public class TestAuditFileSystemChangeFinder {
 
         dispose(session);
         TransactionHelper.startTransaction();
-        folder1 = session.createDocument(session.createDocumentModel("/",
-                "folder1", "Folder"));
-        folder2 = session.createDocument(session.createDocumentModel("/",
-                "folder2", "Folder"));
-        session.createDocument(session.createDocumentModel("/", "folder3",
-                "Folder"));
-        commitAndWaitForAsyncCompletion();
+        try {
+            folder1 = session.createDocument(session.createDocumentModel("/",
+                    "folder1", "Folder"));
+            folder2 = session.createDocument(session.createDocumentModel("/",
+                    "folder2", "Folder"));
+            session.createDocument(session.createDocumentModel("/", "folder3",
+                    "Folder"));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
     }
 
     @After
@@ -124,422 +127,518 @@ public class TestAuditFileSystemChangeFinder {
 
     @Test
     public void testFindChanges() throws Exception {
+        List<FileSystemItemChange> changes;
+        FileSystemItemChange change;
+        DocumentModel doc1;
+        DocumentModel doc2;
+        DocumentModel doc3;
+
         TransactionHelper.startTransaction();
-        // No sync roots
-        List<FileSystemItemChange> changes = getChanges();
-        assertNotNull(changes);
-        assertTrue(changes.isEmpty());
+        try {
+            // No sync roots
+            changes = getChanges();
+            assertNotNull(changes);
+            assertTrue(changes.isEmpty());
 
-        // Sync roots but no changes
-        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
-                folder1, session);
-        nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(),
-                folder2, session);
-        commitAndWaitForAsyncCompletion();
+            // Sync roots but no changes
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session.getPrincipal(), folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session.getPrincipal(), folder2, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
         TransactionHelper.startTransaction();
-        changes = getChanges();
-        // Root registration events
-        assertEquals(2, changes.size());
+        try {
+            changes = getChanges();
+            // Root registration events
+            assertEquals(2, changes.size());
 
-        // Create 3 documents, only 2 in sync roots
-        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
-                "File");
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1."));
-        doc1 = session.createDocument(doc1);
-        Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
-                "File");
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2."));
-        doc2 = session.createDocument(doc2);
-        DocumentModel doc3 = session.createDocumentModel("/folder3", "doc3",
-                "File");
-        doc3.setPropertyValue("file:content", new StringBlob(
-                "The content of file 3."));
-        doc3 = session.createDocument(doc3);
-        commitAndWaitForAsyncCompletion();
+            // Create 3 documents, only 2 in sync roots
+            doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 1."));
+            doc1 = session.createDocument(doc1);
+            Thread.sleep(1000);
+            doc2 = session.createDocumentModel("/folder2", "doc2", "File");
+            doc2.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 2."));
+            doc2 = session.createDocument(doc2);
+            doc3 = session.createDocumentModel("/folder3", "doc3", "File");
+            doc3.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 3."));
+            doc3 = session.createDocument(doc3);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
         TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(2, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(doc2.getId(), change.getDocUuid());
+            change = changes.get(1);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
 
-        changes = getChanges();
-        assertEquals(2, changes.size());
-        FileSystemItemChange change = changes.get(0);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("documentCreated", change.getEventId());
-        assertEquals(doc2.getId(), change.getDocUuid());
-        change = changes.get(1);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("documentCreated", change.getEventId());
-        assertEquals(doc1.getId(), change.getDocUuid());
+            // No changes since last successful sync
+            changes = getChanges();
+            assertTrue(changes.isEmpty());
 
-        // No changes since last successful sync
-        changes = getChanges();
-        assertTrue(changes.isEmpty());
+            // Update both synchronized documents and unsynchronize a root
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 1, updated."));
+            session.saveDocument(doc1);
+            doc2.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 2, updated."));
+            session.saveDocument(doc2);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Update both synchronized documents and unsynchronize a root
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1, updated."));
-        session.saveDocument(doc1);
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2, updated."));
-        session.saveDocument(doc2);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            nuxeoDriveManager.unregisterSynchronizationRoot(
+                    session.getPrincipal(), folder2, session);
+            changes = getChanges();
+            assertEquals(2, changes.size());
+            // the root unregistration is mapped to a fake deletion from the
+            // client's
+            // point of view
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("deleted", change.getEventId());
+            assertEquals(folder2.getId(), change.getDocUuid());
 
-        nuxeoDriveManager.unregisterSynchronizationRoot(
-                session.getPrincipal(), folder2, session);
-        changes = getChanges();
-        assertEquals(2, changes.size());
-        // the root unregistration is mapped to a fake deletion from the
-        // client's
-        // point of view
-        change = changes.get(0);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("deleted", change.getEventId());
-        assertEquals(folder2.getId(), change.getDocUuid());
+            change = changes.get(1);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
 
-        change = changes.get(1);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("documentModified", change.getEventId());
-        assertEquals(doc1.getId(), change.getDocUuid());
+            // Delete a document with a lifecycle transition (trash)
+            session.followTransition(doc1.getRef(), "delete");
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Delete a document with a lifecycle transition (trash)
-        session.followTransition(doc1.getRef(), "delete");
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("deleted", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
+            assertEquals("defaultFileSystemItemFactory#test#" + doc1.getId(),
+                    change.getFileSystemItemId());
 
-        changes = getChanges();
-        assertEquals(1, changes.size());
-        change = changes.get(0);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("deleted", change.getEventId());
-        assertEquals(doc1.getId(), change.getDocUuid());
-        assertEquals("defaultFileSystemItemFactory#test#" + doc1.getId(),
-                change.getFileSystemItemId());
+            // Restore a deleted document and move a document in a newly
+            // synchronized root
+            session.followTransition(doc1.getRef(), "undelete");
+            Thread.sleep(1000);
+            session.move(doc3.getRef(), folder2.getRef(), null);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Restore a deleted document and move a document in a newly
-        // synchronized root
-        session.followTransition(doc1.getRef(), "undelete");
-        Thread.sleep(1000);
-        session.move(doc3.getRef(), folder2.getRef(), null);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session.getPrincipal(), folder2, session);
+            changes = getChanges();
+            assertEquals(2, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentMoved", change.getEventId());
+            assertEquals(doc3.getId(), change.getDocUuid());
+            change = changes.get(1);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("lifecycle_transition_event", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
 
-        nuxeoDriveManager.registerSynchronizationRoot(
-                session.getPrincipal(), folder2, session);
-        changes = getChanges();
-        assertEquals(2, changes.size());
-        change = changes.get(0);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("documentMoved", change.getEventId());
-        assertEquals(doc3.getId(), change.getDocUuid());
-        change = changes.get(1);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("lifecycle_transition_event", change.getEventId());
-        assertEquals(doc1.getId(), change.getDocUuid());
+            // Physical deletion without triggering the delete transition first
+            session.removeDocument(doc3.getRef());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Physical deletion without triggering the delete transition first
-        session.removeDocument(doc3.getRef());
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(2, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("deleted", change.getEventId());
+            assertEquals(doc3.getId(), change.getDocUuid());
+            assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
+                    change.getFileSystemItemId());
 
-        changes = getChanges();
-        assertEquals(2, changes.size());
-        change = changes.get(0);
-        assertEquals("test", change.getRepositoryId());
-        assertEquals("deleted", change.getEventId());
-        assertEquals(doc3.getId(), change.getDocUuid());
-        assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
-                change.getFileSystemItemId());
+            change = changes.get(1);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(folder2.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                    change.getFileSystemItemId());
 
-        change = changes.get(1);
-        assertEquals("documentModified", change.getEventId());
-        assertEquals(folder2.getId(), change.getDocUuid());
-        assertEquals(
-                "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
-                change.getFileSystemItemId());
+            // Too many changes
+            session.followTransition(doc1.getRef(), "delete");
+            session.followTransition(doc2.getRef(), "delete");
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Too many changes
-        session.followTransition(doc1.getRef(), "delete");
-        session.followTransition(doc2.getRef(), "delete");
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
-
-        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
-                "1");
-        FileSystemChangeSummary changeSummary = getChangeSummary(session.getPrincipal());
-        assertEquals(true, changeSummary.getHasTooManyChanges());
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            Framework.getProperties().put(
+                    "org.nuxeo.drive.document.change.limit", "1");
+            FileSystemChangeSummary changeSummary = getChangeSummary(session.getPrincipal());
+            assertEquals(true, changeSummary.getHasTooManyChanges());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
     }
 
     @Test
     public void testGetChangeSummary() throws Exception {
-        TransactionHelper.startTransaction();
+        FileSystemChangeSummary changeSummary;
         Principal admin = new NuxeoPrincipalImpl("Administrator");
+        DocumentModel doc1;
+        DocumentModel doc2;
 
-        // No sync roots => shouldn't find any changes
-        FileSystemChangeSummary changeSummary = getChangeSummary(admin);
-        assertNotNull(changeSummary);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
-
-        // Register sync roots => should find changes: the newly
-        // synchronized root folders as they are updated by the synchronization
-        // registration process
-        nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
-        nuxeoDriveManager.registerSynchronizationRoot(admin, folder2, session);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            // No sync roots => shouldn't find any changes
+            changeSummary = getChangeSummary(admin);
+            assertNotNull(changeSummary);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
-        changeSummary = getChangeSummary(admin);
-        assertEquals(2, changeSummary.getFileSystemChanges().size());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+            // Register sync roots => should find changes: the newly
+            // synchronized root folders as they are updated by the
+            // synchronization
+            // registration process
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1,
+                    session);
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder2,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changeSummary = getChangeSummary(admin);
+            assertEquals(2, changeSummary.getFileSystemChanges().size());
+            assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // Create 3 documents, only 2 in sync roots => should find 2 changes
-        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
-                "File");
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1."));
-        doc1 = session.createDocument(doc1);
-        Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
-                "File");
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2."));
-        doc2 = session.createDocument(doc2);
-        session.createDocument(session.createDocumentModel("/folder3", "doc3",
-                "File"));
-        commitAndWaitForAsyncCompletion();
+        try {
+            doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 1."));
+            doc1 = session.createDocument(doc1);
+            Thread.sleep(1000);
+            doc2 = session.createDocumentModel("/folder2", "doc2", "File");
+            doc2.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 2."));
+            doc2 = session.createDocument(doc2);
+            session.createDocument(session.createDocumentModel("/folder3",
+                    "doc3", "File"));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
         TransactionHelper.startTransaction();
+        try {
+            changeSummary = getChangeSummary(admin);
 
-        changeSummary = getChangeSummary(admin);
+            List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
+            assertEquals(2, changes.size());
+            FileSystemItemChange docChange = changes.get(0);
+            assertEquals("test", docChange.getRepositoryId());
+            assertEquals("documentCreated", docChange.getEventId());
+            assertEquals(
+                    "project",
+                    session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
+            assertEquals(doc2.getId(), docChange.getDocUuid());
+            docChange = changes.get(1);
+            assertEquals("test", docChange.getRepositoryId());
+            assertEquals("documentCreated", docChange.getEventId());
+            assertEquals(
+                    "project",
+                    session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
+            assertEquals(doc1.getId(), docChange.getDocUuid());
 
-        List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
-        assertEquals(2, changes.size());
-        FileSystemItemChange docChange = changes.get(0);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentCreated", docChange.getEventId());
-        assertEquals(
-                "project",
-                session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
-        assertEquals(doc2.getId(), docChange.getDocUuid());
-        docChange = changes.get(1);
-        assertEquals("test", docChange.getRepositoryId());
-        assertEquals("documentCreated", docChange.getEventId());
-        assertEquals(
-                "project",
-                session.getDocument(new IdRef(docChange.getDocUuid())).getCurrentLifeCycleState());
-        assertEquals(doc1.getId(), docChange.getDocUuid());
+            assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+            // Create a document that should not be synchronized because not
+            // adaptable as a FileSystemItem (not Folderish nor a BlobHolder
+            // with a
+            // blob) => should not be considered as a change
+            session.createDocument(session.createDocumentModel("/folder1",
+                    "notSynchronizableDoc", "NotSynchronizable"));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Create a document that should not be synchronized because not
-        // adaptable as a FileSystemItem (not Folderish nor a BlobHolder with a
-        // blob) => should not be considered as a change
-        session.createDocument(session.createDocumentModel("/folder1",
-                "notSynchronizableDoc", "NotSynchronizable"));
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            changeSummary = getChangeSummary(admin);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
-        changeSummary = getChangeSummary(admin);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+            // Create 2 documents in the same sync root: "/folder1" and 1
+            // document
+            // in another sync root => should find 2 changes for "/folder1"
+            DocumentModel doc3 = session.createDocumentModel("/folder1",
+                    "doc3", "File");
+            doc3.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 3."));
+            doc3 = session.createDocument(doc3);
+            DocumentModel doc4 = session.createDocumentModel("/folder1",
+                    "doc4", "File");
+            doc4.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 4."));
+            doc4 = session.createDocument(doc4);
+            DocumentModel doc5 = session.createDocumentModel("/folder2",
+                    "doc5", "File");
+            doc5.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 5."));
+            doc5 = session.createDocument(doc5);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Create 2 documents in the same sync root: "/folder1" and 1 document
-        // in another sync root => should find 2 changes for "/folder1"
-        DocumentModel doc3 = session.createDocumentModel("/folder1", "doc3",
-                "File");
-        doc3.setPropertyValue("file:content", new StringBlob(
-                "The content of file 3."));
-        doc3 = session.createDocument(doc3);
-        DocumentModel doc4 = session.createDocumentModel("/folder1", "doc4",
-                "File");
-        doc4.setPropertyValue("file:content", new StringBlob(
-                "The content of file 4."));
-        doc4 = session.createDocument(doc4);
-        DocumentModel doc5 = session.createDocumentModel("/folder2", "doc5",
-                "File");
-        doc5.setPropertyValue("file:content", new StringBlob(
-                "The content of file 5."));
-        doc5 = session.createDocument(doc5);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            changeSummary = getChangeSummary(admin);
+            assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+            assertEquals(3, changeSummary.getFileSystemChanges().size());
 
-        changeSummary = getChangeSummary(admin);
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
-        assertEquals(3, changeSummary.getFileSystemChanges().size());
+            // No changes since last successful sync
+            changeSummary = getChangeSummary(admin);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
-        // No changes since last successful sync
-        changeSummary = getChangeSummary(admin);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+            // Test too many changes
+            session.followTransition(doc1.getRef(), "delete");
+            session.followTransition(doc2.getRef(), "delete");
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Test too many changes
-        session.followTransition(doc1.getRef(), "delete");
-        session.followTransition(doc2.getRef(), "delete");
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
-
-        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
-                "1");
-        changeSummary = getChangeSummary(admin);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertEquals(Boolean.TRUE, changeSummary.getHasTooManyChanges());
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            Framework.getProperties().put(
+                    "org.nuxeo.drive.document.change.limit", "1");
+            changeSummary = getChangeSummary(admin);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertEquals(Boolean.TRUE, changeSummary.getHasTooManyChanges());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
     }
 
     @Test
     public void testGetChangeSummaryOnRootDocuments() throws Exception {
-        TransactionHelper.startTransaction();
         Principal admin = new NuxeoPrincipalImpl("Administrator");
         Principal otherUser = new NuxeoPrincipalImpl("some-other-user");
+        Set<IdRef> activeRootRefs;
+        FileSystemChangeSummary changeSummary;
+        List<FileSystemItemChange> changes;
+        FileSystemItemChange fsItemChange;
 
-        // No root registered by default: no changes
-        Set<IdRef> activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
-        assertNotNull(activeRootRefs);
-        assertTrue(activeRootRefs.isEmpty());
-
-        FileSystemChangeSummary changeSummary = getChangeSummary(admin);
-        assertNotNull(changeSummary);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
-
-        // Register a root for someone else
-        nuxeoDriveManager.registerSynchronizationRoot(otherUser, folder1,
-                session);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            // No root registered by default: no changes
+            activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+            assertNotNull(activeRootRefs);
+            assertTrue(activeRootRefs.isEmpty());
 
-        // Administrator does not see any change
-        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
-        assertNotNull(activeRootRefs);
-        assertTrue(activeRootRefs.isEmpty());
+            changeSummary = getChangeSummary(admin);
+            assertNotNull(changeSummary);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
-        changeSummary = getChangeSummary(admin);
-        assertNotNull(changeSummary);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertFalse(changeSummary.getHasTooManyChanges());
+            // Register a root for someone else
+            nuxeoDriveManager.registerSynchronizationRoot(otherUser, folder1,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Register a new sync root
-        nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            // Administrator does not see any change
+            activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+            assertNotNull(activeRootRefs);
+            assertTrue(activeRootRefs.isEmpty());
 
-        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
-        assertNotNull(activeRootRefs);
-        assertEquals(1, activeRootRefs.size());
-        assertEquals(folder1.getRef(), activeRootRefs.iterator().next());
+            changeSummary = getChangeSummary(admin);
+            assertNotNull(changeSummary);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertFalse(changeSummary.getHasTooManyChanges());
 
-        // The new sync root is detected in the change summary
-        changeSummary = getChangeSummary(admin);
-        assertNotNull(changeSummary);
+            // Register a new sync root
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        List<FileSystemItemChange> changes = changeSummary.getFileSystemChanges();
-        assertEquals(1, changes.size());
-        FileSystemItemChange fsItemChange = changes.get(0);
-        // TODO: this should be detected has a file system item
-        // creation rather than modification
-        assertEquals("documentModified", fsItemChange.getEventId());
-        assertEquals(
-                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
-                fsItemChange.getFileSystemItem().getId());
-
-        // Check that root unregistration is detected as a deletion
-        nuxeoDriveManager.unregisterSynchronizationRoot(admin, folder1, session);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
+        try {
+            activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+            assertNotNull(activeRootRefs);
+            assertEquals(1, activeRootRefs.size());
+            assertEquals(folder1.getRef(), activeRootRefs.iterator().next());
 
-        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
-        assertNotNull(activeRootRefs);
-        assertTrue(activeRootRefs.isEmpty());
-        changeSummary = getChangeSummary(admin);
-        changes = changeSummary.getFileSystemChanges();
-        assertEquals(1, changes.size());
-        fsItemChange = changes.get(0);
-        assertEquals("deleted", fsItemChange.getEventId());
-        assertEquals(
-                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
-                fsItemChange.getFileSystemItemId());
+            // The new sync root is detected in the change summary
+            changeSummary = getChangeSummary(admin);
+            assertNotNull(changeSummary);
 
-        // Register back the root, it's activity is again detected by the client
-        nuxeoDriveManager.registerSynchronizationRoot(admin, folder1, session);
-        commitAndWaitForAsyncCompletion();
+            changes = changeSummary.getFileSystemChanges();
+            assertEquals(1, changes.size());
+            fsItemChange = changes.get(0);
+            // TODO: this should be detected has a file system item
+            // creation rather than modification
+            assertEquals("documentModified", fsItemChange.getEventId());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+                    fsItemChange.getFileSystemItem().getId());
+
+            // Check that root unregistration is detected as a deletion
+            nuxeoDriveManager.unregisterSynchronizationRoot(admin, folder1,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
         TransactionHelper.startTransaction();
-        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
-        assertNotNull(activeRootRefs);
-        assertEquals(activeRootRefs.size(), 1);
+        try {
+            activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+            assertNotNull(activeRootRefs);
+            assertTrue(activeRootRefs.isEmpty());
+            changeSummary = getChangeSummary(admin);
+            changes = changeSummary.getFileSystemChanges();
+            assertEquals(1, changes.size());
+            fsItemChange = changes.get(0);
+            assertEquals("deleted", fsItemChange.getEventId());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+                    fsItemChange.getFileSystemItemId());
 
-        changeSummary = getChangeSummary(admin);
-        changes = changeSummary.getFileSystemChanges();
-        assertEquals(1, changes.size());
-        fsItemChange = changes.get(0);
-        // TODO: this should be detected has a file system item
-        // creation rather than modification
-        assertEquals("documentModified", fsItemChange.getEventId());
-        assertEquals(
-                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
-                fsItemChange.getFileSystemItem().getId());
+            // Register back the root, it's activity is again detected by the
+            // client
+            nuxeoDriveManager.registerSynchronizationRoot(admin, folder1,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Test deletion of a root
-        session.followTransition(folder1.getRef(), "delete");
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
-        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
-        assertNotNull(activeRootRefs);
-        assertTrue(activeRootRefs.isEmpty());
+        try {
+            activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+            assertNotNull(activeRootRefs);
+            assertEquals(activeRootRefs.size(), 1);
 
-        // The root is no longer active
-        activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
-        assertNotNull(activeRootRefs);
-        assertTrue(activeRootRefs.isEmpty());
+            changeSummary = getChangeSummary(admin);
+            changes = changeSummary.getFileSystemChanges();
+            assertEquals(1, changes.size());
+            fsItemChange = changes.get(0);
+            // TODO: this should be detected has a file system item
+            // creation rather than modification
+            assertEquals("documentModified", fsItemChange.getEventId());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+                    fsItemChange.getFileSystemItem().getId());
 
-        // The deletion of the root itself is mapped as filesystem
-        // deletion event
-        changeSummary = getChangeSummary(admin);
-        changes = changeSummary.getFileSystemChanges();
-        assertEquals(1, changes.size());
-        fsItemChange = changes.get(0);
-        assertEquals("deleted", fsItemChange.getEventId());
-        assertEquals(
-                "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
-                fsItemChange.getFileSystemItemId());
+            // Test deletion of a root
+            session.followTransition(folder1.getRef(), "delete");
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        commitAndWaitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        try {
+            activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+            assertNotNull(activeRootRefs);
+            assertTrue(activeRootRefs.isEmpty());
+
+            // The root is no longer active
+            activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
+            assertNotNull(activeRootRefs);
+            assertTrue(activeRootRefs.isEmpty());
+
+            // The deletion of the root itself is mapped as filesystem
+            // deletion event
+            changeSummary = getChangeSummary(admin);
+            changes = changeSummary.getFileSystemChanges();
+            assertEquals(1, changes.size());
+            fsItemChange = changes.get(0);
+            assertEquals("deleted", fsItemChange.getEventId());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+                    fsItemChange.getFileSystemItemId());
+
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
     }
 
     @Test
     public void testGetChangeSummaryOnRootDocumentsNullChange()
             throws Exception {
+        Principal someUser = new NuxeoPrincipalImpl("some-user");
+        FileSystemChangeSummary changeSummary;
+
         // check that consecutive root registration + unregistration do not lead
         // to a visible change for the client.
         TransactionHelper.startTransaction();
-        Principal someUser = new NuxeoPrincipalImpl("some-user");
-        nuxeoDriveManager.registerSynchronizationRoot(someUser,
-                folder1, session);
-        nuxeoDriveManager.unregisterSynchronizationRoot(someUser,
-                folder1, session);
-        commitAndWaitForAsyncCompletion();
-        TransactionHelper.startTransaction();
-        FileSystemChangeSummary changeSummary = getChangeSummary(someUser);
-        assertNotNull(changeSummary);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertFalse(changeSummary.getHasTooManyChanges());
+        try {
+            nuxeoDriveManager.registerSynchronizationRoot(someUser, folder1,
+                    session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(someUser, folder1,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
 
-        // Do it a second time to check that the client did not receive bad
-        // active root markers
-        nuxeoDriveManager.registerSynchronizationRoot(someUser, folder1,
-                session);
-        nuxeoDriveManager.unregisterSynchronizationRoot(someUser, folder1,
-                session);
-        commitAndWaitForAsyncCompletion();
         TransactionHelper.startTransaction();
-        changeSummary = getChangeSummary(someUser);
-        assertNotNull(changeSummary);
-        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-        assertFalse(changeSummary.getHasTooManyChanges());
-        commitAndWaitForAsyncCompletion();
+        try {
+            changeSummary = getChangeSummary(someUser);
+            assertNotNull(changeSummary);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertFalse(changeSummary.getHasTooManyChanges());
+
+            // Do it a second time to check that the client did not receive bad
+            // active root markers
+            nuxeoDriveManager.registerSynchronizationRoot(someUser, folder1,
+                    session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(someUser, folder1,
+                    session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changeSummary = getChangeSummary(someUser);
+            assertNotNull(changeSummary);
+            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+            assertFalse(changeSummary.getHasTooManyChanges());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
     }
 
     /**

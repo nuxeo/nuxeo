@@ -108,27 +108,30 @@ public class TestGetChangeSummary {
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Register sync roots and create 2 documents => should find 2 changes
+        DocumentModel doc1;
+        DocumentModel doc2;
         TransactionHelper.startTransaction();
-        Principal administrator = session.getPrincipal();
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1,
-                session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2,
-                session);
+        try {
+            Principal administrator = session.getPrincipal();
+            nuxeoDriveManager.registerSynchronizationRoot(administrator,
+                    folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(administrator,
+                    folder2, session);
 
-        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
-                "File");
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1."));
-        doc1 = session.createDocument(doc1);
-        Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
-                "File");
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2."));
-        doc2 = session.createDocument(doc2);
+            doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 1."));
+            doc1 = session.createDocument(doc1);
+            Thread.sleep(1000);
+            doc2 = session.createDocumentModel("/folder2", "doc2", "File");
+            doc2.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 2."));
+            doc2 = session.createDocument(doc2);
 
-        session.save();
-        TransactionHelper.commitOrRollbackTransaction();
+            session.save();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         changeSummary = getChangeSummary();
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();

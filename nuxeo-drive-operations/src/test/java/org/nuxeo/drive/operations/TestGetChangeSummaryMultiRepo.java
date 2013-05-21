@@ -168,36 +168,39 @@ public class TestGetChangeSummaryMultiRepo {
 
         // Register 3 sync roots and create 3 documents: 2 in the 'test'
         // repository, 1 in the 'other' repository
+        DocumentModel doc1;
+        DocumentModel doc2;
+        DocumentModel doc3;
         TransactionHelper.startTransaction();
-        Principal administrator = session.getPrincipal();
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1,
-                session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2,
-                session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder3,
-                otherSession);
+        try {
+            Principal administrator = session.getPrincipal();
+            nuxeoDriveManager.registerSynchronizationRoot(administrator,
+                    folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(administrator,
+                    folder2, session);
+            nuxeoDriveManager.registerSynchronizationRoot(administrator,
+                    folder3, otherSession);
 
-        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
-                "File");
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1."));
-        doc1 = session.createDocument(doc1);
-        Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
-                "File");
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2."));
-        doc2 = session.createDocument(doc2);
-        Thread.sleep(1000);
-        DocumentModel doc3 = otherSession.createDocumentModel("/folder3",
-                "doc3", "File");
-        doc3.setPropertyValue("file:content", new StringBlob(
-                "The content of file 3."));
-        doc3 = otherSession.createDocument(doc3);
+            doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 1."));
+            doc1 = session.createDocument(doc1);
+            Thread.sleep(1000);
+            doc2 = session.createDocumentModel("/folder2", "doc2", "File");
+            doc2.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 2."));
+            doc2 = session.createDocument(doc2);
+            Thread.sleep(1000);
+            doc3 = otherSession.createDocumentModel("/folder3", "doc3", "File");
+            doc3.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 3."));
+            doc3 = otherSession.createDocument(doc3);
 
-        session.save();
-        otherSession.save();
-        TransactionHelper.commitOrRollbackTransaction();
+            session.save();
+            otherSession.save();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // Look in all repositories => should find 3 changes
         FileSystemChangeSummary changeSummary = getChangeSummary();
