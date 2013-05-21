@@ -38,20 +38,40 @@ public class SuggestionHandlerDescriptor implements Cloneable {
         return enabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getSuggesterGroup() {
         return suggestGroup;
     }
 
+    public void setSuggesterGroup(String suggesterGroup) {
+        this.suggestGroup = suggesterGroup;
+    }
+
     public String getOperation() {
         return operation;
     }
 
+    public void setOperation(String operation) {
+        this.operation = operation;
+    }
+
     public String getOperationChain() {
         return operationChain;
+    }
+
+    public void setOperationChain(String operationChain) {
+        this.operationChain = operationChain;
     }
 
     /*
