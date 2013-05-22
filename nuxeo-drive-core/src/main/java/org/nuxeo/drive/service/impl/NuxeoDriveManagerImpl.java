@@ -110,7 +110,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         // Unregister any sub-folder of the new root
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
         SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
-        for (String existingRootPath : synchronizationRoots.paths) {
+        for (String existingRootPath : synchronizationRoots.getPaths()) {
             String prefixPath = newRootContainer.getPathAsString() + "/";
             if (existingRootPath.startsWith(prefixPath)) {
                 // Unregister the nested root sub-folder first
@@ -192,7 +192,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     public Set<IdRef> getSynchronizationRootReferences(CoreSession session)
             throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(session.getPrincipal());
-        return syncRoots.get(session.getRepositoryName()).refs;
+        return syncRoots.get(session.getRepositoryName()).getRefs();
     }
 
     @Override
@@ -286,7 +286,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         // incremental change summary
         Map<String, Set<IdRef>> activeRootRefs = new HashMap<String, Set<IdRef>>();
         for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
-            activeRootRefs.put(rootsEntry.getKey(), rootsEntry.getValue().refs);
+            activeRootRefs.put(rootsEntry.getKey(),
+                    rootsEntry.getValue().getRefs());
         }
         return new FileSystemChangeSummary(allChanges, activeRootRefs,
                 syncDate, hasTooManyChanges);
@@ -320,7 +321,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         String repoName = doc.getRepositoryName();
         SynchronizationRoots syncRoots = getSynchronizationRoots(principal).get(
                 repoName);
-        return syncRoots.refs.contains(doc.getRef());
+        return syncRoots.getRefs().contains(doc.getRef());
     }
 
     protected Map<String, SynchronizationRoots> computeSynchronizationRoots(

@@ -212,7 +212,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         auditQuerySb.append("log.repositoryId = :repositoryId");
         auditQuerySb.append(" and ");
         auditQuerySb.append("(");
-        if (!activeRoots.paths.isEmpty()) {
+        if (!activeRoots.getPaths().isEmpty()) {
             // detect changes under the currently active roots for the
             // current user
             auditQuerySb.append("(");
@@ -223,7 +223,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
             auditQuerySb.append(") and (");
             auditQuerySb.append(getCurrentRootFilteringClause(
-                    activeRoots.paths, params));
+                    activeRoots.getPaths(), params));
             auditQuerySb.append(") or ");
         }
         // detect any root (un-)registration changes for the roots previously
