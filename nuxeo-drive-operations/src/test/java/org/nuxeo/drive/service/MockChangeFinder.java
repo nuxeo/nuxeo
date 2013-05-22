@@ -30,7 +30,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
-import org.nuxeo.drive.service.impl.FileSystemItemChange;
+import org.nuxeo.drive.service.impl.FileSystemItemChangeImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -110,7 +110,8 @@ public class MockChangeFinder implements FileSystemChangeFinder {
 
     protected String getDateClause(long lastSuccessfulSyncDate, long syncDate) {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return String.format("dc:modified >= TIMESTAMP '%s' and dc:modified < TIMESTAMP '%s'",
+        return String.format(
+                "dc:modified >= TIMESTAMP '%s' and dc:modified < TIMESTAMP '%s'",
                 sdf.format(new Date(lastSuccessfulSyncDate)),
                 sdf.format(new Date(syncDate)));
     }
@@ -133,8 +134,8 @@ public class MockChangeFinder implements FileSystemChangeFinder {
                 String docUuid = doc.getId();
                 FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
                 if (fsItem != null) {
-                    docChanges.add(new FileSystemItemChange(eventId, eventDate,
-                            repositoryId, docUuid, fsItem));
+                    docChanges.add(new FileSystemItemChangeImpl(eventId,
+                            eventDate, repositoryId, docUuid, fsItem));
                 }
             }
             return docChanges;

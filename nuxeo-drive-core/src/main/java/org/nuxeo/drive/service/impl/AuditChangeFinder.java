@@ -29,6 +29,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
@@ -91,8 +92,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
                 driveManager.invalidateSynchronizationRootsCache(principalName);
                 Map<String, SynchronizationRoots> synchronizationRoots = driveManager.getSynchronizationRoots(session.getPrincipal());
-                activeRoots = synchronizationRoots.get(session.getRepositoryName());
-                entries = queryAuditEntries(session, activeRoots,
+                SynchronizationRoots updatedActiveRoots = synchronizationRoots.get(session.getRepositoryName());
+                entries = queryAuditEntries(session, updatedActiveRoots,
                         lastSuccessfulSyncDate, syncDate, limit);
                 break;
             }
@@ -140,7 +141,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     String fsId = fsIdInfo.getValue(String.class);
                     String fsName = entry.getExtendedInfos().get(
                             "fileSystemItemName").getValue(String.class);
-                    change = new FileSystemItemChange(entry.getEventId(),
+                    change = new FileSystemItemChangeImpl(entry.getEventId(),
                             entry.getEventDate().getTime(),
                             entry.getRepositoryId(), entry.getDocUUID(), fsId,
                             fsName);
@@ -212,7 +213,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         auditQuerySb.append("log.repositoryId = :repositoryId");
         auditQuerySb.append(" and ");
         auditQuerySb.append("(");
-        if (!activeRoots.paths.isEmpty()) {
+        if (!activeRoots.getPaths().isEmpty()) {
             // detect changes under the currently active roots for the
             // current user
             auditQuerySb.append("(");
@@ -223,7 +224,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
             auditQuerySb.append(") and (");
             auditQuerySb.append(getCurrentRootFilteringClause(
-                    activeRoots.paths, params));
+                    activeRoots.getPaths(), params));
             auditQuerySb.append(") or ");
         }
         // detect any root (un-)registration changes for the roots previously
@@ -297,9 +298,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
     }
 
-    protected FileSystemItemChange getFileSystemItemChange(CoreSession session,
-            DocumentRef docRef, LogEntry entry, String expectedFileSystemItemId)
-            throws ClientException {
+    protected FileSystemItemChange getFileSystemItemChange(
+            CoreSession session, DocumentRef docRef, LogEntry entry,
+            String expectedFileSystemItemId) throws ClientException {
         DocumentModel doc = session.getDocument(docRef);
         // TODO: check the facet, last root change and list of roots
         // to have a special handling for the roots.
@@ -310,6 +311,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         } catch (RootlessItemException e) {
             // Can happen for an unregistered synchronization root that cannot
             // be adapted as a FileSystemItem: nothing to do.
+            log.debug(String.format(
+                    "RootlessItemException thrown while trying to adapt document %s as a FileSystemItem.",
+                    docRef));
         }
         if (fsItem == null) {
             log.debug(String.format(
@@ -334,7 +338,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // detection filtering is using the logDate to have a nearly
         // guaranteed monotonic behavior that evenDate cannot
         // guarantee when facing long transactions.
-        return new FileSystemItemChange(entry.getEventId(),
+        return new FileSystemItemChangeImpl(entry.getEventId(),
                 entry.getEventDate().getTime(), entry.getRepositoryId(),
                 entry.getDocUUID(), fsItem);
     }

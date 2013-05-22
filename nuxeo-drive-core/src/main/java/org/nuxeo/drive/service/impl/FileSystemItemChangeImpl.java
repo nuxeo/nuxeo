@@ -16,17 +16,16 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemChange;
 
 /**
- * Representation of a file system item change.
+ * Default implementation of a {@link FileSystemItemChange}.
  *
  * @author Antoine Taillefer
  */
-public class FileSystemItemChange implements Serializable {
+public class FileSystemItemChangeImpl implements FileSystemItemChange {
 
     private static final long serialVersionUID = -5697869523880291618L;
 
@@ -44,11 +43,11 @@ public class FileSystemItemChange implements Serializable {
 
     protected String fileSystemItemName;
 
-    public FileSystemItemChange() {
+    public FileSystemItemChangeImpl() {
         // Needed for JSON deserialization
     }
 
-    public FileSystemItemChange(String eventId, long eventDate,
+    public FileSystemItemChangeImpl(String eventId, long eventDate,
             String repositoryId, String docUuid, String fileSystemItemId,
             String fileSystemItemName) {
         this.eventId = eventId;
@@ -68,11 +67,11 @@ public class FileSystemItemChange implements Serializable {
         this.fileSystemItemName = fileSystemItemName;
     }
 
-    public FileSystemItemChange(String eventId, long eventDate,
+    public FileSystemItemChangeImpl(String eventId, long eventDate,
             String repositoryId, String docUuid, FileSystemItem fsItem) {
         this(eventId, eventDate, repositoryId, docUuid, fsItem.getId(),
                 fsItem.getName());
-        setFileSystemItem(fsItem);
+        this.fileSystemItem = fsItem;
     }
 
     public String getFileSystemItemId() {

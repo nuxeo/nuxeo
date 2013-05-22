@@ -80,6 +80,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         return session;
     }
 
+    /**
+     * Closer for a {@link CoreSession} object held by {@link #openedSessions}.
+     * It is synchronized with the transaction within which the
+     * {@link CoreSession} was opened.
+     */
     protected class SessionCloser implements Synchronization {
 
         protected final CoreSession session;

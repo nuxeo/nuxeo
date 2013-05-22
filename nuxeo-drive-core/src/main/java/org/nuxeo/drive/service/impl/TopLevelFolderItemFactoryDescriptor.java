@@ -95,4 +95,9 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
                 ((TopLevelFolderItemFactoryDescriptor) obj).factoryClass.getName());
     }
 
+    @Override
+    public int hashCode() {
+        return factoryClass.getName().hashCode();
+    }
+
 }

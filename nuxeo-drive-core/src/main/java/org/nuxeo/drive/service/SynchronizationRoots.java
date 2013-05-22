@@ -27,11 +27,11 @@ import org.nuxeo.ecm.core.api.IdRef;
  */
 public class SynchronizationRoots {
 
-    public final String repositoryName;
+    protected final String repositoryName;
 
-    public final Set<String> paths;
+    protected final Set<String> paths;
 
-    public final Set<IdRef> refs;
+    protected final Set<IdRef> refs;
 
     public SynchronizationRoots(String repositoryName, Set<String> paths,
             Set<IdRef> refs) {
@@ -45,4 +45,17 @@ public class SynchronizationRoots {
         Set<IdRef> emptyRefs = Collections.emptySet();
         return new SynchronizationRoots(repositoryName, emptyPaths, emptyRefs);
     }
+
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
+    public Set<String> getPaths() {
+        return paths;
+    }
+
+    public Set<IdRef> getRefs() {
+        return refs;
+    }
+
 }

@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;

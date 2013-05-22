@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * Fetch the list of synchronization roots for the currently authenticated user.
  */
@@ -71,7 +70,7 @@ public class NuxeoDriveGetRootsOperation {
         DocumentModelList rootDocumentModels = new DocumentModelListImpl();
         for (Map.Entry<String, SynchronizationRoots> rootsEntry : roots.entrySet()) {
             if (session.getRepositoryName().equals(rootsEntry.getKey())) {
-                Set<IdRef> references = rootsEntry.getValue().refs;
+                Set<IdRef> references = rootsEntry.getValue().getRefs();
                 rootDocumentModels.addAll(session.getDocuments(references.toArray(new DocumentRef[references.size()])));
             } else {
                 if (allRepositories) {

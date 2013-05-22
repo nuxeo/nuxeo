@@ -35,8 +35,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
-import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
-import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

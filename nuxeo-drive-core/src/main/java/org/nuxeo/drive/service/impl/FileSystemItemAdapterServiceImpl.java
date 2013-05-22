@@ -336,10 +336,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         String userName = doc.getCoreSession().getPrincipal().getName();
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {
-            if (userName.equals(subscription.get("username"))) {
-                if (Boolean.TRUE.equals(subscription.get("enabled"))) {
-                    return true;
-                }
+            if (userName.equals(subscription.get("username"))
+                    && Boolean.TRUE.equals(subscription.get("enabled"))) {
+                return true;
             }
         }
         return false;

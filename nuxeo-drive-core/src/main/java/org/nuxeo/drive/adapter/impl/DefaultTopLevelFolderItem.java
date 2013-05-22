@@ -66,7 +66,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
                 NuxeoDriveManager.class).getSynchronizationRoots(principal);
         for (String repositoryName : syncRootsByRepo.keySet()) {
             CoreSession session = getSession(repositoryName);
-            Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).refs;
+            Set<IdRef> syncRootRefs = syncRootsByRepo.get(repositoryName).getRefs();
             Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
             while (syncRootRefsIt.hasNext()) {
                 IdRef idRef = syncRootRefsIt.next();

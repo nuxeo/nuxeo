@@ -181,6 +181,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     }
 
     @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
+
+    @Override
     public String toString() {
         return String.format("%s(id=\"%s\", name=\"%s\")",
                 getClass().getSimpleName(), getId(), getName());

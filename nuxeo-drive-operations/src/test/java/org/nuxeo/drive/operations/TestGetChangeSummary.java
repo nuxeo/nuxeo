@@ -28,10 +28,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.service.FileSystemChangeSummary;
+import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.MockChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
-import org.nuxeo.drive.service.impl.FileSystemItemChange;
+import org.nuxeo.drive.service.impl.FileSystemChangeSummaryImpl;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -182,7 +183,8 @@ public class TestGetChangeSummary {
         assertNotNull(changeSummaryJSON);
 
         FileSystemChangeSummary changeSummary = mapper.readValue(
-                changeSummaryJSON.getStream(), FileSystemChangeSummary.class);
+                changeSummaryJSON.getStream(),
+                FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 
         lastSuccessfulSync = changeSummary.getSyncDate();

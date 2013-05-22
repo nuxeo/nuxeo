@@ -8,9 +8,22 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.IdRef;
 
+/**
+ * Helper to handle synchronization root definitions.
+ *
+ * @author Antoine Taillefer
+ */
 public class RootDefinitionsHelper {
 
-    public static Map<String, Set<IdRef>> parseRootDefinitions(String rootDefinitions) {
+    private RootDefinitionsHelper() {
+        // Utility class
+    }
+
+    /**
+     * Parses the given synchronization root definitions string.
+     */
+    public static Map<String, Set<IdRef>> parseRootDefinitions(
+            String rootDefinitions) {
         Map<String, Set<IdRef>> lastActiveRootRefs = new LinkedHashMap<String, Set<IdRef>>();
         if (rootDefinitions != null) {
             String[] rootDefinitionComponents = StringUtils.split(

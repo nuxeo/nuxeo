@@ -140,7 +140,7 @@ public class DocumentBackedFileItem extends
     }
 
     /*--------------------- Protected -----------------*/
-    protected void initialize(VersioningFileSystemItemFactory factory,
+    protected final void initialize(VersioningFileSystemItemFactory factory,
             DocumentModel doc) throws ClientException {
         this.factory = factory;
         this.name = getFileName(doc);

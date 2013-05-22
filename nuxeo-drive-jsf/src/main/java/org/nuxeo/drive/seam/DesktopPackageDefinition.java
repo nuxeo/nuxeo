@@ -35,22 +35,22 @@ public class DesktopPackageDefinition {
 
     protected final boolean isLink;
 
-    protected final String URL;
+    protected final String url;
 
     public DesktopPackageDefinition(File file, String name, String platform) {
         this.file = file;
         this.name = name;
         this.platform = platform;
         this.isLink = false;
-        this.URL = null;
+        this.url = null;
     }
 
-    public DesktopPackageDefinition(String URL, String name, String platform) {
+    public DesktopPackageDefinition(String url, String name, String platform) {
         this.file = null;
         this.name = name;
         this.platform = platform;
         this.isLink = true;
-        this.URL = URL;
+        this.url = url;
     }
 
     public File getFile() {
@@ -74,7 +74,7 @@ public class DesktopPackageDefinition {
     }
 
     public String getURL() {
-        return URL;
+        return url;
     }
 
 }
