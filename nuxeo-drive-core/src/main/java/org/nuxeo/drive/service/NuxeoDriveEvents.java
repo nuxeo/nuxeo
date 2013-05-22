@@ -19,20 +19,20 @@ package org.nuxeo.drive.service;
 
 import java.io.Serializable;
 
-public interface NuxeoDriveEvents {
+public final class NuxeoDriveEvents {
 
-    String ABOUT_TO_REGISTER_ROOT = "aboutToRegisterRoot";
+    public static final String ABOUT_TO_REGISTER_ROOT = "aboutToRegisterRoot";
 
-    String ROOT_REGISTERED = "rootRegistered";
+    public static final String ROOT_REGISTERED = "rootRegistered";
 
-    String ABOUT_TO_UNREGISTER_ROOT = "aboutToUnRegisterRoot";
+    public static final String ABOUT_TO_UNREGISTER_ROOT = "aboutToUnRegisterRoot";
 
-    String ROOT_UNREGISTERED = "rootUnregistered";
+    public static final String ROOT_UNREGISTERED = "rootUnregistered";
 
-    String IMPACTED_USERNAME_PROPERTY = "impactedUserName";
+    public static final String IMPACTED_USERNAME_PROPERTY = "impactedUserName";
 
-    Serializable EVENT_CATEGORY = "NuxeoDrive";
+    public static final Serializable EVENT_CATEGORY = "NuxeoDrive";
 
-    String DELETED_EVENT = "deleted";
+    public static final String DELETED_EVENT = "deleted";
 
 }
