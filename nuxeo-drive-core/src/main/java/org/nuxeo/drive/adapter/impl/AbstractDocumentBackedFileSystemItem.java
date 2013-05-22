@@ -194,7 +194,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         return getSession(repositoryName);
     }
 
-    protected String computeId(String docId) {
+    protected final String computeId(String docId) {
         StringBuilder sb = new StringBuilder();
         sb.append(super.getId());
         sb.append(repositoryName);
