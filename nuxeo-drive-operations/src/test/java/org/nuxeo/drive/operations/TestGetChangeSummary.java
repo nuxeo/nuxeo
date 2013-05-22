@@ -35,7 +35,7 @@ import org.nuxeo.drive.service.impl.FileSystemItemChange;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -55,7 +55,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(RestFeature.class)
+@Features(EmbeddedAutomationServerFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @Jetty(port = 18080)
@@ -108,27 +108,30 @@ public class TestGetChangeSummary {
         assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         // Register sync roots and create 2 documents => should find 2 changes
+        DocumentModel doc1;
+        DocumentModel doc2;
         TransactionHelper.startTransaction();
-        Principal administrator = session.getPrincipal();
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1,
-                session);
-        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2,
-                session);
+        try {
+            Principal administrator = session.getPrincipal();
+            nuxeoDriveManager.registerSynchronizationRoot(administrator,
+                    folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(administrator,
+                    folder2, session);
 
-        DocumentModel doc1 = session.createDocumentModel("/folder1", "doc1",
-                "File");
-        doc1.setPropertyValue("file:content", new StringBlob(
-                "The content of file 1."));
-        doc1 = session.createDocument(doc1);
-        Thread.sleep(1000);
-        DocumentModel doc2 = session.createDocumentModel("/folder2", "doc2",
-                "File");
-        doc2.setPropertyValue("file:content", new StringBlob(
-                "The content of file 2."));
-        doc2 = session.createDocument(doc2);
+            doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+            doc1.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 1."));
+            doc1 = session.createDocument(doc1);
+            Thread.sleep(1000);
+            doc2 = session.createDocumentModel("/folder2", "doc2", "File");
+            doc2.setPropertyValue("file:content", new StringBlob(
+                    "The content of file 2."));
+            doc2 = session.createDocument(doc2);
 
-        session.save();
-        TransactionHelper.commitOrRollbackTransaction();
+            session.save();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         changeSummary = getChangeSummary();
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
@@ -165,9 +168,9 @@ public class TestGetChangeSummary {
     }
 
     /**
-     * Gets the changes summary for the user bound to the
-     * {@link #session} using the {@link NuxeoDriveGetChangeSummary}
-     * automation operation and updates the {@link #lastSuccessfulSync} date.
+     * Gets the changes summary for the user bound to the {@link #session} using
+     * the {@link NuxeoDriveGetChangeSummary} automation operation and updates
+     * the {@link #lastSuccessfulSync} date.
      */
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second

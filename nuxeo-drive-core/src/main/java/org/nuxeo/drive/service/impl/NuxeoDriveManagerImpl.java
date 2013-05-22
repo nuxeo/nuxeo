@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -92,8 +93,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         cache.clear();
     }
 
+    @Override
     public void invalidateSynchronizationRootsCache(String userName) {
-        log.debug("Invalidating synchronization root cache for user: " + userName);
+        log.debug("Invalidating synchronization root cache for user: "
+                + userName);
         cache.remove(userName.intern());
     }
 
@@ -101,6 +104,9 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     public void registerSynchronizationRoot(Principal principal,
             DocumentModel newRootContainer, CoreSession session)
             throws ClientException {
+
+        checkCanUpdateSynchronizationRoot(newRootContainer, session);
+
         // Unregister any sub-folder of the new root
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
         SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
@@ -122,14 +128,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         String userName = principal.getName();
         fireEvent(newRootContainer, session,
                 NuxeoDriveEvents.ABOUT_TO_REGISTER_ROOT, userName);
-        if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
-            throw new ClientException(
-                    String.format(
-                            "Document '%s' (%s) is not a suitable synchronization root"
-                                    + " as it is either a readonly proxy or an archived version.",
-                            newRootContainer.getTitle(),
-                            newRootContainer.getRef()));
-        }
+
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) newRootContainer.getPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY);
         boolean updated = false;
@@ -163,6 +162,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     public void unregisterSynchronizationRoot(Principal principal,
             DocumentModel rootContainer, CoreSession session)
             throws ClientException {
+        checkCanUpdateSynchronizationRoot(rootContainer, session);
         if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             rootContainer.addFacet(NUXEO_DRIVE_FACET);
         }
@@ -352,6 +352,31 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 session.getRepositoryName(), paths, references);
         syncRoots.put(session.getRepositoryName(), repoSyncRoots);
         return syncRoots;
+    }
+
+    protected void checkCanUpdateSynchronizationRoot(
+            DocumentModel newRootContainer, CoreSession session)
+            throws ClientException {
+        // Cannot update a proxy or a version
+        if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
+            throw new ClientException(
+                    String.format(
+                            "Document '%s' (%s) is not a suitable synchronization root"
+                                    + " as it is either a readonly proxy or an archived version.",
+                            newRootContainer.getTitle(),
+                            newRootContainer.getRef()));
+        }
+        // Cannot update a document without the WriteProperties permission
+        if (!session.hasPermission(newRootContainer.getRef(),
+                SecurityConstants.WRITE_PROPERTIES)) {
+            throw new ClientException(
+                    String.format(
+                            "Document '%s' (%s) is not a suitable synchronization root"
+                                    + " for user %s without the WriteProperties permission.",
+                            newRootContainer.getTitle(),
+                            newRootContainer.getRef(),
+                            session.getPrincipal().getName()));
+        }
     }
 
     // TODO: make changeFinder overridable with an extension point and

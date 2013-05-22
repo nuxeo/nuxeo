@@ -75,14 +75,21 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             // We either reached the root of the repository or a document for
             // which the current user doesn't have read access to its parent,
             // without being adapted to a (possibly virtual) descendant of the
-            // the top level folder item.
+            // top level folder item.
             // Let's raise a marker exception and let the caller give more
             // information on the source document.
             throw new RootlessItemException();
         } else {
             FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
                     parentDoc, true);
-            // TODO: handle NPE on parent
+            if (parent == null) {
+                // We reached a document for which the parent document cannot be
+                // adapted to a (possibly virtual) descendant of the top level
+                // folder item.
+                // Let's raise a marker exception and let the caller give more
+                // information on the source document.
+                throw new RootlessItemException();
+            }
             parentId = parent.getId();
             path = parent.getPath() + '/' + id;
         }

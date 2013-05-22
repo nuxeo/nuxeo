@@ -50,7 +50,7 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -82,7 +82,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(RestFeature.class)
+@Features(EmbeddedAutomationServerFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
@@ -178,73 +178,78 @@ public class TestPermissionHierarchy {
     public void init() throws Exception {
 
         TransactionHelper.startTransaction();
+        try {
+            // Create test users
+            createUser("user1", "user1");
+            createUser("user2", "user2");
 
-        // Create test users
-        createUser("user1", "user1");
-        createUser("user2", "user2");
+            // Open a core session for each user
+            session1 = repository.openSessionAs("user1");
+            session2 = repository.openSessionAs("user2");
 
-        // Open a core session for each user
-        session1 = repository.openSessionAs("user1");
-        session2 = repository.openSessionAs("user2");
+            // Create user workspace for each user
+            userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                    session1, null);
+            userWorkspace2 = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                    session2, null);
 
-        // Create user workspace for each user
-        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session1, null);
-        userWorkspace2 = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session2, null);
+            userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
+                    + userWorkspace1.getId();
+            userWorkspace1ItemPath = "/" + TOP_LEVEL_ID + "/"
+                    + userWorkspace1ItemId;
 
-        userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
-                + userWorkspace1.getId();
-        userWorkspace1ItemPath = "/" + TOP_LEVEL_ID + "/"
-                + userWorkspace1ItemId;
+            // Populate user workspaces
+            // user1
+            user1Folder1 = createFolder(session1,
+                    userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
+            user1File1 = createFile(session1, user1Folder1.getPathAsString(),
+                    "user1File1", "File", "user1File1.txt", CONTENT_PREFIX
+                            + "user1File1");
+            user1Folder2 = createFolder(session1,
+                    user1Folder1.getPathAsString(), "user1Folder2", "Folder");
+            user1File2 = createFile(session1, userWorkspace1.getPathAsString(),
+                    "user1File2", "File", "user1File2.txt", CONTENT_PREFIX
+                            + "user1File2");
+            user1Folder3 = createFolder(session1,
+                    userWorkspace1.getPathAsString(), "user1Folder3", "Folder");
+            user1File3 = createFile(session1, user1Folder3.getPathAsString(),
+                    "user1File3", "File", "user1File3.txt", CONTENT_PREFIX
+                            + "user1File3");
+            user1Folder4 = createFolder(session1,
+                    userWorkspace1.getPathAsString(), "user1Folder4", "Folder");
+            session1.save();
+            // user2
+            user2Folder1 = createFolder(session2,
+                    userWorkspace2.getPathAsString(), "user2Folder1", "Folder");
+            user2File1 = createFile(session2, user2Folder1.getPathAsString(),
+                    "user2File1", "File", "user2File1.txt", CONTENT_PREFIX
+                            + "user2File1");
+            user2Folder2 = createFolder(session2,
+                    user2Folder1.getPathAsString(), "user2Folder2", "Folder");
+            user2File2 = createFile(session2, userWorkspace2.getPathAsString(),
+                    "user2File2", "File", "user2File2.txt", CONTENT_PREFIX
+                            + "user2File2");
+            user2Folder3 = createFolder(session2,
+                    userWorkspace2.getPathAsString(), "user2Folder3", "Folder");
+            user2File3 = createFile(session2, user2Folder3.getPathAsString(),
+                    "user2File3", "File", "user2File3.txt", CONTENT_PREFIX
+                            + "user2File3");
+            session2.save();
+            setPermission(user2Folder1, "user1", SecurityConstants.READ_WRITE,
+                    true);
+            setPermission(user2Folder3, "user1", SecurityConstants.READ_WRITE,
+                    true);
 
-        // Populate user workspaces
-        // user1
-        user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(),
-                "user1Folder1", "Folder");
-        user1File1 = createFile(session1, user1Folder1.getPathAsString(),
-                "user1File1", "File", "user1File1.txt", CONTENT_PREFIX
-                        + "user1File1");
-        user1Folder2 = createFolder(session1, user1Folder1.getPathAsString(),
-                "user1Folder2", "Folder");
-        user1File2 = createFile(session1, userWorkspace1.getPathAsString(),
-                "user1File2", "File", "user1File2.txt", CONTENT_PREFIX
-                        + "user1File2");
-        user1Folder3 = createFolder(session1, userWorkspace1.getPathAsString(),
-                "user1Folder3", "Folder");
-        user1File3 = createFile(session1, user1Folder3.getPathAsString(),
-                "user1File3", "File", "user1File3.txt", CONTENT_PREFIX
-                        + "user1File3");
-        user1Folder4 = createFolder(session1, userWorkspace1.getPathAsString(),
-                "user1Folder4", "Folder");
-        session1.save();
-        // user2
-        user2Folder1 = createFolder(session2, userWorkspace2.getPathAsString(),
-                "user2Folder1", "Folder");
-        user2File1 = createFile(session2, user2Folder1.getPathAsString(),
-                "user2File1", "File", "user2File1.txt", CONTENT_PREFIX
-                        + "user2File1");
-        user2Folder2 = createFolder(session2, user2Folder1.getPathAsString(),
-                "user2Folder2", "Folder");
-        user2File2 = createFile(session2, userWorkspace2.getPathAsString(),
-                "user2File2", "File", "user2File2.txt", CONTENT_PREFIX
-                        + "user2File2");
-        user2Folder3 = createFolder(session2, userWorkspace2.getPathAsString(),
-                "user2Folder3", "Folder");
-        user2File3 = createFile(session2, user2Folder3.getPathAsString(),
-                "user2File3", "File", "user2File3.txt", CONTENT_PREFIX
-                        + "user2File3");
-        session2.save();
-        setPermission(user2Folder1, "user1", SecurityConstants.READ_WRITE, true);
-        setPermission(user2Folder3, "user1", SecurityConstants.READ_WRITE, true);
-
-        // Register shared folders as synchronization roots for user1
-        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
-                session1.getDocument(user2Folder1.getRef()), session1);
-        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
-                session1.getDocument(user2Folder3.getRef()), session1);
-
-        TransactionHelper.commitOrRollbackTransaction();
+            // Register shared folders as synchronization roots for user1
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session1.getPrincipal(),
+                    session1.getDocument(user2Folder1.getRef()), session1);
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session1.getPrincipal(),
+                    session1.getDocument(user2Folder3.getRef()), session1);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // Get an Automation client session for each user
         clientSession1 = automationClient.getSession("user1", "user1");
@@ -316,9 +321,12 @@ public class TestPermissionHierarchy {
          * </pre>
          */
         TransactionHelper.startTransaction();
-        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
-                userWorkspace1, session1);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session1.getPrincipal(), userWorkspace1, session1);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // ---------------------------------------------
         // Check top level folder children
@@ -508,9 +516,12 @@ public class TestPermissionHierarchy {
          * </pre>
          */
         TransactionHelper.startTransaction();
-        nuxeoDriveManager.unregisterSynchronizationRoot(
-                session1.getPrincipal(), userWorkspace1, session1);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            nuxeoDriveManager.unregisterSynchronizationRoot(
+                    session1.getPrincipal(), userWorkspace1, session1);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // ---------------------------------------------
         // Check "My Docs"
@@ -569,11 +580,14 @@ public class TestPermissionHierarchy {
          * </pre>
          */
         TransactionHelper.startTransaction();
-        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
-                user1Folder3, session1);
-        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
-                user1Folder4, session1);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session1.getPrincipal(), user1Folder3, session1);
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session1.getPrincipal(), user1Folder4, session1);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // --------------------------------------------
         // Check user synchronization roots
@@ -631,10 +645,13 @@ public class TestPermissionHierarchy {
          * </pre>
          */
         TransactionHelper.startTransaction();
-        nuxeoDriveManager.unregisterSynchronizationRoot(
-                session1.getPrincipal(),
-                session1.getDocument(user2Folder1.getRef()), session1);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            nuxeoDriveManager.unregisterSynchronizationRoot(
+                    session1.getPrincipal(),
+                    session1.getDocument(user2Folder1.getRef()), session1);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // ---------------------------------------------
         // Check shared synchronization roots
