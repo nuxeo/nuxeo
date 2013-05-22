@@ -151,11 +151,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
         newRootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
                 (Serializable) subscriptions);
-        newRootContainer = session.saveDocument(newRootContainer);
+        DocumentModel savedNewRootContainer = session.saveDocument(newRootContainer);
         session.save();
         invalidateSynchronizationRootsCache(userName);
-        fireEvent(newRootContainer, session, NuxeoDriveEvents.ROOT_REGISTERED,
-                userName);
+        fireEvent(savedNewRootContainer, session,
+                NuxeoDriveEvents.ROOT_REGISTERED, userName);
     }
 
     @Override
