@@ -33,13 +33,20 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
-public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker implements PostCommitEventListener  {
+public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker
+        implements PostCommitFilteringEventListener {
 
     private static final Log log = LogFactory.getLog(AsynchronousUnicityCheckListener.class);
 
+    @Override
+    public boolean acceptEvent(Event event) {
+        return isUnicityCheckEnabled();
+    }
+
+    @Override
     public void handleEvent(EventBundle events) throws ClientException {
         if (!isUnicityCheckEnabled()) {
             return;
