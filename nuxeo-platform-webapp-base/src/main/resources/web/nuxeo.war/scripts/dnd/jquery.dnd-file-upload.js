@@ -7,8 +7,10 @@
 (function($) {
 
   var sendingRequestsInProgress=false;
+  var tryToUploadDirectoryContent=false;
   var uploadStack = new Array();
   var uploadIdx=0;
+  var nbDropFilesToProcess=0;
   var nbUploadInprogress=0;
   var completedUploads = new Array();
 
@@ -110,23 +112,18 @@
   }
 
   function getDirectoryEntries(directoryReader, opts) {
-   // this function is async !
-   var nbReads = 0;
-   var readEntries = function () {
+    nbDropFilesToProcess+=1;
+    var readEntries = function () {
        directoryReader.readEntries(function (results) {
            if (!results.length) {
-               if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
-                 uploadFiles(opts);
-               }
+             processFileEntry(null, opts);
            } else {
+             nbDropFilesToProcess+=(results || []).length-1;
              for (var i = 0; i < (results || []).length; i++) {
                if (results[i].isDirectory) {
                  getDirectoryEntries(results[i].createReader(), opts);
                } else {
-               results[i].file(function (f) {
-               nbReads++;
-                 uploadStack.push(f);
-                 }, function(e){log(e)});
+                 results[i].file(function (f) {processFileEntry(f, opts);}, function(e){log(e);});
                }
              }
              readEntries();
@@ -134,64 +131,75 @@
        }, function (e) {log(e)});
    };
    readEntries();
-   return nbReads;
   }
 
-  function isFolder(fileOb) {
-    // Folder size is 0 under Win / %4096 under Linux / variable under MacOS
-    if (!fileOb.type && fileOb.size<(4096*4+1)) {
-        try {
-            reader = new FileReader();
-            var binary = reader.readAsBinaryString(fileOb);
-            if (binary) {
-              return false;
-            }
-            return true;
-        } catch (err) {
-            return true;
-        }
-    }
-      return false;
-  }
-
-  function drop(event, opts) {
-
-    event.preventDefault();
-    var files = event.dataTransfer.files;
-    var skipedFolder=false;
-    for ( var i = 0; i < files.length; i++) {
-      var cfile = files[i];
-      if (isFolder(cfile)) {
-        log("this is a folder");
-        // disable folder upload for now
-        if (false && event.dataTransfer.items && event.dataTransfer.items[i].webkitGetAsEntry) {
-          var folderEntry = event.dataTransfer.items[i].webkitGetAsEntry();
-          var directoryReader = folderEntry.createReader();
-          if (directoryReader) {
-             if (getDirectoryEntries(directoryReader, opts)==0) {
-               log("folder is empty");
-               skipedFolder=true;
-             };
-          } else {
-           skipedFolder=true;
+  function processFileOrFolderEntryAsync(fileOb, opts, fileCB, folderCB, transferItem) {
+      // filter Folders from dropped content
+      // Folder size is 0 under Win / %4096 under Linux / variable under MacOS
+      if (!fileOb.type && fileOb.size<(4096*4+1)) {
+          try {
+              // need to test the file by reading it ...
+              var reader = new FileReader();
+              reader.onerror=function(e){
+                folderCB(fileOb,opts, transferItem);
+              };
+              reader.onabort=function(e){
+                folderCB(fileOb,opts, transferItem);
+              };
+              reader.onload=function(e){
+                fileCB(fileOb,opts);
+              };
+              reader.readAsBinaryString(fileOb);
+          } catch (err) {
+              folderCB(fileOb, opts, transferItem);
           }
-        } else {
-          skipedFolder=true;
-        }
-        if (skipedFolder)  {
-          log("Skiped folder");
-        }
       } else {
-         uploadStack.push(cfile);
+        fileCB(fileOb, opts);
       }
     }
 
+  function cancelUploadIfNoValidFileWasDropped(opts) {
+     if (uploadStack.length==0 && uploadIdx==0 && nbDropFilesToProcess==0) {
+        opts.handler.cancelUpload();
+     }
+  }
+
+  function processFileEntry(cfile, opts) {
+    nbDropFilesToProcess--;
+    if (cfile) {
+      uploadStack.push(cfile);
+    }
     if (opts.directUpload && !sendingRequestsInProgress && uploadStack.length>0) {
-      uploadFiles(opts);
+        uploadFiles(opts);
     } else {
-        if (uploadStack.length==0 && skipedFolder) {
-          opts.handler.cancelUpload();
+        cancelUploadIfNoValidFileWasDropped(opts);
+    }
+  }
+
+  function processFolderEntry(cfolder,opts, folderEntry) {
+    if (tryToUploadDirectoryContent && folderEntry) {
+        var directoryReader = folderEntry.createReader();
+        if (directoryReader) {
+          getDirectoryEntries(directoryReader, opts);
         }
+    } else {
+      nbDropFilesToProcess--;
+      log("skipping folder");
+    }
+    cancelUploadIfNoValidFileWasDropped(opts);
+  }
+
+  function drop(event, opts) {
+    event.preventDefault();
+    var files = event.dataTransfer.files;
+    nbDropFilesToProcess+=files.length;
+    for ( var i = 0; i < files.length; i++) {
+      var cfile = files[i];
+      var folderEntry;
+      if (event.dataTransfer.items && event.dataTransfer.items[i].webkitGetAsEntry) {
+        folderEntry = event.dataTransfer.items[i].webkitGetAsEntry();
+      }
+      processFileOrFolderEntryAsync(cfile, opts, processFileEntry, processFolderEntry, folderEntry);
     }
     return false;
   }
@@ -337,7 +345,7 @@
     if (!sendingRequestsInProgress && uploadStack.length>0) {
       // restart upload
       log("restart pending uploads");
-      upload.uploadFiles(opts)
+      upload.uploadFiles(opts);
     }
     else if (nbUploadInprogress==0) {
       opts.handler.batchFinished(upload.batchId);
