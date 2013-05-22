@@ -45,7 +45,8 @@ import org.nuxeo.ecm.platform.ui.web.directory.SelectItemComparator;
  * @author Cagatay-Mert
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class UISelectItems extends javax.faces.component.UISelectItems {
+public class UISelectItems extends javax.faces.component.UISelectItems
+        implements ResettableComponent {
 
     private static final Log log = LogFactory.getLog(UISelectItems.class);
 
@@ -341,4 +342,16 @@ public class UISelectItems extends javax.faces.component.UISelectItems {
         ordering = (String) values[6];
         caseSensitive = (Boolean) values[7];
     }
+
+    /**
+     * Reset the local value set, useful to reset cache on ajax action when
+     * using a shuttle widget for instance.
+     *
+     * @since 5.7
+     */
+    @Override
+    public void resetCachedModel() {
+        setValue(null);
+    }
+
 }

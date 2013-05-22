@@ -16,6 +16,7 @@
       <a4j:commandLink immediate="true"
         value="#{messages['command.directoryBack']}"
         action="#{groupManagementActions.toggleShowUserOrGroup}"
+        actionListener="#{resetActions.resetComponents}"
         reRender="groupsPanel"
         eventsQueue="adminCenterQueue">
         <h:graphicImage value="/icons/arrow_left.gif" />

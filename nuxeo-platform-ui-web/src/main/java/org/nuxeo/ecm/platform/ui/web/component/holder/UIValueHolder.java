@@ -32,6 +32,7 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasEvent;
+import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import org.nuxeo.ecm.platform.ui.web.component.VariableManager;
 
 import com.sun.facelets.tag.jsf.ComponentSupport;
@@ -44,7 +45,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  *
  * @since 5.5
  */
-public class UIValueHolder extends UIInput {
+public class UIValueHolder extends UIInput implements ResettableComponent {
 
     private static final Log log = LogFactory.getLog(UIValueHolder.class);
 
@@ -359,6 +360,18 @@ public class UIValueHolder extends UIInput {
     public Object saveState(FacesContext context) {
         return new Object[] { super.saveState(context), var, defaultValue,
                 submitValue, getSubmittedValue() };
+    }
+
+    /**
+     * Resets the value holder local values
+     *
+     * @since 5.7
+     */
+    @Override
+    public void resetCachedModel() {
+        setValue(null);
+        setLocalValueSet(false);
+        setSubmittedValue(null);
     }
 
 }
