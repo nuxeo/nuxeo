@@ -32,14 +32,29 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
  * Pluggable {@link DocumentAdapterFactory} used to return the right
  * {@link TemplateBasedDocument} or {@link TemplateSourceDocument}
  * implementation according to given {@link DocumentModel}.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
- * 
+ *
  */
 public class TemplateAdapterFactory implements DocumentAdapterFactory {
 
     protected static final Log log = LogFactory.getLog(TemplateAdapterFactory.class);
 
+    /**
+     * Checks if the document can be adapted. Also works on a
+     * ShallowDocumentModel.
+     */
+    public static boolean isAdaptable(DocumentModel doc, Class<?> adapterClass) {
+        if (adapterClass.equals(TemplateBasedDocument.class)) {
+            return doc.hasFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
+        }
+        if (adapterClass.equals(TemplateSourceDocument.class)) {
+            return doc.hasFacet(TemplateSourceDocumentAdapterImpl.TEMPLATE_FACET);
+        }
+        return false;
+    }
+
+    @Override
     @SuppressWarnings("rawtypes")
     public Object getAdapter(DocumentModel doc, Class adapterClass) {
 
