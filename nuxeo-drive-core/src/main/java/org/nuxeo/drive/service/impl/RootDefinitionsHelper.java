@@ -10,7 +10,12 @@ import org.nuxeo.ecm.core.api.IdRef;
 
 public class RootDefinitionsHelper {
 
-    public static Map<String, Set<IdRef>> parseRootDefinitions(String rootDefinitions) {
+    private RootDefinitionsHelper() {
+        // Utility class
+    }
+
+    public static Map<String, Set<IdRef>> parseRootDefinitions(
+            String rootDefinitions) {
         Map<String, Set<IdRef>> lastActiveRootRefs = new LinkedHashMap<String, Set<IdRef>>();
         if (rootDefinitions != null) {
             String[] rootDefinitionComponents = StringUtils.split(
