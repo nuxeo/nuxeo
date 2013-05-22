@@ -310,6 +310,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         } catch (RootlessItemException e) {
             // Can happen for an unregistered synchronization root that cannot
             // be adapted as a FileSystemItem: nothing to do.
+            log.debug(String.format(
+                    "RootlessItemException thrown while trying to adapt document %s as a FileSystemItem.",
+                    docRef));
         }
         if (fsItem == null) {
             log.debug(String.format(
