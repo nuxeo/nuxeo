@@ -91,8 +91,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
                 driveManager.invalidateSynchronizationRootsCache(principalName);
                 Map<String, SynchronizationRoots> synchronizationRoots = driveManager.getSynchronizationRoots(session.getPrincipal());
-                activeRoots = synchronizationRoots.get(session.getRepositoryName());
-                entries = queryAuditEntries(session, activeRoots,
+                SynchronizationRoots updatedActiveRoots = synchronizationRoots.get(session.getRepositoryName());
+                entries = queryAuditEntries(session, updatedActiveRoots,
                         lastSuccessfulSyncDate, syncDate, limit);
                 break;
             }
