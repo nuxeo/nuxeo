@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
+import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.drive.service.NuxeoDriveManager;

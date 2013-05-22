@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
@@ -71,8 +72,8 @@ public class FileSystemChangeSummary implements Serializable {
         return fileSystemChanges;
     }
 
-    public void setFileSystemChanges(List<FileSystemItemChange> hanges) {
-        this.fileSystemChanges = hanges;
+    public void setFileSystemChanges(List<FileSystemItemChange> changes) {
+        this.fileSystemChanges = changes;
     }
 
     /**
