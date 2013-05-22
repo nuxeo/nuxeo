@@ -11,19 +11,14 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -33,7 +28,6 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
@@ -492,12 +486,20 @@ public abstract class AbstractAutomationClientTest {
     }
 
     @Test
-    @Ignore
     public void testUploadSmallFile() throws Exception {
         DigestMockInputStream source = new DigestMockInputStream(100);
         FileInputStream in = new UploadFileSupport(session,
                 automationTestFolder.getPath()).testUploadFile(source);
-        assertTrue(source.checkDigest(in));
+        byte[] sentSum = source.digest.digest();
+        while (in.available() > 0) {
+            source.digest.update((byte) in.read());
+        }
+        byte[] receivedSum = source.digest.digest();
+        assertTrue(
+                "Expected (sent) bytes array: " + Arrays.toString(sentSum)
+                        + " - Actual (received) bytes array: "
+                        + Arrays.toString(receivedSum),
+                MessageDigest.isEqual(sentSum, receivedSum));
     }
 
     @Test
