@@ -10,16 +10,33 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.template.adapters.TemplateAdapterFactory;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
-public class TemplateTypeBindingListener implements PostCommitEventListener {
+public class TemplateTypeBindingListener implements PostCommitFilteringEventListener {
 
     protected static Log log = LogFactory.getLog(TemplateTypeBindingListener.class);
+
+    @Override
+    public boolean acceptEvent(Event event) {
+        EventContext context = event.getContext();
+        if (!(context instanceof DocumentEventContext)) {
+            return false;
+        }
+        DocumentModel doc = ((DocumentEventContext) context).getSourceDocument();
+        if (doc == null || doc.isVersion()) {
+            return false;
+        }
+        // we cannot directly adapt the ShallowDocumentModel,
+        // so check the adapter factory manually
+        return TemplateAdapterFactory.isAdaptable(doc,
+                TemplateSourceDocument.class);
+    }
 
     @Override
     public void handleEvent(EventBundle eventBundle) throws ClientException {
