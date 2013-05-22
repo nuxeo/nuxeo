@@ -21,7 +21,6 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -141,7 +140,6 @@ public interface NuxeoDriveManager {
      * TODO: make it overridable with an extension point and remove setter.
      */
     public void setChangeFinder(FileSystemChangeFinder changeFinder);
-
 
     /**
      * Invalidate the synchronization roots cache for a given user so as to

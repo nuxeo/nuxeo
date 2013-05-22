@@ -19,8 +19,8 @@ package org.nuxeo.drive.operations;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.drive.service.impl.FileSystemChangeSummary;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;

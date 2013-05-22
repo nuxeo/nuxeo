@@ -16,27 +16,23 @@
  */
 package org.nuxeo.drive.service.impl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
- * Summary of file system changes, including:
- * <ul>
- * <li>A list of file system item changes</li>
- * <li>A global status code</li>
- * </ul>
- * A document change is implemented by {@link FileSystemItemChange}.
+ * Default implementation of a {@link FileSystemChangeSummary}.
  *
  * @author Antoine Taillefer
  */
-public class FileSystemChangeSummary implements Serializable {
+public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,11 +44,11 @@ public class FileSystemChangeSummary implements Serializable {
 
     protected String activeSynchronizationRootDefinitions;
 
-    public FileSystemChangeSummary() {
+    public FileSystemChangeSummaryImpl() {
         // Needed for JSON deserialization
     }
 
-    public FileSystemChangeSummary(
+    public FileSystemChangeSummaryImpl(
             List<FileSystemItemChange> fileSystemChanges,
             Map<String, Set<IdRef>> activeRootRefs, Long syncDate,
             Boolean tooManyChanges) {
@@ -61,17 +57,20 @@ public class FileSystemChangeSummary implements Serializable {
         this.hasTooManyChanges = tooManyChanges;
         List<String> rootDefinitions = new ArrayList<String>();
         for (Map.Entry<String, Set<IdRef>> entry : activeRootRefs.entrySet()) {
-            for (IdRef ref: entry.getValue()) {
-                rootDefinitions.add(String.format("%s:%s", entry.getKey(), ref.toString()));
+            for (IdRef ref : entry.getValue()) {
+                rootDefinitions.add(String.format("%s:%s", entry.getKey(),
+                        ref.toString()));
             }
         }
-        this.activeSynchronizationRootDefinitions = StringUtils.join(rootDefinitions, ",");
+        this.activeSynchronizationRootDefinitions = StringUtils.join(
+                rootDefinitions, ",");
     }
 
     public List<FileSystemItemChange> getFileSystemChanges() {
         return fileSystemChanges;
     }
 
+    @JsonDeserialize(using = FileSystemItemChangeListDeserializer.class)
     public void setFileSystemChanges(List<FileSystemItemChange> changes) {
         this.fileSystemChanges = changes;
     }
