@@ -72,7 +72,7 @@ public class FileSystemItemChange implements Serializable {
             String repositoryId, String docUuid, FileSystemItem fsItem) {
         this(eventId, eventDate, repositoryId, docUuid, fsItem.getId(),
                 fsItem.getName());
-        setFileSystemItem(fsItem);
+        this.fileSystemItem = fsItem;
     }
 
     public String getFileSystemItemId() {
