@@ -48,6 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.el.FieldAdapterManager;
+import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
@@ -66,7 +67,8 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  */
 // XXX AT: see if needs to manage row keys as Trinidad does in case multiple
 // user edit the same list concurrently.
-public class UIEditableList extends UIInput implements NamingContainer {
+public class UIEditableList extends UIInput implements NamingContainer,
+        ResettableComponent {
 
     public static final String COMPONENT_TYPE = UIEditableList.class.getName();
 
