@@ -11,20 +11,14 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -49,7 +43,9 @@ import org.nuxeo.ecm.automation.client.model.DocRefs;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
+import org.nuxeo.ecm.automation.client.model.IdRef;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
+import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.client.model.RecordSet;
@@ -72,6 +68,8 @@ import com.google.inject.Inject;
 
 public abstract class AbstractAutomationClientTest {
 
+    protected static String[] attachments = { "att1", "att2", "att3" };
+
     protected Document automationTestFolder;
 
     @Inject
@@ -90,6 +88,31 @@ public abstract class AbstractAutomationClientTest {
                 root).set("type", "Folder").set("name",
                 "automation-test-folder").execute();
         assertNotNull(automationTestFolder);
+        createDocumentWithComplexProperties(root);
+    }
+
+    /**
+     * Create document with complex properties (from json file)
+     */
+    public void createDocumentWithComplexProperties(Document root)
+            throws Exception {
+        // Fill the document properties
+        Map<String, Object> creationProps = new HashMap<String, Object>();
+        creationProps.put("ds:tableName", "MyTable");
+        creationProps.put("ds:attachments", attachments);
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        creationProps.put("ds:fields", fieldsDataAsJSon);
+
+        // Document creation
+        session.newRequest(CreateDocument.ID).setInput(root).set("type",
+                "DataSet").set("name", "testDoc").set("properties",
+                new PropertyMap(creationProps).toString()).execute();
     }
 
     @After
@@ -632,6 +655,102 @@ public abstract class AbstractAutomationClientTest {
                 Constants.HEADER_NX_SCHEMAS, "*").set("value", folder.getPath()).execute();
 
         assertEquals(folder.getTitle(), title);
+    }
+
+    @Test
+    public void sampleAutomationRemoteAccess() throws Exception {
+
+        // the repository init handler sould have created a sample doc in the
+        // repo
+
+        // check that we see it
+
+        Document testDoc = (Document) session.newRequest(
+                DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
+                "name", "testDoc").execute();
+
+        assertNotNull(testDoc);
+
+        // try to see what's in it
+
+        // check dublincore.title
+        assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("testDoc", testDoc.getProperties().get("dc:title"));
+
+        // schema only a subset of the properties are serialized with default
+        // configuration (common and dublincore only)
+        // see @Constants.HEADER_NX_SCHEMAS
+
+        assertNull(testDoc.getProperties().get("ds:tableName"));
+        assertNull(testDoc.getProperties().get("ds:fields"));
+
+        // refetch the doc, but with the correct header
+        testDoc = (Document) session.newRequest(
+                DocumentService.GetDocumentChild).setHeader(
+                "X-NXDocumentProperties", "*").setInput(new PathRef("/")).set(
+                "name", "testDoc").execute();
+
+        assertNotNull(testDoc);
+
+        assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("MyTable", testDoc.getProperties().get("ds:tableName"));
+        assertNotNull(testDoc.getProperties().get("ds:fields"));
+
+        PropertyList dbFields = testDoc.getProperties().getList("ds:fields");
+        assertEquals(5, dbFields.size());
+
+        PropertyMap dbField0 = dbFields.getMap(0);
+        assertNotNull(dbField0);
+        assertEquals("field0", dbField0.getString("name"));
+
+        assertEquals("Decision", dbField0.getList("roles").getString(0));
+        assertEquals("Score", dbField0.getList("roles").getString(1));
+
+        // now update the doc
+        Map<String, Object> updateProps = new HashMap<String, Object>();
+
+        updateProps.put("ds:tableName", "newTableName");
+        updateProps.put("ds:attachments", "new1,new2,new3,new4");
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        updateProps.put("ds:fields", fieldsDataAsJSon);
+
+        // XXX this should be directly managed by PropertyMap
+        // => will be fixed in 5.7
+
+        // if fields contains a roles[], unmarshaling will fail on the server
+        // side in ComplexTypeJSONDecoding because the roles[] item fields is
+        // wrongly considered as complex because of the restriction
+        // => to be fixed in 5.7 too
+
+        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
+                new IdRef(testDoc.getId())).set("properties",
+                new PropertyMap(updateProps).toString()).execute();
+
+        // check the returned doc
+
+        assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("newTableName",
+                testDoc.getProperties().get("ds:tableName"));
+
+        PropertyList atts = testDoc.getProperties().getList("ds:attachments");
+        assertNotNull(atts);
+        assertEquals(4, atts.size());
+        assertEquals("new1", atts.getString(0));
+        assertEquals("new4", atts.getString(3));
+
+        dbFields = testDoc.getProperties().getList("ds:fields");
+        assertEquals(2, dbFields.size());
+
+        PropertyMap dbFieldA = dbFields.getMap(0);
+        assertNotNull(dbFieldA);
+        assertEquals("fieldA", dbFieldA.getString("name"));
+
     }
 
 }
