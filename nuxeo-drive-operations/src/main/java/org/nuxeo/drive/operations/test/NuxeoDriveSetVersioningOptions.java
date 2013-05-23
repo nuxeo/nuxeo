@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.runtime.api.Framework;
 
@@ -48,7 +49,7 @@ public class NuxeoDriveSetVersioningOptions {
     protected String option;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws ClientException {
 
         FileSystemItemAdapterService fileSystemItemAdapterService = Framework.getLocalService(FileSystemItemAdapterService.class);
         VersioningFileSystemItemFactory defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");

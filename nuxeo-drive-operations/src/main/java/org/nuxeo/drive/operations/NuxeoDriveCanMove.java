@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -28,6 +30,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -54,7 +57,7 @@ public class NuxeoDriveCanMove {
     protected String destId;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws ClientException, IOException {
         boolean canMove = false;
         try {
             FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);

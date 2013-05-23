@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,7 +46,7 @@ public class NuxeoDriveDelete {
     protected String id;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws ClientException, InvalidOperationException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         try {

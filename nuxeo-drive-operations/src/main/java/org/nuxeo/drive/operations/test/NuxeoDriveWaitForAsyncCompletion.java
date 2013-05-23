@@ -33,7 +33,7 @@ public class NuxeoDriveWaitForAsyncCompletion {
     public static final String ID = "NuxeoDrive.WaitForAsyncCompletion";
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
