@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.type.TypeReference;
@@ -39,8 +38,7 @@ public class FileSystemItemChangeListDeserializer extends
 
     @Override
     public List<FileSystemItemChange> deserialize(JsonParser jp,
-            DeserializationContext dc) throws IOException,
-            JsonProcessingException {
+            DeserializationContext dc) throws IOException {
         return jp.readValueAs(LIST_TYPE);
     }
 
