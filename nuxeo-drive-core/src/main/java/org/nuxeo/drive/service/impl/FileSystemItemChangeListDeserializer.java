@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.type.TypeReference;
@@ -34,14 +33,13 @@ import org.nuxeo.drive.service.FileSystemItemChange;
 public class FileSystemItemChangeListDeserializer extends
         JsonDeserializer<List<FileSystemItemChange>> {
 
-    static final TypeReference<List<FileSystemItemChangeImpl>> listType = new TypeReference<List<FileSystemItemChangeImpl>>() {
+    static final TypeReference<List<FileSystemItemChangeImpl>> LIST_TYPE = new TypeReference<List<FileSystemItemChangeImpl>>() {
     };
 
     @Override
     public List<FileSystemItemChange> deserialize(JsonParser jp,
-            DeserializationContext dc) throws IOException,
-            JsonProcessingException {
-        return jp.readValueAs(listType);
+            DeserializationContext dc) throws IOException {
+        return jp.readValueAs(LIST_TYPE);
     }
 
 }

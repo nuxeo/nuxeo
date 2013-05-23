@@ -13,7 +13,7 @@ import org.nuxeo.ecm.core.api.IdRef;
  *
  * @author Antoine Taillefer
  */
-public class RootDefinitionsHelper {
+public final class RootDefinitionsHelper {
 
     private RootDefinitionsHelper() {
         // Utility class
