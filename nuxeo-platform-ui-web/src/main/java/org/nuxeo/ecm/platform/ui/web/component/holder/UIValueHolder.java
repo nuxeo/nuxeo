@@ -386,8 +386,10 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
      */
     @Override
     public void resetCachedModel() {
-        setValue(null);
-        setLocalValueSet(false);
+        if (getValueExpression("value") != null) {
+            setValue(null);
+            setLocalValueSet(false);
+        }
         setSubmittedValue(null);
     }
 

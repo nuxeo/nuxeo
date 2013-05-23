@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 import com.sun.facelets.component.UIRepeat;
@@ -52,7 +53,7 @@ import com.sun.facelets.component.UIRepeat;
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class ChainSelect extends UIInput {
+public class ChainSelect extends UIInput implements ResettableComponent {
 
     public static final String COMPONENT_TYPE = "nxdirectory.chainSelect";
 
@@ -816,6 +817,21 @@ public class ChainSelect extends UIInput {
         if (Boolean.TRUE.equals(getResetCacheOnUpdate()) && isValid()) {
             componentValue = new Selection[0];
         }
+    }
+
+    /**
+     * Reset the chain select cached model
+     *
+     * @since 5.7
+     */
+    @Override
+    public void resetCachedModel() {
+        if (getValueExpression("value") != null) {
+            setValue(null);
+            setLocalValueSet(false);
+        }
+        setSubmittedValue(null);
+        setComponentValue(null);
     }
 
 }
