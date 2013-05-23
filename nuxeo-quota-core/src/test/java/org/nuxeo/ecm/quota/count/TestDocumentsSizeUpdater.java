@@ -45,9 +45,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -58,7 +55,6 @@ import org.nuxeo.ecm.quota.size.QuotaAwareDocument;
 import org.nuxeo.ecm.quota.size.QuotaExceededException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -75,12 +71,7 @@ import com.google.inject.Inject;
  * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
-@TransactionalConfig(autoStart = false)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.quota.core" })
+@Features({ QuotaFeature.class })
 public class TestDocumentsSizeUpdater {
 
     @Inject
