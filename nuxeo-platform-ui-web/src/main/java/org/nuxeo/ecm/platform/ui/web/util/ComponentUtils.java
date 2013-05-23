@@ -345,6 +345,10 @@ public final class ComponentUtils {
             }
             base = base.getParent();
         }
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Resolved base '%s' for anchor '%s'",
+                    base.getId(), anchor.getId()));
+        }
         return base;
     }
 

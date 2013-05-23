@@ -46,9 +46,9 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
  *
  * @since 5.7
  */
-@Name("resetActions")
+@Name("jsfResetActions")
 @Scope(ScopeType.EVENT)
-public class ResetActionsBean {
+public class JSFResetActionsBean {
 
     /**
      * Looks up the parent naming container for the component source of the
