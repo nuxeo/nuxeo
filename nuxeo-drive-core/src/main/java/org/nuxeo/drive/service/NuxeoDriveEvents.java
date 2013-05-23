@@ -21,6 +21,10 @@ import java.io.Serializable;
 
 public final class NuxeoDriveEvents {
 
+    private NuxeoDriveEvents() {
+        // Utility class
+    }
+
     public static final String ABOUT_TO_REGISTER_ROOT = "aboutToRegisterRoot";
 
     public static final String ROOT_REGISTERED = "rootRegistered";
