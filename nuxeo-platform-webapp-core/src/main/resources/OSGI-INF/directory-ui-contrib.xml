@@ -370,6 +370,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
+          <property name="displayObsoleteEntries">true</property>
         </properties>
       </widget>
     </layout>
@@ -411,6 +412,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
+          <property name="displayObsoleteEntries">true</property>
         </properties>
       </widget>
     </layout>
@@ -480,6 +482,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
+          <property name="displayObsoleteEntries">true</property>
         </properties>
       </widget>
     </layout>
@@ -524,6 +527,7 @@
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
+          <property name="displayObsoleteEntries">true</property>
         </properties>
       </widget>
     </layout>
