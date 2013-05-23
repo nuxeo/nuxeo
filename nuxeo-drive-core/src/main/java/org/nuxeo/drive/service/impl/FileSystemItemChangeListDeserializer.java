@@ -34,14 +34,14 @@ import org.nuxeo.drive.service.FileSystemItemChange;
 public class FileSystemItemChangeListDeserializer extends
         JsonDeserializer<List<FileSystemItemChange>> {
 
-    static final TypeReference<List<FileSystemItemChangeImpl>> listType = new TypeReference<List<FileSystemItemChangeImpl>>() {
+    static final TypeReference<List<FileSystemItemChangeImpl>> LIST_TYPE = new TypeReference<List<FileSystemItemChangeImpl>>() {
     };
 
     @Override
     public List<FileSystemItemChange> deserialize(JsonParser jp,
             DeserializationContext dc) throws IOException,
             JsonProcessingException {
-        return jp.readValueAs(listType);
+        return jp.readValueAs(LIST_TYPE);
     }
 
 }
