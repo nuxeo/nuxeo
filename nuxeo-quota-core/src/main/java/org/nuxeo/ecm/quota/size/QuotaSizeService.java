@@ -14,23 +14,21 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.quota.count;
+package org.nuxeo.ecm.quota.size;
 
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import java.util.Collection;
 
 /**
  * @author dmetzler
  *
  */
-@Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.quota.core" })
-public class QuotaFeature extends SimpleFeature{
+public interface QuotaSizeService {
+
+    /**
+     * Exposes the list of blob paths that are excluded for size quota computation
+     *
+     * @return the list of paths
+     */
+    Collection<String> getExcludedPathList();
 
 }

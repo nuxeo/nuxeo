@@ -9,4 +9,5 @@ Nuxeo-component: OSGI-INF/quotastats-service.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/core-types-contrib.xml,
  OSGI-INF/adapters-contrib.xml,
- OSGI-INF/quota-work-contrib.xml
+ OSGI-INF/quota-work-contrib.xml,
+ OSGI-INF/quotasize-service.xml

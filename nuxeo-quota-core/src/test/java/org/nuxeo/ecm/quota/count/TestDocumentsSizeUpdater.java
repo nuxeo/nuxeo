@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -72,6 +73,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ QuotaFeature.class })
+@TransactionalConfig(autoStart = false)
 public class TestDocumentsSizeUpdater {
 
     @Inject

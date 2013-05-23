@@ -1,0 +1,5 @@
+<component name="exclude.blob.contrib">
+  <extension target="org.nuxeo.ecm.quota.size.QuotaSizeService" point="exclusions">
+    <exclude path="files/*/file"></exclude>
+  </extension>
+</component>
