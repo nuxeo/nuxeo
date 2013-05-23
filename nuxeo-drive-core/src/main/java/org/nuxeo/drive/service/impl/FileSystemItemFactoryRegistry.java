@@ -30,6 +30,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -138,7 +139,8 @@ public class FileSystemItemFactoryRegistry extends
     }
 
     protected List<FileSystemItemFactoryWrapper> getOrderedFactories()
-            throws Exception {
+            throws InstantiationException, IllegalAccessException,
+            ClientException {
         List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
         List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
                 factoryDescriptors.values());

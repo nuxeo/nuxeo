@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
@@ -55,7 +57,7 @@ public class NuxeoDriveGetChangeSummary {
     protected String lastSyncActiveRootDefinitions;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws ClientException, IOException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Map<String, Set<IdRef>> lastActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary docChangeSummary = driveManager.getChangeSummary(

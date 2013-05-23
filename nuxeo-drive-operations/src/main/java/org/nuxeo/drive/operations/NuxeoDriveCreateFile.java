@@ -16,6 +16,10 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.io.IOException;
+
+import javax.mail.internet.ParseException;
+
 import org.codehaus.plexus.util.StringUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -27,6 +31,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,7 +55,8 @@ public class NuxeoDriveCreateFile {
     protected String name;
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) throws ClientException, ParseException,
+            IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         // The filename transfered by the multipart encoding is not preserved

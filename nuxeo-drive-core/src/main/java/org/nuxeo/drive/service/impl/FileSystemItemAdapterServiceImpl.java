@@ -60,8 +60,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     /*------------------------ DefaultComponent -----------------------------*/
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
             fileSystemItemFactoryRegistry.addContribution((FileSystemItemFactoryDescriptor) contribution);
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
@@ -73,8 +72,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+            String extensionPoint, ComponentInstance contributor) {
         if (FILE_SYSTEM_ITEM_FACTORY_EP.equals(extensionPoint)) {
             fileSystemItemFactoryRegistry.removeContribution((FileSystemItemFactoryDescriptor) contribution);
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
@@ -103,7 +101,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      * Sorts the contributed factories according to their order.
      */
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context)
+            throws InstantiationException, IllegalAccessException,
+            ClientException {
         sortFileSystemItemFactories();
     }
 
@@ -210,7 +210,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /*--------------------------- Protected ---------------------------------------*/
-    protected void sortFileSystemItemFactories() throws Exception {
+    protected void sortFileSystemItemFactories() throws InstantiationException,
+            IllegalAccessException, ClientException {
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedFactories();
     }
 

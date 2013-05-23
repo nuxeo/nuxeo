@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.io.IOException;
+
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -26,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,11 +52,11 @@ public class NuxeoDriveCreateFolder {
     protected String name;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws ClientException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
-        FolderItem folderItem = fileSystemItemManager.createFolder(parentId, name,
-                ctx.getPrincipal());
+        FolderItem folderItem = fileSystemItemManager.createFolder(parentId,
+                name, ctx.getPrincipal());
 
         // Commit transaction explicitly to ensure client-side consistency
         // TODO: remove when https://jira.nuxeo.com/browse/NXP-10964 is fixed

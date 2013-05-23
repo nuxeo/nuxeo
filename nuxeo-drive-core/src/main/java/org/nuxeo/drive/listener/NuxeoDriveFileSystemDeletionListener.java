@@ -79,11 +79,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         // Some events will only impact a specific user (e.g. root
         // unregistration)
         String impactedUserName = (String) ctx.getProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY);
-        try {
-            logDeletionEvent(doc, ctx.getPrincipal(), impactedUserName);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        logDeletionEvent(doc, ctx.getPrincipal(), impactedUserName);
     }
 
     protected void logDeletionEvent(DocumentModel doc, Principal principal,

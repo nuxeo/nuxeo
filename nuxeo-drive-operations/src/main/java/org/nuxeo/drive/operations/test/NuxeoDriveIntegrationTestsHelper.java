@@ -17,6 +17,7 @@
 package org.nuxeo.drive.operations.test;
 
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -51,7 +52,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
         // Helper class
     }
 
-    public static void cleanUp(CoreSession session) throws Exception {
+    public static void cleanUp(CoreSession session) throws ClientException {
 
         // Delete test users and their personal workspace if exist
         UserManager userManager = Framework.getLocalService(UserManager.class);

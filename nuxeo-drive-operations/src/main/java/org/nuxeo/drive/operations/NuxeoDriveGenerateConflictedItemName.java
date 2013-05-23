@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
@@ -55,7 +57,7 @@ public class NuxeoDriveGenerateConflictedItemName {
     protected String timezone;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws ClientException, IOException {
 
         String extension = "";
         if (name.contains(".")) {

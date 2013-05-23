@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -41,7 +42,7 @@ public class NuxeoDriveTearDownIntegrationTests {
     protected CoreSession session;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() throws ClientException {
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
 
         // Commit transaction explicitly to ensure client-side consistency

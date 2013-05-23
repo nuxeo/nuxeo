@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -76,7 +77,7 @@ public class NuxeoDriveSetupIntegrationTests {
     protected boolean useMembersGroup = false;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws ClientException {
 
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
 
@@ -96,7 +97,8 @@ public class NuxeoDriveSetupIntegrationTests {
         return StreamingBlob.createFromString(testUserCredentials, "text/plain");
     }
 
-    protected String createTestUsers(String[] testUserNames) throws Exception {
+    protected String createTestUsers(String[] testUserNames)
+            throws ClientException {
 
         StringBuilder testUserCredentials = new StringBuilder();
 
@@ -135,7 +137,8 @@ public class NuxeoDriveSetupIntegrationTests {
         return testUserCredentials.toString();
     }
 
-    protected void createTestWorkspace(String[] testUserNames) throws Exception {
+    protected void createTestWorkspace(String[] testUserNames)
+            throws ClientException {
 
         // Create test workspace
         DocumentModel testWorkspace = session.createDocumentModel(

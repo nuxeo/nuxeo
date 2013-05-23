@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.operations;
 
+import java.io.IOException;
+
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -25,6 +27,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,7 +51,7 @@ public class NuxeoDriveRename {
     protected String name;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws ClientException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FileSystemItem fsItem = fileSystemItemManager.rename(id, name,
