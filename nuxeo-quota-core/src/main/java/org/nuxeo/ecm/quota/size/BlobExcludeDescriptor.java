@@ -14,23 +14,27 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.quota.count;
+package org.nuxeo.ecm.quota.size;
 
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author dmetzler
  *
  */
-@Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.quota.core" })
-public class QuotaFeature extends SimpleFeature{
+@XObject("exclude")
+public class BlobExcludeDescriptor {
+    @XNode("@path")
+    private String pathRegexp;
+
+    public String getPathRegexp() {
+        return pathRegexp;
+    }
+
+    public void setPathRegexp(String pathRegexp) {
+        this.pathRegexp = pathRegexp;
+    }
+
 
 }

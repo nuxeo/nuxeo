@@ -33,8 +33,11 @@ import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_IN
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
@@ -469,8 +472,15 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             boolean onlyIfBlobHasChanged) throws ClientException {
 
         try {
+            QuotaSizeService sizeService = Framework.getLocalService(QuotaSizeService.class);
+            Set<String> excludedPathSet = new HashSet<String>(
+                    sizeService.getExcludedPathList());
+
             BlobsExtractor extractor = new BlobsExtractor();
-            List<Property> blobProperties = extractor.getBlobsProperties(doc);
+            extractor.setExtractorProperties(null, new HashSet<String>(
+                    excludedPathSet), true);
+
+            Collection<Property> blobProperties = extractor.getBlobsProperties(doc);
 
             boolean needRecompute = !onlyIfBlobHasChanged;
 
