@@ -8,8 +8,8 @@
 
     <command name="identify" enabled="true">
       <commandLine>identify</commandLine>
-      <parameterString> -ping -format '%m %w %h %z' #{inputFilePath}</parameterString>
-      <winParameterString> -ping -format "%m %w %h %z" #{inputFilePath}</winParameterString>
+      <parameterString> -ping -format '%m %w %h %z' #{inputFilePath}[0]</parameterString>
+      <winParameterString> -ping -format "%m %w %h %z" #{inputFilePath}[0]</winParameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 
