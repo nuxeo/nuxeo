@@ -202,15 +202,18 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB, cancelCB) 
       dzone.removeData("dragoverTimer");
     }
     this.cancelCB();
-    var targetUrl = this.url + 'batch/drop/' + this.batchId;
-    jQuery.ajax({
-        type: 'GET',
-        contentType : 'application/json+nxrequest',
-        url: targetUrl,
-        timeout: 10000});
+    if (this.batchId) {
+      var targetUrl = this.url + 'batch/drop/' + this.batchId;
+      jQuery.ajax({
+          type: 'GET',
+          contentType : 'application/json+nxrequest',
+          url: targetUrl,
+          timeout: 10000});
+    }
   }
 
   DropZoneUIHandler.prototype.batchStarted = function(){
+      this.cancelled=false;
       if (this.batchId==null) {
         // select the target DropZone
         this.selectTargetZone();
@@ -239,6 +242,8 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB, cancelCB) 
       } else {
         this.selectOperation(this.batchId, this.dropZoneId, this.url);
       }
+    } else {
+      this.cancelled=false;
     }
   }
 
