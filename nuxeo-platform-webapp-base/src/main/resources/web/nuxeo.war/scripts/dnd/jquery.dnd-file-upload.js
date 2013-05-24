@@ -4,6 +4,12 @@
 // Base code comes from https://github.com/pangratz/dnd-file-upload/network
 //
 
+if (!log) {
+  log = function (logMsg) {
+    // console && console.log(logMsg);
+  }
+}
+
 (function($) {
 
   var sendingRequestsInProgress=false;
@@ -13,6 +19,7 @@
   var nbDropFilesToProcess=0;
   var nbUploadInprogress=0;
   var completedUploads = new Array();
+  var currentDropZone;
 
   $.fn.dropzone = function(options) {
 
@@ -90,6 +97,7 @@
       dragoverTimer = window.setTimeout(function() {opts.handler.enableExtendedMode(id);}, opts.extendedModeTimeout);
       zone.data("dragoverTimer", dragoverTimer);
     }
+    currentDropZone = zone;
     applyOverlay(zone,opts);
     return false;
   }
@@ -161,6 +169,13 @@
   function cancelUploadIfNoValidFileWasDropped(opts) {
      if (uploadStack.length==0 && uploadIdx==0 && nbDropFilesToProcess==0) {
         opts.handler.cancelUpload();
+        if (currentDropZone) {
+          var zone = jQuery("#"+currentDropZone.attr("id"));
+          currentDropZone=null;
+          dragleave(null,zone.attr("id"));
+          zone.removeClass("dropzoneTarget");
+          zone.bind("dragenter",  function(zone,opts) {return function(event) {dragenter(event,zone,opts);}}(zone,opts));
+        }
      }
   }
 
@@ -231,6 +246,7 @@
          overlay.css("display","none");
          overlay.remove();
          window.setTimeout(function(){zone.bind("dragenter",  function(event) {dragenter(event,zone,opts);});},100);
+         currentDropZone=null;
        }
        var dragoverTimer = zone.data("dragoverTimer");
        if (dragoverTimer) {
@@ -239,10 +255,6 @@
        }
        return false;
    }
-
-  function log(logMsg) {
-      // console && console.log(logMsg);
-  }
 
   function uploadFiles(opts) {
     var batchId = opts.handler.batchStarted();
