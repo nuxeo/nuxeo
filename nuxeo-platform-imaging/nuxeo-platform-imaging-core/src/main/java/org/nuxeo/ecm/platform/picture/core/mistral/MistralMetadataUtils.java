@@ -168,7 +168,11 @@ public class MistralMetadataUtils implements MetadataUtils {
                 metadata.put(META_FNUMBER, exif.getFNumber().doubleValue());
             }
         } catch (IOException e) {
-            log.error("Failed to get EXIF metadata", e);
+            log.warn("Failed to get EXIF metadata for the file: "
+                    + blob.getFilename());
+            log.debug(
+                    "Failed to get EXIF metadata for the file: "
+                            + blob.getFilename(), e);
         }
 
         try {
