@@ -57,10 +57,10 @@ import org.nuxeo.ecm.platform.picture.core.MetadataUtils;
 import com.drew.imaging.jpeg.JpegProcessingException;
 
 /**
- * 
+ *
  * @author Max Stepanov
  * @author <a href="mailto:cbaican@nuxeo.com">Catalin Baican</a>
- * 
+ *
  */
 public class MistralMetadataUtils implements MetadataUtils {
 
@@ -168,8 +168,10 @@ public class MistralMetadataUtils implements MetadataUtils {
                 metadata.put(META_FNUMBER, exif.getFNumber().doubleValue());
             }
         } catch (IOException e) {
-            log.error(
-                    "Failed to get EXIF metadata for the file:"
+            log.warn("Failed to get EXIF metadata for the file: "
+                    + blob.getFilename());
+            log.debug(
+                    "Failed to get EXIF metadata for the file: "
                             + blob.getFilename(), e);
         }
 
