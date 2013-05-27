@@ -21,6 +21,8 @@
 package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator;
@@ -64,10 +67,13 @@ public class AnonymousAuthenticatorForCAS2 extends AnonymousAuthenticator {
             String authURL = getCas2Authenticator().getServiceURL(httpRequest,
                     Cas2Authenticator.LOGIN_ACTION);
             String appURL = getCas2Authenticator().getAppURL(httpRequest);
-            String urlToReach = authURL + "?service=" + appURL;
 
             try {
-                httpResponse.sendRedirect(urlToReach);
+                Map<String, String> urlParameters = new HashMap<String, String>();
+                urlParameters.put("service", appURL);
+                String location = URIUtils.addParametersToURIQuery(
+                        authURL, urlParameters);
+                httpResponse.sendRedirect(location);
                 return true;
             } catch (IOException e) {
                 log.error("Unable to redirect to CAS logout screen:", e);
