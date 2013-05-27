@@ -9,11 +9,15 @@ nuxeo.server.tomcat_admin.port=8005
 nuxeo.server.jvmRoute=nuxeo
 nuxeo.server.declare_datasources=true
 
+# GlobalNamingResources datasource (not visible from webapp)
 nuxeo.db.commonds=jdbc/nuxeo
+# Direct all datasource/VCS connection requests to this datasource
+nuxeo.db.singleDataSource=jdbc/NuxeoDS
+
 nuxeo.db.validationQuery=
 nuxeo.db.user_separator_key=,
 
-# Mail server 
+# Mail server
 mail.store.protocol=pop3
 mail.store.host=localhost
 mail.store.port=110
