@@ -70,7 +70,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
 
-    private Logger LOG = LoggerFactory.getLogger(QuotaSyncListenerChecker.class);
+    private static Logger LOG = LoggerFactory.getLogger(QuotaSyncListenerChecker.class);
 
     @Override
     public void computeInitialStatistics(CoreSession unrestrictedSession,
@@ -507,7 +507,9 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     String schema = blobProperty.getParent().getSchema().getName();
                     String propName = blobProperty.getName();
 
-                    LOG.debug(String.format("Using [%s:%s] for quota blob computation (size : %d)", schema,propName, blob.getLength()));
+                    LOG.debug(String.format(
+                            "Using [%s:%s] for quota blob computation (size : %d)",
+                            schema, propName, blob.getLength()));
                     result.add(blob);
                 }
             }
