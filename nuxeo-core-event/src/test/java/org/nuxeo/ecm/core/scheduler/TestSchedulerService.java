@@ -46,7 +46,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     public void testScheduleRegistration() throws Exception {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-config.xml");
-        Thread.sleep(2000); // so that job is called at least once
+        Thread.sleep(5000); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue("count " + count, count >= 1);
     }
@@ -61,7 +61,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         schedule.eventId = "testEvent";
         schedule.eventCategory = "default";
         service.registerSchedule(schedule);
-        Thread.sleep(2000); // so that job is called at least once
+        Thread.sleep(5000); // so that job is called at least once
 
         long count = DummyEventListener.getCount();
         assertTrue("count " + count, count >= 1);
