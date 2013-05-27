@@ -40,12 +40,13 @@ A _diffDisplay_ contribution represents a number of _diffBlocks_ that you want t
 It is bound to a document type.  
 A _diffBlock_ contribution represents a number of properties (fields) that you want to display (see next section).
 
-When asking for the comparison between 2 versions of a document, the _diffDisplay_ bound to the document type is used.
-If no _diffDisplay_ is found for this type a fall back is done on the default diff display mode: one block per document schema and for each block all the fields of the schema that are different.  
+When asking for the comparison between 2 versions of a document, the _diffDisplay_ bound to the document type or a super type is used.
+If no _diffDisplay_ is found for this type or a super type a fall back is done on the default diff display mode: one block per document schema and for each block all the fields of the schema that are different.  
 _Beware that in this case the order of the schemas and of the fields is undefined._
 
-When asking for the comparison between 2 documents, if they are of the same type, the _diffDisplay_ bound to this type is used.
-If no _diffDisplay_ is found for this type or if the documents are not of the same type a fall back is done on the default diff display mode.
+When asking for the comparison between 2 documents:
+- if they are of the same type: if  a _diffDisplay_ is found for this type or a super type then it is used, else a fall back is done on the default diff display mode
+- if they are of different types: if  a _diffDisplay_ is found for a common super type then it is used, else a fall back is done on the default diff display mode.
 
 For example, this is the _diffDisplay_ contribution bound to the _File_ type:
 
