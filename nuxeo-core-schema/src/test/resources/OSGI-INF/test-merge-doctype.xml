@@ -18,6 +18,9 @@
       <schema name="newschema"/>
       <facet name="NewFacet2"/>
     </doctype>
+    <proxies>
+      <schema name="newschema"/>
+    </proxies>
   </extension>
 
 </component>

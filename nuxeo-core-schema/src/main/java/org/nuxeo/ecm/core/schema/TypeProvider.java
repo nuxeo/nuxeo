@@ -13,6 +13,8 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
@@ -39,4 +41,9 @@ public interface TypeProvider {
     /** Gets the list of facets. */
     CompositeType[] getFacets();
 
+    /** Gets the schemas on a proxy for a document of the given type. */
+    List<Schema> getProxySchemas(String docType);
+
+    /** Checks if a schema is on a proxy for a document of the given type. */
+    boolean isProxySchema(String schema, String docType);
 }

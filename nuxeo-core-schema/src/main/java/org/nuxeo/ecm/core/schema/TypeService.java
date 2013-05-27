@@ -93,6 +93,8 @@ public class TypeService extends DefaultComponent {
                     schemaManager.registerDocumentType((DocumentTypeDescriptor) contrib);
                 } else if (contrib instanceof FacetDescriptor) {
                     schemaManager.registerFacet((FacetDescriptor) contrib);
+                } else if (contrib instanceof ProxiesDescriptor) {
+                    schemaManager.registerProxies((ProxiesDescriptor) contrib);
                 }
             }
         } else if (XP_SCHEMA.equals(xp)) {
@@ -126,6 +128,8 @@ public class TypeService extends DefaultComponent {
                     schemaManager.unregisterDocumentType((DocumentTypeDescriptor) contrib);
                 } else if (contrib instanceof FacetDescriptor) {
                     schemaManager.unregisterFacet((FacetDescriptor) contrib);
+                } else if (contrib instanceof ProxiesDescriptor) {
+                    schemaManager.unregisterProxies((ProxiesDescriptor) contrib);
                 }
             }
         } else if (XP_SCHEMA.equals(xp)) {

@@ -1433,8 +1433,17 @@ public class NXQLQueryMaker implements QueryMaker {
          * @throws QueryMakerException if the property doesn't exist
          */
         protected ColumnInfo getRegularColumnInfo(String xpath) {
-            Table hier = dataHierTable;
-            Table contextHier = hier;
+            Table contextHier;
+            if (model.isProxySchemaPath(xpath)) {
+                // if xpath for proxy, then change contextHier to proxyTable
+                if (proxyTable != null) {
+                    contextHier = hierTable;
+                } else {
+                    contextHier = dataHierTable;
+                }
+            } else {
+                contextHier = dataHierTable;
+            }
             xpath = canonicalXPath(xpath);
             String[] segments = xpath.split("/");
             String simple = null; // simplified prefix to match model
@@ -1497,7 +1506,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         // none existing
                         // create new Join with hierarchy from previous
                         String alias = TABLE_HIER_ALIAS + ++hierJoinCount;
-                        table = new TableAlias(hier, alias);
+                        table = new TableAlias(dataHierTable, alias);
                         propertyHierTables.put(contextKey, table);
                         addJoin(Join.LEFT, alias, table, model.HIER_PARENT_KEY,
                                 contextHier, model.MAIN_KEY, segment, index,

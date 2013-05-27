@@ -120,14 +120,11 @@ public class DocumentModelFactory {
         // create the document model
         // lock is unused
         DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(),
-                doc.getUUID(), path, null, docRef, parentRef, null, facets,
-                sourceId, repositoryName);
+                doc.getUUID(), path, docRef, parentRef, null, facets, sourceId,
+                repositoryName, doc.isProxy());
 
         if (doc.isVersion()) {
             docModel.setIsVersion(true);
-        }
-        if (doc.isProxy()) {
-            docModel.setIsProxy(true);
         }
         if (immutable) {
             docModel.setIsImmutable(true);
@@ -333,7 +330,7 @@ public class DocumentModelFactory {
         refresh.instanceFacets = new HashSet<String>(
                 Arrays.asList(doc.getFacets()));
         Set<String> docSchemas = DocumentModelImpl.computeSchemas(
-                doc.getType(), refresh.instanceFacets);
+                doc.getType(), refresh.instanceFacets, doc.isProxy());
 
         if ((flags & DocumentModel.REFRESH_PREFETCH) != 0) {
             PrefetchInfo prefetchInfo = doc.getType().getPrefetchInfo();

@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
@@ -56,10 +57,18 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     /** Mixin types, updated when facets change. */
     protected final List<CompositeType> mixinTypes;
 
+    /** Proxy-induced types. */
+    protected final List<Schema> proxySchemas;
+
     protected SQLDocumentLive(Node node, ComplexType type,
             List<CompositeType> mixinTypes, SQLSession session, boolean readonly) {
         super(node, type, session, readonly);
         this.mixinTypes = mixinTypes;
+        if (node != null && node.isProxy()) {
+            proxySchemas = session.getTypeManager().getProxySchemas(type.getName());
+        } else {
+            proxySchemas = null;
+        }
     }
 
     /*
@@ -153,7 +162,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     public org.nuxeo.ecm.core.model.Property getProperty(String name)
             throws DocumentException {
         return session.makeProperty(getNode(), name, (ComplexType) type,
-                mixinTypes, readonly);
+                mixinTypes, proxySchemas, readonly);
     }
 
     /**

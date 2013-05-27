@@ -19,10 +19,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.After;
@@ -277,6 +279,14 @@ public class TestSchemaManager extends NXRuntimeTestCase {
                 Arrays.asList(f.getSchemaNames()));
     }
 
+    protected static List<String> schemaNames(List<Schema> schemas) {
+        List<String> list = new ArrayList<String>(schemas.size());
+        for (Schema s : schemas) {
+            list.add(s.getName());
+        }
+        return list;
+    }
+
     @Test
     public void testMergeDocumentType() throws Exception {
         deployContrib("org.nuxeo.ecm.core.schema.tests",
@@ -293,6 +303,9 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertEquals(new HashSet<String>(Arrays.asList("schema1", "schema2")),
                 ts);
         assertEquals(Collections.singleton("myfacet"), t.getFacets());
+
+        assertEquals(Arrays.asList("schema3"),
+                schemaNames(schemaManager.getProxySchemas(null)));
 
         deployContrib("org.nuxeo.ecm.core.schema.tests",
                 "OSGI-INF/test-merge-doctype.xml");
@@ -311,6 +324,9 @@ public class TestSchemaManager extends NXRuntimeTestCase {
         assertEquals(
                 new HashSet<String>(Arrays.asList("myfacet", "NewFacet2")),
                 t.getFacets());
+
+        assertEquals(Arrays.asList("schema3", "newschema"),
+                schemaNames(schemaManager.getProxySchemas(null)));
     }
 
     @Test

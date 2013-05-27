@@ -247,7 +247,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (getDocumentType() != null) {
             facets.addAll(getDocumentType().getFacets());
         }
-        schemas = computeSchemas(getDocumentType(), instanceFacets);
+        schemas = computeSchemas(getDocumentType(), instanceFacets, false);
         schemasOrig = new HashSet<String>(schemas);
     }
 
@@ -262,6 +262,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             Lock lock, DocumentRef docRef, DocumentRef parentRef,
             String[] schemas, Set<String> facets, String sourceId,
             String repositoryName) {
+        this(sid, type, id, path, docRef, parentRef, schemas, facets, sourceId,
+                repositoryName, false);
+    }
+
+    public DocumentModelImpl(String sid, String type, String id, Path path,
+            DocumentRef docRef, DocumentRef parentRef, String[] schemas,
+            Set<String> facets, String sourceId, String repositoryName,
+            boolean isProxy) {
         this(type);
         this.sid = sid;
         this.id = id;
@@ -276,20 +284,22 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             this.facets.addAll(getDocumentType().getFacets());
         }
         if (schemas == null) {
-            this.schemas = computeSchemas(getDocumentType(), instanceFacets);
+            this.schemas = computeSchemas(getDocumentType(), instanceFacets,
+                    isProxy);
         } else {
             this.schemas = new HashSet<String>(Arrays.asList(schemas));
         }
         schemasOrig = new HashSet<String>(this.schemas);
         this.repositoryName = repositoryName;
         this.sourceId = sourceId;
+        setIsProxy(isProxy);
     }
 
     /**
      * Recomputes effective schemas from a type + instance facets.
      */
     public static Set<String> computeSchemas(DocumentType type,
-            Collection<String> instanceFacets) {
+            Collection<String> instanceFacets, boolean isProxy) {
         Set<String> schemas = new HashSet<String>();
         if (type != null) {
             schemas.addAll(Arrays.asList(type.getSchemaNames()));
@@ -299,6 +309,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             CompositeType facetType = typeProvider.getFacet(facet);
             if (facetType != null) { // ignore pseudo-facets like Immutable
                 schemas.addAll(Arrays.asList(facetType.getSchemaNames()));
+            }
+        }
+        if (isProxy) {
+            for (Schema schema : typeProvider.getProxySchemas(type.getName())) {
+                schemas.add(schema.getName());
             }
         }
         return schemas;
@@ -584,7 +599,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
         // find the schemas that were dropped
         Set<String> droppedSchemas = new HashSet<String>(schemas);
-        schemas = computeSchemas(getDocumentType(), instanceFacets);
+        schemas = computeSchemas(getDocumentType(), instanceFacets, isProxy());
         droppedSchemas.removeAll(schemas);
 
         // clear these datamodels
@@ -1608,7 +1623,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             if (immutable) {
                 facets.add(FacetNames.IMMUTABLE);
             }
-            this.schemas = computeSchemas(getDocumentType(), instanceFacets);
+            this.schemas = computeSchemas(getDocumentType(), instanceFacets,
+                    isProxy());
             schemasOrig = new HashSet<String>(this.schemas);
         }
         if ((refreshFlags & REFRESH_CONTENT) != 0) {

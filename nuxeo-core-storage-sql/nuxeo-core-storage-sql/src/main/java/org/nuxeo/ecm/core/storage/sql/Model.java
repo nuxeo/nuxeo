@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -289,6 +290,9 @@ public class Model {
     /** Per-mixin list of schemas. */
     private final Map<String, Set<String>> allMixinSchemas;
 
+    /** The proxy schemas. */
+    private final Set<String> allProxySchemas;
+
     /** Map of mixin to doctypes. */
     private final Map<String, Set<String>> mixinsDocumentTypes;
 
@@ -310,6 +314,9 @@ public class Model {
     /** Map of mixin to property to property info. */
     private final Map<String, Map<String, ModelProperty>> mixinPropertyInfos;
 
+    /** The proxy property infos. */
+    private final Map<String, ModelProperty> proxyPropertyInfos;
+
     /** Map of property to property info. */
     private final Map<String, ModelProperty> sharedPropertyInfos;
 
@@ -318,6 +325,9 @@ public class Model {
 
     /** Per-schema map of path to property info. */
     private final Map<String, Map<String, ModelProperty>> schemaPathPropertyInfos;
+
+    /** Map of prefix to schema. */
+    private final Map<String, String> prefixToSchema;
 
     /** Per-schema set of path to simple fulltext properties. */
     private final Map<String, Set<String>> schemaSimpleTextPaths;
@@ -353,6 +363,9 @@ public class Model {
 
     /** Map of mixin to simple+collection fragments. */
     protected final Map<String, Set<String>> mixinFragments;
+
+    /** The proxy fragments. */
+    private final Set<String> proxyFragments;
 
     /** Map of doctype to prefetched fragments. */
     protected final Map<String, Set<String>> docTypePrefetchedFragments;
@@ -400,14 +413,17 @@ public class Model {
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
         documentTypesMixins = new HashMap<String, Set<String>>();
         allMixinSchemas = new HashMap<String, Set<String>>();
+        allProxySchemas = new HashSet<String>();
 
         fragmentPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         schemaPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         typePropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         mixinPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        proxyPropertyInfos = new HashMap<String, ModelProperty>();
         sharedPropertyInfos = new HashMap<String, ModelProperty>();
         mergedPropertyInfos = new HashMap<String, ModelProperty>();
         schemaPathPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        prefixToSchema = new HashMap<String, String>();
         schemaSimpleTextPaths = new HashMap<String, Set<String>>();
         allPathPropertyInfos = new HashMap<String, ModelProperty>();
         fulltextInfo = new ModelFulltext();
@@ -421,6 +437,7 @@ public class Model {
         schemaFragments = new HashMap<String, Set<String>>();
         typeFragments = new HashMap<String, Set<String>>();
         mixinFragments = new HashMap<String, Set<String>>();
+        proxyFragments = new HashSet<String>();
         docTypePrefetchedFragments = new HashMap<String, Set<String>>();
         fieldFragment = new HashMap<String, String>();
 
@@ -641,13 +658,16 @@ public class Model {
         // allow schema-as-prefix if schemas has no prefix, if non-complex
         Map<String, ModelProperty> alsoWithPrefixes = new HashMap<String, ModelProperty>(
                 propertyInfoByPath);
-        if (schema.getNamespace().prefix.isEmpty()) {
+        String prefix = schema.getNamespace().prefix;
+        if (prefix.isEmpty()) {
             for (Entry<String, ModelProperty> e : propertyInfoByPath.entrySet()) {
                 String key = e.getKey();
                 if (!key.contains("/")) {
                     alsoWithPrefixes.put(schemaName + ':' + key, e.getValue());
                 }
             }
+        } else {
+            prefixToSchema.put(prefix, schemaName);
         }
         allPathPropertyInfos.putAll(alsoWithPrefixes);
         // those for simpletext properties
@@ -881,6 +901,13 @@ public class Model {
         return mixinPropertyInfos.get(mixin);
     }
 
+    // for all types for now
+    public ModelProperty getProxySchemasPropertyInfo(String propertyName) {
+        ModelProperty propertyInfo = proxyPropertyInfos.get(propertyName);
+        return propertyInfo != null ? propertyInfo
+                : sharedPropertyInfos.get(propertyName);
+    }
+
     public ModelProperty getMixinPropertyInfo(String mixin, String propertyName) {
         Map<String, ModelProperty> propertyInfos = mixinPropertyInfos.get(mixin);
         if (propertyInfos == null) {
@@ -927,6 +954,23 @@ public class Model {
             }
         }
         return paths;
+    }
+
+    /**
+     * Checks if the given xpath, when resolved on a proxy, points to a
+     * proxy-specific schema instead of the target document.
+     */
+    public boolean isProxySchemaPath(String xpath) {
+        int p = xpath.indexOf(':');
+        if (p == -1) {
+            return false; // no schema/prefix -> not on proxy
+        }
+        String prefix = xpath.substring(0, p);
+        String schema = prefixToSchema.get(prefix);
+        if (schema == null) {
+            schema = prefix;
+        }
+        return allProxySchemas.contains(schema);
     }
 
     private Set<String> getAllSchemas(String primaryType, String[] mixinTypes) {
@@ -1129,6 +1173,9 @@ public class Model {
                 }
             }
         }
+        if (PROXY_TYPE.equals(typeInfo.primaryType)) {
+            fragmentNames.addAll(proxyFragments);
+        }
         return fragmentNames;
     }
 
@@ -1141,23 +1188,38 @@ public class Model {
                 + repositoryDescriptor.schemaFields);
         // document types
         for (DocumentType docType : schemaManager.getDocumentTypes()) {
-            initDocTypeOrMixinModel(docType, allDocTypeSchemas, typeFragments,
-                    typePropertyInfos);
+            initDocTypeOrMixinModel(docType.getName(), docType.getSchemas(),
+                    allDocTypeSchemas, typeFragments, typePropertyInfos, true);
             initDocTypePrefetch(docType);
             initDocTypeMixins(docType);
             inferSuperType(docType);
         }
         // mixins
         for (CompositeType type : schemaManager.getFacets()) {
-            initDocTypeOrMixinModel(type, allMixinSchemas, mixinFragments,
-                    mixinPropertyInfos);
+            initDocTypeOrMixinModel(type.getName(), type.getSchemas(),
+                    allMixinSchemas, mixinFragments, mixinPropertyInfos, false);
             log.debug("Fragments for facet " + type.getName() + ": "
                     + getMixinFragments(type.getName()));
         }
+        // proxy schemas
+        initProxySchemas(schemaManager.getProxySchemas(null));
         // second pass to get subtypes (needs all supertypes)
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             inferSubTypes(documentType);
         }
+    }
+
+    private void initProxySchemas(List<Schema> proxySchemas)
+            throws StorageException {
+        Map<String, Set<String>> allSchemas = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> allFragments = new HashMap<String, Set<String>>();
+        Map<String, Map<String, ModelProperty>> allPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
+        String key = "__proxies__"; // not stored
+        initDocTypeOrMixinModel(key, proxySchemas, allSchemas, allFragments,
+                allPropertyInfos, false);
+        allProxySchemas.addAll(allSchemas.get(key));
+        proxyFragments.addAll(allFragments.get(key));
+        proxyPropertyInfos.putAll(allPropertyInfos.get(key));
     }
 
     private Set<String> getCommonFragments(String typeName) {
@@ -1187,18 +1249,17 @@ public class Model {
     /**
      * For a doctype or mixin type, init the schemas-related structures.
      */
-    private void initDocTypeOrMixinModel(CompositeType compositeType,
-            Map<String, Set<String>> schemasMap,
+    private void initDocTypeOrMixinModel(String typeName,
+            Collection<Schema> schemas, Map<String, Set<String>> schemasMap,
             Map<String, Set<String>> fragmentsMap,
-            Map<String, Map<String, ModelProperty>> propertyInfoMap)
-            throws StorageException {
-        String typeName = compositeType.getName();
+            Map<String, Map<String, ModelProperty>> propertyInfoMap,
+            boolean addCommonFragments) throws StorageException {
         Set<String> schemaNames = new HashSet<String>();
         Set<String> fragmentNames = new HashSet<String>();
-        if (compositeType instanceof DocumentType) {
+        if (addCommonFragments) {
             fragmentNames.addAll(getCommonFragments(typeName));
         }
-        for (Schema schema : compositeType.getSchemas()) {
+        for (Schema schema : schemas) {
             if (schema == null) {
                 // happens when a type refers to a nonexistent schema
                 // TODO log and avoid nulls earlier

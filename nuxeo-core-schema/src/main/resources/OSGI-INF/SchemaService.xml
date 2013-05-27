@@ -59,12 +59,21 @@
           <prefetch>dc:title, dc:modified, uid.uid</prefetch>
         </doctype>
       </code>
+
+      It's also possible to associate one or more schemas to all proxies:
+      <code>
+        <proxies>
+          <schema name="myschema" />
+        </proxies>
+      </code>
     </documentation>
 
     <object
       class="org.nuxeo.ecm.core.schema.DocumentTypeDescriptor" />
     <object
       class="org.nuxeo.ecm.core.schema.FacetDescriptor" />
+    <object
+      class="org.nuxeo.ecm.core.schema.ProxiesDescriptor" />
   </extension-point>
 
   <extension-point name="schema">

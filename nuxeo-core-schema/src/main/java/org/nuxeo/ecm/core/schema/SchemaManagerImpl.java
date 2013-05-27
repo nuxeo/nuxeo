@@ -75,6 +75,9 @@ public class SchemaManagerImpl implements SchemaManager {
     /** All the registered document types. */
     protected List<DocumentTypeDescriptor> allDocumentTypes = new ArrayList<DocumentTypeDescriptor>();
 
+    /** All the registered proxy descriptors. */
+    protected List<ProxiesDescriptor> allProxies = new ArrayList<ProxiesDescriptor>();
+
     /** Effective prefetch info. */
     protected PrefetchInfo prefetchInfo;
 
@@ -94,6 +97,12 @@ public class SchemaManagerImpl implements SchemaManager {
     protected Map<String, Set<String>> documentTypesExtending = new HashMap<String, Set<String>>();
 
     protected Map<String, Set<String>> documentTypesForFacet = new HashMap<String, Set<String>>();
+
+    /** Effective proxy schemas. */
+    protected List<Schema> proxySchemas = new ArrayList<Schema>();
+
+    /** Effective proxy schema names. */
+    protected Set<String> proxySchemaNames = new HashSet<String>();
 
     /** Fields computed lazily. */
     private Map<String, Field> fields = new ConcurrentHashMap<String, Field>();
@@ -207,6 +216,23 @@ public class SchemaManagerImpl implements SchemaManager {
         return last;
     }
 
+    public synchronized void registerProxies(ProxiesDescriptor pd) {
+        allProxies.add(pd);
+        dirty = true;
+        log.info("Registered proxies descriptor for schemas: " + pd.getSchemas());
+    }
+
+    public synchronized void unregisterProxies(ProxiesDescriptor pd) {
+        if (allProxies.remove(pd)) {
+            dirty = true;
+            log.info("Unregistered proxies descriptor for schemas: "
+                    + pd.getSchemas());
+        } else {
+            log.error("Unregistering unknown proxies descriptor for schemas: "
+                    + pd.getSchemas());
+        }
+    }
+
     /**
      * Checks if something has to be recomputed if a dynamic register/unregister
      * happened.
@@ -227,6 +253,7 @@ public class SchemaManagerImpl implements SchemaManager {
         recomputeSchemas();
         recomputeFacets(); // depend on schemas
         recomputeDocumentTypes(); // depend on schemas and facets
+        recomputeProxies(); // depend on schemas
         fields.clear(); // re-filled lazily
     }
 
@@ -552,6 +579,49 @@ public class SchemaManagerImpl implements SchemaManager {
     public int getDocumentTypesCount() {
         checkDirty();
         return documentTypes.size();
+    }
+
+    /*
+     * ===== Proxies =====
+     */
+
+    protected void recomputeProxies() {
+        List<Schema> list = new ArrayList<Schema>();
+        Set<String> nameSet = new HashSet<String>();
+        for (ProxiesDescriptor pd : allProxies) {
+            if (!pd.getType().equals("*")) {
+                log.error("Proxy descriptor for specific type not supported: "
+                        + pd);
+            }
+            for (String schemaName : pd.getSchemas()) {
+                if (nameSet.contains(schemaName)) {
+                    continue;
+                }
+                Schema schema = schemas.get(schemaName);
+                if (schema == null) {
+                    log.error("Proxy schema uses unknown schema: " + schemaName);
+                    continue;
+                }
+                list.add(schema);
+                nameSet.add(schemaName);
+            }
+        }
+        proxySchemas = list;
+        proxySchemaNames = nameSet;
+    }
+
+    @Override
+    public List<Schema> getProxySchemas(String docType) {
+        // docType unused for now
+        checkDirty();
+        return new ArrayList<Schema>(proxySchemas);
+    }
+
+    @Override
+    public boolean isProxySchema(String schema, String docType) {
+        // docType unused for now
+        checkDirty();
+        return proxySchemaNames.contains(schema);
     }
 
     /*

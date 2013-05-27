@@ -25,6 +25,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,6 +62,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -959,9 +961,10 @@ public class SQLSession implements Session {
     /** Make a property. */
     protected Property makeProperty(Node node, String name,
             ComplexType parentType, List<CompositeType> mixinTypes,
-            boolean readonly) throws DocumentException {
-        return makeProperties(node, name, parentType, mixinTypes, readonly, 0,
-                0).get(0);
+            List<Schema> proxySchemas, boolean readonly)
+            throws DocumentException {
+        return makeProperties(node, name, parentType, mixinTypes, proxySchemas,
+                readonly, 0, 0).get(0);
     }
 
     /**
@@ -969,8 +972,9 @@ public class SQLSession implements Session {
      * elements.
      */
     protected List<Property> makeProperties(Node node, String name,
-            Type parentType, List<CompositeType> mixinTypes, boolean readonly,
-            int complexListStart, int complexListEnd) throws DocumentException {
+            Type parentType, List<CompositeType> mixinTypes,
+            List<Schema> proxySchemas, boolean readonly, int complexListStart,
+            int complexListEnd) throws DocumentException {
         boolean complexList = parentType instanceof ListType;
         Model model;
         try {
@@ -989,6 +993,15 @@ public class SQLSession implements Session {
                     // check mixin types
                     for (CompositeType mixinType : mixinTypes) {
                         field = mixinType.getField(name);
+                        if (field != null) {
+                            break;
+                        }
+                    }
+                }
+                if (field == null && proxySchemas != null) {
+                    // check proxy schemas
+                    for (Schema schema : proxySchemas) {
+                        field = schema.getField(name);
                         if (field != null) {
                             break;
                         }

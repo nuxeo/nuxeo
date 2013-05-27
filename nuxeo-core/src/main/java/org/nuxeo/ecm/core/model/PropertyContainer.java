@@ -35,7 +35,10 @@ public interface PropertyContainer {
      * @param path the path to test
      * @return true if the property at the given path exists, false otherwise
      * @throws DocumentException if any error occurs
+     *
+     * @deprecated unused
      */
+    @Deprecated
     boolean isPropertySet(String path) throws DocumentException;
 
     /**
@@ -63,7 +66,10 @@ public interface PropertyContainer {
      *
      * @param name the property to remove
      * @throws DocumentException if any error occurs
+     *
+     * @deprecated unused
      */
+    @Deprecated
     void removeProperty(String name) throws DocumentException;
 
     /**
@@ -241,10 +247,17 @@ public interface PropertyContainer {
      * @param schemas
      * @return the exported properties as a java Map
      * @throws DocumentException if any error occurs
+     *
+     * @deprecated unused
      */
+    @Deprecated
     Map<String, Map<String, Object>> exportMap(String[] schemas)
             throws DocumentException;
 
+    /**
+     * @deprecated unused
+     */
+    @Deprecated
     Map<String, Object> exportMap(String schemaName) throws DocumentException;
 
     /**
@@ -254,7 +267,10 @@ public interface PropertyContainer {
      * entry of the Map.
      *
      * @throws DocumentException if any error occurs
+     *
+     * @deprecated unused
      */
+    @Deprecated
     void importMap(Map<String, Map<String, Object>> map)
             throws DocumentException;
 
@@ -266,7 +282,10 @@ public interface PropertyContainer {
      * @param schemas
      * @return
      * @throws DocumentException if any error occurs
+     *
+     * @deprecated unused
      */
+    @Deprecated
     Map<String, Object> exportFlatMap(String[] schemas)
             throws DocumentException;
 
@@ -275,7 +294,10 @@ public interface PropertyContainer {
      *
      * @param map
      * @throws DocumentException if any error occurs
+     *
+     * @deprecated unused
      */
+    @Deprecated
     void importFlatMap(Map<String, Object> map) throws DocumentException;
 
     /**
@@ -295,14 +317,20 @@ public interface PropertyContainer {
      *
      * @return the existing properties in this container
      * @throws DocumentException if any error occurs
+     *
+     * @deprecated unused
      */
+    @Deprecated
     Iterator<Property> getPropertyIterator() throws DocumentException;
 
     /**
      * Returns fields that were modified.
      * <p>
      * XXX AT: compatibility method for NXP-666
+     *
+     * @deprecated unused
      */
+    @Deprecated
     List<String> getDirtyFields();
 
 }

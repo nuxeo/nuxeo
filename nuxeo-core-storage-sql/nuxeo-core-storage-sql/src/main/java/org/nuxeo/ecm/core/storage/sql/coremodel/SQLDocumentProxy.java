@@ -32,8 +32,11 @@ import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A proxy is a shortcut to a target document (a version or normal document).
@@ -54,6 +57,39 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
             throws DocumentException {
         this.proxy = proxy;
         this.target = target;
+    }
+
+    protected String getSchema(String xpath) throws DocumentException {
+        int p = xpath.indexOf(':');
+        if (p == -1) {
+            throw new DocumentException("Schema not specified: " + xpath);
+        }
+        String prefix = xpath.substring(0, p);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Schema schema = schemaManager.getSchemaFromPrefix(prefix);
+        if (schema == null) {
+            schema = schemaManager.getSchema(prefix);
+            if (schema == null) {
+                throw new DocumentException("No schema for prefix: " + xpath);
+            }
+        }
+        return schema.getName();
+    }
+
+    /**
+     * Checks if the given schema should be resolved on the proxy or the target.
+     */
+    protected boolean isSchemaForProxy(String schema) {
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        return schemaManager.isProxySchema(schema, getType().getName());
+    }
+
+    /**
+     * Checks if the given property should be resolved on the proxy or the
+     * target.
+     */
+    protected boolean isPropertyForProxy(String xpath) throws DocumentException {
+        return isSchemaForProxy(getSchema(xpath));
     }
 
     /*
@@ -142,12 +178,20 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
 
     @Override
     public void readDocumentPart(DocumentPart dp) throws Exception {
-        target.readDocumentPart(dp);
+        if (isSchemaForProxy(dp.getName())) {
+            proxy.readDocumentPart(dp);
+        } else {
+            target.readDocumentPart(dp);
+        }
     }
 
     @Override
     public void writeDocumentPart(DocumentPart dp) throws Exception {
-        target.writeDocumentPart(dp);
+        if (isSchemaForProxy(dp.getName())) {
+            proxy.writeDocumentPart(dp);
+        } else {
+            target.writeDocumentPart(dp);
+        }
     }
 
     @Override
@@ -434,14 +478,17 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
      */
 
     @Override
+    @Deprecated
     public boolean isPropertySet(String name) throws DocumentException {
         return target.isPropertySet(name);
     }
 
     @Override
     public Property getProperty(String name) throws DocumentException {
+        // TODO proxy-specific schemas as well
         if (Model.PROXY_TARGET_PROP.equals(name)
-                || Model.PROXY_VERSIONABLE_PROP.equals(name)) {
+                || Model.PROXY_VERSIONABLE_PROP.equals(name)
+                || isPropertyForProxy(name)) {
             return proxy.getProperty(name);
         } else {
             return target.getProperty(name);
@@ -454,116 +501,180 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
+    @Deprecated
     public Iterator<Property> getPropertyIterator() throws DocumentException {
         return target.getPropertyIterator();
     }
 
     @Override
+    @Deprecated
     public Map<String, Object> exportFlatMap(String[] schemas)
             throws DocumentException {
         return target.exportFlatMap(schemas);
     }
 
     @Override
+    @Deprecated
     public Map<String, Map<String, Object>> exportMap(String[] schemas)
             throws DocumentException {
         return target.exportMap(schemas);
     }
 
     @Override
+    @Deprecated
     public Map<String, Object> exportMap(String schemaName)
             throws DocumentException {
         return target.exportMap(schemaName);
     }
 
     @Override
+    @Deprecated
     public void importFlatMap(Map<String, Object> map) throws DocumentException {
         target.importFlatMap(map);
     }
 
     @Override
+    @Deprecated
     public void importMap(Map<String, Map<String, Object>> map)
             throws DocumentException {
         target.importMap(map);
     }
 
     @Override
+    @Deprecated
     public List<String> getDirtyFields() {
         return target.getDirtyFields();
     }
 
     @Override
     public Object getPropertyValue(String name) throws DocumentException {
-        return target.getPropertyValue(name);
+        if (isPropertyForProxy(name)) {
+            return proxy.getPropertyValue(name);
+        } else {
+            return target.getPropertyValue(name);
+        }
     }
 
     @Override
     public String getString(String name) throws DocumentException {
-        return target.getString(name);
+        if (isPropertyForProxy(name)) {
+            return proxy.getString(name);
+        } else {
+            return target.getString(name);
+        }
     }
 
     @Override
     public boolean getBoolean(String name) throws DocumentException {
-        return target.getBoolean(name);
+        if (isPropertyForProxy(name)) {
+            return proxy.getBoolean(name);
+        } else {
+            return target.getBoolean(name);
+        }
     }
 
     @Override
     public long getLong(String name) throws DocumentException {
-        return target.getLong(name);
+        if (isPropertyForProxy(name)) {
+            return proxy.getLong(name);
+        } else {
+            return target.getLong(name);
+        }
     }
 
     @Override
     public double getDouble(String name) throws DocumentException {
-        return target.getDouble(name);
+        if (isPropertyForProxy(name)) {
+            return proxy.getDouble(name);
+        } else {
+            return target.getDouble(name);
+        }
     }
 
     @Override
     public Calendar getDate(String name) throws DocumentException {
-        return target.getDate(name);
+        if (isPropertyForProxy(name)) {
+            return proxy.getDate(name);
+        } else {
+            return target.getDate(name);
+        }
     }
 
     @Override
     public Blob getContent(String name) throws DocumentException {
-        return target.getContent(name);
+        if (isPropertyForProxy(name)) {
+            return proxy.getContent(name);
+        } else {
+            return target.getContent(name);
+        }
     }
 
     @Override
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
-        target.setPropertyValue(name, value);
+        if (isPropertyForProxy(name)) {
+            proxy.setPropertyValue(name, value);
+        } else {
+            target.setPropertyValue(name, value);
+        }
     }
 
     @Override
     public void setString(String name, String value) throws DocumentException {
-        target.setString(name, value);
+        if (isPropertyForProxy(name)) {
+            proxy.setString(name, value);
+        } else {
+            target.setString(name, value);
+        }
     }
 
     @Override
     public void setBoolean(String name, boolean value) throws DocumentException {
-        target.setBoolean(name, value);
+        if (isPropertyForProxy(name)) {
+            proxy.setBoolean(name, value);
+        } else {
+            target.setBoolean(name, value);
+        }
     }
 
     @Override
     public void setLong(String name, long value) throws DocumentException {
-        target.setLong(name, value);
+        if (isPropertyForProxy(name)) {
+            proxy.setLong(name, value);
+        } else {
+            target.setLong(name, value);
+        }
     }
 
     @Override
     public void setDouble(String name, double value) throws DocumentException {
-        target.setDouble(name, value);
+        if (isPropertyForProxy(name)) {
+            proxy.setDouble(name, value);
+        } else {
+            target.setDouble(name, value);
+        }
     }
 
     @Override
     public void setDate(String name, Calendar value) throws DocumentException {
-        target.setDate(name, value);
+        if (isPropertyForProxy(name)) {
+            proxy.setDate(name, value);
+        } else {
+            target.setDate(name, value);
+        }
     }
 
     @Override
     public void setContent(String name, Blob value) throws DocumentException {
-        target.setContent(name, value);
+        if (isPropertyForProxy(name)) {
+            proxy.setContent(name, value);
+        } else {
+            target.setContent(name, value);
+        }
     }
 
     @Override
+    @Deprecated
     public void removeProperty(String name) throws DocumentException {
         target.removeProperty(name);
     }

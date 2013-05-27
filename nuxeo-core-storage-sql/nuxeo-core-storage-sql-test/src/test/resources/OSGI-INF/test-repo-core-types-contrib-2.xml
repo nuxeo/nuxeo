@@ -10,6 +10,10 @@
       <schema name="testschema2" />
       <prefetch>tst2:title</prefetch>
     </doctype>
+    <doctype name="MyDocType2" extends="Document">
+      <schema name="common" />
+      <schema name="info" />
+    </doctype>
   </extension>
 
 </component>

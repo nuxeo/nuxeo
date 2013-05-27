@@ -108,7 +108,8 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
 
     @Override
     public List<Property> getProperties() throws DocumentException {
-        return session.makeProperties(node, name, type, null, readonly, -1, -1);
+        return session.makeProperties(node, name, type, null, null, readonly,
+                -1, -1);
     }
 
     @Override
@@ -268,7 +269,7 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
         // add new list elements
         if (oldSize < newSize) {
             List<Property> newProperties = session.makeProperties(node, name,
-                    type, null, readonly, properties.size(), newSize);
+                    type, null, null, readonly, properties.size(), newSize);
             properties.addAll(newProperties);
         }
         // set values

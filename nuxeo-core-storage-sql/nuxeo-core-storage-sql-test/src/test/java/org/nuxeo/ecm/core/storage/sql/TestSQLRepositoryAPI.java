@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.Ignore;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.collections.ScopeType;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -3323,6 +3325,67 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         // check visible from live doc
         doc = session.getDocument(doc.getRef());
         assertEquals("the title again", doc.getProperty("dublincore", "title"));
+    }
+
+    @Test
+    public void testProxySchemas() throws Exception {
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        doc = session.createDocument(doc);
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        session.save();
+        try {
+            doc.setPropertyValue("info:info", "docinfo");
+            doc = session.saveDocument(doc);
+            session.save();
+        } catch (PropertyNotFoundException e) {
+            assertTrue(e.getMessage().contains("info:info"));
+        }
+
+        assertNull(proxy.getPropertyValue("info:info"));
+        proxy.setPropertyValue("info:info", "proxyinfo");
+        proxy = session.saveDocument(proxy);
+        session.save();
+        closeSession();
+
+        // new session
+        openSession();
+        DocumentModel root = session.getRootDocument();
+        proxy = session.getDocument(proxy.getRef());
+        assertEquals("proxyinfo", proxy.getPropertyValue("info:info"));
+
+        // test a query
+        String nxql;
+        DocumentModelList list;
+        nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo' AND ecm:isProxy = 1";
+        list = session.query(nxql);
+        assertEquals(1, list.size());
+        nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo'";
+        list = session.query(nxql);
+        assertEquals(1, list.size());
+        nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo' AND ecm:isProxy = 0";
+        list = session.query(nxql);
+        assertEquals(0, list.size());
+
+        // queryAndFetch
+        nxql = "SELECT ecm:uuid, info:info FROM File WHERE info:info IS NOT NULL";
+        IterableQueryResult res = session.queryAndFetch(nxql, "NXQL");
+        Map<Serializable, String> actual = new HashMap<Serializable, String>();
+        for (Map<String, Serializable> map : res) {
+            Serializable uuid = map.get("ecm:uuid");
+            String info = (String) map.get("info:info");
+            actual.put(uuid, info);
+        }
+        res.close();
+        assertEquals(Collections.singletonMap(proxy.getId(), "proxyinfo"),
+                actual);
+
+        // test that the copy has the extra schema values
+        session.copy(folder.getRef(), root.getRef(), "folderCopy");
+        DocumentModel proxyCopy = session.getDocument(new PathRef("/folderCopy/file"));
+        assertTrue(proxyCopy.isProxy());
+        assertEquals("proxyinfo", proxyCopy.getPropertyValue("info:info"));
     }
 
     @Test

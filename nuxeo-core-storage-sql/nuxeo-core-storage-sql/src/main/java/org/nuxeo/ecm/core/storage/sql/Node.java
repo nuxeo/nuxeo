@@ -364,6 +364,13 @@ public class Node {
                 return propertyInfo;
             }
         }
+        // check proxy schemas
+        if (isProxy()) {
+            propertyInfo = model.getProxySchemasPropertyInfo(name);
+            if (propertyInfo != null) {
+                return propertyInfo;
+            }
+        }
         return null;
     }
 
@@ -413,6 +420,13 @@ public class Node {
     @Override
     public int hashCode() {
         return getId().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(uuid=" + getId() + ", name="
+                + getName() + ", primaryType=" + getPrimaryType()
+                + ", parentId=" + getParentId() + ")";
     }
 
 }

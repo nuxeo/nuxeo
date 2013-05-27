@@ -38,10 +38,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
@@ -2113,6 +2113,105 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(2, list.size());
         list = session.getProxies(node, null); // by series
         assertEquals(2, list.size());
+    }
+
+    @Test
+    public void testProxySchemas() throws Exception {
+        doTestProxySchemas(false);
+    }
+
+    @Test
+    public void testProxySchemasShadowing() throws Exception {
+        doTestProxySchemas(true);
+    }
+
+    protected void doTestProxySchemas(boolean shadow) throws Exception {
+        assumeTrue(isProxiesEnabled());
+
+        String type;
+        if (shadow) {
+            // deploy another contrib where TestDoc4 also has the proxy schema
+            deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                    "OSGI-INF/test-backend-core-types-contrib-2.xml");
+            type = "TestDoc4";
+        } else {
+            type = "TestDoc2";
+        }
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder = session.addChildNode(root, "folder", null, "TestDoc3",
+                false);
+        Node doc = session.addChildNode(root, "file", null, type, false);
+        Node version = session.checkIn(doc, "v1", "");
+        Node proxy = session.addProxy(version.getId(), doc.getId(), folder,
+                "proxy", null);
+        session.save();
+        try {
+            doc.setSimpleProperty("info:info", "docinfo");
+            session.save();
+        } catch (IllegalArgumentException e) {
+            if (shadow) {
+                // base doc should have the property
+                throw e;
+            } else {
+                assertTrue(e.getMessage().contains("info:info"));
+            }
+        }
+
+        assertNull(proxy.getSimpleProperty("info:info").getString());
+        proxy.setSimpleProperty("info:info", "proxyinfo");
+        session.save();
+        session.close();
+
+        // new session
+        session = repository.getConnection();
+        folder = session.getNodeById(folder.getId());
+        proxy = session.getNodeById(proxy.getId());
+        assertEquals("proxyinfo",
+                proxy.getSimpleProperty("info:info").getString());
+
+        // test a query
+        String nxql;
+        PartialList<Serializable> plist;
+        nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo' AND ecm:isProxy = 1";
+        plist = session.query(nxql, QueryFilter.EMPTY, false);
+        assertEquals(1, plist.list.size());
+
+
+        nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo'";
+        plist = session.query(nxql, QueryFilter.EMPTY, false);
+        assertEquals(1, plist.list.size());
+
+        nxql = "SELECT * FROM Document WHERE info:info = 'proxyinfo' AND ecm:isProxy = 0";
+        plist = session.query(nxql, QueryFilter.EMPTY, false);
+        assertEquals(0, plist.list.size());
+
+
+        // queryAndFetch
+        IterableQueryResult it;
+        nxql = "SELECT ecm:uuid, info:info FROM Document WHERE info:info IS NOT NULL";
+        it = session.queryAndFetch(nxql, "NXQL", QueryFilter.EMPTY);
+        Map<Serializable, String> expected = new HashMap<Serializable, String>();
+        if (shadow) {
+            expected.put(doc.getId(), "docinfo");
+        }
+        expected.put(proxy.getId(), "proxyinfo");
+        Map<Serializable, String> actual = new HashMap<Serializable, String>();
+        for (Map<String, Serializable> map : it) {
+            Serializable uuid = map.get("ecm:uuid");
+            String info = (String) map.get("info:info");
+            actual.put(uuid, info);
+        }
+        it.close();
+        assertEquals(actual, expected);
+
+        // test that the copy has the extra schema values
+        Node folderCopy = session.copy(folder, session.getRootNode(), "folderCopy");
+        Node proxyCopy = session.getChildNode(folderCopy, "proxy", false);
+        assertTrue(proxyCopy.isProxy());
+        assertEquals("proxyinfo",
+                proxyCopy.getSimpleProperty("info:info").getString());
     }
 
     @Test
