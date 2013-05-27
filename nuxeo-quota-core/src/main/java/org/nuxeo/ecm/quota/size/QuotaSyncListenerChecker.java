@@ -55,6 +55,8 @@ import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.api.Framework;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
@@ -67,6 +69,8 @@ import org.nuxeo.runtime.api.Framework;
 public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
+
+    private Logger LOG = LoggerFactory.getLogger(QuotaSyncListenerChecker.class);
 
     @Override
     public void computeInitialStatistics(CoreSession unrestrictedSession,
@@ -500,6 +504,10 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     if (blob != null && blob.getLength() < 0) {
                         blob.persist();
                     }
+                    String schema = blobProperty.getParent().getSchema().getName();
+                    String propName = blobProperty.getName();
+
+                    LOG.debug(String.format("Using [%s:%s] for quota blob computation (size : %d)", schema,propName, blob.getLength()));
                     result.add(blob);
                 }
             }

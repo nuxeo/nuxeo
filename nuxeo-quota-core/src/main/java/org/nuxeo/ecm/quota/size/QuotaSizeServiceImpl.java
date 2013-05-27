@@ -20,8 +20,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author dmetzler
@@ -31,6 +33,8 @@ public class QuotaSizeServiceImpl extends DefaultComponent implements
         QuotaSizeService {
 
     private Set<String> excludedPathList = new HashSet<String>();
+
+    private Logger LOG = LoggerFactory.getLogger(QuotaSizeServiceImpl.class);
 
     @Override
     public Collection<String> getExcludedPathList() {
@@ -42,6 +46,9 @@ public class QuotaSizeServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor) {
         if ("exclusions".equals(extensionPoint)) {
             BlobExcludeDescriptor descriptor = (BlobExcludeDescriptor) contribution;
+            LOG.info(String.format(
+                    "Adding %s to size quota computation's blacklist",
+                    descriptor.getPathRegexp()));
             excludedPathList.add(descriptor.getPathRegexp());
         }
 
@@ -54,7 +61,11 @@ public class QuotaSizeServiceImpl extends DefaultComponent implements
             BlobExcludeDescriptor descriptor = (BlobExcludeDescriptor) contribution;
             String pathRegexp = descriptor.getPathRegexp();
             if (excludedPathList.contains(pathRegexp)) {
+                LOG.info(String.format(
+                        "Removing %s from size quota computation's blacklist",
+                        pathRegexp));
                 excludedPathList.remove(pathRegexp);
+
             }
         }
     }
