@@ -33,6 +33,8 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import static org.nuxeo.ecm.core.api.security.ACL.LOCAL_ACL;
+
 public class AclSummaryExtractor {
     private static final Log log = LogFactory.getLog(AclSummaryExtractor.class);
 
@@ -67,7 +69,7 @@ public class AclSummaryExtractor {
     public Multimap<String, Pair<String, Boolean>> getAclLocalByUser(
             DocumentModel doc) throws ClientException {
         ACP acp = doc.getACP();
-        ACL acl = acp.getACL(ACL.LOCAL_ACL);
+        ACL acl = acp.getACL(LOCAL_ACL);
         return getAclByUser(acl);
     }
 
@@ -127,15 +129,14 @@ public class AclSummaryExtractor {
      */
     public boolean hasLockInheritanceACE(DocumentModel doc)
             throws ClientException {
-        ACP acp = doc.getACP();
-        ACL[] acls = acp.getACLs();
+        // Fetch only local ACL to prevent from having blocking inheritance on
+        // all child.
+        ACL acl = doc.getACP().getOrCreateACL(LOCAL_ACL);
 
-        for (ACL acl : acls) {
-            for (ACE ace : acl.getACEs()) {
-                if (filter.acceptsUserOrGroup(ace.getUsername())) {
-                    if (isLockInheritance(ace))
-                        return true;
-                }
+        for (ACE ace : acl.getACEs()) {
+            if (filter.acceptsUserOrGroup(ace.getUsername())) {
+                if (isLockInheritance(ace))
+                    return true;
             }
         }
         return false;
