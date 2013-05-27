@@ -43,7 +43,7 @@ public class DamOldResourcesFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         if (request instanceof HttpServletRequest) {
-            HttpServletRequest httpServletRequest = ((HttpServletRequest) request);
+            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             String contextPath = httpServletRequest.getContextPath();
             String requestURI = httpServletRequest.getRequestURI();
             requestURI = requestURI.replaceFirst(contextPath, "");
