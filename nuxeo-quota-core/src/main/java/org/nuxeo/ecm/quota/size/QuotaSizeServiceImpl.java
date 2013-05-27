@@ -34,7 +34,7 @@ public class QuotaSizeServiceImpl extends DefaultComponent implements
 
     private Set<String> excludedPathList = new HashSet<String>();
 
-    private Logger LOG = LoggerFactory.getLogger(QuotaSizeServiceImpl.class);
+    private static Logger LOG = LoggerFactory.getLogger(QuotaSizeServiceImpl.class);
 
     @Override
     public Collection<String> getExcludedPathList() {
