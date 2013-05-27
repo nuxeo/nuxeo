@@ -383,8 +383,19 @@ def long_path_workaround_cleanup(driveletter, basedir):
 
 def assert_git_config():
     """Check Git configuration."""
-    t = check_output("git config --get color.branch")
-    t += check_output("git config --get color.status")
+    t = ""
+    try:
+        t = check_output("git config --get-all color.branch")
+    except ExitException, e:
+        # Error code 1 is fine (default value)
+        if e.return_code > 1:
+            log("[WARN] %s" % e.message, sys.stderr)
+    try:
+        t += check_output("git config --get-all color.status")
+    except ExitException, e:
+        # Error code 1 is fine (default value)
+        if e.return_code > 1:
+            log("[WARN] %s" % e.message, sys.stderr)
     if "always" in t:
         raise ExitException(1, "The git color mode must not be always, try:" +
                             "\n git config --global color.branch auto" +
