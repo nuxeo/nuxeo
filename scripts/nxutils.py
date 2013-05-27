@@ -47,7 +47,7 @@ class Repository(object):
          self.oldbasedir) = long_path_workaround_init(basedir, dirmapping)
         self.alias = alias
         # find the remote URL
-        remote_lines = check_output(["git", "remote", "-v"]).split("\n")
+        remote_lines = check_output("git remote -v").split("\n")
         for remote_line in remote_lines:
             remote_alias, remote_url, _ = remote_line.split()
             if alias == remote_alias:
@@ -71,7 +71,9 @@ class Repository(object):
         self.modules = []
         log("Using Maven introspection of the POM file"
             " to find the list of modules...")
-        for line in os.popen("mvn -N help:effective-pom"):
+
+        output = check_output("mvn -N help:effective-pom")
+        for line in output.split("\n"):
             line = line.strip()
             m = re.match("<module>(.*?)</module>", line)
             if not m:
@@ -86,11 +88,11 @@ class Repository(object):
         self.addons = []
         log("Using Maven introspection of the POM files"
             " to find the list of addons...")
-        all_lines = os.popen("mvn -N help:effective-pom").readlines()
+        output = check_output("mvn -N help:effective-pom")
         if with_optionals:
-            all_lines += os.popen("mvn -N help:effective-pom " +
-                                  "-f pom-optionals.xml").readlines()
-        for line in all_lines:
+            output += check_output("mvn -N help:effective-pom " +
+                                  "-f pom-optionals.xml")
+        for line in output.split("\n"):
             line = line.strip()
             m = re.match("<module>(.*?)</module>", line)
             if not m:
@@ -182,10 +184,10 @@ class Repository(object):
         'version': the version to checkout.
         'fallback_branch': the branch to fallback on when 'version' is not
         found locally or remotely."""
-        if version in check_output(["git", "tag"]).split():
+        if version in check_output("git tag").split():
             # the version is a tag name
             system("git checkout %s" % version)
-        elif version not in check_output(["git", "branch"]).split():
+        elif version not in check_output("git branch").split():
             # create the local branch if missing
             retcode = system("git checkout --track -b %s %s/%s" % (version,
                                                         self.alias, version),
@@ -243,7 +245,7 @@ class Repository(object):
 
     def get_current_version(self):
         """Return branch or tag version of current Git workspace."""
-        t = check_output(["git", "describe", "--all"]).split("/")
+        t = check_output("git describe --all").split("/")
         return t[-1]
 
     def mvn(self, commands, skip_tests=False, profiles=None):
@@ -272,25 +274,49 @@ def log(message, out=sys.stdout):
     out.flush()
 
 
-def system(cmd, failonerror=True, delay_stdout=True, run=True,
-           stdin=subprocess.PIPE, stdout=subprocess.PIPE):
+# Can't this method be replaced with system?
+def check_output(cmd):
+    """Return Shell command output."""
+    args = shlex.split(cmd)
+    p = subprocess.Popen(args, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = p.communicate()
+    retcode = p.returncode
+    if retcode != 0:
+        if err is None or err == "":
+            err = out
+        raise ExitException(retcode,
+                            "Command '%s' returned non-zero exit code (%s)\n%s"
+                            % (cmd, retcode, err))
+    return out.strip()
+
+
+def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
+           run=True, stdin=subprocess.PIPE,
+           stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     """Shell execution.
 
     'cmd': the command to execute.
     If 'failonerror', command execution failure raises an ExitException.
     If 'delay_stdout', output is flushed at the end of command execution.
     If not 'run', the process is not executed but returned.
-    'stdin', 'stdout' are only used if 'delay_stdout' is True."""
+    'stdin', 'stdout', 'stderr' are only used if 'delay_stdout' is True.
+    If not 'logOutput', output is only logged in case of exception. Only
+    available if 'delay_stdout'"""
     log("$> " + cmd)
     args = shlex.split(cmd)
     if delay_stdout:
-        p = subprocess.Popen(args, stdin=stdin, stdout=stdout,
-                             stderr=subprocess.STDOUT)
+        if logOutput:
+            # Merge stderr with stdout
+            stderr = subprocess.STDOUT
+        p = subprocess.Popen(args, stdin=stdin, stdout=stdout, stderr=stderr)
         if run:
             out, err = p.communicate()
-            sys.stdout.write(out)
-            sys.stdout.flush()
+            if logOutput:
+                sys.stdout.write(out)
+                sys.stdout.flush()
     else:
+        logOutput = True
         p = subprocess.Popen(args)
         if run:
             p.wait()
@@ -299,9 +325,16 @@ def system(cmd, failonerror=True, delay_stdout=True, run=True,
     retcode = p.returncode
     if retcode != 0:
         if failonerror:
-            raise ExitException(retcode,
-                                "Command returned non-zero exit code: %s"
-                                % cmd)
+            if logOutput:
+                raise ExitException(retcode,
+                                    "Command '%s' returned non-zero exit code (%s)"
+                                    % (cmd, retcode))
+            else:
+                if err is None or err == "":
+                    err = out
+                raise ExitException(retcode,
+                                    "Command '%s' returned non-zero exit code (%s)\n%s"
+                                    % (cmd, retcode, err))
     return retcode
 
 
@@ -348,19 +381,10 @@ def long_path_workaround_cleanup(driveletter, basedir):
         system("SUBST %s: /D" % (driveletter,), failonerror=False)
 
 
-def check_output(cmd):
-    """Return Shell command output."""
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    out, err = p.communicate()
-    if err is not None:
-        log("[ERROR] Command", str(cmd), " returned an error:", sys.stderr)
-        log(err, sys.stderr)
-    return out.strip()
-
-
 def assert_git_config():
     """Check Git configuration."""
-    t = check_output(["git", "config", "--get", "color.branch"])
+    t = check_output("git config --get color.branch")
+    t += check_output("git config --get color.status")
     if "always" in t:
         raise ExitException(1, "The git color mode must not be always, try:" +
                             "\n git config --global color.branch auto" +
