@@ -13,6 +13,30 @@
             This widget type allows to select multiple tags.
           </p>
         </description>
+        <categories>
+          <category>search</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="edit">
+            <layout name="select_tags_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
