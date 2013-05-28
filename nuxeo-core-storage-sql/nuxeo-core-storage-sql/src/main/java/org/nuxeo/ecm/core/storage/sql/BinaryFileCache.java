@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     "Stephane Lacoin (aka matic) slacoin@nuxeo.com"
+ *     Florent Guillaume
+ *     Stephane Lacoin
  */
 package org.nuxeo.ecm.core.storage.sql;
 
@@ -30,8 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.file.LRUFileCache;
 
 /**
- * @author "Stephane Lacoin (aka matic) slacoin@nuxeo.com"
- *
+ * An abstract base class to implement a {@link FileCache} based on
+ * {@link #fetchFile} and {@link #fetchLength} methods.
  */
 public abstract class BinaryFileCache extends LRUFileCache {
 
@@ -125,11 +126,10 @@ public abstract class BinaryFileCache extends LRUFileCache {
             return length;
         }
         return fetchLength(key);
-
     }
 
     @Override
-    public synchronized File getFile(String key) {
+    public File getFile(String key) {
 
         // get file from cache
         File file = super.getFile(key);
