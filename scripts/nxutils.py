@@ -279,7 +279,8 @@ def check_output(cmd):
     """Return Shell command output."""
     args = shlex.split(cmd)
     p = subprocess.Popen(args, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                         shell=platform.system() == "Windows")
     out, err = p.communicate()
     retcode = p.returncode
     if retcode != 0:
@@ -309,7 +310,8 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
         if logOutput:
             # Merge stderr with stdout
             stderr = subprocess.STDOUT
-        p = subprocess.Popen(args, stdin=stdin, stdout=stdout, stderr=stderr)
+        p = subprocess.Popen(args, stdin=stdin, stdout=stdout, stderr=stderr,
+                             shell=platform.system() == "Windows")
         if run:
             out, err = p.communicate()
             if logOutput:
@@ -317,7 +319,7 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
                 sys.stdout.flush()
     else:
         logOutput = True
-        p = subprocess.Popen(args)
+        p = subprocess.Popen(args, shell=platform.system() == "Windows")
         if run:
             p.wait()
     if not run:
