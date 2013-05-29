@@ -101,7 +101,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         if (fieldDefinitions == null) {
             this.fieldDefinitions = new FieldDefinition[0];
         } else {
-            this.fieldDefinitions = fieldDefinitions.toArray(new FieldDefinition[] {});
+            this.fieldDefinitions = fieldDefinitions.toArray(new FieldDefinition[0]);
         }
         this.properties = new HashMap<String, Map<String, Serializable>>();
         if (properties != null) {
@@ -111,10 +111,9 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         if (subWidgets == null) {
             this.subWidgets = new WidgetDefinition[0];
         } else {
-            this.subWidgets = subWidgets.toArray(new WidgetDefinition[] {});
+            this.subWidgets = subWidgets.toArray(new WidgetDefinition[0]);
         }
     }
-
 
     public WidgetDefinitionImpl(String name, String type,
             Map<String, String> labels, Map<String, String> helpLabels,
@@ -133,14 +132,14 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         if (fieldDefinitions == null) {
             this.fieldDefinitions = new FieldDefinition[0];
         } else {
-            this.fieldDefinitions = fieldDefinitions.toArray(new FieldDefinition[] {});
+            this.fieldDefinitions = fieldDefinitions.toArray(new FieldDefinition[0]);
         }
         this.properties = properties;
         this.widgetModeProperties = widgetModeProperties;
         if (subWidgets == null) {
             this.subWidgets = new WidgetDefinition[0];
         } else {
-            this.subWidgets = subWidgets.toArray(new WidgetDefinition[] {});
+            this.subWidgets = subWidgets.toArray(new WidgetDefinition[0]);
         }
     }
 

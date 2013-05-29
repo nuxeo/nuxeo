@@ -90,7 +90,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         if (rows == null) {
             this.rows = new LayoutRowDefinition[0];
         } else {
-            this.rows = rows.toArray(new LayoutRowDefinition[] {});
+            this.rows = rows.toArray(new LayoutRowDefinition[0]);
         }
         this.widgets = new HashMap<String, WidgetDefinition>();
         if (widgetDefinitions != null) {

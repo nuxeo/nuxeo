@@ -324,7 +324,7 @@ public class WidgetDescriptor {
             }
             p = p.getNextSibling();
         }
-        selectOptions = options.toArray(new WidgetSelectOption[] {});
+        selectOptions = options.toArray(new WidgetSelectOption[0]);
     }
 
     /**

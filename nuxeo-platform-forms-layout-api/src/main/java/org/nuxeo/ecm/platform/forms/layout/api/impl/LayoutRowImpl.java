@@ -60,7 +60,7 @@ public class LayoutRowImpl implements LayoutRow {
     @Deprecated
     public LayoutRowImpl(List<Widget> widgets,
             Map<String, Serializable> properties) {
-        this.widgets = widgets.toArray(new Widget[] {});
+        this.widgets = widgets.toArray(new Widget[0]);
         this.properties = properties;
         name = null;
         selectedByDefault = true;
@@ -87,7 +87,7 @@ public class LayoutRowImpl implements LayoutRow {
         this.name = name;
         this.selectedByDefault = selectedByDefault;
         this.alwaysSelected = alwaysSelected;
-        this.widgets = widgets.toArray(new Widget[] {});
+        this.widgets = widgets.toArray(new Widget[0]);
         this.properties = properties;
         this.definitionId = definitionId;
     }

@@ -93,7 +93,7 @@ public class LayoutImpl implements Layout {
         this.name = name;
         this.mode = mode;
         this.template = template;
-        this.rows = rows.toArray(new LayoutRow[] {});
+        this.rows = rows.toArray(new LayoutRow[0]);
         this.columns = columns;
         this.properties = properties;
         this.widgetMap = new HashMap<String, Widget>();

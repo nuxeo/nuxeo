@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
  * Default implementation for a layout row definition.
  * <p>
  * Useful to compute rows independently from the layout service.
- * 
+ *
  * @author Anahide Tchertchian
  * @author Antoine Taillefer
  * @since 5.4
@@ -55,11 +55,11 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
     /**
      * Instantiates a new {@code LayoutRowDefinitionImpl} with a given widget
      * name and category.
-     * 
+     *
      * @param name the row name
      * @param widget the widget name
      * @param category the category
-     * 
+     *
      * @since 5.6
      */
     public LayoutRowDefinitionImpl(String name, String widget, String category) {
@@ -94,7 +94,7 @@ public class LayoutRowDefinitionImpl implements LayoutRowDefinition {
             for (int i = 0; i < widgets.size(); i++) {
                 refs[i] = widgets.get(i);
             }
-            this.widgets = widgets.toArray(new WidgetReference[] {});
+            this.widgets = widgets.toArray(new WidgetReference[0]);
         }
         this.alwaysSelected = alwaysSelected;
         this.selectedByDefault = selectedByDefault;
