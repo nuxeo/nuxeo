@@ -3,7 +3,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="home" link="view_home" label="label.main.tab.home" order="20">
+    <action id="home" link="view_home" label="label.main.tab.home" order="20"
+      type="main_tab">
       <category>MAIN_TABS</category>
     </action>
 
