@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.picture.magick.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
@@ -32,12 +34,18 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  */
 public class ImageIdentifier extends MagickExecutor {
 
+    private static final Log log = LogFactory.getLog(ImageIdentifier.class);
+
     public static ImageInfo getInfo(String inputFilePath)
             throws CommandNotAvailable {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", inputFilePath);
         ExecResult result = execCommand("identify", params);
-
+        if (result.getError() != null) {
+            log.debug("identify failed for file: " + inputFilePath + " ("
+                    + result.getError() + ")");
+            return null;
+        }
         String out = result.getOutput().get(
                 result.getOutput().size() > 1 ? result.getOutput().size() - 1
                         : 0);
