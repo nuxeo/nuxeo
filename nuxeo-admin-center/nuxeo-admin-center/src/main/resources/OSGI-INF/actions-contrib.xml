@@ -4,7 +4,7 @@
     point="actions">
 
     <action id="admin" link="view_admin" label="label.main.tab.admin.center"
-      order="100">
+      order="100" type="main_tab">
       <category>MAIN_TABS</category>
       <filter-id>adminCenterAccess</filter-id>
     </action>
