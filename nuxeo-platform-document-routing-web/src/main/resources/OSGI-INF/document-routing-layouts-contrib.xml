@@ -121,6 +121,30 @@
         </property>
       </properties>
     </widget>
+    <widget name="listing_title_link_localized" type="listing_title_link">
+      <labels>
+        <label mode="any">label.content.header.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.ref</field>
+      </fields>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+    <widget name="header_title_and_permlink_localized" type="title_and_permlink">
+      <fields>
+        <field></field>
+      </fields>
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -201,6 +225,128 @@
           <widget>summary_document_route_action</widget>
         </row>
       </rows>
+    </layout>
+    
+    <layout name="document_route_header">
+      <!--@since 5.7.1 -->
+      <templates>
+        <template mode="any">/layouts/layout_div_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>header_title_and_permlink_localized</widget>
+        </row>
+        <row>
+          <widget>header_description</widget>
+        </row>
+      </rows>
+    </layout>
+    
+    <layout name="document_route_models_listing_ajax">
+      <!--@since 5.7.1 -->
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="isListingSelectionBoxWithCurrentDocument">
+              true
+            </property>
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_ajax_selection_box_with_current_document</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>listing_title_link_localized</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="isSortable">false</property>
+          </properties>
+          <widget>listing_version</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </column>
+      </columns>
     </layout>
   </extension>
 </component>

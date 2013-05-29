@@ -28,17 +28,9 @@
       <cacheKey>#{currentDocument.id}</cacheKey>
       <cacheSize>10</cacheSize>
       <resultLayouts>
-        <layout name="document_listing_ajax" title="document_listing"
+        <layout name="document_route_models_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showPDFExport="true" showSyndicationLinks="true" />
-        <layout name="document_listing_ajax_compact_2_columns"
-          title="document_listing_compact_2_columns"
-          translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
-        <layout name="document_listing_ajax_icon_2_columns"
-          title="document_listing_icon_2_columns"
-          translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
        </resultLayouts>
        <selectionList>CURRENT_SELECTION</selectionList>
        <actions category="CURRENT_SELECTION_LIST" />

@@ -45,6 +45,9 @@
         <layout>dublincore</layout>
         <layout>step_folder</layout>
       </layouts>
+      <layouts mode="header">
+        <layout>document_route_header</layout>
+      </layouts>
       <layouts mode="summary">
         <layout>summary_document_route_layout</layout>
       </layouts>
