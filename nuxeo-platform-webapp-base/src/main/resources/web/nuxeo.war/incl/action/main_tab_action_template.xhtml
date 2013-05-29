@@ -5,7 +5,8 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <nxu:set var="requireDocument" value="#{action.properties.requireDocument}">
+  <nxu:set var="requireDocument" value="#{action.properties.requireDocument}"
+    cache="true">
     <c:if test="#{not empty requireDocument}">
       <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(action.id)}"
         view="#{mainTabsActions.getViewFor(action)}"
