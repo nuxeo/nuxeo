@@ -550,6 +550,9 @@
                 <row>
                   <widget>subTab</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">localize</widget>
+                </row>
               </rows>
               <widget name="tab" type="text">
                 <labels>
@@ -579,6 +582,22 @@
                   <field>subTab</field>
                 </fields>
               </widget>
+              <widget name="localize" type="checkbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7.1. Flag indicating that the title is localized.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+            </widget>
             </layout>
           </layouts>
         </properties>

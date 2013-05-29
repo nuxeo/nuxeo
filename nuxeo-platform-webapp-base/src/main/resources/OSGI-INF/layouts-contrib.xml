@@ -925,6 +925,33 @@
         <categories>
           <category>document</category>
         </categories>
+        <properties>
+          <layouts mode="any">
+            <layout name="title_and_permlink_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">localize</widget>
+                </row>
+              </rows>
+              <widget name="localize" type="checkbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7.1. Flag indicating that the title is localized.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+            </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
