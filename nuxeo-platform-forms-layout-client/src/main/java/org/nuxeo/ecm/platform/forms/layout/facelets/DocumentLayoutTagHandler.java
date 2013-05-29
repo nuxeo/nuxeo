@@ -158,7 +158,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
             handlers.add(new LayoutTagHandler(tagConfig));
         }
         CompositeFaceletHandler composite = new CompositeFaceletHandler(
-                handlers.toArray(new FaceletHandler[] {}));
+                handlers.toArray(new FaceletHandler[0]));
         composite.apply(ctx, parent);
     }
 }

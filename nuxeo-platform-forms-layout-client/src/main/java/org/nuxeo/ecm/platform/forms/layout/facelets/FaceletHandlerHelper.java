@@ -262,7 +262,7 @@ public final class FaceletHandlerHelper {
     }
 
     public static TagAttributes getTagAttributes(List<TagAttribute> attributes) {
-        return getTagAttributes(attributes.toArray(new TagAttribute[] {}));
+        return getTagAttributes(attributes.toArray(new TagAttribute[0]));
     }
 
     public static TagAttributes addTagAttribute(TagAttributes orig,

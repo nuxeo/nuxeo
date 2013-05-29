@@ -333,7 +333,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
                 wDef.isTranslated(), wDef.isHandlingLabels(),
                 wDef.getProperties(layoutMode, wMode), required,
-                subWidgets.toArray(new Widget[] {}), level,
+                subWidgets.toArray(new Widget[0]), level,
                 wDef.getSelectOptions(),
                 LayoutFunctions.computeWidgetDefinitionId(wDef),
                 wDef.getRenderingInfos(layoutMode));
@@ -520,7 +520,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 }
             }
             if (!subHandlersList.isEmpty()) {
-                subHandlers = subHandlersList.toArray(new FaceletHandler[] {});
+                subHandlers = subHandlersList.toArray(new FaceletHandler[0]);
             }
             FaceletHandler fHandler = handler.getFaceletHandler(ctx, config,
                     widget, subHandlers);

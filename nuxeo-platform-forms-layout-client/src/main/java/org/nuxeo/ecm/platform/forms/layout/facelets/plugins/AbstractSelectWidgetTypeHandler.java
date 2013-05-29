@@ -64,7 +64,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends
             }
         }
         return new CompositeFaceletHandler(
-                selectItems.toArray(new FaceletHandler[] {}));
+                selectItems.toArray(new FaceletHandler[0]));
     }
 
 }
