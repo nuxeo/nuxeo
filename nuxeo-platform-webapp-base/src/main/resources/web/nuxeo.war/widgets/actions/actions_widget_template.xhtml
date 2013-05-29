@@ -55,7 +55,7 @@
                     begin="0"
                     end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
                     step="1">
-                    <li class="#{nxu:test(widgetProperty_selectedExpression, 'selected', '')}">
+                    <li class="#{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                       <ui:decorate template="/widgets/incl/form_template.xhtml">
                         <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                         <ui:param name="formId" value="#{nxu:jsfTagIdEscape(widget.id)}_#{nxu:jsfTagIdEscape(action.id)}_form" />

@@ -74,6 +74,10 @@ TODO:
       <ui:include src="template_action_template.xhtml" />
     </c:when>
 
+    <c:when test="#{action.type == 'main_tab' or (empty action.type and actionType == 'main_tab')}">
+      <ui:include src="main_tab_action_template.xhtml" />
+    </c:when>
+
     <c:if test="false">
       Use a link by default (also used if type is unknown)
     </c:if>

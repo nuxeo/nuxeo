@@ -255,6 +255,10 @@
       <category>VIEW_ACTION_LIST</category>
     </typeCompatibility>
 
+    <typeCompatibility type="main_tab">
+      <category>MAIN_TABS</category>
+    </typeCompatibility>
+
   </extension>
 
 </component>
