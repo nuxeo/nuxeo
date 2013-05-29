@@ -4,16 +4,28 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core">
-
+ <c:set var="localize" value="#{nxu:test(!empty widgetProperty_localize, widgetProperty_localize, 'false')}" />
   <h1>
 
     <c:if test="#{field.version}">
-      <h:outputText value="#{nxd:titleOrId(field)}"/>
-      (<h:outputText value="#{messages['label.version']}" />
-      <h:outputText value=" #{documentManager.getVersionLabel(field)}"/>)
+       <c:if test="#{localize == 'true'}">
+        <h:outputText value="#{messages[nxd:titleOrId(field)]}"/>
+        (<h:outputText value="#{messages['label.version']}" />
+        <h:outputText value=" #{messages[documentManager.getVersionLabel(field)]}"/>)
+       </c:if>
+       <c:if test="#{localize == 'false'}">
+         <h:outputText value="#{nxd:titleOrId(field)}"/>
+         (<h:outputText value="#{messages['label.version']}" />
+         <h:outputText value=" #{documentManager.getVersionLabel(field)}"/>)
+       </c:if>
     </c:if>
     <c:if test="#{! field.version}">
-      <h:outputText value="#{nxd:titleOrId(field)}"/>
+       <c:if test="#{localize == 'true'}">
+        <h:outputText value="#{messages[nxd:titleOrId(field)]}"/>
+       </c:if>
+       <c:if test="#{localize == 'false'}">
+         <h:outputText value="#{nxd:titleOrId(field)}"/>
+       </c:if>
     </c:if>
 
     <nxu:set var="actions"
