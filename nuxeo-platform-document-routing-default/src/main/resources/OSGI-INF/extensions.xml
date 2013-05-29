@@ -282,7 +282,7 @@ NodeVariables["comment"]= null;}</param>
     <template-resource id="SerialDocumentReview" path="data/SerialDocumentReview.zip"/>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
-    <filter id="filter@wf@SerialDocumentReview">
+    <filter id="filter@SerialDocumentReview">
       <rule grant="true">
         <permission>ReadWrite</permission>
         <type>File</type>

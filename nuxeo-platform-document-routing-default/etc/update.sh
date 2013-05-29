@@ -34,6 +34,10 @@ find $RES -name extensions.xml -o -name '*.xsd' | while read f; do
       -i '~' $f
 done
 
+# replace workflow filter id to add back old id, see NXP-11633
+sed -e 's,filter@wf@SerialDocumentReview,filter@SerialDocumentReview,' \
+    -i '~' $RES/OSGI-INF/extensions.xml
+
 # remove require on runtime started
 sed -e 's#  <require>org.nuxeo.runtime.started</require>##' \
     -i '~' $RES/OSGI-INF/extensions.xml
@@ -42,13 +46,15 @@ sed -e 's#  <require>org.nuxeo.runtime.started</require>##' \
 sed -e '/<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes"/,/<.extension>/d' \
     -i '~' $RES/OSGI-INF/extensions.xml
 
-# replace studio name in schema namespaces in ZIP
+# in zip, replace studio name in schema namespaces, as well as workflow filter id
 ZIP=$RES/data/SerialDocumentReview.zip
 mkdir $ZIP.dir
 cd $ZIP.dir
 unzip $ZIP
 find . -name '*.xml' | while read f; do
   sed -e "s,$STUDIONAME,nuxeo-routing-default,g" \
+      -i '~' $f
+  sed -e 's,filter@wf@SerialDocumentReview,filter@SerialDocumentReview,' \
       -i '~' $f
 done
 find . -name '*~' | xargs rm
