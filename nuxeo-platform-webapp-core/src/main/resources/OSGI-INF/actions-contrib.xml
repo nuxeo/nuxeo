@@ -6,7 +6,7 @@
     <!-- server actions -->
 
     <action id="documents" link="view_documents" label="label.main.tab.documents"
-      order="40">
+      order="40" type="main_tab">
       <category>MAIN_TABS</category>
       <properties>
         <property name="requireDocument">true</property>

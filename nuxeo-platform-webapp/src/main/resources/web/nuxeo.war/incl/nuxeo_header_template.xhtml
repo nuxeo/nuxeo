@@ -5,7 +5,8 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:insert name="header_admin_message">
     <div class="header_admin_messages">
@@ -69,33 +70,12 @@
 
       <ui:insert name="header_main_tabs">
       <div class="mainTabs">
-        <ul>
-          <c:forEach var="mainTab" items="#{webActions.getActionsList('MAIN_TABS')}">
-            <li class="#{nxu:test(webActions.getCurrentTabId('MAIN_TABS') == mainTab.id, 'selected', '')}">
-              <nxu:set var="requireDocument" value="#{mainTab.properties.requireDocument}">
-                <c:if test="#{not empty requireDocument}">
-                  <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
-                    view="#{mainTabsActions.getViewFor(mainTab)}"
-                    pattern="#{mainTabsActions.getPatternFor(mainTab)}"
-                    addTabInfo="false"
-                    tabs="MAIN_TABS:#{mainTab.id}">
-                    <h:outputText value="#{messages[mainTab.label]}" />
-                  </nxd:restDocumentLink>
-                </c:if>
-                <c:if test="#{empty requireDocument}">
-                  <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(mainTab.id)}"
-                    repositoryName="#{navigationContext.currentServerLocation.name}"
-                    view="#{mainTabsActions.getViewFor(mainTab)}"
-                    pattern="#{mainTabsActions.getPatternFor(mainTab)}"
-                    addTabInfo="false"
-                    tabs="MAIN_TABS:#{mainTab.id}">
-                    <h:outputText value="#{messages[mainTab.label]}" />
-                  </nxd:restDocumentLink>
-                </c:if>
-              </nxu:set>
-            </li>
-          </c:forEach>
-        </ul>
+        <nxl:widgetType name="currentDocumentActions" mode="view"
+          value="#{currentDocument}"
+          category="MAIN_TABS" overallDisplay="menu"
+          currentAction="#{webActions.getCurrentTabAction('MAIN_TABS')}"
+          selectedExpression="#{webActions.getCurrentTabId('MAIN_TABS') == action.id}"
+          ignoreTemplateProperty="true" addForm="false" />
       </div>
       </ui:insert>
 
