@@ -124,6 +124,7 @@ public abstract class AbstractUserGroupManagement {
 
     public void toggleShowCreateForm() {
         showCreateForm = !showCreateForm;
+        detailsMode = null;
     }
 
     public boolean isShowUserOrGroup() {
@@ -132,6 +133,7 @@ public abstract class AbstractUserGroupManagement {
 
     public void toggleShowUserOrGroup() {
         showUserOrGroup = !showUserOrGroup;
+        detailsMode = null;
     }
 
 }

@@ -220,6 +220,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
             } else {
                 showCreateForm = false;
                 showUserOrGroup = true;
+                detailsMode = null;
             }
             fireSeamEvent(USERS_LISTING_CHANGED);
         } catch (UserAlreadyExistsException e) {

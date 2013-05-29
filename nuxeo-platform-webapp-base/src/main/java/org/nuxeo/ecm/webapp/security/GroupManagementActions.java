@@ -120,6 +120,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
             } else {
                 showCreateForm = false;
                 showUserOrGroup = true;
+                detailsMode = null;
             }
             fireSeamEvent(GROUPS_LISTING_CHANGED);
         } catch (GroupAlreadyExistsException e) {
