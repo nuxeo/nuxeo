@@ -52,6 +52,8 @@ empty:
           id="submitFilter"
           styleClass="button"
           action="#{contentView.resetPageProvider()}">
+          <nxu:actionListenerMethod
+            value="#{jsfResetActions.resetComponents}" />
           <f:setPropertyActionListener value="false"
             target="#{selectionActions.selectedValue}" />
           <f:setPropertyActionListener
@@ -92,6 +94,8 @@ empty:
           ignoreDupResponses="true"
           requestDelay="100"
           styleClass="button">
+          <nxu:actionListenerMethod
+            value="#{jsfResetActions.resetComponents}" />
           <nxu:actionListenerMethod
             value="#{contentView.resetSearchDocumentModel()}" />
           <f:setPropertyActionListener value="false"
@@ -155,6 +159,8 @@ empty:
                 id="submitFilter"
                 action="#{contentView.resetPageProvider()}"
                 styleClass="button">
+                <nxu:actionListenerMethod
+                  value="#{jsfResetActions.resetComponents}" />
                 <f:setPropertyActionListener value="false"
                   target="#{selectionActions.selectedValue}" />
                 <f:setPropertyActionListener
@@ -172,6 +178,8 @@ empty:
                 ignoreDupResponses="true"
                 requestDelay="100"
                 styleClass="button">
+                <nxu:actionListenerMethod
+                  value="#{jsfResetActions.resetComponents}" />
                 <nxu:actionListenerMethod
                   value="#{contentView.resetSearchDocumentModel()}" />
               </a4j:commandButton>
