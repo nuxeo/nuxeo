@@ -388,7 +388,9 @@ if (!log) {
         }
       if (event.loaded == event.total) {
         log("file " + event.target.fileIndex + " detected upload complete");
-        load(event.target, opts);
+        // having all the bytes sent to the server does not mean the server did actually receive everything
+        // but since load event is not reliable on Webkit we need this
+        // window.setTimeout(function(){load(event.target, opts);}, 5000);
       } else {
         log("file " + event.target.fileIndex + " not completed :" + event.loaded + "/" + event.total);
       }
