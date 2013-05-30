@@ -218,8 +218,8 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB, cancelCB) 
         // select the target DropZone
         this.selectTargetZone();
         // generate a batchId
-        this.batchId = "batch-" + new Date().getTime();
-        // fetc import options
+        this.batchId = "batch-" + new Date().getTime() + "-" + Math.floor(Math.random()*1000);
+        // fetch import options
         this.fetchOptions();
       }
       // Add the status bar on top of body
