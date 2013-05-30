@@ -45,12 +45,14 @@
         <style>header</style>
         <style>body</style>
         <style>footer</style>
-        <style>breadcrumb</style>
+        <style>grids_and_widgets</style>
         <style>navigation</style>
         <style>tables</style>
         <style>forms</style>
         <style>popups</style>
+        <style>breadcrumb</style>
         <style>messages_and_tooltips</style>
+        <style>drag_and_drop</style>
         <style>foldable_boxes</style>
         <style>richfaces_components</style>
         <style>tabs_content</style>
