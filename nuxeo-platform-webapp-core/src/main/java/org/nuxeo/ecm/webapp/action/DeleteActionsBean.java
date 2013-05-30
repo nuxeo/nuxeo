@@ -149,7 +149,11 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDelete() {
-        List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
+        return getCanDelete(CURRENT_DOCUMENT_SELECTION);
+    }
+
+    public boolean getCanDelete(String listName) {
+        List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
         try {
             return getTrashService().canDelete(docs, currentUser, false);
         } catch (ClientException e) {
@@ -214,8 +218,12 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String purgeSelection() throws ClientException {
-        if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_TRASH_SELECTION)) {
-            return purgeSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION));
+        return purgeSelection(CURRENT_DOCUMENT_TRASH_SELECTION);
+    }
+
+    public String purgeSelection(String listName) throws ClientException {
+        if (!documentsListsManager.isWorkingListEmpty(listName)) {
+            return purgeSelection(documentsListsManager.getWorkingList(listName));
         } else {
             log.debug("No documents selection in context to process delete on...");
             return null;

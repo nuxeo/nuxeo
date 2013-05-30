@@ -37,6 +37,11 @@ public interface DeleteActions {
     String purgeSelection() throws ClientException;
 
     /**
+     * Definitively deletes selected documents of the given {@code listName}.
+     */
+    String purgeSelection(String listName) throws ClientException;
+
+    /**
      * Definitively deletes param documents.
      */
     String purgeSelection(List<DocumentModel> docsToPurge)
@@ -72,6 +77,8 @@ public interface DeleteActions {
     boolean getCanDeleteItem(DocumentModel container) throws ClientException;
 
     boolean getCanDelete();
+
+    boolean getCanDelete(String listName);
 
     boolean getCanDeleteSections();
 
