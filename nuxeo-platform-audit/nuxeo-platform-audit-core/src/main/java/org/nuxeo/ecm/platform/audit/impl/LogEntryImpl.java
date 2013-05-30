@@ -80,6 +80,8 @@ public class LogEntryImpl implements LogEntry {
 
     private Date eventDate;
 
+    private Date logDate;
+
     private String docUUID;
 
     private String docType;
@@ -97,6 +99,7 @@ public class LogEntryImpl implements LogEntry {
     protected transient UIAuditComment uiComment;
 
     private Map<String, ExtendedInfoImpl> extendedInfos = new HashMap<String, ExtendedInfoImpl>();
+
 
     /**
      * @return the log identifier
@@ -154,6 +157,24 @@ public class LogEntryImpl implements LogEntry {
 
     public void setEventDate(Date eventDate) {
         this.eventDate = eventDate;
+    }
+    /**
+     * @return the date of the log insertion: this up to max transaction timeout
+     *         later than eventDate.
+     *
+     *         This date is useful for services such as Nuxeo Drive that need
+     *         fine grained incremental near-monotonic access to the audit log.
+     * @since 5.7
+     * @since 5.6-HF16
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "LOG_DATE")
+    public Date getLogDate() {
+        return this.logDate;
+    }
+
+    public void setLogDate(Date logDate) {
+        this.logDate = logDate;
     }
 
     /**

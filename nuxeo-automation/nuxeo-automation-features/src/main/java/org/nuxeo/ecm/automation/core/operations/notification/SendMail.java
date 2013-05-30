@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 
 /**
@@ -153,13 +154,16 @@ public class SendMail {
             for (String xpath : blobXpath) {
                 try {
                     Property p = doc.getProperty(xpath);
-                    if (p instanceof ListProperty) {
+                    if (p instanceof BlobProperty) {
+                        getBlob(p.getValue(), blobs);
+                    } else if (p instanceof ListProperty) {
                         for (Property pp : p) {
                             getBlob(pp.getValue(), blobs);
                         }
                     } else if (p instanceof MapProperty) {
-                        for (Property sp : ((MapProperty) p).values())
+                        for (Property sp : ((MapProperty) p).values()) {
                             getBlob(sp.getValue(), blobs);
+                        }
                     } else {
                         Object o = p.getValue();
                         if (o instanceof Blob) {
@@ -168,7 +172,7 @@ public class SendMail {
                     }
                 } catch (PropertyException pe) {
                     log.error("Error while fetching blobs: " + pe.getMessage());
-                    log.debug(pe);
+                    log.debug(pe, pe);
                     continue;
                 }
             }
@@ -196,8 +200,6 @@ public class SendMail {
             }
         } else if (o instanceof Blob) {
             blobs.add((Blob) o);
-        } else {
-            // stop looking for blobs
         }
 
     }

@@ -49,6 +49,8 @@ public class Document extends DocRef {
     
     protected final String lockCreated;
 
+    protected final String versionLabel;
+
     protected final PropertyMap properties;
 
     protected final PropertyMap contextParameters;
@@ -57,14 +59,30 @@ public class Document extends DocRef {
 
     protected final PropertyList facets;
 
+    @Deprecated
+    /**
+     * Deprecated now use with the constructor with versionLabel
+     *
+     */
+    public Document(String id, String type, PropertyList facets,
+            String changeToken, String path, String state, String lockOwner,
+            String lockCreated, String repository, PropertyMap properties,
+            PropertyMap contextParameters) {
+        this(id,  type,  facets,
+                 changeToken,  path,  state,  lockOwner,
+                 lockCreated,  repository,  null, properties, contextParameters);
+    }
+
     /**
      * Reserved to framework. Should be only called by client framework when
      * unmarshalling documents.
+     * @since 5.7
+     * @since 5.6-HF17
      */
     public Document(String id, String type, PropertyList facets,
-            String changeToken, String path, String state, String lockOwner, String lockCreated,
-            String repository, PropertyMap properties,
-            PropertyMap contextParameters) {
+            String changeToken, String path, String state, String lockOwner,
+            String lockCreated, String repository, String versionLabel,
+            PropertyMap properties, PropertyMap contextParameters) {
         super(id);
         this.changeToken = changeToken;
         this.facets = facets;
@@ -74,6 +92,7 @@ public class Document extends DocRef {
         this.lockOwner = lockOwner;
         this.lockCreated = lockCreated;
         this.repository = repository;
+        this.versionLabel = versionLabel;
         this.properties = properties == null ? new PropertyMap() : properties;
         this.contextParameters = contextParameters == null ? new PropertyMap()
                 : contextParameters;
@@ -121,6 +140,10 @@ public class Document extends DocRef {
     
     public String getState() {
         return state;
+    }
+
+    public String getVersionLabel() {
+        return versionLabel;
     }
 
     public Date getLastModified() {

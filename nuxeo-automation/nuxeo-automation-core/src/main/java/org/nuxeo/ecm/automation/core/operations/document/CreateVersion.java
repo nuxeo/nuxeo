@@ -18,9 +18,11 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
@@ -41,10 +43,16 @@ public class CreateVersion {
 
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
+        if (!doc.hasFacet(FacetNames.VERSIONABLE)) {
+            throw new ClientException(
+                    String.format(
+                            "The document (id:'%s') with title '%s' doesn't have 'versionable' facet",
+                            doc.getId(), doc.getTitle()));
+        }
         VersioningOption vo;
-        if ("Minor".equals(snapshot)) {
+        if ("Minor".equalsIgnoreCase(snapshot)) {
             vo = VersioningOption.MINOR;
-        } else if ("Major".equals(snapshot)) {
+        } else if ("Major".equalsIgnoreCase(snapshot)) {
             vo = VersioningOption.MAJOR;
         } else {
             vo = null;

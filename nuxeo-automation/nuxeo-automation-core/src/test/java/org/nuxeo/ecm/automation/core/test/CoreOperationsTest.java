@@ -642,20 +642,46 @@ public class CoreOperationsTest {
 
     @Test
     public void testRunOperatioOnList() throws Exception {
-        service.putOperation(RunOnListItem.class);
-        OperationContext ctx = new OperationContext(session);
-        String input = "dummyInput";
-        ctx.setInput(input);
-        ArrayList<String> users = new ArrayList<String>();
-        users.add("foo");
-        users.add("bar");
-        ctx.put("users", users);
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(RunOperationOnList.ID).set("list", "users").set("id",
-                "runOnList").set("isolate", "false");
-        service.run(ctx, chain);
-        String result = (String) ctx.get("result");
-        assertEquals("foo, bar", result);
+        try {
+            service.putOperation(RunOnListItem.class);
+            OperationContext ctx = new OperationContext(session);
+            String input = "dummyInput";
+            ctx.setInput(input);
+            ArrayList<String> users = new ArrayList<String>();
+            users.add("foo");
+            users.add("bar");
+            ctx.put("users", users);
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(RunOperationOnList.ID).set("list", "users").set("id",
+                    "runOnList").set("isolate", "false");
+            service.run(ctx, chain);
+            String result = (String) ctx.get("result");
+            assertEquals("foo, bar", result);
+        } finally {
+            service.removeOperation(RunOnListItem.class);
+        }
+    }
+
+    @Test
+    public void testRunOperationOnArray() throws Exception {
+        try {
+            service.putOperation(RunOnListItem.class);
+            OperationContext ctx = new OperationContext(session);
+            String input = "dummyInput";
+            ctx.setInput(input);
+            String[] groups = new String[2];
+            groups[0] = "tic";
+            groups[1] = "tac";
+            ctx.put("groups", groups);
+            OperationChain chain = new OperationChain("testChain");
+            chain.add(RunOperationOnList.ID).set("list", "groups").set("id",
+                    "runOnList").set("isolate", "false");
+            service.run(ctx, chain);
+            String result = (String) ctx.get("result");
+            assertEquals("tic, tac", result);
+        } finally {
+            service.removeOperation(RunOnListItem.class);
+        }
     }
 
     @Test

@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.MockInputStream;
-import org.nuxeo.ecm.automation.test.RestFeature;
+import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -39,7 +39,7 @@ import com.google.inject.Inject;
  *
  */
 @RunWith(FeaturesRunner.class)
-@Features(RestFeature.class)
+@Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
 public class UploadBigFileTest {
 
@@ -50,7 +50,7 @@ public class UploadBigFileTest {
         MemoryMXBean mbean = ManagementFactory.getMemoryMXBean();
         MemoryUsage usage = mbean.getHeapMemoryUsage();
         MockInputStream source = UploadFileSupport.newMockInput(usage.getMax(), false);
-        FileInputStream result = new UploadFileSupport(session).testUploadFile(source);
+        FileInputStream result = new UploadFileSupport(session,"/").testUploadFile(source);
         assertEquals(source.consumed, result.getChannel().size());
     }
 

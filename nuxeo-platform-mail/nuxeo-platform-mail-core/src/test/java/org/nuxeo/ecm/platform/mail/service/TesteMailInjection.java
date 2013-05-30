@@ -19,20 +19,22 @@
 
 package org.nuxeo.ecm.platform.mail.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -126,6 +128,27 @@ public class TesteMailInjection extends
         Message[] messages = { getSampleMessage(filePath) };
 
         visitor.visit(messages, initialExecutionContext);
+    }
+
+    @Test
+    public void testBadMailAddress() throws Exception {
+        injectEmail("data/test_bad_mail_address.eml",
+                mailFolder1.getPathAsString());
+        DocumentModelList children = session.getChildren(mailFolder1.getRef());
+        assertNotNull(children);
+        assertTrue(!children.isEmpty());
+        assertEquals(1, children.size());
+        DocumentModel mail = children.get(0);
+        List<String> recipients = (List<String>) mail.getPropertyValue("mail:recipients");
+        assertNotNull(recipients);
+        assertTrue(!recipients.isEmpty());
+        assertEquals(recipients.get(0), "<Undisclosed-Recipient:;>");
+        List<String> ccRecipients = (List<String>) mail.getPropertyValue("mail:cc_recipients");
+        assertNotNull(ccRecipients);
+        assertTrue(!ccRecipients.isEmpty());
+        assertEquals(ccRecipients.get(0), "<Undisclosed-Recipient:;>");
+        assertEquals(mail.getProperty("mail:sender").getValue(String.class),
+                "Nicolas Ulrich <nulrich:nuxeo.com>");
     }
 
     private Message getSampleMessage(String filePath) throws Exception {

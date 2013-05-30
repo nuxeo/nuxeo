@@ -45,6 +45,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         String type = null;
         String path = null;
         String state = null;
+        String versionLabel = null;
         String lockCreated = null;
         String lockOwner = null;
         String repository = null;
@@ -64,6 +65,8 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 type = jp.getText();
             } else if (key.equals("state")) {
                 state = jp.getText();
+            } else if (key.equals("versionLabel")) {
+                versionLabel = jp.getText();
             } else if (key.equals("lock")) {
                 if (!JsonToken.VALUE_NULL.equals(jp.getCurrentToken())) {
                     String[] lock = jp.getText().split(":");
@@ -94,7 +97,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             }
             tok = jp.nextToken();
         }
-        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, props, null);
+        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, props, null);
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {

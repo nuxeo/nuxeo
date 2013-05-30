@@ -52,7 +52,7 @@ public class OperationChainContribution {
     protected String id;
 
     @XNode("@replace")
-    protected boolean replace;
+    protected boolean replace = true;
 
     @XNode("description")
     protected String description;

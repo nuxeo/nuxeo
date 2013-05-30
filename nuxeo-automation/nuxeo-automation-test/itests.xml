@@ -1,0 +1,33 @@
+<project name="integration-test"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <target name="set-java-home"
+          depends="_init"
+          description="Force use java 7 to start 5.7 Nuxeo server">
+    <antcall target="set-conf">
+      <param name="name" value="JAVA_HOME" />
+      <param name="value" value="${java7.home}" />
+    </antcall>
+    <echo message="Using JAVA_HOME=${java7.home}" />
+  </target>
+
+  <target name="download" unless="no.download">
+    <delete failonerror="false" dir="${nuxeo.home}" />
+    <unzip dest="${nuxeo.home}/">
+      <artifact:resolveFile key="${groupId}:${artifactId}:${nuxeo.tested.version}:zip:${classifier}" />
+      <cutdirsmapper dirs="1" />
+    </unzip>
+  </target>
+
+</project>

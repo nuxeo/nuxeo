@@ -41,6 +41,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -109,62 +110,84 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             context.put(SUBJECT_KEY, subject);
 
             // Sender
-            Address[] from = message.getFrom();
-            String sender = null;
-            String senderEmail = null;
-            if (from != null) {
-                Address addr = from[0];
-                if (addr instanceof InternetAddress) {
-                    InternetAddress iAddr = (InternetAddress) addr;
-                    senderEmail = iAddr.getAddress();
-                    sender = iAddr.getPersonal() + " <" + senderEmail + ">";
-                } else {
-                    sender += addr.toString();
-                    senderEmail = sender;
+            try {
+                Address[] from = message.getFrom();
+                String sender = null;
+                String senderEmail = null;
+                if (from != null) {
+                    Address addr = from[0];
+                    if (addr instanceof InternetAddress) {
+                        InternetAddress iAddr = (InternetAddress) addr;
+                        senderEmail = iAddr.getAddress();
+                        sender = iAddr.getPersonal() + " <" + senderEmail + ">";
+                    } else {
+                        sender += addr.toString();
+                        senderEmail = sender;
+                    }
+                }
+                context.put(SENDER_KEY, sender);
+                context.put(SENDER_EMAIL_KEY, senderEmail);
+            } catch (AddressException ae) {
+                // try to parse sender from header instead
+                String[] values = message.getHeader("From");
+                if (values != null) {
+                    context.put(SENDER_KEY, values[0]);
                 }
             }
-            context.put(SENDER_KEY, sender);
-            context.put(SENDER_EMAIL_KEY, senderEmail);
-
             // Sending date
             context.put(SENDING_DATE_KEY, message.getSentDate());
 
             // Recipients
-            Address[] to = message.getRecipients(Message.RecipientType.TO);
-            Collection<String> recipients = new ArrayList<String>();
-            if (to != null) {
-                for (Address addr : to) {
-                    if (addr instanceof InternetAddress) {
-                        InternetAddress iAddr = (InternetAddress) addr;
-                        if (iAddr.getPersonal() != null) {
-                        recipients.add(iAddr.getPersonal() + " <"
-                                + iAddr.getAddress() + ">");
+            try {
+                Address[] to = message.getRecipients(Message.RecipientType.TO);
+                Collection<String> recipients = new ArrayList<String>();
+                if (to != null) {
+                    for (Address addr : to) {
+                        if (addr instanceof InternetAddress) {
+                            InternetAddress iAddr = (InternetAddress) addr;
+                            if (iAddr.getPersonal() != null) {
+                                recipients.add(iAddr.getPersonal() + " <"
+                                        + iAddr.getAddress() + ">");
+                            } else {
+                                recipients.add(iAddr.getAddress());
+                            }
                         } else {
-                            recipients.add(iAddr.getAddress());
+                            recipients.add(addr.toString());
                         }
-                    } else {
-                        recipients.add(addr.toString());
                     }
                 }
+                context.put(RECIPIENTS_KEY, recipients);
+            } catch (AddressException ae) {
+                // try to parse recipient from header instead
+                Collection<String> recipients = getHeaderValues(message,
+                        Message.RecipientType.TO.toString());
+                context.put(RECIPIENTS_KEY, recipients);
             }
-            context.put(RECIPIENTS_KEY, recipients);
 
             // CC recipients
-            Address[] toCC = message.getRecipients(Message.RecipientType.CC);
-            Collection<String> ccRecipients = new ArrayList<String>();
-            if (toCC != null) {
-                for (Address addr : toCC) {
-                    if (addr instanceof InternetAddress) {
-                        InternetAddress iAddr = (InternetAddress) addr;
-                        ccRecipients.add(iAddr.getPersonal() + " "
-                                + iAddr.getAddress());
-                    } else {
-                        ccRecipients.add(addr.toString());
+
+            try {
+                Address[] toCC = message.getRecipients(Message.RecipientType.CC);
+                Collection<String> ccRecipients = new ArrayList<String>();
+                if (toCC != null) {
+                    for (Address addr : toCC) {
+                        if (addr instanceof InternetAddress) {
+                            InternetAddress iAddr = (InternetAddress) addr;
+                            ccRecipients.add(iAddr.getPersonal() + " "
+                                    + iAddr.getAddress());
+                        } else {
+                            ccRecipients.add(addr.toString());
+                        }
                     }
                 }
-            }
-            context.put(CC_RECIPIENTS_KEY, ccRecipients);
+                context.put(CC_RECIPIENTS_KEY, ccRecipients);
 
+            } catch (AddressException ae) {
+                // try to parse ccRecipient from header instead
+                Collection<String> ccRecipients = getHeaderValues(message,
+                        Message.RecipientType.CC.toString());
+                context.put(CC_RECIPIENTS_KEY, ccRecipients);
+            }
             String[] messageIdHeader = message.getHeader("Message-ID");
             if (messageIdHeader != null) {
                 context.put(MailCoreConstants.MESSAGE_ID_KEY,
@@ -357,6 +380,18 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             }
         }
         return ret;
+    }
+
+    public Collection<String> getHeaderValues(Message message, String headerName)
+            throws MessagingException {
+        Collection<String> valuesList = new ArrayList<String>();
+        String[] values = message.getHeader(headerName);
+        if (values != null) {
+            for (String value : values) {
+                valuesList.add(value);
+            }
+        }
+        return valuesList;
     }
 
 }

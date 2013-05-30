@@ -70,6 +70,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     public List<Blob> getBlobs(String title) throws ClientException {
+        CoreSession session = getSession();
         boolean sessionOpened = false;
         if (session == null) {
             sessionOpened = true;

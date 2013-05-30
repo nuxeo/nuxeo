@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
-    <version>5.6.0-HF13-SNAPSHOT</version>
+    <version>5.6.0-HF19-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-automation-server</artifactId>
   <name>Nuxeo Automation Server</name>
@@ -85,11 +85,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-client</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>

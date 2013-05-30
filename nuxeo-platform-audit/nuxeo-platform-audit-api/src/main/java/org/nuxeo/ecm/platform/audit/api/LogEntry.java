@@ -52,6 +52,19 @@ public interface LogEntry extends Serializable {
     void setEventId(String eventId);
 
     /**
+     * @return the date of the log insertion: this up to max transaction timeout
+     *         later than eventDate.
+     *
+     *         This date is useful for services such as Nuxeo Drive that need
+     *         fine grained incremental near-monotonic access to the audit log.
+     * @since 5.7
+     * @since 5.6-HF16
+     */
+    Date getLogDate();
+
+    void setLogDate(Date logDate);
+
+    /**
      * Returns the date of the event that originated the log entry.
      *
      * @return the date of the event that originated the log entry

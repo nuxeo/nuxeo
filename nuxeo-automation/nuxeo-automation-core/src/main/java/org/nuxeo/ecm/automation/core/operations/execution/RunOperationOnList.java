@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,18 @@ public class RunOperationOnList {
         OperationContext subctx = new OperationContext(ctx.getCoreSession(),
                 vars);
         subctx.setInput(ctx.getInput());
-        for (Object value : (Collection<?>) ctx.get(listName)) {
+
+        Collection<?> list = null;
+        if (ctx.get(listName) instanceof Object[]) {
+            list = Arrays.asList((Object[]) ctx.get(listName));
+        } else if (ctx.get(listName) instanceof Collection<?>) {
+            list = (Collection<?>) ctx.get(listName);
+        } else {
+            throw new UnsupportedOperationException(
+                    ctx.get(listName).getClass() + " is not a Collection");
+        }
+
+        for (Object value : list) {
             subctx.put(itemName, value);
             service.run(subctx, chainId);
         }

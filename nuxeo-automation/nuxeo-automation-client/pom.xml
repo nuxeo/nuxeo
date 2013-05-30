@@ -1,10 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.ecm.automation</groupId>
-    <artifactId>nuxeo-automation-parent</artifactId>
-    <version>5.6.0-HF13-SNAPSHOT</version>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.6.0-HF19-SNAPSHOT</version>
   </parent>
+  <groupId>org.nuxeo.ecm.automation</groupId>
   <artifactId>nuxeo-automation-client</artifactId>
   <name>Nuxeo Automation Client</name>
   <description>Automation Client for automation REST API.</description>
@@ -35,4 +36,58 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
+              </transformers>
+              <createSourcesJar>false</createSourcesJar>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.apache.httpcomponents:httpcore-nio</exclude>
+                  <exclude>org.apache.httpcomponents:fluent-hc</exclude>
+                  <exclude>org.apache.httpcomponents:httpclient-cache</exclude>
+                  <exclude>org.apache.httpcomponents:httpmime</exclude>
+                  <exclude>org.apache.httpcomponents:httpclient</exclude>
+                  <exclude>commons-codec:commons-codec</exclude>
+                  <exclude>org.apache.httpcomponents:httpcore</exclude>
+                </excludes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

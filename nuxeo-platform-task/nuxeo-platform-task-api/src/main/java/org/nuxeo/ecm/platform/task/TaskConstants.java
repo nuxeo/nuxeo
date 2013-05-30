@@ -22,17 +22,17 @@ package org.nuxeo.ecm.platform.task;
  */
 public class TaskConstants {
 
-    public static final String TASK_USERS_PROPERTY_NAME = "task:actors";
+    public static final String TASK_USERS_PROPERTY_NAME = "nt:actors";
 
-    public static final String TASK_INITIATOR_PROPERTY_NAME = "task:initiator";
+    public static final String TASK_INITIATOR_PROPERTY_NAME = "nt:initiator";
 
-    public static final String TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME = "task:targetDocumentId";
+    public static final String TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME = "nt:targetDocumentId";
 
     public static final String TASK_DESCRIPTION_PROPERTY_NAME = "dublincore:description";
 
-    public static final String TASK_DIRECTIVE_PROPERTY_NAME = "task:directive";
+    public static final String TASK_DIRECTIVE_PROPERTY_NAME = "nt:directive";
 
-    public static final String TASK_COMMENTS_PROPERTY_NAME = "task:taskComments";
+    public static final String TASK_COMMENTS_PROPERTY_NAME = "nt:taskComments";
 
     public static final String TASK_COMMENT_AUTHOR_KEY = "author";
 
@@ -40,25 +40,25 @@ public class TaskConstants {
 
     public static final String TASK_COMMENT_CREATION_DATE_KEY = "creationDate";
 
-    public static final String TASK_DUE_DATE_PROPERTY_NAME = "task:dueDate";
+    public static final String TASK_DUE_DATE_PROPERTY_NAME = "nt:dueDate";
 
     public static final String TASK_CREATED_PROPERTY_NAME = "dublincore:created";
 
-    public static final String TASK_VARIABLES_PROPERTY_NAME = "task:task_variables";
+    public static final String TASK_VARIABLES_PROPERTY_NAME = "nt:task_variables";
 
-    public static final String TASK_NAME_PROPERTY_NAME = "task:name";
-
-    /**
-     * @since 5.6
-     */
-    public static final String TASK_TYPE_PROPERTY_NAME = "task:type";
+    public static final String TASK_NAME_PROPERTY_NAME = "nt:name";
 
     /**
      * @since 5.6
      */
-    public static final String TASK_PROCESS_ID_PROPERTY_NAME = "task:processId";
+    public static final String TASK_TYPE_PROPERTY_NAME = "nt:type";
 
-    public static final String TASK_ACCEPTED_PROPERTY_NAME = "task:accepted";
+    /**
+     * @since 5.6
+     */
+    public static final String TASK_PROCESS_ID_PROPERTY_NAME = "nt:processId";
+
+    public static final String TASK_ACCEPTED_PROPERTY_NAME = "nt:accepted";
 
     public static final String TASK_CANCELLED_LIFE_CYCLE_STATE = "cancelled";
 

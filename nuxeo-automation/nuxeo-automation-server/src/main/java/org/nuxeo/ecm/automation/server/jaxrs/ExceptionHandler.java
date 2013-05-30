@@ -14,21 +14,26 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ExceptionHandler {
 
-    protected int status = 500;
+    protected static final String PERMISSION_EXCEPTION_HTTP_CODE_PROP = "org.nuxeo.ecm.automation.server.permission.httpcode";
+
+    protected int status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
     protected String type;
 
@@ -70,37 +75,47 @@ public class ExceptionHandler {
     }
 
     public static boolean isSecurityError(Throwable t) {
-        return getStatus(t) == 401;
+        return getStatus(t) == HttpServletResponse.SC_UNAUTHORIZED;
     }
 
     public static int getStatus(Throwable cause, int depth) {
         if (depth == 0) {
-            return 500;
+            return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
         if ((cause instanceof DocumentSecurityException)
                 || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
-            return 401;
+            // Default behavior, ie. returning 401, is preserved for backward
+            // compatibility.
+            // The org.nuxeo.ecm.automation.server.permission.httpcode Framework
+            // property allows to return another status code in this
+            // case, typically 403.
+            // See https://jira.nuxeo.com/browse/NXP-11503
+            int permissionExceptionStatus = NumberUtils.toInt(Framework.getProperty(PERMISSION_EXCEPTION_HTTP_CODE_PROP));
+            if (permissionExceptionStatus == 0) {
+                permissionExceptionStatus = HttpServletResponse.SC_UNAUTHORIZED;
+            }
+            return permissionExceptionStatus;
         } else if (cause instanceof NoSuchDocumentException) {
-            return 404;
+            return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof ClientException) {
             Throwable ccause = cause.getCause();
             if (ccause != null && ccause.getMessage() != null) {
                 if (ccause.getMessage().contains(
                         "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
-                    return 404;
+                    return HttpServletResponse.SC_NOT_FOUND;
                 }
             }
         } else if (cause instanceof OperationNotFoundException) {
-            return 404;
+            return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof ConflictOperationException) {
-            return 409;
+            return HttpServletResponse.SC_CONFLICT;
         }
         Throwable parent = cause.getCause();
         if (parent != null) {
             return getStatus(parent, depth - 1);
         }
-        return 500;
+        return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     }
 
     public ExceptionHandler(String message, Throwable cause) {
