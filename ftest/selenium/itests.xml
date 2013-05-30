@@ -11,7 +11,15 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss"
+  <target name="set_ds_conf" depends="_init">
+    <echo message="Removing single datasource conf (see NXP-10308)" />
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.db.singleDataSource" />
+      <param name="value" value="" />
+    </antcall>
+  </target>
+
+  <target name="prepare-environment" depends="_init,set_ds_confprepare-db,prepare-tomcat,prepare-jboss"
     description="prepare all ressources for test">
     <copy todir="${nuxeo.nxserver}/bundles/">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
