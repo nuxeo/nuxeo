@@ -118,7 +118,7 @@
           showCSVExport="true" showPDFExport="true" />
       </resultLayouts>
 
-      <selectionList>CURRENT_SELECTION</selectionList>
+      <selectionList>CURRENT_SELECTION_TRASH</selectionList>
       <actions category="DAM_SEARCHES_CURRENT_SELECTION_LIST" />
     </contentView>
 
