@@ -12,4 +12,5 @@ Provide-Package: org.nuxeo.ecm.annotations.client
 Nuxeo-Component: OSGI-INF/default-contrib.xml,
  OSGI-INF/web-configuration-service-framework.xml,
  OSGI-INF/web-configuration-service-contrib.xml,
- OSGI-INF/preview-adapter-contrib.xml
+ OSGI-INF/preview-adapter-contrib.xml,
+ OSGI-INF/widgets-contrib.xml
