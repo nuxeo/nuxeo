@@ -9,7 +9,6 @@
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
 <nxu:set var="label" value="#{empty typeLabel ? field_2 : messages[typeLabel]}">
-<c:set var="localize" value="#{nxu:test(!empty widgetProperty_localize, widgetProperty_localize, 'false')}" />
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxd:titleOrId(field_0)}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
@@ -18,10 +17,10 @@
     <nxd:restDocumentLink document="#{field_0}"
       tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}">
       <span id="title_#{field_1}" title="#{label}">
-       <c:if test="#{localize == 'true'}">
+       <c:if test="#{widgetProperty_localize}">
         #{messages[nxd:titleOrId(field_0)]}
        </c:if>
-       <c:if test="#{localize == 'false'}">
+       <c:if test="#{!widgetProperty_localize}">
          #{nxd:titleOrId(field_0)}
        </c:if>
       </span>
@@ -48,7 +47,14 @@
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
-  <nxp:html>#{nxd:titleOrId(field_0)}</nxp:html>
+  <nxp:html>       
+    <c:if test="#{widgetProperty_localize}">
+        #{messages[nxd:titleOrId(field_0)]}
+       </c:if>
+       <c:if test="#{!widgetProperty_localize}">
+         #{nxd:titleOrId(field_0)}
+       </c:if>
+  </nxp:html>
 </c:if>
 </nxu:set></nxu:set>
 </f:subview>
