@@ -57,7 +57,23 @@ public interface BatchManager {
      */
     List<Blob> getBlobs(String batchId);
 
+
+    /**
+     * Get Blobs associated to a given batch. Returns null if batch does not
+     * exist
+     *
+     * Wait for upload in progress if needed
+     *
+     * @since 5.7
+     *
+     * @param batchId
+     * @return
+     */
+    List<Blob> getBlobs(String batchId, int timeoutS);
+
     Blob getBlob(String batchId, String fileId);
+
+    Blob getBlob(String batchId, String fileId, int timeoutS);
 
     /**
      * Cleanup the temporary storage associated to the batch

@@ -52,9 +52,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Exposes {@link Batch} as a JAX-RS resource
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
- * 
+ *
  */
 public class BatchResource {
 
@@ -69,6 +69,11 @@ public class BatchResource {
     protected Response buildFromString(String message) {
         return Response.ok(message, MediaType.APPLICATION_JSON).header(
                 "Content-Length", message.length()).build();
+    }
+
+    protected int getUploadWaitTimeout() {
+        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout", "5");
+        return Integer.parseInt(t);
     }
 
     @POST
@@ -104,7 +109,13 @@ public class BatchResource {
 
         BatchManager bm = Framework.getLocalService(BatchManager.class);
 
-        List<Blob> blobs = bm.getBlobs(batchId);
+        List<Blob> blobs = bm.getBlobs(batchId, getUploadWaitTimeout());
+        if (blobs==null) {
+            log.error("Unable to find batch associated with id " + batchId);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
+                    "{\"error\" : \"" + "Unable to find batch with Id " + batchId + "\"}").build();
+        }
+
         xreq.setInput(new BlobList(blobs));
 
         OperationContext ctx = xreq.createContext(request,
