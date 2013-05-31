@@ -71,7 +71,7 @@
       </flags>
     </contentView>
 
-    <contentView name="dam_saved_search">
+    <contentView name="dam_saved_searches">
 
       <showTitle>false</showTitle>
 
@@ -118,8 +118,8 @@
           showCSVExport="true" showPDFExport="true" />
       </resultLayouts>
 
-      <selectionList>CURRENT_SELECTION_TRASH</selectionList>
-      <actions category="DAM_SEARCHES_CURRENT_SELECTION_LIST" />
+      <selectionList>DAM_SAVED_SEARCHES_CURRENT_SELECTION</selectionList>
+      <actions category="DAM_SAVED_SEARCHES_CURRENT_SELECTION_LIST" />
     </contentView>
 
   </extension>

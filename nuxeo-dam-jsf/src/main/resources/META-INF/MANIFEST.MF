@@ -17,4 +17,5 @@ Nuxeo-Component: OSGI-INF/dam-core-types-contrib.xml,
  OSGI-INF/dam-service-contrib.xml,
  OSGI-INF/dam-content-template-contrib.xml,
  OSGI-INF/dam-operations-contrib.xml,
- OSGI-INF/dam-directories-contrib.xml
+ OSGI-INF/dam-directories-contrib.xml,
+ OSGI-INF/dam-documentslists-contrib.xml

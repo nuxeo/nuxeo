@@ -153,13 +153,13 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="damCurrentSelectionDelete" link="#{deleteActions.purgeSelection('CURRENT_SELECTION_TRASH')}"
+    <action id="damCurrentSelectionDelete" link="#{deleteActions.purgeSelection('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}"
       label="command.trashDocs" icon="" help="comand.deleteDocs.help"
       confirm="if( !confirmDeleteDocumentsForever() ) return false;">
-      <category>DAM_SEARCHES_CURRENT_SELECTION_LIST</category>
+      <category>DAM_SAVED_SEARCHES_CURRENT_SELECTION_LIST</category>
       <filter id="canDeleteDamSavedSearches">
         <rule grant="true">
-          <condition>#{deleteActions.getCanDelete('CURRENT_SELECTION_TRASH')}</condition>
+          <condition>#{deleteActions.getCanDelete('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}</condition>
         </rule>
       </filter>
     </action>
