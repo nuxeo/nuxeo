@@ -34,4 +34,6 @@ public final class DamConstants {
 
     public static final String SHARED_DAM_SEARCHES_PROVIDER_NAME = "SHARED_DAM_SEARCHES";
 
+    public static final String DAM_MAIN_TAB_ACTION = "dam";
+
 }

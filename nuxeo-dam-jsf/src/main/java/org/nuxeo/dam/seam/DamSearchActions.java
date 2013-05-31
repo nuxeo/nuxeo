@@ -19,6 +19,7 @@ package org.nuxeo.dam.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
 import static org.nuxeo.dam.DamConstants.SAVED_DAM_SEARCHES_PROVIDER_NAME;
 import static org.nuxeo.dam.DamConstants.SHARED_DAM_SEARCHES_PROVIDER_NAME;
 import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_CHANGED_EVENT;
@@ -51,6 +52,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.dam.DamConstants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -73,6 +75,7 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -113,6 +116,9 @@ public class DamSearchActions implements Serializable {
 
     @In(create = true)
     protected NavigationContext navigationContext;
+
+    @In(create = true)
+    protected MainTabsActions mainTabsActions;
 
     @In(create = true)
     protected RestHelper restHelper;
@@ -403,8 +409,8 @@ public class DamSearchActions implements Serializable {
     public String getPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
         String currentContentViewName = getCurrentContentViewName();
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        DocumentView docView = computeDocumentView(currentDocument);
+        DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
+        DocumentView docView = computeDocumentView(damCurrentDocument);
         docView.setViewId("assets");
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);

@@ -19,6 +19,7 @@ package org.nuxeo.dam.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.dam.AssetLibrary;
+import org.nuxeo.dam.DamConstants;
 import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,6 +48,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.runtime.api.Framework;
 
@@ -73,6 +76,9 @@ public class DamActions implements Serializable {
     @In(create = true)
     protected transient DocumentActions documentActions;
 
+    @In(create = true)
+    protected transient MainTabsActions mainTabsActions;
+
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
@@ -91,6 +97,7 @@ public class DamActions implements Serializable {
         DocumentModel selectedDocument = documentManager.getDocument(new IdRef(
                 selectedDocumentId));
         navigationContext.setCurrentDocument(selectedDocument);
+        mainTabsActions.setDocumentFor(DAM_MAIN_TAB_ACTION, selectedDocument);
     }
 
     public void selectDocument(DocumentModel doc) throws ClientException {
