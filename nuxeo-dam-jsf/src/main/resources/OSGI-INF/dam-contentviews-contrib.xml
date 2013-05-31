@@ -39,7 +39,7 @@
           </predicate>
 
         </whereClause>
-        <sort column="dc:title" ascending="true" />
+        <sort column="dc:created" ascending="false" />
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
 
