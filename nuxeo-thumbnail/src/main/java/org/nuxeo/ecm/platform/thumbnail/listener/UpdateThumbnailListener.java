@@ -45,7 +45,8 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
                     return;
                 }
                 BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-                if (blobHolder != null) {
+                if (blobHolder != null && blobHolder.getBlobs() != null
+                        && !blobHolder.getBlobs().isEmpty()) {
                     try {
                         AddThumbnailUnrestricted runner = new AddThumbnailUnrestricted(
                                 context.getCoreSession(), doc, blobHolder);
