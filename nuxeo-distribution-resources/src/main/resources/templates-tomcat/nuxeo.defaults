@@ -6,7 +6,6 @@ nuxeo.data.dir=nxserver/data
 nuxeo.server.dir=nxserver
 
 jndi.base=java:comp/env
-nuxeo.server.ContextSecurityGrabber.disable=false
 
 # Default template to use if not defined in nuxeo.conf
 nuxeo.templates=default
