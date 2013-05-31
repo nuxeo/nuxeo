@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Benoit Delbosc
  */
 package org.nuxeo.ecm.core.work;
 
@@ -34,6 +35,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -56,6 +58,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
 
 /**
  * The implementation of a {@link WorkManager}.
@@ -264,14 +267,18 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         protected WorkList suspended;
 
         // @since 5.7
-        protected final Counter scheduledCount = Metrics.defaultRegistry().newCounter(
-                WorkThreadPoolExecutor.class, "scheduled");
+        protected final Counter scheduledCount;
 
-        protected final Counter scheduledMax = Metrics.defaultRegistry().newCounter(
-                WorkThreadPoolExecutor.class, "scheduled-max");
+        protected final Counter scheduledMax;
 
-        public WorkThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
-                long keepAliveTime, TimeUnit unit,
+        protected final Counter runningCount;
+
+        protected final Counter completedCount;
+
+        protected final Timer workTimer;
+
+        public WorkThreadPoolExecutor(String queueId, int corePoolSize,
+                int maximumPoolSize, long keepAliveTime, TimeUnit unit,
                 BlockingQueue<Runnable> queue, ThreadFactory threadFactory) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queue,
                     threadFactory);
@@ -280,6 +287,17 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             running = new WorkList();
             completed = new WorkList();
             suspended = new WorkList();
+            scheduledCount = Metrics.defaultRegistry().newCounter(
+                    WorkThreadPoolExecutor.class, "scheduled", queueId);
+            scheduledMax = Metrics.defaultRegistry().newCounter(
+                    WorkThreadPoolExecutor.class, "scheduled-max", queueId);
+            runningCount = Metrics.defaultRegistry().newCounter(
+                    WorkThreadPoolExecutor.class, "running", queueId);
+            completedCount = Metrics.defaultRegistry().newCounter(
+                    WorkThreadPoolExecutor.class, "completed", queueId);
+            workTimer = Metrics.defaultRegistry().newTimer(
+                    WorkThreadPoolExecutor.class, "work", queueId,
+                    TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
         }
 
         /**
@@ -464,19 +482,25 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 running.add(work);
                 work.beforeRun(); // change state
                 scheduledCount.dec();
+                runningCount.inc();
             }
         }
 
         @Override
         protected void afterExecute(Runnable r, Throwable t) {
             synchronized (monitor) {
+                runningCount.dec();
                 Work work = (Work) r;
                 work.afterRun(t == null); // change state
+                workTimer.update(
+                        work.getCompletionTime() - work.getStartTime(),
+                        TimeUnit.MILLISECONDS);
                 running.remove(work);
                 if (work.getState() == State.SUSPENDED) {
                     suspended.add(work);
                 } else {
                     completed.add(work);
+                    completedCount.inc();
                 }
             }
         }
@@ -650,6 +674,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected static final int DEFAULT_MAX_POOL_SIZE = 4;
 
+    private static final String THREAD_PREFIX = "Nuxeo-Work-";
+
     protected Map<String, WorkThreadPoolExecutor> executors;
 
     @Override
@@ -673,28 +699,93 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         WorkThreadPoolExecutor executor = executors.get(queueId);
         if (executor == null) {
-            ThreadFactory threadFactory = new NamedThreadFactory("Nuxeo-Work-"
+            ThreadFactory threadFactory = new NamedThreadFactory(THREAD_PREFIX
                     + queueId + "-");
             int maxPoolSize = workQueueDescriptor.maxThreads;
             if (maxPoolSize <= 0) {
                 maxPoolSize = DEFAULT_MAX_POOL_SIZE;
                 workQueueDescriptor.maxThreads = maxPoolSize;
             }
-            executor = new WorkThreadPoolExecutor(maxPoolSize, maxPoolSize, 0,
-                    TimeUnit.SECONDS,
-                    newBlockingQueue(workQueueDescriptor.usePriority),
-                    threadFactory);
+            executor = new WorkThreadPoolExecutor(queueId, maxPoolSize,
+                    maxPoolSize, 0, TimeUnit.SECONDS,
+                    newBlockingQueue(workQueueDescriptor), threadFactory);
             executors.put(queueId, executor);
         }
         return executor;
     }
 
-    protected BlockingQueue<Runnable> newBlockingQueue(boolean usePriority) {
-        if (usePriority) {
-            return new PriorityBlockingQueue<Runnable>();
-        } else {
-            return new LinkedBlockingQueue<Runnable>();
+    /**
+     * A LinkedBlockingQueue that blocks on "offer" and prevent starvation
+     * deadlock on reentrant call.
+     *
+     */
+    public class NuxeoLinkedBlockingQueue<T> extends LinkedBlockingQueue<T> {
+
+        private static final long serialVersionUID = -5798585349765219199L;
+
+        private final ReentrantLock limitedPutLock = new ReentrantLock();
+
+        private final int limitedCapacity;
+
+        public NuxeoLinkedBlockingQueue(int capacity) {
+            // Allocate more space to prevent starvation dead lock
+            // because a worker can add a new job to the queue.
+            super(2 * capacity);
+            limitedCapacity = capacity;
         }
+
+        /**
+         * Block until there are enough remaining capacity to put the entry.
+         */
+        public void limitedPut(T e) throws InterruptedException {
+            limitedPutLock.lockInterruptibly();
+            try {
+                while (remainingCapacity() < limitedCapacity) {
+                    Thread.sleep(100);
+                }
+                put(e);
+            } finally {
+                limitedPutLock.unlock();
+            }
+
+        }
+
+        @Override
+        public boolean offer(T e) {
+            // Patch to turn non blocking offer into a blocking put
+            try {
+                if (Thread.currentThread().getName().startsWith(THREAD_PREFIX)) {
+                    // use the full queue capacity for reentrant call
+                    put(e);
+                } else {
+                    // put only if there are enough remaining capacity
+                    limitedPut(e);
+                }
+                return true;
+            } catch (InterruptedException e1) {
+                Thread.currentThread().interrupt();
+            }
+            return false;
+        }
+
+    }
+
+    protected BlockingQueue<Runnable> newBlockingQueue(
+            WorkQueueDescriptor descriptor) {
+        int capacity = descriptor.capacity;
+        if (descriptor.usePriority) {
+            if (capacity > 0) {
+                log.warn(String.format(
+                        "Priority queue can not have limited capacity, either disable capacity or priority on EP %s:%s ",
+                        descriptor.id, descriptor.name));
+            }
+            return new PriorityBlockingQueue<Runnable>();
+        }
+        if (capacity > 0) {
+            return new NuxeoLinkedBlockingQueue<Runnable>(descriptor.capacity);
+        }
+        // default unbounded queue
+        return new LinkedBlockingQueue<Runnable>();
     }
 
     @Override
@@ -774,7 +865,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             throw new IllegalStateException(String.valueOf(work.getState()));
         }
         String queueId = getCategoryQueueId(work.getCategory());
-        log.debug("Scheduling work: " + work + " using queue: " + queueId);
+        if (log.isDebugEnabled()) {
+            log.debug("Scheduling work: " + work + " using queue: " + queueId);
+        }
         WorkThreadPoolExecutor executor = getExecutor(queueId);
         switch (scheduling) {
         case ENQUEUE:

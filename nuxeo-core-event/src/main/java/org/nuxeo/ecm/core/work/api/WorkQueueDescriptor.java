@@ -57,6 +57,16 @@ public class WorkQueueDescriptor {
     @XNodeList(value = "category", type = HashSet.class, componentType = String.class)
     public Set<String> categories;
 
+    /**
+     * When specified, make the blocking queue bounded, so submission will
+     * block until space become available. This option can not be used with
+     * a priority queue.
+     *
+     * @since 5.7
+     */
+    @XNode("capacity")
+    public int capacity = -1;
+
     @Override
     public WorkQueueDescriptor clone() {
         WorkQueueDescriptor o = new WorkQueueDescriptor();
@@ -65,6 +75,7 @@ public class WorkQueueDescriptor {
         o.maxThreads = maxThreads;
         o.usePriority = usePriority;
         o.clearCompletedAfterSeconds = clearCompletedAfterSeconds;
+        o.capacity = capacity;
         o.categories = new HashSet<String>(categories);
         return o;
     }
@@ -74,6 +85,7 @@ public class WorkQueueDescriptor {
         maxThreads = other.maxThreads;
         usePriority = other.usePriority;
         clearCompletedAfterSeconds = other.clearCompletedAfterSeconds;
+        capacity = other.capacity;
         categories.addAll(other.categories);
     }
 
