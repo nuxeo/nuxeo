@@ -27,9 +27,7 @@
     loaderClass="org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader" />
 </#if>
 
-<#if "${nuxeo.server.ContextSecurityGrabber.disable}" != "true">
   <Listener className="org.nuxeo.runtime.tomcat.ContextSecurityGrabber" />
-</#if>
 <#noparse>
   <Listener className="org.nuxeo.runtime.tomcat.NuxeoLauncher" home="${catalina.base}/nxserver" />
 </#noparse>
