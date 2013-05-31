@@ -150,6 +150,15 @@ public class MainTabsActions implements Serializable {
         return null;
     }
 
+    /**
+     * Set the document used for a given {@code mainTabId}.
+     *
+     * @since 5.7
+     */
+    public void setDocumentFor(String mainTabId, DocumentModel doc) {
+        documentsByMainTabs.put(mainTabId, doc);
+    }
+
     public DocumentModel getDocumentFor(String mainTabId)
             throws ClientException {
         return getDocumentFor(mainTabId, navigationContext.getCurrentDocument());
