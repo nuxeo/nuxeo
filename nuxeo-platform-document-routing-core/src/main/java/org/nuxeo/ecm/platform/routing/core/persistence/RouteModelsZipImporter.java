@@ -91,7 +91,7 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
             resultingRef = rootRef;
         } else {
             String rootName = root.getPath().lastSegment();
-            resultingRef = new PathRef(path + "/" + rootName);
+            resultingRef = new PathRef(path, rootName);
         }
 
         try {
