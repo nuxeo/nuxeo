@@ -65,7 +65,7 @@ public class AnnotationsActions implements Serializable {
             log.error("Unable to get annotations graph", e);
             return 0;
         } catch (URISyntaxException e) {
-            log.error("Unable to get annotations", e);
+            log.error("Unable to get annotations for: " + documentUrl, e);
             return 0;
         }
     }
