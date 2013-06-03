@@ -16,6 +16,12 @@
       <to-view-id>/dam/assets.xhtml</to-view-id>
       <redirect />
     </navigation-case>
+
+    <navigation-case>
+      <from-outcome>asset</from-outcome>
+      <to-view-id>/dam/asset.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
   </extension>
 
 </fragment>

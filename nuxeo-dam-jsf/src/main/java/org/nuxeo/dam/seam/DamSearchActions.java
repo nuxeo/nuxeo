@@ -354,6 +354,10 @@ public class DamSearchActions implements Serializable {
         return null;
     }
 
+    /*
+     * ----- Permanent links -----
+     */
+
     public void setState(String state) throws ClientException,
             UnsupportedEncodingException {
         if (StringUtils.isNotBlank(state)) {
@@ -405,7 +409,7 @@ public class DamSearchActions implements Serializable {
      * Compute a permanent link for the current search.
      */
     @SuppressWarnings("unchecked")
-    public String getPermanentLinkUrl() throws ClientException,
+    public String getSearchPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
         String currentContentViewName = getCurrentContentViewName();
         DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
@@ -433,6 +437,17 @@ public class DamSearchActions implements Serializable {
             return new DocumentViewImpl(new DocumentLocationImpl(
                     documentManager.getRepositoryName(), null));
         }
+    }
+
+    public String getAssetPermanentLinkUrl() throws ClientException,
+            UnsupportedEncodingException {
+        String currentContentViewName = getCurrentContentViewName();
+        DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
+        DocumentView docView = computeDocumentView(damCurrentDocument);
+        docView.setViewId("asset");
+        DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
+        return documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
+                docView, true, BaseURL.getBaseURL());
     }
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)

@@ -6,10 +6,9 @@
 
   <a4j:outputPanel id="damPermanentLink_panel" ajaxRendered="true" layout="block">
     <script type="text/javascript">
-      history.pushState(null, '#{currentDocument.title}', '#{damSearchActions.permanentLinkUrl}');
+      history.pushState(null, '#{currentDocument.title}', '#{damSearchActions.searchPermanentLinkUrl}');
     </script>
   </a4j:outputPanel>
-
 
   <a4j:form>
     <a4j:jsFunction name="damSelectDocument" reRender="nxw_damAssetView_panel"

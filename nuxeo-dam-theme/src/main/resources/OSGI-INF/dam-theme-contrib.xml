@@ -40,6 +40,9 @@
       <view id="/dam/assets.xhtml">
         <theme>dam/default</theme>
       </view>
+      <view id="/dam/asset.xhtml">
+        <theme>dam/default</theme>
+      </view>
 
     </application>
 
