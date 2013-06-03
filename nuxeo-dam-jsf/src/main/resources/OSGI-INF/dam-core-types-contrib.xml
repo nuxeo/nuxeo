@@ -73,7 +73,12 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="types">
     <types>
+      <type name="AssetLibrary">default</type>
       <type name="DamSearch">default</type>
+      <!-- For backward  compatibility on old types -->
+      <type name="ImportRoot">default</type>
+      <type name="ImportFolder">default</type>
+      <type name="ImportSet">default</type>
     </types>
   </extension>
 
