@@ -55,6 +55,8 @@ empty:
             requestDelay="100"
             styleClass="button warningLink">
             <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+            <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
           </a4j:commandLink>
         </a4j:form>
@@ -76,7 +78,10 @@ empty:
             value="#{messages['label.contentview.filter.filterAction']}"
             id="submitFilter"
             action="#{contentView.resetPageProvider()}"
-            styleClass="button" />
+            styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
+          </h:commandButton>
           <a4j:commandButton
             value="#{messages['label.contentview.filter.clearFilterButton']}"
             id="resetFilter"
@@ -87,6 +92,8 @@ empty:
             ignoreDupResponses="true"
             requestDelay="100"
             styleClass="button">
+            <nxu:actionListenerMethod
+              value="#{jsfResetActions.resetComponents}" />
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
           </a4j:commandButton>
