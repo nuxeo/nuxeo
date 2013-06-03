@@ -299,9 +299,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
     }
 
-    protected FileSystemItemChange getFileSystemItemChange(
-            CoreSession session, DocumentRef docRef, LogEntry entry,
-            String expectedFileSystemItemId) throws ClientException {
+    protected FileSystemItemChange getFileSystemItemChange(CoreSession session,
+            DocumentRef docRef, LogEntry entry, String expectedFileSystemItemId)
+            throws ClientException {
         DocumentModel doc = session.getDocument(docRef);
         // TODO: check the facet, last root change and list of roots
         // to have a special handling for the roots.
