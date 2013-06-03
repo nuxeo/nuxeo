@@ -5,6 +5,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
+import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -46,21 +48,24 @@ public class AnnotationsActions implements Serializable {
     protected transient Principal currentUser;
     
     public long getAnnotationsCount(DocumentModel doc) {
+        DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
+        AnnotationsService annotationsService = Framework.getLocalService(AnnotationsService.class);
+        DocumentView docView = new DocumentViewImpl(doc);
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        String documentUrl = documentViewCodecManager.getUrlFromDocumentView(
+                "docpath", docView, true,
+                VirtualHostHelper.getBaseURL(request));
         try {
-            DocumentViewCodecManager documentViewCodecManager = Framework.getService(DocumentViewCodecManager.class);
-            AnnotationsService annotationsService = Framework.getLocalService(AnnotationsService.class);
-            DocumentView docView = new DocumentViewImpl(doc);
-            FacesContext context = FacesContext.getCurrentInstance();
-            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-            String documentUrl = documentViewCodecManager.getUrlFromDocumentView(
-                    "docpath", docView, true,
-                    VirtualHostHelper.getBaseURL(request));
             List<Annotation> annotations = annotationsService.queryAnnotations(
                     new URI(documentUrl), null,
                     (NuxeoPrincipal) currentUser);
             return annotations.size();
-        } catch (Exception e) {
-            log.error("Unable to get annotations service");
+        } catch (AnnotationException e) {
+            log.error("Unable to get annotations graph", e);
+            return 0;
+        } catch (URISyntaxException e) {
+            log.error("Unable to get annotations", e);
             return 0;
         }
     }
