@@ -94,12 +94,12 @@ public class DamActions implements Serializable {
             throws ClientException {
         DocumentModel selectedDocument = documentManager.getDocument(new IdRef(
                 selectedDocumentId));
-        navigationContext.setCurrentDocument(selectedDocument);
-        mainTabsActions.setDocumentFor(DAM_MAIN_TAB_ACTION, selectedDocument);
+        selectDocument(selectedDocument);
     }
 
     public void selectDocument(DocumentModel doc) throws ClientException {
         navigationContext.setCurrentDocument(doc);
+        mainTabsActions.setDocumentFor(DAM_MAIN_TAB_ACTION, doc);
     }
 
     public String getDamMainTab() {

@@ -110,6 +110,9 @@ public class DamSearchActions implements Serializable {
 
     public static final String CONTENT_VIEW_STATE_PARAMETER = "state";
 
+    @In(create = true)
+    protected DamActions damActions;
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -240,9 +243,9 @@ public class DamSearchActions implements Serializable {
         List<DocumentModel> docs = pageProvider.getCurrentPage();
         if (docs.isEmpty()) {
             // no document selected
-            navigationContext.setCurrentDocument(null);
+            damActions.selectDocument(null);
         } else if (!docs.contains(currentDocument)) {
-            navigationContext.setCurrentDocument(docs.get(0));
+            damActions.selectDocument(docs.get(0));
         }
     }
 
