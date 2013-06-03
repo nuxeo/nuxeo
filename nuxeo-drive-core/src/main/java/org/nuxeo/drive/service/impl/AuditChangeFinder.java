@@ -218,7 +218,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             // current user
             auditQuerySb.append("(");
             auditQuerySb.append("log.category = 'eventDocumentCategory'");
-            auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved')");
+            // TODO: don't hardcode event ids (contribute them?)
+            auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy')");
             auditQuerySb.append(" or ");
             auditQuerySb.append("log.category = 'eventLifeCycleCategory'");
             auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");

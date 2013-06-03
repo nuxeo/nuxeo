@@ -130,6 +130,8 @@ public class TestAuditFileSystemChangeFinder {
         DocumentModel doc1;
         DocumentModel doc2;
         DocumentModel doc3;
+        DocumentModel docToCopy;
+        DocumentModel copiedDoc;
 
         TransactionHelper.startTransaction();
         try {
@@ -279,6 +281,39 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(doc3.getId(), change.getDocUuid());
             assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
                     change.getFileSystemItemId());
+
+            // Create a doc and copy it from a sync root to another one
+            docToCopy = session.createDocumentModel("/folder1", "docToCopy",
+                    "File");
+            docToCopy.setPropertyValue("file:content", new StringBlob(
+                    "The content of file to copy."));
+            docToCopy = session.createDocument(docToCopy);
+            copiedDoc = session.copy(docToCopy.getRef(), folder2.getRef(), null);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(2, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentCreatedByCopy", change.getEventId());
+            assertEquals(copiedDoc.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultFileSystemItemFactory#test#" + copiedDoc.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("docToCopy", change.getFileSystemItemName());
+
+            change = changes.get(1);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(docToCopy.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultFileSystemItemFactory#test#" + docToCopy.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("docToCopy", change.getFileSystemItemName());
 
             // Too many changes
             session.followTransition(doc1.getRef(), "delete");
