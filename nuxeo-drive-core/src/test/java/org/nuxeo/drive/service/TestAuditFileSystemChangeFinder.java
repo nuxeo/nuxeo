@@ -130,6 +130,8 @@ public class TestAuditFileSystemChangeFinder {
         DocumentModel doc1;
         DocumentModel doc2;
         DocumentModel doc3;
+        DocumentModel docToCopy;
+        DocumentModel copiedDoc;
 
         TransactionHelper.startTransaction();
         try {
@@ -138,7 +140,7 @@ public class TestAuditFileSystemChangeFinder {
             assertNotNull(changes);
             assertTrue(changes.isEmpty());
 
-            // Sync roots but no changes
+            // Sync roots
             nuxeoDriveManager.registerSynchronizationRoot(
                     session.getPrincipal(), folder1, session);
             nuxeoDriveManager.registerSynchronizationRoot(
@@ -158,7 +160,6 @@ public class TestAuditFileSystemChangeFinder {
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
             doc1 = session.createDocument(doc1);
-            Thread.sleep(1000);
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2."));
@@ -195,19 +196,18 @@ public class TestAuditFileSystemChangeFinder {
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2, updated."));
             session.saveDocument(doc2);
+            nuxeoDriveManager.unregisterSynchronizationRoot(
+                    session.getPrincipal(), folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
 
         TransactionHelper.startTransaction();
         try {
-            nuxeoDriveManager.unregisterSynchronizationRoot(
-                    session.getPrincipal(), folder2, session);
             changes = getChanges();
             assertEquals(2, changes.size());
-            // the root unregistration is mapped to a fake deletion from the
-            // client's
-            // point of view
+            // The root unregistration is mapped to a fake deletion from the
+            // client's point of view
             change = changes.get(0);
             assertEquals("test", change.getRepositoryId());
             assertEquals("deleted", change.getEventId());
@@ -238,23 +238,29 @@ public class TestAuditFileSystemChangeFinder {
             // Restore a deleted document and move a document in a newly
             // synchronized root
             session.followTransition(doc1.getRef(), "undelete");
-            Thread.sleep(1000);
             session.move(doc3.getRef(), folder2.getRef(), null);
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session.getPrincipal(), folder2, session);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
 
         TransactionHelper.startTransaction();
         try {
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session.getPrincipal(), folder2, session);
             changes = getChanges();
-            assertEquals(2, changes.size());
+            assertEquals(3, changes.size());
             change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(folder2.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                    change.getFileSystemItemId());
+            change = changes.get(1);
             assertEquals("test", change.getRepositoryId());
             assertEquals("documentMoved", change.getEventId());
             assertEquals(doc3.getId(), change.getDocUuid());
-            change = changes.get(1);
+            change = changes.get(2);
             assertEquals("test", change.getRepositoryId());
             assertEquals("lifecycle_transition_event", change.getEventId());
             assertEquals(doc1.getId(), change.getDocUuid());
@@ -268,7 +274,7 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.startTransaction();
         try {
             changes = getChanges();
-            assertEquals(2, changes.size());
+            assertEquals(1, changes.size());
             change = changes.get(0);
             assertEquals("test", change.getRepositoryId());
             assertEquals("deleted", change.getEventId());
@@ -276,12 +282,38 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("defaultFileSystemItemFactory#test#" + doc3.getId(),
                     change.getFileSystemItemId());
 
-            change = changes.get(1);
-            assertEquals("documentModified", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
+            // Create a doc and copy it from a sync root to another one
+            docToCopy = session.createDocumentModel("/folder1", "docToCopy",
+                    "File");
+            docToCopy.setPropertyValue("file:content", new StringBlob(
+                    "The content of file to copy."));
+            docToCopy = session.createDocument(docToCopy);
+            copiedDoc = session.copy(docToCopy.getRef(), folder2.getRef(), null);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(2, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentCreatedByCopy", change.getEventId());
+            assertEquals(copiedDoc.getId(), change.getDocUuid());
             assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                    "defaultFileSystemItemFactory#test#" + copiedDoc.getId(),
                     change.getFileSystemItemId());
+            assertEquals("docToCopy", change.getFileSystemItemName());
+
+            change = changes.get(1);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(docToCopy.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultFileSystemItemFactory#test#" + docToCopy.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("docToCopy", change.getFileSystemItemName());
 
             // Too many changes
             session.followTransition(doc1.getRef(), "delete");
@@ -344,7 +376,6 @@ public class TestAuditFileSystemChangeFinder {
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
             doc1 = session.createDocument(doc1);
-            Thread.sleep(1000);
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2."));

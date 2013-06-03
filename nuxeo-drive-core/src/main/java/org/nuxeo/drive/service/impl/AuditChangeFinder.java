@@ -218,7 +218,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             // current user
             auditQuerySb.append("(");
             auditQuerySb.append("log.category = 'eventDocumentCategory'");
-            auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved')");
+            // TODO: don't hardcode event ids (contribute them?)
+            auditQuerySb.append(" and (log.eventId = 'documentCreated' or log.eventId = 'documentModified' or log.eventId = 'documentMoved' or log.eventId = 'documentCreatedByCopy')");
             auditQuerySb.append(" or ");
             auditQuerySb.append("log.category = 'eventLifeCycleCategory'");
             auditQuerySb.append(" and log.eventId = 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' ");
@@ -298,9 +299,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
     }
 
-    protected FileSystemItemChange getFileSystemItemChange(
-            CoreSession session, DocumentRef docRef, LogEntry entry,
-            String expectedFileSystemItemId) throws ClientException {
+    protected FileSystemItemChange getFileSystemItemChange(CoreSession session,
+            DocumentRef docRef, LogEntry entry, String expectedFileSystemItemId)
+            throws ClientException {
         DocumentModel doc = session.getDocument(docRef);
         // TODO: check the facet, last root change and list of roots
         // to have a special handling for the roots.
