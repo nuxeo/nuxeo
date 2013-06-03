@@ -266,5 +266,15 @@ public class DocumentContentViewActions implements Serializable {
         currentAvailableContentViews = null;
         currentExportContentViews = null;
     }
-
+    
+    /**
+     * Resets typeToContentView cache on {@link EventNames#FLUSH_EVENT},
+     * triggered by hot reload when dev mode is set.
+     * 
+     * @since 5.7.1
+     */
+    @Observer(value = { EventNames.FLUSH_EVENT }, create = true)
+    public void onHotReloadFlush() {
+        typeToContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
+    }
 }
