@@ -3,6 +3,9 @@
 
   <require>org.nuxeo.ecm.webapp.seam.debug.action</require>
   <require>org.nuxeo.ecm.platform.preview.actions</require>
+  <!-- 
+   -->
+  <require>org.nuxeo.ecm.platform.annotations.widgets</require>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
@@ -316,6 +319,10 @@
     <widget name="damAssetViewStates" type="summary_current_document_states" />
 
     <widget name="damAssetViewLikeStatus" type="summary_document_like_status" />
+
+    <widget name="damAssetViewAnnotationsStatus" type="summary_document_annotations_status" />
+
+    <widget name="damAssetViewCommentsStatus" type="summary_document_comments_status" />
 
     <widget name="damAssetViewVideoStoryboard" type="container">
       <labels>
@@ -643,7 +650,7 @@
       </properties>
       <filter-id>hasVideoFacet</filter-id>
       <filter-id>hasAssetFacet</filter-id>
-    </action>
+    </action> 
 
     <action id="damAssetViewAudio" type="widget" order="300">
       <category>DAM_PANEL_RIGHT</category>
@@ -686,7 +693,23 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoStoryboard" type="widget" order="800">
+    <action id="damAssetViewAnnotationsStatus" type="widget" order="800">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewAnnotationsStatus</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewCommentsStatus" type="widget" order="900">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewCommentsStatus</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewVideoStoryboard" type="widget" order="1000">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoStoryboard</property>
@@ -695,7 +718,15 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewVideoInfo" type="widget" order="1000">
+    <action id="damAssetViewDamCommon" type="widget" order="1100">
+      <category></category>
+      <properties>
+        <property name="widgetName">damAssetViewDamCommon</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewVideoInfo" type="widget" order="1200">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewVideoInfo</property>
@@ -704,15 +735,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewDamCommon" type="widget" order="900">
-      <category></category>
-      <properties>
-        <property name="widgetName">damAssetViewDamCommon</property>
-      </properties>
-      <filter-id>hasAssetFacet</filter-id>
-    </action>
-
-    <action id="damAssetViewWorkflow" type="widget" order="1100">
+    <action id="damAssetViewWorkflow" type="widget" order="1300">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewWorkflow</property>
@@ -721,7 +744,7 @@
       <filter-id>hasWorkflowProcess</filter-id>
     </action>
 
-    <action id="damAssetViewTasks" type="widget" order="1200">
+    <action id="damAssetViewTasks" type="widget" order="1400">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewTasks</property>
@@ -730,7 +753,7 @@
       <filter-id>hasTasks</filter-id>
     </action>
 
-    <action id="damAssetViewMetadata" type="widget" order="1300">
+    <action id="damAssetViewMetadata" type="widget" order="1500">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewMetadata</property>
@@ -738,7 +761,7 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewComments" type="widget" order="1400">
+    <action id="damAssetViewComments" type="widget" order="1600">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewComments</property>
@@ -748,7 +771,7 @@
       <filter-id>hasComments</filter-id>
     </action>
 
-    <action id="damAssetViewIPTC" type="widget" order="1500">
+    <action id="damAssetViewIPTC" type="widget" order="1700">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewIPTC</property>
@@ -757,7 +780,7 @@
       <filter-id>hasPictureFacet</filter-id>
     </action>
 
-    <action id="damAssetViewEXIF" type="widget" order="1600">
+    <action id="damAssetViewEXIF" type="widget" order="1800">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewEXIF</property>
@@ -766,7 +789,7 @@
       <filter-id>hasPictureFacet</filter-id>
     </action>
 
-    <action id="damAssetViewIpRights" type="widget" order="1700">
+    <action id="damAssetViewIpRights" type="widget" order="1900">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">damAssetViewIpRights</property>
