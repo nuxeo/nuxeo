@@ -42,4 +42,11 @@ public class AutomationClientActivator implements AutomationClientFactory,
     public AutomationClient getClient(URL url) throws URISyntaxException {
         return new HttpAutomationClient(url.toURI().toASCIIString());
     }
+
+    @Override
+    public AutomationClient getClient(URL url, int httpCxTimeout)
+            throws URISyntaxException {
+        return new HttpAutomationClient(url.toURI().toASCIIString(),
+                httpCxTimeout);
+    }
 }
