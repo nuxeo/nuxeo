@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
+import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
  * Helper to handle Complex types decoding from a JSON encoded String entries of
@@ -61,14 +62,21 @@ public class ComplexTypeJSONDecoder {
 
     public static List<Object> decodeList(ListType lt, ArrayNode jsonArray) {
         List<Object> result = new ArrayList<Object>();
-
-        ComplexType ct = (ComplexType) lt.getFieldType();
+        Type currentObjectType = lt.getFieldType();
         for (int i = 0; i < jsonArray.size(); i++) {
             JsonNode node = jsonArray.get(i);
             if (node.isArray()) {
-                result.add(decodeList((ListType) ct, (ArrayNode) node));
+                result.add(decodeList((ListType) currentObjectType,
+                        (ArrayNode) node));
             } else if (node.isObject()) {
-                result.add(decode(ct, (ObjectNode) node));
+                result.add(decode((ComplexType) currentObjectType,
+                        (ObjectNode) node));
+            } else if (node.isTextual()) {
+                result.add(node.getTextValue());
+            } else if (node.isNumber()) {
+                result.add(node.getNumberValue());
+            } else if (node.isBoolean()) {
+                result.add(node.getBooleanValue());
             }
         }
         return result;
