@@ -21,12 +21,22 @@
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
             <field schema="dam_search" name="ecm_fulltext" />
           </predicate>
+          <predicate parameter="dc:creator" operator="IN">
+            <field schema="dam_search" name="dc_creator" />
+          </predicate>
           <predicate parameter="damc:author" operator="LIKE">
             <field schema="dam_search" name="damc_author" />
+          </predicate>
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="dam_search" name="dc_created_min" />
+            <field schema="dam_search" name="dc_created_max" />
           </predicate>
           <predicate parameter="damc:authoringDate" operator="BETWEEN">
             <field schema="dam_search" name="damc_authoringDate_min" />
             <field schema="dam_search" name="damc_authoringDate_max" />
+          </predicate>
+          <predicate parameter="dc:subjects" operator="STARTSWITH">
+            <field schema="dam_search" name="dc_subjects" />
           </predicate>
           <predicate parameter="dc:coverage" operator="STARTSWITH">
             <field schema="dam_search" name="dc_coverage" />
