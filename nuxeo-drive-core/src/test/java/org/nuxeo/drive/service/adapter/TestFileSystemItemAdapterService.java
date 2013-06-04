@@ -111,19 +111,22 @@ public class TestFileSystemItemAdapterService {
         syncRootItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItem(syncRootFolder);
         syncRootItemId = syncRootItem.getId();
 
-        file = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFile", "File");
+        file = session.createDocumentModel(syncRootFolder.getPathAsString(),
+                "aFile", "File");
         file.setPropertyValue("dc:creator", "Joe");
         Blob blob = new StringBlob("Content of Joe's file.");
         blob.setFilename("Joe's file.txt");
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
 
-        folder = session.createDocumentModel(syncRootFolder.getPathAsString(), "aFolder", "Folder");
+        folder = session.createDocumentModel(syncRootFolder.getPathAsString(),
+                "aFolder", "Folder");
         folder.setPropertyValue("dc:title", "Jack's folder");
         folder.setPropertyValue("dc:creator", "Jack");
         folder = session.createDocument(folder);
 
-        custom = session.createDocumentModel(syncRootFolder.getPathAsString(), "aCustom", "Custom");
+        custom = session.createDocumentModel(syncRootFolder.getPathAsString(),
+                "aCustom", "Custom");
         custom.setPropertyValue("dc:creator", "Bonnie");
         blob = new StringBlob("Content of the custom document's blob.");
         blob.setFilename("Bonnie's file.txt");
