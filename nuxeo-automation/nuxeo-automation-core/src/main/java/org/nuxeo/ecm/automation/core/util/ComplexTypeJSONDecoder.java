@@ -34,16 +34,15 @@ import org.nuxeo.ecm.core.schema.types.Type;
 /**
  * Helper to handle Complex types decoding from a JSON encoded String entries of
  * a property file
- *
+ * 
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
- *
+ * 
  */
 public class ComplexTypeJSONDecoder {
 
-    protected static List<JSONBlobDecoder> blobDecoders = new ArrayList<JSONBlobDecoder>();
-
     private static final ObjectMapper mapper = new ObjectMapper();
+    protected static List<JSONBlobDecoder> blobDecoders = new ArrayList<JSONBlobDecoder>();
 
     static {
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
@@ -113,13 +112,15 @@ public class ComplexTypeJSONDecoder {
                 } else {
                     JsonNode subNode = nodeEntry.getValue();
                     if (subNode.isArray()) {
-                        result.put(nodeEntry.getKey(), decodeList(
-                                ((ListType) field.getType()),
-                                (ArrayNode) subNode));
+                        result.put(
+                                nodeEntry.getKey(),
+                                decodeList(((ListType) field.getType()),
+                                        (ArrayNode) subNode));
                     } else {
-                        result.put(nodeEntry.getKey(), decode(
-                                ((ComplexType) field.getType()),
-                                (ObjectNode) subNode));
+                        result.put(
+                                nodeEntry.getKey(),
+                                decode(((ComplexType) field.getType()),
+                                        (ObjectNode) subNode));
                     }
                 }
             }
