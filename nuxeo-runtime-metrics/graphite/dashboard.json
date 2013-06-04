@@ -1,7 +1,7 @@
 [
   {
-    "title": "sys/Load",
     "colorList": "darkgray,red,orange,yellow",
+    "title": "sys/Load",
     "target": [
       "alias(secondYAxis(servers.octopussy.loadavg.processes_running),\"process running\")",
       "alias(servers.octopussy.loadavg.15,\"15min\")",
@@ -10,40 +10,26 @@
     ]
   },
   {
-    "title": "sys/CPU",
-    "vtitle": "CPU",
-    "colorList": "green,darkgray,yellow,orange,red",
-    "vtitleRight": "temp C",
-    "target": [
-      "alias(asPercent(servers.octopussy.cpu.total.idle,800),\"idle\")",
-      "alias(secondYAxis(servers.octopussy.sensors.i5k_amb-isa-0000.Ch.-3-DIMM-0),\"temp\")",
-      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.user),800),\"user\")",
-      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.system),800),\"system\")",
-      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.iowait),800),\"iowait\")"
-    ]
-  },
-  {
-    "title": "sys/Disk usage",
-    "vtitle": "percent",
-    "colorList": "red,orange,yellow",
     "lineMode": "connected",
-    "yMax": "100",
     "target": [
       "alias(servers.octopussy.iostat.sda.util_percentage,\"sda\")",
       "alias(servers.octopussy.iostat.sdb.util_percentage,\"sdb\")",
       "alias(servers.octopussy.iostat.sdc.util_percentage,\"sdc\")",
       "alias(servers.octopussy.iostat.sdd.util_percentage,\"sdd\")"
-    ]
+    ],
+    "title": "sys/Disk usage",
+    "vtitle": "percent",
+    "colorList": "red,orange,yellow"
   },
   {
-    "title": "sys/Memory",
-    "vtitle": "percent",
-    "colorList": "green,blue,orange",
     "target": [
       "alias(asPercent(servers.octopussy.memory.MemFree,servers.octopussy.memory.MemTotal),\"free\")",
       "alias(asPercent(servers.octopussy.memory.Buffers,servers.octopussy.memory.MemTotal),\"buffers\")",
       "alias(asPercent(servers.octopussy.memory.Cached,servers.octopussy.memory.MemTotal),\"cached\")"
-    ]
+    ],
+    "title": "sys/Memory",
+    "vtitle": "percent",
+    "colorList": "green,blue,orange"
   },
   {
     "title": "sys/Sockets",
@@ -53,8 +39,21 @@
     ]
   },
   {
-    "title": "db/Postgres",
+    "vtitleRight": "temp C",
+    "target": [
+      "alias(asPercent(servers.octopussy.cpu.total.idle,800),\"idle\")",
+      "alias(secondYAxis(servers.octopussy.sensors.i5k_amb-isa-0000.Ch.-3-DIMM-0),\"temp\")",
+      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.user),800),\"user\")",
+      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.system),800),\"system\")",
+      "alias(asPercent(sumSeries(servers.octopussy.cpu.cpu*.iowait),800),\"iowait\")"
+    ],
+    "title": "sys/CPU",
+    "vtitle": "CPU",
+    "colorList": "green,darkgray,yellow,orange,red"
+  },
+  {
     "colorList": "red,orange,yellow,blue,green",
+    "title": "db/Postgres",
     "target": [
       "alias(perSecond(servers.octopussy.postgres.cibenchod.database.tup_deleted),\"tup_deleted\")",
       "alias(perSecond(servers.octopussy.postgres.cibenchod.database.tup_inserted),\"tup_inserted\")",
@@ -72,9 +71,6 @@
     ]
   },
   {
-    "title": "jvm/Thread state",
-    "areaMode": "stacked",
-    "colorList": "green,blue,red,yellow,orange,purple",
     "target": [
       "alias(servers.octopussy.nuxeo.jvm.thread-states.runnable,\"runnable\")",
       "alias(servers.octopussy.nuxeo.jvm.thread-states.new,\"new\")",
@@ -82,28 +78,29 @@
       "alias(servers.octopussy.nuxeo.jvm.thread-states.waiting,\"waiting\")",
       "alias(servers.octopussy.nuxeo.jvm.thread-states.timed_waiting,\"timed_waiting\")",
       "alias(servers.octopussy.nuxeo.jvm.thread-states.terminated,\"terminated\")"
-    ]
+    ],
+    "title": "jvm/Thread state",
+    "areaMode": "stacked",
+    "colorList": "green,blue,yellow,orange,red,purple"
   },
   {
-    "title": "jvm/Heap",
     "vtitle": "percent",
-    "yMax": "100",
+    "title": "jvm/Heap",
     "target": [
       "alias(asPercent(servers.octopussy.nuxeo.jvm.memory.heap_usage,1),\"heap usage\")",
       "alias(asPercent(servers.octopussy.nuxeo.jvm.memory.non_heap_usage,1),\"non heap usage\")"
     ]
   },
   {
-    "title": "jvm/GC",
-    "areaMode": "stacked",
     "lineMode": "staircase",
-    "vtitle": "percent",
-    "colorList": "orange,red",
-    "yMax": "100",
     "target": [
       "alias(asPercent(perSecond(servers.octopussy.nuxeo.jvm.gc.PS-Scavenge.time),1000),\"minor GC\")",
       "alias(asPercent(perSecond(servers.octopussy.nuxeo.jvm.gc.PS-MarkSweep.time),1000),\"major GC\")"
-    ]
+    ],
+    "title": "jvm/GC",
+    "areaMode": "stacked",
+    "vtitle": "percent",
+    "colorList": "orange,red"
   },
   {
     "title": "nx/Transactions",
@@ -114,8 +111,8 @@
     ]
   },
   {
-    "title": "nx/Up and log",
     "colorList": "green,orange,red",
+    "title": "nx/Up and log",
     "target": [
       "alias(drawAsInfinite(absolute(derivative(transformNull(servers.octopussy.nuxeo.org.nuxeo.runtime.metrics.MetricsServiceImpl.instance-up.count,0)))),\"start or stop\")",
       "alias(servers.octopussy.nuxeo.org.apache.log4j.Appender.warn.count,\"warnings\")",
@@ -132,39 +129,50 @@
     ]
   },
   {
-    "title": "nx/AbstractSession",
-    "areaMode": "stacked",
-    "vtitle": "per second",
     "target": [
       "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.api.AbstractSession.create-document.count),\"created\")",
       "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.api.AbstractSession.update-document.count),\"updated\")",
       "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.api.AbstractSession.delete-document.count),\"deleted\")"
-    ]
+    ],
+    "title": "nx/AbstractSession",
+    "areaMode": "stacked",
+    "vtitle": "per second"
   },
   {
-    "title": "nx/SessionImpl",
     "vtitle": "per second",
-    "colorList": "green,orange,red,blue",
+    "title": "nx/SessionImpl",
     "target": [
       "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.query.count),\"query\")",
       "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.save.count),\"save\")",
-      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.aclr-update.count),\"aclrUpdate\")",
-      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.session.count),\"sessions count\")"
+      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SessionImpl.aclr-update.count),\"aclrUpdate\")"
     ]
   },
   {
     "title": "nx/VCS cache",
     "target": [
-      "alias(asPercent(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper.cache-hit.count,servers.*.nuxeo.org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper.cache-get.count),\"Row hit-ratio\")",
-      "alias(asPercent(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SelectionContext.cache-hit.count,servers.*.nuxeo.org.nuxeo.ecm.core.storage.sql.SelectionContext.cache-get.count),\"Selection hit-ratio\")"
+      "alias(asPercent(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.PersistenceContext.cache-hit.count,servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.PersistenceContext.cache-get.count),\"Fragment hit-ratio\")",
+      "alias(asPercent(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper.cache-hit.count,servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper.cache-get.count),\"Row hit-ratio\")",
+      "alias(asPercent(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SelectionContext.cache-hit.count,servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SelectionContext.cache-get.count),\"Selection hit-ratio\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.PersistenceContext.cache-hit.count),\"Fragment hit-count\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper.cache-hit.count),\"Row hit-count\")",
+      "alias(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.ecm.core.storage.sql.SelectionContext.cache-hit.count),\"Selection hit-count\")"
     ]
   },
   {
-    "title": "nx/Workers",
     "vtitle": "per second",
+    "title": "nx/Workers",
     "target": [
-      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.AbstractWork.work.count),\"running\")",
-      "alias(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.WorkThreadPoolExecutor.scheduled.count),\"pending\")"
+      "aliasByNode(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.WorkThreadPoolExecutor.*.scheduled.count),9,10)",
+      "aliasByNode(perSecond(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.WorkThreadPoolExecutor.*.completed.count),9,10)"
+    ]
+  },
+  {
+    "vtitle": "count",
+    "title": "nx/Workers",
+    "target": [
+      "aliasByNode(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.WorkThreadPoolExecutor.*.scheduled-max.count,9,10)",
+      "aliasByNode(secondYAxis(servers.octopussy.nuxeo.org.nuxeo.ecm.core.work.WorkThreadPoolExecutor.*.completed.count),9,10)"
     ]
   }
+
 ]
