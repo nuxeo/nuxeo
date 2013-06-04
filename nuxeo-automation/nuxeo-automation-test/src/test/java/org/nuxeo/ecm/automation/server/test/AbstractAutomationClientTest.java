@@ -153,7 +153,7 @@ public abstract class AbstractAutomationClientTest {
 
         // update folder properties
         folder = (Document) session.newRequest(UpdateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(folder).set(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(folder).set(
                 "properties", "dc:title=My Folder2\ndc:description=test").execute();
 
         assertNotNull(folder);
@@ -544,7 +544,7 @@ public abstract class AbstractAutomationClientTest {
         props.set("dc:description", "test");
         props.set("dc:subjects", "a,b,c\\,d");
         Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(automationTestFolder).set(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(automationTestFolder).set(
                 "type", "Folder").set("name", "myfolder2").set("properties",
                 props).execute();
 
