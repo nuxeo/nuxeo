@@ -47,7 +47,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
     protected boolean enabled = true;
 
     @XNode("@order")
-    protected int order;
+    protected int order = 0;
 
     @XNode("@docType")
     protected String docType;
@@ -145,7 +145,12 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
         if (other == null) {
             return 1;
         }
-        return getOrder() - other.getOrder();
+        int orderDiff = getOrder() - other.getOrder();
+        if (orderDiff == 0) {
+            // Make sure we have a deterministic sort, use name
+            orderDiff = getName().compareTo(other.getName());
+        }
+        return orderDiff;
     }
 
 }
