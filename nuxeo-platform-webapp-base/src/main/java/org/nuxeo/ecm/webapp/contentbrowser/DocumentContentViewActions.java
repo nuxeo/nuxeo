@@ -273,7 +273,7 @@ public class DocumentContentViewActions implements Serializable {
      * 
      * @since 5.7.1
      */
-    @Observer(value = { EventNames.FLUSH_EVENT }, create = true)
+    @Observer(value = { EventNames.FLUSH_EVENT })
     public void onHotReloadFlush() {
         typeToContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
     }
