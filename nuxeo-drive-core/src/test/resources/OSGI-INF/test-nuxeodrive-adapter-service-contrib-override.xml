@@ -13,7 +13,7 @@
     <fileSystemItemFactory name="defaultFileSystemItemFactory"
       enabled="false" />
 
-    <!-- Override dummyDocTypeFactory and dummyFacetFactory -->
+    <!-- Override dummyDocTypeFactory, dummyFacetFactory and nullMergeTestFactory -->
     <fileSystemItemFactory name="dummyFacetFactory"
       order="20" facet="Folderish"
       class="org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory" />
@@ -25,6 +25,7 @@
         <parameter name="versioningOption">MAJOR</parameter>
       </parameters>
     </fileSystemItemFactory>
+    <fileSystemItemFactory name="nullMergeTestFactory" />
 
   </extension>
 

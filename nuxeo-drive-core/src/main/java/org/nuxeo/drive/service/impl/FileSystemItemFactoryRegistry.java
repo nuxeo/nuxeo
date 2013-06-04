@@ -112,8 +112,9 @@ public class FileSystemItemFactoryRegistry extends
             dst.setEnabled(src.isEnabled());
         }
         // Order
-        if (src.getOrder() != dst.getOrder()) {
-            dst.setOrder(src.getOrder());
+        int srcOrder = src.getOrder();
+        if (srcOrder > 0 && srcOrder != dst.getOrder()) {
+            dst.setOrder(srcOrder);
         }
         // Doc type
         if (!StringUtils.isEmpty(src.getDocType())
