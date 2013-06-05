@@ -118,6 +118,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         creationProps.put("ds:fields", fieldsDataAsJSon);
+        creationProps.put("dc:title", "testDoc");
 
         // Document creation
         session.newRequest(CreateDocument.ID).setInput(root).set("type",
@@ -422,8 +423,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
         assertNotNull(testDoc);
 
-        // TODO: find why 'simple' properties are not fetched as complex ones
-        // assertEquals("testDoc", testDoc.getString("dc:title"));
+        assertEquals("testDoc", testDoc.getTitle());
         assertEquals("MyTable", testDoc.getProperties().get("ds:tableName"));
         assertNotNull(testDoc.getProperties().get("ds:fields"));
 
@@ -456,8 +456,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 new PropertyMap(updateProps).toString()).execute();
 
         // check the returned doc
-        // TODO: find why 'simple' properties are not fetched as complex ones
-        // assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("testDoc", testDoc.getTitle());
         assertEquals("newTableName",
                 testDoc.getProperties().get("ds:tableName"));
 
