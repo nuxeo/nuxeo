@@ -16,9 +16,8 @@ import java.util.Date;
 /**
  * A document. Documents are as they are returned by the server. To modify
  * documents use operations. Use {@link #getProperties()} method to fetch the
- * document properties and
- * {@link org.nuxeo.ecm.automation.client.model.PropertyMap#getDirties()} to
- * fetch dirty properties updated.
+ * document properties and {@link #getDirties()} to fetch dirty properties
+ * updated.
  * <p>
  * You need to create your own wrapper if you need to access the document
  * properties in a multi-level way. This is a flat representation of the
