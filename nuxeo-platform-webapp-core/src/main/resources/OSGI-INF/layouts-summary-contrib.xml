@@ -892,6 +892,8 @@
       </properties>
     </action>
 
+
+
     <action id="summary_current_document_states" type="widget" order="200">
       <category>SUMMARY_PANEL_RIGHT</category>
       <properties>
