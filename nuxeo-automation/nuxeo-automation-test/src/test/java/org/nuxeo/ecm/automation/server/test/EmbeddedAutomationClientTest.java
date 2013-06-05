@@ -126,6 +126,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         creationProps.put("ds:fields", fieldsDataAsJSon);
+        creationProps.put("dc:title", "testDoc");
 
         // Document creation
         session.newRequest(CreateDocument.ID).setInput(root).set("type",
@@ -159,15 +160,15 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 "value", "/").execute();
 
         Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").setInput(root).set("type", "MV").set(
-                "name", "pfff").set("properties",
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(root).set("type",
+                "MV").set("name", "pfff").set("properties",
                 "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n").execute();
         checkHasCorrectMultiValues(note);
 
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
                 DocumentPageProviderOperation.ID).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").set("query", "SELECT * from MV").set(
-                "pageSize", 2).execute();
+                Constants.HEADER_NX_SCHEMAS, "*").set("query",
+                "SELECT * from MV").set("pageSize", 2).execute();
 
         assertThat(docs, notNullValue());
         assertThat(docs.size(), is(1));
@@ -441,8 +442,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
         assertNotNull(testDoc);
 
-        // TODO: find why 'simple' properties are not fetched as complex ones
-        // assertEquals("testDoc", testDoc.getString("dc:title"));
+        assertEquals("testDoc", testDoc.getTitle());
         assertEquals("MyTable", testDoc.getProperties().get("ds:tableName"));
         assertNotNull(testDoc.getProperties().get("ds:fields"));
 
@@ -475,8 +475,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 new PropertyMap(updateProps).toString()).execute();
 
         // check the returned doc
-        // TODO: find why 'simple' properties are not fetched as complex ones
-        // assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("testDoc", testDoc.getTitle());
         assertEquals("newTableName",
                 testDoc.getProperties().get("ds:tableName"));
 
