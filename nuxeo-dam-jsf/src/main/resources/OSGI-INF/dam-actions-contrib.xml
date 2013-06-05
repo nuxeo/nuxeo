@@ -49,20 +49,45 @@
     </action>
 
     <!-- Asset view actions -->
-    <action id="showFancyBoxPreview">
+    <action id="damShowFancyBoxPreview" order="50" type="fancybox"
+      label="label.document.preview" icon="/icons/contextual_menu/preview.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>view_preview</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="iframe">
+          #{previewActions.getCurrentDocumentPreviewPopupURL()}
+        </property>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="documentLock">
+    <action id="damDocumentLock" link="#{lockActions.lockCurrentDocument}"
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="documentUnlock">
+    <action id="damDocumentUnlock" link="#{lockActions.unlockCurrentDocument}"
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="downloadAction">
+    <action id="damDownloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
+      order="30" label="label.document.download" type="link"
+      icon="/icons/contextual_menu/download.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>documentHasBlobs</filter-id>
     </action>
 
     <action id="damPermalinkAction" order="20" label="label.permalink" type="fancybox"
@@ -77,28 +102,70 @@
       </properties>
     </action>
 
-    <action id="subscribesAllDocNotifications">
+    <action id="damSubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.follow" type="link"
+      icon="/icons/contextual_menu/subscribe.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>hasNoSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="unsubscribesAllDocNotifications">
+    <action id="damUnsubscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
+      order="40" label="label.subscriptions.unfollow" type="link"
+      icon="/icons/contextual_menu/unsubscribe.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>hasSubscriptions</filter-id>
+      <filter-id>canSubscribe</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="addCurrentDocumentToWorklist">
+    <action id="damAddCurrentDocumentToWorklist"
+      link="#{operationActionBean.doOperation('addCurrentDocumentToWorklist')}"
+      order="60" label="help.command.clipboard.addworklist" type="link"
+      icon="/icons/action_add.gif" immediate="true">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="print">
+    <action id="damPrint" link="#{restHelper.doPrint(themeActions.defaultTheme)}"
+      order="70" label="label.print" icon="/icons/printer.gif">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
     </action>
 
-    <action id="documentLike">
+    <action id="damDocumentLike" order="5" type="link"
+      link="#{likeActions.like(currentUser, currentDocument)}"
+      icon="/icons/like.png" label="command.like">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>userNotLiked</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
-    <action id="documentUnlike">
+    <action id="damDocumentUnlike" order="5" type="link"
+      link="#{likeActions.cancelLike(currentUser, currentDocument)}"
+      icon="/icons/unlike.png" label="command.unlike">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>userLiked</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="damViewInDM"
