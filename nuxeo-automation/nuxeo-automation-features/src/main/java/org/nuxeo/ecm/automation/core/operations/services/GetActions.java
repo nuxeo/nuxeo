@@ -18,8 +18,10 @@
 
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -138,10 +140,16 @@ public class GetActions {
             obj.element("label", label);
             String help = translate(action.getHelp());
             obj.element("help", help);
+
+            JSONObject properties = new JSONObject();
+            Map<String, Serializable> actionProperties = action.getProperties();
+            for (Map.Entry<String, Serializable> entry : actionProperties .entrySet()) {
+                properties.element(entry.getKey(), entry.getValue());
+            }
+            obj.element("properties", properties);
             rows.add(obj);
         }
         return new ByteArrayBlob(rows.toString().getBytes("UTF-8"),
                 "application/json");
     }
-
 }
