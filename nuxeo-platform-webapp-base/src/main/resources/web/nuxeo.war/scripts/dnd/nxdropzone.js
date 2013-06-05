@@ -159,23 +159,33 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB, cancelCB) 
       }
       getOptions.addParameter("category",context);
       getOptions.setContext(this.ctx);
-      getOptions.execute(function(data, textStatus,xhr) {
-                            if (data.length==0) {
-                              handler.operationsDef=null;
-                              handler.canNotUpload(false,true);
-                              return;
-                            };
-                            handler.operationsDef=data;
-                            if(handler.executionPending) {
-                              // execution was waiting for the op definitions
-                              handler.executionPending=false;
-                              handler.selectOperation(handler.batchId, handler.dropZoneId,handler.url);
-                            }
-                          },
-                          function(xhr, status, e) {
-                              log(e);
-                              handler.canNotUpload(true,false);
-                          }, false);
+      getOptions.execute(
+        function(data, textStatus,xhr) {
+          if (data.length==0) {
+            handler.operationsDef=null;
+            handler.canNotUpload(false,true);
+            return;
+          }
+          handler.operationsDef=data;
+          for (var i = 0; i < handler.operationsDef.length; i++) {
+            var chainOrOperationId = null
+            if (handler.operationsDef[i].properties.chainId !== undefined) {
+              chainOrOperationId = "Chain." + handler.operationsDef[i].properties.chainId
+            } else if (handler.operationsDef[i].properties.operationId !== undefined) {
+              chainOrOperationId = handler.operationsDef[i].properties.operationId
+            }
+            handler.operationsDef[i].chainOrOperationId = chainOrOperationId
+          }
+          if(handler.executionPending) {
+            // execution was waiting for the op definitions
+            handler.executionPending=false;
+            handler.selectOperation(handler.batchId, handler.dropZoneId,handler.url);
+          }
+        },
+        function(xhr, status, e) {
+            log(e);
+            handler.canNotUpload(true,false);
+        }, false);
   }
 
   DropZoneUIHandler.prototype.canNotUpload = function(isError, noop) {
@@ -342,7 +352,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB, cancelCB) 
       return;
     } else {
       if ((this.extendedMode==false || this.operationsDef.length==1) && this.operationsDef[0].link=='') {
-        this.executeBatch(this.operationsDef[0].id,{});
+        this.executeBatch(this.operationsDef[0].chainOrOperationId, {});
       return;
       }
     }
@@ -366,7 +376,7 @@ function DropZoneUIHandler(idx, dropZoneId, options,targetSelectedCB, cancelCB) 
     selector.html("");
     for (i=0; i< this.operationsDef.length; i++) {
       var optionEntry = jQuery("<option></option>")
-      optionEntry.attr("value",this.operationsDef[i].id);
+      optionEntry.attr("value",this.operationsDef[i].chainOrOperationId);
       optionEntry.text(this.operationsDef[i].label);
       selector.append(optionEntry);
     }
