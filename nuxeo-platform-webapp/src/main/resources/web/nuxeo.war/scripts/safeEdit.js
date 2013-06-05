@@ -194,6 +194,10 @@ function initSafeEdit(key, formSelector, savePeriod, saveCB, loadCB, message) {
         // return message
         return message;
       });
+      // if the user really wanna leave the page, then we clear the localstorage
+      jQuery(window).bind('unload', function(){
+        cleanupSavedData(key);
+      });
     }
     dirtyPage = true;
   });
