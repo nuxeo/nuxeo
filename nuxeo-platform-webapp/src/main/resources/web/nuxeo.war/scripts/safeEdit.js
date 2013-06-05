@@ -184,9 +184,9 @@ function initSafeEdit(key, formSelector, savePeriod, saveCB, loadCB, message) {
    var loaded = restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB);
    bindOnChange(formSelector, function(event) {
         if (!dirtyPage) {
+          // first time we detect a dirty page, we start force save
+	      saveForm(key, formSelector, savePeriod, saveCB);
           jQuery(window).bind('beforeunload', function(){
-            // force save
-            saveForm(key, formSelector, savePeriod, saveCB);
             // return message
             return message;
         });
