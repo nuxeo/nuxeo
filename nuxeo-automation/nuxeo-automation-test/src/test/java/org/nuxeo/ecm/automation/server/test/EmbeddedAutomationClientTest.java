@@ -22,9 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -102,7 +103,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 MyObjectOperation.class);
     }
 
-    @Before
+    /**
+     * Use to setup complex documents for related tests
+     */
     public void setupComplexDocuments() throws Exception {
         Document root = (Document) super.session.newRequest(FetchDocument.ID).set(
                 "value", "/").execute();
@@ -414,6 +417,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void sampleAutomationRemoteAccessWithComplexDocuments()
             throws Exception {
 
+        // Initialize repository for this test
+        setupComplexDocuments();
+
         // the repository init handler sould have created a sample doc in the
         // repo
         // Check that we see it
@@ -584,4 +590,44 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals(4, result);
     }
 
+    @Test
+    public void testDirtyProperties() throws Exception {
+        // Initialize repository for this test
+        setupComplexDocuments();
+
+        Document testDoc = (Document) session.newRequest(
+                DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
+                "name", "testDoc").execute();
+
+        // No need to use PropertyMap object anymore
+        testDoc.set("ds:tableName", "newTableName");
+        testDoc.set("ds:attachments", "new1,new2,new3,new4");
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        testDoc.set("ds:fields", fieldsDataAsJSon);
+
+        // Fetch the dirty properties (updated values) from the document
+        PropertyMap dirties = testDoc.getDirties();
+
+        // Check that dirty properties doesn't contain title
+        Assert.assertFalse(
+                "The property dc:title should not be part of dirty properties",
+                dirties.getKeys().contains("dc:title"));
+
+        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
+                new IdRef(testDoc.getId())).set("properties",
+                dirties.toString()).execute();
+
+        // check the returned doc with properties not updated
+        assertEquals("testDoc", testDoc.getTitle());
+        // check properties set previously
+        assertEquals("newTableName",
+                testDoc.getProperties().get("ds:tableName"));
+    }
 }

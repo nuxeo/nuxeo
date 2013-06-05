@@ -539,14 +539,16 @@ public abstract class AbstractAutomationClientTest {
 
     @Test
     public void testSetArrayProperty() throws Exception {
-        PropertyMap props = new PropertyMap();
-        props.set("dc:title", "My Test Folder");
-        props.set("dc:description", "test");
-        props.set("dc:subjects", "a,b,c\\,d");
+        Document document = new Document("myFolder2", "Folder", null, null,
+                automationTestFolder.getPath(), null, null, null, null, null,
+                null, null);
+        document.set("dc:title", "My Test Folder");
+        document.set("dc:description", "test");
+        document.set("dc:subjects", "a,b,c\\,d");
         Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(
                 Constants.HEADER_NX_SCHEMAS, "*").setInput(automationTestFolder).set(
                 "type", "Folder").set("name", "myfolder2").set("properties",
-                props).execute();
+                document.getDirties()).execute();
 
         assertEquals("My Test Folder", folder.getString("dc:title"));
         assertEquals("test", folder.getString("dc:description"));
