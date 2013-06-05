@@ -71,7 +71,7 @@ public class Batch {
             if (mime != null) {
                 blob.setMimeType(mime);
             } else {
-                blob.setMimeType("application/octetstream");
+                blob.setMimeType("application/octet-stream");
             }
             blob.setFilename(name);
             addBlob(idx, blob);
