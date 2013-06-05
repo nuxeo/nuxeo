@@ -467,6 +467,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertNotNull(fieldAsJsonFile);
         String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         updateProps.put("ds:fields", fieldsDataAsJSon);
 
         testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
