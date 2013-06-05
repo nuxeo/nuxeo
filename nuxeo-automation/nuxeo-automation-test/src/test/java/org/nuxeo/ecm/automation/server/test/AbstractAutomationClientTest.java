@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
@@ -486,6 +487,7 @@ public abstract class AbstractAutomationClientTest {
     }
 
     @Test
+    @Ignore
     public void testUploadSmallFile() throws Exception {
         DigestMockInputStream source = new DigestMockInputStream(100);
         FileInputStream in = new UploadFileSupport(session,
