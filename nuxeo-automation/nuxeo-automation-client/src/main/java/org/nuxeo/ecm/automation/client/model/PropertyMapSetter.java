@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class PropertyMapSetter {
 
-    protected final LinkedHashMap<String, Object> map;
+    protected final Map<String, Object> map;
 
     protected final Set<String> dirties = new HashSet<String>();
 

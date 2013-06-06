@@ -37,13 +37,12 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * 
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
- * 
  */
 public class ComplexTypeJSONDecoder {
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    protected static List<JSONBlobDecoder> blobDecoders = new ArrayList<JSONBlobDecoder>();
 
+    protected static List<JSONBlobDecoder> blobDecoders = new ArrayList<JSONBlobDecoder>();
     static {
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         blobDecoders.add(new JSONStringBlobDecoder());
