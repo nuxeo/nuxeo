@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Andreas Kalogeropoulos
+ *     Anahide Tchertchian
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.webapp.filemanager;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +57,8 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
@@ -67,13 +69,10 @@ import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.FileSource;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
-/**
- * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
- *         Kalogeropoulos</a>
- */
 @Name("FileManageActions")
 @Scope(ScopeType.EVENT)
 @Install(precedence = Install.FRAMEWORK)
@@ -140,15 +139,17 @@ public class FileManageActionsBean extends InputController implements
         return "view_documents";
     }
 
+    /**
+     * Creates a document from the file held in the fileUploadHolder.
+     *
+     * Takes responsibility for the fileUploadHolder temporary file.
+     */
     @Override
-    public String addFile() throws ClientException {
-        return addFile(getFileUpload(), getFileName());
-    }
-
     @SuppressWarnings("static-access")
-    public String addFile(InputStream fileUpload, String fileName)
-            throws ClientException {
-        if (fileUpload == null || fileName == null) {
+    public String addFile() throws ClientException {
+        File tempFile = fileUploadHolder.getTempFile();
+        String fileName = getFileName();
+        if (tempFile == null || fileName == null) {
             facesMessages.add(
                     StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
@@ -160,7 +161,7 @@ public class FileManageActionsBean extends InputController implements
         fileName = FileUtils.getCleanFileName(fileName);
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String path = currentDocument.getPathAsString();
-        Blob blob = FileUtils.createSerializableBlob(fileUpload, fileName, null);
+        Blob blob = createTemporaryFileBlob(tempFile, fileName, null);
         DocumentModel createdDoc = null;
         try {
             createdDoc = getFileManagerService().createDocumentFromBlob(
@@ -593,9 +594,8 @@ public class FileManageActionsBean extends InputController implements
                     "files");
             for (UploadItem uploadItem : getUploadedFiles()) {
                 String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
-                Blob blob = FileUtils.createSerializableBlob(
-                        new FileInputStream(uploadItem.getFile()), filename,
-                        null);
+                Blob blob = createTemporaryFileBlob(uploadItem.getFile(),
+                        filename, uploadItem.getContentType());
 
                 HashMap<String, Object> fileMap = new HashMap<String, Object>(2);
                 fileMap.put("file", blob);
@@ -608,7 +608,10 @@ public class FileManageActionsBean extends InputController implements
             documentActions.updateDocument(current, Boolean.TRUE);
         } finally {
             for (UploadItem uploadItem : getUploadedFiles()) {
-                uploadItem.getFile().delete();
+                File tempFile = uploadItem.getFile();
+                if (tempFile != null && tempFile.exists()) {
+                    Framework.trackFile(tempFile, tempFile);
+                }
             }
         }
         Contexts.getConversationContext().remove("fileUploadHolder");
@@ -637,43 +640,32 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String validate() throws ClientException {
-        if (fileUploadHolder != null && fileUploadHolder.getTempFile() != null) {
-            InputStream stream = null;
-            try {
-                try {
-                    stream = new FileInputStream(fileUploadHolder.getTempFile());
-                } catch (FileNotFoundException e) {
-                    throw new RecoverableClientException(
-                            "Cannot validate, caught no such file",
-                            "message.operation.fails.generic", null, e);
-                }
-                try {
-                    return addFile(stream, getFileName());
-                } catch (ClientException e) {
-                    throw new RecoverableClientException(
-                            "Cannot validate, caught client exception",
-                            "message.operation.fails.generic", null, e);
-                } catch (RuntimeException e) {
-                    if (e.getCause() instanceof RecoverableClientException) {
-                        throw e;
-                    }
-                    throw new RecoverableClientException(
-                            "Cannot validate, caught runtime", "error.db.fs",
-                            null, e);
-                }
-            } finally {
-                org.nuxeo.common.utils.FileUtils.close(stream);
-                // the content of the temporary blob has been
-                if (fileUploadHolder.getTempFile() != null) {
-                    fileUploadHolder.getTempFile().delete();
-                }
-            }
-        } else {
+        File tempFile;
+        if (fileUploadHolder == null
+                || (tempFile = fileUploadHolder.getTempFile()) == null) {
             facesMessages.add(
                     StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "fileImporter.error.nullUploadedFile"));
             return null;
+        }
+        try {
+            return addFile();
+        } catch (ClientException e) {
+            throw new RecoverableClientException(
+                    "Cannot validate, caught client exception",
+                    "message.operation.fails.generic", null, e);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof RecoverableClientException) {
+                throw e;
+            }
+            throw new RecoverableClientException(
+                    "Cannot validate, caught runtime", "error.db.fs",
+                    null, e);
+        } finally {
+            if (tempFile != null && tempFile.exists()) {
+                Framework.trackFile(tempFile, tempFile);
+            }
         }
     }
 
@@ -776,6 +768,69 @@ public class FileManageActionsBean extends InputController implements
             getUploadedFiles().remove(fileToDelete);
         }
         return "";
+    }
+
+    /**
+     * A Blob based on a File but whose contract says that the file is allowed
+     * to be moved to another filesystem location if needed.
+     *
+     * (The move is done by getting the StreamSource from the Blob, casting to FileSource,
+     *
+     * @since 5.6.0-HF19
+     */
+    public static class TemporaryFileBlob extends StreamingBlob {
+
+        private static final long serialVersionUID = 1L;
+
+        public TemporaryFileBlob(File file, String mimeType,
+                String encoding, String filename, String digest) {
+            super(new FileSource(file), mimeType, encoding, filename, digest);
+        }
+
+        @Override
+        public boolean isTemporary() {
+            return true; // for SQLSession#getBinary
+        }
+
+        @Override
+        public FileSource getStreamSource() {
+            return (FileSource) src;
+        }
+    }
+
+    /**
+     * Creates a TemporaryFileBlob.
+     *
+     * Similar to FileUtils.createSerializableBlob.
+     *
+     * @since 5.6.0-HF19
+     */
+    protected static Blob createTemporaryFileBlob(File file, String filename,
+            String mimeType) {
+        if (filename != null) {
+            filename = FileUtils.getCleanFileName(filename);
+        }
+        Blob blob = new TemporaryFileBlob(file, mimeType, null, filename,
+                null);
+        try {
+            // mimetype detection
+            MimetypeRegistry mimeService = Framework.getLocalService(MimetypeRegistry.class);
+            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
+                    filename, blob, null);
+            if (detectedMimeType == null) {
+                if (mimeType != null) {
+                    detectedMimeType = mimeType;
+                } else {
+                    // default
+                    detectedMimeType = "application/octet-stream";
+                }
+            }
+            blob.setMimeType(detectedMimeType);
+        } catch (MimetypeDetectionException e) {
+            log.error(String.format("could not fetch mimetype for file %s",
+                    filename), e);
+        }
+        return blob;
     }
 
 }
