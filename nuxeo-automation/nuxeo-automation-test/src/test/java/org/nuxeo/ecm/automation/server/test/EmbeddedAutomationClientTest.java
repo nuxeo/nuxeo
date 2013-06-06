@@ -630,4 +630,56 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals("newTableName",
                 testDoc.getProperties().get("ds:tableName"));
     }
+
+    /**
+     * This test use {@link OperationRequest#set(String, Object)} passing in
+     * object {@link org.nuxeo.ecm.automation.client.model.Document} to map
+     * directly an automation client document to requested parameters of
+     * Properties type
+     */
+    @Test
+    public void testSetDocumentOperationMethod() throws Exception {
+        // Test document creation
+        Document document = new Document("myfolder2", "Folder");
+        document.set("dc:title", "My Test Folder");
+        document.set("dc:description", "test");
+        document.set("dc:subjects", "a,b,c\\,d");
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(automationTestFolder).set(
+                "type", document.getType()).set("name", document.getId()).set(
+                "properties", document).execute();
+
+        assertEquals("My Test Folder", folder.getString("dc:title"));
+        assertEquals("test", folder.getString("dc:description"));
+        // Initialize repository for this document update test
+        setupComplexDocuments();
+
+        Document testDoc = (Document) session.newRequest(
+                DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
+                "name", "testDoc").execute();
+
+        // No need to use PropertyMap object anymore
+        testDoc.set("ds:tableName", "newTableName");
+        testDoc.set("ds:attachments", "new1,new2,new3,new4");
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        testDoc.set("ds:fields", fieldsDataAsJSon);
+
+        // No need to get properties from the document, just pass document
+        // testDoc into "properties" entry
+        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
+                new IdRef(testDoc.getId())).set("properties", testDoc).execute();
+
+        // check the returned doc with properties not updated
+        assertEquals("testDoc", testDoc.getTitle());
+        // check properties set previously
+        assertEquals("newTableName",
+                testDoc.getProperties().get("ds:tableName"));
+    }
 }
