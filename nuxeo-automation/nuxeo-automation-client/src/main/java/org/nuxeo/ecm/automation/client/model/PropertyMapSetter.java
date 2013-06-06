@@ -15,7 +15,6 @@ package org.nuxeo.ecm.automation.client.model;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,20 +34,16 @@ public class PropertyMapSetter {
 
     /**
      * @since 5.7 This method fetch all dirty properties that has been defined.
-     *        Warning: Dirty properties set is flushed when getting it.
+     *        Warning: Dirty properties are not flushed when getting it.
      * @return PropertyMap
      */
     public PropertyMap getDirties() {
-        try {
-            Map<String, Object> resultMap = new HashMap<String, Object>();
-            for (String key : dirties) {
-                Object value = map.get(key);
-                resultMap.put(key, value);
-            }
-            return new PropertyMap(resultMap);
-        } finally {
-            dirties.clear();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        for (String key : dirties) {
+            Object value = map.get(key);
+            resultMap.put(key, value);
         }
+        return new PropertyMap(resultMap);
     }
 
     public void set(String key, String value) {
