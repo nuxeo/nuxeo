@@ -31,8 +31,6 @@ public class PropertyMap implements Serializable {
 
     protected final LinkedHashMap<String, Object> map;
 
-    protected final Set<String> dirties = new HashSet<String>();
-
     public PropertyMap() {
         map = new LinkedHashMap<String, Object>();
     }
