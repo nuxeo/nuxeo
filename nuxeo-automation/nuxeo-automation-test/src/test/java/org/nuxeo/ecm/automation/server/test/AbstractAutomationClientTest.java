@@ -539,9 +539,7 @@ public abstract class AbstractAutomationClientTest {
 
     @Test
     public void testSetArrayProperty() throws Exception {
-        Document document = new Document("myFolder2", "Folder", null, null,
-                automationTestFolder.getPath(), null, null, null, null, null,
-                null, null);
+        Document document = new Document("myFolder2", "Folder");
         document.set("dc:title", "My Test Folder");
         document.set("dc:description", "test");
         document.set("dc:subjects", "a,b,c\\,d");

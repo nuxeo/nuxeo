@@ -29,7 +29,7 @@ import java.util.Date;
  * <li>Number
  * <li>Date
  * <ul>
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Document extends DocRef {
@@ -77,7 +77,7 @@ public class Document extends DocRef {
     /**
      * Reserved to framework. Should be only called by client framework when
      * unmarshalling documents.
-     * 
+     *
      * @since 5.7
      * @since 5.6-HF17
      */
@@ -100,6 +100,28 @@ public class Document extends DocRef {
                 : contextParameters;
         propertiesSetter = new PropertyMapSetter(
                 properties == null ? new PropertyMap() : properties);
+    }
+
+    /**
+     * Minimal constructor for automation client Document. Could be instantiated
+     * when creating a document and passing to the related automation operation.
+     *
+     * @since 5.7
+     */
+    public Document(String id, String type) {
+        super(id);
+        this.type = type;
+        this.propertiesSetter = new PropertyMapSetter(new PropertyMap());
+        this.changeToken = null;
+        this.facets = null;
+        this.path = null;
+        this.state = null;
+        this.lockOwner = null;
+        this.lockCreated = null;
+        this.repository = null;
+        this.versionLabel = null;
+        this.properties = new PropertyMap();
+        this.contextParameters = new PropertyMap();
     }
 
     public String getRepository() {
