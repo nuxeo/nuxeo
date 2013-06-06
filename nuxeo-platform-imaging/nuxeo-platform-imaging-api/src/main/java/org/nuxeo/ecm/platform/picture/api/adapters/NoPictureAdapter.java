@@ -18,11 +18,13 @@ package org.nuxeo.ecm.platform.picture.api.adapters;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 
 /**
  * Picture adapter that creates no picture views at all.
@@ -67,6 +69,17 @@ public class NoPictureAdapter extends AbstractPictureAdapter {
             return getFirstViewXPath();
         }
         return null;
+    }
+
+    @Override
+    public boolean fillPictureViews(Blob blob, String filename, String title,
+            ArrayList<Map<String, Object>> pictureTemplates) {
+        return true;
+    }
+
+    @Override
+    public void preFillPictureViews(Blob blob,
+            List<Map<String, Object>> pictureTemplates, ImageInfo imageInfo) {
     }
 
 }
