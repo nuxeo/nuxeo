@@ -59,6 +59,7 @@ import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
@@ -1037,6 +1038,17 @@ public abstract class AbstractTest {
         throw new UnsupportedOperationException(
                 "Method is deprecated since 5.7,"
                         + " use a FileWidgetElement instead");
+    }
+
+    /**
+     * Get the current document id stored in the javascript ctx.currentDocument variable of the current page.
+     *
+     * @return the current document id
+     *
+     * @since 5.7
+     */
+    protected String getCurrentDocumentId() {
+        return (String) ((JavascriptExecutor) driver).executeScript(String.format("return ctx.currentDocument;"));
     }
 
 }
