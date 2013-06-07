@@ -21,6 +21,8 @@ import static org.junit.Assert.fail;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
@@ -87,6 +89,8 @@ public class ITSafeEditTest extends AbstractTest {
 
     }
 
+    private static final Log log = LogFactory.getLog(AbstractTest.class);
+
     private final static String USERNAME = "jdoe";
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
@@ -112,7 +116,7 @@ public class ITSafeEditTest extends AbstractTest {
      */
     private void byPassLeavePagePopup() {
         ((JavascriptExecutor) driver).executeScript("window.onbeforeunload = function(e){};");
-        ((JavascriptExecutor) driver).executeScript("jQuery(window).bind('unload')");
+        ((JavascriptExecutor) driver).executeScript("jQuery(window).unbind('unload');");
     }
 
     /**
@@ -128,31 +132,35 @@ public class ITSafeEditTest extends AbstractTest {
     public void testAutoSaveOnChangeAndRestore() throws Exception {
         DocumentBasePage documentBasePage;
         WebElement descriptionElt, titleElt;
-        DocumentBasePage s = login();
-        UsersGroupsBasePage page;
-        UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(USERNAME);
-        if (!usersTab.isUserFound(USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(USERNAME, USERNAME,
-                    "lastname1", "company1", "email1", USERNAME, "members");
-            usersTab = page.getUsersTab(true);
-        } // search user usersTab =
-        usersTab.searchUser(USERNAME);
-        assertTrue(usersTab.isUserFound(USERNAME));
+        final boolean createNewUser = true;
+        if (createNewUser) {
+            DocumentBasePage s = login();
+            UsersGroupsBasePage page;
+            UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+            usersTab = usersTab.searchUser(USERNAME);
+            if (!usersTab.isUserFound(USERNAME)) {
+                page = usersTab.getUserCreatePage().createUser(USERNAME,
+                        USERNAME, "lastname1", "company1", "email1", USERNAME,
+                        "members");
+                usersTab = page.getUsersTab(true);
+            } // search user usersTab =
+            usersTab.searchUser(USERNAME);
+            assertTrue(usersTab.isUserFound(USERNAME));
 
-        // create a doc
-        UsersGroupsBasePage usergroupPage = s.getAdminCenter().getUsersGroupsHomePage();
-        documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
-        // Need WriteSecurity (so in practice Manage everything) to edit a
-        // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                USERNAME)) {
-            accessRightSubTab.addPermissionForUser(USERNAME,
-                    "Manage everything", true);
+            // create a doc
+            UsersGroupsBasePage usergroupPage = s.getAdminCenter().getUsersGroupsHomePage();
+            documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
+                    "Workspaces");
+            AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
+            // Need WriteSecurity (so in practice Manage everything) to edit a
+            // Workspace
+            if (!accessRightSubTab.hasPermissionForUser("Manage everything",
+                    USERNAME)) {
+                accessRightSubTab.addPermissionForUser(USERNAME,
+                        "Manage everything", true);
+            }
+            logout();
         }
-        logout();
 
         // Starting the test for real
         documentBasePage = login(USERNAME, USERNAME).getContentTab().goToDocument(
@@ -170,6 +178,7 @@ public class ITSafeEditTest extends AbstractTest {
 
         descriptionElt = driver.findElement(By.name(DESCRIPTION_ELT_ID));
         titleElt = driver.findElement(By.name(TITLE_ELT_ID));
+        log.debug("1 - " + localStorage.getLocalStorageLength());
 
         // We change the value of the title
         titleElt.click();
@@ -179,6 +188,7 @@ public class ITSafeEditTest extends AbstractTest {
         // form to fire an onchange event
         descriptionElt.click();
         descriptionElt.clear();
+        log.debug("2 - " + localStorage.getLocalStorageLength());
 
         // Now must have something saved in the localstorage
         String lsItem = localStorage.getItemFromLocalStorage(currentDocumentId);
@@ -197,7 +207,9 @@ public class ITSafeEditTest extends AbstractTest {
             // The following is a workaround to by pass the popup windows which
             // is supposed to prevent the user from leaving the page with
             // unsaved modification
+            log.debug("3 - " + localStorage.getLocalStorageLength());
             byPassLeavePagePopup();
+            log.debug("4 - " + localStorage.getLocalStorageLength());
         }
 
         // We leave the page and get back to it. Since we didn't save the title
@@ -208,11 +220,13 @@ public class ITSafeEditTest extends AbstractTest {
         titleElt = driver.findElement(By.name(TITLE_ELT_ID));
         String titleEltValue = titleElt.getAttribute("value");
         assertTrue(titleEltValue.equals(WORKSPACE_TITLE));
+        log.debug("5 - " + localStorage.getLocalStorageLength());
 
         // We must find in the localstorage an entry matching the previous
         // document which contains the title we edited
         lsItem = localStorage.getItemFromLocalStorage(currentDocumentId);
         assertTrue(lsItem.contains(lookupString));
+        log.debug("6 - " + localStorage.getLocalStorageLength());
 
         // We must find the status message asking if we want to restore previous
         // unchanged data and make sure it is visible
