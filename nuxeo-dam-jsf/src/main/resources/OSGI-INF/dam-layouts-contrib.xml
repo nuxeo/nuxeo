@@ -3,8 +3,6 @@
 
   <require>org.nuxeo.ecm.webapp.seam.debug.action</require>
   <require>org.nuxeo.ecm.platform.preview.actions</require>
-  <!-- 
-   -->
   <require>org.nuxeo.ecm.platform.annotations.widgets</require>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
