@@ -175,7 +175,7 @@
         <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
         <property name="defaultTime">23:59</property>
       </properties>
     </widget>
