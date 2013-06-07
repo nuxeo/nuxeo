@@ -25,9 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -91,7 +88,9 @@ public class ITSafeEditTest extends AbstractTest {
 
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    private final static String USERNAME = "jdoe";
+    // private final static String USERNAME = "jdoe";
+
+    // private final static String PASSWORD = "test";
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
             + new Date().getTime();
@@ -132,39 +131,10 @@ public class ITSafeEditTest extends AbstractTest {
     public void testAutoSaveOnChangeAndRestore() throws Exception {
         DocumentBasePage documentBasePage;
         WebElement descriptionElt, titleElt;
-        final boolean createNewUser = true;
-        if (createNewUser) {
-            DocumentBasePage s = login();
-            UsersGroupsBasePage page;
-            UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-            usersTab = usersTab.searchUser(USERNAME);
-            if (!usersTab.isUserFound(USERNAME)) {
-                page = usersTab.getUserCreatePage().createUser(USERNAME,
-                        USERNAME, "lastname1", "company1", "email1", USERNAME,
-                        "members");
-                usersTab = page.getUsersTab(true);
-            } // search user usersTab =
-            usersTab.searchUser(USERNAME);
-            assertTrue(usersTab.isUserFound(USERNAME));
 
-            // create a doc
-            UsersGroupsBasePage usergroupPage = s.getAdminCenter().getUsersGroupsHomePage();
-            documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                    "Workspaces");
-            AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
-            // Need WriteSecurity (so in practice Manage everything) to edit a
-            // Workspace
-            if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                    USERNAME)) {
-                accessRightSubTab.addPermissionForUser(USERNAME,
-                        "Manage everything", true);
-            }
-            logout();
-        }
+        DocumentBasePage s = login();
 
-        // Starting the test for real
-        documentBasePage = login(USERNAME, USERNAME).getContentTab().goToDocument(
-                "Workspaces");
+        documentBasePage = s.getContentTab().goToDocument("Workspaces");
 
         // Create a new workspace named 'WorkspaceDescriptionModify_{current
         // time}'
@@ -248,4 +218,5 @@ public class ITSafeEditTest extends AbstractTest {
         deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
         logout();
     }
+
 }
