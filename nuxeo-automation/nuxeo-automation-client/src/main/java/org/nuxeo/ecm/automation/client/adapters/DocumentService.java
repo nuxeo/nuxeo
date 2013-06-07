@@ -11,6 +11,9 @@
  */
 package org.nuxeo.ecm.automation.client.adapters;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -81,13 +84,11 @@ public class DocumentService {
     public static final String FireEvent = "Notification.SendEvent";
 
     // The following are not yet implemented
-
     public static final String CheckOut = "Document.CheckOut";
 
     public static final String CheckIn = "Document.CheckIn";
 
     // //TODO GetAcl?
-
     protected Session session;
 
     public DocumentService(Session session) {
@@ -100,6 +101,19 @@ public class DocumentService {
 
     public Document getDocument(String ref) throws Exception {
         return getDocument(DocRef.newRef(ref), null);
+    }
+
+    /**
+     * @since 5.7
+     * @param document document to fetch
+     * @param schemas schemas related to the document to fetch (* for all)
+     * @return the document returned by server
+     * @throws Exception
+     */
+    public Document getDocument(Document document, String... schemas)
+            throws Exception {
+        return getDocument(new DocRef(document.getId()),
+                StringUtils.join(Arrays.asList(schemas), ","));
     }
 
     public Document getDocument(DocRef ref) throws Exception {
@@ -119,6 +133,19 @@ public class DocumentService {
         return getDocument(new PathRef("/"));
     }
 
+    /**
+     * @since 5.7
+     * @param parent can be PathRef or IdRef
+     * @param document the document to create
+     * @return the document created
+     * @throws Exception
+     */
+    public Document createDocument(String parent, Document document)
+            throws Exception {
+        return createDocument(DocRef.newRef(parent), document.getType(),
+                document.getId(), document.getDirties());
+    }
+
     public Document createDocument(DocRef parent, String type, String name)
             throws Exception {
         return createDocument(parent, type, name, null);
@@ -132,6 +159,15 @@ public class DocumentService {
             req.set("properties", properties);
         }
         return (Document) req.execute();
+    }
+
+    /**
+     * @since 5.7
+     * @param document the document to remove
+     * @throws Exception
+     */
+    public void remove(Document document) throws Exception {
+        remove(new DocRef(document.getId()));
     }
 
     public void remove(DocRef doc) throws Exception {
@@ -252,6 +288,18 @@ public class DocumentService {
                 "xpath", key).execute();
     }
 
+    /**
+     * This method sends the dirty properties to server
+     *
+     * @since 5.7
+     * @param document the document to update
+     * @return the document returned by the server
+     * @throws Exception
+     */
+    public Document update(Document document) throws Exception {
+        return update(new DocRef(document.getId()), document.getDirties());
+    }
+
     public Document update(DocRef doc, PropertyMap properties) throws Exception {
         return (Document) session.newRequest(UpdateDocument).setInput(doc).set(
                 "properties", properties).execute();
@@ -352,7 +400,7 @@ public class DocumentService {
     /**
      * Increment is one of "None", "Major", "Minor". If null the server default
      * will be used.
-     * 
+     *
      * See {@link VersionIncrement}
      */
     public Document createVersion(DocRef doc, String increment)
