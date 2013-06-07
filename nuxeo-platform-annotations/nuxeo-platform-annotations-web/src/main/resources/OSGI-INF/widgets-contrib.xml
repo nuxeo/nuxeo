@@ -34,19 +34,16 @@
 
   </extension>
 
-<!-- 
-
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="summary_document_annotations_status" type="widget" order="150"> <!- TODO order ->
-      <category>SUMMARY_PANEL_RIGHT</category>
+    <action id="summary_document_annotations_status" type="widget" order="20">
+      <category>SUMMARY_INDICATORS</category>
       <properties>
         <property name="widgetName">summary_document_annotations_status</property>
       </properties>
     </action>
 
   </extension>
- -->
 
 </component>

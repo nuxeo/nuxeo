@@ -6,14 +6,15 @@
 
   <c:if test="#{value.hasFacet('Commentable')}">
 
-    <c:set var="commentsCount" value="#{commentManagerActions.getCommentsAsThreadOnDoc(value).size}" />
-    <c:set var="baseLabel" value="#{nxu:test(commentsCount > 1, 'label.comments.moreComments', 'label.comments.oneComment')}" />
-    <c:set var="tooltip" value="#{nxu:translate(baseLabel, commentsCount)}" />
+    <nxu:set var="commentsCount" value="#{commentManagerActions.getCommentsAsThreadOnDoc(value).size}" cache="true" >
+      <c:set var="baseLabel" value="#{nxu:test(commentsCount > 1, 'label.comments.moreComments', 'label.comments.oneComment')}" />
+      <c:set var="tooltip" value="#{nxu:translate(baseLabel, commentsCount)}" />
 
-    <div title="#{tooltip}" >
-      <h:outputText value="#{commentsCount}" />
-      <h:graphicImage value="/icons/comments.png" />
-    </div>
+      <div title="#{tooltip}" >
+        <h:outputText value="#{commentsCount}" />
+        <h:graphicImage value="/icons/comments.png" />
+      </div>
+    </nxu:set>
 
   </c:if>
 
