@@ -682,4 +682,85 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals("newTableName",
                 testDoc.getProperties().get("ds:tableName"));
     }
+
+    @Test
+    public void testAutomationDocumentService() throws Exception {
+
+        // Test with simple metadata
+
+        // Test document creation
+        Document document = new Document("myfolder2", "Folder");
+        document.set("dc:title", "My Test Folder");
+        document.set("dc:description", "test");
+        document.set("dc:subjects", "a,b,c\\,d");
+        DocumentService documentService = session.getAdapter(DocumentService.class);
+
+        // automationTestFolder is the parent, we can pass the Path or Id
+        Document folder = documentService.createDocument(
+                automationTestFolder.getId(), document);
+
+        assertEquals("My Test Folder", folder.getTitle());
+
+        // Fetch the document with its dublincore properties
+        folder = documentService.getDocument(folder, "dublincore");
+        assertEquals("My Test Folder", folder.getString("dc:title"));
+        assertEquals("test", folder.getString("dc:description"));
+
+        // Update the document title
+        folder.set("dc:title", "New Title");
+        documentService.update(folder);
+
+        // Check if title has been updated
+        folder = documentService.getDocument(folder, "*");
+        assertEquals("New Title", folder.getString("dc:title"));
+
+        // Test with complex metadata
+
+        // Initialize repository for this test
+        setupComplexDocuments();
+
+        Document testDoc = documentService.getDocument(new PathRef("/testDoc"),
+                "*");
+
+        testDoc.set("ds:tableName", "newTableName");
+        testDoc.set("ds:attachments", "new1,new2,new3,new4");
+        PropertyList dbFields = testDoc.getProperties().getList("ds:fields");
+        assertEquals(5, dbFields.size());
+        PropertyMap dbField0 = dbFields.getMap(0);
+        assertNotNull(dbField0);
+        assertEquals("field0", dbField0.getString("name"));
+        assertEquals("Decision", dbField0.getList("roles").getString(0));
+        assertEquals("Score", dbField0.getList("roles").getString(1));
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        testDoc.set("ds:fields", fieldsDataAsJSon);
+
+        documentService.update(testDoc);
+
+        testDoc = documentService.getDocument(testDoc, "*");
+
+        // check the returned doc
+        assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("newTableName",
+                testDoc.getProperties().get("ds:tableName"));
+
+        PropertyList atts = testDoc.getProperties().getList("ds:attachments");
+        assertNotNull(atts);
+        assertEquals(4, atts.size());
+        assertEquals("new1", atts.getString(0));
+        assertEquals("new4", atts.getString(3));
+
+        dbFields = testDoc.getProperties().getList("ds:fields");
+        assertEquals(2, dbFields.size());
+
+        PropertyMap dbFieldA = dbFields.getMap(0);
+        assertNotNull(dbFieldA);
+        assertEquals("fieldA", dbFieldA.getString("name"));
+
+    }
 }
