@@ -316,6 +316,14 @@
       </properties>
     </widget>
 
+    <widget name="damAssetViewIndicators" type="currentDocumentActions">
+      <properties widgetMode="view">
+        <property name="category">DAM_ASSET_VIEW_INDICATORS</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="subStyleClass">contextActions</property>
+      </properties>
+    </widget>
+
     <widget name="damAssetViewStates" type="summary_current_document_states" />
 
     <widget name="damAssetViewLikeStatus" type="summary_document_like_status" />
@@ -677,34 +685,41 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewStates" type="widget" order="600">
+    <action id="damAssetViewIndicators" type="widget" order="550">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
-        <property name="widgetName">damAssetViewStates</property>
+        <property name="widgetName">damAssetViewIndicators</property>
       </properties>
-      <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewLikeStatus" type="widget" order="700">
-      <category>DAM_PANEL_RIGHT</category>
+    <action id="damAssetViewLikeStatus" type="widget" order="10">
+      <category>DAM_ASSET_VIEW_INDICATORS</category>
       <properties>
         <property name="widgetName">damAssetViewLikeStatus</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewAnnotationsStatus" type="widget" order="800">
-      <category>DAM_PANEL_RIGHT</category>
+    <action id="damAssetViewAnnotationsStatus" type="widget" order="20">
+      <category>DAM_ASSET_VIEW_INDICATORS</category>
       <properties>
         <property name="widgetName">damAssetViewAnnotationsStatus</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewCommentsStatus" type="widget" order="900">
-      <category>DAM_PANEL_RIGHT</category>
+    <action id="damAssetViewCommentsStatus" type="widget" order="30">
+      <category>DAM_ASSET_VIEW_INDICATORS</category>
       <properties>
         <property name="widgetName">damAssetViewCommentsStatus</property>
+      </properties>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
+    <action id="damAssetViewStates" type="widget" order="600">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewStates</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
