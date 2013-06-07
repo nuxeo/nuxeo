@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
@@ -47,6 +48,8 @@ public class Batch {
 
     protected final String baseDir;
 
+    protected final AtomicInteger uploadInProgress = new AtomicInteger(0);
+
     public Batch(String id) {
         this.id = id;
         baseDir = new Path(System.getProperty("java.io.tmpdir")).append(id).toString();
@@ -60,16 +63,21 @@ public class Batch {
     public void addStream(String idx, InputStream is, String name, String mime)
             throws IOException {
 
-        File tmp = new File(new Path(baseDir).append(name).toString());
-        FileUtils.copyToFile(is, tmp);
-        FileBlob blob = new FileBlob(tmp);
-        if (mime != null) {
-            blob.setMimeType(mime);
-        } else {
-            blob.setMimeType("application/octetstream");
+        uploadInProgress.incrementAndGet();
+        try {
+            File tmp = new File(new Path(baseDir).append(name).toString());
+            FileUtils.copyToFile(is, tmp);
+            FileBlob blob = new FileBlob(tmp);
+            if (mime != null) {
+                blob.setMimeType(mime);
+            } else {
+                blob.setMimeType("application/octet-stream");
+            }
+            blob.setFilename(name);
+            addBlob(idx, blob);
+        } finally {
+            uploadInProgress.decrementAndGet();
         }
-        blob.setFilename(name);
-        addBlob(idx, blob);
     }
 
     /**
@@ -78,9 +86,32 @@ public class Batch {
      * @return
      */
     public List<Blob> getBlobs() {
+        return getBlobs(0);
+
+    }
+
+    /**
+     * @since 5.7
+     *
+     * @param timeoutS
+     * @return
+     */
+    public List<Blob> getBlobs(int timeoutS) {
 
         List<Blob> blobs = new ArrayList<Blob>();
 
+        if (uploadInProgress.get() > 0 && timeoutS>0) {
+            for (int i = 0; i < timeoutS*5; i++) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (uploadInProgress.get()==0) {
+                    break;
+                }
+            }
+        }
         List<String> sortedIdx = new ArrayList<String>(uploadedBlob.keySet());
         Collections.sort(sortedIdx);
 
@@ -91,7 +122,33 @@ public class Batch {
     }
 
     public Blob getBlob(String fileId) {
-        return uploadedBlob.get(fileId);
+        return getBlob(fileId, 0);
+    }
+
+    /**
+     * @since 5.7
+     *
+     * @param fileId
+     * @param timeoutS
+     * @return
+     */
+    public Blob getBlob(String fileId, int timeoutS) {
+
+        Blob result =  uploadedBlob.get(fileId);
+        if (result==null && timeoutS>0 && uploadInProgress.get()>0) {
+            for (int i = 0; i < timeoutS*5; i++) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                result =  uploadedBlob.get(fileId);
+                if (result!=null) {
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     public void clear() {

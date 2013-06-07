@@ -12,7 +12,9 @@
 package org.nuxeo.ecm.automation.client.model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -129,6 +131,11 @@ public class PropertyMap implements Serializable {
         return map.isEmpty();
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link Document#set(String, String)} to inject
+     *             data.
+     */
+    @Deprecated
     public void set(String key, String value) {
         if (value == null) {
             map.remove(key);
@@ -136,6 +143,11 @@ public class PropertyMap implements Serializable {
         map.put(key, value);
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link Document#set(String, Boolean)} to
+     *             inject data.
+     */
+    @Deprecated
     public void set(String key, Boolean value) {
         if (value == null) {
             map.remove(key);
@@ -143,6 +155,11 @@ public class PropertyMap implements Serializable {
         map.put(key, value.toString());
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link Document#set(String, Long)} to inject
+     *             data.
+     */
+    @Deprecated
     public void set(String key, Long value) {
         if (value == null) {
             map.remove(key);
@@ -150,6 +167,11 @@ public class PropertyMap implements Serializable {
         map.put(key, value.toString());
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link Document#set(String, Double)} to inject
+     *             data.
+     */
+    @Deprecated
     public void set(String key, Double value) {
         if (value == null) {
             map.remove(key);
@@ -157,6 +179,11 @@ public class PropertyMap implements Serializable {
         map.put(key, value.toString());
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link Document#set(String, java.util.Date)}
+     *             to inject data.
+     */
+    @Deprecated
     public void set(String key, Date value) {
         if (value == null) {
             map.remove(key);
@@ -164,6 +191,11 @@ public class PropertyMap implements Serializable {
         map.put(key, DateUtils.formatDate(value));
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link Document#set(String, PropertyList)} to
+     *             inject data.
+     */
+    @Deprecated
     public void set(String key, PropertyList value) {
         if (value == null) {
             map.remove(key);
@@ -171,6 +203,11 @@ public class PropertyMap implements Serializable {
         map.put(key, value);
     }
 
+    /**
+     * @deprecated since 5.7. Use {@link Document#set(String, PropertyMap)} to
+     *             inject data.
+     */
+    @Deprecated
     public void set(String key, PropertyMap value) {
         if (value == null) {
             map.remove(key);
@@ -179,7 +216,7 @@ public class PropertyMap implements Serializable {
     }
 
     public Map<String, Object> map() {
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 
     @Override

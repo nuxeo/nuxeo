@@ -83,14 +83,6 @@ public class UploadFileSupport {
             return data;
         }
 
-        boolean checkDigest(InputStream in) throws IOException {
-            byte[] sentSum = digest.digest();
-            while (in.available() > 0) {
-                digest.update((byte) in.read());
-            }
-            byte[] receivedSum = digest.digest();
-            return MessageDigest.isEqual(sentSum, receivedSum);
-        }
     }
 
    public static MockInputStream newMockInput(long size, boolean digest) throws NoSuchAlgorithmException {

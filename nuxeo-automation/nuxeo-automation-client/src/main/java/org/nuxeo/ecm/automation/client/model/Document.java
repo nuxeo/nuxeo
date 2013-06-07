@@ -13,10 +13,11 @@ package org.nuxeo.ecm.automation.client.model;
 
 import java.util.Date;
 
-
 /**
- * A immutable document. You cannot modify documents. Documents are as they are
- * returned by the server. To modify documents use operations.
+ * A document. Documents are as they are returned by the server. To modify
+ * documents use operations. Use {@link #getProperties()} method to fetch the
+ * document properties and {@link #getDirties()} to fetch dirty properties
+ * updated.
  * <p>
  * You need to create your own wrapper if you need to access the document
  * properties in a multi-level way. This is a flat representation of the
@@ -42,16 +43,17 @@ public class Document extends DocRef {
     protected final String type;
 
     // TODO can be stored in map
-
     protected final String state;
 
     protected final String lockOwner;
-    
+
     protected final String lockCreated;
 
     protected final String versionLabel;
 
     protected final PropertyMap properties;
+
+    protected final transient PropertyMapSetter propertiesSetter;
 
     protected final PropertyMap contextParameters;
 
@@ -68,14 +70,14 @@ public class Document extends DocRef {
             String changeToken, String path, String state, String lockOwner,
             String lockCreated, String repository, PropertyMap properties,
             PropertyMap contextParameters) {
-        this(id,  type,  facets,
-                 changeToken,  path,  state,  lockOwner,
-                 lockCreated,  repository,  null, properties, contextParameters);
+        this(id, type, facets, changeToken, path, state, lockOwner,
+                lockCreated, repository, null, properties, contextParameters);
     }
 
     /**
      * Reserved to framework. Should be only called by client framework when
      * unmarshalling documents.
+     *
      * @since 5.7
      * @since 5.6-HF17
      */
@@ -96,6 +98,30 @@ public class Document extends DocRef {
         this.properties = properties == null ? new PropertyMap() : properties;
         this.contextParameters = contextParameters == null ? new PropertyMap()
                 : contextParameters;
+        propertiesSetter = new PropertyMapSetter(
+                properties == null ? new PropertyMap() : properties);
+    }
+
+    /**
+     * Minimal constructor for automation client Document. Could be instantiated
+     * when creating a document and passing to the related automation operation.
+     *
+     * @since 5.7
+     */
+    public Document(String id, String type) {
+        super(id);
+        this.type = type;
+        this.propertiesSetter = new PropertyMapSetter(new PropertyMap());
+        this.changeToken = null;
+        this.facets = null;
+        this.path = null;
+        this.state = null;
+        this.lockOwner = null;
+        this.lockCreated = null;
+        this.repository = null;
+        this.versionLabel = null;
+        this.properties = new PropertyMap();
+        this.contextParameters = new PropertyMap();
     }
 
     public String getRepository() {
@@ -125,19 +151,19 @@ public class Document extends DocRef {
         }
         return null;
     }
-    
+
     public String getLockOwner() {
         return lockOwner;
     }
-    
+
     public String getLockCreated() {
         return lockCreated;
     }
-    
+
     public boolean isLocked() {
         return lockOwner != null;
     }
-    
+
     public String getState() {
         return state;
     }
@@ -191,19 +217,40 @@ public class Document extends DocRef {
     }
 
     public void set(String key, String defValue) {
-        properties.set(key, defValue);
+        propertiesSetter.set(key, defValue);
     }
 
     public void set(String key, Date defValue) {
-        properties.set(key, defValue);
+        propertiesSetter.set(key, defValue);
     }
 
     public void set(String key, Long defValue) {
-        properties.set(key, defValue);
+        propertiesSetter.set(key, defValue);
     }
 
     public void set(String key, Double defValue) {
-        properties.set(key, defValue);
+        propertiesSetter.set(key, defValue);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public void set(String key, Boolean defValue) {
+        propertiesSetter.set(key, defValue);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public void set(String key, PropertyMap defValue) {
+        propertiesSetter.set(key, defValue);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public void set(String key, PropertyList defValue) {
+        propertiesSetter.set(key, defValue);
     }
 
     public String getChangeToken() {
@@ -216,6 +263,10 @@ public class Document extends DocRef {
 
     public PropertyMap getContextParameters() {
         return contextParameters;
+    }
+
+    public PropertyMap getDirties() {
+        return propertiesSetter.getDirties();
     }
 
 }

@@ -89,5 +89,9 @@ public class AutomationClientOSGiComplianceTest {
         AutomationClient client = factory.getClient(new URL(
                 "http://localhost:8080/nuxeo/site/automation"));
         Assert.assertNotNull(client);
+        // Check if client constructor with timeout is available
+        client = factory.getClient(new URL(
+                "http://localhost:8080/nuxeo/site/automation"), 3600);
+        Assert.assertNotNull(client);
     }
 }

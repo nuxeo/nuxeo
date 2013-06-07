@@ -21,4 +21,7 @@ import java.net.URL;
 public interface AutomationClientFactory {
 
     AutomationClient getClient(URL url) throws URISyntaxException;
+
+    AutomationClient getClient(URL url, int httpCxTimeout)
+            throws URISyntaxException;
 }

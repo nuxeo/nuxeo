@@ -11,21 +11,18 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import junit.framework.Assert;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
@@ -36,21 +33,26 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.IdRef;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
+import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
+import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
@@ -81,11 +83,14 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
-        "org.nuxeo.ecm.automation.server:test-mvalues.xml" })
+        "org.nuxeo.ecm.automation.server:test-mvalues.xml",
+        "org.nuxeo.ecm.automation.server:core-types-contrib.xml" })
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
+
+    protected static String[] attachments = { "att1", "att2", "att3" };
 
     @Inject
     UserManager userManager;
@@ -96,6 +101,40 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 new MyObjectCodec());
         Framework.getLocalService(AutomationService.class).putOperation(
                 MyObjectOperation.class);
+    }
+
+    /**
+     * Use to setup complex documents for related tests
+     */
+    public void setupComplexDocuments() throws Exception {
+        Document root = (Document) super.session.newRequest(FetchDocument.ID).set(
+                "value", "/").execute();
+        createDocumentWithComplexProperties(root);
+    }
+
+    /**
+     * Create document with complex properties (from json file)
+     */
+    public void createDocumentWithComplexProperties(Document root)
+            throws Exception {
+        // Fill the document properties
+        Map<String, Object> creationProps = new HashMap<String, Object>();
+        creationProps.put("ds:tableName", "MyTable");
+        creationProps.put("ds:attachments", attachments);
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        creationProps.put("ds:fields", fieldsDataAsJSon);
+        creationProps.put("dc:title", "testDoc");
+
+        // Document creation
+        session.newRequest(CreateDocument.ID).setInput(root).set("type",
+                "DataSet").set("name", "testDoc").set("properties",
+                new PropertyMap(creationProps).toString()).execute();
     }
 
     @BeforeClass
@@ -124,15 +163,15 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 "value", "/").execute();
 
         Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(root).set("type", "MV").set(
-                "name", "pfff").set("properties",
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(root).set("type",
+                "MV").set("name", "pfff").set("properties",
                 "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n").execute();
         checkHasCorrectMultiValues(note);
 
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
                 DocumentPageProviderOperation.ID).setHeader(
-                "X-NXDocumentProperties", "*").set("query", "SELECT * from MV").set(
-                "pageSize", 2).execute();
+                Constants.HEADER_NX_SCHEMAS, "*").set("query",
+                "SELECT * from MV").set("pageSize", 2).execute();
 
         assertThat(docs, notNullValue());
         assertThat(docs.size(), is(1));
@@ -374,6 +413,93 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         }
     }
 
+    @Test
+    public void sampleAutomationRemoteAccessWithComplexDocuments()
+            throws Exception {
+
+        // Initialize repository for this test
+        setupComplexDocuments();
+
+        // the repository init handler sould have created a sample doc in the
+        // repo
+        // Check that we see it
+        Document testDoc = (Document) session.newRequest(
+                DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
+                "name", "testDoc").execute();
+
+        assertNotNull(testDoc);
+
+        // try to see what's in it
+
+        // check dublincore.title
+        assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("testDoc", testDoc.getProperties().get("dc:title"));
+
+        // schema only a subset of the properties are serialized with default
+        // configuration (common and dublincore only)
+        // see @Constants.HEADER_NX_SCHEMAS
+
+        assertNull(testDoc.getProperties().get("ds:tableName"));
+        assertNull(testDoc.getProperties().get("ds:fields"));
+
+        // refetch the doc, but with the correct header
+        testDoc = (Document) session.newRequest(DocumentService.FetchDocument).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("value", "/testDoc").execute();
+
+        assertNotNull(testDoc);
+
+        assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("MyTable", testDoc.getProperties().get("ds:tableName"));
+        assertNotNull(testDoc.getProperties().get("ds:fields"));
+
+        PropertyList dbFields = testDoc.getProperties().getList("ds:fields");
+        assertEquals(5, dbFields.size());
+
+        PropertyMap dbField0 = dbFields.getMap(0);
+        assertNotNull(dbField0);
+        assertEquals("field0", dbField0.getString("name"));
+
+        assertEquals("Decision", dbField0.getList("roles").getString(0));
+        assertEquals("Score", dbField0.getList("roles").getString(1));
+
+        // now update the doc
+        Map<String, Object> updateProps = new HashMap<String, Object>();
+
+        updateProps.put("ds:tableName", "newTableName");
+        updateProps.put("ds:attachments", "new1,new2,new3,new4");
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        updateProps.put("ds:fields", fieldsDataAsJSon);
+
+        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
+                new IdRef(testDoc.getId())).set("properties",
+                new PropertyMap(updateProps).toString()).execute();
+
+        // check the returned doc
+        assertEquals("testDoc", testDoc.getTitle());
+        assertEquals("newTableName",
+                testDoc.getProperties().get("ds:tableName"));
+
+        PropertyList atts = testDoc.getProperties().getList("ds:attachments");
+        assertNotNull(atts);
+        assertEquals(4, atts.size());
+        assertEquals("new1", atts.getString(0));
+        assertEquals("new4", atts.getString(3));
+
+        dbFields = testDoc.getProperties().getList("ds:fields");
+        assertEquals(2, dbFields.size());
+
+        PropertyMap dbFieldA = dbFields.getMap(0);
+        assertNotNull(dbFieldA);
+        assertEquals("fieldA", dbFieldA.getString("name"));
+    }
+
     /* The following tests need automation server 5.7 or later */
 
     @Test
@@ -464,4 +590,96 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals(4, result);
     }
 
+    @Test
+    public void testDirtyProperties() throws Exception {
+        // Initialize repository for this test
+        setupComplexDocuments();
+
+        Document testDoc = (Document) session.newRequest(
+                DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
+                "name", "testDoc").execute();
+
+        // No need to use PropertyMap object anymore
+        testDoc.set("ds:tableName", "newTableName");
+        testDoc.set("ds:attachments", "new1,new2,new3,new4");
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        testDoc.set("ds:fields", fieldsDataAsJSon);
+
+        // Fetch the dirty properties (updated values) from the document
+        PropertyMap dirties = testDoc.getDirties();
+
+        // Check that dirty properties doesn't contain title
+        Assert.assertFalse(
+                "The property dc:title should not be part of dirty properties",
+                dirties.getKeys().contains("dc:title"));
+
+        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
+                new IdRef(testDoc.getId())).set("properties",
+                dirties.toString()).execute();
+
+        // check the returned doc with properties not updated
+        assertEquals("testDoc", testDoc.getTitle());
+        // check properties set previously
+        assertEquals("newTableName",
+                testDoc.getProperties().get("ds:tableName"));
+    }
+
+    /**
+     * This test use {@link OperationRequest#set(String, Object)} passing in
+     * object {@link org.nuxeo.ecm.automation.client.model.Document} to map
+     * directly an automation client document to requested parameters of
+     * Properties type
+     */
+    @Test
+    public void testSetDocumentOperationMethod() throws Exception {
+        // Test document creation
+        Document document = new Document("myfolder2", "Folder");
+        document.set("dc:title", "My Test Folder");
+        document.set("dc:description", "test");
+        document.set("dc:subjects", "a,b,c\\,d");
+        Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(automationTestFolder).set(
+                "type", document.getType()).set("name", document.getId()).set(
+                "properties", document).execute();
+
+        assertEquals("My Test Folder", folder.getString("dc:title"));
+        assertEquals("test", folder.getString("dc:description"));
+        // Initialize repository for this document update test
+        setupComplexDocuments();
+
+        Document testDoc = (Document) session.newRequest(
+                DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
+                "name", "testDoc").execute();
+
+        // No need to use PropertyMap object anymore
+        testDoc.set("ds:tableName", "newTableName");
+        testDoc.set("ds:attachments", "new1,new2,new3,new4");
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        testDoc.set("ds:fields", fieldsDataAsJSon);
+
+        // No need to get properties from the document, just pass document
+        // testDoc into "properties" entry
+        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
+                new IdRef(testDoc.getId())).set("properties", testDoc).execute();
+
+        // check the returned doc with properties not updated
+        assertEquals("testDoc", testDoc.getTitle());
+        // check properties set previously
+        assertEquals("newTableName",
+                testDoc.getProperties().get("ds:tableName"));
+    }
 }

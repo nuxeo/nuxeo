@@ -11,19 +11,14 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -158,7 +153,7 @@ public abstract class AbstractAutomationClientTest {
 
         // update folder properties
         folder = (Document) session.newRequest(UpdateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(folder).set(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(folder).set(
                 "properties", "dc:title=My Folder2\ndc:description=test").execute();
 
         assertNotNull(folder);
@@ -497,7 +492,16 @@ public abstract class AbstractAutomationClientTest {
         DigestMockInputStream source = new DigestMockInputStream(100);
         FileInputStream in = new UploadFileSupport(session,
                 automationTestFolder.getPath()).testUploadFile(source);
-        assertTrue(source.checkDigest(in));
+        byte[] sentSum = source.digest.digest();
+        while (in.available() > 0) {
+            source.digest.update((byte) in.read());
+        }
+        byte[] receivedSum = source.digest.digest();
+        assertTrue(
+                "Expected (sent) bytes array: " + Arrays.toString(sentSum)
+                        + " - Actual (received) bytes array: "
+                        + Arrays.toString(receivedSum),
+                MessageDigest.isEqual(sentSum, receivedSum));
     }
 
     @Test
@@ -540,7 +544,7 @@ public abstract class AbstractAutomationClientTest {
         props.set("dc:description", "test");
         props.set("dc:subjects", "a,b,c\\,d");
         Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(
-                "X-NXDocumentProperties", "*").setInput(automationTestFolder).set(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(automationTestFolder).set(
                 "type", "Folder").set("name", "myfolder2").set("properties",
                 props).execute();
 

@@ -19,17 +19,20 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Runtime Component implementing the {@link BatchManager} service
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.4.2
  */
@@ -39,6 +42,8 @@ public class BatchManagerComponent extends DefaultComponent implements
     protected ConcurrentHashMap<String, Batch> batches = new ConcurrentHashMap<String, Batch>();
 
     protected static final String DEFAULT_CONTEXT = "None";
+
+    protected static final Log log = LogFactory.getLog(BatchManagerComponent.class);
 
     static {
         ComplexTypeJSONDecoder.registerBlobDecoder(new JSONBatchBlobDecoder());
@@ -77,19 +82,29 @@ public class BatchManagerComponent extends DefaultComponent implements
     }
 
     public List<Blob> getBlobs(String batchId) {
+        return getBlobs(batchId, 0);
+    }
+
+    public List<Blob> getBlobs(String batchId, int timeoutS) {
         Batch batch = batches.get(batchId);
         if (batch == null) {
-            return null;
+            log.error("Unable to find batch with id " + batchId);
+            return Collections.emptyList();
         }
-        return batch.getBlobs();
+        return batch.getBlobs(timeoutS);
     }
 
     public Blob getBlob(String batchId, String fileId) {
+        return getBlob(batchId, fileId, 0);
+    }
+
+    public Blob getBlob(String batchId, String fileId, int timeoutS) {
         Batch batch = batches.get(batchId);
         if (batch == null) {
+            log.error("Unable to find batch with id " + batchId);
             return null;
         }
-        return batch.getBlob(fileId);
+        return batch.getBlob(fileId, timeoutS);
     }
 
     public void clean(String batchId) {

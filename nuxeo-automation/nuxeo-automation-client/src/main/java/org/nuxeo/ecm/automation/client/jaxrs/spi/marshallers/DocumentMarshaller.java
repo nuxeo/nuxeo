@@ -18,6 +18,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.PropertyMapSetter;
 
 /**
  * @author matic
@@ -53,6 +54,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         String changeToken = null;
         JsonToken tok = jp.nextToken();
         PropertyMap props = new PropertyMap();
+        PropertyMapSetter propsSetter = new PropertyMapSetter(props);
         PropertyMap contextParameters = new PropertyMap();
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
@@ -80,9 +82,9 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             }else if (key.equals("repository")) {
                 repository = jp.getText();
             } else if (key.equals("title")) {
-                props.set("dc:title", jp.getText());
+                propsSetter.set("dc:title", jp.getText());
             } else if (key.equals("lastModified")) {
-                props.set("dc:modified", jp.getText());
+                propsSetter.set("dc:modified", jp.getText());
             } else if (key.equals("properties")) {
                 readProperties(jp, props);
             } else if (key.equals("facets")) {
@@ -101,18 +103,19 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {
+        PropertyMapSetter setter = new PropertyMapSetter(props);
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             if (tok == JsonToken.START_ARRAY) {
-                props.set(key, readArrayProperty(jp));
+                setter.set(key, readArrayProperty(jp));
             } else if (tok == JsonToken.START_OBJECT) {
-                props.set(key, readObjectProperty(jp));
+                setter.set(key, readObjectProperty(jp));
             } else if (tok  == JsonToken.VALUE_NULL) {
-                props.set(key, (String)null);
+                setter.set(key, (String)null);
             } else {
-                props.set(key, jp.getText());
+                setter.set(key, jp.getText());
             }
             tok = jp.nextToken();
         }

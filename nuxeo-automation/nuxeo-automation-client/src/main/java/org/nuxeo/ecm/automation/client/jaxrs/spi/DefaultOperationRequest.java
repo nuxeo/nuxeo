@@ -20,6 +20,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.client.AsyncCallback;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
+import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.client.model.OperationInput;
@@ -132,6 +133,17 @@ public class DefaultOperationRequest implements OperationRequest {
         // }
         if (value.getClass() == Date.class) {
             params.put(key, DateUtils.formatDate((Date) value));
+        } else if ("properties".equals(key) && value instanceof Document) {
+            // Handle document parameter in case of properties - and bind it to
+            // properties
+            List<Param> parameters = op.getParams();
+            for (Param parameter : parameters) {
+                // Check if one of params has the Properties type
+                if ("properties".equals(parameter.getType())) {
+                    params.put("properties",
+                            ((Document) value).getDirties().toString());
+                }
+            }
         } else {
             params.put(key, value);
         }
