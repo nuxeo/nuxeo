@@ -25,6 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -88,9 +92,9 @@ public class ITSafeEditTest extends AbstractTest {
 
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    // private final static String USERNAME = "jdoe";
+    private final static String USERNAME = "jdoe";
 
-    // private final static String PASSWORD = "test";
+    private final static String PASSWORD = "test";
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
             + new Date().getTime();
@@ -134,16 +138,40 @@ public class ITSafeEditTest extends AbstractTest {
 
         DocumentBasePage s = login();
 
-        documentBasePage = s.getContentTab().goToDocument("Workspaces");
+        // Create a new user if not exist
+        UsersGroupsBasePage page;
+        UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = usersTab.searchUser(USERNAME);
+        if (!usersTab.isUserFound(USERNAME)) {
+            page = usersTab.getUserCreatePage().createUser(USERNAME, USERNAME,
+                    "lastname1", "company1", "email1", PASSWORD, "members");
+            usersTab = page.getUsersTab(true);
+        } // search user usersTab =
+        usersTab.searchUser(USERNAME);
+        assertTrue(usersTab.isUserFound(USERNAME));
 
-        // Create a new workspace named 'WorkspaceDescriptionModify_{current
-        // time}'
+        // create a new wokspace and grant all rights to the test user
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
+                "Workspaces");
         DocumentBasePage workspacePage = createWorkspace(documentBasePage,
                 WORKSPACE_TITLE, INITIAL_DESCRIPTION);
+        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
+        // Need WriteSecurity (so in practice Manage everything) to edit a
+        // Workspace
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
+                USERNAME)) {
+            accessRightSubTab.addPermissionForUser(USERNAME,
+                    "Manage everything", true);
+        }
+        logout();
 
-        workspacePage.getEditTab();
+        // Log as test user and edit the created workdspace
+        documentBasePage = login(USERNAME, PASSWORD).getContentTab().goToDocument(
+                "Workspaces").getContentTab().goToDocument(WORKSPACE_TITLE);
+        documentBasePage.getEditTab();
+
         LocalStorage localStorage = new LocalStorage(driver);
-
+        localStorage.clearLocalStorage();
         String currentDocumentId = getCurrentDocumentId();
 
         descriptionElt = driver.findElement(By.name(DESCRIPTION_ELT_ID));
@@ -168,6 +196,8 @@ public class ITSafeEditTest extends AbstractTest {
         assertTrue(lsItem != null && lsItem.length() > 0);
         assertTrue(lsItem.contains(lookupString));
 
+        // Let's leave the edit tab of the workspace with unsaved changes. A
+        // popup should prevent us from doing that
         try {
             documentBasePage.getContentTab();
             // Should never occur
@@ -176,13 +206,13 @@ public class ITSafeEditTest extends AbstractTest {
             // Expected behavior
             // The following is a workaround to by pass the popup windows which
             // is supposed to prevent the user from leaving the page with
-            // unsaved modification
+            // unsaved modifications
             log.debug("3 - " + localStorage.getLocalStorageLength());
             byPassLeavePagePopup();
             log.debug("4 - " + localStorage.getLocalStorageLength());
         }
 
-        // We leave the page and get back to it. Since we didn't save the title
+        // We leave the page and get back to it. Since we didn't save, the title
         // must be the initial one.
         documentBasePage.getContentTab();
         documentBasePage.getEditTab();
@@ -213,8 +243,27 @@ public class ITSafeEditTest extends AbstractTest {
         titleEltValue = titleElt.getAttribute("value");
         assertTrue(titleEltValue.equals(NEW_WORKSPACE_TITLE));
 
-        // We delete the created workspace
         byPassLeavePagePopup();
+        documentBasePage.getContentTab();
+        logout();
+
+        restoreSate();
+
+    }
+
+    /**
+     * Delete created user and data.
+     *
+     * @throws UserNotConnectedException
+     *
+     * @since 5.7.1
+     */
+    private void restoreSate() throws Exception {
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = usersTab.searchUser(USERNAME);
+        usersTab = usersTab.viewUser(USERNAME).deleteUser();
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
+                "Workspaces");
         deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
         logout();
     }
