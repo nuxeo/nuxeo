@@ -24,7 +24,7 @@ function restoreDataCallbackPrompt(doLoadCB, formId, key) {
     return false;
   });
   jQuery("#confirmRestore").css({
-    "display" : "inline"
+    "display" : "block"
   });
 }
 
