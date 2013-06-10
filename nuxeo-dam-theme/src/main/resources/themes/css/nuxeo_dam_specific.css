@@ -157,21 +157,23 @@ author: lkemen@nuxeo.com
   border-collapse: collapse;
   border-spacing: 0;
   font-size: .9em;
-  margin: 0 0 .5em }
+  margin: 0 }
 .nxDamAssetView .dataInput td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-spacing: 0;
-  border-style: solid none;
+  border-style: none none solid;
   border-width: 1px;
   padding: .1em .3em .2em;
   text-align: left;
   vertical-align: top }
+.nxDamAssetView .dataInput td td { border: none }
 .nxDamAssetView .dataInput tr:hover {
   background-color: "color.major.light (__FLAVOR__ background)" }
 .nxDamAssetView .widgetTable table {
   width: 100% }
 .nxDamAssetView .widgetPanel .labelColumn {
-  text-align: left }
+  text-align: left;
+  width: 28% }
 
 .nxDamAssetView .summaryTitle {
   background-color: "neutral.medium (__FLAVOR__ background)";
