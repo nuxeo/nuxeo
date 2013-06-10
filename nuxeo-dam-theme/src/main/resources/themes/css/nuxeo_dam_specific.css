@@ -124,7 +124,9 @@ author: lkemen@nuxeo.com
 	background-color: #fff }
 
 .bubbleBox .tag {
+  background-color: "neutral.light (__FLAVOR__ background)";
   border-radius: 0;
+  color: "gray.medium (__FLAVOR__ color)";
   display: inline-block;
   font-size: .9em;
   line-height: 130%;
@@ -134,18 +136,10 @@ author: lkemen@nuxeo.com
   right: 10px;
   text-transform: lowercase }
 
-.bubbleBox .tag.picture {
-  background-color: #00b4e1 }
-.bubbleBox .tag.video {
-  background-color: #00896e }
-.bubbleBox .tag.audio {
-  background-color: #871900 }
-.bubbleBox .tag.other {
-	background-color: #a99d9a }
-
 .bubbleBox.selectedItem .tag,
 .bubbleBox:hover .tag {
-    background-color: #000 }
+  background-color: #000;
+  color: #fff }
 
 /* =Assets View */
 .widgetPanel .description_block {
