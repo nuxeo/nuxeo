@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.naming.CompositeName;
 import javax.naming.Context;
@@ -56,6 +57,11 @@ import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
 import org.nuxeo.runtime.api.InitialContextAccessor;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+import com.yammer.metrics.core.Timer;
+import com.yammer.metrics.core.TimerContext;
+
 /**
  * Internal helper for the Nuxeo-defined transaction manager and connection
  * manager.
@@ -90,6 +96,22 @@ public class NuxeoContainer {
     private static Map<String, Object> parentEnvironment = new HashMap<String, Object>();
 
     protected static Context rootContext;
+
+    // @since 5.7
+    protected final static Counter rollbackCount = Metrics.defaultRegistry().newCounter(
+            NuxeoContainer.class, "rollback");
+
+    protected final static Counter concurrentCount = Metrics.defaultRegistry().newCounter(
+            NuxeoContainer.class, "tx-concurrent");
+
+    protected final static Counter concurrentMaxCount = Metrics.defaultRegistry().newCounter(
+            NuxeoContainer.class, "tx-concurrent-max");
+
+    protected final static Timer transactionTimer = Metrics.defaultRegistry().newTimer(
+            NuxeoContainer.class, "transaction", TimeUnit.MICROSECONDS,
+            TimeUnit.SECONDS);
+
+    protected static final ConcurrentHashMap<Transaction, TimerContext> timers = new ConcurrentHashMap<Transaction, TimerContext>();
 
     private NuxeoContainer() {
     }
@@ -544,6 +566,12 @@ public class NuxeoContainer {
         public void begin() throws NotSupportedException, SystemException {
             check();
             transactionManager.begin();
+            timers.put(transactionManager.getTransaction(),
+                    transactionTimer.time());
+            concurrentCount.inc();
+            if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
+                concurrentMaxCount.inc();
+            }
         }
 
         @Override
@@ -551,14 +579,25 @@ public class NuxeoContainer {
                 HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
             check();
+            TimerContext timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.commit();
+            if (timerContext != null) {
+                timerContext.stop();
+            }
+            concurrentCount.dec();
         }
 
         @Override
         public void rollback() throws IllegalStateException, SecurityException,
                 SystemException {
             check();
+            TimerContext timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.rollback();
+            concurrentCount.dec();
+            if (timerContext != null) {
+                timerContext.stop();
+            }
+            rollbackCount.inc();
         }
     }
 
