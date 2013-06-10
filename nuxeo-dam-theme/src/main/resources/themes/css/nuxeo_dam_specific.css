@@ -8,9 +8,6 @@ author: lkemen@nuxeo.com
 */
 
 /* =Grid */
-.nxMainContainer {
-  background-color: "neutral.lighter (__FLAVOR__ background)" }
-
 .nxDamSearchForm {
   background-color: #fff;
   -moz-box-sizing: border-box;
@@ -20,7 +17,6 @@ author: lkemen@nuxeo.com
   width: 19% }
 
 .nxDamSearchResults {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
