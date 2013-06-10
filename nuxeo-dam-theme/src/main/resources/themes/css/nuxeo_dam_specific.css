@@ -45,6 +45,15 @@ author: lkemen@nuxeo.com
   border-bottom: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)"; }
 
+.nxDamSearchResults .dataOutput {
+  font-size: .9em;
+  text-align: left }
+
+.nxDamSearchResults .dataOutput .documentTitle {
+  font-size: 1em;
+  font-weight: normal;
+  text-align: left }
+
 .nxDamAssetView .globalActionBar {
   padding: .2em }
 
