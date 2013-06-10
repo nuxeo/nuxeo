@@ -59,6 +59,8 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
                 mainBlob.setFilename(file.getName());
                 blobs.add(mainBlob);
             }
+
+            orderIndexPageFirst(blobs);
         } catch (Exception e) {
             throw new RuntimeException("Blob loading from cache failed",
                     e.getCause());
@@ -105,6 +107,27 @@ public class SimpleCachableBlobHolder extends SimpleBlobHolder implements
                 blob.transferTo(file);
             }
             return dir.getAbsolutePath();
+        }
+    }
+
+    /**
+     * Rearrange blobs to have smallest index.html page as the first blob.
+     * 
+     * @since 5.7.1
+     */
+    protected void orderIndexPageFirst(List<Blob> blobs) {
+        Blob indexPage = null;
+        for (Blob blob : blobs) {
+            if (blob.getFilename().contains("index.html")
+                    && (indexPage == null || blob.getFilename().compareTo(
+                            indexPage.getFilename()) < 0)) {
+                indexPage = blob;
+            }
+        }
+
+        if (indexPage != null) {
+            blobs.remove(indexPage);
+            blobs.add(0, indexPage);
         }
     }
 
