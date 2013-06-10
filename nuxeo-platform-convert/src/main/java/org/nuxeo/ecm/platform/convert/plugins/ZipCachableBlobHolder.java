@@ -94,33 +94,11 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
                 mainBlob.setFilename(file.getName());
                 blobs.add(mainBlob);
             }
+
+            orderIndexPageFirst(blobs);
         } catch (Exception e) {
             throw new RuntimeException("Blob loading from cache failed",
                     e.getCause());
-        }
-    }
-
-    @Override
-    public void addDirectoryToList(File directory, String prefix)
-            throws ConversionException {
-        File[] directoryContent = directory.listFiles();
-        for (File file : directoryContent) {
-            if (file.isDirectory()) {
-                int beginIndex = prefix.length();
-                prefix += file.getName() + File.separatorChar;
-                addDirectoryToList(file, prefix);
-                prefix = prefix.substring(0, beginIndex);
-            } else {
-                Blob blob = new FileBlob(file);
-                String mimeType = getMimeType(file);
-                blob.setMimeType(mimeType);
-                blob.setFilename(prefix + file.getName());
-                if (file.getName().equalsIgnoreCase("index.html")) {
-                    blobs.add(0, blob);
-                } else {
-                    blobs.add(blob);
-                }
-            }
         }
     }
 
@@ -140,9 +118,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             return getMimeTypeService().getMimetypeFromFile(file);
         } catch (ConversionException e) {
             throw new ConversionException("Could not get MimeTypeRegistry", e);
-        } catch (MimetypeNotFoundException e) {
-            return "application/octet-stream";
-        } catch (MimetypeDetectionException e) {
+        } catch (MimetypeNotFoundException | MimetypeDetectionException e) {
             return "application/octet-stream";
         }
     }
