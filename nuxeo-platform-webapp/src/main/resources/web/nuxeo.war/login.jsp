@@ -367,7 +367,7 @@ body {
       <td align="center" valign="bottom">
       <div class="loginLegal">
         <fmt:message bundle="${messages}" key="label.login.copyright">
-          <fmt:param value="2012" />
+          <fmt:param value="2013" />
         </fmt:message>
       </div>
       </td>
