@@ -641,13 +641,13 @@
       </properties>
       <columns>
         <column>
+          <widget>dam_listing_thumbnail</widget>
+        </column>
+        <column>
           <properties mode="any">
             <property name="isBoxTitle">true</property>
           </properties>
           <widget>dam_listing_ajax_selection_box_with_title</widget>
-        </column>
-        <column>
-          <widget>dam_listing_thumbnail</widget>
         </column>
         <column>
           <widget>dam_listing_dam_common</widget>
