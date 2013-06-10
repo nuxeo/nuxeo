@@ -40,8 +40,6 @@ author: lkemen@nuxeo.com
 .nxDamSearchForm { font-size: .82em }
 
 /* =Assets list */
-.nxDamSearchResults { background-color: "neutral.lighter (__FLAVOR__ background)"; }
-
 .nxDamSearchResults .globalActionBar,
 .nxDamAssetView .globalActionBar {
   border-bottom: 1px solid;
