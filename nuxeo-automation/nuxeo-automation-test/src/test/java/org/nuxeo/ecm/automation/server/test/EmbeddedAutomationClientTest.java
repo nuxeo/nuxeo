@@ -37,6 +37,8 @@ import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.adapters.BusinessService;
+import org.nuxeo.ecm.automation.client.adapters.BusinessServiceFactory;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
@@ -56,6 +58,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
+import org.nuxeo.ecm.automation.server.test.business.pojo.BusinessBean;
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
@@ -84,7 +87,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
         "org.nuxeo.ecm.automation.server:test-mvalues.xml",
-        "org.nuxeo.ecm.automation.server:core-types-contrib.xml" })
+        "org.nuxeo.ecm.automation.server:core-types-contrib.xml",
+        "org.nuxeo.ecm.automation.server:adapter-contrib.xml" })
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -762,5 +766,24 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertNotNull(dbFieldA);
         assertEquals("fieldA", dbFieldA.getString("name"));
 
+    }
+
+    @Test
+    public void testAutomationBusinessObjects() throws Exception {
+        // Test for pojo <-> adapter automation creation
+        BusinessBean file = new BusinessBean("File", "File description");
+        client.registerAdapter(new BusinessServiceFactory());
+        BusinessService businessService = session.getAdapter(BusinessService.class);
+        assertNotNull(businessService);
+        JsonMarshalling.addMarshaller(PojoMarshaller.forClass(file.getClass()));
+        file = (BusinessBean) businessService.create(file, file.getTitle(),
+                "File", "/",
+                "org.nuxeo.ecm.automation.server.test.business.adapter.BeanBusinessAdapter");
+        assertNotNull(file);
+        // Test for pojo <-> adapter automation update
+        file.setTitle("Update");
+        file = (BusinessBean) businessService.update(file, file.getId(),
+                "org.nuxeo.ecm.automation.server.test.business.adapter.BeanBusinessAdapter");
+        assertEquals("Update", file.getTitle());
     }
 }
