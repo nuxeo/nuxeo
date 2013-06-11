@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 /**
  * Helper to handle Complex types decoding from a JSON encoded String entries of
  * a property file
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @since 5.5
  */
