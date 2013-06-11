@@ -40,6 +40,7 @@ function AutomationWrapper(operationId,opts) {
     }
     var timeout = 5+ (this.opts.execTimeout/1000)|0;
     var documentSchemas = this.opts.documentSchemas;
+    var repo = this.opts.repository;
     jQuery.ajax({
         type: 'POST',
         contentType : 'application/json+nxrequest',
@@ -50,6 +51,9 @@ function AutomationWrapper(operationId,opts) {
             if (documentSchemas.length>0) {
                 xhr.setRequestHeader('X-NXDocumentProperties',documentSchemas);
               }
+            if (repo) {
+                xhr.setRequestHeader('X-NXRepository', repo);
+            }
         },
         url: targetUrl,
         timeout: this.opts.execTimeout,
@@ -89,6 +93,7 @@ function AutomationWrapper(operationId,opts) {
       }
       var timeout = 5+ (this.opts.execTimeout/1000)|0;
       var documentSchemas = this.opts.documentSchemas;
+      var repo = this.opts.repository;
       jQuery.ajax({
           type: 'POST',
           contentType : 'application/json+nxrequest',
@@ -98,6 +103,9 @@ function AutomationWrapper(operationId,opts) {
               xhr.setRequestHeader('Nuxeo-Transaction-Timeout', timeout);
               if (documentSchemas.length>0) {
                 xhr.setRequestHeader('X-NXDocumentProperties',documentSchemas);
+              }
+              if (repo) {
+                  xhr.setRequestHeader('X-NXRepository', repo);
               }
           },
           url: targetUrl,
@@ -149,6 +157,7 @@ function AutomationWrapper(operationId,opts) {
     }
     var timeout = 5+ (this.opts.execTimeout/1000)|0;
     var documentSchemas = this.opts.documentSchemas;
+    var repo = this.opts.repository;
     jQuery.ajax({
         type: 'POST',
         contentType : 'application/json+nxrequest',
@@ -158,7 +167,10 @@ function AutomationWrapper(operationId,opts) {
             xhr.setRequestHeader('Nuxeo-Transaction-Timeout', timeout);
             if (documentSchemas.length>0) {
                 xhr.setRequestHeader('X-NXDocumentProperties',documentSchemas);
-              }
+            }
+            if (repo) {
+                xhr.setRequestHeader('X-NXRepository', repo);
+            }
         },
         url: targetUrl,
         timeout: this.opts.execTimeout,
