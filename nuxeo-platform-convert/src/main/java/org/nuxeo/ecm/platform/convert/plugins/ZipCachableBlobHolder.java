@@ -22,11 +22,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -40,6 +44,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Laurent Doguin
  */
 public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
+
+    private static final Log log = LogFactory.getLog(ZipCachableBlobHolder.class);
 
     protected Blob zipBlob;
 
@@ -110,6 +116,21 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
         dir.mkdir();
         ZipUtils.unzip(zipBlob.getStream(), dir);
         key = dir.getAbsolutePath();
+
+        // Check if creating an index.html file is needed
+        load(path.toString());
+        if (blobs != null && !blobs.get(0).getFilename().contains("index.html")) {
+            log.info("Any index.html file found, generate a listing as index page.");
+            File index = new File(dir, "index.html");
+            if (index.createNewFile()) {
+                Blob indexBlob = createIndexBlob();
+                blobs.add(0, indexBlob);
+                FileUtils.writeFile(index, indexBlob.getByteArray());
+            } else {
+                log.info("Unable to create index.html file");
+            }
+        }
+
         return key;
     }
 
@@ -132,5 +153,18 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             }
         }
         return mimeTypeService;
+    }
+
+    protected Blob createIndexBlob() {
+        StringBuilder page = new StringBuilder("<html><body>");
+        page.append("<h1>").append(zipBlob.getFilename()).append("</h1>");
+        page.append("<ul>");
+        for (Blob blob : blobs) {
+            page.append("<li><a href=\"").append(blob.getFilename()).append("\">");
+            page.append(blob.getFilename());
+            page.append("</a></li>");
+        }
+        page.append("</ul></body></html>");
+        return new StringBlob(page.toString());
     }
 }
