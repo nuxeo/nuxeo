@@ -93,6 +93,10 @@
       class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
     <operation
       class="org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.server.test.business.BusinessCreateOperation" />
+    <operation
+      class="org.nuxeo.ecm.automation.server.test.business.BusinessUpdateOperation" />
   </extension>
-  
+
 </component>
