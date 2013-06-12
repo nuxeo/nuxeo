@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *     <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  */
 
 package org.nuxeo.ecm.quota.size;
@@ -21,6 +22,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 
 /**
  * Simple factory for {@link QuotaAwareDocument} document model adapter
@@ -36,6 +39,8 @@ public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
             doc.addFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             if (save) {
                 doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+                doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true); 
                 doc = doc.getCoreSession().saveDocument(doc);
             }
         }
