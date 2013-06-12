@@ -94,6 +94,8 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
+    public static final String BUSINESS_ADAPTER = "org.nuxeo.ecm.automation.server.test.business.adapter.BeanBusinessAdapter";
+
     protected static String[] attachments = { "att1", "att2", "att3" };
 
     @Inject
@@ -768,6 +770,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
     }
 
+    /**
+     * 'pojo client side' <--- mapping ----> 'adapter server side' test
+     */
     @Test
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
@@ -775,15 +780,22 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         client.registerAdapter(new BusinessServiceFactory());
         BusinessService businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
+
+        // adding BusinessBean marshaller
         JsonMarshalling.addMarshaller(PojoMarshaller.forClass(file.getClass()));
+
+        // This request can be done directly with
+        // Operation.BusinessCreateOperation ->
+        // session.newRequest("Operation.BusinessCreateOperation").setInput(o).set("name",
+        // name).set("type", type).set("parentPath",parentPath).set("adapter",
+        // adapter).execute();
         file = (BusinessBean) businessService.create(file, file.getTitle(),
-                "File", "/",
-                "org.nuxeo.ecm.automation.server.test.business.adapter.BeanBusinessAdapter");
+                "File", "/", BUSINESS_ADAPTER);
         assertNotNull(file);
         // Test for pojo <-> adapter automation update
         file.setTitle("Update");
         file = (BusinessBean) businessService.update(file, file.getId(),
-                "org.nuxeo.ecm.automation.server.test.business.adapter.BeanBusinessAdapter");
+                BUSINESS_ADAPTER);
         assertEquals("Update", file.getTitle());
     }
 }

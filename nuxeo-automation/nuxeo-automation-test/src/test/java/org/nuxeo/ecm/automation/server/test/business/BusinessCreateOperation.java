@@ -25,9 +25,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
+ * This operation map pojo client side to document adapter server side and
+ * create NX document assuming that pojo and adapter have both properties in
+ * common. Parameter 'adapter' is the canonical name adapter class to map server
+ * side.
+ *
  * @since 5.7
  */
-@Operation(id = BusinessCreateOperation.ID, category = Constants.CAT_EXECUTION, label = "BusinessCreateOperation")
+@Operation(id = BusinessCreateOperation.ID, category = Constants.CAT_EXECUTION, label = "BusinessCreateOperation", description = "This operation map pojo client side to document adapter server side and create NX document assuming that pojo and adapter have both properties in common. Parameter 'adapter' is the canonical name adapter class to map server side.")
 public class BusinessCreateOperation {
 
     public static final String ID = "Operation.BusinessCreateOperation";

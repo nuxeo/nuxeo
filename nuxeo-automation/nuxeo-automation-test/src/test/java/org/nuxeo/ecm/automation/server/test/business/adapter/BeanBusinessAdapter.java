@@ -6,6 +6,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
+/**
+ *
+ * A Nuxeo document model adapter example
+ */
 public class BeanBusinessAdapter {
 
     private static final Log log = LogFactory.getLog(BeanBusinessAdapter.class);

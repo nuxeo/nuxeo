@@ -26,9 +26,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
+ * This operation map pojo client side to document adapter server side and
+ * update the related NX document. Parameter 'adapter' is the canonical name
+ * adapter class to map server side.
+ *
  * @since 5.7
  */
-@Operation(id = BusinessUpdateOperation.ID, category = Constants.CAT_EXECUTION, label = "BusinessCreateOperation")
+@Operation(id = BusinessUpdateOperation.ID, category = Constants.CAT_EXECUTION, label = "BusinessUpdateOperation", description = "This operation map pojo client side to document adapter server side and update the related NX document. Parameter 'adapter' is the canonical name adapter class to map server side.")
 public class BusinessUpdateOperation {
 
     public static final String ID = "Operation.BusinessUpdateOperation";
