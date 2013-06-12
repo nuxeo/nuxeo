@@ -257,6 +257,13 @@ if (!log) {
    }
 
   function uploadFiles(opts) {
+
+    if (nbUploadInprogress>=opts.numConcurrentUploads) {
+      sendingRequestsInProgress=false;
+      log("delaying upload for next file(s) " + uploadIdx + "+ since there are already " + nbUploadInprogress + " active uploads");
+      return;
+    }
+
     var batchId = opts.handler.batchStarted();
     sendingRequestsInProgress=true;
 
@@ -354,7 +361,7 @@ if (!log) {
     opts.handler.uploadFinished(upload.fileIndex, upload.fileObj, timeDiff);
     log("upload of file " + upload.fileIndex + " completed");
     nbUploadInprogress--;
-    if (!sendingRequestsInProgress && uploadStack.length>0) {
+    if (!sendingRequestsInProgress && uploadStack.length>0 && nbUploadInprogress<opts.numConcurrentUploads) {
       // restart upload
       log("restart pending uploads");
       upload.uploadFiles(opts);
