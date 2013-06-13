@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
@@ -118,7 +119,11 @@ public class ImagingComponent extends DefaultComponent implements
     public String getImageMimeType(File file) {
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
-            return mimetypeRegistry.getMimetypeFromFile(file);
+            if (file.getName()!=null) {
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), new FileBlob(file), "image/jpeg");
+            } else {
+                return mimetypeRegistry.getMimetypeFromFile(file);
+            }
         } catch (Exception e) {
             log.error("Unable to retrieve mime type", e);
         }
@@ -129,7 +134,11 @@ public class ImagingComponent extends DefaultComponent implements
     public String getImageMimeType(Blob blob) {
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
-            return mimetypeRegistry.getMimetypeFromBlob(blob);
+            if (blob.getFilename()!=null) {
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, "image/jpeg");
+            } else {
+                return mimetypeRegistry.getMimetypeFromBlob(blob);
+            }
         } catch (Exception e) {
             log.error("Unable to retrieve mime type", e);
         }
