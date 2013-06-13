@@ -88,13 +88,18 @@
     <type id="Audio">
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>file</layout>
+        <layout>audio_file</layout>
         <layout>dam_common</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dam_common</layout>
         <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dam_common</layout>
       </layouts>
     </type>
 
