@@ -50,17 +50,15 @@ function showIframeIfPossible() {
 
 <body>
 
-<div id="wizardFrame">
+<div id="topbar">
+<div class="container">
+ <a href="<%=contextPath%>"><img src="<%=contextPath%>/images/nuxeo.png" height="38px" border="0"/></a>
+</div>
+</div>
+
+<div id="wizardFrame" class="container">
 
 <table width="100%" cellpadding="0" cellspacing="0">
-  <tr valign="middle">
-    <td class="header">
-        <div class="logo">
-          <a href="<%=contextPath%>"><img src="<%=contextPath%>/images/nuxeo.png" height="28px" border="0"/></a>
-        </div>
-        <div style="clear:both;"></div>
-    </td>
-  </tr>
   <tr valign="top" align="left">
     <td class="mainBlock">
 
