@@ -9,12 +9,12 @@
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.ecm.automation.server.test.business.pojo;
+package org.nuxeo.ecm.automation.server.test.business.client;
 
 /**
  * Automation client File pojo example
  */
-public class BusinessBean {
+public class BeanBusinessAdapter {
 
     protected String title;
 
@@ -22,10 +22,10 @@ public class BusinessBean {
 
     protected String id;
 
-    public BusinessBean() {
+    public BeanBusinessAdapter() {
     }
 
-    public BusinessBean(String title, String description) {
+    public BeanBusinessAdapter(String title, String description) {
         this.title = title;
         this.description = description;
     }
