@@ -146,8 +146,9 @@ public class LayoutResource {
                 layoutDef = conv.getLayoutDefinition(layoutDef, ctx);
             }
             if (layoutDef != null) {
+                List<WidgetDefinitionConverter> widgetConverters = service.getWidgetConverters(conversionCategory);
                 JSONObject jsonLayout = JSONLayoutExporter.exportToJson(
-                        category, layoutDef);
+                        category, layoutDef, ctx, widgetConverters);
                 jsonLayouts.add(jsonLayout);
             }
         }
