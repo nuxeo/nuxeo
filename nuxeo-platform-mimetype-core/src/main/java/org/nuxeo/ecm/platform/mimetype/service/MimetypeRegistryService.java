@@ -62,6 +62,9 @@ public class MimetypeRegistryService extends DefaultComponent implements
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService");
 
+    // 10 MB is the max size to allow full file scan
+    public static final long MAX_SIZE_FOR_SCAN = 10*1024*1024;
+
     private static final Log log = LogFactory.getLog(MimetypeRegistryService.class);
 
     protected Map<String, MimetypeEntry> mimetypeByNormalisedRegistry;
@@ -189,7 +192,13 @@ public class MimetypeRegistryService extends DefaultComponent implements
     public String getMimetypeFromFile(File file)
             throws MimetypeNotFoundException, MimetypeDetectionException {
         try {
-            // Magic magic = new Magic(); // need to be initialized
+
+            if (file.length()>MAX_SIZE_FOR_SCAN) {
+                if (file.getAbsolutePath() != null) {
+                    return getMimetypeFromFilename(file.getAbsolutePath());
+                }
+                throw new MimetypeNotFoundException("Not able to determine mime type from filename and file is too big for binary scan.");
+            }
             MagicMatch match = Magic.getMagicMatch(file, true, false);
             String mimeType;
 
@@ -286,12 +295,12 @@ public class MimetypeRegistryService extends DefaultComponent implements
         File file = null;
         try {
             file = File.createTempFile("NXMimetypeBean", ".bin");
-			try {
-				FileUtils.copyToFile(stream, file);
-				return getMimetypeFromFile(file);
-			} finally {
-				file.delete();
-			}
+            try {
+                FileUtils.copyToFile(stream, file);
+                return getMimetypeFromFile(file);
+            } finally {
+                file.delete();
+            }
         } catch (IOException e) {
             throw new MimetypeDetectionException(e.getMessage(), e);
         }
