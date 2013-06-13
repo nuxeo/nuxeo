@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.runtime.api.Framework;
 
 public class AggregatedJSProvider extends HttpServlet {
 
@@ -71,7 +72,7 @@ public class AggregatedJSProvider extends HttpServlet {
         String cacheKey = scriptsStr + "*" + minimize;
 
         String resultScript = null;
-        if (!refresh) {
+        if (!refresh && !Framework.isDevModeSet()) {
             cacheLock.readLock().lock();
             try {
                 resultScript = cachedResponses.get(cacheKey);
@@ -84,11 +85,13 @@ public class AggregatedJSProvider extends HttpServlet {
             String[] scripts = scriptsStr.split(SCRIPT_SEP);
             resultScript = computeResult(scripts, minimize);
 
-            cacheLock.writeLock().lock();
-            try {
-                cachedResponses.put(cacheKey, resultScript);
-            } finally {
-                cacheLock.writeLock().unlock();
+            if (!Framework.isDevModeSet()) {
+                cacheLock.writeLock().lock();
+                try {
+                    cachedResponses.put(cacheKey, resultScript);
+                } finally {
+                    cacheLock.writeLock().unlock();
+                }
             }
         }
 
