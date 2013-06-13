@@ -9,30 +9,30 @@
  * Contributors:
  * Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.ecm.automation.server.test.business;
+package org.nuxeo.ecm.automation.core.operations.business;
 
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.nuxeo.ecm.automation.client.AutomationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.operations.business.adapter.BeanBusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * This operation map pojo client side to document adapter server side and
- * update the related NX document. Parameter 'adapter' is the canonical name
- * adapter class to map server side.
+ * update the related NX document.
  *
  * @since 5.7
  */
-@Operation(id = BusinessUpdateOperation.ID, category = Constants.CAT_EXECUTION, label = "BusinessUpdateOperation", description = "This operation map pojo client side to document adapter server side and update the related NX document. Parameter 'adapter' is the canonical name adapter class to map server side.")
+@Operation(id = BusinessUpdateOperation.ID, category = Constants.CAT_EXECUTION, label = "BusinessUpdateOperation", description = "This operation map pojo client side to document adapter server side and update the related NX document.")
 public class BusinessUpdateOperation {
 
     public static final String ID = "Operation.BusinessUpdateOperation";
@@ -43,28 +43,25 @@ public class BusinessUpdateOperation {
     @Param(name = "id", required = true)
     protected String id;
 
-    @Param(name = "adapter", required = true)
-    protected String adapter;
-
     @OperationMethod
-    public Object run(Object input) throws ClientException,
+    public Object run(BeanBusinessAdapter input) throws ClientException,
             ClassNotFoundException {
+        // TODO: would be nice to get the document to reattach the doc to the
+        // session (but cannot access to it from the adapter input)
         DocumentModel document = session.getDocument(new IdRef(id));
-        Object adapter = document.getAdapter(Class.forName(this.adapter));
+        BeanBusinessAdapter adapter = document.getAdapter(BeanBusinessAdapter.class);
         mapObject(input, adapter);
-        document = session.saveDocument(document);
-        adapter = document.getAdapter(Class.forName(this.adapter));
-        mapObject(adapter, input);
-        return input;
+        document = session.saveDocument(adapter.getDocument());
+        return document.getAdapter(BeanBusinessAdapter.class);
     }
 
     private void mapObject(Object input, Object adapter) {
         try {
             BeanUtils.copyProperties(adapter, input);
         } catch (InvocationTargetException e) {
-            throw new AutomationException("cannot copy properties", e);
+            throw new ClientRuntimeException("cannot copy properties", e);
         } catch (IllegalAccessException e) {
-            throw new AutomationException("cannot copy properties", e);
+            throw new ClientRuntimeException("cannot copy properties", e);
         }
     }
 }

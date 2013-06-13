@@ -42,6 +42,8 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
+import org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation;
+import org.nuxeo.ecm.automation.core.operations.business.BusinessUpdateOperation;
 import org.nuxeo.ecm.automation.core.operations.document.AddEntryToMultiValuedProperty;
 import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument;
@@ -212,6 +214,10 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(CreateProxyLive.class);
         service.putOperation(GetLiveDocument.class);
         service.putOperation(RemoveEntryOfMultiValuedProperty.class);
+
+        // Business Operations
+        service.putOperation(BusinessCreateOperation.class);
+        service.putOperation(BusinessUpdateOperation.class);
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);

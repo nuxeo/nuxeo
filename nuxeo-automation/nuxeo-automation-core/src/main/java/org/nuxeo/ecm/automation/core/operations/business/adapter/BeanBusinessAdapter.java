@@ -1,20 +1,27 @@
-package org.nuxeo.ecm.automation.server.test.business.adapter;
+package org.nuxeo.ecm.automation.core.operations.business.adapter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
 /**
- *
- * A Nuxeo document model adapter example
+ * Nuxeo document model adapter for mapping
+ * @since 5.7
  */
 public class BeanBusinessAdapter {
 
     private static final Log log = LogFactory.getLog(BeanBusinessAdapter.class);
 
-    protected final DocumentModel doc;
+    protected final transient DocumentModel doc;
+
+    public BeanBusinessAdapter() {
+        this.doc = DocumentModelFactory.createDocumentModel("File");
+    }
 
     public BeanBusinessAdapter(DocumentModel document) {
         this.doc = document;
@@ -27,6 +34,11 @@ public class BeanBusinessAdapter {
         } catch (ClientException e) {
             log.error("Cannot save document", e);
         }
+    }
+
+    @JsonIgnore
+    public DocumentModel getDocument() {
+        return doc;
     }
 
     public String getId() {
