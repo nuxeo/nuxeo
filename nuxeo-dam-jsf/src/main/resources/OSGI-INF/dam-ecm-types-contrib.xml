@@ -43,8 +43,8 @@
     <type id="File">
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>dam_common</layout>
         <layout>file</layout>
+        <layout>dam_common</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
@@ -75,8 +75,8 @@
     <type id="Video">
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>dam_common</layout>
         <layout>file</layout>
+        <layout>dam_common</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
@@ -88,8 +88,8 @@
     <type id="Audio">
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>dam_common</layout>
         <layout>file</layout>
+        <layout>dam_common</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
