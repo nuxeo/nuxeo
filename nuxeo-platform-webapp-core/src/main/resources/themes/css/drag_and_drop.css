@@ -20,7 +20,7 @@ author: lkemen@nuxeo.com, tdelprat@nuxeo.com
 
 .dropzone-info-block { display: block; margin: .4em 0 0; text-align: center }
 .dropzone-info-summary { display: block; margin : .6em .9em 1.8em 4em }
-.dropzone-info-progress { background-color: #7ebbff; height: 3px; width: 0% }
+.dropzone-info-progress { background-color: "color.major.stronger (__FLAVOR__ background)"; height: 3px; width: 0% }
 .dropzone-info-item { margin: 0 auto 1em; width: 80% }
 .dropzone-info-name { text-align: center; margin-bottom: 	.2em }
 
@@ -59,3 +59,30 @@ input.dropzone-bar-btn { visibility:hidden; margin-top: 2em !important; }
 
 #dndContinueButton { display: none; cursor: hand; padding: 5px  }
 #operationForm { border-style: none none none solid; border-color: #444; border-width: 2px }
+
+/* Drag and drop in DAM */
+.droppedItem,
+.droppedItemInProgress {
+  color: "default (__FLAVOR__ color)";
+  display: inline-block;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100% }
+
+.droppedItemInProgress {
+  color: "gray.medium (__FLAVOR__ color)";
+  font-weight: normal;
+  width: 66% }
+
+.progressBarContainer {
+  display: inline-block;
+  margin: 0.3em;
+  vertical-align: top;
+  width: 30% }
+
+.progressBar {
+  background-color: "color.major.stronger (__FLAVOR__ background)";
+	display: inline-block;
+	height: 13px }
