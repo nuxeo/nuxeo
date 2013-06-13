@@ -35,7 +35,7 @@ public class PojoMarshaller<T> implements JsonMarshaller<T> {
 
     @Override
     public String getType() {
-        return type.getCanonicalName();
+        return type.getSimpleName();
     }
 
     @Override
