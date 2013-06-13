@@ -29,6 +29,85 @@
       </property>
     </widgetType>
 
+    <widgetType name="audio_file">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <title>Audio File</title>
+        <description>
+          <p>
+            The audio widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors.
+          </p>
+          <li>
+            duration: the duration of the audio file in view mode.
+          </li>
+        </description>
+        <properties>
+          <layouts mode="view">
+            <layout name="audio_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>duration</widget>
+                </row>
+              </rows>
+              <widget name="duration" type="int">
+                <labels>
+                  <label mode="any">Duration</label>
+                </labels>
+                <fields>
+                  <field>duration</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="audio_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget>acceptedExtensions</widget>
+                </row>
+              </rows>
+              <widget name="acceptedExtensions" type="text">
+                <labels>
+                  <label mode="any">Accepted extensions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    A comma separated list of supported file
+                    extensions. Default value: '.mp3, .ra, .wav'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>acceptedExtensions</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">/widgets/audio_file_widget_template.xhtml</property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -37,6 +116,17 @@
     <widget name="summary_audio_player" type="audio_player">
       <fields>
         <field>file:content</field>
+      </fields>
+    </widget>
+
+    <widget name="audioFile" type="audio_file">
+      <labels>
+        <label mode="any">label.file.content</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>file:content</field>
+        <field>file:filename</field>
       </fields>
     </widget>
 
@@ -78,6 +168,17 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
+
+    <layout name="audio_file">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>audioFile</widget>
+        </row>
+      </rows>
+    </layout>
 
     <!-- deprecated since 5.6, here for compat -->
     <layout name="audio_summary_layout">
