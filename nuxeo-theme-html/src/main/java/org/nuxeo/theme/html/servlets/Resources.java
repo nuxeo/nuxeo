@@ -190,7 +190,9 @@ public final class Resources extends HttpServlet implements Serializable {
                         }
                     }
                 }
-                themeManager.setResource(resourceName, source);
+                if (!Framework.isDevModeSet()) {
+                    themeManager.setResource(resourceName, source);
+                }
             }
             text.append(source);
             if (out != null) {
