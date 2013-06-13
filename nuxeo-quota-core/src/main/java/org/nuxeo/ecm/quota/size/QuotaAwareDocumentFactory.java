@@ -40,7 +40,7 @@ public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
             if (save) {
                 doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
                 doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-                doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true); 
+                doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
                 doc = doc.getCoreSession().saveDocument(doc);
             }
         }
