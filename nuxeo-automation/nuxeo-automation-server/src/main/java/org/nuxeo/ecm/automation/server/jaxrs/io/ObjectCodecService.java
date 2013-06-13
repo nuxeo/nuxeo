@@ -34,7 +34,19 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation;
+import org.nuxeo.ecm.automation.core.operations.business.adapter.BeanBusinessAdapter;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
+import org.nuxeo.ecm.core.api.adapter.DocumentAdapterService;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -61,6 +73,8 @@ public class ObjectCodecService {
         new CalendarCodec().register(this);
         new BooleanCodec().register(this);
         new NumberCodec().register(this);
+        DocumentAdapterCodec.register(this,
+                Framework.getLocalService(DocumentAdapterService.class));
     }
 
     /**
@@ -459,6 +473,33 @@ public class ObjectCodecService {
             service.codecsByName.put(getType(), this);
         }
     }
+
+    public static class DocumentAdapterCodec extends ObjectCodec<Object> {
+
+        protected final DocumentAdapterDescriptor descriptor;
+
+        public DocumentAdapterCodec(DocumentAdapterDescriptor descriptor) {
+            super(descriptor.getInterface());
+            this.descriptor = descriptor;
+        }
+
+        @Override
+        public String getType() {
+            return descriptor.getInterface().getSimpleName();
+        }
+
+        public static void register(ObjectCodecService service,
+                DocumentAdapterService adapterService) {
+            for (DocumentAdapterDescriptor desc : adapterService.getAdapterDescriptors()) {
+                if (!BeanBusinessAdapter.class.isAssignableFrom(desc.getInterface())) {
+                    continue;
+                }
+                DocumentAdapterCodec codec = new DocumentAdapterCodec(desc);
+                service.codecs.put(desc.getInterface(), codec);
+                service.codecsByName.put(codec.getType(), codec);
+            }
+        }
+ }
 
     public static void main(String[] args) throws Exception {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
