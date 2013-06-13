@@ -38,7 +38,6 @@ import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.RemoteException;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.BusinessService;
-import org.nuxeo.ecm.automation.client.adapters.BusinessServiceFactory;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
@@ -58,7 +57,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
-import org.nuxeo.ecm.automation.server.test.business.pojo.BusinessBean;
+import org.nuxeo.ecm.automation.server.test.business.client.BeanBusinessAdapter;
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
@@ -87,14 +86,11 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
         "org.nuxeo.ecm.automation.server:test-mvalues.xml",
-        "org.nuxeo.ecm.automation.server:core-types-contrib.xml",
-        "org.nuxeo.ecm.automation.server:adapter-contrib.xml" })
+        "org.nuxeo.ecm.automation.server:core-types-contrib.xml" })
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
-
-    public static final String BUSINESS_ADAPTER = "org.nuxeo.ecm.automation.server.test.business.adapter.BeanBusinessAdapter";
 
     protected static String[] attachments = { "att1", "att2", "att3" };
 
@@ -776,8 +772,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
-        BusinessBean file = new BusinessBean("File", "File description");
-        client.registerAdapter(new BusinessServiceFactory());
+        BeanBusinessAdapter file = new BeanBusinessAdapter("File",
+                "File description");
         BusinessService businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
@@ -789,13 +785,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // session.newRequest("Operation.BusinessCreateOperation").setInput(o).set("name",
         // name).set("type", type).set("parentPath",parentPath).set("adapter",
         // adapter).execute();
-        file = (BusinessBean) businessService.create(file, file.getTitle(),
-                "File", "/", BUSINESS_ADAPTER);
+        file = (BeanBusinessAdapter) businessService.create(file,
+                file.getTitle(), "File", "/");
         assertNotNull(file);
         // Test for pojo <-> adapter automation update
         file.setTitle("Update");
-        file = (BusinessBean) businessService.update(file, file.getId(),
-                BUSINESS_ADAPTER);
+        file = (BeanBusinessAdapter) businessService.update(file, file.getId());
         assertEquals("Update", file.getTitle());
     }
 }
