@@ -111,6 +111,22 @@ public class DocumentHelper {
         return map;
     }
 
+    public static void setProperties(CoreSession session, DocumentModel doc,
+                                     Properties properties) throws Exception {
+        if (properties instanceof DataModelProperties) {
+            DataModelProperties dataModelProperties = (DataModelProperties) properties;
+            for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {
+                doc.setPropertyValue(entry.getKey(), entry.getValue());
+            }
+        } else {
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                setProperty(session, doc, key, value);
+            }
+        }
+    }
+
     /**
      * Sets the properties given as a map of xpath:value to the given document.
      * There is one special property: ecm:acl that can be used to set the local
