@@ -61,6 +61,16 @@ author: lkemen@nuxeo.com
 
 .massEditForm foldableBox { margin-right: 1.4em }
 
+/* =Simple boxes */
+.simpleBox {
+  border-width: 1px; border-style: solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  color: "default (__FLAVOR__ color)";
+  margin: .1em .5em .5em;
+  max-width: 400px;
+  padding: .5em;
+  text-align: left }
+
 /* =Bubble boxes */
 .bubbleBox { border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
