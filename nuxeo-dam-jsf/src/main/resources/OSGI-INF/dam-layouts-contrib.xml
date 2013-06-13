@@ -374,6 +374,12 @@
       </fields>
     </widget>
 
+    <widget name="damAssetViewThumbnail" type="listing_thumbnail">
+      <fields>
+        <field></field>
+      </fields>
+    </widget>
+
     <widget name="damAssetViewDamCommon" type="toggleableLayoutWithForms">
       <labels>
         <label mode="any">label.dam.common</label>
@@ -640,6 +646,16 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
+    <action id="damAssetViewThumbnail" type="widget" order="250">
+      <category>DAM_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">damAssetViewThumbnail</property>
+      </properties>
+      <filter-id>hasNotVideoFacet</filter-id>
+      <filter-id>hasNotPictureFacet</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
+    </action>
+
     <action id="damAssetViewPicture" type="widget" order="300">
       <category>DAM_PANEL_RIGHT</category>
       <properties>
@@ -855,6 +871,18 @@
     <filter id="hasVideoFacet">
       <rule grant="true">
         <facet>Video</facet>
+      </rule>
+    </filter>
+
+    <filter id="hasNotVideoFacet">
+      <rule grant="false">
+        <facet>Video</facet>
+      </rule>
+    </filter>
+
+    <filter id="hasNotPictureFacet">
+      <rule grant="false">
+        <facet>Picture</facet>
       </rule>
     </filter>
 
