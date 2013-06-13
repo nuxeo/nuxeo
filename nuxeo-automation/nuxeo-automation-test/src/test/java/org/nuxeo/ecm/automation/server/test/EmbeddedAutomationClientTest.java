@@ -27,6 +27,7 @@ import junit.framework.Assert;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -548,6 +549,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
+    @Ignore
     public void testRawJSONDatastructuresAsInput() throws Exception {
         // It is possible to pass arbitrary Java objects as the input as
         // long as the JSON representation is a valid representation for the
