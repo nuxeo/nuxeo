@@ -39,14 +39,12 @@ public class BusinessService<T> {
      * @param name the id/name of the NX document
      * @param type the type of the NX document
      * @param parentPath the path of the NX document parent
-     * @param adapter the NX adapter server side to map
      * @return the pojo returned by the server
      */
-    public T create(T o, String name, String type, String parentPath,
-            String adapter) throws Exception {
+    public T create(T o, String name, String type, String parentPath) throws Exception {
         return (T) session.newRequest("Operation.BusinessCreateOperation").setInput(
                 o).set("name", name).set("type", type).set("parentPath",
-                parentPath).set("adapter", adapter).execute();
+                parentPath).execute();
     }
 
     /**
@@ -54,11 +52,10 @@ public class BusinessService<T> {
      *
      * @param o the object to send (pojo client side)
      * @param id the id of the NX document
-     * @param adapter
      * @return the pojo returned by the server
      */
-    public T update(T o, String id, String adapter) throws Exception {
+    public T update(T o, String id) throws Exception {
         return (T) session.newRequest("Operation.BusinessUpdateOperation").setInput(
-                o).set("id", id).set("adapter", adapter).execute();
+                o).set("id", id).execute();
     }
 }
