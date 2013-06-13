@@ -40,7 +40,7 @@ TODO:
 
 
 <script type="text/javascript">
-  function confirm#{idPrefix}#{action.id}Message() {
+  function confirm#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}Message() {
     message = "#{nxu:translate(action.properties.confirmMessage, action.properties.confirmMessageArgs)}";
     if (message != "") {
       return confirm(message);
@@ -50,7 +50,7 @@ TODO:
 </script>
 
 <nxu:set var="actionConfirmMessageJs"
-  value="if (!confirm#{idPrefix}#{action.id}Message()) return false;"
+  value="if (!confirm#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}Message()) return false;"
   cache="true">
   <c:choose>
 

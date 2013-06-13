@@ -41,7 +41,7 @@
 
       <c:if test="#{empty elementsToReRender}">
         <a4j:commandLink
-          id="#{idPrefix}#{action.id}"
+          id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
           action="#{webActions.setCurrentTabAction(action.id)}"
           accesskey="#{action.accessKey}"
           onbeforedomupdate="history.pushState(null, '#{action.id}', '#{nxu:javaScriptEscape(docUrl)}');"
@@ -53,7 +53,7 @@
 
       <c:if test="#{not empty elementsToReRender}">
         <a4j:commandLink
-          id="#{idPrefix}#{action.id}"
+          id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
           action="#{webActions.setCurrentTabAction(action.id)}"
           accesskey="#{action.accessKey}"
           reRender="#{elementsToReRender}"
