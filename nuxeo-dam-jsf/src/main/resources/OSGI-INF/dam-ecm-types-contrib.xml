@@ -4,6 +4,9 @@
   <require>org.nuxeo.ecm.platform.types</require>
   <require>org.nuxeo.ecm.platform.picture.jsf.types</require>
   <require>org.nuxeo.ecm.platform.audio.ecm.types</require>
+  <require>org.nuxeo.ecm.platform.audio.layouts</require>
+  <require>org.nuxeo.ecm.platform.video.jsf.types</require>
+  <require>org.nuxeo.ecm.platform.video.layouts</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
@@ -75,13 +78,18 @@
     <type id="Video">
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>file</layout>
+        <layout>video_file</layout>
         <layout>dam_common</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dam_common</layout>
         <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dam_common</layout>
       </layouts>
     </type>
 
