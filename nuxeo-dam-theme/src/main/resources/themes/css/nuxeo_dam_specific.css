@@ -9,7 +9,7 @@ author: lkemen@nuxeo.com
 
 /* =Grid */
 .nxDamSearchForm {
-  background-color: #fff;
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -17,6 +17,7 @@ author: lkemen@nuxeo.com
   width: 19% }
 
 .nxDamSearchResults {
+  background-color: #fff;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -25,7 +26,7 @@ author: lkemen@nuxeo.com
   width: 48% }
 
 .nxDamAssetView {
-  background-color: #fff;
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -97,6 +98,9 @@ author: lkemen@nuxeo.com
 
 .nxDamSearchResults .bubbleBox .bubbleHeader input {
   margin-right: .3em }
+
+.nxDamSearchResults .bubbleBox .bubbleHeader { margin: 0 0 .3em }
+.nxDamSearchResults .bubbleBox .fieldColumn { line-height: 135% }
 
   /* Reduce padding between widgets in the box*/
   .nxDamSearchResults .bubbleBox .fieldColumn {
@@ -180,6 +184,9 @@ author: lkemen@nuxeo.com
   display: block }
 
 /* smaller buttons in Foldable boxes*/
+.foldableBox h3.folded,
+.foldableBox h3.unfolded {
+  border-bottom: none 0 }
 .foldableBox .buttonsGadget {
   margin: .1em 0 0.2em;
   text-align: right }
@@ -191,10 +198,11 @@ author: lkemen@nuxeo.com
 
 /* Picture View -> TODO: move it to imaging styles ? */
 .pictureContainer {
-  border: 1px solid #eee;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
   margin: .2em 0 .5em;
-  min-height: 200px;
+  height: 250px;
   padding: 3px;
   text-align: center }
 
@@ -204,7 +212,7 @@ author: lkemen@nuxeo.com
   box-sizing: border-box;
   font-size: 1.3em;
   font-weight: bold;
-  margin: 0 0 -0.3em;
+  margin: .1em 0;
   overflow: hidden;
   padding: .3em;
   text-align: center;
@@ -213,14 +221,17 @@ author: lkemen@nuxeo.com
   width: 100% }
 
 /* Test to center img */
+.thumbnailContainer:before,
 .pictureContainer:before {
   content: '';
   display: inline-block;
   height: 100%;
   vertical-align: middle }
+.thumbnailContainer img,
 .pictureContainer img {
   display: inline-block;
   max-width: 100%;
+  max-height: 100%;
   vertical-align: middle }
 
 /* TODO: move to box styles */
