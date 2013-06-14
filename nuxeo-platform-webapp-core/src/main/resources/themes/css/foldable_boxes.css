@@ -66,8 +66,9 @@ author: lkemen@nuxeo.com
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "default (__FLAVOR__ color)";
+  display: inline-block;
   margin: .1em .5em .5em;
-  max-width: 400px;
+  width: 350px;
   padding: .5em;
   text-align: left }
 
