@@ -21,8 +21,11 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * Service interface to collect inputs (Blobs) for an operation or operation
@@ -45,8 +48,8 @@ public interface BatchManager {
      * @param mime
      * @throws IOException
      */
-    void addStream(String batchId, String idx, InputStream is,
-            String name, String mime) throws IOException;
+    void addStream(String batchId, String idx, InputStream is, String name,
+            String mime) throws IOException;
 
     /**
      * Get Blobs associated to a given batch. Returns null if batch does not
@@ -56,7 +59,6 @@ public interface BatchManager {
      * @return
      */
     List<Blob> getBlobs(String batchId);
-
 
     /**
      * Get Blobs associated to a given batch. Returns null if batch does not
@@ -92,5 +94,30 @@ public interface BatchManager {
      */
     String initBatch(String batchId, String contextName);
 
+    /**
+     * Executes the chain or operation on the {@code Blobs} from the given
+     * {@code batchId}.
+     * <p>
+     * This method does not clean the temporary storage associated to the
+     * {@code batchId}.
+     *
+     * @since 5.7
+     */
+    Object execute(String batchId, String chainOrOperationId,
+            CoreSession session, Map<String, Object> contextParams,
+            Map<String, Object> operationParams) throws ClientException;
+
+    /**
+     * Executes the chain or operation on the {@code Blobs} from the given
+     * {@code batchId}.
+     * <p>
+     * This method clean the temporary storage associated to the {@code batchId}
+     * after the execution.
+     *
+     * @since 5.7
+     */
+    Object executeAndClean(String batchId, String chainOrOperationId,
+            CoreSession session, Map<String, Object> contextParams,
+            Map<String, Object> operationParams) throws ClientException;
 
 }

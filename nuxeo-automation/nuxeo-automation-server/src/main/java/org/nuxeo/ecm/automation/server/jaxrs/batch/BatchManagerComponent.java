@@ -20,14 +20,24 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -112,6 +122,71 @@ public class BatchManagerComponent extends DefaultComponent implements
         if (batch != null) {
             batch.clear();
             batches.remove(batchId);
+        }
+    }
+
+    @Override
+    public Object execute(String batchId, String chainOrOperationId,
+            CoreSession session, Map<String, Object> contextParams,
+            Map<String, Object> operationParams) throws ClientException {
+        List<Blob> blobs = getBlobs(batchId, getUploadWaitTimeout());
+        if (blobs == null) {
+            String message = String.format(
+                    "Unable to find batch associated with id '%s'", batchId);
+            log.error(message);
+            throw new ClientException(message);
+        }
+
+        if (contextParams == null) {
+            contextParams = new HashMap<>();
+        }
+        if (operationParams == null) {
+            operationParams = new HashMap<>();
+        }
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(new BlobList(blobs));
+        ctx.putAll(contextParams);
+
+        try {
+            Object result = null;
+            AutomationService as = Framework.getLocalService(AutomationService.class);
+            if (chainOrOperationId.startsWith("Chain.")) {
+                result = as.run(ctx, chainOrOperationId.substring(6));
+            } else {
+                OperationChain chain = new OperationChain("operation");
+                OperationParameters params = new OperationParameters(
+                        chainOrOperationId, operationParams);
+                chain.add(params);
+                result = as.run(ctx, chain);
+            }
+            return result;
+        } catch (Exception e) {
+            log.error("Error while executing automation batch ", e);
+            throw ClientException.wrap(e);
+        }
+    }
+
+    protected int getUploadWaitTimeout() {
+        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout",
+                "5");
+        try {
+            return Integer.parseInt(t);
+        } catch (NumberFormatException e) {
+            log.error("Wrong number format for upload wait timeout property", e);
+            return 5;
+        }
+    }
+
+    @Override
+    public Object executeAndClean(String batchId, String chainOrOperationId,
+            CoreSession session, Map<String, Object> contextParams,
+            Map<String, Object> operationParams) throws ClientException {
+        try {
+            return execute(batchId, chainOrOperationId, session, contextParams,
+                    operationParams);
+        } finally {
+            clean(batchId);
         }
     }
 }
