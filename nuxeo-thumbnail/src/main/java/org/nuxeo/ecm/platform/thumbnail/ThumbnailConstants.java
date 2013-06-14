@@ -9,7 +9,7 @@
  * Contributors:
  * Vladimir Pasquier <vpasquier@nuxeo.com>
  * Laurent Doguin <ldoguin@nuxeo.com>
- * 
+ *
  */
 package org.nuxeo.ecm.platform.thumbnail;
 
@@ -28,7 +28,7 @@ public class ThumbnailConstants {
 
     public static final String THUMBNAIL_SIZE_PARAMETER_NAME = "size";
 
-    public static final String THUMBNAIL_DEFAULT_SIZE = "100x100";
+    public static final String THUMBNAIL_DEFAULT_SIZE = "280x280";
 
     public enum EventNames {
         /**
