@@ -230,8 +230,21 @@ if (!log) {
         var overlay = jQuery("<div></div>");
         overlay.addClass("dropzoneTargetOverlay");
         overlay.css(zone.position());
-        overlay.width(zone.width()+2);
-        overlay.height(zone.height()+2);
+
+        var computedWidth = zone.width() + 2;
+        computedWidth += parseInt(zone.css('padding-right'), 10);
+        computedWidth += parseInt(zone.css('padding-left'), 10);
+        computedWidth += parseInt(zone.css('margin-right'), 10);
+        computedWidth += parseInt(zone.css('margin-left'), 10);
+        overlay.width(computedWidth);
+
+        var computedHeight = zone.height() + 2;
+        computedHeight += parseInt(zone.css('padding-top'), 10);
+        computedHeight += parseInt(zone.css('padding-bottom'), 10);
+        computedHeight += parseInt(zone.css('margin-top'), 10);
+        computedHeight += parseInt(zone.css('margin-bottom'), 10);
+        overlay.height(computedHeight);
+
         zone.append(overlay);
         overlay.bind("dragleave",  function(event) { removeOverlay(event, overlay, zone, opts);});
         zone.unbind("dragenter");
