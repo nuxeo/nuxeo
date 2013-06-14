@@ -111,7 +111,7 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
         bytes = null;
 
         // generated views
-        assertEquals(4, bh.getBlobs().size());
+        assertEquals(5, bh.getBlobs().size());
 
         // test set null blob
         bh.setBlob(null);

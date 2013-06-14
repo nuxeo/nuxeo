@@ -98,7 +98,7 @@ public class TestPictureThumbnail {
         session.save();
         // Get picture thumbnail view
         MultiviewPicture mViewPicture = picture.getAdapter(MultiviewPicture.class);
-        PictureView thumbnailView = mViewPicture.getView("Thumbnail");
+        PictureView thumbnailView = mViewPicture.getView("Small");
         Blob pictureUsualThumbnail = thumbnailView.getBlob();
         // Thumbnail service should return the default picture thumbnail
         ThumbnailAdapter pictureThumbnail = picture.getAdapter(ThumbnailAdapter.class);
