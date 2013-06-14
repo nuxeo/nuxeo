@@ -4,12 +4,26 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="Chain.Dam.ImportInSeam"
-      link=""
+    <action id="dndAssets" link=""
       order="10" label="label.smart.import"
       help="desc.smart.import.file">
-      <category>DAM_IMPORT</category>
+      <category>DAM_DND</category>
       <filter-id>canCreateInAssetLibrary</filter-id>
+      <properties>
+        <property name="chainId">Dam.ImportInSeam</property>
+      </properties>
+    </action>
+
+    <action id="dndDamImportAssets" link=""
+      order="10" label="label.smart.import"
+      help="desc.smart.import.file">
+      <category>DAM_IMPORT_ASSETS</category>
+      <filter-id>canCreateInAssetLibrary</filter-id>
+      <properties>
+        <property name="chainId">Dam.ImportWithMetaDataInSeam</property>
+        <property name="layout">dublincore</property>
+        <property name="schema">dublincore</property>
+      </properties>
     </action>
 
   </extension>
@@ -28,6 +42,19 @@
       </operation>
       <operation id="Seam.Refresh" />
       <operation id="Seam.DestroyContext" />
+    </chain>
+
+    <chain id="Dam.ImportWithMetaDataInSeam">
+      <operation id="Dam.Import">
+        <param type="boolean" name="overwrite">true</param>
+      </operation>
+      <operation id="Document.Update">
+        <param type="properties" name="properties">expr:Context.get("docMetaData")
+        </param>
+      </operation>
+      <operation id="Seam.RunOperation">
+        <param type="string" name="id">Seam.Refresh</param>
+      </operation>
     </chain>
 
   </extension>

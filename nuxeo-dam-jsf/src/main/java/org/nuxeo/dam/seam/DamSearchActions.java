@@ -79,6 +79,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Handles DAM search and permalinks related actions.
+ *
  * @since 5.7
  */
 @Name("damSearchActions")
@@ -444,7 +446,6 @@ public class DamSearchActions implements Serializable {
 
     public String getAssetPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
-        String currentContentViewName = getCurrentContentViewName();
         DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
         DocumentView docView = computeDocumentView(damCurrentDocument);
         docView.setViewId("asset");

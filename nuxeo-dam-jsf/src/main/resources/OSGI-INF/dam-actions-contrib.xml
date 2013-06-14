@@ -191,6 +191,21 @@
       </properties>
       <filter-id>canCreateNewAsset</filter-id>
     </action>
+    <action id="damImportAssets" order="200" label="label.dam.import.assets"
+      type="fancybox">
+      <category>DAM_SEARCH_RESULTS_ACTIONS</category>
+      <properties>
+        <property name="include">/dam/incl/import_assets_box.xhtml</property>
+        <property name="dropContext">DAM_IMPORT_ASSETS</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">80%</property>
+        <property name="height">90%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+      <filter-id>canCreateNewAsset</filter-id>
+    </action>
 
     <!-- Current selection actions -->
     <action id="damBulkEdit" type="fancybox"

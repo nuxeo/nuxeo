@@ -1,0 +1,92 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3><h:outputText value="#{messages['label.dam.new.asset']}" /></h3>
+
+  <h:form enctype="multipart/form-data" id="#{fancyboxFormId}">
+
+    <div class="content">
+
+      <div class="tips damAssetImportZone #{widgetProperty_styleClass}" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
+        <div class="dropZoneLabel jsTips">
+          #{messages['label.dam.import.assets.tips']}
+        </div>
+      </div>
+
+      <nxu:set var="importOptions" value="#{damImportActions.getImportOptions(action.properties.dropContext)}" cache="true">
+
+        <table class="dataInput fullWidth separator">
+          <tbody>
+            <tr>
+              <td class="labelColumn">
+                #{messages['label.dam.import.assets.select.option']}
+              </td>
+              <td class="fieldColumn">
+                <h:selectOneMenu
+                  value="#{damImportActions.selectedImportOptionId}"
+                  id="#{widget.id}" styleClass="langSelect">
+                  <a4j:support event="onchange"
+                    reRender="importLayout_panel" />
+                  <nxu:selectItems
+                    var="importOption" value="#{importOptions}"
+                    itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
+                </h:selectOneMenu>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <a4j:outputPanel id="importLayout_panel">
+
+          <nxl:layout name="#{damImportActions.selectedImportOption.properties.layout}" mode="create"
+            value="#{damImportActions.importDocumentModel}"/>
+
+          <!-- <nxl:widgetType name="layout" mode="create"
+            value="#{damImportActions.importDocumentModel}"
+            widgetProperty_name="#{damImportActions.selectedImportOption.properties.layout}"/> -->
+
+        </a4j:outputPanel>
+
+      </nxu:set>
+
+    </div>
+
+    <div class="buttonsGadget">
+      <nxh:commandButton value="#{messages['command.import']}"
+        action="#{damImportActions.importAssets()}"
+        styleClass="button jsDamImportButton" />
+      <!--<a4j:commandButton value="#{messages['command.cancel']}"
+        immediate="true"
+        action="#{damImportActions.cancel()}"
+        oncomplete="jQuery.fancybox.close()"
+        styleClass="button" /> -->
+      <nxh:commandButton value="#{messages['command.cancel']}"
+        immediate="true"
+        action="#{damImportActions.cancel()}"
+        styleClass="button" />
+    </div>
+
+    <script type="text/javascript">
+      jQuery(".damAssetImportZone").nxDropZone({
+        url : "#{contextPath}/site/automation/",
+        uploadRateRefreshTime : 500,
+        numConcurrentUploads : 3,
+        dropContext : ctx,
+        uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+        execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+        extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
+        handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
+      });
+      jQuery(".jsDamImportButton").attr("disabled", "disabled");
+    </script>
+
+  </h:form>
+
+</div>

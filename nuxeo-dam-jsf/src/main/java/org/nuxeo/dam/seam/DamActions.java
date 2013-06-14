@@ -51,6 +51,8 @@ import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Handles global DAM actions (selected asset, asset creation, ...).
+ *
  * @since 5.7
  */
 @Name("damActions")

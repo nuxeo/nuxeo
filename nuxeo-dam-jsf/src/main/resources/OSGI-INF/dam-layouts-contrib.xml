@@ -257,10 +257,9 @@
         </widget>
       </subWidgets>
       <properties widgetMode="any">
-        <property name="dropContext">DAM_IMPORT</property>
+        <property name="dropContext">DAM_DND</property>
         <property name="cannotDrop">
-          #{not
-          webActions.checkFilter('canCreateInAssetLibrary')}
+          #{not webActions.checkFilter('canCreateInAssetLibrary')}
         </property>
       </properties>
     </widget>
