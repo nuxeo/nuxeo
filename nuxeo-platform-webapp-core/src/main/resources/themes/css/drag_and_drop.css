@@ -71,6 +71,10 @@ input.dropzone-bar-btn { visibility:hidden; margin-top: 2em !important; }
   white-space: nowrap;
   width: 100% }
 
+.dropZoneLabel {
+  font-size: 1.2em;
+  padding: 1.5em }
+
 .droppedItemInProgress {
   color: "gray.medium (__FLAVOR__ color)";
   font-weight: normal;
