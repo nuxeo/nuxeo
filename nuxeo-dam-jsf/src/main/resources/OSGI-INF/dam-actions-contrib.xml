@@ -27,7 +27,7 @@
     </action>
 
     <action id="damSubmitSearch" link="#{damSearchActions.refreshAndRewind()}"
-      label="command.faceted.search.go" order="10">
+      label="label.dam.search.filter" order="10">
       <category>DAM_SEARCH_FILTER_ACTIONS</category>
       <properties>
         <property name="ajaxSupport">true</property>
@@ -38,7 +38,7 @@
     </action>
 
     <action id="damClearSearch" link="#{damSearchActions.clearSearch()}"
-      label="command.faceted.search.clear" order="20" immediate="true">
+      label="label.dam.search.clear" order="20" immediate="true">
       <category>DAM_SEARCH_FILTER_ACTIONS</category>
       <properties>
         <property name="ajaxSupport">true</property>
