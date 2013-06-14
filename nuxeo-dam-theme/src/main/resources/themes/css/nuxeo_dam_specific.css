@@ -81,15 +81,17 @@ author: lkemen@nuxeo.com
 
 .nxDamSearchResults .bubbleBox {
   background-color: #fff;
+  border-radius: 0;
   cursor: pointer;
   display: inline-block;
   font-size: .9em;
-  margin: .1em .3em .6em;
-  min-height: 170px;
-  text-align: left;
+  margin: .1em .2em .5em;
+  min-height: 200px;
+  padding: 0;
   position: relative;
+  text-align: left;
   vertical-align: top;
-  width: 130px }
+  width: 185px }
 
 .nxDamSearchResults .bubbleBox:hover {
   background-color: "color.major.light (__FLAVOR__ background)";
@@ -97,9 +99,9 @@ author: lkemen@nuxeo.com
 .nxDamSearchResults .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
 
 .nxDamSearchResults .bubbleBox .bubbleHeader input {
-  margin-right: .3em }
+  margin: 0 .2em }
 
-.nxDamSearchResults .bubbleBox .bubbleHeader { margin: 0 0 .3em }
+.nxDamSearchResults .bubbleBox .bubbleHeader { margin: 0 0 .2em }
 .nxDamSearchResults .bubbleBox .fieldColumn { line-height: 135% }
 
   /* Reduce padding between widgets in the box*/
@@ -107,6 +109,10 @@ author: lkemen@nuxeo.com
     color: "gray.medium (__FLAVOR__ color)";
     font-size: .9em;
     padding: 0 }
+
+  .nxDamSearchResults .bubbleBox .dataInput,
+  .nxDamSearchResults .bubbleBox .widgetPanel {
+    margin: 0 0 0 .4em }
 
 .nxDamSearchResults .bubbleBox .thumbViewPicture { display: block;
     margin: 0 auto }
@@ -121,9 +127,10 @@ author: lkemen@nuxeo.com
 
 /* Pictures and video thumbnails in bubbleBoxes */
 .thumbnailContainer { text-align: center;
-  height: 75px }
+  height: 124px }
 .thumbnailContainer img {
-  max-height: 70px }
+  max-height: 100%;
+  max-width: 100% }
 .bubbleBox:hover .thumbnailContainer img {
 	background-color: #fff }
 
@@ -146,9 +153,13 @@ author: lkemen@nuxeo.com
   color: #fff }
 
 /* =Assets View */
-.widgetPanel .description_block {
+.nxDamAssetView .widgetPanel .description_block {
   font-size: .9em;
-  margin: 1em .4em }
+  margin: 1em .2em }
+
+.nxDamAssetView .description_block span {
+  color: "gray.dark (__FLAVOR__ color)";
+	font-weight: normal }
 
 /* Smaller tables display in foldableBox, apply .dataTableLine styles */
 .nxDamAssetView .dataInput {
@@ -219,6 +230,9 @@ author: lkemen@nuxeo.com
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100% }
+
+.nxDamAssetView .documentTitle {
+  color: "black (__FLAVOR__ color)" }
 
 /* Test to center img */
 .thumbnailContainer:before,
