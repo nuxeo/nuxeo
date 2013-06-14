@@ -77,7 +77,7 @@
                 <helpLabels>
                   <label mode="any">
                     A comma separated list of supported file
-                    extensions. Default value: '.mp3, .ra, .wav'.
+                    extensions. Default value: '.mp3, .ogg, .oga, .m4a, .aac, .ac3, .aif, .aiff, .aifc, .au, .snd, .asf, .wav'.
                   </label>
                 </helpLabels>
                 <fields>
