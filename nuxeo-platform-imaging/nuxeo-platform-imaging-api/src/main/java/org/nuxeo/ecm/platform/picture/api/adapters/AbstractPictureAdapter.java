@@ -134,6 +134,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     public static final int MEDIUM_SIZE = 550;
 
+    public static final int SMALL_SIZE = 280;
+
     public static final int THUMB_SIZE = 100;
 
     protected DocumentModel doc;
@@ -357,6 +359,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                     filename, width, height, depth, fileContent);
             createPictureimpl(description, "original", "Original", null,
                     filename, width, height, depth, fileContent);
+            createPictureimpl("Small Size", "small", "Small",
+                    SMALL_SIZE, filename, width, height, depth, fileContent);
             createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
                     THUMB_SIZE, filename, width, height, depth, fileContent);
             createPictureimpl("Original Picture in JPEG format",

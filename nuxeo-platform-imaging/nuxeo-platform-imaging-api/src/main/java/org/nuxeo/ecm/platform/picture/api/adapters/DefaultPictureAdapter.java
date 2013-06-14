@@ -147,6 +147,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         List<PictureTemplate> templates = new ArrayList<PictureTemplate>();
         templates.add(new PictureTemplate("Medium", "Medium Size", "medium", 0));
         templates.add(new PictureTemplate("Original", "Original", "original", 0));
+        templates.add(new PictureTemplate("Small", "Small Size", "small", 0));
         templates.add(new PictureTemplate("Thumbnail", "Thumbnail Size",
                 "thumb", 0));
         templates.add(new PictureTemplate("OriginalJpeg",
