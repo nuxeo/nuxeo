@@ -74,9 +74,9 @@ public class VideoHelper {
 
     static {
         Map<String, Object> thumbnailView = new LinkedHashMap<String, Object>();
-        thumbnailView.put("title", "Thumbnail");
+        thumbnailView.put("title", "Small");
         thumbnailView.put("maxsize",
-                Long.valueOf(AbstractPictureAdapter.THUMB_SIZE));
+                Long.valueOf(AbstractPictureAdapter.SMALL_SIZE));
         THUMBNAILS_VIEWS.add(thumbnailView);
         Map<String, Object> staticPlayerView = new HashMap<String, Object>();
         staticPlayerView.put("title", "StaticPlayerView");

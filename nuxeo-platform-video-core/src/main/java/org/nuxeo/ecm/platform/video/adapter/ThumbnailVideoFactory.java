@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
 /**
  * Movie thumbnail factory
- * 
+ *
  * @since 5.7
  */
 public class ThumbnailVideoFactory implements ThumbnailFactory {
@@ -42,12 +42,16 @@ public class ThumbnailVideoFactory implements ThumbnailFactory {
         // Choose the nuxeo default thumbnail of the picture views (screenshots
         // of the video taken during creation)
         PictureResourceAdapter picResAdapter = doc.getAdapter(PictureResourceAdapter.class);
-        Blob thumbnailView = picResAdapter.getPictureFromTitle("Thumbnail");
+        Blob thumbnailView = picResAdapter.getPictureFromTitle("Small");
         if (thumbnailView == null) {
-            TypeInfo docType = doc.getAdapter(TypeInfo.class);
-            return new FileBlob(
-                    FileUtils.getResourceFileFromContext("nuxeo.war"
-                            + File.separator + docType.getBigIcon()));
+            // try Thumbnail view
+            thumbnailView = picResAdapter.getPictureFromTitle("Thumbnail");
+            if (thumbnailView == null) {
+                TypeInfo docType = doc.getAdapter(TypeInfo.class);
+                return new FileBlob(
+                        FileUtils.getResourceFileFromContext("nuxeo.war"
+                                + File.separator + docType.getBigIcon()));
+            }
         }
         return thumbnailView;
     }
