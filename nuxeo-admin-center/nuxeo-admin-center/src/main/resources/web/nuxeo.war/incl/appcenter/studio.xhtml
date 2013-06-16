@@ -3,6 +3,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core">
 
   <a4j:outputPanel id="connectAppListing" layout="block">
@@ -37,11 +38,12 @@
         <table width="100%">
           <tr>
             <td width="70%">
-              <h:outputText value="#{messages['label.studio.update.lastStatus']}"/>
-              <span style="color:green">
-                <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
-              </span>
+
+              <h:outputText value="#{messages['label.studio.update.lastStatus']} "/>
+              <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+
               <c:if test="#{connectServerReachable and registredConnectInstance}">
+
                 <a4j:form id="updateStudioSnapshotForm">
                   <h:commandButton
                     id="updateStudioButton"
@@ -49,6 +51,8 @@
                     action="#{appsViews.installStudioSnapshotAndRedirect()}"
                     onclick="showUpdateInProgress();"
                     styleClass="button">
+                    <nxu:actionListenerMethod
+                      value="#{appsViews.setValidateStudioSnapshot(true)}" />
                   </h:commandButton>
                   <div style="display:none">
                     <div id="studioBigUpdateWaiter">
@@ -57,6 +61,80 @@
                   </div>
                   <h:outputText value="#{messages['label.studio.update']}"/>
                 </a4j:form>
+
+                <nxu:set var="vstatus"
+                  value="#{appsViews.studioSnapshotValidationStatus}"
+                  cache="true">
+                <c:if test="#{vstatus != null}">
+
+                  <a4j:form>
+                    <a4j:jsFunction name="validation_status_box_closeFancybox">
+                      <nxu:actionListenerMethod
+                        value="#{appsViews.resetStudioSnapshotValidationStatus()}" />
+                    </a4j:jsFunction>
+                  </a4j:form>
+
+                  <script>
+                    jQuery(document).ready(function() {
+                      openFancyBox('#validation_status_box', {
+                          onClosed: validation_status_box_closeFancybox
+                        });
+                    });
+                  </script>
+
+                  <div style="display:none">
+                    <div id="validation_status_box">
+                      <h3>#{messages['label.studio.update.validation.errorTitle']}</h3>
+                      <div class="content">
+                        <div>
+                          <h:outputText value="#{appsViews.getStudioInstallationStatus()}" styleClass="boldLabel"/>
+                        </div>
+                        <c:if test="#{not empty vstatus.errors}">
+                          <h5>
+                            <h:outputText value="#{messages['label.studio.update.lastStatus.errors']}" />
+                          </h5>
+                          <ul class="visibleList">
+                            <c:forEach var="error" items="#{vstatus.errors}">
+                              <li><h:outputText value="#{error}" escape="false" /></li>
+                            </c:forEach>
+                          </ul>
+                          <br />
+                        </c:if>
+                        <c:if test="#{not empty vstatus.warnings}">
+                          <h5>
+                            <h:outputText value="#{messages['label.studio.update.lastStatus.warnings']}" />
+                          </h5>
+                          <ul class="visibleList">
+                            <c:forEach var="warn" items="#{vstatus.warnings}">
+                              <li><h:outputText value="#{warn}" escape="false" /></li>
+                            </c:forEach>
+                          </ul>
+                        </c:if>
+
+                        <p class="buttonsGadget">
+                          <a4j:form id="updateStudioSnapshotValidationErrorForm">
+                            <h:commandButton
+                              id="updateStudioAnywayButton"
+                              value="#{messages['admCommand.studio.updateAnyway']}"
+                              action="#{appsViews.installStudioSnapshotAndRedirect()}"
+                              onclick="showUpdateInProgress();"
+                              styleClass="button">
+                              <nxu:actionListenerMethod
+                                value="#{appsViews.setValidateStudioSnapshot(false)}" />
+                            </h:commandButton>
+                            <a4j:commandButton styleClass="button"
+                              value="#{messages['command.cancel']}"
+                              oncomplete="jQuery.fancybox.close();" />
+                          </a4j:form>
+                        </p>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </c:if>
+                </nxu:set>
+
               </c:if>
               <c:if test="#{not connectServerReachable or not registredConnectInstance}">
                 <h:outputText value="#{messages['label.studio.cannotUpdate']}"/>
