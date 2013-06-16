@@ -97,6 +97,12 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
      * Extracts view id and parameters, for both get and post methods
      */
     public DocumentView getDocumentViewFromUrl(String url) {
+        // strip url of any jsessionid param
+        int jsessionidIndex = url.indexOf(";jsessionid");
+        if (jsessionidIndex != -1) {
+            url = url.substring(0, jsessionidIndex);
+        }
+
         // try POST pattern
         Pattern pattern = Pattern.compile(getPrefix() + POST_URL_PATTERN);
         Matcher m = pattern.matcher(url);
@@ -106,7 +112,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
                 // for debug
                 // for (int i = 1; i < m.groupCount() + 1; i++) {
                 // System.err.println(i + ": " + m.group(i));
-                //                }
+                // }
 
                 // get other parameters
 
@@ -135,7 +141,7 @@ public class LayoutDemoURLCodec extends AbstractDocumentViewCodec {
                 // for debug
                 // for (int i = 1; i < m.groupCount() + 1; i++) {
                 // System.err.println(i + ": " + m.group(i));
-                //                }
+                // }
 
                 String viewId = m.group(1);
                 if (viewId == null || "".equals(viewId)) {
