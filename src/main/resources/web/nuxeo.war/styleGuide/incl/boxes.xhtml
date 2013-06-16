@@ -101,6 +101,12 @@
           <div class="boxBody">The foldable box content is in a <span class="code">.boxBody</span> div. The h3 title class automatically switches from <span class="code">.folded</span> to <span class="code">.unfolded</span> and vice versa.</div>
         </div>
         <div class="foldableBox">
+          <h3 class="folded">
+            <a onclick="return toggleBox(this)" href="#nologo">A box folded by default</a>
+          </h3>
+          <div class="boxBody" style="display:none;">Some awesome content</div>
+        </div>
+        <div class="foldableBox">
           <h3 class="unfolded">
             <a onclick="return false" href="#nologo">Foldable box with button</a>
             <img src="/nuxeo/icons/lightbulb.png" title="Write in the title of your helper a text that helps" class="layoutHelpLabel" />
