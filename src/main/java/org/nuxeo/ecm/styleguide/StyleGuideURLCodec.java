@@ -86,6 +86,12 @@ public class StyleGuideURLCodec extends AbstractDocumentViewCodec {
      * Extracts view id and parameters, for both get and post methods
      */
     public DocumentView getDocumentViewFromUrl(String url) {
+        // strip url of any jsessionid param
+        int jsessionidIndex = url.indexOf(";jsessionid");
+        if (jsessionidIndex != -1) {
+            url = url.substring(0, jsessionidIndex);
+        }
+
         // try POST pattern -> FIXME this is not enough information to restore
         // a tab
         Pattern pattern = Pattern.compile(getPrefix() + POST_URL_PATTERN);
