@@ -82,10 +82,10 @@
         <div style="float:left; color:white" class="studioButton">
         <c:choose>
           <c:when test="#{connectUpdateStatusInfo.registered}">
-            <a target="studio" href="https://connect.nuxeo.com/nuxeo/site/studio/ide">Studio</a>
+            <a target="studio" href="#{nuxeoConnectUrl}studio/ide">Studio</a>
           </c:when>
           <c:otherwise>
-            <a href="https://connect.nuxeo.com/nuxeo/site/connect/trial/form?source=studioButton&#38;product=#{connectUpdateStatusInfo.distributionLabel}" target="studio">Studio</a>
+            <a href="#{nuxeoConnectUrl}connect/trial/form?source=studioButton&#38;product=#{connectUpdateStatusInfo.distributionLabel}" target="studio">Studio</a>
           </c:otherwise>
         </c:choose>
         </div>
