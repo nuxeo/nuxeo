@@ -317,8 +317,7 @@
       <properties widgetMode="view">
         <property name="category">DAM_ASSET_VIEW_INDICATORS</property>
         <property name="overallDisplay">horizontal_block</property>
-        <property name="styleClass">globalActionBar</property>
-        <property name="subStyleClass">contextActions</property>
+        <property name="styleClass">indicators</property>
       </properties>
     </widget>
 

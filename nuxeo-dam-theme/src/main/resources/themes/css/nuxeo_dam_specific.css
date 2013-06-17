@@ -91,7 +91,7 @@ author: lkemen@nuxeo.com
   position: relative;
   text-align: left;
   vertical-align: top;
-  width: 185px }
+  width: 186px }
 
 .nxDamSearchResults .bubbleBox:hover {
   background-color: "color.major.light (__FLAVOR__ background)";
@@ -155,7 +155,7 @@ author: lkemen@nuxeo.com
 /* =Assets View */
 .nxDamAssetView .widgetPanel .description_block {
   font-size: .9em;
-  margin: 1em .2em }
+  margin: .7em .2em .5em }
 
 .nxDamAssetView .description_block span {
   color: "gray.dark (__FLAVOR__ color)";
