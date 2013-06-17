@@ -55,7 +55,7 @@ function showIframeIfPossible() {
  <a href="<%=contextPath%>"><img src="<%=contextPath%>/images/nuxeo.png" height="38px" border="0"/></a>
 </div>
 </div>
-
+<div style="text-align:center;">
 <div id="wizardFrame" class="container">
 
 <table width="100%" cellpadding="0" cellspacing="0">
