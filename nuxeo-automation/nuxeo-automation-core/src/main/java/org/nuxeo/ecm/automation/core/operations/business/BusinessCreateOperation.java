@@ -17,7 +17,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.operations.business.adapter.BeanBusinessAdapter;
+import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,12 +47,12 @@ public class BusinessCreateOperation {
     protected String type;
 
     @OperationMethod
-    public Object run(BeanBusinessAdapter input) throws ClientException,
+    public Object run(BusinessAdapter input) throws ClientException,
             ClassNotFoundException {
         DocumentModel document = input.getDocument();
         document.setPathInfo(parentPath, name);
         document = session.createDocument(document);
-        return document.getAdapter(BeanBusinessAdapter.class);
+        return document.getAdapter(input.getClass());
     }
 
 }

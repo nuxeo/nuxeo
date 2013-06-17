@@ -19,7 +19,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.operations.business.adapter.BeanBusinessAdapter;
+import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,15 +44,15 @@ public class BusinessUpdateOperation {
     protected String id;
 
     @OperationMethod
-    public Object run(BeanBusinessAdapter input) throws ClientException,
+    public Object run(BusinessAdapter input) throws ClientException,
             ClassNotFoundException {
         // TODO: would be nice to get the document to reattach the doc to the
         // session (but cannot access to it from the adapter input)
         DocumentModel document = session.getDocument(new IdRef(id));
-        BeanBusinessAdapter adapter = document.getAdapter(BeanBusinessAdapter.class);
+        BusinessAdapter adapter = document.getAdapter(input.getClass());
         mapObject(input, adapter);
         document = session.saveDocument(adapter.getDocument());
-        return document.getAdapter(BeanBusinessAdapter.class);
+        return document.getAdapter(input.getClass());
     }
 
     private void mapObject(Object input, Object adapter) {
