@@ -261,13 +261,13 @@ public class AppCenterViewsManager implements Serializable {
      * Returns true if Studio snapshot module should be validated.
      * <p>
      * Validation can be skipped by user, or can be globally disabled by
-     * setting framework property
-     * "org.nuxeo.ecm.platform.disableStudioSnapshotPackageValidation" to true.
+     * setting framework property "studio.snapshot.disablePkgValidation" to
+     * true.
      *
      * @since 5.7.1
      */
     protected boolean shouldValidateStudioSnapshot() {
-        if (Framework.isBooleanPropertyTrue("org.nuxeo.ecm.platform.disableStudioSnapshotPackageValidation")) {
+        if (Framework.isBooleanPropertyTrue("studio.snapshot.disablePkgValidation")) {
             return false;
         }
         return Boolean.TRUE.equals(getValidateStudioSnapshot());
