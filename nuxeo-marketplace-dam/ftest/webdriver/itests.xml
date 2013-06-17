@@ -7,7 +7,7 @@
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <!-- Base distribution (nuxeo-cap, nuxeo-dm, ...) -->
-  <property name="wizard.preset" value="nuxeo-cap" />
+  <property name="wizard.preset" value="nuxeo-dm" />
 
   <property name="out.dir" value="${maven.project.build.directory}" />
   <unzip dest="${out.dir}/" overwrite="false">

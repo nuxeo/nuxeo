@@ -67,9 +67,9 @@
   <platforms>
     <platform>cap-@VERSION@</platform>
   </platforms>
-  <provides>
-    <package>nuxeo-content-browser:1.0.0:1.0.0</package>
-  </provides>
+  <dependencies>
+    <package>nuxeo-dm:@VERSION@</package>
+  </dependencies>
   <conflicts>
     <package>nuxeo-cmf</package>
   </conflicts>
