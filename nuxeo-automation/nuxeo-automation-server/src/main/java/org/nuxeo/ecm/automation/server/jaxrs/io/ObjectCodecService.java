@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,8 @@
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier
+ *     slacoin
  */
 package org.nuxeo.ecm.automation.server.jaxrs.io;
 
@@ -29,22 +31,16 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation;
-import org.nuxeo.ecm.automation.core.operations.business.adapter.BeanBusinessAdapter;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterService;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.repository.RepositoryManager;
-import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,6 +49,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class ObjectCodecService {
+
+    protected static final Log log = LogFactory.getLog(ObjectCodecService.class);
 
     protected Map<Class<?>, ObjectCodec<?>> codecs;
     protected Map<String, ObjectCodec<?>> codecsByName;
@@ -73,6 +71,9 @@ public class ObjectCodecService {
         new CalendarCodec().register(this);
         new BooleanCodec().register(this);
         new NumberCodec().register(this);
+    }
+
+    public void postInit() {
         DocumentAdapterCodec.register(this,
                 Framework.getLocalService(DocumentAdapterService.class));
     }
@@ -145,7 +146,7 @@ public class ObjectCodecService {
 
     public String toString(Object object, boolean preetyPrint) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        write (baos, object, preetyPrint);
+        write(baos, object, preetyPrint);
         return baos.toString("UTF-8");
     }
 
@@ -491,15 +492,20 @@ public class ObjectCodecService {
         public static void register(ObjectCodecService service,
                 DocumentAdapterService adapterService) {
             for (DocumentAdapterDescriptor desc : adapterService.getAdapterDescriptors()) {
-                if (!BeanBusinessAdapter.class.isAssignableFrom(desc.getInterface())) {
+                if (!BusinessAdapter.class.isAssignableFrom(desc.getInterface())) {
                     continue;
                 }
                 DocumentAdapterCodec codec = new DocumentAdapterCodec(desc);
+                if (service.codecsByName.containsKey(codec.getType())) {
+                    log.warn("Be careful, you have already contributed an adapter with the same simple name:"
+                            + codec.getType());
+                    continue;
+                }
                 service.codecs.put(desc.getInterface(), codec);
                 service.codecsByName.put(codec.getType(), codec);
             }
         }
- }
+    }
 
     public static void main(String[] args) throws Exception {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
