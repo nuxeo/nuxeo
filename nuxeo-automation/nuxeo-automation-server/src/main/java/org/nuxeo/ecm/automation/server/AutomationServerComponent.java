@@ -8,6 +8,8 @@
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier
+ *     slacoin
  */
 package org.nuxeo.ecm.automation.server;
 
@@ -17,7 +19,17 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.JsonSerializer;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.introspect.BasicBeanDescription;
+import org.codehaus.jackson.map.module.SimpleModule;
+import org.codehaus.jackson.map.ser.BeanSerializer;
+import org.codehaus.jackson.map.ser.BeanSerializerModifier;
 import org.nuxeo.ecm.automation.server.jaxrs.io.CodecDescriptor;
+import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -30,6 +42,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class AutomationServerComponent extends DefaultComponent implements
         AutomationServer {
 
+    public static AutomationServerComponent me;
+
     protected static final String XP_BINDINGS = "bindings";
 
     protected static final String XP_CODECS = "codecs";
@@ -40,16 +54,21 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     protected ObjectCodecService codecs;
 
+    protected JsonFactory factory;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         bindings = new HashMap<String, RestBinding>();
         codecs = new ObjectCodecService();
+        me = this;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         bindings = null;
         codecs = null;
+        factory = null;
+        me = null;
     }
 
     @Override
@@ -89,8 +108,19 @@ public class AutomationServerComponent extends DefaultComponent implements
         return null;
     }
 
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        super.applicationStarted(context);
+        factory = createFactory();
+        codecs.postInit();
+    }
+
     public ObjectCodecService getCodecs() {
         return codecs;
+    }
+
+    public JsonFactory getFactory() {
+        return factory;
     }
 
     public RestBinding getOperationBinding(String name) {
@@ -170,5 +200,35 @@ public class AutomationServerComponent extends DefaultComponent implements
         return _lookup;
     }
 
+    protected JsonFactory createFactory() {
+        JsonFactory factory = new JsonFactory();
+        final ObjectMapper oc = new ObjectMapper(factory);
+        final SimpleModule module = new SimpleModule("automation",
+                Version.unknownVersion()) {
+
+            @Override
+            public void setupModule(SetupContext context) {
+                super.setupModule(context);
+
+                context.addBeanSerializerModifier(new BeanSerializerModifier() {
+
+                    @Override
+                    public JsonSerializer<?> modifySerializer(
+                            SerializationConfig config,
+                            BasicBeanDescription beanDesc,
+                            JsonSerializer<?> serializer) {
+                        if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
+                            return super.modifySerializer(config, beanDesc, serializer);
+                        }
+                        return new JsonWriter.ThrowableSerializer((BeanSerializer) serializer);
+                    }
+                });
+            }
+        };
+        oc.registerModule(module);
+
+        factory.setCodec(oc);
+        return factory;
+    }
 
 }

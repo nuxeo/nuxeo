@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
+import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentInputResolver;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentsInputResolver;
@@ -111,8 +112,8 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     public static ExecutionRequest readRequest0(String content, MultivaluedMap<String, String> headers) throws Exception {
         ExecutionRequest req = new ExecutionRequest();
-        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
-        JsonParser jp = JsonWriter.getFactory().createJsonParser(content);
+        ObjectCodecService codecService = AutomationServerComponent.me.getCodecs();
+        JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(content);
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {

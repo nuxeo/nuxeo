@@ -25,18 +25,12 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.introspect.BasicBeanDescription;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.codehaus.jackson.map.ser.BeanSerializer;
-import org.codehaus.jackson.map.ser.BeanSerializerModifier;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
+import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
 import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.LoginInfo;
@@ -48,12 +42,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JsonWriter {
 
-    protected static JsonFactory factory = createFactory();
-
-    protected static class ThrowableSerializer extends BeanSerializer {
+    public static class ThrowableSerializer extends BeanSerializer {
 
 
-        protected ThrowableSerializer(BeanSerializer src) {
+        public ThrowableSerializer(BeanSerializer src) {
             super(src);
         }
 
@@ -78,44 +70,14 @@ public class JsonWriter {
             jgen.writeString(bean.getClass().getName());
         }
     }
-    public static JsonFactory createFactory() {
-        factory = new JsonFactory();
-        final ObjectMapper oc = new ObjectMapper(factory);
-        final SimpleModule module = new SimpleModule("automation",
-                Version.unknownVersion()) {
-
-            @Override
-            public void setupModule(SetupContext context) {
-                super.setupModule(context);
-
-                context.addBeanSerializerModifier(new BeanSerializerModifier() {
-
-                    @Override
-                    public JsonSerializer<?> modifySerializer(
-                            SerializationConfig config,
-                            BasicBeanDescription beanDesc,
-                            JsonSerializer<?> serializer) {
-                        if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
-                            return super.modifySerializer(config, beanDesc, serializer);
-                        }
-                        return new ThrowableSerializer((BeanSerializer) serializer);
-                    }
-                });
-            }
-        };
-        oc.registerModule(module);
-
-        factory.setCodec(oc);
-        return factory;
-    }
 
     public static JsonFactory getFactory() {
-        return factory;
+        return AutomationServerComponent.me.getFactory();
     }
 
     public static JsonGenerator createGenerator(OutputStream out)
             throws IOException {
-        return factory.createJsonGenerator(out, JsonEncoding.UTF8);
+        return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
     public static void writeAutomationInfo(OutputStream out,
@@ -156,16 +118,12 @@ public class JsonWriter {
 
     /**
      * Used to export operations to studio
-     *
-     * @param info
-     * @return
-     * @throws IOException
      */
     public static String exportOperations() throws IOException {
         List<OperationDocumentation> ops = Framework.getLocalService(
                 AutomationService.class).getDocumentation();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = factory.createJsonGenerator(out);
+        JsonGenerator jg = getFactory().createJsonGenerator(out);
         jg.useDefaultPrettyPrinter();
         jg.writeStartObject();
         jg.writeArrayFieldStart("operations");
