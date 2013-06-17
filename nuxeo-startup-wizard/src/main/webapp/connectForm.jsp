@@ -21,7 +21,7 @@ if (ConnectRegistrationHelper.isConnectRegistrationFileAlreadyPresent(ctx)) {
 <script>
 var connectFormLoaded=false;
 function setSize() {
- $('#connectForm').css('height','560px');
+ $('#connectForm').css('height','600px');
  $('#connectForm').css('display','block');
  connectFormLoaded=true;
 }
