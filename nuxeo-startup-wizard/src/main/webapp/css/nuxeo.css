@@ -155,16 +155,11 @@ input {
     border: 1px solid #DEDEDE;
     padding: 2px 3px;
     margin: 0px 10px 0px 0px;
+    cursor: pointer;
 }
 
 input[type=text]:hover {
   background-color: #E5F2FF;
-}
-
-input:hover {
- /*   border: 1px solid #b1d0ff;
-    background-color: #e5f2ff; */
-    cursor: pointer;
 }
 
 textarea {
@@ -790,7 +785,7 @@ table.registration .header {
     font-size: 13px;
     font-weight: bold;
     margin-bottom: 1em;
-    padding: 0.7em 2em;
+    padding: 0.7em 1em;
 }
 
 .glossyButton:hover,a.glossyButton:hover {
