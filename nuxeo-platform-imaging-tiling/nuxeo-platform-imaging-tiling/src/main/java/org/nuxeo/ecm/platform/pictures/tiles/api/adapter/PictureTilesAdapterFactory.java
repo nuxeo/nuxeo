@@ -40,6 +40,10 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
 
     private static final Log log = LogFactory.getLog(PictureTilesAdapterFactory.class);
 
+    protected static final String ORIGINAL_JPEG_VIEW_NAME = "OriginalJpeg";
+
+    protected static final String ORIGINAL_VIEW_NAME = "Original";
+
     public Object getAdapter(DocumentModel doc, Class itf) {
         String blobProperty = null;
         try {
@@ -92,9 +96,14 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc)
             throws ClientException {
         if (doc.hasSchema("picture")) {
-            // fallback on old Original view xpath
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
-            String blobProperty = adapter.getViewXPath("Original") + "content";
+            // try OriginalJpeg view xpath
+            String blobProperty = adapter.getViewXPath(ORIGINAL_JPEG_VIEW_NAME);
+            if (blobProperty == null) {
+                // fallback on old Original view xpath
+                blobProperty = adapter.getViewXPath(ORIGINAL_VIEW_NAME);
+            }
+            blobProperty += "content";
             return getPictureTilesAdapter(doc, blobProperty);
         }
         return null;
