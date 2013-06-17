@@ -28,6 +28,11 @@ author: lkemen@nuxeo.com
 .overflowYS { overflow: scroll }
 .overflowXS { overflow: scroll }
 .overflowA { overflow: auto }
+.positionR { position: relative }
+.positionA { position: absolute }
+.positionF { position: fixed }
+.positionI { position: inherit }
+.positionS { position: static }
 
 /* width for divs */
 .fullWidth { width:100% }
