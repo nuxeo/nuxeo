@@ -20,6 +20,7 @@ package org.nuxeo.dam.seam;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
+import static org.nuxeo.dam.DamConstants.REFRESH_DAM_SEARCH;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.dam.AssetLibrary;
@@ -187,6 +189,9 @@ public class DamActions implements Serializable {
 
         // reset changeable document and selected type
         cancelNewAsset();
+
+        // refresh the current dam search
+        Events.instance().raiseEvent(REFRESH_DAM_SEARCH);
 
         facesMessages.add(StatusMessage.Severity.INFO,
                 messages.get("document_saved"),

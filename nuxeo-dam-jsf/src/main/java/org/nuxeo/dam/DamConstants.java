@@ -36,4 +36,6 @@ public final class DamConstants {
 
     public static final String DAM_MAIN_TAB_ACTION = "dam";
 
+    public static final String REFRESH_DAM_SEARCH = "refreshDamSearch";
+
 }

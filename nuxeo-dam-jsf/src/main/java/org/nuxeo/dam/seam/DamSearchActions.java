@@ -20,6 +20,7 @@ package org.nuxeo.dam.seam;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
+import static org.nuxeo.dam.DamConstants.REFRESH_DAM_SEARCH;
 import static org.nuxeo.dam.DamConstants.SAVED_DAM_SEARCHES_PROVIDER_NAME;
 import static org.nuxeo.dam.DamConstants.SHARED_DAM_SEARCHES_PROVIDER_NAME;
 import static org.nuxeo.ecm.platform.contentview.jsf.ContentView.CONTENT_VIEW_PAGE_CHANGED_EVENT;
@@ -224,6 +225,7 @@ public class DamSearchActions implements Serializable {
         updateCurrentDocument();
     }
 
+    @Observer(value = { REFRESH_DAM_SEARCH }, create = true)
     public void refreshAndRewind() throws ClientException {
         contentViewActions.refreshAndRewind(getCurrentContentViewName());
         updateCurrentDocument();
