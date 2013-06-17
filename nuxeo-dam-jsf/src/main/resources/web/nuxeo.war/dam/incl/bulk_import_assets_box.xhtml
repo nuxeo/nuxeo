@@ -12,7 +12,7 @@
 
   <h:form enctype="multipart/form-data" id="#{fancyboxFormId}">
 
-    <div class="content">
+    <div class="content positionR">
 
       <div class="tips damAssetImportZone #{widgetProperty_styleClass}" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
         <div class="dropZoneLabel jsTips">
@@ -64,11 +64,6 @@
       <nxh:commandButton value="#{messages['command.import']}"
         action="#{damImportActions.importAssets()}"
         styleClass="button jsDamImportButton" />
-      <!--<a4j:commandButton value="#{messages['command.cancel']}"
-        immediate="true"
-        action="#{damImportActions.cancel()}"
-        oncomplete="jQuery.fancybox.close()"
-        styleClass="button" /> -->
       <nxh:commandButton value="#{messages['command.cancel']}"
         immediate="true"
         action="#{damImportActions.cancel()}"
