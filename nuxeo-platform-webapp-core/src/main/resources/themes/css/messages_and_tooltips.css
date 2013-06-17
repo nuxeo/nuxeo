@@ -19,17 +19,17 @@ author: lkemen@nuxeo.com
 .infoMessage, .errorMessage, .warningMessage, .successMessage,
 .infoFeedback, .errorFeedback, .warningFeedback, .successFeedback {
   background-color: #e6f1ff;
-  border-color: "neutral.medium (__FLAVOR__ border)";
+  border-color: "neutral.light (__FLAVOR__ border)";
   border-width: 1px;
   border-style: solid;
-  border-radius: 7px;
-  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+  border-radius: 0 3px;
   color: "black (__FLAVOR__ color)";
   display: block;
   font-weight: bold;
   list-style: none;
   margin: 0;
-  padding: 1em }
+  padding: 1em;
+  max-width: 45em }
 
 .successMessage, .successFeedback {
   background-color:"success (__FLAVOR__ background)";

@@ -11,7 +11,7 @@ author: lkemen@nuxeo.com
 
 /* =Buttons */
 .button, input.button {
-	box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset, 1px 1px 0 #efefef;
+	box-shadow: 0 10px 5px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px #fff inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
 	background-color: "button (__FLAVOR__ background)";
 	border-radius: 3px;
 	border: 1px solid;  border-color: "button (__FLAVOR__ border)";
@@ -50,7 +50,7 @@ a.button { color: "link.action (__FLAVOR__ color)"; display: inline-block; text-
 
 .dropdown, .dropdown:hover { background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
   background-color: "button (__FLAVOR__ background)";
-  padding: .25em 1.5em .2em .8em }
+  padding: .25em 1.5em .2em .8em !important }
 .dropdown:hover { background-color: "color.major.medium (__FLAVOR__ background)" }
 
 /* =Syndication Button */
@@ -66,7 +66,7 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .action_bar ul { list-style: none; margin: 0; padding: 0 1em 0 0 }
 .action_bar li { float: left; margin: 0; padding: 0 }
 .action_bar a {
-  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset, 1px 1px 0 #efefef;
+  box-shadow: 0 10px 5px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px #fff inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
   background-color: "button (__FLAVOR__ background)";
   border-radius: 3px;
   border: 1px solid; border-color: "button (__FLAVOR__ border)";
@@ -97,7 +97,7 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 .headerTitleAndTools .globalActionBar { float: right } /* Clean headerTitleAndTools style, inheritance issue with globalActionBar class*/
 .globalActionBar h1 { float: left }
 .globalActionBar .actionList { float: right; list-style: none; margin: 0; padding: 0 }
-.globalActionBar .actionList li { cursor: pointer; display: block; font-weight: normal; margin: 0 0 0 .8em; position: relative; text-decoration: none; z-index:3000 }
+.globalActionBar .actionList li { cursor: pointer; display: block; font-weight: normal; margin: 0 0 0 .4em; position: relative; text-decoration: none; z-index:3000 }
 .globalActionBar .actionList li a { color: "default (__FLAVOR__ color)"; padding: 0 }
 .globalActionBar .actionList .actionSubList { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); display:none; list-style: none; margin-top: .5em; padding: 0; position: absolute; right: 0; top: 19px; width: 250px; z-index: 1001 }
 .globalActionBar .actionList .actionSubList li { background: none; border: none; float: none; height: auto; margin: 0; padding: 0; text-align: left; max-width: 300px }
@@ -116,7 +116,7 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
   .globalActions .contextActions div img { padding: -0.3em 0 0 }
 
 /* Link on forms */
-.actionLink { margin: .1em .4em .1em .1em }
+.actionLink { margin: .1em .2em .1em .1em }
 
 /* =Foldablebox Action for Local Configuration*/
 .foldableBox h3 a.action, .foldableBox h3 a.action:visited {

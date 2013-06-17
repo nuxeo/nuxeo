@@ -14,7 +14,7 @@ author: lkemen@nuxeo.com, tdelprat@nuxeo.com
 .dropzone { display: block }
 .dropzoneHL { border: 2px dashed #ccc; background-color: #f5f5f5 }
 
-.dropzoneTarget { border:2px dashed #92cdff }
+.dropzoneTarget { border:2px dashed #92cdff; text-align: left }
 .dropzoneTargetExtended { border:2px dashed #54d920 }
 .dropzoneTargetOverlay { position : absolute; background-color : rgba(200,220,250,0.3) }
 

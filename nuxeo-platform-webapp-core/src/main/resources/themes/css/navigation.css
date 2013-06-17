@@ -13,7 +13,7 @@ author: lkemen@nuxeo.com
   border-width: 1px; border-style: solid;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 10px 8px #fff inset;
+  box-shadow: 0 10px 15px #fff inset;
   float: left;
   margin-top: .4em;
   width: 100% }
@@ -31,12 +31,10 @@ author: lkemen@nuxeo.com
   display: block;
   float: left;
   padding: .3em .5em .4em;
-  text-decoration:none;
-  text-shadow: 1px 1px 0 #fff }
+  text-decoration: none }
 .tabsBar li.selected a,.tabsBar li a:hover,.tabsBar li.selected a:visited {
   background: none "color.major.stronger (__FLAVOR__ background)";
-  color: #fff;
-  text-shadow: 1px 1px 0 #000 }
+  color: #fff }
 
 .column .tabsBar,
 .modularTabs { border-style: solid solid none; border-width: 1px; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 0 0 0 0; box-shadow: 0 0 0 transparent, 0 10px 8px #fff inset }
