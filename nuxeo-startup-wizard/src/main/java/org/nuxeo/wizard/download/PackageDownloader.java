@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,10 +47,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.params.ConnManagerParams;
-import org.apache.http.conn.params.ConnPerRoute;
 import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -60,13 +57,14 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
- * 
+ *
  */
 public class PackageDownloader {
 
@@ -170,23 +168,16 @@ public class PackageDownloader {
 
     protected PackageDownloader() {
         SchemeRegistry registry = new SchemeRegistry();
-        registry.register(new Scheme("http",
-                PlainSocketFactory.getSocketFactory(), 80));
-        registry.register(new Scheme("https",
-                SSLSocketFactory.getSocketFactory(), 443));
+        registry.register(new Scheme("http", 80,
+                PlainSocketFactory.getSocketFactory()));
+        registry.register(new Scheme("https", 443,
+                SSLSocketFactory.getSocketFactory()));
         HttpParams httpParams = new BasicHttpParams();
         HttpProtocolParams.setUseExpectContinue(httpParams, false);
-        ConnManagerParams.setMaxTotalConnections(httpParams,
-                NB_DOWNLOAD_THREADS);
-        ConnManagerParams.setMaxConnectionsPerRoute(httpParams,
-                new ConnPerRoute() {
-            @Override
-            public int getMaxForRoute(HttpRoute arg0) {
-                return NB_DOWNLOAD_THREADS;
-            }
-        });
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(
-                httpParams, registry);
+                registry);
+        cm.setMaxTotal(NB_DOWNLOAD_THREADS);
+        cm.setDefaultMaxPerRoute(NB_DOWNLOAD_THREADS);
         httpClient = new DefaultHttpClient(cm, httpParams);
     }
 
@@ -534,18 +525,14 @@ public class PackageDownloader {
                             log.error("Package " + pkg.filename
                                     + " not found :" + url);
                             download.setStatus(PendingDownload.MISSING);
-                            if (response.getEntity() != null) {
-                                response.getEntity().consumeContent();
-                            }
+                            EntityUtils.consume(response.getEntity());
                             dw.abort();
                             return;
                         } else {
                             log.error("Received StatusCode "
                                     + response.getStatusLine().getStatusCode());
                             download.setStatus(PendingDownload.ABORTED);
-                            if (response.getEntity() != null) {
-                                response.getEntity().consumeContent();
-                            }
+                            EntityUtils.consume(response.getEntity());
                             dw.abort();
                             return;
                         }
