@@ -13,10 +13,12 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
+import org.nuxeo.ecm.automation.client.annotations.EntityType;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 
 /**
  * Marshaller for the default ObjectCodec for the java Boolean class instances.
+ * Returned into entity-type primitive the content of existing {@link EntityType} annotation.
  *
  * @author ogrisel
  * @since 5.7
@@ -24,9 +26,14 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshaller;
 public class PojoMarshaller<T> implements JsonMarshaller<T> {
 
     final Class<T> type;
+    protected String entityTypeName;
 
     public PojoMarshaller(Class<T> type) {
-       this.type  = type;
+        this.type = type;
+        this.entityTypeName = "";
+        if (type.getAnnotation(EntityType.class) != null) {
+            this.entityTypeName = type.getAnnotation(EntityType.class).value();
+        }
     }
 
     public static <T> PojoMarshaller<T> forClass(Class<T> type) {
@@ -35,7 +42,8 @@ public class PojoMarshaller<T> implements JsonMarshaller<T> {
 
     @Override
     public String getType() {
-        return type.getSimpleName();
+        return entityTypeName.isEmpty() ? type.getCanonicalName()
+                : entityTypeName;
     }
 
     @Override
