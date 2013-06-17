@@ -33,7 +33,7 @@ $.ajaxSetup( {
 // start polling after 15s to be sure the server begun the restart
 var currentUrl = "${Context.getServerURL().toString()}${contextPath}";
 var newUrl = "${nuxeoctl.getServerURL()}";
-if (currentUrl == newUrl)
+if (currentUrl == newUrl || newUrl.match("localhost")) // Polling on currentUrl when nuxeo.url is still default.
   setTimeout(startDirectPolling, 15000);
 else
   setTimeout(startIndirectPolling, 15000);
