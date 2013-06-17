@@ -114,7 +114,7 @@
                 <helpLabels>
                   <label mode="any">
                     A comma separated list of supported file
-                    extensions. Default value: '.mpg, .mpe, .mpeg, .wmv, .swf, .ogg, .ogv, .mkv, .mov, .avi, .mp4, .flv, .fla'.
+                    extensions. Default value: '.mpg, .mpe, .mpeg, .wmv, .swf, .ogg, .ogv, .mkv, .mov, .avi, .mp4, .m4v, .flv, .fla'.
                   </label>
                 </helpLabels>
                 <fields>
