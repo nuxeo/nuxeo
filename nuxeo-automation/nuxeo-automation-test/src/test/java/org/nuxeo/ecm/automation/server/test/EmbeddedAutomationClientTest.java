@@ -27,7 +27,6 @@ import junit.framework.Assert;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -57,8 +56,9 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
-import org.nuxeo.ecm.automation.server.test.business.client.BeanBusinessAdapter;
+import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
@@ -69,6 +69,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -87,7 +88,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
         "org.nuxeo.ecm.automation.server:test-mvalues.xml",
-        "org.nuxeo.ecm.automation.server:core-types-contrib.xml" })
+        "org.nuxeo.ecm.automation.server:core-types-contrib.xml",
+        "org.nuxeo.ecm.automation.server:adapter-contrib.xml" })
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -99,11 +101,19 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     UserManager userManager;
 
     @BeforeClass
-    public static void setupCodecs() throws OperationException {
+    public static void setupCodecs() throws Exception {
         Framework.getLocalService(ObjectCodecService.class).addCodec(
                 new MyObjectCodec());
         Framework.getLocalService(AutomationService.class).putOperation(
                 MyObjectOperation.class);
+        // Fire application start on AutomationServer component forcing to load
+        // correctly Document Adapter Codec in Test scope (to take into account
+        // of document adapters contributed into test) -> see execution order
+        // here: org.nuxeo.runtime.test.runner.RuntimeFeature.start()
+        ComponentInstance componentInstance = Framework.getRuntime().getComponentInstance(
+                "org.nuxeo.ecm.automation.server.AutomationServer");
+        AutomationServerComponent automationServerComponent = (AutomationServerComponent) componentInstance.getInstance();
+        automationServerComponent.applicationStarted(componentInstance);
     }
 
     /**
@@ -549,7 +559,6 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     @Test
-    @Ignore
     public void testRawJSONDatastructuresAsInput() throws Exception {
         // It is possible to pass arbitrary Java objects as the input as
         // long as the JSON representation is a valid representation for the
@@ -774,8 +783,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
-        BeanBusinessAdapter file = new BeanBusinessAdapter("File",
-                "File description");
+        BusinessBean file = new BusinessBean("File", "File description");
         BusinessService businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
@@ -785,14 +793,13 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // This request can be done directly with
         // Operation.BusinessCreateOperation ->
         // session.newRequest("Operation.BusinessCreateOperation").setInput(o).set("name",
-        // name).set("type", type).set("parentPath",parentPath).set("adapter",
-        // adapter).execute();
-        file = (BeanBusinessAdapter) businessService.create(file,
-                file.getTitle(), "File", "/");
+        // name).set("type", type).set("parentPath",parentPath).execute();
+        file = (BusinessBean) businessService.create(file, file.getTitle(),
+                "File", "/");
         assertNotNull(file);
         // Test for pojo <-> adapter automation update
         file.setTitle("Update");
-        file = (BeanBusinessAdapter) businessService.update(file, file.getId());
+        file = (BusinessBean) businessService.update(file, file.getId());
         assertEquals("Update", file.getTitle());
     }
 }
