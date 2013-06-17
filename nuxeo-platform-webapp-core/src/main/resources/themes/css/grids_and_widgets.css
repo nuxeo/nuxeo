@@ -46,8 +46,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   font-size: 1.1em }
 
 .summaryTitle, .gridBox .summaryTitle {
-  border-width: 3px;
-  border-style: none none double;
+  border-width: 1px;
+  border-style: none none solid;
   border-color: "color.major.medium (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
   display: block;
@@ -98,6 +98,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin-left: -0.5em }
 
 /* =Specifics */
+
+.indicators {
+  margin: 0 .2em .5em 0 }
+.indicators .widgetPanel.actionsWidgetPanel > div {
+  display: inline;
+  margin: 0 1em 0 0 }
+.indicators .widgetPanel.actionsWidgetPanel img {
+  margin: 0 0 -0.17em }
 
 /* CompactLayout mode */
 /* The .compactLayout class role is to display widgets and containers in
@@ -177,7 +185,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .actionsWidgetPanel input.button {
   display: inline-block;
   font-weight: bold;
-  margin: 0 0 .2em .5em;
+  margin: 0 0 .2em .2em;
   padding: .3em .7em }
 
 .compactLayout .searchFilterActions {

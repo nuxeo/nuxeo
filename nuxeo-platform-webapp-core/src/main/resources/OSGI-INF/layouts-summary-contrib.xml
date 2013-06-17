@@ -721,10 +721,7 @@
       <properties widgetMode="view">
         <property name="category">SUMMARY_INDICATORS</property>
         <property name="overallDisplay">horizontal_block</property>
-        <property name="subStyleClass">contextActions</property>
-        <!-- 
-        <property name="styleClass">globalActionBar textAlignR</property>
-         -->
+        <property name="styleClass">indicators</property>
       </properties>
     </widget>
 
