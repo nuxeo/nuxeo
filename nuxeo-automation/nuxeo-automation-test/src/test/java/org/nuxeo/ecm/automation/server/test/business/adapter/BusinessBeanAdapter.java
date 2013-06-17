@@ -1,52 +1,24 @@
-package org.nuxeo.ecm.automation.core.operations.business.adapter;
+package org.nuxeo.ecm.automation.server.test.business.adapter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelFactory;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
 /**
- * Nuxeo document model adapter for mapping
- * @since 5.7
+ * Document Model Adapter example server side
  */
-public class BeanBusinessAdapter {
+public class BusinessBeanAdapter extends BusinessAdapter {
 
-    private static final Log log = LogFactory.getLog(BeanBusinessAdapter.class);
+    private static final Log log = LogFactory.getLog(BusinessBeanAdapter.class);
 
-    protected final transient DocumentModel doc;
-
-    public BeanBusinessAdapter() {
-        this.doc = DocumentModelFactory.createDocumentModel("File");
+    public BusinessBeanAdapter() {
+        super();
     }
 
-    public BeanBusinessAdapter(DocumentModel document) {
-        this.doc = document;
-    }
-
-    public void save(CoreSession session) {
-        try {
-            session.saveDocument(doc);
-            session.save();
-        } catch (ClientException e) {
-            log.error("Cannot save document", e);
-        }
-    }
-
-    @JsonIgnore
-    public DocumentModel getDocument() {
-        return doc;
-    }
-
-    public String getId() {
-        return doc.getId();
-    }
-
-    public void setId(String id) {
-        return;
+    public BusinessBeanAdapter(DocumentModel documentModel) {
+        super(documentModel);
     }
 
     public String getTitle() {

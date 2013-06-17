@@ -1,17 +1,14 @@
-package org.nuxeo.ecm.automation.core.operations.business.adapter;
+package org.nuxeo.ecm.automation.server.test.business.adapter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
-/**
- * @since 5.7
- */
-public class BeanBusinessAdapterFactory implements DocumentAdapterFactory {
+public class BusinessBeanAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
         if ("File".equals(doc.getType())) {
-            return new BeanBusinessAdapter(doc);
+            return new BusinessBeanAdapter(doc);
         } else {
             return null;
         }
