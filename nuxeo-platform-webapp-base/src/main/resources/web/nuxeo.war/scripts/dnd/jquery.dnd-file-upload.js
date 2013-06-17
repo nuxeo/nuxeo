@@ -229,28 +229,34 @@ if (!log) {
         // Webkit and FF4 => use Overlay
         var overlay = jQuery("<div></div>");
         overlay.addClass("dropzoneTargetOverlay");
-        overlay.css(zone.position());
-
-        var computedWidth = zone.width() + 2;
-        computedWidth += parseInt(zone.css('padding-right'), 10);
-        computedWidth += parseInt(zone.css('padding-left'), 10);
-        computedWidth += parseInt(zone.css('margin-right'), 10);
-        computedWidth += parseInt(zone.css('margin-left'), 10);
-        overlay.width(computedWidth);
-
-        var computedHeight = zone.height() + 2;
-        computedHeight += parseInt(zone.css('padding-top'), 10);
-        computedHeight += parseInt(zone.css('padding-bottom'), 10);
-        computedHeight += parseInt(zone.css('margin-top'), 10);
-        computedHeight += parseInt(zone.css('margin-bottom'), 10);
-        overlay.height(computedHeight);
-
         zone.append(overlay);
+        resizeOverlay(zone);
         overlay.bind("dragleave",  function(event) { removeOverlay(event, overlay, zone, opts);});
         zone.unbind("dragenter");
         log("overlay applied");
       }
    }
+
+  function resizeOverlay(dropZone) {
+    dropZone = jQuery(dropZone)
+    dropZone.find(".dropzoneTargetOverlay").each(function() {
+      var overlay = jQuery(this);
+      overlay.css(dropZone.position());
+      var computedWidth = dropZone.width();
+      computedWidth += parseInt(dropZone.css('padding-right'), 10);
+      computedWidth += parseInt(dropZone.css('padding-left'), 10);
+      computedWidth += parseInt(dropZone.css('margin-right'), 10);
+      computedWidth += parseInt(dropZone.css('margin-left'), 10);
+      overlay.width(computedWidth);
+
+      var computedHeight = dropZone.height();
+      computedHeight += parseInt(dropZone.css('padding-top'), 10);
+      computedHeight += parseInt(dropZone.css('padding-bottom'), 10);
+      computedHeight += parseInt(dropZone.css('margin-top'), 10);
+      computedHeight += parseInt(dropZone.css('margin-bottom'), 10);
+      overlay.height(computedHeight);
+    })
+  }
 
   function removeOverlay(event,overlay,zone,opts) {
        zone.removeClass("dropzoneTarget");
@@ -334,8 +340,13 @@ if (!log) {
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
       nbUploadInprogress++;
 
-      opts.handler.uploadStarted(uploadIdx, file);
       uploadIdx++;
+      opts.handler.uploadStarted(uploadIdx, file);
+
+      // resize the overlay
+      jQuery(".dropzoneTarget").each(function() {
+        resizeOverlay(this);
+      });
 
       xhr.send(file);
 
