@@ -14,15 +14,14 @@
       </properties>
     </action>
 
-    <action id="dndDamImportAssets" link=""
+    <action id="dndDamBulkImportAssets" link=""
       order="10" label="label.smart.import"
       help="desc.smart.import.file">
       <category>DAM_IMPORT_ASSETS</category>
       <filter-id>canCreateInAssetLibrary</filter-id>
       <properties>
         <property name="chainId">Dam.ImportWithMetaDataInSeam</property>
-        <property name="layout">dublincore</property>
-        <property name="schema">dublincore</property>
+        <property name="layout">damBulkImport@create</property>
       </properties>
     </action>
 

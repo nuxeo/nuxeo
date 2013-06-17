@@ -947,6 +947,29 @@
       </rows>
     </layout>
 
+    <layout name="damBulkImport@create">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>damc_authoringDate</widget>
+        </row>
+        <row>
+          <widget>damc_author</widget>
+        </row>
+        <row>
+          <widget>subjects</widget>
+        </row>
+        <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+      </rows>
+    </layout>
+
     <layout name="damBulkEdit@edit">
       <templates>
         <template mode="any">/layouts/layout_bulkedit_template.xhtml</template>

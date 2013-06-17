@@ -191,11 +191,11 @@
       </properties>
       <filter-id>canCreateNewAsset</filter-id>
     </action>
-    <action id="damImportAssets" order="200" label="label.dam.import.assets"
+    <action id="damBulkImportAssets" order="200" label="label.dam.bulk.import.assets"
       type="fancybox">
       <category>DAM_SEARCH_RESULTS_ACTIONS</category>
       <properties>
-        <property name="include">/dam/incl/import_assets_box.xhtml</property>
+        <property name="include">/dam/incl/bulk_import_assets_box.xhtml</property>
         <property name="dropContext">DAM_IMPORT_ASSETS</property>
         <property name="autoDimensions">false</property>
         <property name="width">80%</property>
