@@ -2,58 +2,52 @@
 
 Welcome to the Nuxeo Platform 5.7-SNAPSHOT.
 
-You can always download the latest releases of Nuxeo modules
-on the Nuxeo Platform from
-[http://www.nuxeo.com/en/downloads.][1]
+You can always download the latest releases of Nuxeo packages (distributions, 
+installers, virtual machine images, ...) from [http://www.nuxeo.com/en/downloads][1].
+Previous releases are available at [http://nuxeo.github.com/downloads.html][2]
 
 ## Requirements
 
-The applications based on Nuxeo EP 5.5 need Java. Please install and
-set up the recommended [Sun Java Development Kit (JDK) 6][2] if it's not
-already installed on your computer.
+The applications based on Nuxeo Platform 5 need Java. Please install and set up a 
+Java Development Kit 7 (JDK 7, also called Java 1.7; JRE is not enough)* if it's not
+already installed on your computer.  
+* We currently support Oracle's JDK[3] and OpenJDK[4] as a default Java setup. 
+Don't hesitate to contact us if you need us to support a JDK from another vendor.
 
-Nuxeo Platform 5.5 supports OpenJDK 6 as a default Java setup.
-We don't consider Java 7 as a supported version yet, but we welcome
-your feedback if you encounter any trouble with it.
-
-It won't work with any previous release of Java (e.g. Java 5).
+Even if not supported, we welcome your feedback if you encounter any trouble with 
+earlier versions of the JDK. Nuxeo won't work with any previous release of Java (e.g. Java 5).
 
 Under Windows, virus scan should be configured to avoid scanning
-Nuxeo's installation folder. More details on [this FAQ entry][3].
+Nuxeo's installation folder.  See [lock problems leading to server errors][5].
 
 ## Getting Started
 
-For Internet Explorer 9 users:
-You need to add the Nuxeo server URL in the trusted sites list to be
-able to complete the installation and configuration steps.
-In the Internet Options > Security > Trusted Sites menu, click on
-the Sites button, type the Nuxeo server URL and add it.
+For Internet Explorer 9 users: uou need to add the Nuxeo server URL in the trusted 
+sites list to be able to complete the installation and configuration steps.
+In the Internet Options > Security > Trusted Sites menu, click on the 
+Sites button, type the Nuxeo server URL and add it.
 
-After you have installed the Nuxeo Platform:
-
-Either follow the Quick installation steps described on the online
-[Installation and Administration Guide][4] or the instructions below:
+After you have installed the Nuxeo Platform, either follow the Quick installation
+steps described on the online [Installation and Administration Guide][6] or the instructions below:
 
 1. Go to your installation directory.
 2. Start the server:
-  + under Linux/Unix/MacOS, run "./bin/nuxeoctl start" to use only
-    the terminal or "./bin/nuxeoctl gui start" to display the
-    Control Panel (run "./bin/nuxeoctl help" for list of available
-    commands).
-  + under Windows if you installed Nuxeo from the .zip file, run
-    "bin\nuxeoctl.bat".
-  + under Windows if you installed Nuxeo from the .exe file,
-    either run "bin\nuxeoctl.bat" or use the "nuxeo" Windows
-    service.
+  + under Linux/Unix/MacOS, run "./bin/nuxeoctl start" to use only the terminal 
+    or "./bin/nuxeoctl gui start" to display the Control Panel 
+    (run "./bin/nuxeoctl help" for list of available commands).
+  + under Windows, run "bin\nuxeoctl.bat" (the Control Panel is displayed by default, 
+    use "--gui=false" option for terminal only).
+  + you can also use a Debian[7] or Windows[8] service.  
 3. Point your browser to http://localhost:8080/nuxeo/.
 4. Configure your server using the displayed Startup Wizard.
-5. Select the modules you want to install on the Platform.
+5. Select the modules you want to install on the Platform (a lot of other modules 
+   are available in [the Update Center][9] and on [the Nuxeo Marketplace][10]).
 6. When the server is restarted, log in using the "Administrator"
    login and the "Administrator" password (no quotes, of course, but
    capital "A").
 
 For setup and configuration, you should refer to the [Setup pages of
-the Installation and Administration Guide][5].
+the Installation and Administration Guide][11].
 
 ## Complementary features
 
@@ -62,27 +56,26 @@ your Nuxeo application:
 
 * PDF transformation: this feature requires OpenOffice started as
   server, complete the installation by following [the OpenOffice
-  instructions on the related software page][6].
+  instructions on the related software page][12].
 * Preview and annotations: requires install of third-party software
- [pdftohtml][7], see [the pdftohtml instructions on the related
-  software page][8].
-* Image tiling: requires install of third-party software [ImageMagick][9],
- see [the ImageMagick instructions on the related software page][10].
-* Drag and drop plugins: [Firefox][11], [Internet Explorer][12].
+ [pdftohtml][13], see [the pdftohtml instructions on the related
+  software page][14].
+* Image tiling: requires install of third-party software [ImageMagick][15],
+  see [the ImageMagick instructions on the related software page][16].
+* Drag and drop plugins: [Firefox][17], [Internet Explorer][18].
 * Desktop integration thanks to LiveEdit: see the [plugins
- download page][13].
-* Video features: requires install of third-party software FFmpeg:
- for [Windows][14] and [other OS][15].
+  download page][19].
+* Video features: requires install of third-party software [FFmpeg][20].
 
 
 ## About Nuxeo
 
-Nuxeo provides an [Open Source Content Management Platform][16] enabling
+Nuxeo provides an [Open Source Content Management Platform][21] enabling
 architects and developers to easily build, deploy, and run
 content-centric  business applications. In the cloud or on premise,
 Nuxeo's Enterprise Content Management (ECM) technology offers an
-integrated solution for [Document Management][17], [Digital Asset Management][18],
-[Case Management][19] and much more. Built on a modern,
+integrated solution for [Document Management][22], [Digital Asset Management][23],
+[Case Management][24] and much more. Built on a modern,
 Java-based architecture, the Nuxeo Platform is architected for modularity
 and extensibility, unlike traditional ECM solutions. This means that
 your content-centric application aligns with your business and technical
@@ -121,39 +114,37 @@ community of professional and individual contributors:
  easily find your documents through their content or their metadata.
  Save time: you can save and reuse your most frequent queries.
 
-This release note presents the main features of the platform, through a
-default web client.
+## Release Notes
 
-## Known Issues
+See See [http://nuxeo.github.io/releasenotes/5.7.1/][25]
 
-Please go to the [Jira issue tracker][20] for the Nuxeo ECM Platform
-project on jira.nuxeo.org to check the [currently bugs and issues
-with this release][21].
+## Issues
+
+Please go to the [JIRA issue tracker][26] for the Nuxeo ECM Platform
+project to check the [fixed and currently known bugs and issues
+with this release][27].
 
 ## Documentation and Help
 
-You will find documentation on the [the Nuxeo community site][22].
+You will find documentation on the [the Nuxeo community site][28].
 
 More specifically:
 
-* The [Nuxeo User Guide][23]
-* [Customization and Development with Nuxeo][24]
-* The [Nuxeo Technical Documentation Center][25]
-* The [Nuxeo Administration Guide][26]
+* The [Nuxeo User Guide][29]
+* [Customization and Development with Nuxeo][30]
+* The [Nuxeo Technical Documentation Center][31]
+* The [Nuxeo Administration Guide][32]
 
 ## Licenses
 
-The Nuxeo Platform is copyright 2006-2011 Nuxeo SA. They are
-released under the LGPL license. The Nuxeo Platform includes third-party
-libraries, licensed under compatible open source licenses.
+The Nuxeo Platform is copyright 2006-2013 Nuxeo SA. It is released under the LGPL license. 
+The Nuxeo Platform includes third-party libraries, licensed under compatible open source licenses.
 
 ## Acknowledgments
 
-This release contains code developed by the Nuxeo Team (Alain, Anahide,
-Benjamin, Bogdan, Eric, Eugen, Julien, Lise, Olivier, Solen, Stefane,
-Thierry, Tibo...), the Leroy Merlin team and Jean-Marc from Chalmers
-University in Goteborg. Many more people have suggested improvement,
-spotted issues or contributed bugfixes on the mailing list.
+This release contains code developed by the Nuxeo Team, the Leroy Merlin team 
+and Jean-Marc from Chalmers University in Goteborg. 
+Many more people have suggested improvement, spotted issues or contributed patches.
 
 The following translations are contributions from the community:
 
@@ -180,32 +171,40 @@ Group, the Apache Foundation, Sun Microsystems, HP, the OSGi Alliance,
 the JMock project, the JFlex project, the Cup project, etc.
 
 This project is developed using tools that include: Eclipse, JUnit,
-Ant, Maven, Jira, Hudson, YourKit Java Profiler (thanks to free
+Ant, Maven, JIRA, Hudson, YourKit Java Profiler (thanks to free
 licenses donated by YourKit), etc.
 
+
 [1]: http://www.nuxeo.com/en/downloads
-[2]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
-[3]: https://doc.nuxeo.com/x/ngQz
-[4]: https://doc.nuxeo.com/x/G4AO
-[5]: https://doc.nuxeo.com/x/PwA7
-[6]: https://doc.nuxeo.com/x/zgJc
-[7]: http://sourceforge.net/projects/pdftohtml/
-[8]: https://doc.nuxeo.com/x/zgJc
-[9]: http://www.imagemagick.org/script/index.php
-[10]: https://doc.nuxeo.com/x/zgJc
-[11]: https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi
-[12]: http://download.nuxeo.org/desktop-integration/drag-drop/msie/
-[13]: http://www.nuxeo.com/en/downloads/desktop-integration
-[14]: http://ffmpeg.zeranoe.com/builds/
-[15]: http://ffmpeg.org/download.html
-[16]: http://www.nuxeo.com/en/products/enterprise-platform/
-[17]: http://www.nuxeo.com/en/products/document-management
-[18]: http://www.nuxeo.com/en/products/dam
-[19]: http://www.nuxeo.com/en/products/case-management
-[20]: http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel
-[21]: https://jira.nuxeo.org/browse/NXP/fixforversion/
-[22]: http://doc.nuxeo.com/
-[23]: http://doc.nuxeo.org/current/books/nuxeo-user-guide/html/
-[24]: http://doc.nuxeo.com/display/NXDOC/Customization+and+Development
-[25]: https://doc.nuxeo.com/x/PIAO
-[26]: https://doc.nuxeo.com/x/G4AO
+[2]: http://nuxeo.github.com/downloads.html
+[3]: http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
+[4]: http://openjdk.java.net/install/index.html
+[5]: https://doc.nuxeo.com/x/ngQz
+[6]: https://doc.nuxeo.com/x/G4AO
+[7]: http://doc.nuxeo.com/x/NIpH
+[8]: http://doc.nuxeo.com/x/6QJc
+[9]: http://localhost:8080/nuxeo/nxhome/default@view_admin?tabIds=NUXEO_ADMIN%3AConnectApps
+[10]: https://marketplace.nuxeo.com/
+[11]: https://doc.nuxeo.com/x/PwA7
+[12]: https://doc.nuxeo.com/x/zgJc
+[13]: http://sourceforge.net/projects/pdftohtml/
+[14]: https://doc.nuxeo.com/x/zgJc
+[15]: http://www.imagemagick.org/script/index.php
+[16]: https://doc.nuxeo.com/x/zgJc
+[17]: https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi
+[18]: http://download.nuxeo.org/desktop-integration/drag-drop/msie/
+[19]: http://www.nuxeo.com/en/downloads/desktop-integration
+[20]: http://ffmpeg.org/download.html
+[21]: http://www.nuxeo.com/en/products/enterprise-platform/
+[22]: http://www.nuxeo.com/en/products/document-management
+[23]: http://www.nuxeo.com/en/products/dam
+[24]: http://www.nuxeo.com/en/products/case-management
+[25]: http://nuxeo.github.io/releasenotes/5.7.1
+[26]: http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel
+[27]: https://jira.nuxeo.org/browse/NXP/fixforversion/
+[28]: http://doc.nuxeo.com/
+[29]: http://doc.nuxeo.org/current/books/nuxeo-user-guide/html/
+[30]: http://doc.nuxeo.com/display/NXDOC/Customization+and+Development
+[31]: https://doc.nuxeo.com/x/PIAO
+[32]: https://doc.nuxeo.com/x/G4AO
+
