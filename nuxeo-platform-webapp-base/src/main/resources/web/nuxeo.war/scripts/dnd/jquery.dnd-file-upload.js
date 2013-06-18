@@ -340,8 +340,8 @@ if (!log) {
       xhr.setRequestHeader("Content-Type", "multipart/form-data");
       nbUploadInprogress++;
 
-      uploadIdx++;
       opts.handler.uploadStarted(uploadIdx, file);
+      uploadIdx++;
 
       // resize the overlay
       jQuery(".dropzoneTarget").each(function() {
