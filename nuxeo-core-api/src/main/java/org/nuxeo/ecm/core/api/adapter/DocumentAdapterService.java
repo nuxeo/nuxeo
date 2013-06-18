@@ -14,6 +14,7 @@
 
 package org.nuxeo.ecm.core.api.adapter;
 
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -53,6 +54,14 @@ public class DocumentAdapterService extends DefaultComponent {
 
     public DocumentAdapterDescriptor getAdapterDescriptor(Class<?> itf) {
         return adapters.get(itf);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public DocumentAdapterDescriptor[] getAdapterDescriptors() {
+        Collection<DocumentAdapterDescriptor> values = adapters.values();
+        return values.toArray(new DocumentAdapterDescriptor[values.size()]);
     }
 
     public void registerAdapterFactory(DocumentAdapterDescriptor dae) {
