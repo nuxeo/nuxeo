@@ -265,6 +265,11 @@ public class Document extends DocRef {
         return contextParameters;
     }
 
+    /**
+     * This method fetch the dirty properties of the document (which have been
+     * updated during the session)
+     * @since 5.7
+     */
     public PropertyMap getDirties() {
         return propertiesSetter.getDirties();
     }

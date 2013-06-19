@@ -41,7 +41,7 @@ public class Constants {
      * the returned doc.
      * <p>
      * If the header is not specified, the default properties are returned (the
-     * minimal document properties). To specify all the schemas you can use the
+     * minimal document properties: common, dublincore, file). To specify all the schemas you can use the
      * <code>*</code> as value. Example:
      *
      * <pre>
