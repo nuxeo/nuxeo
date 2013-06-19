@@ -127,10 +127,9 @@ empty:
         <c:if test="#{showFilterFormBox}">
           <script>
             openFancyBox('##{filterFormId}_box', {
-              'autoDimensions': false,
+              'autoDimensions': true,
               'autoScale': true,
               'width': 'auto',
-              'height': '320',
               'transitionIn': 'none',
               'transitionOut': 'none',
               'enableEscapeButton': true,
@@ -143,15 +142,17 @@ empty:
 
         <div  style="display:none;">
         <div id="#{filterFormId}_box">
-
+          <h3><h:outputText value="#{messages['label.contentview.filter.title']}" /></h3>
           <a4j:form id="#{filterFormId}" ajaxSubmit="true"
             reRender="#{elementsToReRender}"
             ignoreDupResponses="true"
             requestDelay="100"
             oncomplete="jQuery.fancybox.close();">
 
-            <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
-              value="#{contentView.searchDocumentModel}" />
+            <div class="content">
+              <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+                value="#{contentView.searchDocumentModel}" />
+            </div>
 
             <p class="buttonsGadget">
               <h:commandButton
