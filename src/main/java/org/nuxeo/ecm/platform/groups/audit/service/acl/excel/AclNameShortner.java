@@ -18,9 +18,7 @@
 package org.nuxeo.ecm.platform.groups.audit.service.acl.excel;
 
 import java.util.Set;
-
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -75,9 +73,18 @@ public class AclNameShortner {
      * @throws an IllegalArgumentException if the permission is unknown.
      */
     public String getShortName(String permission) {
-        if (!mapping.containsKey(permission))
-            throw new IllegalArgumentException("Unknown permission '"
-                    + permission + "'");
+        if (!mapping.containsKey(permission)) {
+            // Generate one with capitalized letters
+            String s = permission.replaceAll("[a-z\\s]", "");
+            String shortName = s;
+            int index = 1;
+            while (mapping.values().contains(shortName)) {
+                shortName = s + index;
+                index++;
+            }
+            mapping.put(permission, shortName);
+        }
+
         return mapping.get(permission);
     }
 

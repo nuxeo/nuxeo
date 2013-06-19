@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.AclExcelLayoutBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.IAclExcelLayoutBuilder;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.AclNameShortner;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -40,6 +41,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test excel export of groups
@@ -134,5 +137,16 @@ public class TestAclLayoutSimple extends AbstractAclLayoutTest {
         IAclExcelLayoutBuilder v = new AclExcelLayoutBuilder();
         v.renderAudit(session);
         v.getExcel().save(testFile);
+    }
+
+    @Test
+    public void testAclNameShortner() {
+        AclNameShortner ans = new AclNameShortner();
+        assertEquals("SU", ans.getShortName("Something Unknown"));
+        assertEquals("SU1", ans.getShortName("Something Unknowndsds"));
+        assertEquals("SU2", ans.getShortName("Somedsasdsathing Unknowndsds"));
+        assertEquals("SU", ans.getShortName("Something Unknown"));
+        assertEquals("SU2", ans.getShortName("Somedsasdsathing Unknowndsds"));
+        assertEquals("R", ans.getShortName(SecurityConstants.READ));
     }
 }
