@@ -17,9 +17,6 @@
     <antcall target="build-resources">
       <param name="distribution" value="doc" />
     </antcall>
-    <antcall target="build-resources">
-      <param name="distribution" value="doc-dm" />
-    </antcall>
     <antcall target="copy-resources">
       <param name="distribution" value="bin" />
     </antcall>
