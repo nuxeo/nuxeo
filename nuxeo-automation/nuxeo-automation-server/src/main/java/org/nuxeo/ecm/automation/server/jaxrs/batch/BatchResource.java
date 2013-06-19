@@ -19,7 +19,6 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.InputStream;
 import java.net.URLDecoder;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,15 +34,10 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationParameters;
-import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
@@ -71,6 +65,12 @@ public class BatchResource {
                 "Content-Length", message.length()).build();
     }
 
+    /**
+     *
+     * @deprecated since 5.7.2. The timeout is managed by the
+     *             {@link BatchManager#execute} method.
+     */
+    @Deprecated
     protected int getUploadWaitTimeout() {
         String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout",
                 "5");
@@ -108,49 +108,30 @@ public class BatchResource {
         params.remove(REQUEST_BATCH_ID);
         params.remove("operationId");
 
-        BatchManager bm = Framework.getLocalService(BatchManager.class);
-
-        List<Blob> blobs = bm.getBlobs(batchId, getUploadWaitTimeout());
-        if (blobs == null) {
-            log.error("Unable to find batch associated with id " + batchId);
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-                    "{\"error\" : \"" + "Unable to find batch with Id "
-                            + batchId + "\"}").build();
-        }
-
-        xreq.setInput(new BlobList(blobs));
-
-        OperationContext ctx = xreq.createContext(request,
-                getCoreSession(request));
-        AutomationService as = Framework.getLocalService(AutomationService.class);
-
-        request.setAttribute(REQUEST_BATCH_ID, batchId);
-
+        final BatchManager bm = Framework.getLocalService(BatchManager.class);
         // register commit hook for cleanup
+        request.setAttribute(REQUEST_BATCH_ID, batchId);
         RequestContext.getActiveContext(request).addRequestCleanupHandler(
                 new RequestCleanupHandler() {
                     @Override
                     public void cleanup(HttpServletRequest req) {
                         String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
-                        BatchManager bm = Framework.getLocalService(BatchManager.class);
                         bm.clean(bid);
                     }
 
                 });
+
         try {
-            Object result = null;
-            if (operationId.startsWith("Chain.")) {
-                // Copy params in the Chain context
-                ctx.putAll(xreq.getParams());
-                result = as.run(ctx, operationId.substring(6));
+            OperationContext ctx = xreq.createContext(request,
+                    getCoreSession(request));
+
+            Object result = bm.execute(batchId, operationId,
+                    getCoreSession(request), ctx, params);
+            if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
+                return ResponseHelper.emptyContent(); // void response
             } else {
-                OperationChain chain = new OperationChain("operation");
-                OperationParameters oparams = new OperationParameters(
-                        operationId, params);
-                chain.add(oparams);
-                result = as.run(ctx, chain);
+                return result;
             }
-            return ResponseHelper.getResponse(result, request);
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
             if (ExceptionHandler.isSecurityError(e)) {

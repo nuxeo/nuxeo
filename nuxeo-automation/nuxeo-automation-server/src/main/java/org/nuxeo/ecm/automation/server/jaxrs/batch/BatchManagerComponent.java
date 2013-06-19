@@ -152,6 +152,7 @@ public class BatchManagerComponent extends DefaultComponent implements
             Object result = null;
             AutomationService as = Framework.getLocalService(AutomationService.class);
             if (chainOrOperationId.startsWith("Chain.")) {
+                ctx.putAll(operationParams);
                 result = as.run(ctx, chainOrOperationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
