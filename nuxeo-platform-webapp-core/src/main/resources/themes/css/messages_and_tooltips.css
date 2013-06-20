@@ -41,9 +41,11 @@ author: lkemen@nuxeo.com
   background-color: "info (__FLAVOR__ background)";
   border-color:"warning (__FLAVOR__ border)" }
 
+.info { color: "info.status (__FLAVOR__ color)"; font-weight: bold }
 .success { color: "normal.status (__FLAVOR__ color)"; font-weight: bold }
 .avert { color: "gray.dark (__FLAVOR__ color)"; font-weight: bold }
-.error, .warning { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
+.warning { color: "warning.status (__FLAVOR__ color)"; font-weight: bold }
+.error { color: "error.status (__FLAVOR__ color)"; font-weight: bold }
 
 .successLink { color: "normal.status (__FLAVOR__ color)" }
 .errorLink, .warningLink, .warningLabel { color: "warning.status (__FLAVOR__ color)" }
