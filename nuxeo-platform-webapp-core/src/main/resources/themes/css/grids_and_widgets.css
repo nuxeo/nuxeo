@@ -78,6 +78,13 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   border: 1px solid;
   border-color: "neutral.medium (__FLAVOR__ border)" }
 
+.thumbnailContainer {
+  height: 11em;
+  max-width: 14em }
+.thumbnailContainer img {
+  max-height: 100%;
+  max-width: 100% }
+
 /* =Standard Widgets */
 /* Widgets styles, spacing between blocks in .gridBox containers */
 .widgetPanel,
