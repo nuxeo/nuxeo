@@ -61,6 +61,7 @@
     <nuxeo.templates.version>5.7.2-SNAPSHOT</nuxeo.templates.version>
     <nuxeo.csv.version>5.7.2-SNAPSHOT</nuxeo.csv.version>
     <nuxeo.drive.version>5.7.2-SNAPSHOT</nuxeo.drive.version>
+    <nuxeo.dam.pdf.export.version>5.7.2-SNAPSHOT</nuxeo.dam.pdf.export.version>
   </properties>
 
   <modules>
@@ -120,6 +121,7 @@
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-drive</module>
+    <module>nuxeo-dam-pdf-export</module>
   </modules>
 
   <dependencyManagement>
@@ -1090,6 +1092,13 @@
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-hierarchy-permission</artifactId>
         <version>${nuxeo.drive.version}</version>
+      </dependency>
+
+      <!-- DAM PDF Export -->
+      <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-pdf-export</artifactId>
+        <version>${nuxeo.dam.pdf.export.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
