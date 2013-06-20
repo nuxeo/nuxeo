@@ -172,7 +172,7 @@ span.user:hover { background-color: "color.major.light (__FLAVOR__ background)" 
 .user a:hover { text-decoration: none }
 .description_block span.user { display: inline-block; font-size: 1em; padding: .1em .3em .1em 2.1em }
 
-.sticker, .description_block .sticker { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px;	 display: inline-block; font-size: 1em; font-weight: bold; margin: .2em; padding: .1em .2em; text-transform: uppercase }
+.sticker, .description_block .sticker { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px;	 display: inline-block; font-size: 1em; font-weight: bold; margin: .2em .5em .2em .1em; padding: .1em .2em; text-transform: uppercase }
 
 /* =Icon size management for upload in Nuxeo Studio */
 .bigIcon { width: 50px }
