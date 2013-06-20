@@ -49,19 +49,23 @@
                 </c:otherwise>
               </c:choose>
               <td class="fieldColumn">
-                <nxu:set var="leftValue" value="#{value.leftValue}" cache="true">
-                  <nxl:widget widget="#{widget}" value="#{leftValue}" />
-                </nxu:set>
+                <f:subview id="#{widget.id}_left">
+                  <nxu:set var="leftValue" value="#{value.leftValue}" cache="true">
+                    <nxl:widget widget="#{widget}" value="#{leftValue}" />
+                  </nxu:set>
+                 </f:subview>
               </td>
               <td class="fieldColumn">
-                <nxu:set var="rightValue" value="#{value.rightValue}" cache="true">
-                  <nxl:widget widget="#{widget}" value="#{rightValue}" />
-                </nxu:set>
+                <f:subview id="#{widget.id}_right">
+                  <nxu:set var="rightValue" value="#{value.rightValue}" cache="true">
+                    <nxl:widget widget="#{widget}" value="#{rightValue}" />
+                  </nxu:set>
+                 </f:subview>
               </td>
               <c:if test="#{fn:length(layoutRow.widgets) == 1}">
                 <td class="contentDiffColumn">
                 </td>
-              </c:if>  
+              </c:if>
             </c:if>
             <c:if test="#{widgetIndex == 1}">
               <td class="contentDiffColumn">
