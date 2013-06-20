@@ -139,7 +139,7 @@ public class ContextFunctions {
         return formatDate(calendar, "HH:mm:ss");
     }
 
-    protected String formatDate(Object calendar, String format) {
+    public String formatDate(Object calendar, String format) {
         Date dt = null;
         if (calendar instanceof Calendar) {
             dt = ((Calendar) calendar).getTime();
