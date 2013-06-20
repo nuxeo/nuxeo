@@ -272,13 +272,14 @@
       <param-value>500000</param-value>
     </context-param>
 
+    <!-- parameters of JSF server-side state saving -->
     <context-param>
       <param-name>com.sun.faces.numberOfViewsInSession</param-name>
-      <param-value>4</param-value>
+      <param-value>${nuxeo.jsf.numberOfViewsInSession}</param-value>
     </context-param>
     <context-param>
       <param-name>com.sun.faces.numberOfLogicalViews</param-name>
-      <param-value>4</param-value>
+      <param-value>${nuxeo.jsf.numberOfLogicalViews}</param-value>
     </context-param>
 
     <!-- parameters for RichFaces resources loading -->
