@@ -50,6 +50,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
@@ -484,6 +485,20 @@ public class DamSearchActions implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Reset attributes.
+     *
+     * @since 5.7.2
+     */
+    @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
+    @BypassInterceptors
+    public void resetonFlush() {
+        contentViewHeaders = null;
+        contentViewNames = null;
+        currentSelectedSavedSearchId = null;
+        currentContentViewName = null;
     }
 
 }
