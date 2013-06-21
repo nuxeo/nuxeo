@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Thumbnail adapter getting thumbnail blob from thumbnail registered factories
- * 
+ *
  * @since 5.7
  */
 public class ThumbnailAdapter implements Thumbnail {
@@ -51,6 +51,7 @@ public class ThumbnailAdapter implements Thumbnail {
         return doc.getId();
     }
 
+    @Override
     public Blob computeThumbnail(CoreSession session) throws ClientException {
         ThumbnailService thumbnailService = Framework.getLocalService(ThumbnailService.class);
         return thumbnailService.computeThumbnail(doc, session);
