@@ -26,12 +26,35 @@ public class BusinessBean {
 
     protected String id;
 
+    protected String note;
+
+    protected String type;
+
     public BusinessBean() {
     }
 
-    public BusinessBean(String title, String description) {
+    public BusinessBean(String title, String description, String note,
+            String type) {
         this.title = title;
         this.description = description;
+        this.note = note;
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public String getTitle() {

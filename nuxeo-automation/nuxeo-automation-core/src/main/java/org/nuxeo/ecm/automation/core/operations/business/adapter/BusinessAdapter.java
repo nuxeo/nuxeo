@@ -34,17 +34,22 @@ public abstract class BusinessAdapter {
 
     private static final Log log = LogFactory.getLog(BusinessAdapter.class);
 
+    @JsonProperty("id")
+    protected final String id;
+
+    @JsonProperty("type")
+    protected final String type;
+
     protected transient DocumentModel doc;
 
-    @JsonProperty("id")
-    protected String id;
-
-    public BusinessAdapter() {
-        this.doc = DocumentModelFactory.createDocumentModel("File");
+    public BusinessAdapter(String type) {
+        this.type = type;
+        this.doc = DocumentModelFactory.createDocumentModel(type);
         this.id = doc.getId();
     }
 
     public BusinessAdapter(DocumentModel document) {
+        this.type = document.getType();
         this.doc = document;
         this.id = doc.getId();
     }
@@ -65,6 +70,10 @@ public abstract class BusinessAdapter {
 
     public String getId() {
         return doc.getId();
+    }
+
+    public String getType() {
+        return doc.getType();
     }
 
 }

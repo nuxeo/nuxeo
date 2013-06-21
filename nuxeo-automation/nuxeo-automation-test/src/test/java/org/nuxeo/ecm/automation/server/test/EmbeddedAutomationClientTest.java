@@ -783,23 +783,24 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
-        BusinessBean file = new BusinessBean("File", "File description");
+        BusinessBean note = new BusinessBean("Note", "File description",
+                "Note Content", "Note");
         BusinessService businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
         // adding BusinessBean marshaller
-        JsonMarshalling.addMarshaller(PojoMarshaller.forClass(file.getClass()));
+        JsonMarshalling.addMarshaller(PojoMarshaller.forClass(note.getClass()));
 
         // This request can be done directly with
         // Operation.BusinessCreateOperation ->
         // session.newRequest("Operation.BusinessCreateOperation").setInput(o).set("name",
         // name).set("type", type).set("parentPath",parentPath).execute();
-        file = (BusinessBean) businessService.create(file, file.getTitle(),
-                "File", "/");
-        assertNotNull(file);
+        note = (BusinessBean) businessService.create(note, note.getTitle(),
+                note.getType(), "/");
+        assertNotNull(note);
         // Test for pojo <-> adapter automation update
-        file.setTitle("Update");
-        file = (BusinessBean) businessService.update(file, file.getId());
-        assertEquals("Update", file.getTitle());
+        note.setTitle("Update");
+        note = (BusinessBean) businessService.update(note, note.getId());
+        assertEquals("Update", note.getTitle());
     }
 }

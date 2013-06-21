@@ -1,7 +1,20 @@
+/*
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
+ */
 package org.nuxeo.ecm.automation.server.test.business.adapter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -13,8 +26,14 @@ public class BusinessBeanAdapter extends BusinessAdapter {
 
     private static final Log log = LogFactory.getLog(BusinessBeanAdapter.class);
 
-    public BusinessBeanAdapter() {
-        super();
+    /**
+     * This constructor is used by Jackson to initialize the adapter with the
+     * proper document type
+     */
+    @JsonCreator
+    public BusinessBeanAdapter(@JsonProperty("type")
+    String type) {
+        super(type);
     }
 
     public BusinessBeanAdapter(DocumentModel documentModel) {
@@ -52,6 +71,23 @@ public class BusinessBeanAdapter extends BusinessAdapter {
             doc.setPropertyValue("dc:description", value);
         } catch (ClientException e) {
             log.error("cannot set description property", e);
+        }
+    }
+
+    public String getNote() {
+        try {
+            return (String) doc.getPropertyValue("note:note");
+        } catch (ClientException e) {
+            log.error("cannot get note property", e);
+        }
+        return null;
+    }
+
+    public void setNote(String value) {
+        try {
+            doc.setPropertyValue("note:note", value);
+        } catch (ClientException e) {
+            log.error("cannot get note property", e);
         }
     }
 
