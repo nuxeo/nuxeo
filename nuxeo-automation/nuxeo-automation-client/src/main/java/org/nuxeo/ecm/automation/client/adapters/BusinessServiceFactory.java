@@ -11,24 +11,44 @@
  */
 package org.nuxeo.ecm.automation.client.adapters;
 
+import java.lang.reflect.ParameterizedType;
+
 import org.nuxeo.ecm.automation.client.AdapterFactory;
 import org.nuxeo.ecm.automation.client.Session;
 
 /**
  * @since 5.7
  */
-public class BusinessServiceFactory implements AdapterFactory<BusinessService> {
+public class BusinessServiceFactory<T> implements
+        AdapterFactory<BusinessService<T>> {
+
+    Class<BusinessService<T>> serviceType;
 
     public Class<?> getAcceptType() {
         return Session.class;
     }
 
-    public Class<BusinessService> getAdapterType() {
-        return BusinessService.class;
+    @Override
+    public Class<BusinessService<T>> getAdapterType() {
+        return serviceType();
     }
 
-    public BusinessService getAdapter(Object toAdapt) {
-        return new BusinessService((Session) toAdapt);
+    @Override
+    public BusinessService<T> getAdapter(Object toAdapt) {
+        return new BusinessService<T>((Session) toAdapt);
+    }
+
+    protected Class<BusinessService<T>> serviceType() {
+        try {
+            if (serviceType == null) {
+                ParameterizedType adapterType = (ParameterizedType) this.getClass().getGenericInterfaces()[0];
+                ParameterizedType serviceType = (ParameterizedType) adapterType.getActualTypeArguments()[0];
+                this.serviceType = (Class<BusinessService<T>>) serviceType.getRawType();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return serviceType;
     }
 
 }

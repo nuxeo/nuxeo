@@ -18,6 +18,8 @@ import java.net.URL;
 
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.AutomationClientFactory;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -27,6 +29,7 @@ import org.osgi.framework.BundleContext;
  */
 public class AutomationClientActivator implements AutomationClientFactory,
         BundleActivator {
+
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         bundleContext.registerService(AutomationClientFactory.class.getName(),

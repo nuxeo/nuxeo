@@ -12,6 +12,8 @@
 package org.nuxeo.ecm.automation.client.adapters;
 
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 
 /**
  * This automation client business service provides access to Business
@@ -33,6 +35,17 @@ public class BusinessService<T> {
     }
 
     /**
+     * Check if Client JsonMarshalling already contains o Marshaller
+     *
+     * @param o the pojo to add to Client JsonMarshalling
+     */
+    private void checkMarshaller(T o) {
+        if (JsonMarshalling.getMarshaller(o.getClass()) == null) {
+            JsonMarshalling.addMarshaller(PojoMarshaller.forClass(o.getClass()));
+        }
+    }
+
+    /**
      * This method is calling @{BusinessCreateOperation}
      *
      * @param o the object to send (pojo client side)
@@ -41,6 +54,7 @@ public class BusinessService<T> {
      * @return the pojo returned by the server
      */
     public T create(T o, String name, String parentPath) throws Exception {
+        checkMarshaller(o);
         return (T) session.newRequest("Business.BusinessCreateOperation").setInput(
                 o).set("name", name).set("parentPath", parentPath).execute();
     }
@@ -53,6 +67,7 @@ public class BusinessService<T> {
      * @return the pojo returned by the server
      */
     public T update(T o, String id) throws Exception {
+        checkMarshaller(o);
         return (T) session.newRequest("Business.BusinessUpdateOperation").setInput(
                 o).set("id", id).execute();
     }
