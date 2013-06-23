@@ -236,7 +236,8 @@ public class ITSafeEditTest extends AbstractTest {
 
         // Let's restore
         WebElement confirmRestoreYes = driver.findElement(By.id(CONFIRM_RESTORE_YES_ELT_ID));
-        confirmRestoreYes.click();
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", confirmRestoreYes);
+        //confirmRestoreYes.click();
 
         // We check that the title value has actually been restored
         titleElt = driver.findElement(By.name(TITLE_ELT_ID));
