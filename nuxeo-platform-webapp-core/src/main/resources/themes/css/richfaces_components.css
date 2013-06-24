@@ -35,7 +35,9 @@ td.dr-tree-i-sel { padding: 0 4px }
 
 /* =FileUpload */
 .rich-fileupload-list-decor { margin: 1em 0 }
-.rich-fileupload-button {
+.rich-fileupload-button,
+.rich-fileupload-button-light,
+.rich-fileupload-button-press {
   box-shadow: 0 10px 5px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px #fff inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
   background: none 0;
   background-color: "button (__FLAVOR__ background)";
@@ -45,12 +47,11 @@ td.dr-tree-i-sel { padding: 0 4px }
   margin: .2em;
   border-color: "button (__FLAVOR__ border)";
   border-radius: 2px }
-.rich-fileupload-button-light,
-.rich-fileupload-button-press { padding: .1em }
 .rich-fileupload-button-content { padding: .1em .5em .1em 1.7em }
 
 .rich-fileupload-table-td {
-  padding: .4em 1em;
+  border-color: "neutral.lighter (__FLAVOR__ border)" ;
+  padding: .4em 1em .2em;
   height: auto }
 
 rich-fileupload-list-overflow table {
@@ -60,8 +61,6 @@ rich-fileupload-list-overflow table {
   font-weight: bold;
 	font-size: 1.1em }
 .rich-fileupload-name-padding b {
-  font-size: .8em;
-  font-weight: normal;
   color: "normal.status (__FLAVOR__ color)" }
 
 /* =Modal Panel */
