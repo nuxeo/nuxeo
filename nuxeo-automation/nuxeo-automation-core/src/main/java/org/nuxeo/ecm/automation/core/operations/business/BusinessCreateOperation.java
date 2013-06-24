@@ -29,10 +29,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @since 5.7
  */
-@Operation(id = BusinessCreateOperation.ID, category = Constants.CAT_EXECUTION, label = "BusinessCreateOperation", description = "This operation map pojo client side to document adapter server side and create NX document assuming that pojo and adapter have both properties in common.")
-public class BusinessCreateOperation {
+@Operation(id = BusinessCreateOperation.ID, category = Constants.CAT_BUSINESS, label = "BusinessCreateOperation", description = "This operation map pojo client side to document adapter server side and create NX document assuming that pojo and adapter have both properties in common.")
+public class
+        BusinessCreateOperation {
 
-    public static final String ID = "Operation.BusinessCreateOperation";
+    public static final String ID = "Business.BusinessCreateOperation";
 
     @Context
     protected CoreSession session;

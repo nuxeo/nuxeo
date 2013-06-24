@@ -42,7 +42,7 @@ public class BusinessService<T> {
      * @return the pojo returned by the server
      */
     public T create(T o, String name, String type, String parentPath) throws Exception {
-        return (T) session.newRequest("Operation.BusinessCreateOperation").setInput(
+        return (T) session.newRequest("Business.BusinessCreateOperation").setInput(
                 o).set("name", name).set("type", type).set("parentPath",
                 parentPath).execute();
     }
@@ -55,7 +55,7 @@ public class BusinessService<T> {
      * @return the pojo returned by the server
      */
     public T update(T o, String id) throws Exception {
-        return (T) session.newRequest("Operation.BusinessUpdateOperation").setInput(
+        return (T) session.newRequest("Business.BusinessUpdateOperation").setInput(
                 o).set("id", id).execute();
     }
 }
