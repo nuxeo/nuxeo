@@ -41,12 +41,21 @@ td.dr-tree-i-sel { padding: 0 4px }
   box-shadow: 0 10px 5px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px #fff inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
   background: none 0;
   background-color: "button (__FLAVOR__ background)";
+  border: none 0;
   padding: 0 }
+.rich-fileupload-button:hover,
+.rich-fileupload-button-light:hover,
+.rich-fileupload-button-press:hover {
+  background: none "color.major.medium (__FLAVOR__ background)" }
+
 .rich-fileupload-button-border {
   padding: 0;
   margin: .2em;
   border-color: "button (__FLAVOR__ border)";
   border-radius: 2px }
+.rich-fileupload-button-border:hover {
+  border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
+
 .rich-fileupload-button-content { padding: .1em .5em .1em 1.7em }
 
 .rich-fileupload-table-td {
