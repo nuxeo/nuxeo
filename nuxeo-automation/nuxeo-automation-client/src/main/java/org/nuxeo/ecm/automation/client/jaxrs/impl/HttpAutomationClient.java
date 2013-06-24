@@ -16,7 +16,7 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.nuxeo.ecm.automation.client.adapters.BusinessServiceFactory;
 import org.nuxeo.ecm.automation.client.adapters.DocumentServiceFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.AsyncAutomationClient;
@@ -67,7 +67,7 @@ public class HttpAutomationClient extends AsyncAutomationClient {
     }
 
     private void init(int httpConnectionTimeout) {
-        http = new DefaultHttpClient(new ThreadSafeClientConnManager());
+        http = new DefaultHttpClient(new PoolingClientConnectionManager());
         this.httpConnectionTimeout = httpConnectionTimeout;
         // http.setCookieSpecs(null);
         // http.setCookieStore(null);
