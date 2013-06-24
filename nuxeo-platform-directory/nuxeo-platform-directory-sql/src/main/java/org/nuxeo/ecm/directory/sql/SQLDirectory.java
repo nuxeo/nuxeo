@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
+import javax.transaction.Synchronization;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,8 +50,63 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class SQLDirectory extends AbstractDirectory {
+
+    protected class TxSessionCleaner implements Synchronization {
+        private final SQLSession session;
+
+        Throwable initContext = captureInitContext();
+
+        protected TxSessionCleaner(SQLSession session) {
+            this.session = session;
+        }
+
+        protected Throwable captureInitContext() {
+            if (!log.isDebugEnabled()) {
+                return null;
+            }
+            return new Throwable(
+                    "SQL directory session init context in "
+                            + SQLDirectory.this);
+        }
+
+        protected void checkIsNotLive() {
+            try {
+                if (!session.isLive()) {
+                    return;
+                }
+                if (initContext != null) {
+                    log.warn("Closing a sql directory session for you "
+                            + session, initContext);
+                } else {
+                    log.warn("Closing a sql directory session for you "
+                            + session);
+                }
+                if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                		log.warn("Closing sql directory session outside a transaction" + session);
+                }
+                session.close();
+            } catch (DirectoryException e) {
+                log.error(
+                        "Cannot state on sql directory session before commit "
+                                + SQLDirectory.this, e);
+            }
+
+        }
+
+		@Override
+		public void beforeCompletion() {
+			checkIsNotLive();
+		}
+
+		@Override
+		public void afterCompletion(int status) {
+			checkIsNotLive();
+		}
+
+    }
 
     private static final Log log = LogFactory.getLog(SQLDirectory.class);
 
@@ -288,13 +346,32 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public synchronized Session getSession() throws DirectoryException {
-        Session session = new SQLSession(this, config, managedSQLSession);
+        SQLSession session = new SQLSession(this, config, managedSQLSession);
         addSession(session);
         return session;
     }
 
-    protected synchronized void addSession(Session session) {
+    protected synchronized void addSession(final SQLSession session)
+            throws DirectoryException {
         sessions.add(session);
+        registerInTx(session);
+    }
+
+    protected void registerInTx(final SQLSession session)
+            throws DirectoryException {
+        if (!TransactionHelper.isTransactionActive()) {
+            return;
+        }
+        TransactionManager tm;
+        try {
+            tm = TransactionHelper.lookupTransactionManager();
+            Transaction tx = tm.getTransaction();
+            tx.registerSynchronization(new TxSessionCleaner(session));
+        } catch (Exception e) {
+            throw new DirectoryException(
+                    "Cannot register in tx for session cleanup handling "
+                            + this, e);
+        }
     }
 
     protected synchronized void removeSession(Session session) {
@@ -312,8 +389,8 @@ public class SQLDirectory extends AbstractDirectory {
             try {
                 session.close();
             } catch (DirectoryException e) {
-                log.error("Error during shutdown of directory '"
-                        + this.getName() + "'", e);
+                log.error("Error during shutdown of directory '" + getName()
+                        + "'", e);
             }
         }
     }
@@ -342,4 +419,10 @@ public class SQLDirectory extends AbstractDirectory {
     public boolean isMultiTenant() {
         return table.getColumn(TENANT_ID_FIELD) != null;
     }
+
+    @Override
+    public String toString() {
+        return "SQLDirectory [name=" + config.name + "]";
+    }
+
 }

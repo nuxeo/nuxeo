@@ -116,20 +116,20 @@ public class SQLSession extends BaseSession implements EntrySource {
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
             boolean managedSQLSession) throws DirectoryException {
         this.directory = directory;
-        this.schemaName = config.getSchemaName();
-        this.table = directory.getTable();
-        this.idField = config.getIdField();
-        this.passwordField = config.getPasswordField();
-        this.passwordHashAlgorithm = config.passwordHashAlgorithm;
-        this.schemaFieldMap = directory.getSchemaFieldMap();
-        this.storedFieldNames = directory.getStoredFieldNames();
-        this.dialect = directory.getDialect();
-        this.sid = String.valueOf(SIDGenerator.next());
+        schemaName = config.getSchemaName();
+        table = directory.getTable();
+        idField = config.getIdField();
+        passwordField = config.getPasswordField();
+        passwordHashAlgorithm = config.passwordHashAlgorithm;
+        schemaFieldMap = directory.getSchemaFieldMap();
+        storedFieldNames = directory.getStoredFieldNames();
+        dialect = directory.getDialect();
+        sid = String.valueOf(SIDGenerator.next());
         this.managedSQLSession = managedSQLSession;
-        this.substringMatchType = config.getSubstringMatchType();
-        this.autoincrementIdField = config.isAutoincrementIdField();
-        this.staticFilters = config.getStaticFilters();
-        this.computeMultiTenantId = config.isComputeMultiTenantId();
+        substringMatchType = config.getSubstringMatchType();
+        autoincrementIdField = config.isAutoincrementIdField();
+        staticFilters = config.getStaticFilters();
+        computeMultiTenantId = config.isComputeMultiTenantId();
         acquireConnection();
     }
 
@@ -1021,6 +1021,17 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
+    /**
+     * Enable connection status checking on SQL directory connections
+     * @since 5.7.2
+     */
+    public boolean isLive() throws DirectoryException {
+        try {
+            return !sqlConnection.isClosed();
+        } catch (SQLException e) {
+            throw new DirectoryException("Cannot check connection status of " + this, e);
+        }
+    }
     @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws ClientException {
@@ -1148,5 +1159,10 @@ public class SQLSession extends BaseSession implements EntrySource {
         NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
         return principal != null ? principal.getTenantId() : null;
     }
+
+	@Override
+	public String toString() {
+		return "SQLSession [directory=" + directory.getName() + ", sid=" + sid + "]";
+	}
 
 }
