@@ -48,7 +48,7 @@ public class
     protected String type;
 
     @OperationMethod
-    public Object run(BusinessAdapter input) throws ClientException,
+    public BusinessAdapter run(BusinessAdapter input) throws ClientException,
             ClassNotFoundException {
         DocumentModel document = input.getDocument();
         document.setPathInfo(parentPath, name);

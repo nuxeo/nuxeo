@@ -44,7 +44,7 @@ public class BusinessUpdateOperation {
     protected String id;
 
     @OperationMethod
-    public Object run(BusinessAdapter input) throws ClientException,
+    public BusinessAdapter run(BusinessAdapter input) throws ClientException,
             ClassNotFoundException {
         // TODO: would be nice to get the document to reattach the doc to the
         // session (but cannot access to it from the adapter input)
