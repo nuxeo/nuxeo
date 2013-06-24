@@ -35,17 +35,17 @@ public abstract class BusinessAdapter {
     private static final Log log = LogFactory.getLog(BusinessAdapter.class);
 
     @JsonProperty("id")
-    protected final String id;
+    protected String id;
 
     @JsonProperty("type")
-    protected final String type;
+    protected String type;
 
-    protected transient DocumentModel doc;
+    private transient DocumentModel doc;
 
-    public BusinessAdapter(String type) {
-        this.type = type;
-        this.doc = DocumentModelFactory.createDocumentModel(type);
-        this.id = doc.getId();
+    /**
+     * Default constructor called by jackson
+     */
+    public BusinessAdapter() {
     }
 
     public BusinessAdapter(DocumentModel document) {
@@ -65,6 +65,9 @@ public abstract class BusinessAdapter {
 
     @JsonIgnore
     public DocumentModel getDocument() {
+        if (doc == null) {
+            doc = DocumentModelFactory.createDocumentModel(type);
+        }
         return doc;
     }
 
