@@ -37,14 +37,12 @@ public class BusinessService<T> {
      *
      * @param o the object to send (pojo client side)
      * @param name the id/name of the NX document
-     * @param type the type of the NX document
      * @param parentPath the path of the NX document parent
      * @return the pojo returned by the server
      */
-    public T create(T o, String name, String type, String parentPath) throws Exception {
+    public T create(T o, String name, String parentPath) throws Exception {
         return (T) session.newRequest("Business.BusinessCreateOperation").setInput(
-                o).set("name", name).set("type", type).set("parentPath",
-                parentPath).execute();
+                o).set("name", name).set("parentPath", parentPath).execute();
     }
 
     /**

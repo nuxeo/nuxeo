@@ -44,9 +44,6 @@ public class
     @Param(name = "name", required = true)
     protected String name;
 
-    @Param(name = "type", required = true)
-    protected String type;
-
     @OperationMethod
     public BusinessAdapter run(BusinessAdapter input) throws ClientException,
             ClassNotFoundException {

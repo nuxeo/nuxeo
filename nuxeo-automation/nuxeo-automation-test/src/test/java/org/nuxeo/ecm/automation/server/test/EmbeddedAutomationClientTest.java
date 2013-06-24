@@ -795,8 +795,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Operation.BusinessCreateOperation ->
         // session.newRequest("Operation.BusinessCreateOperation").setInput(o).set("name",
         // name).set("type", type).set("parentPath",parentPath).execute();
-        note = (BusinessBean) businessService.create(note, note.getTitle(),
-                note.getType(), "/");
+        note = (BusinessBean) businessService.create(note, note.getTitle(), "/");
         assertNotNull(note);
         // Test for pojo <-> adapter automation update
         note.setTitle("Update");
