@@ -14,15 +14,16 @@
 
 package org.nuxeo.theme.test.presets;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URL;
 import java.util.Map;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.presets.PaletteParser;
 
-public class TestPropertiesPaletteParser {
+public class TestPropertiesPaletteParser extends NXRuntimeTestCase {
 
     @Test
     public void testParser() {
