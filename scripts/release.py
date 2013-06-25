@@ -81,6 +81,7 @@ import sys
 import tempfile
 import time
 import urllib
+from test.test_iterlen import len
 
 
 PKG_RENAMINGS = {
@@ -119,8 +120,7 @@ class Release(object):
         self.is_final = is_final
         self.maintenance = maintenance
         self.skipTests = skipTests
-        if other_version is not None and other_version != "None":
-            self.o_old_version, self.o_new_version = other_version.split('/', 1)
+        self.other_version = other_version
         # Evaluate default values, if not provided
         self.set_snapshot()
         self.set_tag(tag)
@@ -178,12 +178,8 @@ class Release(object):
             log("Maintenance version:".ljust(25) + self.maintenance)
         if self.skipTests:
             log("Tests execution is skipped")
-        if hasattr(self, 'o_old_version'):
-            log("Also replace version:".ljust(25) + self.o_old_version)
-            log("with ".rjust(25) + self.o_new_version)
-            other_version = self.o_old_version + '/' + self.o_new_version
-        else:
-            other_version = None
+        if self.other_version is not None:
+            log("Also replace version:".ljust(25) + self.other_version)
         if store_params:
             release_log = os.path.abspath(os.path.join(self.repo.basedir,
                                                        os.pardir,
@@ -194,12 +190,14 @@ class Release(object):
                         "OTHER_VERSION=%s" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance, self.is_final,
-                         self.skipTests, other_version))
+                         self.skipTests, self.other_version))
             log("Parameters stored in %s" % release_log)
         log("")
 
     def update_versions(self, old_version, new_version):
         """Update all occurrences of 'old_version' with 'new_version'."""
+        if old_version == new_version:
+            return
         log("Replacing occurrences of %s with %s" % (old_version, new_version))
         pattern = re.compile("^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$")
         for root, dirs, files in os.walk(os.getcwd(), True, None, True):
@@ -334,8 +332,12 @@ class Release(object):
         # Create release branches, update version, commit and tag
         self.repo.system_recurse("git checkout -b %s" % self.tag)
         self.update_versions(self.snapshot, self.tag)
-        if hasattr(self, 'o_old_version'):
-            self.update_versions(self.o_old_version, self.o_new_version)
+        if self.other_version is not None:
+            other_version_split = self.other_version.split("/")
+        else:
+            other_version_split = ()
+        if len(other_version_split) > 0:
+            self.update_versions(other_version_split[0], other_version_split[1])
         self.repo.system_recurse("git commit -m'Release %s' -a" % self.tag)
         self.repo.system_recurse("git tag release-%s" % self.tag)
 
@@ -347,9 +349,11 @@ class Release(object):
                                      self.tag)
 
         self.repo.system_recurse("git checkout %s" % self.branch)
-        if self.snapshot != self.next_snapshot:
-            # Update released branches
-            self.update_versions(self.snapshot, self.next_snapshot)
+        # Update released branches with next versions
+        self.update_versions(self.snapshot, self.next_snapshot)
+        if len(other_version_split) == 3:
+            self.update_versions(other_version_split[0], other_version_split[2])
+        if self.snapshot != self.next_snapshot or len(other_version_split) == 3:
             self.repo.system_recurse("git commit -m'Post release %s' -a" %
                                      self.tag)
 
