@@ -158,6 +158,8 @@ public class TestConverters extends SimpleConverterTest {
                 "application/vnd.oasis.opendocument.presentation", "any2text",
                 "hello.odp");
         doTestAny2TextConverter("application/pdf", "any2text", "hello.pdf");
+        doTestAny2TextConverter("application/rtf", "any2text", "hello.rtf");
+
     }
 
 }

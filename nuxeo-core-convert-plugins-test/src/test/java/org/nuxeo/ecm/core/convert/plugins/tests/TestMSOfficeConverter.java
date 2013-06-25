@@ -59,6 +59,13 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
     }
 
     @Test
+    public void testRtfConverter() throws Exception {
+        doTestTextConverter(
+                "application/rtf",
+                "rtf2text", "hello.rtf");
+    }
+
+    @Test
     public void testPptxConverter() throws Exception {
         doTestTextConverter(
                 "application/vnd.openxmlformats-officedocument.presentationml.presentation",
