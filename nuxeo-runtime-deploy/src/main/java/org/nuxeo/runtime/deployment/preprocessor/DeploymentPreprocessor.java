@@ -22,7 +22,6 @@ package org.nuxeo.runtime.deployment.preprocessor;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -116,7 +115,7 @@ public class DeploymentPreprocessor {
 
     protected void init(ContainerDescriptor cd) throws Exception {
         cd.context = new CommandContextImpl(cd.directory);
-        initSeamHotDeploy(cd.context);
+        initContextProperties(cd.context);
         // run container install instructions if any
         if (cd.install != null) {
             cd.install.setLogger(log);
@@ -137,11 +136,12 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected void initSeamHotDeploy(CommandContext ctx) throws IOException {
+    protected void initContextProperties(CommandContext ctx) {
         ConfigurationGenerator confGen = new ConfigurationGenerator();
-        // this init detects if seam debug mode should be set
         confGen.init();
         Properties props = confGen.getUserConfig();
+
+        // init Seam hot deploy
         String seamDebugPropValue = props.getProperty(
                 ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "false");
         boolean isSeamDebugSet = Boolean.TRUE.equals(Boolean.valueOf(seamDebugPropValue));
@@ -149,6 +149,12 @@ public class DeploymentPreprocessor {
             // not sure where it's used, but assume this is useful
             ctx.put(ConfigurationGenerator.SEAM_DEBUG_SYSTEM_PROP, "true");
         }
+
+        // init JSF configuration variables
+        ctx.put(ConfigurationGenerator.JSF_NUMBER_OF_LOGICAL_VIEWS,
+                ConfigurationGenerator.JSF_DEFAULT_NUMBER_VIEWS);
+        ctx.put(ConfigurationGenerator.JSF_NUMBER_OF_VIEWS_IN_SESSION,
+                ConfigurationGenerator.JSF_DEFAULT_NUMBER_VIEWS);
     }
 
     protected void processFile(ContainerDescriptor cd, File file)

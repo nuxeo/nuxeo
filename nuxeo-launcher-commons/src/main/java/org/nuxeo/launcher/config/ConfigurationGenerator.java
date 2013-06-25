@@ -212,6 +212,27 @@ public class ConfigurationGenerator {
     @Deprecated
     public static final String SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE = "seam-debug.properties";
 
+    /**
+     * Variable for JSF configurability on 5.6.0 maintenance branch
+     *
+     * @since 5.6.0-HF20
+     */
+    public static final String JSF_NUMBER_OF_LOGICAL_VIEWS = "nuxeo.jsf.numberOfLogicalViews";
+
+    /**
+     * Variable for JSF configurability on 5.6.0 maintenance branch
+     *
+     * @since 5.6.0-HF20
+     */
+    public static final String JSF_NUMBER_OF_VIEWS_IN_SESSION = "nuxeo.jsf.numberOfViewsInSession";
+
+    /**
+     * Variable for JSF configurability on 5.6.0 maintenance branch
+     *
+     * @since 5.6.0-HF20
+     */
+    public static final String JSF_DEFAULT_NUMBER_VIEWS = "4";
+
     private final File nuxeoHome;
 
     // User configuration file
@@ -565,8 +586,9 @@ public class ConfigurationGenerator {
      * of a file.
      * <p>
      * On 5.6, using the config generator to get the info from the nuxeo.conf
-     * file makes it possible to get the property value this early, so adding an
-     * empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer needed.
+     * file makes it possible to get the property value this early, so adding
+     * an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer
+     * needed.
      *
      * @deprecated since 5.6
      */
