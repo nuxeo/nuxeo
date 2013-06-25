@@ -2,6 +2,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:rich="http://richfaces.org/rich"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -14,11 +15,24 @@
 
     <div class="content positionR">
 
-      <div class="tips damAssetImportZone #{widgetProperty_styleClass}" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
-        <div class="dropZoneLabel jsTips">
-          #{messages['label.dam.bulk.import.assets.tips']}
+      <c:if test="#{useHtml5DragAndDrop}">
+        <div class="tips damAssetImportZone #{widgetProperty_styleClass}" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
+          <div class="dropZoneLabel jsTips">
+            #{messages['label.dam.bulk.import.assets.tips']}
+          </div>
         </div>
-      </div>
+      </c:if>
+
+      <c:if test="#{!useHtml5DragAndDrop}">
+        <rich:fileUpload id="fileUploadForm" uploadData="#{damImportActions.uploadedFiles}"
+          maxFilesQuantity="10" immediateUpload="true"
+          locale="#{localeSelector.localeString}"
+          ajaxSingle="true"
+          onadd="nuxeo.dam.disableBulkImportButton();"
+          onuploadcomplete="nuxeo.dam.enableBulkImportButton();"
+          listWidth="60%" listHeight="150px">
+        </rich:fileUpload>
+      </c:if>
 
       <nxu:set var="importOptions" value="#{damImportActions.getImportOptions(action.properties.dropContext)}" cache="true">
 
@@ -70,18 +84,23 @@
         styleClass="button" />
     </div>
 
+
+
+
     <script type="text/javascript">
-      jQuery(".damAssetImportZone").nxDropZone({
-        url : "#{contextPath}/site/automation/",
-        uploadRateRefreshTime : 500,
-        numConcurrentUploads : 3,
-        dropContext : ctx,
-        uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
-        execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
-        extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
-        handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
-      });
-      jQuery(".jsDamImportButton").attr("disabled", "disabled");
+      <c:if test="#{useHtml5DragAndDrop}">
+        jQuery(".damAssetImportZone").nxDropZone({
+          url : "#{contextPath}/site/automation/",
+          uploadRateRefreshTime : 500,
+          numConcurrentUploads : 3,
+          dropContext : ctx,
+          uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+          execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+          extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
+          handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
+        });
+      </c:if>
+      nuxeo.dam.disableBulkImportButton();
     </script>
 
   </h:form>

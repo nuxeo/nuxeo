@@ -3,30 +3,30 @@ var nuxeo = nuxeo || {}
 nuxeo.dam = (function(m) {
 
   function removeAllSelectedItemClass() {
-    jQuery('.jsDamItem.selectedItem').removeClass('selectedItem')
+    jQuery('.jsDamItem.selectedItem').removeClass('selectedItem');
   }
 
   m.selectDocument = function(event, docRef) {
     if (nuxeo.dam.canSelectDocument(event)) {
       // trigger the a4j:jsFunction
-      damSelectDocument(docRef)
+      damSelectDocument(docRef);
     }
-  }
+  };
 
   m.canSelectDocument = function(event) {
     if (event && event.target) {
-      var ele = jQuery(event.target)
+      var ele = jQuery(event.target);
       if (ele.is('input') && ele.attr('type').match(/checkbox/i)) {
-        return false
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   m.afterDocumentSelected = function(data) {
-    removeAllSelectedItemClass()
-    jQuery("[data-docref='" + data + "']").addClass('selectedItem')
-  }
+    removeAllSelectedItemClass();
+    jQuery("[data-docref='" + data + "']").addClass('selectedItem');
+  };
 
   m.createDamImportAssetHandler = function(batchId) {
     var handler = function DropZoneUIHandler(idx, dropZoneId, options, targetSelectedCB, cancelCB) {
@@ -45,13 +45,13 @@ nuxeo.dam = (function(m) {
       batchStarted: function() {
         jQuery("#" + this.dropZoneId).html();
         // deactivate import button
-        jQuery(".jsDamImportButton").attr("disabled", "disabled");
+        m.disableBulkImportButton();
         this.selectTargetZone();
         return this.batchId;
       },
       batchFinished: function(batchId) {
         // activate import button
-        jQuery(".jsDamImportButton").removeAttr("disabled");
+        m.enableBulkImportButton();
       },
       uploadStarted: function(fileIndex, file) {
         this.nxUploadStarted++;
@@ -128,6 +128,14 @@ nuxeo.dam = (function(m) {
     return handler;
   };
 
+  m.disableBulkImportButton = function() {
+    jQuery(".jsDamImportButton").attr("disabled", "disabled");
+  };
+
+  m.enableBulkImportButton = function() {
+    jQuery(".jsDamImportButton").removeAttr("disabled");
+  };
+
   return m
 
-}(nuxeo.dam || {}))
+}(nuxeo.dam || {}));

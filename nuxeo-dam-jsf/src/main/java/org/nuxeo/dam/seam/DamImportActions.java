@@ -20,30 +20,43 @@ package org.nuxeo.dam.seam;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
+import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.richfaces.model.UploadItem;
 
 /**
  * Handles DAM import related actions.
@@ -67,6 +80,9 @@ public class DamImportActions implements Serializable {
     @In(create = true)
     protected transient WebActions webActions;
 
+    @In(create = true)
+    protected transient DndConfigurationHelper dndConfigHelper;
+
     protected DocumentModel importDocumentModel;
 
     protected Action selectedImportOption;
@@ -74,6 +90,8 @@ public class DamImportActions implements Serializable {
     protected List<Action> importOptions;
 
     protected String currentBatchId;
+
+    protected Collection<UploadItem> uploadedFiles = null;
 
     public DocumentModel getImportDocumentModel() {
         if (importDocumentModel == null) {
@@ -122,15 +140,7 @@ public class DamImportActions implements Serializable {
         return currentBatchId;
     }
 
-    protected int getUploadWaitTimeout() {
-        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout",
-                "5");
-        return Integer.parseInt(t);
-    }
-
     public String importAssets() throws ClientException {
-        BatchManager bm = Framework.getLocalService(BatchManager.class);
-
         Map<String, Serializable> importOptionProperties = selectedImportOption.getProperties();
         String chainOrOperationId = null;
         if (importOptionProperties.containsKey("chainId")) {
@@ -152,10 +162,61 @@ public class DamImportActions implements Serializable {
         Map<String, Object> contextParams = new HashMap<>();
         contextParams.put("docMetaData", properties);
 
+        if (dndConfigHelper.useHtml5DragAndDrop()) {
+            importAssetsThroughBatchManager(chainOrOperationId, contextParams);
+        } else {
+            importAssetsThroughUploadItems(chainOrOperationId, contextParams);
+        }
+        return null;
+    }
+
+    protected void importAssetsThroughBatchManager(String chainOrOperationId,
+            Map<String, Object> contextParams) throws ClientException {
+        BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.executeAndClean(currentBatchId, chainOrOperationId, documentManager,
                 contextParams, null);
+    }
 
-        return null;
+    protected void importAssetsThroughUploadItems(String chainOrOperationId,
+            Map<String, Object> contextParams) throws ClientException {
+        if (uploadedFiles == null) {
+            return;
+        }
+        try {
+            List<Blob> blobs = new ArrayList<>();
+            for (UploadItem uploadItem : uploadedFiles) {
+                String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
+                Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(),
+                        filename, uploadItem.getContentType());
+                blobs.add(blob);
+            }
+
+            OperationContext ctx = new OperationContext(documentManager);
+            ctx.setInput(new BlobList(blobs));
+            ctx.putAll(contextParams);
+
+            AutomationService as = Framework.getLocalService(AutomationService.class);
+            if (chainOrOperationId.startsWith("Chain.")) {
+                as.run(ctx, chainOrOperationId.substring(6));
+            } else {
+                OperationChain chain = new OperationChain("operation");
+                OperationParameters params = new OperationParameters(
+                        chainOrOperationId, new HashMap<String, Object>());
+                chain.add(params);
+                as.run(ctx, chain);
+            }
+        } catch (Exception e) {
+            log.error("Error while executing automation batch ", e);
+            throw ClientException.wrap(e);
+        } finally {
+            for (UploadItem uploadItem : getUploadedFiles()) {
+                File tempFile = uploadItem.getFile();
+                if (tempFile != null && tempFile.exists()) {
+                    Framework.trackFile(tempFile, tempFile);
+                }
+            }
+            uploadedFiles = null;
+        }
     }
 
     public void cancel() {
@@ -164,6 +225,17 @@ public class DamImportActions implements Serializable {
             bm.clean(currentBatchId);
             importDocumentModel = null;
         }
+    }
+
+    public Collection<UploadItem> getUploadedFiles() {
+        if (uploadedFiles == null) {
+            uploadedFiles = new ArrayList<>();
+        }
+        return uploadedFiles;
+    }
+
+    public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
+        this.uploadedFiles = uploadedFiles;
     }
 
 }

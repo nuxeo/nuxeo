@@ -184,7 +184,6 @@ public class DamSearchActions implements Serializable {
             String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
             loadSavedSearch(contentViewName, savedSearch);
         }
-        this.currentSelectedSavedSearchId = currentSelectedSavedSearchId;
     }
 
     public void loadSavedSearch(String contentViewName,
