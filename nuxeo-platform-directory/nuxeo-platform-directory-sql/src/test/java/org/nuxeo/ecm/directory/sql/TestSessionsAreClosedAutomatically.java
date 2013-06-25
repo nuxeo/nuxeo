@@ -26,106 +26,107 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, TransactionalFeature.class,
-		CoreFeature.class })
+        CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.api",
-		"org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
-		"org.nuxeo.ecm.directory.sql" })
+        "org.nuxeo.ecm.core", "org.nuxeo.ecm.directory",
+        "org.nuxeo.ecm.directory.sql" })
 @LocalDeploy({
-		"org.nuxeo.ecm.directory:test-sql-directories-schema-override.xml",
-		"org.nuxeo.ecm.directory.sql:test-sql-directories-bundle.xml" })
+        "org.nuxeo.ecm.directory:test-sql-directories-schema-override.xml",
+        "org.nuxeo.ecm.directory.sql:test-sql-directories-bundle.xml" })
 @LogCaptureFeature.FilterWith(TestSessionsAreClosedAutomatically.CloseSessionFilter.class)
 @TransactionalConfig(autoStart = false)
 public class TestSessionsAreClosedAutomatically {
 
-	public static class CloseSessionFilter implements LogCaptureFeature.Filter {
+    public static class CloseSessionFilter implements LogCaptureFeature.Filter {
 
-		@Override
-		public boolean accept(LoggingEvent event) {
-			if (!SQLDirectory.class.getName().equals(
-					event.getLogger().getName())) {
-				return false;
-			}
-			if (!Level.WARN.equals(event.getLevel())) {
-				return false;
-			}
-			String msg = event.getMessage().toString();
-			if (!msg.startsWith("Closing a sql directory session")) {
-				return false;
-			}
-			return true;
-		}
+        @Override
+        public boolean accept(LoggingEvent event) {
+            if (!SQLDirectory.class.getName().equals(
+                    event.getLogger().getName())) {
+                return false;
+            }
+            if (!Level.WARN.equals(event.getLevel())) {
+                return false;
+            }
+            String msg = event.getMessage().toString();
+            if (!msg.startsWith("Closing a sql directory session")) {
+                return false;
+            }
+            return true;
+        }
 
-	}
+    }
 
-	protected Directory userDirectory;
+    protected Directory userDirectory;
 
-	protected @Inject
-	LogCaptureFeature.Result caughtEvents;
+    protected @Inject
+    LogCaptureFeature.Result caughtEvents;
 
-	protected String savedSingleDS;
-	
-	@Before
-	public void setSingleDataSourceMode() {
+    protected String savedSingleDS;
+
+    @Before
+    public void setSingleDataSourceMode() {
         savedSingleDS = System.getProperty(ConnectionHelper.SINGLE_DS);
         System.setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
-	}
-	
-	@After
-	public void resetSingleDataSourceMode() {
-		if (savedSingleDS == null || savedSingleDS.isEmpty()) {
-			System.clearProperty(ConnectionHelper.SINGLE_DS);
-		} else {
-			System.setProperty(ConnectionHelper.SINGLE_DS, savedSingleDS);
-		}
-	}
-	
-	@Before
-	public void fetchUserDirectory() throws DirectoryException {
-		userDirectory = TestSQLDirectory.getDirectory("userDirectory");
-		Assert.assertNotNull(userDirectory);
-	}
+    }
 
-	@Test
-	public void hasNoWarns() throws DirectoryException,
-			NoLogCaptureFilterException {
-		boolean started = TransactionHelper.startTransaction();
-		
-		try {
-			Session session = userDirectory.getSession();
-			session.close();
-		} finally {
-			if (started) {
-				TransactionHelper.commitOrRollbackTransaction();
-			}
-		}
-		Assert.assertTrue(caughtEvents.getCaughtEvents().isEmpty());
-	}
-	
-	@Test
-	public void hasWarnsOnCommit() throws DirectoryException, NoLogCaptureFilterException {
-		boolean started = TransactionHelper.startTransaction();
-		try {
-			Session session = userDirectory.getSession();
-		} finally {
-			if (started) {
-				TransactionHelper.commitOrRollbackTransaction();
-			}
-		}
-		caughtEvents.assertHasEvent();
-	}
-	
-	
-	@Test
-	public void hasWarnsOnRollback() throws DirectoryException, NoLogCaptureFilterException {
-		boolean started = TransactionHelper.startTransaction();
-		try {
-			Session session = userDirectory.getSession();
-		} finally {
-			if (started) {
-				TransactionHelper.setTransactionRollbackOnly();
-				TransactionHelper.commitOrRollbackTransaction();
-			}
-		}
-		caughtEvents.assertHasEvent();
-	}
+    @After
+    public void resetSingleDataSourceMode() {
+        if (savedSingleDS == null || savedSingleDS.isEmpty()) {
+            System.clearProperty(ConnectionHelper.SINGLE_DS);
+        } else {
+            System.setProperty(ConnectionHelper.SINGLE_DS, savedSingleDS);
+        }
+    }
+
+    @Before
+    public void fetchUserDirectory() throws DirectoryException {
+        userDirectory = TestSQLDirectory.getDirectory("userDirectory");
+        Assert.assertNotNull(userDirectory);
+    }
+
+    @Test
+    public void hasNoWarns() throws DirectoryException,
+            NoLogCaptureFilterException {
+        boolean started = TransactionHelper.startTransaction();
+
+        try {
+            Session session = userDirectory.getSession();
+            session.close();
+        } finally {
+            if (started) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
+        Assert.assertTrue(caughtEvents.getCaughtEvents().isEmpty());
+    }
+
+    @Test
+    public void hasWarnsOnCommit() throws DirectoryException,
+            NoLogCaptureFilterException {
+        boolean started = TransactionHelper.startTransaction();
+        try {
+            Session session = userDirectory.getSession();
+        } finally {
+            if (started) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
+        caughtEvents.assertHasEvent();
+    }
+
+    @Test
+    public void hasWarnsOnRollback() throws DirectoryException,
+            NoLogCaptureFilterException {
+        boolean started = TransactionHelper.startTransaction();
+        try {
+            Session session = userDirectory.getSession();
+        } finally {
+            if (started) {
+                TransactionHelper.setTransactionRollbackOnly();
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
+        caughtEvents.assertHasEvent();
+    }
 }

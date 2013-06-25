@@ -71,9 +71,8 @@ public class SQLDirectory extends AbstractDirectory {
             if (!log.isDebugEnabled()) {
                 return null;
             }
-            return new Throwable(
-                    "SQL directory session init context in "
-                            + SQLDirectory.this);
+            return new Throwable("SQL directory session init context in "
+                    + SQLDirectory.this);
         }
 
         protected void checkIsNotLive() {
@@ -89,7 +88,8 @@ public class SQLDirectory extends AbstractDirectory {
                             + session);
                 }
                 if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                		log.warn("Closing sql directory session outside a transaction" + session);
+                    log.warn("Closing sql directory session outside a transaction"
+                            + session);
                 }
                 session.close();
             } catch (DirectoryException e) {
@@ -100,15 +100,15 @@ public class SQLDirectory extends AbstractDirectory {
 
         }
 
-		@Override
-		public void beforeCompletion() {
-			checkIsNotLive();
-		}
+        @Override
+        public void beforeCompletion() {
+            checkIsNotLive();
+        }
 
-		@Override
-		public void afterCompletion(int status) {
-			checkIsNotLive();
-		}
+        @Override
+        public void afterCompletion(int status) {
+            checkIsNotLive();
+        }
 
     }
 

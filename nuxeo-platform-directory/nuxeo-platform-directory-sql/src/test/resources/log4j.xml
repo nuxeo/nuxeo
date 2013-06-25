@@ -12,6 +12,10 @@
     </layout>
   </appender>
 
+  <!-- logger name="org.nuxeo.ecm.directory.sql.SQLDirectory">
+    <level value="DEBUG" />
+  </logger -->
+
   <logger name="org.nuxeo.ecm.core.storage.sql.jdbc">
     <level value="WARN" />
   </logger>
