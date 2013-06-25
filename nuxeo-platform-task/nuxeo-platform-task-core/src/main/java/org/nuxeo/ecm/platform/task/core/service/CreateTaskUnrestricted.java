@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -145,7 +146,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment,
             Date dueDate, Map<String, String> taskVariables, String parentPath)
-            throws ClientException {
+                    throws ClientException {
         if (createOneTaskPerActor) {
             for (String prefixedActorId : prefixedActorIds) {
                 createTask(coreSession, principal, document, taskName,
@@ -212,8 +213,10 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 // Set rights
                 List<String> actorIds = new ArrayList<String>();
                 for (String actor : prefixedActorIds) {
-                    if (actor.contains(":")) {
-                        actorIds.add(actor.split(":")[1]);
+                    if (actor.startsWith(NotificationConstants.GROUP_PREFIX)
+                            || actor.startsWith(NotificationConstants.USER_PREFIX)) {
+                        // prefixed assignees with "user:" or "group:"
+                        actorIds.add(actor.substring(actor.indexOf(":") + 1));
                     } else {
                         actorIds.add(actor);
                     }
@@ -243,7 +246,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath)
-            throws ClientException {
+                    throws ClientException {
         createTask(coreSession, principal, document,
                 TaskConstants.TASK_TYPE_NAME, taskName, null, null,
                 prefixedActorIds, createOneTaskPerActor, directive, comment,
