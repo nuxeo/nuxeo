@@ -31,3 +31,6 @@ author: lkemen@nuxeo.com
 .selectSize td { padding: .3em }
 .selectSize td label { padding: 0 .5em }
 .imagingPanelDownloadLink { color: "link (__FLAVOR__ color)"; font-weight: bold; padding: .4em .5em; text-align: center }
+
+.pictureItemSize td {padding: 0 1.5em 0 0}
+.pictureItemSize td input[type="radio"] {margin-right: 0.1em}
