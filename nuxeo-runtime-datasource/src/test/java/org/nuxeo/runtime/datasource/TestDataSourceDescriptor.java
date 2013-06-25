@@ -17,6 +17,8 @@
 
 package org.nuxeo.runtime.datasource;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,11 +28,10 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestDataSourceDescriptor {
+public class TestDataSourceDescriptor extends NXRuntimeTestCase {
 
     protected static DataSourceDescriptor load(String resource)
             throws Exception {

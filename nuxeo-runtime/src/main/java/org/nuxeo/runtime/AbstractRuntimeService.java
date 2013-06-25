@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -187,6 +188,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public Properties getProperties() {
+        // do not unreference properties: some methods rely on this to set
+        // variables here...
         return properties;
     }
 
@@ -197,12 +200,13 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public String getProperty(String name, String defValue) {
-        String value = properties.getProperty(name);
-        if (value == null) {
-            value = System.getProperty(name);
-            if (value == null) {
-                return defValue == null ? null : expandVars(defValue);
-            }
+        Properties props = new Properties(System.getProperties());
+        props.putAll(properties);
+        String value = props.getProperty(name, defValue);
+        if (value != null && value.startsWith("$")
+                && value.equals("${" + name + "}")) {
+            // avoid loop, don't expand
+            return value;
         }
         return expandVars(value);
     }
@@ -277,54 +281,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public String expandVars(String expression) {
-        int p = expression.indexOf("${");
-        if (p == -1) {
-            return expression; // do not expand if not needed
-        }
-
-        char[] buf = expression.toCharArray();
-        StringBuilder result = new StringBuilder(buf.length);
-        if (p > 0) {
-            result.append(expression.substring(0, p));
-        }
-        StringBuilder varBuf = new StringBuilder();
-        boolean dollar = false;
-        boolean var = false;
-        for (int i = p; i < buf.length; i++) {
-            char c = buf[i];
-            switch (c) {
-            case '$':
-                dollar = true;
-                break;
-            case '{':
-                if (dollar) {
-                    dollar = false;
-                    var = true;
-                }
-                break;
-            case '}':
-                if (var) {
-                    var = false;
-                    String varName = varBuf.toString();
-                    String varValue = getProperty(varName); // get the variable
-                                                            // value
-                    if (varValue != null) {
-                        result.append(varValue);
-                    } else { // let the variable as is
-                        result.append("${").append(varName).append('}');
-                    }
-                }
-                break;
-            default:
-                if (var) {
-                    varBuf.append(c);
-                } else {
-                    result.append(c);
-                }
-                break;
-            }
-        }
-        return result.toString();
+        Properties props = new Properties(System.getProperties());
+        props.putAll(properties);
+        return new TextTemplate(props).process(expression);
     }
 
     @Override

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Stephane Lacoin
  */
@@ -31,26 +31,24 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.InlineRef;
 import org.nuxeo.runtime.test.protocols.inline.InlineURLsFeature;
 
-
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, InlineURLsFeature.class })
 public class CanExpandVariablesInContributionTest {
 
     RuntimeService runtime = Framework.getRuntime();
 
-    @Before public void installDataHandler() {
-
-    }
-
-    @Before public void deployComponent() throws Exception {
+    @Before
+    public void deployComponent() throws Exception {
         RuntimeContext ctx = runtime.getContext();
         System.setProperty("nuxeo.test.domain", "test");
         Framework.getProperties().setProperty("nuxeo.test.contrib", "contrib");
-        InlineRef contribRef = new InlineRef("test", "<component name=\"${nuxeo.test.domain}:${nuxeo.test.contrib}\"/>");
+        InlineRef contribRef = new InlineRef("test",
+                "<component name=\"${nuxeo.test.domain}:${nuxeo.test.contrib}\"/>");
         ctx.deploy(contribRef);
     }
 
-    @Test public void variablesAreExpanded() throws Exception {
+    @Test
+    public void variablesAreExpanded() throws Exception {
         ComponentInstance component = runtime.getComponentInstance("test:contrib");
         assertThat("component is installed", component, notNullValue());
     }

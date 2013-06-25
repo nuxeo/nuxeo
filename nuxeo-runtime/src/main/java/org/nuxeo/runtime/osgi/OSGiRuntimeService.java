@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
@@ -463,6 +464,25 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             return value;
         }
         return expandVars(value);
+    }
+
+    /**
+     * Overrides the default method to be able to include OSGi properties.
+     */
+    @Override
+    public String expandVars(String expression) {
+        return new TextTemplate(getProperties()) {
+
+            @Override
+            public String getVariable(String name) {
+                String value = super.getVariable(name);
+                if (value == null) {
+                    value = bundleContext.getProperty(name);
+                }
+                return value;
+            }
+
+        }.process(expression);
     }
 
     protected void notifyComponentsOnStarted() {

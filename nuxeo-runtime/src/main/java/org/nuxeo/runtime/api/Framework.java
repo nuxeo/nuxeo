@@ -399,59 +399,7 @@ public final class Framework {
      * System properties are also expanded.
      */
     public static String expandVars(String expression) {
-        int p = expression.indexOf("${");
-        if (p == -1) {
-            return expression; // do not expand if not needed
-        }
-
-        char[] buf = expression.toCharArray();
-        StringBuilder result = new StringBuilder(buf.length);
-        if (p > 0) {
-            result.append(expression.substring(0, p));
-        }
-        StringBuilder varBuf = new StringBuilder();
-        boolean dollar = false;
-        boolean var = false;
-        for (int i = p; i < buf.length; i++) {
-            char c = buf[i];
-            switch (c) {
-            case '$':
-                dollar = true;
-                break;
-            case '{':
-                if (dollar) {
-                    dollar = false;
-                    var = true;
-                } else {
-                    result.append(c);
-                }
-                break;
-            case '}':
-                if (var) {
-                    var = false;
-                    String varName = varBuf.toString();
-                    varBuf.setLength(0);
-                    String varValue = getProperty(varName); // get the variable
-                                                            // value
-                    if (varValue != null) {
-                        result.append(varValue);
-                    } else { // let the variable as is
-                        result.append("${").append(varName).append('}');
-                    }
-                } else {
-                    result.append(c);
-                }
-                break;
-            default:
-                if (var) {
-                    varBuf.append(c);
-                } else {
-                    result.append(c);
-                }
-                break;
-            }
-        }
-        return result.toString();
+        return runtime.expandVars(expression);
     }
 
     public static boolean isOSGiServiceSupported() {
@@ -459,7 +407,7 @@ public final class Framework {
             isOSGiServiceSupported = Boolean.valueOf(getProperty(
                     "ecr.osgi.services", "false"));
         }
-        return isOSGiServiceSupported;
+        return isOSGiServiceSupported.booleanValue();
     }
 
     /**
