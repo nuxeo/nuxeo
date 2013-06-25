@@ -101,7 +101,7 @@ public interface AutomationClient {
      * Optional operation. Framework that doesn't supports reflection like GWT
      * must throw {@link UnsupportedOperationException}
      */
-    <T> T getAdapter(Object objToAdapt, Class<T> adapterType);
+    <T> T getAdapter(Session session, Class<T> adapterType);
 
     /**
      * Register an adapter for a given type. Registration is not thread safe.

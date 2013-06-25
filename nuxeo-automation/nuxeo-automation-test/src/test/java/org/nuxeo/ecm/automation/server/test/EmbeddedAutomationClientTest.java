@@ -11,8 +11,15 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -785,6 +792,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description",
                 "Note Content", "Note");
+        @SuppressWarnings("unchecked")
         BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 

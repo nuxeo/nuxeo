@@ -92,8 +92,8 @@ public abstract class JavaClient implements AutomationClient {
     }
 
     @Override
-    public <T> T getAdapter(Object objToAdapt, Class<T> adapterType) {
-        return adapters.getAdapter(objToAdapt, adapterType);
+    public <T> T getAdapter(Session session, Class<T> adapterType) {
+        return adapters.getAdapter(session, adapterType);
     }
 
     @Override

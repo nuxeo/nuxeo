@@ -22,24 +22,12 @@ package org.nuxeo.ecm.automation.client;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface AdapterFactory<T> {
-
-    /**
-     * The class to adapt.
-     * @return
-     */
-    Class<?> getAcceptType();
-
-    /**
-     * The adapter class.
-     * @return
-     */
-    Class<T> getAdapterType();
-
+	
     /**
      * Adapt the given object and return the adapter instance.
      * @param toAdapt
      * @return
      */
-    T getAdapter(Object toAdapt);
+    	T getAdapter(Session session, Class<T> clazz);
 
 }

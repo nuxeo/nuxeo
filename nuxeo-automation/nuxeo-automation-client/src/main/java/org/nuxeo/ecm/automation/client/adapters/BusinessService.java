@@ -24,7 +24,7 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
  */
 public class BusinessService<T> {
 
-    protected Session session;
+    protected final Session session;
 
     public BusinessService(Session session) {
         this.session = session;
@@ -53,7 +53,8 @@ public class BusinessService<T> {
      * @param parentPath the path of the NX document parent
      * @return the pojo returned by the server
      */
-    public T create(T o, String name, String parentPath) throws Exception {
+    @SuppressWarnings("unchecked")
+	public T create(T o, String name, String parentPath) throws Exception {
         checkMarshaller(o);
         return (T) session.newRequest("Business.BusinessCreateOperation").setInput(
                 o).set("name", name).set("parentPath", parentPath).execute();

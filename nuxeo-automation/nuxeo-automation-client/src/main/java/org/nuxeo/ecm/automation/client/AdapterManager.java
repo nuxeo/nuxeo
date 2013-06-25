@@ -16,41 +16,55 @@
  */
 package org.nuxeo.ecm.automation.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class AdapterManager {
 
-    protected Map<Class<?>, List<AdapterFactory<?>>> adapters;
+	protected final Set<AdapterFactory<?>> factories = new HashSet<AdapterFactory<?>>();
 
-    @SuppressWarnings("unchecked")
-    public <T> T getAdapter(Object objToAdapt, Class<T> adapterType) {
-        Class<?> cls = objToAdapt.getClass();
-        List<AdapterFactory<?>> factories = adapters.get(adapterType);
-        if (factories != null) {
-            for (AdapterFactory<?> f : factories) {
-                if (f.getAcceptType().isAssignableFrom(cls)) {
-                    return (T) f.getAdapter(objToAdapt);
-                }
-            }
-        }
-        return null;
-    }
+	// put(BusinessObjectService.class,
+	public <T> T getAdapter(Session session, Class<T> adapterType) {
+		for (AdapterFactory<?> f : factories) {
+			if (!factoryAccept(f, adapterType)) {
+				continue;
+			}
+			@SuppressWarnings("unchecked")
+			AdapterFactory<T> tFactory = (AdapterFactory<T>) f;
+			return adapterType.cast(tFactory.getAdapter(session, adapterType));
+		}
+		return null;
+	}
 
-    public void registerAdapter(AdapterFactory<?> factory) {
-        Class<?> adapter = factory.getAdapterType();
-        List<AdapterFactory<?>> factories = adapters.get(adapter);
-        if (factories == null) {
-            factories = new ArrayList<AdapterFactory<?>>();
-            adapters.put(adapter, factories);
-        }
-        factories.add(factory);
-    }
+	protected boolean factoryAccept(AdapterFactory<?> factory,
+			Class<?> adapterType) {
+		ParameterizedType itf = (ParameterizedType) factory.getClass()
+				.getGenericInterfaces()[0];
+		Type type = itf.getActualTypeArguments()[0];
+		Class<?> clazz;
+		if (type instanceof Class) {
+			clazz = (Class<?>) type;
+		} else if (type instanceof ParameterizedType) {
+			clazz = (Class<?>)((ParameterizedType) type).getRawType();
+		} else {			
+			throw new UnsupportedOperationException("Don't know how to handle "
+					+ type.getClass());
+		}
+		return clazz.isAssignableFrom(adapterType);
+	}
+
+	public void registerAdapter(AdapterFactory<?> factory) {
+		factories.add(factory);
+	}
+
+	public void clear() {
+		factories.clear();
+	}
 
 }
