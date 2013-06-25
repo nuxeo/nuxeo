@@ -718,6 +718,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public List<DocumentModel> searchRouteModels(CoreSession session,
             String searchString) throws ClientException {
+        List<DocumentModel> allRouteModels = new ArrayList<DocumentModel>();
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
@@ -726,7 +727,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
                 DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null,
                 0L, props, String.format("%s%%", searchString));
-        return pageProvider.getCurrentPage();
+        allRouteModels.addAll(pageProvider.getCurrentPage());
+        while (pageProvider.isNextPageAvailable()) {
+            pageProvider.nextPage();
+            allRouteModels.addAll(pageProvider.getCurrentPage());
+        }
+        return allRouteModels;
     }
 
     @Override
