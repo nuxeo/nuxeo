@@ -7,7 +7,7 @@
     <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS">
       <pattern>
         SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState =
-        'validated' AND dc:title ILIKE ?
+        'validated' AND dc:title LIKE ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
