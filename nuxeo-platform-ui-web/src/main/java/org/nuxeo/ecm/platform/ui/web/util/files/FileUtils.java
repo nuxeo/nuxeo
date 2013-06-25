@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.util.files;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.streaming.FileSource;
 
 public class FileUtils {
 
@@ -104,6 +106,69 @@ public class FileUtils {
             res = filename;
         }
         return res;
+    }
+
+    /**
+     * A Blob based on a File but whose contract says that the file is allowed
+     * to be moved to another filesystem location if needed.
+     *
+     * (The move is done by getting the StreamSource from the Blob, casting to
+     * FileSource,
+     *
+     * @since 5.7.2
+     */
+    public static class TemporaryFileBlob extends StreamingBlob {
+
+        private static final long serialVersionUID = 1L;
+
+        public TemporaryFileBlob(File file, String mimeType, String encoding,
+                String filename, String digest) {
+            super(new FileSource(file), mimeType, encoding, filename, digest);
+        }
+
+        @Override
+        public boolean isTemporary() {
+            return true; // for SQLSession#getBinary
+        }
+
+        @Override
+        public FileSource getStreamSource() {
+            return (FileSource) src;
+        }
+    }
+
+    /**
+     * Creates a TemporaryFileBlob.
+     *
+     * Similar to FileUtils.createSerializableBlob.
+     *
+     * @since 5.7.2
+     */
+    public static Blob createTemporaryFileBlob(File file, String filename,
+            String mimeType) {
+        if (filename != null) {
+            filename = FileUtils.getCleanFileName(filename);
+        }
+        Blob blob = new TemporaryFileBlob(file, mimeType, null, filename, null);
+        try {
+            // mimetype detection
+            MimetypeRegistry mimeService = Framework.getLocalService(MimetypeRegistry.class);
+            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
+                    filename, blob, null);
+            if (detectedMimeType == null) {
+                if (mimeType != null) {
+                    detectedMimeType = mimeType;
+                } else {
+                    // default
+                    detectedMimeType = "application/octet-stream";
+                }
+            }
+            blob.setMimeType(detectedMimeType);
+        } catch (MimetypeDetectionException e) {
+            log.error(String.format("could not fetch mimetype for file %s",
+                    filename), e);
+        }
+        return blob;
     }
 
 }
