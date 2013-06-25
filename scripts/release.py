@@ -1,59 +1,59 @@
 #!/usr/bin/env python
-##
-## (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
-##
-## All rights reserved. This program and the accompanying materials
-## are made available under the terms of the GNU Lesser General Public License
-## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl.html
-##
-## This library is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-## Lesser General Public License for more details.
-##
-## Contributors:
-##     Julien Carsique
-##
-## This script manages releasing of Nuxeo source code.
-## It applies on current Git repository and its sub-repositories.
-##
-## Examples from Nuxeo root, checkout on master:
-## $ ./scripts/release.py
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6-I20120102_1741
-## Next version:            5.6-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -f
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6
-## Next version:            5.7-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6
-## Next version:            5.7-SNAPSHOT
-## Maintenance version:     5.6.1-SNAPSHOT
-##
-## $ ./scripts/release.py -f -b 5.5.0
-## Releasing from branch:   5.5.0
-## Current version:         5.5.0-HF01-SNAPSHOT
-## Tag:                     5.5.0-HF01
-## Next version:            5.5.0-HF02-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -b 5.5.0 -t sometag
-## Releasing from branch 5.5.0
-## Current version:      5.5.0-HF01-SNAPSHOT
-## Tag:                  sometag
-## Next version:         5.5.0-HF01-SNAPSHOT
-## No maintenance branch
-##
+# #
+# # (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+# #
+# # All rights reserved. This program and the accompanying materials
+# # are made available under the terms of the GNU Lesser General Public License
+# # (LGPL) version 2.1 which accompanies this distribution, and is available at
+# # http://www.gnu.org/licenses/lgpl.html
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# # Lesser General Public License for more details.
+# #
+# # Contributors:
+# #     Julien Carsique
+# #
+# # This script manages releasing of Nuxeo source code.
+# # It applies on current Git repository and its sub-repositories.
+# #
+# # Examples from Nuxeo root, checkout on master:
+# # $ ./scripts/release.py
+# # Releasing from branch:   master
+# # Current version:         5.6-SNAPSHOT
+# # Tag:                     5.6-I20120102_1741
+# # Next version:            5.6-SNAPSHOT
+# # No maintenance branch
+# #
+# # $ ./scripts/release.py -f
+# # Releasing from branch:   master
+# # Current version:         5.6-SNAPSHOT
+# # Tag:                     5.6
+# # Next version:            5.7-SNAPSHOT
+# # No maintenance branch
+# #
+# # $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
+# # Releasing from branch:   master
+# # Current version:         5.6-SNAPSHOT
+# # Tag:                     5.6
+# # Next version:            5.7-SNAPSHOT
+# # Maintenance version:     5.6.1-SNAPSHOT
+# #
+# # $ ./scripts/release.py -f -b 5.5.0
+# # Releasing from branch:   5.5.0
+# # Current version:         5.5.0-HF01-SNAPSHOT
+# # Tag:                     5.5.0-HF01
+# # Next version:            5.5.0-HF02-SNAPSHOT
+# # No maintenance branch
+# #
+# # $ ./scripts/release.py -b 5.5.0 -t sometag
+# # Releasing from branch 5.5.0
+# # Current version:      5.5.0-HF01-SNAPSHOT
+# # Tag:                  sometag
+# # Next version:         5.5.0-HF01-SNAPSHOT
+# # No maintenance branch
+# #
 from datetime import datetime
 from lxml import etree
 from nxutils import ExitException
@@ -64,9 +64,13 @@ from nxutils import extract_zip
 from nxutils import log
 from nxutils import make_zip
 from nxutils import system
+from terminalsize import get_terminal_size
 import fnmatch
 import hashlib
 import optparse
+from optparse import IndentedHelpFormatter
+from optparse import TitledHelpFormatter
+from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
 import os
 import posixpath
 import re
@@ -335,8 +339,7 @@ class Release(object):
         self.repo.system_recurse("git commit -m'Release %s' -a" % self.tag)
         self.repo.system_recurse("git tag release-%s" % self.tag)
 
-        ## TODO NXP-8569 Optionally merge maintenance branch on source
-
+        # TODO NXP-8569 Optionally merge maintenance branch on source
         if self.maintenance != "auto":
             # Maintenance branches are kept, so update their versions
             self.update_versions(self.tag, self.maintenance)
@@ -399,59 +402,85 @@ def main():
         if not os.path.isdir(".git"):
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
-        usage = ("usage: %prog [options] <command>\n\nCommands:\n"
-                 "  prepare: Prepare the release (build, change versions, tag "
-                 "and package source and distributions). The release "
-                 "parameters are stored in a release.log file.\n"
-                 "  perform: Perform the release (push sources, deploy "
-                 "artifacts and upload packages). If no parameter is given, "
-                 "they are read from the release.log file.\n"
-                 "  package: Package distributions and source code in the "
-                 "archives directory.")
-        parser = optparse.OptionParser(usage=usage,
-                                       description="""Release Nuxeo from
-a given branch, tag the release, then set the next SNAPSHOT version.  If a
-maintenance version was provided, then a maintenance branch is kept, else it is
-deleted after release.""")
+        usage = ("""usage: %prog <command> [options]
+       %prog prepare [-r alias] [-f] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [-d] [--skipTests] [--arv versions_replacements]
+       %prog perform [-r alias] [-f] [-b branch] [-t tag] [-m maintenance]
+       %prog package [--skipTests]
+\nCommands:
+  prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
+  perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release.log file.
+  package: Package distributions and source code in the archives directory.""")
+        description = """Release Nuxeo from a given branch, tag the release, then
+set the next SNAPSHOT version. If a maintenance version was provided, then a
+maintenance branch is kept, else it is deleted after release."""
+        help_formatter = IndentedHelpFormatterWithNL(
+#                 max_help_position=6,
+                 width=get_terminal_size()[0])
+        parser = optparse.OptionParser(usage=usage, description=description,
+                                       formatter=help_formatter)
         parser.add_option('-r', action="store", type="string",
                           dest='remote_alias',
                           default='origin',
-                          help="""the Git alias of remote URL
-                          (default: %default)""")
-        parser.add_option('-f', '--final', action="store_true",
-                          dest='is_final', default=False,
-                          help='is it a final release? (default: %default)')
-        parser.add_option("-b", "--branch", action="store", type="string",
-                          help='branch to release (default: current branch)',
-                          dest="branch", default="auto")
-        parser.add_option("-t", "--tag", action="store", type="string",
-                          dest="tag", default="auto",
-                          help="""if final option is True, then the default tag
-is the current version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is
-replaced with a date (aka 'date-based release')""")
-        parser.add_option("-n", "--next", action="store", type="string",
-                          dest="next_snapshot", default="auto",
-                          help="""next snapshot. If final option is True, then
-the next snapshot is the current one increased, else it is equal to the current
-""")
-        parser.add_option('-m', '--maintenance', action="store",
-                          dest='maintenance', default="auto",
-                          help="""maintenance version (by default, the
-maintenance branch is deleted after release)""")
+                          help="""The Git alias of remote URL.
+Default: %default""")
         parser.add_option('-i', '--interactive', action="store_true",
                           dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive
-mode.""")
+mode. Default: %default""")
         parser.add_option('-d', '--deploy', action="store_true",
                           dest='deploy', default=False,
-                          help="""deploy artifacts to nightly repository""")
+                          help="""Deploy artifacts to nightly/staging repository
+by activating the 'nightly' Maven profile. Default: %default""")
         parser.add_option('--skipTests', action="store_true",
                           dest='skipTests', default=False,
-                          help="""skip tests execution (but compile them)""")
-        parser.add_option('--arv', '--also-replace-version', action="store",
-                          dest='other_version', default=None,
-                          help="""other version to replace; use a slash ('/') as
-a separator between old and new version: '1.0-SNAPSHOT/1.0-beta'""")
+                          help="""Skip tests execution (but compile them).
+Default: %default""")
+        versioning_options = optparse.OptionGroup(parser, 'Version policy')
+        versioning_options.add_option('-f', '--final', action="store_true",
+                          dest='is_final', default=False,
+                          help='Is it a final release? Default: %default')
+        versioning_options.add_option("-b", "--branch", action="store",
+                          type="string",
+                          help="""Branch to release. Default: %default = the
+current branch""",
+                          dest="branch", default="auto")
+        versioning_options.add_option("-t", "--tag", action="store",
+                          type="string", dest="tag", default="auto",
+                          help="""Released version. SCM tag is 'release-$TAG'.
+Default: %default\n
+In mode 'auto', if final option is True, then the default value is the current
+version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is replaced with a date
+(aka 'date-based release').""")
+        versioning_options.add_option("-n", "--next", action="store", type="string",
+                          dest="next_snapshot", default="auto",
+                          help="""Version post-release. Default: %default\n
+In mode 'auto', if final option is True, then the next snapshot is the current
+one increased, else it is equal to the current.""")
+        versioning_options.add_option('-m', '--maintenance', action="store",
+                          dest='maintenance', default="auto",
+                          help="""Maintenance version. Default: %default\n
+The maintenance branch is always named like the tag without the 'release-'
+prefix. If set, the version will be used on the maintenance branch, else, in
+mode 'auto', the maintenance branch is deleted after release.""")
+        versioning_options.add_option('--arv', '--also-replace-version',
+                          action="store", dest='other_version', default=None,
+                          help="""Other version(s) to replace. Default: %default\n
+Use a slash ('/') as a separator between old and new version: '1.0-SNAPSHOT/1.0'.\n
+A version post-release can also be specified: '1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT'.\n
+Multiple versions can be replaced using a coma (',') separator:
+'1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT,0.0-SNAPSHOT/2.0.1'.\n
+It only applies on files named with xml, properties, txt, defaults, sh, html or
+nxftl extension and on 'pom.xml' files. On POM files, it only applies on the
+parent version, the POM version and the properties named
+'nuxeo|marketplace.*version'. Other patterns for filename extensions and
+properties can be provided using two colon (':') separators:
+'.*\\.customextension:my.property:1.0-SNAPSHOT/1.0', '.*\\.text::',
+':my.property:1.0-SNAPSHOT/1.0/1.1-SNAPSHOT', ...
+Those patterns are common to all replacements, including the released version.\n
+Default patterns are respectively:
+'^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$' and
+'(nuxeo|marketplace)\..*version'. They can't be removed.""")
+        parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
