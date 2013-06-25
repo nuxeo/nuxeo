@@ -19,7 +19,7 @@
       <sourceMimeType>text/xhtml</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
-    
+
     <converter name="md2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.MD2TextConverter">
       <sourceMimeType>text/x-web-markdown</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
@@ -42,14 +42,19 @@
       <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
-    
+
+    <converter name="rtf2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.RTF2TextConverter">
+      <sourceMimeType>application/rtf</sourceMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+    </converter>
+
     <converter name="docx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.DOCX2TextConverter">
       <sourceMimeType>
         application/vnd.openxmlformats-officedocument.wordprocessingml.document
       </sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
-    
+
     <converter name="pptx2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.PPTX2TextConverter">
       <sourceMimeType>
         application/vnd.openxmlformats-officedocument.presentationml.presentation
