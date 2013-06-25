@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -21,11 +21,11 @@
 
 package org.nuxeo.common.utils;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Properties;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author sfermigier
@@ -54,6 +54,21 @@ public class TestTextTemplate {
         tt.setVariable("k2", "v2");
         String text = tt.process("${k1}-${k2}");
         assertEquals("v1-v2", text);
+    }
+
+    @Test
+    public void testParameterExpansion() {
+        TextTemplate emptytt = new TextTemplate(new Properties());
+        Properties vars = new Properties();
+        vars.setProperty("foo", "bar");
+        TextTemplate tt = new TextTemplate(vars);
+        assertEquals("baz", emptytt.process("${foo:=baz}"));
+        assertEquals("bar", tt.process("${foo:=baz}"));
+        assertEquals("<foo>${myUnresolvedExpression}</foo>",
+                tt.process("<foo>${myUnresolvedExpression}</foo>"));
+        vars.setProperty("myUnresolvedExpression", "");
+        assertEquals("<foo></foo>",
+                tt.process("<foo>${myUnresolvedExpression}</foo>"));
     }
 
 }
