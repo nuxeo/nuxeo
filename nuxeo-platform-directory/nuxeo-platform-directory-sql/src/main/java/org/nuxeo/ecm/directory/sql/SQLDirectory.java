@@ -52,6 +52,9 @@ import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.yammer.metrics.Metrics;
+import com.yammer.metrics.core.Counter;
+
 public class SQLDirectory extends AbstractDirectory {
 
     protected class TxSessionCleaner implements Synchronization {
@@ -137,6 +140,13 @@ public class SQLDirectory extends AbstractDirectory {
     private final List<String> storedFieldNames;
 
     private final Dialect dialect;
+
+    // @since 5.7
+    protected final static Counter sessionCount = Metrics.defaultRegistry().newCounter(
+            SQLDirectory.class, "session");
+
+    protected final static Counter sessionMaxCount = Metrics.defaultRegistry().newCounter(
+            SQLDirectory.class, "session-max");
 
     public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
         this.config = config;
@@ -354,6 +364,10 @@ public class SQLDirectory extends AbstractDirectory {
     protected synchronized void addSession(final SQLSession session)
             throws DirectoryException {
         sessions.add(session);
+        sessionCount.inc();
+        if (sessionCount.getCount() > sessionMaxCount.getCount()) {
+            sessionMaxCount.inc();
+        }
         registerInTx(session);
     }
 
@@ -375,7 +389,10 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     protected synchronized void removeSession(Session session) {
-        sessions.remove(session);
+        if (sessions.remove(session)) {
+            // called from session.close()
+            sessionCount.dec();
+        }
     }
 
     @Override
