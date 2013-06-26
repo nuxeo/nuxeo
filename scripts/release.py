@@ -70,7 +70,6 @@ from nxutils import system
 from optparse import IndentedHelpFormatter
 from optparse import TitledHelpFormatter
 from terminalsize import get_terminal_size
-from test.test_iterlen import len
 import fnmatch
 import hashlib
 import optparse
@@ -182,8 +181,8 @@ class Release(object):
                         % other_versions)
                 other_versions_split.append(other_version_split)
             self.other_versions = other_versions_split
-            self.custom_patterns = Patterns(custom_files_pattern,
-                                            custom_props_pattern)
+        self.custom_patterns = Patterns(custom_files_pattern,
+                                        custom_props_pattern)
 
     def set_snapshot(self):
         """Set current version from root POM."""
