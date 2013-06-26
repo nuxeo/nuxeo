@@ -144,8 +144,9 @@ class Release(object):
             "{%s}(nuxeo|marketplace)\..*version" % namespaces.get("pom"))
         custom_files_pattern = None
         custom_props_pattern = None
-        self.other_versions = other_versions
-        if other_versions is not None:
+        other_versions_split = []
+        if other_versions:
+            # Parse custom patterns
             other_versions_split = other_versions.split(':')
             if (len(other_versions_split) == 3):
                 if other_versions_split[0]:
@@ -163,14 +164,15 @@ class Release(object):
                                             other_versions_split[1], e.message)
                     custom_props_pattern = "{%s}%s" % (namespaces.get("pom"),
                                                        other_versions_split[1])
-                self.other_versions = other_versions_split[2]
+                other_versions = other_versions_split[2]
             elif len(other_versions_split) == 1:
-                self.other_versions = other_versions_split[0]
+                other_versions = other_versions_split[0]
             else:
                 raise ExitException(1, "Could not parse other_versions parameter %s."
                                     % other_versions)
+            # Parse version replacements
             other_versions_split = []
-            for other_version in self.other_versions.split(","):
+            for other_version in other_versions.split(","):
                 other_version_split = other_version.split("/")
                 if (len(other_version_split) < 2 or
                     len(other_version_split) > 3 or
@@ -180,7 +182,7 @@ class Release(object):
                         "Could not parse other_versions parameter %s."
                         % other_versions)
                 other_versions_split.append(other_version_split)
-            self.other_versions = other_versions_split
+        self.other_versions = other_versions_split
         self.custom_patterns = Patterns(custom_files_pattern,
                                         custom_props_pattern)
 
