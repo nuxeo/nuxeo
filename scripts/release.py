@@ -142,8 +142,8 @@ class Release(object):
             "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
             # Properties like nuxeo.*.version
             "{%s}(nuxeo|marketplace)\..*version" % namespaces.get("pom"))
-        custom_files_pattern = None
-        custom_props_pattern = None
+        custom_files_pattern = ""
+        custom_props_pattern = ""
         other_versions_split = []
         if other_versions:
             # Parse custom patterns
@@ -230,13 +230,13 @@ class Release(object):
             log("Maintenance version:".ljust(25) + self.maintenance)
         if self.skipTests:
             log("Tests execution is skipped")
-        if self.custom_patterns.files is not None:
+        if self.custom_patterns.files:
             log("Custom files pattern: ".ljust(25) +
                 self.custom_patterns.files)
-        if self.custom_patterns.props is not None:
+        if self.custom_patterns.props:
             log("Custom props pattern: ".ljust(25) +
                 self.custom_patterns.props[35:])
-        if self.other_versions is not None:
+        if self.other_versions:
             for other_version in self.other_versions:
                 log("Also replace version:".ljust(25) + '/'.join(other_version))
         if store_params:
@@ -266,16 +266,16 @@ class Release(object):
             return changed
         log("[INFO] Replacing occurrences of %s with %s" % (old_version,
                                                             new_version))
-        if self.custom_patterns.files is None:
-            files_pattern = re.compile(self.default_patterns.files)
-        else:
+        if self.custom_patterns.files:
             files_pattern = re.compile("(%s)|(%s)" % (self.default_patterns.files,
                                  self.custom_patterns.files))
-        if self.custom_patterns.props is None:
-            props_pattern = re.compile(self.default_patterns.props)
         else:
+            files_pattern = re.compile(self.default_patterns.files)
+        if self.custom_patterns.props:
             props_pattern = re.compile("(%s)|(%s)" % (self.default_patterns.props,
                                  self.custom_patterns.props))
+        else:
+            props_pattern = re.compile(self.default_patterns.props)
 
         for root, dirs, files in os.walk(os.getcwd(), True, None, True):
             for dir in set(dirs) & set([".git", "target"]):
