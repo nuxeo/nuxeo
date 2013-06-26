@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Yet Another variable resolver
+ * Yet Another variable resolver.
  *
  * @see TextTemplate
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

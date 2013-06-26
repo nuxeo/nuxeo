@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  * <p>
  * Since 5.7.2, it an accept default values using syntax
  * ${parameter:=defaultValue}. The default value will be used if parameter is
- * null or unset.</li>
+ * null or unset.
  * <p>
  * Method {@link #setParsingExtensions(String)} allow to set list of files
  * being processed when using {@link #processDirectory(File, File)} or #pro,
