@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -108,12 +109,12 @@ public class CoreQueryDocumentPageProvider extends
 
                 DocumentModelList docs;
                 if (getMaxResults() > 0) {
-                    docs = coreSession.query(query, null, minMaxPageSize,
+                    docs = coreSession.query(query, getFilter(), minMaxPageSize,
                             offset, getMaxResults());
                 } else {
                     // use a totalCount=true instead of countUpTo=-1 to enable
                     // global limitation described in NXP-9381
-                    docs = coreSession.query(query, null, minMaxPageSize,
+                    docs = coreSession.query(query, getFilter(), minMaxPageSize,
                             offset, true);
                 }
                 long resultsCount = docs.totalSize();
@@ -288,6 +289,10 @@ public class CoreQueryDocumentPageProvider extends
 
     public String getCurrentQuery() {
         return query;
+    }
+
+    protected Filter getFilter() {
+        return null;
     }
 
     @Override
