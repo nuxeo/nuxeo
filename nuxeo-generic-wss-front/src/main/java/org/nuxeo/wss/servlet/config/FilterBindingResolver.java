@@ -19,7 +19,6 @@ package org.nuxeo.wss.servlet.config;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,10 +28,9 @@ import org.nuxeo.wss.fprpc.FPRPCConts;
 
 public class FilterBindingResolver {
 
+    // @GuardedBy("itself")
     protected static final Map<String, FilterBindingConfig> bindingCache = new LRUCachingMap<String, FilterBindingConfig>(
             50);
-
-    protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
     public static FilterBindingConfig getBinding(HttpServletRequest request)
             throws Exception {
@@ -49,21 +47,14 @@ public class FilterBindingResolver {
     }
 
     public static FilterBindingConfig getBinding(String uri) throws Exception {
-        FilterBindingConfig binding = null;
-
-        try {
-            cacheLock.readLock().lock();
+        FilterBindingConfig binding;
+        synchronized(bindingCache) {
             binding = bindingCache.get(uri);
-        } finally {
-            cacheLock.readLock().unlock();
         }
         if (binding == null) {
-            try {
-                cacheLock.writeLock().lock();
-                binding = computeBindingForRequest(uri);
+            binding = computeBindingForRequest(uri);
+            synchronized(bindingCache) {
                 bindingCache.put(uri, binding);
-            } finally {
-                cacheLock.writeLock().unlock();
             }
         }
         return binding;
