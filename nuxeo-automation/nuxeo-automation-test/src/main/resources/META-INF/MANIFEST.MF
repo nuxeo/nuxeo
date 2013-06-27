@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Version: 5.4.2.qualifier
 Bundle-Name: Nuxeo Automation Tests
 Bundle-SymbolicName: org.nuxeo.ecm.automation.test;singleton:=true
+Export-Package: org.nuxeo.ecm.automation.test;
 Bundle-Vendor: Nuxeo
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.mail,
@@ -43,3 +44,4 @@ Import-Package: javax.mail,
  org.osgi.framework;version="1.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.automation.core
+Nuxeo-Component: OSGI-INF/adapter-contrib.xml, OSGI-INF/core-types-contrib.xml

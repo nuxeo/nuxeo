@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
              point="adapters">
     <adapter
-            class="org.nuxeo.ecm.automation.server.test.business.adapter.BusinessBeanAdapter"
-            factory="org.nuxeo.ecm.automation.server.test.business.adapter.BusinessBeanAdapterFactory" />
+            class="org.nuxeo.ecm.automation.test.adapter.BusinessBeanAdapter"
+            factory="org.nuxeo.ecm.automation.test.adapter.BusinessBeanAdapterFactory" />
   </extension>
 </component>

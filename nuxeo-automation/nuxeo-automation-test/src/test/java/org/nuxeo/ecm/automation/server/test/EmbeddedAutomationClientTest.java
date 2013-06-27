@@ -89,14 +89,15 @@ import com.google.inject.Inject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Deploy({ "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core",
+@Deploy({
+        "org.nuxeo.ecm.platform.url.api",
+        "org.nuxeo.ecm.platform.url.core",
         "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml" })
-@LocalDeploy({ "org.nuxeo.ecm.automation.server:test-bindings.xml",
-        "org.nuxeo.ecm.automation.server:test-mvalues.xml",
-        "org.nuxeo.ecm.automation.server:core-types-contrib.xml",
-        "org.nuxeo.ecm.automation.server:adapter-contrib.xml" })
+        "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml",
+        "org.nuxeo.ecm.automation.test" })
+@LocalDeploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml",
+        "org.nuxeo.ecm.automation.test:test-mvalues.xml" })
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
