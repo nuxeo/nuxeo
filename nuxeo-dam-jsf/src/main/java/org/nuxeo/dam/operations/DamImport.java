@@ -19,6 +19,7 @@ package org.nuxeo.dam.operations;
 
 import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.DamService;
+import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -50,6 +51,9 @@ public class DamImport {
     protected CoreSession session;
 
     @Context
+    protected AutomationService as;
+
+    @Context
     protected FileManager fileManager;
 
     @Context
@@ -58,12 +62,25 @@ public class DamImport {
     @Param(name = "overwrite", required = false)
     protected Boolean overwrite = false;
 
+    protected DocumentModel getCurrentDocument() throws Exception {
+        String cdRef = (String) ctx.get("currentDocument");
+        return as.getAdaptedValue(ctx, cdRef, DocumentModel.class);
+    }
+
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
-        AssetLibrary assetLibrary = damService.getAssetLibrary();
+        DocumentModel parent = getCurrentDocument();
+        String parentPath;
+        if (parent != null) {
+            parentPath = parent.getPathAsString();
+        } else {
+            AssetLibrary assetLibrary = damService.getAssetLibrary();
+            parentPath = assetLibrary.getPath();
+        }
+
         ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
-        return fileManager.createDocumentFromBlob(session, blob,
-                assetLibrary.getPath(), overwrite, blob.getFilename());
+        return fileManager.createDocumentFromBlob(session, blob, parentPath,
+                overwrite, blob.getFilename());
     }
 
     @OperationMethod

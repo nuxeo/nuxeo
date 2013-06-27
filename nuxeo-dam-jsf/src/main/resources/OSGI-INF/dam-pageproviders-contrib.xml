@@ -24,6 +24,17 @@
       <sort column="dc:title" ascending="true" />
     </coreQueryPageProvider>
 
+    <genericPageProvider name="damImportFolders"
+      class="org.nuxeo.dam.provider.ImportFolderPageProvider">
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
+        'HiddenInNavigation' AND ecm:mixinType = 'Folderish'
+        AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>10</pageSize>
+    </genericPageProvider>
+
   </extension>
 
 </component>

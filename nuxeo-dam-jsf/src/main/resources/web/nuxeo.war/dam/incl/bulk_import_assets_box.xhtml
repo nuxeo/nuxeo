@@ -34,6 +34,24 @@
         </rich:fileUpload>
       </c:if>
 
+
+
+      <table class="dataInput fullWidth separator">
+        <tbody>
+        <tr>
+          <td class="labelColumn">
+            #{messages['label.dam.bulk.import.assets.select.path']}
+          </td>
+          <td class="fieldColumn">
+            <nxl:widgetType name="damSingleDocumentSuggestion" mode="edit"
+              value="#{damImportActions}"
+              field="selectedImportFolderId"
+              pageProviderName="damImportFolders"/>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
       <nxu:set var="importOptions" value="#{damImportActions.getImportOptions(action.properties.dropContext)}" cache="true">
 
         <c:if test="#{importOptions.size() > 1}">

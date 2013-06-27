@@ -89,6 +89,8 @@ public class DamImportActions implements Serializable {
 
     protected List<Action> importOptions;
 
+    protected String selectedImportFolderId;
+
     protected String currentBatchId;
 
     protected Collection<UploadItem> uploadedFiles = null;
@@ -134,6 +136,14 @@ public class DamImportActions implements Serializable {
         return importOptions;
     }
 
+    public String getSelectedImportFolderId() {
+        return selectedImportFolderId;
+    }
+
+    public void setSelectedImportFolderId(String selectedImportFolderId) {
+        this.selectedImportFolderId = selectedImportFolderId;
+    }
+
     public String generateBatchId() {
         currentBatchId = "batch-" + new Date().getTime() + "-"
                 + random.nextInt(1000);
@@ -161,12 +171,18 @@ public class DamImportActions implements Serializable {
 
         Map<String, Object> contextParams = new HashMap<>();
         contextParams.put("docMetaData", properties);
+        contextParams.put("currentDocument", selectedImportFolderId);
 
-        if (dndConfigHelper.useHtml5DragAndDrop()) {
-            importAssetsThroughBatchManager(chainOrOperationId, contextParams);
-        } else {
-            importAssetsThroughUploadItems(chainOrOperationId, contextParams);
+        try {
+            if (dndConfigHelper.useHtml5DragAndDrop()) {
+                importAssetsThroughBatchManager(chainOrOperationId, contextParams);
+            } else {
+                importAssetsThroughUploadItems(chainOrOperationId, contextParams);
+            }
+        } finally {
+            cancel();
         }
+
         return null;
     }
 
@@ -223,8 +239,10 @@ public class DamImportActions implements Serializable {
         if (currentBatchId != null) {
             BatchManager bm = Framework.getLocalService(BatchManager.class);
             bm.clean(currentBatchId);
-            importDocumentModel = null;
         }
+        importDocumentModel = null;
+        selectedImportFolderId = null;
+        uploadedFiles = null;
     }
 
     public Collection<UploadItem> getUploadedFiles() {
