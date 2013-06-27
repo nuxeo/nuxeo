@@ -6,12 +6,65 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
     <widgetType name="video_player">
-      <documentation>
-        This widget displays a HTML5 video player for browsers
-        supporting it, and fallback on a Flash player for others.
-        It uses the WebM or MP4 conversion (in 480p) of
-        a document having the facet 'Video'.
-      </documentation>
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Video player</title>
+        <description>
+          <p>
+            This widget displays a HTML5 video player for browsers
+            supporting it, and fallback on a Flash player for others.
+            It uses the WebM or MP4 conversion (in 480p) of
+            a document having the facet 'Video'.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="video_player_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>height</widget>
+                </row>
+              </rows>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The width of the Video player.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="int">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The height of the Video player.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -50,10 +103,24 @@
     </widgetType>
 
     <widgetType name="video_conversions">
-      <documentation>
-        This widget displays the list of available
-        video conversions for the given Video document.
-      </documentation>
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Video conversions</title>
+        <description>
+          <p>
+            This widget displays the list of available
+            video conversions for the given Video document.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -64,10 +131,24 @@
     </widgetType>
 
     <widgetType name="video_info">
-      <documentation>
-        This widget displays the information of the main video of
-        a document having the facet 'Video'.
-      </documentation>
+      <configuration>
+        <sinceVersion>5.6</sinceVersion>
+        <title>Video info</title>
+        <description>
+          <p>
+            This widget displays the information of the main video of
+            a document having the facet 'Video'.
+          </p>
+        </description>
+        <handlingLabels>true</handlingLabels>
+        <categories>
+          <category>summary</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <!-- no configurable properties -->
+      </configuration>
 
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -89,7 +170,7 @@
         </description>
         <properties>
           <layouts mode="view">
-            <layout name="video_widget_type_properties_view">
+            <layout name="video_file_widget_type_properties_view">
               <rows>
                 <row>
                   <widget>summary_video_info</widget>
@@ -98,7 +179,7 @@
             </layout>
           </layouts>
           <layouts mode="edit">
-            <layout name="video_widget_type_properties_edit">
+            <layout name="video_file_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">required</widget>
@@ -114,7 +195,8 @@
                 <helpLabels>
                   <label mode="any">
                     A comma separated list of supported file
-                    extensions. Default value: '.mpg, .mpe, .mpeg, .wmv, .swf, .ogg, .ogv, .mkv, .mov, .avi, .mp4, .m4v, .flv, .fla'.
+                    extensions. Default value: '.mpg, .mpe, .mpeg, .wmv, .swf,
+                    .ogg, .ogv, .mkv, .mov, .avi, .mp4, .m4v, .flv, .fla'.
                   </label>
                 </helpLabels>
                 <fields>
