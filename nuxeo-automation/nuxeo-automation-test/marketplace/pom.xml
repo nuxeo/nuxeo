@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.automation</groupId>
+    <artifactId>nuxeo-automation-parent</artifactId>
+    <version>5.7.2-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>marketplace</artifactId>
+  <packaging>zip</packaging>
+  <name>Marketplace QA Package</name>
+
+  <properties>
+    <nuxeo.distribution.version>5.7.2-SNAPSHOT</nuxeo.distribution.version>
+    <marketplace.sample.version>5.7.2-SNAPSHOT</marketplace.sample.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-cap</artifactId>
+      <type>pom</type>
+      <version>${nuxeo.distribution.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-test</artifactId>
+      <version>${nuxeo.distribution.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
