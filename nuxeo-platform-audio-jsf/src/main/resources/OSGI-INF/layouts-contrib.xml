@@ -19,6 +19,13 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+        </fields>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -44,7 +51,7 @@
         </description>
         <properties>
           <layouts mode="view">
-            <layout name="audio_widget_type_properties_view">
+            <layout name="audio_file_widget_type_properties_view">
               <rows>
                 <row>
                   <widget>duration</widget>
@@ -61,7 +68,7 @@
             </layout>
           </layouts>
           <layouts mode="edit">
-            <layout name="audio_widget_type_properties_edit">
+            <layout name="audio_file_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">required</widget>
