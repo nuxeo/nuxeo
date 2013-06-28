@@ -796,13 +796,35 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
-        // This request can be done directly with
-        // Operation.BusinessCreateOperation ->
-        // session.newRequest("Operation.BusinessCreateOperation").setInput(o).set("name",
-        // name).set("parentPath",parentPath).execute();
-        // Adding BusinessBean marshaller is mandatory in this way:
-        // JsonMarshalling.addMarshaller(PojoMarshaller.forClass(file.getClass()));
+        // Marshaller for bean 'note' registration
+        client.registerPojoMarshaller(note.getClass());
 
+        note = (BusinessBean) session.newRequest(
+                "Business.BusinessCreateOperation").setInput(note).set("name",
+                note.getTitle()).set("parentPath", "/").execute();
+        assertNotNull(note);
+        // Test for pojo <-> adapter automation update
+        note.setTitle("Update");
+        note = (BusinessBean) session.newRequest(
+                "Business.BusinessUpdateOperation").setInput(note).set("id",
+                note.getId()).execute();
+        assertEquals("Update", note.getTitle());
+    }
+
+    /**
+     * 'pojo client side' <--- mapping ----> 'adapter server side' test with
+     * BusinessService
+     */
+    @Test
+    public void testAutomationBusinessObjectsWithService() throws Exception {
+        // Test for pojo <-> adapter automation creation
+        BusinessBean note = new BusinessBean("Note", "File description",
+                "Note Content", "Note");
+        @SuppressWarnings("unchecked")
+        BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
+        assertNotNull(businessService);
+
+        // Marshaller for bean 'note' is registered on the fly
         note = businessService.create(note, note.getTitle(), "/");
         assertNotNull(note);
         // Test for pojo <-> adapter automation update

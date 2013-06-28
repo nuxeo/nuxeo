@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.TokenCallback;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.BasicAuthInterceptor;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.auth.TokenAuthInterceptor;
+import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.client.model.OperationRegistry;
 
@@ -219,4 +220,8 @@ public abstract class AbstractAutomationClient implements AutomationClient {
 		sharedRegistryExpirationDelay = delay;
 	}
 
+    @Override
+    public void registerPojoMarshaller(Class clazz) {
+        JsonMarshalling.addMarshaller(PojoMarshaller.forClass(clazz));
+    }
 }
