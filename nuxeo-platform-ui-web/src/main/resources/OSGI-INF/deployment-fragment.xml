@@ -736,6 +736,12 @@
         org.nuxeo.ecm.platform.ui.web.validator.SortInfoListValidator
       </validator-class>
     </validator>
+    <validator>
+      <validator-id>NxDateValidator</validator-id>
+      <validator-class>
+        org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator
+      </validator-class>
+    </validator>
   </extension>
 
   <extension target="faces-config#MANAGED-BEAN">

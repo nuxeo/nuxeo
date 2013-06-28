@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.util.Arrays;
+
 import javax.faces.component.html.HtmlOutputText;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
@@ -41,6 +43,8 @@ import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 import com.sun.facelets.tag.jsf.ConvertHandler;
 import com.sun.facelets.tag.jsf.ConverterConfig;
+import com.sun.facelets.tag.jsf.ValidateHandler;
+import com.sun.facelets.tag.jsf.ValidatorConfig;
 import com.sun.facelets.tag.jsf.core.ConvertDateTimeHandler;
 
 /**
@@ -69,12 +73,18 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
         FaceletHandler leaf = null;
-        if (subHandlers != null) {
-            leaf = new CompositeFaceletHandler(subHandlers);
-        } else {
-            leaf = new LeafFaceletHandler();
-        }
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
+            ValidatorConfig validatorConfig = TagConfigFactory.createValidatorConfig(
+                    tagConfig, widget.getTagConfigId(), new TagAttributes(new TagAttribute[0]),
+                    new LeafFaceletHandler(), org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator.VALIDATOR_ID);
+            ValidateHandler validateHandler = new ValidateHandler(validatorConfig);
+
+            if (subHandlers != null) {
+                leaf = new CompositeFaceletHandler(addNewSubHandler(subHandlers, validateHandler));
+            } else {
+                leaf = validateHandler;
+            }
+
             ComponentConfig config = TagConfigFactory.createComponentConfig(
                     tagConfig, widget.getTagConfigId(), attributes, leaf,
                     UICalendar.COMPONENT_TYPE, null);
@@ -87,8 +97,15 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, widget.getTagConfigId(), attributes,
-                    leaf, javax.faces.convert.DateTimeConverter.CONVERTER_ID);
+                    new LeafFaceletHandler(), javax.faces.convert.DateTimeConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertDateTimeHandler(convertConfig);
+
+            if (subHandlers != null) {
+                leaf = new CompositeFaceletHandler(addNewSubHandler(subHandlers, convert));
+            } else {
+                leaf = convert;
+            }
+
             ComponentHandler output = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, convert,
                     HtmlOutputText.COMPONENT_TYPE, null);
@@ -101,6 +118,21 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 return output;
             }
         }
+    }
+
+    /**
+     * Create an array of FaceletHandler which contains all the elements of originalSubHandlers plus newSubHandler
+     *
+     * @param originalSubHandlers
+     * @param newSubHandler
+     * @return the new array
+     *
+     * @since 5.7.2
+     */
+    private FaceletHandler[] addNewSubHandler(FaceletHandler[] originalSubHandlers, FaceletHandler newSubHandler) {
+        FaceletHandler[] newSubHandlers = Arrays.copyOf(originalSubHandlers, originalSubHandlers.length + 1);
+        newSubHandlers[newSubHandlers.length - 1] = newSubHandler;
+        return newSubHandlers;
     }
 
 }
