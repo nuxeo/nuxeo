@@ -1617,18 +1617,19 @@ public class ConfigurationGenerator {
                 classname);
         // Test db connection
         DriverManager.registerDriver(driver);
-        TextTemplate tt = new TextTemplate();
-        tt.setVariable(PARAM_DB_HOST, dbHost);
-        tt.setVariable(PARAM_DB_PORT, dbPort);
-        tt.setVariable(PARAM_DB_NAME, dbName);
-        tt.setVariable(PARAM_DB_USER, dbUser);
-        tt.setVariable(PARAM_DB_PWD, dbPassword);
-        Properties props = new Properties();
-        props.put("user", dbUser);
-        props.put("password", dbPassword);
+        Properties ttProps = new Properties(userConfig);
+        ttProps.put(PARAM_DB_HOST, dbHost);
+        ttProps.put(PARAM_DB_PORT, dbPort);
+        ttProps.put(PARAM_DB_NAME, dbName);
+        ttProps.put(PARAM_DB_USER, dbUser);
+        ttProps.put(PARAM_DB_PWD, dbPassword);
+        TextTemplate tt = new TextTemplate(ttProps);
         String url = tt.processText(connectionUrl);
-        log.debug("Testing URL " + url + " with " + props);
-        Connection con = driver.connect(url, props);
+        Properties conProps = new Properties();
+        conProps.put("user", dbUser);
+        conProps.put("password", dbPassword);
+        log.debug("Testing URL " + url + " with " + conProps);
+        Connection con = driver.connect(url, conProps);
         con.close();
     }
 
