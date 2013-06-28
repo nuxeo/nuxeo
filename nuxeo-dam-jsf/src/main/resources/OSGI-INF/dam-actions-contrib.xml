@@ -32,7 +32,7 @@
       <properties>
         <property name="ajaxSupport">true</property>
         <property name="ajaxReRender">
-          damPanelCenter, damPanelRight
+          damPanelCenter, damPanelRight, damPanelLeft
         </property>
       </properties>
     </action>
