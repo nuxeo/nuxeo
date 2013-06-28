@@ -55,7 +55,7 @@
     <copy todir="${outdir}/nxr/bundles" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
+          <artifact groupId="org.nuxeo*" artifactId="nuxeo-automation-test" scope="test" type="!pom" />
           <!-- Include your artifacts using their groupId for instance -->
           <artifact groupId="com.nuxeo*" scope="!test" type="!pom" />
         </includes>

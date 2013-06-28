@@ -19,15 +19,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap</artifactId>
-      <type>pom</type>
-      <version>${nuxeo.distribution.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-test</artifactId>
       <version>${nuxeo.distribution.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.nuxeo.ecm.automation</groupId>
+          <artifactId>nuxeo-automation-client</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
