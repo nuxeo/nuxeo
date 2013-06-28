@@ -48,7 +48,7 @@ public class ClientMarshallingTest {
                 "value", "/default-domain").execute();
         assertEquals("6e4ee4b8-af3f-4fb4-ad31-1a0a88720dfb",
                 defaultDomain.getId());
-        assertEquals("Thu May 16 13:35:00 CEST 2013", defaultDomain.getLastModified().toString());
+        assertEquals(1368704100560L, defaultDomain.getLastModified().getTime());
         assertEquals(2, defaultDomain.getFacets().size());
         assertEquals("SuperSpace", defaultDomain.getFacets().getString(0));
         assertEquals("Folderish", defaultDomain.getFacets().getString(1));
