@@ -1,8 +1,11 @@
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,14 +14,13 @@ import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.BusinessService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
+import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
+import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -33,76 +35,138 @@ import com.google.inject.Inject;
 @Features(RemoteAutomationServerFeature.class)
 public class RemoteAutomationClientTCK {
 
+    protected static String[] attachments = { "att1", "att2", "att3" };
+
     @Inject
     Session session;
 
     @Inject
     HttpAutomationClient client;
 
-    /**
-     * Create Read Update Delete
-     */
     @Test
     public void testSuite() throws Exception {
-        testCreateDocument();
-        testFetchDocument();
-        testQuery();
-        testUpdateDocument();
-        testDeleteDocument();
-        testAttachBlob();
-        testGetBlob();
-        testComplexProperties();
+        testCRUDSuite();
+        testBlobSuite();
+        testPaginationSuite();
+        testComplexPropertiesWithJSON();
         testAutomationBusinessObjects();
     }
 
-    public void testCreateDocument() throws Exception {
+    public void testCRUDSuite() throws Exception {
+        testCreateRoot();
+        testCreateChild1();
+        testCreateChild2();
+        testUpdateChild2();
+        testGetChildren();
+    }
+
+    public void testBlobSuite() throws Exception {
+        testAttachBlob();
+        testGetBlob();
+    }
+
+    public void testPaginationSuite() throws Exception {
+        testCreateAnotherRoot();
+        testCreateChild("1");
+        testCreateChild("2");
+        testCreateChild("3");
+        testQueryPage1();
+        testQueryPage2();
+    }
+
+    /**
+     * Create Read Update Delete
+     */
+    public void testCreateRoot() throws Exception {
         Document folder = (Document) session.newRequest("Document.Create").setInput(
-                "/").set("type", "Folder").set("name", "myfolder").set(
-                "properties", "dc:title=My Folder").execute();
-        // Assertions
+                "/").set("type", "Folder").set("name", "TestFolder1").set(
+                "properties",
+                "dc:title=Test Folder2 \\ndc:description=Simple container").execute();
         assertNotNull(folder);
-        assertEquals("/myfolder", folder.getPath());
-        assertEquals("My Folder", folder.getTitle());
+        assertEquals("/TestFolder1", folder.getPath());
+        assertEquals("Test Folder2", folder.getTitle());
     }
 
-    public void testFetchDocument() throws Exception {
-        Document folder = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/myfolder").execute();
-        // Assertions
+    public void testCreateChild1() throws Exception {
+        Document file = (Document) session.newRequest("Document.Create").setInput(
+                "/TestFolder1").set("type", "File").set("name", "TestFile1").execute();
+        assertNotNull(file);
+        assertEquals("/TestFolder1/TestFile1", file.getPath());
+    }
+
+    public void testCreateChild2() throws Exception {
+        Document file = (Document) session.newRequest("Document.Create").setInput(
+                "/TestFolder1").set("type", "File").set("name", "TestFile2").execute();
+        assertNotNull(file);
+        assertEquals("/TestFolder1/TestFile2", file.getPath());
+    }
+
+    public void testUpdateChild2() throws Exception {
+        Document file = (Document) session.newRequest("Document.Update").setInput(
+                "/TestFolder1/TestFile2").set("save", "true").set("properties",
+                "dc:description=Simple File\\ndc:subjects=subject1,subject2").execute();
+        assertNotNull(file);
+        assertEquals("Simple File",
+                file.getProperties().getString("dc:description"));
+        assertEquals(2, file.getProperties().get("dc:subjects"));
+    }
+
+    public void testGetChildren() throws Exception {
+        Document root = (Document) session.newRequest("Document.Fetch").set(
+                "value", "/TestFolder1").execute();
+        assertNotNull(root);
+        Documents children = (Documents) session.newRequest(
+                "Document.getChildren").setInput(root.getPath()).execute();
+        assertEquals(2, children.size());
+
+    }
+
+    /**
+     * Managing Pagination
+     */
+
+    public void testCreateAnotherRoot() throws Exception {
+        Document folder = (Document) session.newRequest("Document.Create").setInput(
+                "/").set("type", "Folder").set("name", "TestFolder2").set(
+                "properties",
+                "dc:title=Test Folder3 \\ndc:description=Simple container").execute();
         assertNotNull(folder);
-        assertEquals("/myfolder", folder.getPath());
-        assertEquals("My Folder", folder.getTitle());
     }
 
-    public void testQuery() throws Exception {
-        Documents docs = (Documents) session.newRequest("Document.Query").set(
-                "query", "SELECT * FROM Document").execute();
-        // Assertions
-        assertFalse(docs.isEmpty());
+    public void testCreateChild(String id) throws Exception {
+        String name = "TestFile" + id;
+        Document file = (Document) session.newRequest("Document.Create").setInput(
+                "/TestFolder1").set("type", "File").set("name", name).execute();
+        assertNotNull(file);
     }
 
-    public void testUpdateDocument() throws Exception {
-        Document folder = (Document) session.newRequest("Document.Update").setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").setInput(getFolder()).set(
-                "properties", "dc:title=My Folder2\ndc:description=test").execute();
-        // Assertions
-        assertNotNull(folder);
-        assertEquals("/myfolder", folder.getPath());
-        assertEquals("My Folder2", folder.getTitle());
-        assertEquals("test", folder.getProperties().getString("dc:description"));
+    public void testQueryPage1() throws Exception {
+        Document root = (Document) session.newRequest("Document.Fetch").set(
+                "value", "/TestFolder1").execute();
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(
+                "Document.PageProvider").set("query",
+                "select * from Document where ecm:parentId = ?").set(
+                "queryParams", root.getId()).set("pageSize", "2").set("page",
+                "0").execute();
+        assertEquals(2, docs.size());
+        assertEquals(2, docs.getPageSize());
+        assertEquals(2, docs.getPageCount());
+        assertEquals(3, docs.getTotalSize());
+
     }
 
-    public void testDeleteDocument() throws Exception {
-        Document folder = (Document) session.newRequest(DeleteDocument.ID).setInput(
-                getFolder()).execute();
-        // Assertions
-        assertNull(folder);
-    }
-
-    public Document getFolder() throws Exception {
-        Document folder = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/myfolder").execute();
-        return folder;
+    public void testQueryPage2() throws Exception {
+        Document root = (Document) session.newRequest("Document.Fetch").set(
+                "value", "/TestFolder1").execute();
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(
+                "Document.PageProvider").set("query",
+                "select * from Document where ecm:parentId = ?").set(
+                "queryParams", root.getId()).set("pageSize", "2").set("page",
+                "1").execute();
+        assertEquals(1, docs.size());
+        assertEquals(2, docs.getPageSize());
+        assertEquals(2, docs.getPageCount());
+        assertEquals(3, docs.getTotalSize());
     }
 
     /**
@@ -144,15 +208,28 @@ public class RemoteAutomationClientTCK {
      * Managing Complex Properties
      */
 
-    public void testComplexProperties() throws Exception {
-
-    }
-
-    /**
-     * Ignore until we got a complex type into nuxeo test distribution or by
-     * default in the platform
-     */
     public void testComplexPropertiesWithJSON() throws Exception {
+        // get the root
+        Document root = (Document) session.newRequest("Document.Fetch").set(
+                "value", "/").execute();
+        // Fill the document properties
+        Map<String, Object> creationProps = new HashMap<String, Object>();
+        creationProps.put("ds:tableName", "MyTable");
+        creationProps.put("ds:attachments", attachments);
+
+        // send the fields representation as json
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
+        assertNotNull(fieldAsJsonFile);
+        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
+        fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
+        creationProps.put("ds:fields", fieldsDataAsJSon);
+        creationProps.put("dc:title", "testDoc");
+
+        // Document creation
+        session.newRequest(CreateDocument.ID).setInput(root).set("type",
+                "DataSet").set("name", "testDoc").set("properties",
+                new PropertyMap(creationProps).toString()).execute();
         // Fetch the document
         Document document = (Document) session.newRequest("Document.GetChild").setInput(
                 new PathRef("/")).set("name", "testDoc").execute();
@@ -160,8 +237,8 @@ public class RemoteAutomationClientTCK {
         // Send the fields representation as json
 
         // Read the json file
-        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creation.json");
-        String fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
+        fieldAsJsonFile = FileUtils.getResourceFileFromContext("updateFields.json");
+        fieldsDataAsJSon = FileUtils.readFile(fieldAsJsonFile);
 
         // Don't forget to replace CRLF or LF
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\n", "");
@@ -183,21 +260,22 @@ public class RemoteAutomationClientTCK {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description",
                 "Note Content", "Note");
-        BusinessService businessService = session.getAdapter(BusinessService.class);
+        @SuppressWarnings("unchecked")
+        BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
-        // adding BusinessBean marshaller
-        JsonMarshalling.addMarshaller(PojoMarshaller.forClass(note.getClass()));
+        // Marshaller for bean 'note' registration
+        client.registerPojoMarshaller(note.getClass());
 
-        // This request can be done directly with
-        // Operation.BusinessCreateOperation ->
-        // session.newRequest("Operation.BusinessCreateOperation").setInput(o).set("name",
-        // name).set("type", type).set("parentPath",parentPath).execute();
-        note = (BusinessBean) businessService.create(note, note.getTitle(), "/");
+        note = (BusinessBean) session.newRequest(
+                "Business.BusinessCreateOperation").setInput(note).set("name",
+                note.getTitle()).set("parentPath", "/").execute();
         assertNotNull(note);
         // Test for pojo <-> adapter automation update
         note.setTitle("Update");
-        note = (BusinessBean) businessService.update(note, note.getId());
+        note = (BusinessBean) session.newRequest(
+                "Business.BusinessUpdateOperation").setInput(note).set("id",
+                note.getId()).execute();
         assertEquals("Update", note.getTitle());
     }
 }
