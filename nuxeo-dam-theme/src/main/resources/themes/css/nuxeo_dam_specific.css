@@ -235,6 +235,8 @@ author: lkemen@nuxeo.com
   color: "black (__FLAVOR__ color)" }
 
 /* Test to center img */
+.thumbnailContainer {
+  max-width: none }
 .thumbnailContainer:before,
 .pictureContainer:before {
   content: '';
