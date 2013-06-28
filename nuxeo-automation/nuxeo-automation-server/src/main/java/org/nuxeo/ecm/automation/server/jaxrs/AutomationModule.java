@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
+import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartFormRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.UrlEncodedFormRequestReader;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.BlobsWriter;
@@ -42,6 +43,7 @@ public class AutomationModule extends Application {
         // need to be stateless since it needs the request member to be
         // injected
         result.add(MultiPartRequestReader.class);
+        result.add(MultiPartFormRequestReader.class);
         return result;
     }
 
