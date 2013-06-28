@@ -12,11 +12,12 @@ author: lkemen@nuxeo.com, tdelprat@nuxeo.com
 .dropPanel { padding: 1em; background: #BBBBCC; border-radius: 5px; height: 250px }
 
 .dropzone { display: block }
-.dropzoneHL { border: 2px dashed #ccc; background-color: #f5f5f5 }
+.dropzoneHL { border: 2px dashed; border-color: "neutral.light (__FLAVOR__ border)"; background-color: #f5f5f5 }
 
-.dropzoneTarget { border:2px dashed #92cdff; text-align: left }
-.dropzoneTargetExtended { border:2px dashed #54d920 }
-.dropzoneTargetOverlay { position : absolute; background-color : rgba(200,220,250,0.3) }
+.dropzoneTarget { border: 2px dashed; border-color: "info (__FLAVOR__ border)" }
+.dropzoneTargetExtended { border: 2px dashed; border-color: "success (__FLAVOR__ border)" }
+.dropzoneTargetOverlay { position : absolute }
+.dropezoneTargetOverlay:hover { background-color : rgba(200,220,250,0.3) }
 
 .dropzone-info-block { display: block; margin: .4em 0 0; text-align: center }
 .dropzone-info-summary { display: block; margin : .6em .9em 1.8em 4em }
@@ -61,6 +62,9 @@ input.dropzone-bar-btn { visibility:hidden; margin-top: 2em !important; }
 #operationForm { border-style: none none none solid; border-color: #444; border-width: 2px }
 
 /* Drag and drop in DAM */
+.dropzoneTarget .simpleBox {
+  margin: .5em .2em .5em .5em }
+
 .droppedItem,
 .droppedItemInProgress {
   color: "default (__FLAVOR__ color)";
@@ -70,10 +74,6 @@ input.dropzone-bar-btn { visibility:hidden; margin-top: 2em !important; }
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100% }
-
-.dropZoneLabel {
-  font-size: 1.2em;
-  padding: 1.5em }
 
 .droppedItemInProgress {
   color: "gray.medium (__FLAVOR__ color)";
