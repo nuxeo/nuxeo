@@ -292,7 +292,7 @@ public class ConfigurationGenerator {
     static {
         Map<String, String> tempPM = new HashMap<String, String>();
         tempPM.put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
-                PARAM_TEMPLATES_PARSING_EXTENSIONS);
+                    PARAM_TEMPLATES_PARSING_EXTENSIONS);
         tempPM.put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");
         tempPM.put("nuxeo.server.tomcat-admin.port",
                 "nuxeo.server.tomcat_admin.port");
@@ -305,7 +305,7 @@ public class ConfigurationGenerator {
         tempPM.put("mail.smtp.usetls", "mail.transport.usetls");
         tempPM.put("mail.smtp.auth", "mail.transport.auth");
         parametersMigration = tempPM;
-    }
+        }
 
     /**
      * @param quiet Suppress info level messages from the console output
@@ -908,12 +908,12 @@ public class ConfigurationGenerator {
         this.setFalseToOnce = setGenerationFalseToOnce;
         writeConfiguration(loadConfiguration(changedParameters),
                 changedParameters);
-        for (String key : changedParameters.keySet()) {
+            for (String key : changedParameters.keySet()) {
             if (changedParameters.get(key) != null) {
                 userConfig.setProperty(key, changedParameters.get(key));
+                }
             }
-        }
-    }
+            }
 
     /**
      * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
@@ -930,7 +930,7 @@ public class ConfigurationGenerator {
         if (newDbTemplate != null) {
             changedParameters.put(PARAM_TEMPLATES_NAME,
                     rebuildTemplatesStr(newDbTemplate));
-        }
+    }
         saveConfiguration(getChangedParameters(changedParameters));
     }
 
@@ -969,18 +969,18 @@ public class ConfigurationGenerator {
             // Copy back file content
             writer.append(newContent.toString());
             if (changedParameters != null && !changedParameters.isEmpty()) {
-                // Write changed parameters
-                writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
-                        + System.getProperty("line.separator"));
+            // Write changed parameters
+            writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
+                    + System.getProperty("line.separator"));
                 for (String key : changedParameters.keySet()) {
                     writer.write("#" + key + "="
                             + userConfig.getProperty(key, "")
                             + System.getProperty("line.separator"));
                     if (changedParameters.get(key) != null) {
                         writer.write(key + "=" + changedParameters.get(key)
-                                + System.getProperty("line.separator"));
-                    }
+                            + System.getProperty("line.separator"));
                 }
+            }
                 writer.write(BOUNDARY_END
                         + System.getProperty("line.separator"));
             }
@@ -1002,9 +1002,9 @@ public class ConfigurationGenerator {
         String wizardParam = null, templatesParam = null;
         Integer generationIndex = null, wizardIndex = null, templatesIndex = null;
         if (changedParameters != null) {
-            // Will change wizardParam value instead of appending it
+        // Will change wizardParam value instead of appending it
             wizardParam = changedParameters.remove(PARAM_WIZARD_DONE);
-            // Will change templatesParam value instead of appending it
+        // Will change templatesParam value instead of appending it
             templatesParam = changedParameters.remove(PARAM_TEMPLATES_NAME);
         }
         ArrayList<String> newLines = new ArrayList<String>();
@@ -1071,28 +1071,28 @@ public class ConfigurationGenerator {
                         if (changedParameters == null) {
                             newLines.add(line);
                         } else {
-                            int equalIdx = line.indexOf("=");
-                            if (line.startsWith("#" + PARAM_TEMPLATES_NAME)
-                                    || line.startsWith(PARAM_TEMPLATES_NAME)) {
-                                // Backward compliance, it must be ignored
-                                continue;
-                            }
-                            if (equalIdx < 1) { // Ignore non-readable lines
-                                continue;
-                            }
-                            if (line.trim().startsWith("#")) {
-                                String key = line.substring(1, equalIdx).trim();
-                                String value = line.substring(equalIdx + 1).trim();
+                        int equalIdx = line.indexOf("=");
+                        if (line.startsWith("#" + PARAM_TEMPLATES_NAME)
+                                || line.startsWith(PARAM_TEMPLATES_NAME)) {
+                            // Backward compliance, it must be ignored
+                            continue;
+                        }
+                        if (equalIdx < 1) { // Ignore non-readable lines
+                            continue;
+                        }
+                        if (line.trim().startsWith("#")) {
+                            String key = line.substring(1, equalIdx).trim();
+                            String value = line.substring(equalIdx + 1).trim();
                                 userConfig.setProperty(key, value);
-                            } else {
-                                String key = line.substring(0, equalIdx).trim();
-                                String value = line.substring(equalIdx + 1).trim();
+                        } else {
+                            String key = line.substring(0, equalIdx).trim();
+                            String value = line.substring(equalIdx + 1).trim();
                                 if (!changedParameters.containsKey(key)) {
                                     changedParameters.put(key, value);
                                 } else if (!value.equals(changedParameters.get(key))) {
                                     userConfig.setProperty(key, value);
-                                }
                             }
+                        }
                         }
                     } else {
                         onConfiguratorContent = false;
@@ -1404,7 +1404,7 @@ public class ConfigurationGenerator {
         String newTemplates = nodbTemplates.isEmpty() ? dbTemplate : dbTemplate
                 + "," + nodbTemplates;
         return newTemplates;
-    }
+        }
 
     /**
      * @return Nuxeo config directory
@@ -1494,7 +1494,7 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public void rmTemplate(String template) throws ConfigurationException {
-        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+            HashMap<String, String> newParametersToSave = new HashMap<String, String>();
         String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         List<String> oldTemplatesSplit = Arrays.asList(oldTemplates.split(","));
         if (oldTemplatesSplit.contains(template)) {
@@ -1579,16 +1579,19 @@ public class ConfigurationGenerator {
                 classname);
         // Test db connection
         DriverManager.registerDriver(driver);
-        TextTemplate tt = new TextTemplate();
-        tt.setVariable(PARAM_DB_HOST, dbHost);
-        tt.setVariable(PARAM_DB_PORT, dbPort);
-        tt.setVariable(PARAM_DB_NAME, dbName);
-        Properties props = new Properties();
-        props.put("user", dbUser);
-        props.put("password", dbPassword);
+        Properties ttProps = new Properties(userConfig);
+        ttProps.put(PARAM_DB_HOST, dbHost);
+        ttProps.put(PARAM_DB_PORT, dbPort);
+        ttProps.put(PARAM_DB_NAME, dbName);
+        ttProps.put(PARAM_DB_USER, dbUser);
+        ttProps.put(PARAM_DB_PWD, dbPassword);
+        TextTemplate tt = new TextTemplate(ttProps);
         String url = tt.processText(connectionUrl);
-        log.debug("Testing URL " + url + " with " + props);
-        Connection con = driver.connect(url, props);
+        Properties conProps = new Properties();
+        conProps.put("user", dbUser);
+        conProps.put("password", dbPassword);
+        log.debug("Testing URL " + url + " with " + conProps);
+        Connection con = driver.connect(url, conProps);
         con.close();
     }
 
@@ -1614,16 +1617,16 @@ public class ConfigurationGenerator {
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 serverConfigurator.getServerLibDir().listFiles());
         List<URL> urlsList = new ArrayList<URL>();
-        for (File file : files) {
-            if (file.getName().endsWith("jar")) {
-                try {
+            for (File file : files) {
+                if (file.getName().endsWith("jar")) {
+                    try {
                     urlsList.add(new URL("jar:file:" + file.getPath() + "!/"));
-                    log.debug("Added " + file.getPath());
-                } catch (MalformedURLException e) {
-                    log.error(e);
+                        log.debug("Added " + file.getPath());
+                    } catch (MalformedURLException e) {
+                        log.error(e);
+                    }
                 }
             }
-        }
         URLClassLoader ucl = new URLClassLoader(urlsList.toArray(new URL[0]));
         try {
             return (Driver) Class.forName(classname, true, ucl).newInstance();
