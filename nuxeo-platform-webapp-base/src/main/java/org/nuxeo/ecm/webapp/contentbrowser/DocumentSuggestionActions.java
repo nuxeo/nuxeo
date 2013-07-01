@@ -61,6 +61,14 @@ public class DocumentSuggestionActions implements Serializable {
     @RequestParameter
     protected String pageProviderName;
 
+    /**
+     * If true, '*' will be appended to the pattern to do a prefix search.
+     *
+     * @since 5.7.2
+     */
+    @RequestParameter
+    protected Boolean prefixSearch;
+
     protected String cachedPageProviderName;
 
     protected Object cachedInput;
@@ -114,6 +122,11 @@ public class DocumentSuggestionActions implements Serializable {
             }
             FacesContext context = FacesContext.getCurrentInstance();
             Object[] resolvedParams = new Object[params.length + 1];
+
+            if (Boolean.TRUE.equals(prefixSearch) && !pattern.endsWith(" ")) {
+                pattern += "*";
+            }
+
             resolvedParams[0] = pattern;
             for (int i = 0; i < params.length; i++) {
                 resolvedParams[i + 1] = ComponentTagUtils.resolveElExpression(
