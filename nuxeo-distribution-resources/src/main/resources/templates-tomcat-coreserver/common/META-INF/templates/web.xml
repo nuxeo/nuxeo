@@ -7,6 +7,8 @@
 
   %{EXCEPTION-FILTER}%
 
+  %{CORS-FILTER}%
+
   %{AUTH-FILTER}%
 
   %{STD-AUTH-FILTER}%
