@@ -53,7 +53,11 @@ public class JsonNodeToProperties implements TypeAdapter {
                     map.put(key, buf.toString());
                 }
             } else {
-                map.put(key, value.getValueAsText());
+                if (value.isTextual()) {
+                    map.put(key, value.getTextValue());
+                } else {
+                    map.put(key, value.toString());
+                }
             }
         }
         return new Properties(map);
