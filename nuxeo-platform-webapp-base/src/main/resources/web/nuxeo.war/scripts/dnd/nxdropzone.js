@@ -311,7 +311,7 @@ DropZoneUIHandler.prototype.updateForm = function (event, value) {
        }
        iframe.attr("src", src);
        desc.append(iframe);
-       var v = this;
+       var handler = this;
        window.dndFormFunctionCB = function(fData) {
          handler.executeBatch(value, fData);
        };
