@@ -9,8 +9,16 @@ Styles for the buttons and actions.
 author: lkemen@nuxeo.com
 */
 
+/* Fix button heights in Ffox */
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0 }
+
 /* =Buttons */
-.button, input.button {
+.button,
+a.button,
+input.button,
+.action_bar a {
 	box-shadow: 0 10px 5px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px #fff inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
 	background-color: "button (__FLAVOR__ background)";
 	border-radius: 3px;
@@ -20,11 +28,20 @@ author: lkemen@nuxeo.com
 	font-size: .9em;
 	font-weight: bold;
 	margin: .4em .9em .9em 0;
-	padding: .3em .7em;
+	padding: .4em .7em;
 	text-decoration: none;
 	text-shadow: 1px 1px 0 #fff;
 	white-space: nowrap; }
-.button:hover, input.button:hover {
+
+a.button {
+  color: "link.action (__FLAVOR__ color)";
+  display: inline-block;
+  padding: .3em .7em;
+  text-decoration: none }
+
+.button:hover,
+input.button:hover,
+.action_bar a:hover {
   background: none "color.major.medium (__FLAVOR__ background)";
 	border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 
@@ -34,8 +51,6 @@ input.button[disabled], input.button[disabled]:hover {
 	border: 1px solid; border-color: "button.disabled (__FLAVOR__ border)";
 	color: "link.disabled (__FLAVOR__ color)";
 	cursor: default }
-
-a.button { color: "link.action (__FLAVOR__ color)"; display: inline-block; text-decoration: none }
 
 .major, input.major {
 	background: none repeat scroll 0 0 #0080b0;
@@ -66,21 +81,12 @@ div.syndicationButton div.syndicationLinks a { color: #fff }
 .action_bar ul { list-style: none; margin: 0; padding: 0 1em 0 0 }
 .action_bar li { float: left; margin: 0; padding: 0 }
 .action_bar a {
-  box-shadow: 0 10px 5px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px #fff inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
-  background-color: "button (__FLAVOR__ background)";
-  border-radius: 3px;
-  border: 1px solid; border-color: "button (__FLAVOR__ border)";
-  color: "link.action (__FLAVOR__ color)";
-  cursor: pointer;
   float: left;
-  font-size: .9em;
   font-weight: bold;
-  margin-right: .9em;
+  margin: 0 .9em .9em 0;
   padding: .3em .7em .5em;
-  text-decoration:none;
-  white-space: nowrap }
-.action_bar a:hover { background: none "color.major.medium (__FLAVOR__ background)";
-border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
+  text-decoration:none }
+
 .action_bar a img { float: left; margin: -0.2em .3em -0.3em -0.4em }
 .action_bar a:focus { border-color: "color.major.strong (__FLAVOR__ border)"; }
 .action_bar input[type="text"] { margin: 0 .2em }
