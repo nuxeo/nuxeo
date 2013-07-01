@@ -63,14 +63,33 @@ author: lkemen@nuxeo.com
 .running { background-image: url("${basePath}/img/standart_waiter.gif") }
 .scheduled { background-image: url("${basePath}/icons/clock.png") }
 
-.label {
-  background-color: "neutral.strong (__FLAVOR__ background)";
-  color: "black (__FLAVOR__ color)";
+.label,
+.chip {
+  background-color: "neutral.stronger (__FLAVOR__ background)";
+  color: #fff;
   line-height: 130%;
-  margin: 0 .4em .2em 0;
+  margin: 0 .2em .2em 0;
   padding: 0 .2em;
   vertical-align: baseline;
   white-space: nowrap }
+
+.chip {
+  border-radius: 35px;
+  padding: .1em .4em }
+
+.label-light,
+.chip-light {
+  background-color: #fff;
+  border: 1px solid; border-color:"neutral.light (__FLAVOR__ border)";
+  color: "black (__FLAVOR__ color)" }
+.label-info,
+.chip-info { background-color: "info.strong (__FLAVOR__ background)" }
+.label-success,
+.chip-success { background-color: "success.strong (__FLAVOR__ background)" }
+.label-warning,
+.chip-warning { background-color: "warning.strong (__FLAVOR__ background)" }
+.label-error,
+.chip-error { background-color: "error.strong (__FLAVOR__ background)" }
 
 /* =Quote */
 .quote {
