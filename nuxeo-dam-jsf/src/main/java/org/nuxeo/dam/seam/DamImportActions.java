@@ -52,6 +52,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.types.Type;
+import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
@@ -88,6 +91,8 @@ public class DamImportActions implements Serializable {
     protected Action selectedImportOption;
 
     protected List<Action> importOptions;
+
+    protected String selectedImportFolderId;
 
     protected String currentBatchId;
 
@@ -134,6 +139,24 @@ public class DamImportActions implements Serializable {
         return importOptions;
     }
 
+    public String getSelectedImportFolderId() {
+        return selectedImportFolderId;
+    }
+
+    public void setSelectedImportFolderId(String selectedImportFolderId) {
+        this.selectedImportFolderId = selectedImportFolderId;
+    }
+
+    public List<Type> getSubTypesFor(DocumentModel doc) {
+        TypeManager typeManager = Framework.getLocalService(TypeManager.class);
+        List<Type> types = new ArrayList<>();
+        TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
+        for (String typeName : typeInfo.getAllowedSubTypes().keySet()) {
+            types.add(typeManager.getType(typeName));
+        }
+        return types;
+    }
+
     public String generateBatchId() {
         currentBatchId = "batch-" + new Date().getTime() + "-"
                 + random.nextInt(1000);
@@ -161,12 +184,18 @@ public class DamImportActions implements Serializable {
 
         Map<String, Object> contextParams = new HashMap<>();
         contextParams.put("docMetaData", properties);
+        contextParams.put("currentDocument", selectedImportFolderId);
 
-        if (dndConfigHelper.useHtml5DragAndDrop()) {
-            importAssetsThroughBatchManager(chainOrOperationId, contextParams);
-        } else {
-            importAssetsThroughUploadItems(chainOrOperationId, contextParams);
+        try {
+            if (dndConfigHelper.useHtml5DragAndDrop()) {
+                importAssetsThroughBatchManager(chainOrOperationId, contextParams);
+            } else {
+                importAssetsThroughUploadItems(chainOrOperationId, contextParams);
+            }
+        } finally {
+            cancel();
         }
+
         return null;
     }
 
@@ -223,8 +252,10 @@ public class DamImportActions implements Serializable {
         if (currentBatchId != null) {
             BatchManager bm = Framework.getLocalService(BatchManager.class);
             bm.clean(currentBatchId);
-            importDocumentModel = null;
         }
+        importDocumentModel = null;
+        selectedImportFolderId = null;
+        uploadedFiles = null;
     }
 
     public Collection<UploadItem> getUploadedFiles() {
