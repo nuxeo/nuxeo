@@ -27,7 +27,7 @@ input.button,
 	cursor: pointer;
 	font-size: .9em;
 	font-weight: bold;
-	margin: .4em .9em .9em 0;
+	margin: 0 .9em .9em 0;
 	padding: .4em .7em;
 	text-decoration: none;
 	text-shadow: 1px 1px 0 #fff;
