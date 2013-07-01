@@ -17,8 +17,10 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +36,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
@@ -65,6 +68,14 @@ public class BatchResource {
                 "Content-Length", message.length()).build();
     }
 
+    protected Response buildFromMap(Map<String, String> map) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        ByteArrayOutputStream out = new ByteArrayOutputStream(128);
+        mapper.writeValue(out, map);
+        String result = out.toString("UTF-8");
+        return buildFromString(result);
+    }
+
     /**
      *
      * @deprecated since 5.7.2. The timeout is managed by the
@@ -93,7 +104,11 @@ public class BatchResource {
 
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.addStream(batchId, idx, is, fileName, mimeType);
-        return buildFromString("uploaded");
+
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("batchId", batchId);
+        result.put("uploaded", "true");
+        return buildFromMap(result);
     }
 
     @POST
@@ -150,7 +165,11 @@ public class BatchResource {
     String batchId) throws Exception {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.clean(batchId);
-        return buildFromString("Batch droped");
+
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("batchId", batchId);
+        result.put("dropped", "true");
+        return buildFromMap(result);
     }
 
 }
