@@ -99,6 +99,7 @@ nuxeo.dam = (function(m) {
       selectTargetZone: function() {
         var dzone = jQuery("#" + this.dropZoneId); // XXX
         dzone.addClass("dropzoneTarget");
+        dzone.addClass("dropzoneFilled");
         this.targetSelectedCB(this.dropZoneId);
       },
       cancelUpload: function() {

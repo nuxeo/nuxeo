@@ -18,7 +18,6 @@
       order="10" label="label.smart.import"
       help="desc.smart.import.file">
       <category>DAM_IMPORT_ASSETS</category>
-      <filter-id>canCreateInAssetLibrary</filter-id>
       <properties>
         <property name="chainId">Dam.ImportWithMetaDataInSeam</property>
         <property name="layout">damBulkImport@create</property>
@@ -51,9 +50,11 @@
         <param type="properties" name="properties">expr:Context.get("docMetaData")
         </param>
       </operation>
-      <operation id="Seam.RunOperation">
-        <param type="string" name="id">Seam.Refresh</param>
+      <operation id="Seam.AddMessage">
+        <param type="string" name="severity">INFO</param>
+        <param type="string" name="message">label.dam.assets.imported</param>
       </operation>
+      <operation id="Seam.Refresh" />
     </chain>
 
   </extension>

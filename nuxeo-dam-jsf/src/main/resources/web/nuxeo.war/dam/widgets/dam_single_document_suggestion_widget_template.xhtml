@@ -205,8 +205,6 @@
             </c:if>
 
           </h:panelGroup>
-          <h:message for="#{widget.id}" styleClass="errorMessage"/>
-
         </h:panelGrid>
 
         <c:if test="#{canSee}">
@@ -226,7 +224,10 @@
       </nxu:valueHolder>
     </a4j:outputPanel>
 
+    <h:message for="#{widget.id}" styleClass="errorMessage" />
+
   </a4j:region>
+
 
 </c:if>
 </c:if>

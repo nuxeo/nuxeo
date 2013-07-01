@@ -39,8 +39,8 @@
           </td>
           <td class="fieldColumn">
             <c:if test="#{useHtml5DragAndDrop}">
-              <div class="damAssetImportZone" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
-                <div class="dropArea dropZoneLabel jsTips">
+              <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
+                <div class="dropZoneLabel jsTips">
                   #{messages['label.dam.bulk.import.assets.tips']}
                 </div>
               </div>
@@ -103,9 +103,6 @@
         action="#{damImportActions.cancel()}"
         styleClass="button" />
     </div>
-
-
-
 
     <script type="text/javascript">
       <c:if test="#{useHtml5DragAndDrop}">
