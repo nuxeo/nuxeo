@@ -115,6 +115,20 @@
 
   </extension>
 
+  <extension target="web#CORS-FILTER">
+    <filter>
+      <display-name>Nuxeo Cors Controller Filter</display-name>
+      <filter-name>NuxeoCorsFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsFilter
+      </filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>NuxeoCorsFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+  </extension>
+
   <extension target="web#FILTER">
     <filter>
       <display-name>Nuxeo Simple Cache Filter</display-name>
