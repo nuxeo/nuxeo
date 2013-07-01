@@ -14,7 +14,7 @@
           <p>This widgets displays a html5 or flash audio player</p>
         </description>
         <categories>
-          <category>configuration_not_ready</category>
+          <category>document</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
