@@ -325,6 +325,7 @@
             <property name="useAjaxForm">true</property>
             <property name="useAjaxPagination">true</property>
             <property name="ajaxReRender">damPanelRight</property>
+            <property name="styleClass">alignL</property>
           </properties>
         </widget>
       </subWidgets>

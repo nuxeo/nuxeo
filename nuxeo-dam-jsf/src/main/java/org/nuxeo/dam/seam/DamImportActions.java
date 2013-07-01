@@ -52,6 +52,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.types.Type;
+import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
@@ -142,6 +145,16 @@ public class DamImportActions implements Serializable {
 
     public void setSelectedImportFolderId(String selectedImportFolderId) {
         this.selectedImportFolderId = selectedImportFolderId;
+    }
+
+    public List<Type> getSubTypesFor(DocumentModel doc) {
+        TypeManager typeManager = Framework.getLocalService(TypeManager.class);
+        List<Type> types = new ArrayList<>();
+        TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
+        for (String typeName : typeInfo.getAllowedSubTypes().keySet()) {
+            types.add(typeManager.getType(typeName));
+        }
+        return types;
     }
 
     public String generateBatchId() {
