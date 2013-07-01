@@ -15,6 +15,16 @@
   <!-- Make Launcher JVM check permissive -->
   <property name="launcher.debug" value="-Djvmcheck=nofail" />
 
+
+  <!-- Instruction for installing the MP to be tested -->
+  <property name="mp.install"
+            value="file:${out.dir}/${maven.project.artifactId}-${maven.project.version}.zip" />
+  <!-- Override default prepare-environment target to make it download your MP -->
+  <target name="prepare-environment"
+          depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
+  </target>
+
+
   <target name="download" unless="no.download">
     <delete failonerror="false" dir="${nuxeo.home}" />
     <unzip dest="${nuxeo.home}/">

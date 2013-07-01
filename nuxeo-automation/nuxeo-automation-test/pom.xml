@@ -216,6 +216,24 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>nuxeo-distribution-tools</artifactId>
+        <executions>
+          <execution>
+            <id>build-marketplace</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <buildFiles>
+                <buildFile>${basedir}/src/main/marketplace/assemble/assembly.xml</buildFile>
+              </buildFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -233,10 +251,19 @@
           <plugin>
             <groupId>org.nuxeo.build</groupId>
             <artifactId>nuxeo-distribution-tools</artifactId>
-            <configuration>
-              <buildFile>${basedir}/itests.xml</buildFile>
-            </configuration>
             <executions>
+              <execution>
+                <id>build-marketplace</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+                <configuration>
+                  <buildFiles>
+                    <buildFile>${basedir}/src/main/marketplace/assemble/assembly.xml</buildFile>
+                  </buildFiles>
+                </configuration>
+              </execution>
               <execution>
                 <id>start-tomcat</id>
                 <phase>pre-integration-test</phase>
@@ -244,6 +271,9 @@
                   <goal>build</goal>
                 </goals>
                 <configuration>
+                  <buildFiles>
+                    <buildFile>${basedir}/itests.xml</buildFile>
+                  </buildFiles>
                   <targets>
                     <target>prepare-environment</target>
                     <target>start</target>
@@ -257,6 +287,9 @@
                   <goal>build</goal>
                 </goals>
                 <configuration>
+                  <buildFiles>
+                    <buildFile>${basedir}/itests.xml</buildFile>
+                  </buildFiles>
                   <target>stop</target>
                 </configuration>
               </execution>
@@ -266,5 +299,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>
