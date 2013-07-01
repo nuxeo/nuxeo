@@ -204,7 +204,6 @@
         <property name="scrolling">auto</property>
         <property name="ajaxSupport">true</property>
       </properties>
-      <filter-id>canCreateNewAsset</filter-id>
     </action>
 
     <!-- Current selection actions -->

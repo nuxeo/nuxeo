@@ -27,6 +27,7 @@
             <nxl:widgetType name="damSingleDocumentSuggestion" mode="edit"
               value="#{damImportActions}"
               field="selectedImportFolderId"
+              required="true"
               pageProviderName="damImportFolders"
               placeholder="#{messages['label.dam.bulk.import.assets.select.location.placeholder']}"
               prefixSearch="true" />
@@ -34,7 +35,7 @@
         </tr>
         <tr>
           <td class="labelColumn">
-            #{messages['label.dam.bulk.import.assets.select.location']}
+            #{messages['label.files.files']}
           </td>
           <td class="fieldColumn">
             <c:if test="#{useHtml5DragAndDrop}">
