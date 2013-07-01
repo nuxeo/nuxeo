@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -32,23 +33,32 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * Runtime component that implements the {@link RequestControllerManager} interface.
- * Contains both the Extension point logic and the service implementation.
- *
+ * Runtime component that implements the {@link RequestControllerManager}
+ * interface. Contains both the Extension point logic and the service
+ * implementation.
+ * 
  * @author tiry
  */
 public class RequestControllerService extends DefaultComponent implements
         RequestControllerManager {
 
-    public static final String FILTER_CONFIG_EP ="filterConfig";
+    public static final String FILTER_CONFIG_EP = "filterConfig";
+
+    public static final String CORS_CONFIG_EP = "corsConfig";
 
     private static final Log log = LogFactory.getLog(RequestControllerService.class);
 
     protected static final Map<String, FilterConfigDescriptor> grantPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
+
     protected static final Map<String, FilterConfigDescriptor> denyPatterns = new LinkedHashMap<String, FilterConfigDescriptor>();
 
     // @GuardedBy("itself")
-    protected static final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(250);
+    protected static final Map<String, RequestFilterConfig> configCache = new LRUCachingMap<String, RequestFilterConfig>(
+            250);
+
+    protected static final Map<String, FilterConfig> filterConfigCache = new LRUCachingMap<>(250);
+
+    protected static final NuxeoCorsFilterDescriptorRegistry corsFilterRegistry = new NuxeoCorsFilterDescriptorRegistry();
 
     @Override
     public void registerContribution(Object contribution,
@@ -57,6 +67,8 @@ public class RequestControllerService extends DefaultComponent implements
         if (FILTER_CONFIG_EP.equals(extensionPoint)) {
             FilterConfigDescriptor desc = (FilterConfigDescriptor) contribution;
             registerFilterConfig(desc);
+        } else if (CORS_CONFIG_EP.equals(extensionPoint)) {
+            corsFilterRegistry.addContribution((NuxeoCorsFilterDescriptor)contribution);
         } else {
             log.error("Unknown ExtensionPoint " + extensionPoint);
         }
@@ -65,8 +77,8 @@ public class RequestControllerService extends DefaultComponent implements
     public void registerFilterConfig(String name, String pattern,
             boolean grant, boolean tx, boolean sync, boolean cached,
             boolean isPrivate, String cacheTime) {
-        FilterConfigDescriptor desc = new FilterConfigDescriptor(
-                name, pattern, grant, tx, sync, cached, isPrivate, cacheTime);
+        FilterConfigDescriptor desc = new FilterConfigDescriptor(name, pattern,
+                grant, tx, sync, cached, isPrivate, cacheTime);
         registerFilterConfig(desc);
     }
 
@@ -84,20 +96,46 @@ public class RequestControllerService extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
+        if (CORS_CONFIG_EP.equals(extensionPoint)) {
+            corsFilterRegistry.removeContribution((NuxeoCorsFilterDescriptor) contribution);
+        }
     }
 
     /* Service interface */
+
+    @Override
+    public FilterConfig getCorsConfigForRequest(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        FilterConfig filterConfig = null;
+        synchronized (filterConfigCache) {
+            filterConfig = filterConfigCache.get(uri);
+        }
+
+        if (filterConfig == null) {
+            filterConfig = computeCorsFilterConfigForUri(uri);
+            synchronized (filterConfigCache) {
+                filterConfigCache.put(uri, filterConfig);
+            }
+        }
+
+        return filterConfig;
+    }
+
+    public FilterConfig computeCorsFilterConfigForUri(String uri) {
+        NuxeoCorsFilterDescriptor descriptor = corsFilterRegistry.getFirstMatchingDescriptor(uri);
+        return descriptor != null ? descriptor.buildFilterConfig() : null;
+    }
 
     public RequestFilterConfig getConfigForRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
         RequestFilterConfig config = null;
 
-        synchronized(configCache) {
+        synchronized (configCache) {
             config = configCache.get(uri);
         }
         if (config == null) {
             config = computeConfigForRequest(uri);
-            synchronized(configCache) {
+            synchronized (configCache) {
                 configCache.put(uri, config);
             }
         }
@@ -110,8 +148,8 @@ public class RequestControllerService extends DefaultComponent implements
             Pattern pat = desc.getCompiledPattern();
             Matcher m = pat.matcher(uri);
             if (m.matches()) {
-                return new RequestFilterConfigImpl(false, false, false, false, false,
-                        "");
+                return new RequestFilterConfigImpl(false, false, false, false,
+                        false, "");
             }
         }
 
@@ -121,13 +159,14 @@ public class RequestControllerService extends DefaultComponent implements
             Matcher m = pat.matcher(uri);
             if (m.matches()) {
                 return new RequestFilterConfigImpl(desc.useSync(),
-                        desc.useTx(), desc.useTxBuffered(), desc.isCached(), desc.isPrivate(),
-                        desc.getCacheTime());
+                        desc.useTx(), desc.useTxBuffered(), desc.isCached(),
+                        desc.isPrivate(), desc.getCacheTime());
             }
         }
 
         // return deny by default
-        return new RequestFilterConfigImpl(false, false, false, false, false, "");
+        return new RequestFilterConfigImpl(false, false, false, false, false,
+                "");
     }
 
 }

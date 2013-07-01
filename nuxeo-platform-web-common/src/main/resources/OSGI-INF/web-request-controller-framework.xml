@@ -17,8 +17,8 @@
   <extension-point name="filterConfig">
   <documentation>
       Define a new filterConfig.
-      
-      -filterConfig 
+
+      -filterConfig
         - name: name of the Filter.
         - transactional: use transaction.
         - synchonize: is synchronized
@@ -29,8 +29,8 @@
       -pattern: url pattern to match
 
       Example of a filterConfig Registration:
-      
-      <code>  
+
+      <code>
 		    <filterConfig name="filterName" transactional="true" synchonize="true"
 		     cached="true" private="true" cachetime="3600">
 		      <pattern>/nuxeo/urlPattern/.*</pattern>
@@ -40,6 +40,69 @@
   </documentation>
     <object
       class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.FilterConfigDescriptor" />
+  </extension-point>
+
+  <extension-point name="corsConfig">
+    <documentation>
+      Add a CORS compliant url's pattern
+
+      Mandatory:
+       - name: name of the config
+       - pattern: url pattern to match
+
+      Optionnal:
+       - allowGenericHttpRequests: If false, only valid and accepted CORS
+         requests that be allowed (strict CORS filtering).
+       - allowOrigin: Whitespace-separated list of origins that the CORS
+         filter must allow.
+       - allowSubdomains: If true the CORS filter will allow requests from any
+         origin which is a subdomain origin of the allowed origins.
+       - supportedMethods: List of the supported HTTP methods.
+       - supportedHeaders: The names of the supported author request headers.
+       - exposedHeaders: List of the response headers other than simple
+         response headers that the browser should expose to the author of the
+         cross-domain request through the XMLHttpRequest.getResponseHeader()
+         method.
+       - supportsCredentials: Indicates whether user credentials, such as
+         cookies, HTTP authentication or client-side certificates, are
+         supported.
+       - maxAge: Indicates how long the results of a preflight request
+         can be cached by the web browser, in seconds.
+
+      Some samples:
+       - Minimal contribution:
+      <code>
+        <corsConfig name="minimal">
+          <pattern>/nuxeo/site/.*</pattern>
+        </corsConfig>
+      </code>
+
+       - Contribution with default values:
+      <code>
+        <corsConfig name="defaults" allowGenericHttpRequests="true"
+          allowOrigin="*" allowSubdomains="false" supportedMethods="GET, POST, HEAD, OPTIONS"
+          supportedHeaders="*" exposedHeaders=""
+          supportsCredentials="true" maxAge="-1">
+          <pattern>/nuxeo/site/.*</pattern>
+        </corsConfig>
+      </code>
+
+       - Other dummy contribution:
+      <code>
+        <corsConfig name="dummy" allowGenericHttpRequests="true"
+          allowOrigin="http://example.com http://example.com:8080"
+          allowSubdomains="true" supportedMethods="GET"
+          supportedHeaders="Content-Type, X-Requested-With"
+          exposedHeaders="X-Custom-1, X-Custom-2"
+          supportsCredentials="false" maxAge="3600">
+          <pattern>/nuxeo/site/.*</pattern>
+        </corsConfig>
+      </code>
+
+      @since 5.7.2
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.web.common.requestcontroller.service.NuxeoCorsFilterDescriptor" />
   </extension-point>
 
 </component>
