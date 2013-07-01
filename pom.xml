@@ -3913,6 +3913,11 @@
         <artifactId>javax.inject</artifactId>
         <version>1</version>
       </dependency>
+      <dependency>
+        <groupId>com.thetransactioncompany</groupId>
+        <artifactId>cors-filter</artifactId>
+        <version>1.7.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
