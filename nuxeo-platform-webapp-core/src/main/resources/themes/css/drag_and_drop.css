@@ -62,6 +62,10 @@ input.dropzone-bar-btn { visibility:hidden; margin-top: 2em !important; }
 #operationForm { border-style: none none none solid; border-color: #444; border-width: 2px }
 
 /* Drag and drop in DAM */
+.dropzoneFilled {
+	text-align: left;
+	padding: .5em }
+
 .dropzoneTarget .simpleBox {
   margin: .5em .2em .5em .5em }
 
