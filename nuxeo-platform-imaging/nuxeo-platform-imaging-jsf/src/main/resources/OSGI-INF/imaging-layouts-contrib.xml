@@ -30,6 +30,62 @@
             </ul>
           </p>
         </description>
+        <properties>widgetProperty_pictureView
+          <layouts mode="view">
+            <layout name="picture_view_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>pictureView</widget>
+                </row>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>height</widget>
+                </row>
+              </rows>
+              <widget name="pictureView" type="text">
+                <labels>
+                  <label mode="any">Picture view</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The name of the picture view, default to 'Medium'.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>pictureView</field>
+                </fields>
+              </widget>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The width of the image.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+              <widget name="height" type="text">
+                <labels>
+                  <label mode="any">Height</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The height of the image.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>height</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
         <categories>
           <category>document</category>
         </categories>
