@@ -72,7 +72,8 @@ public class BatchResource {
     }
 
     protected int getUploadWaitTimeout() {
-        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout", "5");
+        String t = Framework.getProperty("org.nuxeo.batch.upload.wait.timeout",
+                "5");
         return Integer.parseInt(t);
     }
 
@@ -110,10 +111,11 @@ public class BatchResource {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
 
         List<Blob> blobs = bm.getBlobs(batchId, getUploadWaitTimeout());
-        if (blobs==null) {
+        if (blobs == null) {
             log.error("Unable to find batch associated with id " + batchId);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-                    "{\"error\" : \"" + "Unable to find batch with Id " + batchId + "\"}").build();
+                    "{\"error\" : \"" + "Unable to find batch with Id "
+                            + batchId + "\"}").build();
         }
 
         xreq.setInput(new BlobList(blobs));
@@ -148,11 +150,7 @@ public class BatchResource {
                 chain.add(oparams);
                 result = as.run(ctx, chain);
             }
-            if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
-                return ResponseHelper.emptyContent(); // void response
-            } else {
-                return result;
-            }
+            return ResponseHelper.getResponse(result, request);
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
             if (ExceptionHandler.isSecurityError(e)) {
