@@ -142,11 +142,7 @@ public class BatchResource {
 
             Object result = bm.execute(batchId, operationId,
                     getCoreSession(request), ctx, params);
-            if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
-                return ResponseHelper.emptyContent(); // void response
-            } else {
-                return result;
-            }
+            return ResponseHelper.getResponse(result, request);
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
             if (ExceptionHandler.isSecurityError(e)) {

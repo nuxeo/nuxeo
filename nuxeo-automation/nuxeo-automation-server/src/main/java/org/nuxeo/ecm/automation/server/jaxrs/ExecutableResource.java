@@ -16,14 +16,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.core.util.BlobList;
-import org.nuxeo.ecm.automation.core.util.RecordSet;
 import org.nuxeo.ecm.automation.server.AutomationServer;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -55,27 +49,7 @@ public abstract class ExecutableResource {
                 return ResponseHelper.notFound();
             }
             Object result = execute(xreq);
-            if (result == null) {
-                return null;
-            }
-            if ("true".equals(request.getHeader("X-NXVoidOperation"))) {
-                return ResponseHelper.emptyContent(); // void response
-            }
-            if (result instanceof Blob) {
-                return ResponseHelper.blob((Blob) result);
-            } else if (result instanceof BlobList) {
-                return ResponseHelper.blobs((BlobList) result);
-            } else if (result instanceof DocumentRef) {
-                return getCoreSession().getDocument((DocumentRef) result);
-            } else if ((result instanceof DocumentModel)
-                    || (result instanceof DocumentModelList)
-                    || (result instanceof JsonAdapter)) {
-                return result;
-            } else if (result instanceof RecordSet) {
-                return result;
-            } else { // try to adapt to JSON
-                return new DefaultJsonAdapter(result);
-            }
+            return ResponseHelper.getResponse(result, request);
         } catch (Throwable e) {
             throw ExceptionHandler.newException("Failed to execute operation: "
                     + getId(), e);
