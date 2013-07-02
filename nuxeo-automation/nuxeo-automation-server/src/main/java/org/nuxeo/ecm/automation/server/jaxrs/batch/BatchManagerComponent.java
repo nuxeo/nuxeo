@@ -161,10 +161,10 @@ public class BatchManagerComponent extends DefaultComponent implements
             CoreSession session, Map<String, Object> contextParams,
             Map<String, Object> operationParams) throws ClientException {
         if (contextParams == null) {
-            contextParams = new HashMap<>();
+            contextParams = new HashMap<String, Object>();
         }
         if (operationParams == null) {
-            operationParams = new HashMap<>();
+            operationParams = new HashMap<String, Object>();
         }
 
         OperationContext ctx = new OperationContext(session);
