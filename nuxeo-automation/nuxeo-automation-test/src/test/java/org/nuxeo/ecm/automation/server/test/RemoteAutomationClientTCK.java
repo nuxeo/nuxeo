@@ -19,6 +19,7 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PathRef;
+import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
@@ -81,7 +82,7 @@ public class RemoteAutomationClientTCK {
         Document folder = (Document) session.newRequest("Document.Create").setInput(
                 "/").set("type", "Folder").set("name", "TestFolder1").set(
                 "properties",
-                "dc:title=Test Folder2 \\ndc:description=Simple container").execute();
+                "dc:title=Test Folder2\ndc:description=Simple container").execute();
         assertNotNull(folder);
         assertEquals("/TestFolder1", folder.getPath());
         assertEquals("Test Folder2", folder.getTitle());
@@ -102,13 +103,14 @@ public class RemoteAutomationClientTCK {
     }
 
     public void testUpdateChild2() throws Exception {
-        Document file = (Document) session.newRequest("Document.Update").setInput(
+        Document file = (Document) session.newRequest("Document.Update").setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").setInput(
                 "/TestFolder1/TestFile2").set("save", "true").set("properties",
-                "dc:description=Simple File\\ndc:subjects=subject1,subject2").execute();
+                "dc:description=Simple File\ndc:subjects=subject1,subject2").execute();
         assertNotNull(file);
-        assertEquals("Simple File",
-                file.getProperties().getString("dc:description"));
-        assertEquals(2, file.getProperties().get("dc:subjects"));
+        assertEquals("Simple File", file.getProperties().get("dc:description"));
+        assertEquals(2,
+                ((PropertyList) file.getProperties().get("dc:subjects")).size());
     }
 
     public void testGetChildren() throws Exception {
@@ -116,7 +118,7 @@ public class RemoteAutomationClientTCK {
                 "value", "/TestFolder1").execute();
         assertNotNull(root);
         Documents children = (Documents) session.newRequest(
-                "Document.getChildren").setInput(root.getPath()).execute();
+                "Document.GetChildren").setInput(root.getPath()).execute();
         assertEquals(2, children.size());
 
     }
@@ -129,20 +131,20 @@ public class RemoteAutomationClientTCK {
         Document folder = (Document) session.newRequest("Document.Create").setInput(
                 "/").set("type", "Folder").set("name", "TestFolder2").set(
                 "properties",
-                "dc:title=Test Folder3 \\ndc:description=Simple container").execute();
+                "dc:title=Test Folder3\ndc:description=Simple container").execute();
         assertNotNull(folder);
     }
 
     public void testCreateChild(String id) throws Exception {
         String name = "TestFile" + id;
         Document file = (Document) session.newRequest("Document.Create").setInput(
-                "/TestFolder1").set("type", "File").set("name", name).execute();
+                "/TestFolder2").set("type", "File").set("name", name).execute();
         assertNotNull(file);
     }
 
     public void testQueryPage1() throws Exception {
         Document root = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/TestFolder1").execute();
+                "value", "/TestFolder2").execute();
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
                 "Document.PageProvider").set("query",
                 "select * from Document where ecm:parentId = ?").set(
@@ -157,7 +159,7 @@ public class RemoteAutomationClientTCK {
 
     public void testQueryPage2() throws Exception {
         Document root = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/TestFolder1").execute();
+                "value", "/TestFolder2").execute();
         PaginableDocuments docs = (PaginableDocuments) session.newRequest(
                 "Document.PageProvider").set("query",
                 "select * from Document where ecm:parentId = ?").set(
