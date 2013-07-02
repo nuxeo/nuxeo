@@ -136,7 +136,30 @@ public class BatchManagerComponent extends DefaultComponent implements
             log.error(message);
             throw new ClientException(message);
         }
+        return execute(new BlobList(blobs), chainOrOperationId, session,
+                contextParams, operationParams);
+    }
 
+    @Override
+    public Object execute(String batchId, String fileIdx,
+            String chainOrOperationId, CoreSession session,
+            Map<String, Object> contextParams,
+            Map<String, Object> operationParams) throws ClientException {
+        Blob blob = getBlob(batchId, fileIdx, getUploadWaitTimeout());
+        if (blob == null) {
+            String message = String.format(
+                    "Unable to find batch associated with id '%s' or file associated with index '%s'",
+                    batchId, fileIdx);
+            log.error(message);
+            throw new ClientException(message);
+        }
+        return execute(blob, chainOrOperationId, session, contextParams,
+                operationParams);
+    }
+
+    protected Object execute(Object blobInput, String chainOrOperationId,
+            CoreSession session, Map<String, Object> contextParams,
+            Map<String, Object> operationParams) throws ClientException {
         if (contextParams == null) {
             contextParams = new HashMap<>();
         }
@@ -145,7 +168,7 @@ public class BatchManagerComponent extends DefaultComponent implements
         }
 
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(new BlobList(blobs));
+        ctx.setInput(blobInput);
         ctx.putAll(contextParams);
 
         try {

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * chain
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @autor Antoine Taillefer
  * @since 5.4.2
  */
 public interface BatchManager {
@@ -104,6 +105,19 @@ public interface BatchManager {
      * @since 5.7
      */
     Object execute(String batchId, String chainOrOperationId,
+            CoreSession session, Map<String, Object> contextParams,
+            Map<String, Object> operationParams) throws ClientException;
+
+    /**
+     * Executes the chain or operation on the {@code Blob} from the given
+     * {@code batchId} and {@code fileIdx}.
+     * <p>
+     * This method does not clean the temporary storage associated to the
+     * {@code batchId}.
+     *
+     * @since 5.7.2
+     */
+    Object execute(String batchId, String fileIdx, String chainOrOperationId,
             CoreSession session, Map<String, Object> contextParams,
             Map<String, Object> operationParams) throws ClientException;
 
