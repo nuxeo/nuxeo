@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -56,6 +57,8 @@ import org.nuxeo.runtime.api.Framework;
 public class BatchResource {
 
     private static final String REQUEST_BATCH_ID = "batchId";
+
+    private static final String REQUEST_FILE_IDX = "fileIdx";
 
     protected static final Log log = LogFactory.getLog(BatchResource.class);
 
@@ -119,6 +122,7 @@ public class BatchResource {
 
         Map<String, Object> params = xreq.getParams();
         String batchId = (String) params.get(REQUEST_BATCH_ID);
+        String fileIdx = (String) params.get(REQUEST_FILE_IDX);
         String operationId = (String) params.get("operationId");
         params.remove(REQUEST_BATCH_ID);
         params.remove("operationId");
@@ -140,8 +144,14 @@ public class BatchResource {
             OperationContext ctx = xreq.createContext(request,
                     getCoreSession(request));
 
-            Object result = bm.execute(batchId, operationId,
-                    getCoreSession(request), ctx, params);
+            Object result;
+            if (StringUtils.isEmpty(fileIdx)) {
+                result = bm.execute(batchId, operationId,
+                        getCoreSession(request), ctx, params);
+            } else {
+                result = bm.execute(batchId, fileIdx, operationId,
+                        getCoreSession(request), ctx, params);
+            }
             return ResponseHelper.getResponse(result, request);
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
