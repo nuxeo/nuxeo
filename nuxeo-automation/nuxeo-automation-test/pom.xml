@@ -11,7 +11,7 @@
   <description>Automation Tests</description>
 
   <properties>
-    <nuxeo.tested.version>5.7.1</nuxeo.tested.version>
+    <nuxeo.tested.version>5.7.2-SNAPSHOT</nuxeo.tested.version>
   </properties>
 
   <dependencies>
