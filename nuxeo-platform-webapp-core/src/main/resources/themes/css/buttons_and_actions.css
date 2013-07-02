@@ -69,10 +69,11 @@ input.button[disabled], input.button[disabled]:hover {
 .dropdown:hover { background-color: "color.major.medium (__FLAVOR__ background)" }
 
 /* =Syndication Button */
-div.syndicationButton { background-color: #ff9d5c; float: right; font-size: .7em; margin-bottom: .5em }
+div.syndicationButton { float: right; font-size: .7em; margin-bottom: .5em }
 .syndicationContainer { height: 30px }
-div.syndicationButton div.syndicationLinks {color: #fff; padding: .2em .4em }
-div.syndicationButton div.syndicationLinks a { color: #fff }
+div.syndicationButton div.syndicationLinks { padding: .2em .4em }
+div.syndicationButton div.syndicationLinks a { color: "gray.medium (__FLAVOR__ color)" }
+div.syndicationButton div.syndicationLinks a:hover { color: "link.hover (__FLAVOR__ color)"; text-decoration: none }
 
 /* =Action Bar */
 .action_bar { float: left; line-height: normal; margin: 1em 1em 1em 0 }
