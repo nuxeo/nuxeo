@@ -17,8 +17,6 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 public class NuxeoCorsFilterDescriptorRegistry extends
         ContributionFragmentRegistry<NuxeoCorsFilterDescriptor> {
 
-    private static final Log log = LogFactory.getLog(NuxeoCorsFilterDescriptorRegistry.class);
-
     protected Map<String, NuxeoCorsFilterDescriptor> descs = new HashMap<>();
 
     @Override
@@ -46,7 +44,12 @@ public class NuxeoCorsFilterDescriptorRegistry extends
 
     @Override
     public NuxeoCorsFilterDescriptor clone(NuxeoCorsFilterDescriptor orig) {
-        return orig.clone();
+        try {
+            return orig.clone();
+        } catch (CloneNotSupportedException e) {
+            // Should never happens...
+            return null;
+        }
     }
 
     @Override

@@ -21,7 +21,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
  * @since 5.7.2
  */
 @XObject(value = "corsConfig")
-public class NuxeoCorsFilterDescriptor implements Serializable {
+public class NuxeoCorsFilterDescriptor implements Serializable, Cloneable {
 
     private static final String PROPERTIES_PREFIX = "cors.";
 
@@ -94,7 +94,7 @@ public class NuxeoCorsFilterDescriptor implements Serializable {
                 && request.getRequestURI().matches(pattern);
     }
 
-    public NuxeoCorsFilterDescriptor clone() {
+    public NuxeoCorsFilterDescriptor clone() throws CloneNotSupportedException {
         NuxeoCorsFilterDescriptor n = new NuxeoCorsFilterDescriptor();
         n.name = name;
         n.allowGenericHttpRequests = allowGenericHttpRequests;
