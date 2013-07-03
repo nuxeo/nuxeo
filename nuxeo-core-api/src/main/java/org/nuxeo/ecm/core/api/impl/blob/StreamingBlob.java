@@ -52,6 +52,8 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
 
     protected transient File persistedTmpFile;
 
+    protected boolean temporary;
+
     public StreamingBlob(StreamSource src) {
         this(src, null, null);
     }
@@ -192,6 +194,7 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
                 copy(in, out);
                 src = new FileSource(persistedTmpFile);
                 Framework.trackFile(persistedTmpFile, this);
+                temporary = true;
             } finally {
                 FileUtils.close(in);
                 FileUtils.close(out);
@@ -201,7 +204,11 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
     }
 
     public boolean isTemporary() {
-        return persistedTmpFile != null;
+        return temporary;
+    }
+
+    public void setTemporary(boolean temporary) {
+        this.temporary = temporary;
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

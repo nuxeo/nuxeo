@@ -96,6 +96,18 @@ public interface Blob {
     void transferTo(File file) throws IOException;
 
     /**
+     * Transfers the blob to the given file, doing a simple move if the blob
+     * allows it.
+     * <p>
+     * If {@code keep} is {@code true}, then the file won't be moved again.
+     *
+     * @param file the destination file
+     * @param keep don't allow further moves if this is {@code true}
+     * @since 5.6.0-HF20, 5.7.2
+     */
+    void transferToOrMove(File file, boolean keep) throws IOException;
+
+    /**
      * Persist this stream so that {@link #getStream()} method can be called
      * successfully several times. The persistence is done in a temporary file
      * or in memory - this is up to the implementation.
