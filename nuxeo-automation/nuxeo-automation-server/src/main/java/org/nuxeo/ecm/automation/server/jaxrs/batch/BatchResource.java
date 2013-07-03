@@ -52,6 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  * Exposes {@link Batch} as a JAX-RS resource
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @author Antoine Taillefer
  *
  */
 public class BatchResource {
