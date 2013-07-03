@@ -44,6 +44,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Runtime Component implementing the {@link BatchManager} service
  *
  * @author Tiry (tdelprat@nuxeo.com)
+ * @author Antoine Taillefer
  * @since 5.4.2
  */
 public class BatchManagerComponent extends DefaultComponent implements

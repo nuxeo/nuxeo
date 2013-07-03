@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * chain
  *
  * @author Tiry (tdelprat@nuxeo.com)
- * @autor Antoine Taillefer
+ * @author Antoine Taillefer
  * @since 5.4.2
  */
 public interface BatchManager {
