@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.picture.api;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -52,8 +53,13 @@ public class BlobHelper {
             return ((FileSource) source).getFile();
         } else if (blob instanceof StreamingBlob) {
             StreamingBlob sb = (StreamingBlob) blob;
+            try {
+                sb.persist();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             StreamSource source = sb.getStreamSource();
-            if (source instanceof FileSource && sb.isTemporary()) {
+            if (source instanceof FileSource) {
                 return ((FileSource) source).getFile();
             }
         }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -24,15 +24,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageRotater;
+import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 public class IMImageUtils implements ImageUtils {
@@ -43,8 +44,7 @@ public class IMImageUtils implements ImageUtils {
 
         protected File sourceFile;
 
-        // a tmp file is needed if the blob doesn't have a file, or
-        // if it has one but with an incorrect extension
+        // a tmp file is needed if the blob doesn't have a file
         protected File tmpFile;
 
         protected File targetFile;
@@ -58,73 +58,53 @@ public class IMImageUtils implements ImageUtils {
 
             try {
                 makeFiles(blob, targetExt);
-
                 callImageMagick();
-
-                Blob targetBlob = new FileBlob(targetFile);
+                Blob targetBlob = FileUtils.createTemporaryFileBlob(targetFile,
+                        null, null);
                 Framework.trackFile(targetFile, targetBlob);
                 return targetBlob;
-            } catch (Exception e) {
+            } catch (IOException e) {
+                log.error("ImageMagick failed on command: " + commandName, e);
+                return null;
+            } catch (CommandNotAvailable e) {
                 log.error("ImageMagick failed on command: " + commandName, e);
                 return null;
             } finally {
-                if (tmpFile != null) {
-                    tmpFile.delete();
-                }
+                cleanFiles();
             }
         }
 
-        protected void makeFiles(Blob blob, String targetExt) throws Exception {
+        protected void makeFiles(Blob blob, String targetExt)
+                throws IOException {
             sourceFile = BlobHelper.getFileFromBlob(blob);
-
-            // check extension
-            String ext = FilenameUtils.getExtension(blob.getFilename());
-            if (ext == null || "".equals(ext)) {
-                // no known extension
-                if (sourceFile == null) {
-                    sourceFile = createTempSource(blob, "tmp");
-                }
-                // detect extension
-                ext = ImageIdentifier.getInfo(sourceFile.getPath()).getFormat();
-                if (tmpFile == null) {
-                    // copy source with proper name
-                    sourceFile = createTempSource(blob, ext);
-                } else {
-                    // rename tmp file
-                    File newTmpFile = new File(
-                            FilenameUtils.removeExtension(tmpFile.getPath())
-                                    + "." + ext);
-                    tmpFile.renameTo(newTmpFile);
-                    tmpFile = newTmpFile;
-                    sourceFile = newTmpFile;
-                }
-            } else {
-                // check that extension on source is correct
-                if (sourceFile != null
-                        && !ext.equals(FilenameUtils.getExtension(sourceFile.getName()))) {
-                    sourceFile = null;
-                }
-            }
-
             if (sourceFile == null) {
-                sourceFile = createTempSource(blob, ext);
+                // cannot get a File for the source, dump to a tmp file
+                tmpFile = File.createTempFile("nuxeoImageSource", ".tmp");
+                blob.transferTo(tmpFile);
+                sourceFile = tmpFile;
             }
-
             if (targetExt == null) {
-                targetExt = ext;
+                targetExt = FilenameUtils.getExtension(blob.getFilename());
+                if (targetExt == null) {
+                    try {
+                        targetExt = ImageIdentifier.getInfo(
+                                sourceFile.getPath()).getFormat();
+                    } catch (CommandNotAvailable e) {
+                        log.warn(e.getMessage());
+                    }
+                }
             }
             targetFile = File.createTempFile("nuxeoImageTarget", "."
                     + targetExt);
         }
 
-        protected File createTempSource(Blob blob, String ext)
-                throws IOException {
-            tmpFile = File.createTempFile("nuxeoImageSource", "." + ext);
-            blob.transferTo(tmpFile);
-            return tmpFile;
+        protected void cleanFiles() {
+            if (tmpFile != null) {
+                tmpFile.delete();
+            }
         }
 
-        public abstract void callImageMagick() throws Exception;
+        public abstract void callImageMagick() throws CommandNotAvailable;
     }
 
     @Override
@@ -132,7 +112,7 @@ public class IMImageUtils implements ImageUtils {
             final int height) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() throws CommandNotAvailable {
                 ImageCropper.crop(sourceFile.getAbsolutePath(),
                         targetFile.getAbsolutePath(), width, height, x, y);
             }
@@ -144,7 +124,7 @@ public class IMImageUtils implements ImageUtils {
             final int height, final int depth) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() throws CommandNotAvailable {
                 ImageResizer.resize(sourceFile.getAbsolutePath(),
                         targetFile.getAbsolutePath(), width, height, depth);
             }
@@ -155,7 +135,7 @@ public class IMImageUtils implements ImageUtils {
     public Blob rotate(Blob blob, final int angle) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() throws CommandNotAvailable {
                 ImageRotater.rotate(sourceFile.getAbsolutePath(),
                         targetFile.getAbsolutePath(), angle);
             }

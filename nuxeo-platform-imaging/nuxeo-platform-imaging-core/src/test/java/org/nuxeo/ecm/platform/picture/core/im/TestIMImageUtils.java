@@ -21,6 +21,7 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.io.FilenameUtils;
@@ -28,6 +29,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.core.im.IMImageUtils.ImageMagickCaller;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -66,7 +68,7 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         assertNotNull(blob);
         ImageMagickCaller imc = new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() throws CommandNotAvailable {
                 return;
             }
         };
@@ -95,20 +97,20 @@ public class TestIMImageUtils extends NXRuntimeTestCase {
         // FileBlob
         assertEquals("src=jpg dst=jpg tmp=",
                 checkFileBlob(filename, true, null));
-        assertEquals("src=JPEG dst=JPEG tmp=JPEG",
+        assertEquals("src=jpg dst=JPEG tmp=",
                 checkFileBlob(filename, false, null));
         assertEquals("src=jpg dst=png tmp=",
                 checkFileBlob(filename, true, "png"));
-        assertEquals("src=JPEG dst=png tmp=JPEG",
+        assertEquals("src=jpg dst=png tmp=",
                 checkFileBlob(filename, false, "png"));
         // StringBlob
-        assertEquals("src=jpg dst=jpg tmp=jpg",
+        assertEquals("src=tmp dst=jpg tmp=tmp",
                 checkStringBlob(filename, true, null));
-        assertEquals("src=JPEG dst=JPEG tmp=JPEG",
+        assertEquals("src=tmp dst=JPEG tmp=tmp",
                 checkStringBlob(filename, false, null));
-        assertEquals("src=jpg dst=png tmp=jpg",
+        assertEquals("src=tmp dst=png tmp=tmp",
                 checkStringBlob(filename, true, "png"));
-        assertEquals("src=JPEG dst=png tmp=JPEG",
+        assertEquals("src=tmp dst=png tmp=tmp",
                 checkStringBlob(filename, false, "png"));
     }
 
