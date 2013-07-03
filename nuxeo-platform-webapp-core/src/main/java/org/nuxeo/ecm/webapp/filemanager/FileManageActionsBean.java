@@ -55,8 +55,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -67,7 +65,6 @@ import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.streaming.FileSource;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
@@ -780,66 +777,18 @@ public class FileManageActionsBean extends InputController implements
     }
 
     /**
-     * A Blob based on a File but whose contract says that the file is allowed
-     * to be moved to another filesystem location if needed.
-     *
-     * (The move is done by getting the StreamSource from the Blob, casting to FileSource,
-     *
-     * @since 5.6.0-HF19
-     */
-    public static class TemporaryFileBlob extends StreamingBlob {
-
-        private static final long serialVersionUID = 1L;
-
-        public TemporaryFileBlob(File file, String mimeType,
-                String encoding, String filename, String digest) {
-            super(new FileSource(file), mimeType, encoding, filename, digest);
-        }
-
-        @Override
-        public boolean isTemporary() {
-            return true; // for SQLSession#getBinary
-        }
-
-        @Override
-        public FileSource getStreamSource() {
-            return (FileSource) src;
-        }
-    }
-
-    /**
      * Creates a TemporaryFileBlob.
      *
      * Similar to FileUtils.createSerializableBlob.
      *
      * @since 5.6.0-HF19
+     * @deprecated Since 5.6.0-HF20, 5.7.2. See
+     *             {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils#createTemporaryFileBlob}
      */
+    @Deprecated
     protected static Blob createTemporaryFileBlob(File file, String filename,
             String mimeType) {
-        if (filename != null) {
-            filename = FileUtils.getCleanFileName(filename);
-        }
-        Blob blob = new TemporaryFileBlob(file, mimeType, null, filename,
-                null);
-        try {
-            // mimetype detection
-            MimetypeRegistry mimeService = Framework.getLocalService(MimetypeRegistry.class);
-            String detectedMimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    filename, blob, null);
-            if (detectedMimeType == null) {
-                if (mimeType != null) {
-                    detectedMimeType = mimeType;
-                } else {
-                    // default
-                    detectedMimeType = "application/octet-stream";
-                }
-            }
-            blob.setMimeType(detectedMimeType);
-        } catch (MimetypeDetectionException e) {
-            log.error(String.format("could not fetch mimetype for file %s",
-                    filename), e);
-        }
-        return blob;
+        return FileUtils.createTemporaryFileBlob(file, filename, mimeType);
     }
 
 }
