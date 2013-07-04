@@ -126,7 +126,7 @@ author: lkemen@nuxeo.com
 .commentActions { float: right; font-size: .8em; margin-right: .4em; padding: 2em }
 .commentCreationDate { font-weight: normal }
 .commentQuote { margin: .4em 0; white-space: pre-line }
-.commentAuthor { background: transparent url("${basePath}/icons/comment.gif") no-repeat 4px 4px;
+.commentAuthor { background: transparent url("${basePath}/icons/comment.png") no-repeat 4px 4px;
   color: "gray.dark (__FLAVOR__ color)";
   font-weight: bold;
   padding: .4em .3em .3em 2.1em }
