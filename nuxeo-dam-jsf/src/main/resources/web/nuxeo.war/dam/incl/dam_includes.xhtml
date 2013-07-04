@@ -5,9 +5,11 @@
   xmlns:a4j="http://richfaces.org/a4j">
 
   <a4j:outputPanel id="damPermanentLink_panel" ajaxRendered="true" layout="block">
-    <script type="text/javascript">
-      history.pushState(null, '#{currentDocument.title}', '#{damSearchActions.searchPermanentLinkUrl}');
-    </script>
+    <c:if test="#{useHtml5DragAndDrop}">
+      <script type="text/javascript">
+        history.pushState(null, '#{currentDocument.title}', '#{damSearchActions.searchPermanentLinkUrl}');
+      </script>
+    </c:if>
   </a4j:outputPanel>
 
   <a4j:form>
