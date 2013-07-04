@@ -55,7 +55,7 @@
     <webAnnotation
            name="Advice"
            uri="http://www.w3.org/2000/10/annotationType#Advice"
-           icon="icons/annotation-icon-Advice.png"
+           icon="icons/annotate.png"
            type="local"
            enabled="false">
     </webAnnotation>
