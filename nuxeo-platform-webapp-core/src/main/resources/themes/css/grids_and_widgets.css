@@ -90,9 +90,15 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .widgetPanel,
 .actionsWidgetPanel {
   display: block;
-  padding: 0 1em 1em .5em }
+  padding: 0 1em 1.5em .5em }
 
 .contextActions .actionsWidgetPanel {
+  padding: 0 }
+.contextActions .actionLink.button  {
+  margin: 0 .3em 0 0 }
+
+.widgetPanel .widgetPanel,
+.widgetPanel .actionsWidgetPanel {
   padding: 0 }
 
 /* =Advanced Widgets */
@@ -165,6 +171,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding-left: .1em }
 .compactLayout .fieldColumn img {
   margin: 0 }
+.compactLayout .fieldColumn a img {
+  margin: 0 .5em 0 0;
+  vertical-align: middle }
 
 .compactLayout .widgetTable .boldColumn,
 .compactLayout .widgetTable .boldLabel {
