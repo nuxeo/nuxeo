@@ -88,10 +88,12 @@
     value="#{nxu:test(!empty widgetProperty_frequency, widgetProperty_frequency, '0')}"/>
   <c:set var="requestDelay"
     value="#{nxu:test(!empty widgetProperty_requestDelay, widgetProperty_requestDelay, '100')}"/>
+  <c:set var="ajaxReRender" value="#{widgetProperty_ajaxReRender}"/>
+  <c:set var="globalPanelId" value="#{widget.id}_globalPanel"/>
 
-  <a4j:region renderRegionOnly="true" id="#{widget.id}_ajax_region">
+  <a4j:region id="#{widget.id}_ajax_region">
 
-    <a4j:outputPanel id="#{widget.id}_globalPanel">
+    <a4j:outputPanel id="#{globalPanelId}">
 
       <nxu:valueHolder var="selectedDocId" value="#{field}"
         id="#{widget.id}"
@@ -101,7 +103,6 @@
           value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(selectedDocId)}">
         <nxu:set var="doc"
           value="#{docSuggestionActions.getDocumentWithId(selectedDocId)}">
-
 
         <h:panelGrid id="#{widget.id}_panel" columns="2">
 
@@ -131,10 +132,14 @@
               <a4j:support event="onselect"
                 focus="#{widget.id}_suggest"
                 bypassUpdates="true"
-                reRender="#{widget.id}_globalPanel"
+                reRender="#{nxl:joinReRender(globalPanelId, ajaxReRender)}"
+                immediate="#{widgetProperty_immediate}"
+                ajaxSingle="#{widgetProperty_ajaxSingle}"
                 id="#{widget.id}_suggestion_select">
                 <f:setPropertyActionListener value="#{result.id}"
                   target="#{suggestionActions.selectedValue}"/>
+                <f:setPropertyActionListener value="#{result.id}"
+                  target="#{field}"/>
                 <nxu:actionListenerMethod
                   value="#{suggestionActions.addSingleBoundSelection}"/>
                 <f:param name="suggestionSelectionHiddenId"
@@ -170,9 +175,11 @@
             <a4j:commandLink id="#{widget.id}_selectionReset"
               actionListener="#{suggestionActions.clearSingleSelection}"
               ignoreDupResponses="true" ajaxSingle="true" bypassUpdates="true"
-              reRender="#{widget.id}_selectionGroup"
+              reRender="#{nxl:joinReRender(globalPanelId, ajaxReRender)}"
               rendered="#{!empty selectedDocId}">
               <h:graphicImage value="/icons/action_delete.gif"/>
+              <f:setPropertyActionListener value=""
+                target="#{field}"/>
               <f:param name="suggestionSelectionHiddenId"
                 value="#{widget.id}"/>
               <f:param name="suggestionSelectionDeleteId"
@@ -206,17 +213,6 @@
 
           </h:panelGroup>
         </h:panelGrid>
-
-        <c:if test="#{canSee}">
-          <p>
-            <nxu:set var="types" value="#{damImportActions.getSubTypesFor(doc)}" cache="true">
-              <c:forEach var="type" items="#{types}">
-                <span title="#{messages[type.description]}" class="label">#{messages[type.label]}</span>
-              </c:forEach>
-            </nxu:set>
-            #{messages['label.dam.bulk.import.assets.select.location.types.imported']}
-          </p>
-        </c:if>
 
         </nxu:set>
         </nxu:set>

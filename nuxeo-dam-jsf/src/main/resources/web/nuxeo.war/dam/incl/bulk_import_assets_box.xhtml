@@ -15,12 +15,10 @@
 
     <div class="content positionR">
 
-      <nxu:set var="importOptions" value="#{damImportActions.getImportOptions(action.properties.dropContext)}" cache="true">
-
-      <table class="dataInput fullWidth">
+      <table class="dataInput fullWidth separator">
         <tbody>
         <tr>
-          <td class="labelColumn">
+          <td class="labelColumn required">
             #{messages['label.dam.bulk.import.assets.select.location']}
           </td>
           <td class="fieldColumn">
@@ -30,66 +28,107 @@
               required="true"
               pageProviderName="damImportFolders"
               placeholder="#{messages['label.dam.bulk.import.assets.select.location.placeholder']}"
-              prefixSearch="true" />
+              prefixSearch="true"
+              immediate="true"
+              ajaxSingle="true"
+              ajaxReRender="#{fancyboxFormId}_importPanel">
+            </nxl:widgetType>
           </td>
         </tr>
-        <tr>
-          <td class="labelColumn">
-            #{messages['label.files.files']}
-          </td>
-          <td class="fieldColumn">
-            <c:if test="#{useHtml5DragAndDrop}">
-              <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
-                <div class="dropZoneLabel jsTips">
-                  #{messages['label.dam.bulk.import.assets.tips']}
-                </div>
-              </div>
-            </c:if>
-
-            <c:if test="#{!useHtml5DragAndDrop}">
-              <rich:fileUpload id="fileUploadForm" uploadData="#{damImportActions.uploadedFiles}"
-                maxFilesQuantity="10" immediateUpload="true"
-                locale="#{localeSelector.localeString}"
-                ajaxSingle="true"
-                onadd="nuxeo.dam.disableBulkImportButton();"
-                onuploadcomplete="nuxeo.dam.enableBulkImportButton();"
-                listWidth="60%" listHeight="150px">
-              </rich:fileUpload>
-            </c:if>
-          </td>
-        </tr>
-        <c:if test="#{importOptions.size() > 1}">
-        <tr>
-          <td class="labelColumn">
-            #{messages['label.dam.bulk.import.assets.select.option']}
-          </td>
-          <td class="fieldColumn">
-            <h:selectOneMenu
-              value="#{damImportActions.selectedImportOptionId}"
-              id="#{widget.id}" styleClass="langSelect">
-              <a4j:support event="onchange"
-                reRender="importLayout_panel" />
-              <nxu:selectItems
-                var="importOption" value="#{importOptions}"
-                itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
-            </h:selectOneMenu>
-          </td>
-        </tr>
-        </c:if>
         </tbody>
       </table>
 
-      </nxu:set>
+      <a4j:outputPanel id="#{fancyboxFormId}_importPanel">
+        <c:if test="#{not empty damImportActions.selectedImportFolderId}">
+          <nxu:set var="importOptions" value="#{damImportActions.getImportOptions(action.properties.dropContext)}" cache="true">
+            <table class="dataInput fullWidth">
+              <tbody>
+              <tr>
+                <td class="labelColumn">
+                  #{messages['label.files.files']}
+                </td>
+                <td class="fieldColumn">
+                  <p>
+                    <nxu:set var="types" value="#{damImportActions.allowedImportFolderSubTypes}" cache="true">
+                      <c:forEach var="type" items="#{types}">
+                        <span title="#{messages[type.description]}" class="label">#{messages[type.label]}</span>
+                      </c:forEach>
+                    </nxu:set>
+                    #{messages['label.dam.bulk.import.assets.select.location.types.imported']}
+                  </p>
 
-      <a4j:outputPanel id="importLayout_panel">
+                  <c:if test="#{useHtml5DragAndDrop}">
+                    <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
+                      <div class="dropZoneLabel jsTips">
+                        #{messages['label.dam.bulk.import.assets.tips']}
+                      </div>
+                    </div>
+                  </c:if>
 
-        <nxl:layout name="#{damImportActions.selectedImportOption.properties.layout}" mode="create"
-          value="#{damImportActions.importDocumentModel}"/>
+                  <c:if test="#{!useHtml5DragAndDrop}">
+                    <rich:fileUpload id="fileUploadForm" uploadData="#{damImportActions.uploadedFiles}"
+                      maxFilesQuantity="10" immediateUpload="true"
+                      locale="#{localeSelector.localeString}"
+                      ajaxSingle="true"
+                      onadd="nuxeo.dam.disableBulkImportButton();"
+                      onuploadcomplete="nuxeo.dam.enableBulkImportButton();"
+                      listWidth="60%" listHeight="150px">
+                    </rich:fileUpload>
+                  </c:if>
+                </td>
+              </tr>
+              <c:if test="#{importOptions.size() > 1}">
+                <tr>
+                  <td class="labelColumn">
+                    #{messages['label.dam.bulk.import.assets.select.option']}
+                  </td>
+                  <td class="fieldColumn">
+                    <h:selectOneMenu
+                      value="#{damImportActions.selectedImportOptionId}"
+                      id="#{widget.id}" styleClass="langSelect">
+                      <a4j:support event="onchange"
+                        reRender="importLayout_panel" />
+                      <nxu:selectItems
+                        var="importOption" value="#{importOptions}"
+                        itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
+                    </h:selectOneMenu>
+                  </td>
+                </tr>
+              </c:if>
+              </tbody>
+            </table>
 
-        <!-- <nxl:widgetType name="layout" mode="create"
-          value="#{damImportActions.importDocumentModel}"
-          widgetProperty_name="#{damImportActions.selectedImportOption.properties.layout}"/> -->
+          </nxu:set>
 
+          <a4j:outputPanel id="importLayout_panel">
+
+            <nxl:layout name="#{damImportActions.selectedImportOption.properties.layout}" mode="create"
+              value="#{damImportActions.importDocumentModel}"/>
+
+            <!-- <nxl:widgetType name="layout" mode="create"
+              value="#{damImportActions.importDocumentModel}"
+              widgetProperty_name="#{damImportActions.selectedImportOption.properties.layout}"/> -->
+
+          </a4j:outputPanel>
+
+
+          <c:if test="#{useHtml5DragAndDrop}">
+            <script type="text/javascript">
+              jQuery(".damAssetImportZone").nxDropZone({
+                url : "#{contextPath}/site/automation/",
+                uploadRateRefreshTime : 500,
+                numConcurrentUploads : 3,
+                dropContext : ctx,
+                uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+                execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+                extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
+                handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
+              });
+            </script>
+          </c:if>
+
+
+        </c:if>
       </a4j:outputPanel>
 
     </div>
@@ -105,18 +144,6 @@
     </div>
 
     <script type="text/javascript">
-      <c:if test="#{useHtml5DragAndDrop}">
-        jQuery(".damAssetImportZone").nxDropZone({
-          url : "#{contextPath}/site/automation/",
-          uploadRateRefreshTime : 500,
-          numConcurrentUploads : 3,
-          dropContext : ctx,
-          uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
-          execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
-          extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
-          handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
-        });
-      </c:if>
       nuxeo.dam.disableBulkImportButton();
     </script>
 

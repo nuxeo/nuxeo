@@ -24,13 +24,13 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
@@ -49,8 +49,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -157,6 +157,22 @@ public class DamImportActions implements Serializable {
         return types;
     }
 
+    public List<Type> getAllowedImportFolderSubTypes() throws ClientException {
+        if (selectedImportFolderId == null) {
+            return Collections.emptyList();
+        }
+
+        DocumentModel doc = documentManager.getDocument(new IdRef(
+                selectedImportFolderId));
+        TypeManager typeManager = Framework.getLocalService(TypeManager.class);
+        List<Type> types = new ArrayList<>();
+        TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
+        for (Type type : typeManager.getAllowedSubTypes(doc.getType(), doc)) {
+            types.add(type);
+        }
+        return types;
+    }
+
     public String generateBatchId() {
         currentBatchId = "batch-" + new Date().getTime() + "-"
                 + random.nextInt(1000);
@@ -188,9 +204,11 @@ public class DamImportActions implements Serializable {
 
         try {
             if (dndConfigHelper.useHtml5DragAndDrop()) {
-                importAssetsThroughBatchManager(chainOrOperationId, contextParams);
+                importAssetsThroughBatchManager(chainOrOperationId,
+                        contextParams);
             } else {
-                importAssetsThroughUploadItems(chainOrOperationId, contextParams);
+                importAssetsThroughUploadItems(chainOrOperationId,
+                        contextParams);
             }
         } finally {
             cancel();
@@ -215,8 +233,9 @@ public class DamImportActions implements Serializable {
             List<Blob> blobs = new ArrayList<>();
             for (UploadItem uploadItem : uploadedFiles) {
                 String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
-                Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(),
-                        filename, uploadItem.getContentType());
+                Blob blob = FileUtils.createTemporaryFileBlob(
+                        uploadItem.getFile(), filename,
+                        uploadItem.getContentType());
                 blobs.add(blob);
             }
 
