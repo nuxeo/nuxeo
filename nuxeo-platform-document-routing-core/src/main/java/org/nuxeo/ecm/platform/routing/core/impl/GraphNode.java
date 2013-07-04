@@ -115,6 +115,9 @@ public interface GraphNode {
 
     String PROP_TASK_DUE_DATE_EXPR = "rnode:taskDueDateExpr";
 
+    // @since 5.7.2
+    String PROP_EXCLUSIVE = "rnode:exclusive";
+
     /**
      * The internal state of a node.
      */
@@ -438,6 +441,8 @@ public interface GraphNode {
      * true.
      * <p>
      * Transitions are evaluated and ordered by transition id order.
+     * Since @5.7.2 if the node is an exclusive node, only the first transition
+     * evaluated to true is returned
      *
      * @return the true transitions
      */
@@ -508,4 +513,12 @@ public interface GraphNode {
      * @param detached The documents added into this map can be detached or not
      */
     Map<String, Serializable> getWorkflowContextualInfo(boolean detached);
+
+    /**
+     * When workflow engine runs an exclusive node, it evaluates the transition
+     * one by one and stops a soon as one of the transition is evaluated to true
+     *
+     * @since 5.7.2
+     */
+    boolean isExclusive();
 }

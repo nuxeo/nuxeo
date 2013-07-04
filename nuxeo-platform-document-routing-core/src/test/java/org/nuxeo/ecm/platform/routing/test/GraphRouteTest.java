@@ -236,6 +236,7 @@ public class GraphRouteTest {
                 DocumentRoute.class);
     }
 
+
     @Test
     public void testExceptionIfNoStartNode() throws Exception {
         // route
@@ -1289,7 +1290,7 @@ public class GraphRouteTest {
         OperationChain chain = new OperationChain("testChain");
         chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle());
         automationService.run(ctx, chain);
-        //process invalidations from automation context
+        // process invalidations from automation context
         session.save();
         // query for all the workflows
         DocumentModelList workflows = session.query(String.format(
@@ -1302,7 +1303,7 @@ public class GraphRouteTest {
         chain.add(BulkRestartWorkflow.ID).set("workflowId", routeDoc.getTitle()).set(
                 "nodeId", "node2");
         automationService.run(ctx, chain);
-        //process invalidations from automation context
+        // process invalidations from automation context
         session.save();
         // query for all the workflows
         workflows = session.query(String.format(
@@ -1452,5 +1453,44 @@ public class GraphRouteTest {
                 "done",
                 session.getDocument(route.getDocument().getRef()).getCurrentLifeCycleState());
 
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRouteWithExclusiveNode() throws Exception {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_EXCLUSIVE, true);
+        setTransitions(node1,
+                transition("trans12", "node2", "true", "testchain_title1"),
+                transition("trans13", "node3", "true", "testchain_descr1"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        setTransitions(node2, transition("trans24", "node4", "true"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        setTransitions(node3, transition("trans34", "node4", "true"));
+        node3 = session.saveDocument(node3);
+
+        DocumentModel node4 = createNode(routeDoc, "node4");
+        node4.setPropertyValue(GraphNode.PROP_MERGE, "one");
+        node4.setPropertyValue(GraphNode.PROP_STOP, true);
+        node4 = session.saveDocument(node4);
+
+        DocumentRoute route = instantiateAndRun();
+        assertTrue(route.isDone());
+
+        session.save();
+
+        // curently merge all is executed only if all incoming transitions are
+        // evaluated to true
+        routeDoc = session.getDocument(routeDoc.getRef());
+        node4.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node4 = session.saveDocument(node4);
+        route = instantiateAndRun();
+        // since node3 is never executed, route is not done
+        assertFalse(route.isDone());
     }
 }

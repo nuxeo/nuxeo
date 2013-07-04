@@ -13,6 +13,7 @@
   <xs:element name="start" type="xs:boolean" />
   <xs:element name="stop" type="xs:boolean" />
   <xs:element name="merge" type="xs:string" /> <!-- (null)/one/all -->
+  <xs:element name="exclusive" type="xs:boolean" />
 
   <xs:element name="hasTask" type="xs:boolean" />
   <xs:element name="taskDirective" type="xs:string" />

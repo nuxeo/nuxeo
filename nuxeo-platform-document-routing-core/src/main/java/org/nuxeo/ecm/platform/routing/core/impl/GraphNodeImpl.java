@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -486,7 +485,6 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             for (Property p : props) {
                 trans.add(new Transition(this, p));
             }
-            Collections.sort(trans);
             return trans;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -534,6 +532,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 t.setResult(bool);
                 if (bool) {
                     trueTrans.add(t);
+                    if (isExclusive()) {
+                        // if node is exclusive, no need to evaluate others
+                        break;
+                    }
                 }
             }
             saveDocument();
@@ -749,5 +751,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             throw new ClientRuntimeException(e);
         }
         return dueDate;
+    }
+
+    @Override
+    public boolean isExclusive() {
+        return getBoolean(PROP_EXCLUSIVE);
     }
 }
