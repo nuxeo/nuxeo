@@ -47,7 +47,7 @@ boolean useExternalProviders = providers!=null && providers.size()>0;
 boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
 
-String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.png') repeat scroll bottom left #cadfc0");
+String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') repeat scroll bottom left #cadfc0");
 String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
@@ -138,8 +138,8 @@ body {
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
   margin-left: 10em;
-  filter: alpha(opacity = 80);
-  opacity: 0.8;
+  filter: alpha(opacity = 90);
+  opacity: 0.9;
   padding: 1.5em 0 1em;
   width: 22em
 }
@@ -439,7 +439,7 @@ body {
           </div>
         </form>
       </td>
-      <td class="news_container" align="right" valign="center">
+      <td class="news_container" align="right" valign="middle">
         <% if (showNews && !"Nuxeo-Selenium-Tester".equals(testerName)) { %>
           <iframe class="block_container" style="visibility:hidden"
             onload="javascript:this.style.visibility='visible';"
@@ -451,7 +451,7 @@ body {
       <td align="center" valign="bottom">
       <div class="loginLegal">
         <fmt:message bundle="${messages}" key="label.login.copyright">
-          <fmt:param value="2012" />
+          <fmt:param value="2013" />
         </fmt:message>
       </div>
       </td>
