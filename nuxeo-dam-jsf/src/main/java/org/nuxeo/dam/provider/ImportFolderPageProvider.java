@@ -17,7 +17,6 @@
 
 package org.nuxeo.dam.provider;
 
-import static org.nuxeo.dam.DamConstants.ASSET_FACET;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 
 import java.util.Collection;
@@ -30,8 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.PermissionFilter;
-import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -73,18 +70,14 @@ public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
 
         @Override
         public boolean accept(DocumentModel doc) {
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
             TypeManager typeManager = Framework.getLocalService(TypeManager.class);
             DamService damService = Framework.getLocalService(DamService.class);
             List<Type> allowedAssetTypes = damService.getAllowedAssetTypes();
             Collection<Type> allowedSubTypes = typeManager.getAllowedSubTypes(
                     doc.getType(), doc);
-            for (Type type : allowedSubTypes) {
-                if (allowedAssetTypes.contains(type)) {
-                    DocumentType docType = schemaManager.getDocumentType(type.getId());
-                    if (docType.hasFacet(ASSET_FACET)) {
-                        return true;
-                    }
+            for (Type type : allowedAssetTypes) {
+                if (allowedSubTypes.contains(type)) {
+                    return true;
                 }
             }
             return false;

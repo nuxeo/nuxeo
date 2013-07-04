@@ -187,9 +187,13 @@
       <category>DAM_SEARCH_RESULTS_ACTIONS</category>
       <properties>
         <property name="include">/dam/incl/new_asset_box.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">60%</property>
+        <property name="height">90%</property>
         <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
       </properties>
-      <filter-id>canCreateNewAsset</filter-id>
     </action>
     <action id="damBulkImportAssets" order="200" label="label.dam.bulk.import.assets"
       type="fancybox">

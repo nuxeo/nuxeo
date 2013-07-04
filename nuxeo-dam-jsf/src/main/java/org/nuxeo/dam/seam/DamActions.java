@@ -20,21 +20,14 @@ package org.nuxeo.dam.seam;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
-import static org.nuxeo.dam.DamConstants.REFRESH_DAM_SEARCH;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.core.Events;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -43,9 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.action.MainTabsActions;
@@ -81,14 +72,6 @@ public class DamActions implements Serializable {
     @In(create = true)
     protected transient MainTabsActions mainTabsActions;
 
-    @In(create = true, required = false)
-    protected FacesMessages facesMessages;
-
-    @In(create = true)
-    protected Map<String, String> messages;
-
-    protected String selectedNewAssetType;
-
     public String getSelectedDocumentId() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return currentDocument != null ? currentDocument.getId() : null;
@@ -115,94 +98,6 @@ public class DamActions implements Serializable {
                 : MAIN_TABS_DAM);
     }
 
-    /*
-     * ----- Asset creation -----
-     */
-
-    public boolean getCanCreateInAssetLibrary() throws ClientException {
-        AssetLibrary assetLibrary = getAssetLibrary();
-        DocumentRef assetLibraryRef = new PathRef(assetLibrary.getPath());
-        return documentManager.hasPermission(assetLibraryRef,
-                SecurityConstants.ADD_CHILDREN);
-    }
-
-    public boolean getCanCreateNewAsset() throws ClientException {
-        return !getAllowedAssetTypes().isEmpty()
-                && getCanCreateInAssetLibrary();
-    }
-
-    public AssetLibrary getAssetLibrary() {
-        return Framework.getLocalService(DamService.class).getAssetLibrary();
-    }
-
-    public List<Type> getAllowedAssetTypes() {
-        return Framework.getLocalService(DamService.class).getAllowedAssetTypes();
-    }
-
-    /**
-     * Gets the selected asset new asset type.
-     * <p>
-     * If selected type is null, initialize it to the first one, and initialize
-     * the changeable document with this document type.
-     */
-    public String getSelectedNewAssetType() throws ClientException {
-        if (selectedNewAssetType == null) {
-            List<Type> allowedAssetTypes = getAllowedAssetTypes();
-            if (!allowedAssetTypes.isEmpty()) {
-                selectedNewAssetType = allowedAssetTypes.get(0).getId();
-            }
-            if (selectedNewAssetType != null) {
-                selectNewAssetType();
-            }
-        }
-        return selectedNewAssetType;
-    }
-
-    public void setSelectedNewAssetType(String selectedNewAssetType) {
-        this.selectedNewAssetType = selectedNewAssetType;
-    }
-
-    public void selectNewAssetType() throws ClientException {
-        String selectedType = getSelectedNewAssetType();
-        if (selectedType == null) {
-            // ignore
-            return;
-        }
-        Map<String, Object> context = new HashMap<String, Object>();
-        DocumentModel changeableDocument = documentManager.createDocumentModel(
-                selectedType, context);
-        navigationContext.setChangeableDocument(changeableDocument);
-    }
-
-    public void saveNewAsset() throws ClientException {
-        DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-        if (changeableDocument.getId() != null) {
-            return;
-        }
-        PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
-
-        changeableDocument.setPathInfo(getAssetLibrary().getPath(),
-                pss.generatePathSegment(changeableDocument));
-
-        changeableDocument = documentManager.createDocument(changeableDocument);
-        documentManager.save();
-
-        // reset changeable document and selected type
-        cancelNewAsset();
-
-        // refresh the current dam search
-        Events.instance().raiseEvent(REFRESH_DAM_SEARCH);
-
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get("document_saved"),
-                messages.get(changeableDocument.getType()));
-    }
-
-    public void cancelNewAsset() {
-        navigationContext.setChangeableDocument(null);
-        setSelectedNewAssetType(null);
-    }
-
     public String viewInDM() throws ClientException {
         webActions.setCurrentTabIds("MAIN_TABS:documents");
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
@@ -213,4 +108,14 @@ public class DamActions implements Serializable {
         return null;
     }
 
+    public boolean getCanCreateInAssetLibrary() throws ClientException {
+        AssetLibrary assetLibrary = getAssetLibrary();
+        DocumentRef assetLibraryRef = new PathRef(assetLibrary.getPath());
+        return documentManager.hasPermission(assetLibraryRef,
+                SecurityConstants.ADD_CHILDREN);
+    }
+
+    public AssetLibrary getAssetLibrary() {
+        return Framework.getLocalService(DamService.class).getAssetLibrary();
+    }
 }
