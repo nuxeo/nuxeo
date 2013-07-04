@@ -43,25 +43,25 @@ public class WebConfiguration implements IsSerializable {
         DEFAULT_WEB_CONFIGURATION = new WebConfiguration();
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
                 "http://www.w3.org/2000/10/annotationType#Example", "Example",
-                "icons/annotation-icon-Comment.png", "local"));
+                "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
                 "http://www.w3.org/2000/10/annotationType#Comment", "Comment",
-                "icons/annotation-icon-Comment.png", "local"));
+                "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
                 "http://www.w3.org/2000/10/annotationType#SeeAlso", "SeeAlso",
-                "icons/annotation-icon-Comment.png", "local"));
+                "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
                 "http://www.w3.org/2000/10/annotationType#Question",
-                "Question", "icons/annotation-icon-Comment.png", "local"));
+                "Question", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
                 "http://www.w3.org/2000/10/annotationType#Explanation",
-                "Explanation", "icons/annotation-icon-Comment.png", "local"));
+                "Explanation", "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
                 "http://www.w3.org/2000/10/annotationType#Change", "Change",
-                "icons/annotation-icon-Comment.png", "local"));
+                "icons/annotate.png", "local"));
         DEFAULT_WEB_CONFIGURATION.addAnnotationDefinition(new AnnotationDefinition(
                 "http://www.w3.org/2000/10/annotationType#Advice", "Advice",
-                "icons/annotation-icon-Comment.png", "local"));
+                "icons/annotate.png", "local"));
     }
 
     private Map<String, AnnotationDefinition> annotationDefinitions = new HashMap<String, AnnotationDefinition>();

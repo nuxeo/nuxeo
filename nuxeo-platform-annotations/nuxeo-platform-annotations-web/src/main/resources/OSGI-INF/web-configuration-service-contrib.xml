@@ -23,7 +23,7 @@
     <webAnnotation
            name="Explanation"
            uri="http://www.w3.org/2000/10/annotationType#Explanation"
-           icon="icons/annotation-icon-Comment.png"
+           icon="icons/annotate.png"
            type="local"
            enabled="false">
     </webAnnotation>
@@ -31,7 +31,7 @@
     <webAnnotation
            name="Example"
            uri="http://www.w3.org/2000/10/annotationType#Example"
-           icon="icons/annotation-icon-Comment.png"
+           icon="icons/annotate.png"
            type="local"
            enabled="false">
     </webAnnotation>
@@ -39,7 +39,7 @@
     <webAnnotation
            name="Comment"
            uri="http://www.w3.org/2000/10/annotationType#Comment"
-           icon="icons/annotation-icon-Comment.png"
+           icon="icons/annotate.png"
            type="local"
            enabled="true">
     </webAnnotation>
@@ -47,7 +47,7 @@
     <webAnnotation
            name="Change"
            uri="http://www.w3.org/2000/10/annotationType#Change"
-           icon="icons/annotation-icon-Comment.png"
+           icon="icons/annotate.png"
            type="local"
            enabled="false">
     </webAnnotation>

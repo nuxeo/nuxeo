@@ -22,7 +22,7 @@
       <webAnnotation
           name="Comment"
           uri="http://www.w3.org/2000/10/annotation-ns#Comment"
-          icon="icons/annotation-icon-Comment.png"
+          icon="icons/annotate.png"
           type="local"
           enabled="true"
           listIcon="icons/annotation-icon-Comment-list.png"
@@ -54,21 +54,21 @@
 
   <extension-point name="filters">
     <documentation>
-      <filter name="All Annotations" order="0" icon="icons/annotation-icon-Comment.png"/>
+      <filter name="All Annotations" order="0" icon="icons/annotate.png"/>
 
-      <filter name="Our Annotations" order="1" icon="icons/annotation-icon-Comment.png">
+      <filter name="Our Annotations" order="1" icon="icons/annotate.png">
         <field name="ou">${userOrgUnit}</field>
       </filter>
 
-      <filter name="My Annotations" order="2" icon="icons/annotation-icon-Comment.png">
+      <filter name="My Annotations" order="2" icon="icons/annotate.png">
         <author>${userName}</author>
       </filter>
 
-      <filter name="Comments Only" order="3" icon="icons/annotation-icon-Comment.png">
+      <filter name="Comments Only" order="3" icon="icons/annotate.png">
         <type>Comment</type>
       </filter>
 
-      <filter name="Custom Filters" order="4" icon="icons/annotation-icon-Comment.png">
+      <filter name="Custom Filters" order="4" icon="icons/annotate.png">
         <author/>
         <type/>
         <field name="ou"/>
