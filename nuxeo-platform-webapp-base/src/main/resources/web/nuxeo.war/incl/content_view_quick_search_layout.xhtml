@@ -31,7 +31,7 @@ empty:
   <nxu:set var="filterFormId" value="#{cvid}_filterForm"
     cache="true">
   <nxu:set var="elementsToReRender"
-    value="#{cvid}_resultsPanel, #{resetFilterFormId}, #{filterFormId}, #{quickFilterFormId}, #{cvid}_contentViewActionsPanel, #{filterFormId}_panel"
+    value="#{contentIdToBeReRendered}, #{resetFilterFormId}, #{filterFormId}, #{quickFilterFormId}, #{cvid}_contentViewActionsPanel, #{filterFormId}_panel"
     cache="true">
 
   <a4j:outputPanel id="#{quickFilterFormId}_panel"
