@@ -18,7 +18,7 @@
 <c:forEach items="#{documentThreadedComments}" var="threadEntry">
   <nxp:paragraph indentationLeft="#{threadEntry.depth*20}"
     firstLineIndent="15">
-    <nxp:image value="/icons/comment.gif" underlying="true" />
+    <nxp:image value="/icons/comment.png" underlying="true" />
     <nxp:text value=" #{nxu:userFullName(threadEntry.comment.comment.author)} " />
     <nxp:font size="10" style="italic">
       <nxl:widgetType name="datetime" mode="pdf"
