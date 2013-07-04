@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+' * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -235,7 +235,6 @@ public class GraphRouteTest {
         return session.getDocument(new IdRef(id)).getAdapter(
                 DocumentRoute.class);
     }
-
 
     @Test
     public void testExceptionIfNoStartNode() throws Exception {
@@ -1463,7 +1462,7 @@ public class GraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_EXCLUSIVE, true);
         setTransitions(node1,
                 transition("trans12", "node2", "true", "testchain_title1"),
-                transition("trans13", "node3", "true", "testchain_descr1"));
+                transition("trans13", "node3", "true", "testchain_title2"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
@@ -1484,13 +1483,8 @@ public class GraphRouteTest {
 
         session.save();
 
-        // curently merge all is executed only if all incoming transitions are
-        // evaluated to true
-        routeDoc = session.getDocument(routeDoc.getRef());
-        node4.setPropertyValue(GraphNode.PROP_MERGE, "all");
-        node4 = session.saveDocument(node4);
-        route = instantiateAndRun();
-        // since node3 is never executed, route is not done
-        assertFalse(route.isDone());
+        // check that trans12 was executed and not trans13
+        DocumentModel docR = session.getDocument(doc.getRef());
+        assertEquals("title 1", docR.getTitle());
     }
 }
