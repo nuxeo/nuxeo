@@ -485,6 +485,11 @@ var NXDropZone = {
 (function ($) {
 
   $.fn.nxDropZone = function (options) {
+    // reinitialize NXDropZone object state
+    NXDropZone.handlerIdx = 0;
+    NXDropZone.highLightOn = false ;
+    NXDropZone.targetSelected = false;
+    NXDropZone.initDone = false;
 
     var ids = [];
     this.each(function () {
