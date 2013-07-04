@@ -15,7 +15,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/nxws_remoting_session_manager-framework.xml,
-  OSGI-INF/nxws_remoting_session_manager-platform-contrib.xml
+  OSGI-INF/nxws_remoting_session_manager-platform-contrib.xml,
+  OSGI-INF/wsendpoint-manager-framework.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation.security,
  javax.ejb,
