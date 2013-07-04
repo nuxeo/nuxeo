@@ -94,9 +94,12 @@
 <nxu:set var="contentViewRenderId"
   value="#{nxu:jsfTagIdEscape(contentViewRenderId)}"
   cache="true">
+<nxu:set var="contentViewPanelId"
+  value="#{contentViewRenderId}_panel"
+  cache="true">
 
 <a4j:region id="#{contentViewRenderId}_region">
-<a4j:outputPanel id="#{contentViewRenderId}_panel">
+<a4j:outputPanel id="#{contentViewPanelId}">
 
   <nxu:set var="provider" value="#{contentView.currentPageProvider}"
     cache="true">
@@ -159,7 +162,10 @@
 
           <ui:insert name="content_view_quick_search_layout">
             <c:if test="#{contentView.searchLayout.filterDisplayType == 'quick'}">
-              <ui:include src="/incl/content_view_quick_search_layout.xhtml" />
+              <ui:include src="/incl/content_view_quick_search_layout.xhtml">
+                <ui:param name="contentIdToBeReRendered"
+                  value="#{contentViewPanelId}" />
+              </ui:include>
             </c:if>
           </ui:insert>
 
@@ -289,6 +295,7 @@
 
 </a4j:outputPanel>
 </a4j:region>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </c:if>
