@@ -26,6 +26,7 @@ import javax.faces.context.FacesContext;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -214,6 +215,7 @@ public class ContentViewActions implements Serializable {
      * Refreshes all content views that have declared the given seam event name
      * as a refresh event in their XML configuration.
      */
+    @BypassInterceptors
     public void refreshOnSeamEvent(String seamEventName) {
         cache.refreshOnEvent(seamEventName);
     }
@@ -222,30 +224,37 @@ public class ContentViewActions implements Serializable {
      * Resets all content views page providers that have declared the given
      * seam event name as a reset event in their XML configuration.
      */
+    @BypassInterceptors
     public void resetPageProviderOnSeamEvent(String seamEventName) {
         cache.resetPageProviderOnEvent(seamEventName);
     }
 
+    @BypassInterceptors
     public void refresh(String contentViewName) {
         cache.refresh(contentViewName, false);
     }
 
+    @BypassInterceptors
     public void refreshAndRewind(String contentViewName) {
         cache.refresh(contentViewName, true);
     }
 
+    @BypassInterceptors
     public void resetPageProvider(String contentViewName) {
         cache.resetPageProvider(contentViewName);
     }
 
+    @BypassInterceptors
     public void reset(String contentViewName) {
         cache.reset(contentViewName);
     }
 
+    @BypassInterceptors
     public void resetAllContent() {
         cache.resetAllContent();
     }
 
+    @BypassInterceptors
     public void resetAll() {
         cache.resetAll();
     }
