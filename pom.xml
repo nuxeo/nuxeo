@@ -148,6 +148,7 @@
     <jclouds.version>1.5.3</jclouds.version>
     <google.client.version>1.12.0-beta</google.client.version>
     <selenium.version>2.34.0</selenium.version>
+    <cxf.version>2.6.8</cxf.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -4005,7 +4006,6 @@
         <artifactId>cors-filter</artifactId>
         <version>1.7.1</version>
       </dependency>
-
       <!-- dmk adaptor -->
       <dependency>
         <groupId>com.sun.jdmk</groupId>
@@ -4019,6 +4019,30 @@
         <version>2.1.0-20130502</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>${cxf.version}</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-javamail_1.4_spec</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>jsp-api</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>javax.faces</groupId>
+                <artifactId>jsf-api</artifactId>
+            </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
