@@ -23,7 +23,9 @@ import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -34,6 +36,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToDocRef;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
@@ -62,6 +65,17 @@ public class OperationChainContribution {
 
     @XNode("public")
     protected boolean isPublic = true;
+
+    @XNodeList(value = "param", type = ArrayList.class, componentType = OperationDocumentation.Param.class)
+    protected List<OperationDocumentation.Param> params = Collections.emptyList();
+
+    public List<OperationDocumentation.Param> getParams() {
+        return params;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public OperationChain toOperationChain(Bundle bundle) throws Exception {
         OperationChain chain = new OperationChain(id);
@@ -182,7 +196,9 @@ public class OperationChainContribution {
         //Optional map for properties type values
         @XNodeMap(value="property", key="@key", type=HashMap.class, componentType=String.class, nullByDefault=true)
         protected Map<String, String> map;
-
     }
 
+    public ArrayList<Operation> getOps() {
+        return ops;
+    }
 }

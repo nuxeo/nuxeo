@@ -15,6 +15,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.events.operations.FireEvent;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.operations.FetchContextBlob;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
@@ -119,7 +120,7 @@ public class AutomationComponent extends DefaultComponent {
 
     public static final String XP_EVENT_HANDLERS = "event-handlers";
 
-    protected AutomationService service;
+    protected OperationServiceImpl service;
 
     protected EventHandlerRegistry handlers;
 
@@ -242,9 +243,11 @@ public class AutomationComponent extends DefaultComponent {
             service.putOperation(opc.type, opc.replace, contributor.getName().toString());
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
-            service.putOperationChain(
+            /*service.putOperationChain(
                     occ.toOperationChain(contributor.getContext().getBundle()),
-                    occ.replace);
+                    occ.replace);*/
+            ChainTypeImpl chainType = new ChainTypeImpl(service,occ,contributor.getName().toString());
+            service.putOperation(chainType, occ.replace);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
             service.putTypeAdapter(tac.accept, tac.produce,
@@ -267,7 +270,7 @@ public class AutomationComponent extends DefaultComponent {
             service.removeOperation(((OperationContribution) contribution).type);
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
-            service.removeOperationChain(occ.id);
+            //service.removeOperationChain(occ.id);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
             service.removeTypeAdapter(tac.accept, tac.produce);

@@ -72,6 +72,22 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         consume = p.length == 0 ? Void.TYPE : p[0];
     }
 
+    public InvokableMethod(OperationType op, Method method) {
+        produce = method.getReturnType();
+        Class<?>[] p = method.getParameterTypes();
+        if (p.length > 1) {
+            throw new IllegalArgumentException(
+                    "Operation method must accept at most one argument: "
+                            + method);
+        }
+        this.op = op;
+        this.method = method;
+        if (priority > 0) {
+            priority += USER_PRIORITY;
+        }
+        consume = p.length == 0 ? Void.TYPE : p[0];
+    }
+
     public boolean isIterable() {
         return false;
     }

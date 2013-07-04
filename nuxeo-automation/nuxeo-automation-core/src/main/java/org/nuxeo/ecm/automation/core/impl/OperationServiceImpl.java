@@ -55,6 +55,7 @@ public class OperationServiceImpl implements AutomationService {
         adapters = new AdapterKeyedRegistry();
     }
 
+    @Deprecated
     public Object run(OperationContext ctx, String chainId)
             throws OperationException, InvalidChainException, Exception {
         try {
@@ -75,6 +76,7 @@ public class OperationServiceImpl implements AutomationService {
         }
     }
 
+    @Deprecated
     public Object run(OperationContext ctx, OperationChain chain)
             throws OperationException, InvalidChainException, Exception {
         try {
@@ -97,6 +99,7 @@ public class OperationServiceImpl implements AutomationService {
      * optimization)
      */
     @Override
+    @Deprecated
     public Object run(OperationContext ctx, String id,
             Map<String, Object> params) throws OperationException,
             InvalidChainException, Exception {
@@ -106,21 +109,71 @@ public class OperationServiceImpl implements AutomationService {
         return run(ctx, chain);
     }
 
+    // TODO take in account parameters from operations
+    @Override
+    public Object run(OperationContext ctx, OperationType operationType,
+            Map<String, Object> params) throws OperationException,
+            InvalidChainException, Exception {
+        List<String> ids = new ArrayList<String>();
+        if (operationType instanceof ChainTypeImpl) {
+            ids.add(operationType.getId());
+            for (OperationType operation : operationType.getOperations()) {
+                ids.add(operation.getId());
+            }
+        } else {
+            ids.add(operationType.getId());
+        }
+        return run(ctx, ids, params);
+    }
+
+    /**
+     * @since 5.7.2
+     */
+    public Object run(OperationContext ctx, List<String> ids, Map<String, Object> params)
+            throws OperationException, InvalidChainException, Exception {
+        try {
+            Object input = ctx.getInput();
+            Class<?> inputType = input == null ? Void.TYPE : input.getClass();
+            List<OperationParameters> operationParameters = new ArrayList<OperationParameters>();
+            // Fetch operation list
+            for (String id : ids) {
+                OperationParameters oparams = new OperationParameters(id);
+                operationParameters.add(oparams);
+            }
+            // Compile all operations
+            Object ret = compileChain(
+                    inputType,
+                    operationParameters.toArray(new OperationParameters[operationParameters.size()])).invoke(
+                    ctx);
+            if (ctx.getCoreSession() != null && ctx.isCommit()) {
+                // auto save session if any
+                ctx.getCoreSession().save();
+            }
+            return ret;
+        } finally {
+            ctx.dispose();
+        }
+    }
+
+    @Deprecated
     public synchronized void putOperationChain(OperationChain chain)
             throws OperationException {
         putOperationChain(chain, false);
     }
 
+    @Deprecated
     public synchronized void putOperationChain(OperationChain chain,
             boolean replace) throws OperationException {
         chains.addContribution(new ChainEntry(chain), replace);
     }
 
+    @Deprecated
     public synchronized void removeOperationChain(String id) {
         ChainEntry contrib = chains.getChainEntry(id);
         chains.removeContribution(contrib);
     }
 
+    @Deprecated
     public OperationChain getOperationChain(String id)
             throws OperationNotFoundException {
         ChainEntry chain = chains.lookup().get(id);
@@ -131,6 +184,7 @@ public class OperationServiceImpl implements AutomationService {
         return chain.chain;
     }
 
+    @Deprecated
     public List<OperationChain> getOperationChains() {
         List<OperationChain> result = new ArrayList<OperationChain>();
         Map<String, ChainEntry> ochains = chains.lookup();
@@ -140,6 +194,7 @@ public class OperationServiceImpl implements AutomationService {
         return result;
     }
 
+    @Deprecated
     public ChainEntry getChainEntry(String id) throws OperationException {
         ChainEntry chain = chains.lookup().get(id);
         if (chain == null) {
@@ -148,6 +203,7 @@ public class OperationServiceImpl implements AutomationService {
         return chain;
     }
 
+    @Deprecated
     public synchronized void flushCompiledChains() {
         chains.flushCompiledChains();
     }
@@ -169,7 +225,7 @@ public class OperationServiceImpl implements AutomationService {
         putOperation(op, replace);
     }
 
-    protected synchronized void putOperation(OperationTypeImpl op,
+    public synchronized void putOperation(OperationType op,
             boolean replace) throws OperationException {
         operations.addContribution(op, replace);
     }
@@ -196,6 +252,7 @@ public class OperationServiceImpl implements AutomationService {
         return op;
     }
 
+    @Deprecated
     public CompiledChain compileChain(Class<?> inputType, OperationChain chain)
             throws Exception, InvalidChainException {
         List<OperationParameters> ops = chain.getOperations();
@@ -204,10 +261,10 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     public CompiledChain compileChain(Class<?> inputType,
-            OperationParameters... chain) throws Exception,
+            OperationParameters... operations) throws Exception,
             InvalidChainException {
         return CompiledChainImpl.buildChain(this, inputType == null ? Void.TYPE
-                : inputType, chain);
+                : inputType, operations);
     }
 
     public void putTypeAdapter(Class<?> accept, Class<?> produce,

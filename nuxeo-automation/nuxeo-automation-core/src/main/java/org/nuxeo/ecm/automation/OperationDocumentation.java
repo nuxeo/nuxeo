@@ -15,6 +15,10 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XObject;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -98,19 +102,25 @@ public class OperationDocumentation implements
                 + description;
     }
 
+    @XObject("param")
     public static class Param implements Serializable, Comparable<Param> {
         private static final long serialVersionUID = 1L;
 
+        @XNode("@name")
         public String name;
 
+        @XNode("@type")
         public String type; // the data type
 
         public String widget; // the widget type
 
+        @XNodeList(value = "values", type = String[].class, componentType = String.class)
         public String[] values; // the default values
 
+        @XNode("@order")
         public int order;
 
+        @XNode("@required")
         public boolean isRequired;
 
         public String getName() {

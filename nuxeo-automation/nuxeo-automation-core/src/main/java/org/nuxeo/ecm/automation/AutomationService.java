@@ -107,6 +107,12 @@ public interface AutomationService {
             throws OperationException, InvalidChainException, Exception;
 
     /**
+     * @since 5.7.2
+     */
+    Object run(OperationContext ctx, OperationType operation, Map<String, Object> params)
+            throws OperationException, InvalidChainException, Exception;
+
+    /**
      * Registers a parametrized operation chain. This chain can be executed
      * later by calling <code>run</code> and passing the chain ID. If a chain
      * having the same ID exists an exception is thrown
