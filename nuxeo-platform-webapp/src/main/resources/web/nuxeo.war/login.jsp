@@ -54,7 +54,7 @@ if (selectedLanguage != null) { %>
 <!--
 body {
   font: normal 12px/18pt "Lucida Grande", Arial, sans-serif;
-  background: url("<%=context%>/img/login_bg.png") repeat scroll bottom left #cadfc0;
+  background: url("<%=context%>/img/login_bg.jpg") repeat scroll bottom left #cadfc0;
   color: #343434;
   margin: 0;
   text-align: center
@@ -111,8 +111,8 @@ body {
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
   margin-left: 10em;
-  filter: alpha(opacity = 80);
-  opacity: 0.8;
+  filter: alpha(opacity = 90);
+  opacity: 0.9;
   padding: 1.5em 0 1em;
   width: 22em
 }
