@@ -440,8 +440,9 @@ public interface GraphNode {
      * Evaluates transition conditions and returns the transitions that were
      * true.
      * <p>
-     * Transitions are evaluated and ordered by transition id order.
-     * Since @5.7.2 if the node is an exclusive node, only the first transition
+     * Transitions are evaluated in the order set on the node when the workflow
+     * was designed. Since @5.7.2 if the node has the property
+     * "executeOnlyFirstTransition" set to true, only the first transition
      * evaluated to true is returned
      *
      * @return the true transitions
