@@ -48,6 +48,9 @@ import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.runtime.api.Framework;
 
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
+
 /**
  * Handles global DAM actions (selected asset, asset creation, ...).
  *
@@ -130,5 +133,25 @@ public class DamActions implements Serializable {
 
     public AssetLibrary getAssetLibrary() {
         return Framework.getLocalService(DamService.class).getAssetLibrary();
+    }
+
+    /**
+     * Returns true if the user is viewing DAM
+     */
+    public boolean isOnDamView() {
+        if (FacesContext.getCurrentInstance() == null) {
+            return false;
+        }
+
+        UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
+        if (viewRoot != null) {
+            String viewId = viewRoot.getViewId();
+            // FIXME find a better way to update the current document only
+            // if we are on DAM
+            if ("/dam/assets.xhtml".equals(viewId) || "/dam/asset.xhtml".equals(viewId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -470,18 +470,8 @@ public class DamSearchActions implements Serializable {
         String currentContentViewName = getCurrentContentViewName();
         if (currentContentViewName != null
                 && currentContentViewName.equals(contentViewName)) {
-            if (FacesContext.getCurrentInstance() == null) {
-                return;
-            }
-
-            UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
-            if (viewRoot != null) {
-                String viewId = viewRoot.getViewId();
-                // FIXME find a better way to update the current document only
-                // if we are on DAM
-                if ("/dam/assets.xhtml".equals(viewId)) {
-                    updateCurrentDocument();
-                }
+            if (damActions.isOnDamView()) {
+                updateCurrentDocument();
             }
         }
     }

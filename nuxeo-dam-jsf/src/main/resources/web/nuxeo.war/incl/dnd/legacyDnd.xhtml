@@ -324,6 +324,9 @@ if (window.addEventListener)
 </div>
 <!--  waiter overlay  -->
 <div style="position: absolute; top: 0pt; left: 0pt; z-index: 9; width: 100%; opacity: 0.6; display: none;" class="overlay_waiter" id="overlay_modal"></div>
-<!--  don't remove or the plugin won't be activated -->
-<input id="Nx5PluginEnabled" type="hidden" value="true" />
+
+<c:if test="#{not damActions.isOnDamView()}">
+  <!--  don't remove or the plugin won't be activated -->
+  <input id="Nx5PluginEnabled" type="hidden" value="true" />
+</c:if>
 </div>
