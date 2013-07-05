@@ -22,6 +22,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
@@ -29,6 +30,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.dam.AssetLibrary;
+import org.nuxeo.dam.DamConstants;
 import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -39,6 +41,9 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.runtime.api.Framework;
@@ -56,6 +61,8 @@ public class DamActions implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String MAIN_TABS_DAM = "MAIN_TABS:dam";
+
+    public static final String MAIN_TABS_DOCUMENT_MANAGEMENT = "MAIN_TABS:documents";
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -99,8 +106,14 @@ public class DamActions implements Serializable {
     }
 
     public String viewInDM() throws ClientException {
-        webActions.setCurrentTabIds("MAIN_TABS:documents");
+        webActions.setCurrentTabIds(MAIN_TABS_DOCUMENT_MANAGEMENT);
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
+    }
+
+    public String viewInDAM() throws ClientException {
+        webActions.setCurrentTabIds(MAIN_TABS_DAM);
+        navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
+        return "asset";
     }
 
     public String updateCurrentDocument() throws ClientException {
