@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
@@ -196,27 +197,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <includes>
-            <include>**/RemoteAutomationClientTest.java</include>
-            <include>**/RemoteAutomationClientTCK.java</include>
-          </includes>
-          <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.properties
-            -Dnuxeo.log.dir=${build.directory}
-          </argLine>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <executions>
@@ -240,14 +220,36 @@
   <profiles>
     <profile>
       <id>withIT</id>
+      <!-- Comment activation when tests are not skipped NXBT-586
       <activation>
         <property>
-          <!-- Skip exec if skipTests is defined. Using NXBT-568 would be better. -->
+          &lt;!&ndash; Skip exec if skipTests is defined. Using NXBT-568 would be better. &ndash;&gt;
           <name>!skipTests</name>
         </property>
-      </activation>
+      </activation>-->
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/RemoteAutomationClientTest.java</include>
+                <include>**/RemoteAutomationClientTCK.java</include>
+              </includes>
+              <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.properties
+                -Dnuxeo.log.dir=${build.directory}
+              </argLine>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
             <groupId>org.nuxeo.build</groupId>
             <artifactId>nuxeo-distribution-tools</artifactId>
