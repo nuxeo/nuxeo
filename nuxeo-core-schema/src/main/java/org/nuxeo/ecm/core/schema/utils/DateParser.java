@@ -19,7 +19,7 @@ import java.util.TimeZone;
 
 /**
  * Parse / format ISO 8601 dates.
- * 
+ *
  * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
  *
  */
@@ -34,8 +34,8 @@ public class DateParser {
         int len = str.length();
         if (len == 0) { // empty string
             //TODO throw error?
-            return cal; 
-        }        
+            return cal;
+        }
         int i = 0;
         i = readYear(cal, str, i);
         i = readCharOpt('-', cal, str, i);
@@ -46,41 +46,42 @@ public class DateParser {
         i = readCharOpt('-', cal, str, i);
         if (i == -1) {
             return cal;
-        }        
+        }
         i = readDay(cal, str, i);
         i = readCharOpt('T', cal, str, i);
         if (i == -1) {
             return cal;
-        }        
+        }
         i = readHours(cal, str, i);
         i = readCharOpt(':', cal, str, i);
         if (i == -1) {
             return cal;
-        }        
+        }
         i = readMinutes(cal, str, i);
         if (isChar(':', str, i)) {
             i = readSeconds(cal, str, i+1);
             if (isChar('.', str, i)) {
                 i = readMilliseconds(cal, str, i+1);
-            }            
+            }
         }
         if (i > -1) {
             readTimeZone(cal, str, i);
         }
         return cal;
     }
-    
+
     public static Date parseW3CDateTime(String str) {
-    	if (str == null) {
-    		return null;
-    	}
+        if (str == null || "".equals(str)) {
+            return null;
+        }
         try {
             return parse(str).getTime();
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Failed to parse ISO 8601 date: "+str, e);
+            throw new IllegalArgumentException(
+                    "Failed to parse ISO 8601 date: " + str, e);
         }
     }
-    
+
     /**
      * 2011-10-23T12:00:00.00Z
      * @param date
@@ -108,12 +109,12 @@ public class DateParser {
             .append(pad(cal.get(Calendar.MILLISECOND) / 10))
             .append('Z').toString();
     }
-    
+
     private final static String pad(int i) {
-        return i < 10 ? "0".concat(String.valueOf(i)) : String.valueOf(i);    
+        return i < 10 ? "0".concat(String.valueOf(i)) : String.valueOf(i);
     }
 
-    
+
     private final static int readYear(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 4) {
             cal.set(Calendar.YEAR, Integer.parseInt(str.substring(off, off+4)));
@@ -121,7 +122,7 @@ public class DateParser {
         }
         throw new ParseException("Invalid year in date '"+str+"'", off);
     }
-    
+
     private final static int readMonth(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.MONTH, Integer.parseInt(str.substring(off, off+2))-1);
@@ -153,7 +154,7 @@ public class DateParser {
         }
         throw new ParseException("Invalid minutes in date '"+str+"'", off);
     }
-    
+
     private final static int readSeconds(Calendar cal, String str, int off) throws ParseException {
         if (str.length() >= off + 2) {
             cal.set(Calendar.SECOND, Integer.parseInt(str.substring(off, off+2)));
@@ -161,7 +162,7 @@ public class DateParser {
         }
         throw new ParseException("Invalid seconds in date '"+str+"'", off);
     }
-    
+
     /**
      * Return -1 if no more content to read or the offset of the expected TZ
      * @param cal
@@ -179,7 +180,7 @@ public class DateParser {
             }
         }
         String ms = e == -1 ? str.substring(off) : str.substring(off, e);
-        // need to normalize the ms fraction to 3 digits. 
+        // need to normalize the ms fraction to 3 digits.
         // If less than 3 digits right pad with 0
         // If more than 3 digits truncate to 3 digits.
         int mslen = ms.length();
@@ -203,11 +204,11 @@ public class DateParser {
         }
         return e;
     }
-    
+
     private static final boolean isChar(char c, String str, int off) {
         return str.length() > off && str.charAt(off) == c;
     }
-    
+
     private static final int readCharOpt(char c, Calendar cal, String str, int off) {
         if (str.length() > off) {
             if (str.charAt(off) == c) {
@@ -222,11 +223,11 @@ public class DateParser {
         if (len == off) {
             return false;
         }
-        char c = str.charAt(off); 
-        if (c == 'Z') {            
+        char c = str.charAt(off);
+        if (c == 'Z') {
             return true;
         }
-        off++;        
+        off++;
         boolean plus = false;
         if (c == '+') {
             plus = true;
@@ -245,7 +246,7 @@ public class DateParser {
         } else {
             throw new ParseException("Invalid TZ in \""+str+"\"", off);
         }
-        
+
         if (plus) {
             cal.add(Calendar.HOUR, -h);
             cal.add(Calendar.MINUTE, -m);
@@ -256,5 +257,5 @@ public class DateParser {
 
         return true;
     }
-    
+
 }
