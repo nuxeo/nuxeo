@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.core.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -114,7 +115,7 @@ public class OperationServiceImpl implements AutomationService {
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws OperationException,
             InvalidChainException, Exception {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new LinkedList<String>();
         if (operationType instanceof ChainTypeImpl) {
             ids.add(operationType.getId());
             for (OperationType operation : operationType.getOperations()) {
@@ -123,27 +124,21 @@ public class OperationServiceImpl implements AutomationService {
         } else {
             ids.add(operationType.getId());
         }
-        return run(ctx, ids, params);
+        return run(ctx, ids.toArray(new String[ids.size()]), params);
     }
 
     /**
      * @since 5.7.2
      */
-    public Object run(OperationContext ctx, List<String> ids, Map<String, Object> params)
+    public Object run(OperationContext ctx, String[] ids, Map<String, Object> params)
             throws OperationException, InvalidChainException, Exception {
         try {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-            List<OperationParameters> operationParameters = new ArrayList<OperationParameters>();
-            // Fetch operation list
-            for (String id : ids) {
-                OperationParameters oparams = new OperationParameters(id);
-                operationParameters.add(oparams);
-            }
             // Compile all operations
             Object ret = compileChain(
                     inputType,
-                    operationParameters.toArray(new OperationParameters[operationParameters.size()])).invoke(
+                    toParams(ids)).invoke(
                     ctx);
             if (ctx.getCoreSession() != null && ctx.isCommit()) {
                 // auto save session if any
@@ -154,6 +149,14 @@ public class OperationServiceImpl implements AutomationService {
             ctx.dispose();
         }
     }
+
+	public static OperationParameters[] toParams(String... ids) {
+		OperationParameters[] operationParameters = new OperationParameters[ids.length];
+		for (int i = 0; i < ids.length; ++i) {
+			operationParameters[i] = new OperationParameters(ids[i]);
+		}
+		return operationParameters;
+	}
 
     @Deprecated
     public synchronized void putOperationChain(OperationChain chain)

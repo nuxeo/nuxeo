@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -262,7 +263,7 @@ public class OperationTypeImpl implements OperationType {
         }
         doc.description = op.description();
         // load parameters information
-        doc.params = new ArrayList<OperationDocumentation.Param>();
+        List<OperationDocumentation.Param> paramsAccumulator = new LinkedList<OperationDocumentation.Param>();
         for (Field field : params.values()) {
             Param p = field.getAnnotation(Param.class);
             OperationDocumentation.Param param = new OperationDocumentation.Param();
@@ -275,9 +276,10 @@ public class OperationTypeImpl implements OperationType {
             param.order = p.order();
             param.values = p.values();
             param.isRequired = p.required();
-            doc.params.add(param);
+            paramsAccumulator.add(param);
         }
-        Collections.sort(doc.params);
+        Collections.sort(paramsAccumulator);
+        doc.params = paramsAccumulator.toArray(new OperationDocumentation.Param[paramsAccumulator.size()]);
         // load signature
         ArrayList<String> result = new ArrayList<String>(methods.size() * 2);
         Collection<String> collectedSigs = new HashSet<String>();

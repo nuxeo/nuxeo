@@ -45,7 +45,7 @@ public class OperationDocumentation implements
 
     public String description;
 
-    public List<Param> params;
+    public Param[] params;
 
     // optional URL indicating the relative path (relative to the automation
     // service home)
@@ -91,7 +91,7 @@ public class OperationDocumentation implements
         return requires;
     }
 
-    public List<Param> getParams() {
+    public Param[] getParams() {
         return params;
     }
 

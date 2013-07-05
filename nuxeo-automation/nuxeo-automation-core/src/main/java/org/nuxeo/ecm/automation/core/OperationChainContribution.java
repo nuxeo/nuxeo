@@ -60,16 +60,16 @@ public class OperationChainContribution {
     @XNode("description")
     protected String description;
 
-    @XNodeList(value = "operation", type = ArrayList.class, componentType = Operation.class)
-    protected ArrayList<Operation> ops;
+    @XNodeList(value = "operation", type = Operation[].class, componentType = Operation.class)
+    protected Operation[] ops = new Operation[0];
 
     @XNode("public")
     protected boolean isPublic = true;
 
-    @XNodeList(value = "param", type = ArrayList.class, componentType = OperationDocumentation.Param.class)
-    protected List<OperationDocumentation.Param> params = Collections.emptyList();
+    @XNodeList(value = "param", type = OperationDocumentation.Param[].class, componentType = OperationDocumentation.Param.class)
+    protected OperationDocumentation.Param[] params = new OperationDocumentation.Param[0];
 
-    public List<OperationDocumentation.Param> getParams() {
+    public OperationDocumentation.Param[] getParams() {
         return params;
     }
 
@@ -178,6 +178,15 @@ public class OperationChainContribution {
 
         @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
         protected ArrayList<Param> params;
+
+		public String getId() {
+			return id;
+		}
+
+		public ArrayList<Param> getParams() {
+			return params;
+		}
+        
     }
 
     @XObject("param")
@@ -198,7 +207,27 @@ public class OperationChainContribution {
         protected Map<String, String> map;
     }
 
-    public ArrayList<Operation> getOps() {
+    public Operation[] getOps() {
         return ops;
     }
+
+	public String getLabel() {
+		return id; 
+	}
+
+	public String getRequires() {
+		return null;
+	}
+
+	public String getCategory() {
+		return "chain";
+	}
+
+	public String getSince() {
+		return null;
+	}
+
+	public String getDescription() {
+		return "";
+	}
 }
