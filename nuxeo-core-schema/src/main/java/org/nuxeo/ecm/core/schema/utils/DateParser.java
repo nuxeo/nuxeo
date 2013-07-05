@@ -71,7 +71,7 @@ public class DateParser {
     }
 
     public static Date parseW3CDateTime(String str) {
-        if (str == null) {
+        if (str == null || "".equals(str)) {
             return null;
         }
         try {
