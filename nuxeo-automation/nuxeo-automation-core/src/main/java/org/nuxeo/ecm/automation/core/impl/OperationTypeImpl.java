@@ -195,10 +195,6 @@ public class OperationTypeImpl implements OperationType {
             }
             if (obj == null) {
                 if (entry.getValue().getAnnotation(Param.class).required()) {
-                    if (ctx.containsKey(entry.getKey())) {
-                        entry.setValue((Field) ctx.get(entry.getKey()));
-                        continue;
-                    }
                     throw new OperationException(
                             "Failed to inject parameter '"
                                     + entry.getKey()
@@ -219,10 +215,6 @@ public class OperationTypeImpl implements OperationType {
             Object obj = ctx.getAdapter(field.getType());
             field.set(target, obj);
         }
-    }
-
-    public List<InvokableMethod> getMethods() {
-        return methods;
     }
 
     public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
@@ -328,19 +320,9 @@ public class OperationTypeImpl implements OperationType {
         return contributingComponent;
     }
 
-    /**
-     * A 'simple' operation cannot contain multiple operations
-     */
     @Override
-    public void addOperations(List<OperationType> operationTypeList) {
-        throw new UnsupportedOperationException();
+    public Map<String, Field> getParameters() {
+        return params;
     }
 
-    /**
-     * A 'simple' operation cannot contain multiple operations
-     */
-    @Override
-    public List<OperationType> getOperations() {
-        return Collections.emptyList();
-    }
 }

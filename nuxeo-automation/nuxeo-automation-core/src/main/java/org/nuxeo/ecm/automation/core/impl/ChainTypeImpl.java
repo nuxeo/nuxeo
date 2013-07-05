@@ -12,10 +12,8 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,15 +23,10 @@ import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.automation.core.OperationChainContribution.Operation;
-import org.nuxeo.ecm.automation.core.util.BlobList;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentRefList;
+
+import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -86,27 +79,6 @@ public class ChainTypeImpl implements OperationType {
         this.id = chainId;
     }
 
-    static class Match implements Comparable<Match> {
-        protected InvokableMethod method;
-
-        int priority;
-
-        Match(InvokableMethod method, int priority) {
-            this.method = method;
-            this.priority = priority;
-        }
-
-        @Override
-        public int compareTo(Match o) {
-            return o.priority - priority;
-        }
-
-        @Override
-        public String toString() {
-            return "Match(" + method + ", " + priority + ")";
-        }
-    }
-
     public AutomationService getService() {
         return service;
     }
@@ -124,37 +96,22 @@ public class ChainTypeImpl implements OperationType {
         Operation[] ops = contribution.getOps();
         OperationParameters[] params = new OperationParameters[ops.length];
         for (int i = 0; i < params.length; ++i) {
-            params[i] = new OperationParameters(ops[i].getId());
+            Map<String, Object> operationParameters = new HashMap<String, Object>();
+            for (OperationChainContribution.Param parameter : ops[i].getParams()) {
+                if (T_PROPERTIES.equals(parameter.getType())) {
+                    operationParameters.put(parameter.getName(),
+                            parameter.getMap());
+                } else {
+                    operationParameters.put(parameter.getName(),
+                            parameter.getValue());
+                }
+            }
+            params[i] = new OperationParameters(ops[i].getId(),
+                    operationParameters);
         }
+        ctx.putAll(args);
         return CompiledChainImpl.buildChain(service, ctx.getInput().getClass(),
                 params);
-    }
-
-    public List<InvokableMethod> getMethods() {
-        return methods;
-    }
-
-    public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
-        List<Match> result = new ArrayList<Match>();
-        for (InvokableMethod m : methods) {
-            int priority = m.inputMatch(in);
-            if (priority > 0) {
-                result.add(new Match(m, priority));
-            }
-        }
-        int size = result.size();
-        if (size == 0) {
-            return null;
-        }
-        if (size == 1) {
-            return new InvokableMethod[] { result.get(0).method };
-        }
-        Collections.sort(result);
-        InvokableMethod[] ar = new InvokableMethod[result.size()];
-        for (int i = 0; i < ar.length; i++) {
-            ar[i] = result.get(i).method;
-        }
-        return ar;
     }
 
     public OperationDocumentation getDocumentation() {
@@ -175,43 +132,17 @@ public class ChainTypeImpl implements OperationType {
         return doc;
     }
 
-    protected String getParamDocumentationType(Class<?> type) {
-        return getParamDocumentationType(type, false);
-    }
-
-    protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
-        String t;
-        if (DocumentModel.class.isAssignableFrom(type)
-                || DocumentRef.class.isAssignableFrom(type)) {
-            t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
-        } else if (DocumentModelList.class.isAssignableFrom(type)
-                || DocumentRefList.class.isAssignableFrom(type)) {
-            t = Constants.T_DOCUMENTS;
-        } else if (BlobList.class.isAssignableFrom(type)) {
-            t = Constants.T_BLOBS;
-        } else if (Blob.class.isAssignableFrom(type)) {
-            t = isIterable ? Constants.T_BLOBS : Constants.T_BLOB;
-        } else if (URL.class.isAssignableFrom(type)) {
-            t = Constants.T_RESOURCE;
-        } else if (Calendar.class.isAssignableFrom(type)) {
-            t = Constants.T_DATE;
-        } else {
-            t = type.getSimpleName().toLowerCase();
-        }
-        return t;
-    }
-
     public String getContributingComponent() {
         return contributingComponent;
     }
 
     @Override
+    public Map<String, Field> getParameters() {
+        return null;
+    }
+
     public void addOperations(List<OperationType> operationList) {
         this.operationsList = operationList;
     }
 
-    @Override
-    public List<OperationType> getOperations() {
-        return operationsList;
-    }
 }

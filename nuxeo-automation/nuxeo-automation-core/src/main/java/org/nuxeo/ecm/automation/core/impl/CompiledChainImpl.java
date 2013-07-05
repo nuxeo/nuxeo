@@ -41,8 +41,6 @@ class CompiledChainImpl implements CompiledChain {
 
     protected Map<String, Object> compileParameters; // argument references
 
-    protected Map<String, Object> runtimeParameters; // argument references
-
     protected InvokableMethod method;
 
     protected CompiledChainImpl next;
@@ -57,13 +55,7 @@ class CompiledChainImpl implements CompiledChain {
             parent.next = this;
         }
         this.op = op;
-        this.runtimeParameters = new HashMap<String, Object>();
-        this.compileParameters = new HashMap<String, Object>();
-        if (op.getType().equals(CompiledChainImpl.class)) {
-            this.runtimeParameters = args;
-        } else {
-            this.compileParameters = args;
-        }
+        this.compileParameters = args;
     }
 
     public final InvokableMethod method() {
@@ -79,10 +71,7 @@ class CompiledChainImpl implements CompiledChain {
      * path is computed using a backtracking algorithm.
      */
     public boolean initializePath(Class<?> in) {
-        if(op instanceof ChainTypeImpl){
-            return true;
-        }
-        InvokableMethod[] methods =  op.getMethodsMatchingInput(in);
+        InvokableMethod[] methods =  ((OperationTypeImpl)op).getMethodsMatchingInput(in);
         if (methods == null) {
             return false;
         }

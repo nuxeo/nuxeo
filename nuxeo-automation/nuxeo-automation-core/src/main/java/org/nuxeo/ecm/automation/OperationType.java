@@ -11,10 +11,8 @@
  */
 package org.nuxeo.ecm.automation;
 
-import java.util.List;
+import java.lang.reflect.Field;
 import java.util.Map;
-
-import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
  * Describe an operation class. Each registered operation will be stored in the
@@ -48,12 +46,5 @@ public interface OperationType {
     /**
      * @since 5.7.2
      */
-    void addOperations(List<OperationType> operationTypeList);
-
-    /**
-     * @since 5.7.2
-     */
-    List<OperationType> getOperations();
-
-    InvokableMethod[] getMethodsMatchingInput(Class<?> in);
+    Map<String,Field> getParameters();
 }

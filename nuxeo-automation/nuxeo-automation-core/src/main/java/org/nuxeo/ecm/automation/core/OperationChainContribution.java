@@ -202,12 +202,28 @@ public class OperationChainContribution {
         @XContent
         protected String value;
 
-        //Optional map for properties type values
-        @XNodeMap(value="property", key="@key", type=HashMap.class, componentType=String.class, nullByDefault=true)
+        // Optional map for properties type values
+        @XNodeMap(value = "property", key = "@key", type = HashMap.class, componentType = String.class, nullByDefault = true)
         protected Map<String, String> map;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public Map<String, String> getMap() {
+            return map;
+        }
     }
 
-    public Operation[] getOps() {
+  public Operation[] getOps() {
         return ops;
     }
 

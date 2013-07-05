@@ -27,6 +27,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  * Registry for chain entries
  *
  * @since 5.6
+ * @Deprecated
  */
 public class ChainEntryRegistry extends
         ContributionFragmentRegistry<ChainEntry> {
