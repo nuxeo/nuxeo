@@ -62,8 +62,8 @@ public class JSONContentViewState {
      * Returns the String serialization in JSON format of a content view state.
      *
      * @param state the state to serialize
-     * @param encode if true, the resulting String will be zipped and encoded
-     *            in Base-64 format.
+     * @param encode if true, the resulting String will be zipped and encoded in
+     *            Base-64 format.
      * @throws ClientException
      * @throws UnsupportedEncodingException
      */
@@ -157,30 +157,32 @@ public class JSONContentViewState {
         ContentViewState state = new ContentViewStateImpl();
 
         state.setContentViewName(jsonObject.getString("contentViewName"));
-        state.setPageSize(new Long(jsonObject.optLong("pageSize", -1)));
-        state.setCurrentPage(new Long(jsonObject.optLong("currentPage", -1)));
+        state.setPageSize(jsonObject.optLong("pageSize", -1));
+        state.setCurrentPage(jsonObject.optLong("currentPage", -1));
 
         JSONArray jsonQueryParams = jsonObject.getJSONArray("queryParameters");
-        List<Object> queryParams = new ArrayList<Object>();
-        if (jsonQueryParams != null) {
+
+        if (jsonQueryParams != null && !jsonQueryParams.isEmpty()) {
+            List<Object> queryParams = new ArrayList<Object>();
             for (Object item : jsonQueryParams) {
                 queryParams.add(item);
             }
+            state.setQueryParameters(queryParams.toArray(new Object[queryParams.size()]));
         }
-        state.setQueryParameters(queryParams.toArray(new Object[] {}));
 
         JSONObject jsonDoc = jsonObject.getJSONObject("searchDocument");
         DocumentModel searchDoc = getDocumentModelFromJSON(jsonDoc);
         state.setSearchDocumentModel(searchDoc);
 
         JSONArray jsonSortInfos = jsonObject.getJSONArray("sortInfos");
-        List<SortInfo> sortInfos = new ArrayList<SortInfo>();
-        if (jsonSortInfos != null) {
+
+        if (jsonSortInfos != null && !jsonSortInfos.isEmpty()) {
+            List<SortInfo> sortInfos = new ArrayList<SortInfo>();
             for (Object item : jsonSortInfos) {
                 sortInfos.add(getSortInfoFromJSON((JSONObject) item));
             }
+            state.setSortInfos(sortInfos);
         }
-        state.setSortInfos(sortInfos);
 
         state.setResultLayout(getContentViewLayoutFromJSON(jsonObject.getJSONObject("resultLayout")));
 
@@ -288,8 +290,8 @@ public class JSONContentViewState {
         } else if (o instanceof JSONArray) {
             JSONArray jsonArray = (JSONArray) o;
             ArrayList<Serializable> list = new ArrayList<Serializable>();
-            for (int i = 0; i < jsonArray.size(); i++) {
-                list.add(getDocumentPropertyValue(jsonArray.get(i)));
+            for (Object aJsonArray : jsonArray) {
+                list.add(getDocumentPropertyValue(aJsonArray));
             }
             return list;
         } else if (o instanceof JSONObject) {

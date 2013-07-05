@@ -332,10 +332,11 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         contentView.getPageProvider();
         contentView.setCurrentResultLayoutColumns(Arrays.asList(new String[] { "column_1" }));
         state = service.saveContentView(contentView);
-        checkContentViewStateWithSearchDoc(state);
+        checkContentViewStateWithSearchDoc(state, true, true);
     }
 
-    protected void checkContentViewStateWithSearchDoc(ContentViewState state)
+    protected void checkContentViewStateWithSearchDoc(ContentViewState state,
+            boolean withQueryParams, boolean withSortInfos)
             throws ClientException {
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT",
@@ -344,8 +345,12 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals(new Long(2), state.getPageSize());
 
         Object[] queryParams = state.getQueryParameters();
-        assertNotNull(queryParams);
-        assertEquals(0, queryParams.length);
+        if (withQueryParams) {
+            assertNotNull(queryParams);
+            assertEquals(0, queryParams.length);
+        } else {
+            assertNull(queryParams);
+        }
 
         List<String> resultColumns = state.getResultColumns();
         assertNotNull(resultColumns);
@@ -359,10 +364,14 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertNull(searchDoc.getPropertyValue("dc:description"));
 
         List<SortInfo> sortInfos = state.getSortInfos();
-        assertNotNull(sortInfos);
-        assertEquals(1, sortInfos.size());
-        assertEquals("dc:title", sortInfos.get(0).getSortColumn());
-        assertTrue(sortInfos.get(0).getSortAscending());
+        if (withSortInfos) {
+            assertNotNull(sortInfos);
+            assertEquals(1, sortInfos.size());
+            assertEquals("dc:title", sortInfos.get(0).getSortColumn());
+            assertTrue(sortInfos.get(0).getSortAscending());
+        } else {
+            assertNull(sortInfos);
+        }
     }
 
     @Test
@@ -427,8 +436,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     }
 
     /**
-     * Non regression test for NXP-11419, showing an issue when restoring with
-     * a search doc and a current page > 0
+     * Non regression test for NXP-11419, showing an issue when restoring with a
+     * search doc and a current page > 0
      */
     @Test
     public void testRestoreContentViewWithSearchDocAndCurrentPage()
@@ -514,12 +523,12 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
-        checkContentViewStateWithSearchDoc(state);
+        checkContentViewStateWithSearchDoc(state, false, true);
 
         String encodedJson = "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuYfBMbcpHWqlsU3dBgc0VVFqRkSaFCfRVKr%2BdxwqdnPej8dWJtDeRXTx1eBtp3oEAfLcNJvdqS338vySB1nV25Kl9q0%2BVe1xs25kdXehgEFd8Wh%2BuPtUgE5EzDuwBmJVwHdCGg%2BKmB2RAoj3SwEBFenP0uvUcxbEBHEc8u5nYzETyQ9I0WDIXqdFNNFmfyk%2BfOF489QFmGeGeYq1%2B%2FCZPf29pLepdxy%2FN5fUOmh0nXFXEJESznwJYUg2btXoE9%2FhkrX%2F2gLJUP6jPLaPcJl%2FAbtiVTcxAQAA";
 
         state = JSONContentViewState.fromJSON(encodedJson, true);
-        checkContentViewStateWithSearchDoc(state);
+        checkContentViewStateWithSearchDoc(state, false, true);
     }
 
 }
