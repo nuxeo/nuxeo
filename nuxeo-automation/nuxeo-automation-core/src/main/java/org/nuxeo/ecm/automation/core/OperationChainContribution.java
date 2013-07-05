@@ -179,14 +179,14 @@ public class OperationChainContribution {
         @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
         protected ArrayList<Param> params;
 
-		public String getId() {
-			return id;
-		}
+        public String getId() {
+            return id;
+        }
 
-		public ArrayList<Param> getParams() {
-			return params;
-		}
-        
+        public ArrayList<Param> getParams() {
+            return params;
+        }
+
     }
 
     @XObject("param")
@@ -211,23 +211,23 @@ public class OperationChainContribution {
         return ops;
     }
 
-	public String getLabel() {
-		return id; 
-	}
+    public String getLabel() {
+        return id;
+    }
 
-	public String getRequires() {
-		return null;
-	}
+    public String getRequires() {
+        return null;
+    }
 
-	public String getCategory() {
-		return "chain";
-	}
+    public String getCategory() {
+        return "chain";
+    }
 
-	public String getSince() {
-		return null;
-	}
+    public String getSince() {
+        return null;
+    }
 
-	public String getDescription() {
-		return "";
-	}
+    public String getDescription() {
+        return "";
+    }
 }

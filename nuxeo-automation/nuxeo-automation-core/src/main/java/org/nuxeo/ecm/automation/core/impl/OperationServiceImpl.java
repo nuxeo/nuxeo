@@ -150,13 +150,13 @@ public class OperationServiceImpl implements AutomationService {
         }
     }
 
-	public static OperationParameters[] toParams(String... ids) {
-		OperationParameters[] operationParameters = new OperationParameters[ids.length];
-		for (int i = 0; i < ids.length; ++i) {
-			operationParameters[i] = new OperationParameters(ids[i]);
-		}
-		return operationParameters;
-	}
+    public static OperationParameters[] toParams(String... ids) {
+        OperationParameters[] operationParameters = new OperationParameters[ids.length];
+        for (int i = 0; i < ids.length; ++i) {
+            operationParameters[i] = new OperationParameters(ids[i]);
+        }
+        return operationParameters;
+    }
 
     @Deprecated
     public synchronized void putOperationChain(OperationChain chain)

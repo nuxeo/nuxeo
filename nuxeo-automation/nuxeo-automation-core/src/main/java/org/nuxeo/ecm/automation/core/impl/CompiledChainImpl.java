@@ -12,7 +12,6 @@
 package org.nuxeo.ecm.automation.core.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -142,8 +141,8 @@ class CompiledChainImpl implements CompiledChain {
     public static CompiledChainImpl buildChain(AutomationService service,
             Class<?> in, OperationParameters[] operations)
             throws Exception {
-    	
-		// TODO PUT A CACHE of Compiled Chain By Input Type
+
+        // TODO PUT A CACHE of Compiled Chain By Input Type
 
         if (operations.length == 0) {
             throw new InvalidChainException("Null operation chain.");
