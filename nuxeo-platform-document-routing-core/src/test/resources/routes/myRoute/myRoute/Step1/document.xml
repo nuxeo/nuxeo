@@ -49,6 +49,7 @@
     <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
     <rnode:taskDocType><![CDATA[MyTaskDoc]]></rnode:taskDocType>
     <rnode:taskNotificationTemplate/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
     <rnode:transitions>
       <transition>
         <chain><![CDATA[]]></chain>

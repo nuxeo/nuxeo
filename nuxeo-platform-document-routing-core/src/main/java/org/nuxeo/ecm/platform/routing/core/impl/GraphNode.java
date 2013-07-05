@@ -116,7 +116,7 @@ public interface GraphNode {
     String PROP_TASK_DUE_DATE_EXPR = "rnode:taskDueDateExpr";
 
     // @since 5.7.2
-    String PROP_EXCLUSIVE = "rnode:exclusive";
+    String PROP_EXECUTE_ONLY_FIRST_TRANSITION= "rnode:executeOnlyFirstTransition";
 
     /**
      * The internal state of a node.
@@ -520,5 +520,5 @@ public interface GraphNode {
      *
      * @since 5.7.2
      */
-    boolean isExclusive();
+    boolean executeOnlyFirstTransition();
 }

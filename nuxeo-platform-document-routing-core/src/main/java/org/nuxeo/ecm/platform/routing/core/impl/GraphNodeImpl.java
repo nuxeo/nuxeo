@@ -532,7 +532,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 t.setResult(bool);
                 if (bool) {
                     trueTrans.add(t);
-                    if (isExclusive()) {
+                    if (executeOnlyFirstTransition()) {
                         // if node is exclusive, no need to evaluate others
                         break;
                     }
@@ -754,7 +754,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public boolean isExclusive() {
-        return getBoolean(PROP_EXCLUSIVE);
+    public boolean executeOnlyFirstTransition() {
+        return getBoolean(PROP_EXECUTE_ONLY_FIRST_TRANSITION);
     }
 }

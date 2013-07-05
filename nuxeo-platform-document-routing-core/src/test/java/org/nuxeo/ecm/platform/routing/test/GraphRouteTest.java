@@ -1459,7 +1459,8 @@ public class GraphRouteTest {
     public void testRouteWithExclusiveNode() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        node1.setPropertyValue(GraphNode.PROP_EXCLUSIVE, true);
+        node1.setPropertyValue(GraphNode.PROP_EXECUTE_ONLY_FIRST_TRANSITION,
+                true);
         setTransitions(node1,
                 transition("trans12", "node2", "true", "testchain_title1"),
                 transition("trans13", "node3", "true", "testchain_title2"));

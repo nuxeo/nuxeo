@@ -47,6 +47,7 @@
     <rnode:startDate/>
     <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
     <rnode:taskNotificationTemplate/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
     <rnode:transitions/>
     <rnode:nodeId><![CDATA[Task6cee2342]]></rnode:nodeId>
     <rnode:taskDirective/>
