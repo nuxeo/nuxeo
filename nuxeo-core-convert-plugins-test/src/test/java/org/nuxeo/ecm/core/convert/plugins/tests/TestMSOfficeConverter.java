@@ -63,6 +63,9 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
         doTestTextConverter(
                 "application/rtf",
                 "rtf2text", "hello.rtf");
+        doTestTextConverter(
+                "text/rtf",
+                "rtf2text", "hello.rtf");
     }
 
     @Test
