@@ -54,7 +54,7 @@ public class BusinessService<T> {
      * @return the pojo returned by the server
      */
     @SuppressWarnings("unchecked")
-	public T create(T o, String name, String parentPath) throws Exception {
+    public T create(T o, String name, String parentPath) throws Exception {
         checkMarshaller(o);
         return (T) session.newRequest("Business.BusinessCreateOperation").setInput(
                 o).set("name", name).set("parentPath", parentPath).execute();
@@ -64,12 +64,22 @@ public class BusinessService<T> {
      * This method is calling @{BusinessUpdateOperation}
      *
      * @param o the object to send (pojo client side)
-     * @param id the id of the NX document
      * @return the pojo returned by the server
      */
-    public T update(T o, String id) throws Exception {
+    public T update(T o) throws Exception {
         checkMarshaller(o);
         return (T) session.newRequest("Business.BusinessUpdateOperation").setInput(
-                o).set("id", id).execute();
+                o).execute();
+    }
+
+    /**
+     * This method is calling @{BusinessFetchOperation}
+     *
+     * @param o the object to send (pojo client side)
+     * @return the pojo returned by the server
+     */
+    public T fetch(T o) throws Exception {
+        return (T) session.newRequest("Business.BusinessFetchOperation").setInput(
+                o).execute();
     }
 }
