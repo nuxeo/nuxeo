@@ -20,7 +20,7 @@ import java.util.concurrent.SynchronousQueue;
 
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.CachingRowMapper;
+import org.nuxeo.ecm.core.storage.sql.SoftRefCachingRowMapper;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Repository;
@@ -142,8 +142,10 @@ public class MapperInvoker extends Thread {
         if (methodName == INVOKER_INIT) { // == is ok
             session = repository.getConnection();
             mapper = session.getMapper();
-            // replace event queue with the client-repo specific one
-            ((CachingRowMapper) mapper).setEventQueue(eventQueue);
+            if (mapper instanceof SoftRefCachingRowMapper) {
+                // replace event queue with the client-repo specific one
+                ((SoftRefCachingRowMapper) mapper).setEventQueue(eventQueue);
+            }
             return null;
         } else if (methodName == INVOKER_CLOSE) { // == is ok
             session.close();

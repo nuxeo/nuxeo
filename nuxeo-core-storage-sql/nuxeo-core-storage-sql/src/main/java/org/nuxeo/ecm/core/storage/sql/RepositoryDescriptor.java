@@ -124,6 +124,15 @@ public class RepositoryDescriptor {
     @XNode("backendClass")
     public Class<? extends RepositoryBackend> backendClass;
 
+    @XNode("cachingMapper@class")
+    public Class<? extends CachingMapper> cachingMapperClass;
+
+    @XNode("cachingMapper@enabled")
+    public boolean cachingMapperEnabled = true;
+
+    @XNodeMap(value = "cachingMapper/property", key = "@name", type = HashMap.class, componentType = String.class)
+    public Map<String, String> cachingMapperProperties = new HashMap<String, String>();
+
     @XNode("noDDL")
     public boolean noDDL = false;
 
@@ -193,6 +202,8 @@ public class RepositoryDescriptor {
         listen = other.listen;
         connect = other.connect;
         backendClass = other.backendClass;
+        cachingMapperClass = other.cachingMapperClass;
+        cachingMapperEnabled = other.cachingMapperEnabled;
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         noDDL = other.noDDL;
