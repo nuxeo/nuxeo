@@ -805,10 +805,13 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 note.getTitle()).set("parentPath", "/").execute();
         assertNotNull(note);
         // Test for pojo <-> adapter automation update
+        // Fetching the business adapter model
+        note = (BusinessBean) session.newRequest(
+                "Business.BusinessFetchOperation").setInput(note).execute();
+        assertNotNull(note.getId());
         note.setTitle("Update");
         note = (BusinessBean) session.newRequest(
-                "Business.BusinessUpdateOperation").setInput(note).set("id",
-                note.getId()).execute();
+                "Business.BusinessUpdateOperation").setInput(note).execute();
         assertEquals("Update", note.getTitle());
     }
 
@@ -828,9 +831,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Marshaller for bean 'note' is registered on the fly
         note = businessService.create(note, note.getTitle(), "/");
         assertNotNull(note);
+        // Fetching the business adapter model
+        note = businessService.fetch(note);
+        assertNotNull(note.getId());
         // Test for pojo <-> adapter automation update
         note.setTitle("Update");
-        note = businessService.update(note, note.getId());
+        note = businessService.update(note);
         assertEquals("Update", note.getTitle());
     }
 }
