@@ -72,6 +72,9 @@ public abstract class BusinessAdapter {
     }
 
     public String getId() {
+        if (doc.getId() == null) {
+            return id;
+        }
         return doc.getId();
     }
 

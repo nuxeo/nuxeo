@@ -43,6 +43,7 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.PostBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.SetBlobFileName;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation;
+import org.nuxeo.ecm.automation.core.operations.business.BusinessFetchOperation;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessUpdateOperation;
 import org.nuxeo.ecm.automation.core.operations.document.AddEntryToMultiValuedProperty;
 import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
@@ -218,6 +219,7 @@ public class AutomationComponent extends DefaultComponent {
         // Business Operations
         service.putOperation(BusinessCreateOperation.class);
         service.putOperation(BusinessUpdateOperation.class);
+        service.putOperation(BusinessFetchOperation.class);
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);
