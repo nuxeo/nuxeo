@@ -159,6 +159,7 @@ public class TestConverters extends SimpleConverterTest {
                 "hello.odp");
         doTestAny2TextConverter("application/pdf", "any2text", "hello.pdf");
         doTestAny2TextConverter("application/rtf", "any2text", "hello.rtf");
+        doTestAny2TextConverter("text/rtf", "any2text", "hello.rtf");
 
     }
 

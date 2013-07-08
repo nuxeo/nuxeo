@@ -45,6 +45,7 @@
 
     <converter name="rtf2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.RTF2TextConverter">
       <sourceMimeType>application/rtf</sourceMimeType>
+      <sourceMimeType>text/rtf</sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
     </converter>
 
