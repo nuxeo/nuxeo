@@ -478,6 +478,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      */
     protected final DataModel loadDataModel(String schema)
             throws ClientException {
+
+        if(log.isTraceEnabled()) {
+            log.trace("lazy loading of schema " + schema + " for doc " + this.toString());
+        }
+
         if (!schemas.contains(schema)) {
             return null;
         }
