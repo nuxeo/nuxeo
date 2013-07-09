@@ -152,6 +152,9 @@ public class Constants {
     // key for setting workflow node variables on the operation context
     public static final String VAR_WORKFLOW_NODE = "NodeVariables";
 
+    // key for setting chain runtime variables on the operation context
+    public static final String VAR_RUNTIME_CHAIN = "RuntimeParameters";
+
     private Constants() {
     }
 

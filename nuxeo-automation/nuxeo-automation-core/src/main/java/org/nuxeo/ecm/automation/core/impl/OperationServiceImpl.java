@@ -8,13 +8,14 @@
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier
+ *     slacoin
  */
 package org.nuxeo.ecm.automation.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.TypeAdapter;
+import org.nuxeo.ecm.automation.core.Constants;
 
 /**
  * The operation registry is thread safe and optimized for modifications at
@@ -63,43 +65,23 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    @Deprecated
     public Object run(OperationContext ctx, String chainId)
             throws Exception {
-        try {
-            Object input = ctx.getInput();
-            Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-            ChainEntry chain = getChainEntry(chainId);
-            if (chain.cchain == null) {
-                chain.cchain = compileChain(inputType, chain.chain);
-            }
-            Object ret = chain.cchain.invoke(ctx);
-            if (ctx.getCoreSession() != null && ctx.isCommit()) {
-                // auto save session if any
-                ctx.getCoreSession().save();
-            }
-            return ret;
-        } finally {
-            ctx.dispose();
-        }
+        ChainTypeImpl chain = (ChainTypeImpl) getOperation(chainId);
+        return run(ctx, chain, chain.getChainParameters());
     }
 
     @Override
-    @Deprecated
     public Object run(OperationContext ctx, OperationChain chain)
             throws Exception {
-        try {
-            Object input = ctx.getInput();
-            Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-            Object ret = compileChain(inputType, chain).invoke(ctx);
-            if (ctx.getCoreSession() != null && ctx.isCommit()) {
-                // auto save session if any
-                ctx.getCoreSession().save();
-            }
-            return ret;
-        } finally {
-            ctx.dispose();
-        }
+        ChainTypeImpl chainType = new ChainTypeImpl(this, chain);
+        return run(ctx, chainType, Collections.<String, Object> emptyMap());
+    }
+
+    public Object run(OperationContext ctx, OperationChain chain, Map<String,Object> runtimeParameters)
+            throws Exception {
+        ChainTypeImpl chainType = new ChainTypeImpl(this, chain);
+        return run(ctx, chainType, runtimeParameters);
     }
 
     /**
@@ -108,10 +90,10 @@ public class OperationServiceImpl implements AutomationService {
      * optimization)
      */
     @Override
-    public Object run(OperationContext ctx, String id,
-            Map<String, Object> params) throws Exception {
-        OperationType type = getOperation(id);
-        return run(ctx, type, params);
+    public Object run(OperationContext ctx, String operationId,
+            Map<String, Object> runtimeParameters) throws Exception {
+        OperationType type = getOperation(operationId);
+        return run(ctx, type, runtimeParameters);
     }
 
     /**
@@ -123,10 +105,16 @@ public class OperationServiceImpl implements AutomationService {
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws Exception {
         CompiledChainImpl chain;
+        // Put Chain parameters into the context
+        if (!params.isEmpty()) {
+            ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
+        }
+        Object input = ctx.getInput();
+        Class<?> inputType = input == null ? Void.TYPE : input.getClass();
         if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
             chain = (CompiledChainImpl) operationType.newInstance(ctx, params);
         } else {
-            chain = CompiledChainImpl.buildChain(ctx.getInput().getClass(),
+            chain = CompiledChainImpl.buildChain(inputType,
                     toParams(operationType.getId()));
         }
         return chain.invoke(ctx);
@@ -141,28 +129,24 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    @Deprecated
     public synchronized void putOperationChain(OperationChain chain)
             throws OperationException {
         putOperationChain(chain, false);
     }
 
     @Override
-    @Deprecated
     public synchronized void putOperationChain(OperationChain chain,
             boolean replace) throws OperationException {
         chains.addContribution(new ChainEntry(chain), replace);
     }
 
     @Override
-    @Deprecated
     public synchronized void removeOperationChain(String id) {
         ChainEntry contrib = chains.getChainEntry(id);
         chains.removeContribution(contrib);
     }
 
     @Override
-    @Deprecated
     public OperationChain getOperationChain(String id)
             throws OperationNotFoundException {
         ChainEntry chain = chains.lookup().get(id);
@@ -174,7 +158,6 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    @Deprecated
     public List<OperationChain> getOperationChains() {
         List<OperationChain> result = new ArrayList<OperationChain>();
         Map<String, ChainEntry> ochains = chains.lookup();
@@ -249,7 +232,6 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    @Deprecated
     public CompiledChain compileChain(Class<?> inputType, OperationChain chain)
             throws Exception, InvalidChainException {
         List<OperationParameters> ops = chain.getOperations();
