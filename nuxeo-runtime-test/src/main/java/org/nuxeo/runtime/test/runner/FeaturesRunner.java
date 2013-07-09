@@ -76,8 +76,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
-        super(classToRun);
-        locator = new TargetResourceLocator(classToRun);
+        super(OSGiBootloader.loadOsgiClass(classToRun));
         try {
             loadFeatures(getTargetTestClass());
             initialize();
@@ -146,6 +145,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         // register collected features
         this.features = new ArrayList<RunnerFeature>();
         for (Class<? extends RunnerFeature> fc : features) {
+            fc = OSGiBootloader.loadOsgiClass(fc);
             RunnerFeature rf = fc.newInstance();
             this.features.add(rf);
         }

@@ -107,8 +107,9 @@ public class ComponentPersistence {
     }
 
     protected void deploy(RuntimeContext rc, File file) throws Exception {
-        RegistrationInfoImpl ri = (RegistrationInfoImpl)rc.deploy(file.toURI().toURL());
-        ri.isPersistent = true;
+        for (RegistrationInfo ri:rc.deploy(file.toURI().toURL())) {
+            ((RegistrationInfoImpl)ri).isPersistent = true;
+        }
     }
 
     public void loadPersistedComponents() throws Exception {
@@ -189,7 +190,7 @@ public class ComponentPersistence {
         if (p > -1) {
             owner = name.substring(0, p);
         }
-        DefaultRuntimeContext rc = (DefaultRuntimeContext)getContext(owner);
+        AbstractRuntimeContext rc = (AbstractRuntimeContext)getContext(owner);
         File file = new File(this.root, name+".xml");
         if (!isPersistent) {
             file.deleteOnExit();
@@ -210,7 +211,7 @@ public class ComponentPersistence {
         if (p > -1) {
             owner = compName.substring(0, p);
         }
-        DefaultRuntimeContext rc = (DefaultRuntimeContext)getContext(owner);
+        AbstractRuntimeContext rc = (AbstractRuntimeContext)getContext(owner);
         rc.undeploy(file.toURI().toURL());
         file.delete();
         return true;

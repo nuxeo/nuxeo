@@ -20,12 +20,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class ComponentAliasTest extends NXRuntimeTestCase {
@@ -50,7 +52,7 @@ public class ComponentAliasTest extends NXRuntimeTestCase {
 
         ComponentManager mgr = runtime.getComponentManager();
         assertTrue(mgr.size() > 0);
-        Map<ComponentName, Set<ComponentName>> pending = mgr.getPendingRegistrations();
+        Map<ComponentName, Set<RegistrationInfo>> pending = mgr.getPendingRegistrations();
         assertEquals(0, pending.size());
 
         ComponentInstance co = runtime.getComponentInstance("my.comp3");

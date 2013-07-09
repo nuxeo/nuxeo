@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
-import org.nuxeo.osgi.application.MutableClassLoader;
+import org.nuxeo.runtime.tomcat.NuxeoWebappClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,7 +57,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
 
     protected final File webclasses;
 
-    public DevFrameworkBootstrap(MutableClassLoader cl, File home)
+    public DevFrameworkBootstrap(NuxeoWebappClassLoader cl, File home)
             throws IOException {
         super(cl, home);
         devBundlesFile = new File(home, "dev.bundles");
@@ -71,14 +72,20 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
         preloadDevBundles();
         // start the framework
         super.start();
-        reloadServiceInvoker = new ReloadServiceInvoker((ClassLoader) loader);
+//        reloadServiceInvoker = new ReloadServiceInvoker(classloader);
         writeComponentIndex();
-        postloadDevBundles(); // start dev bundles if any
         String installReloadTimerOption = (String) env.get(INSTALL_RELOAD_TIMER);
         if (installReloadTimerOption != null
                 && Boolean.parseBoolean(installReloadTimerOption) == Boolean.TRUE) {
             toggleTimer();
         }
+    }
+
+    @Override
+    protected List<File> buildBundlesClassPath(List<File> libraries) throws IOException {
+    	List<File> bundles = super.buildBundlesClassPath(libraries);
+    	bundles.addAll(preloadDevBundles());
+    	return bundles;
     }
 
     @Override
@@ -125,24 +132,18 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
      * Load the development bundles and libs if any in the classpath before
      * starting the framework.
      */
-    protected void preloadDevBundles() throws IOException {
+    protected List<File> preloadDevBundles() throws IOException {
         if (!devBundlesFile.isFile()) {
-            return;
+            return Collections.emptyList();
         }
         lastModified = devBundlesFile.lastModified();
         devBundles = DevBundle.parseDevBundleLines(new FileInputStream(
                 devBundlesFile));
         if (devBundles.length == 0) {
             devBundles = null;
-            return;
+            return Collections.emptyList();
         }
-        installNewClassLoader(devBundles);
-    }
-
-    protected void postloadDevBundles() throws Exception {
-        if (devBundles != null) {
-            reloadServiceInvoker.hotDeployBundles(devBundles);
-        }
+        return installNewClassLoader(devBundles);
     }
 
     @Override
@@ -175,7 +176,7 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     protected synchronized void reloadDevBundles(DevBundle[] bundles)
             throws Exception {
 
-        if (devBundles != null) { // clear last context
+        if (devBundles != null) {
             try {
                 reloadServiceInvoker.hotUndeployBundles(devBundles);
                 clearClassLoader();
@@ -184,7 +185,9 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
             }
         }
 
-        if (bundles != null) { // create new context
+        if (bundles == null) {
+        	reloadServiceInvoker.reload(new File[0]);
+        } else {
             try {
                 installNewClassLoader(bundles);
                 reloadServiceInvoker.hotDeployBundles(bundles);
@@ -195,49 +198,64 @@ public class DevFrameworkBootstrap extends FrameworkBootstrap implements
     }
 
     protected void clearClassLoader() {
-        NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
-        devLoader.clear();
-        System.gc();
+//        NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) classloader;
+//        devLoader.clear();
+//        System.gc();
+        throw new UnsupportedOperationException();
     }
 
-    protected void installNewClassLoader(DevBundle[] bundles) {
-        List<URL> jarUrls = new ArrayList<URL>();
-        List<File> seamDirs = new ArrayList<File>();
-        List<File> resourceBundleFragments = new ArrayList<File>();
-        // filter dev bundles types
-        for (DevBundle bundle : bundles) {
-            if (bundle.devBundleType.isJar) {
-                try {
-                    jarUrls.add(bundle.url());
-                } catch (IOException e) {
-                    log.error("Cannot install " + bundle);
-                }
-            } else if (bundle.devBundleType == DevBundleType.Seam) {
-                seamDirs.add(bundle.file());
-            } else if (bundle.devBundleType == DevBundleType.ResourceBundleFragment) {
-                resourceBundleFragments.add(bundle.file());
-            }
-        }
-
-        // install class loader
-        NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) loader;
-        devLoader.createLocalClassLoader(jarUrls.toArray(new URL[jarUrls.size()]));
-
-        // install seam classes in hot sync folder
-        try {
-            installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
-        } catch (IOException e) {
-            log.error("Cannot install seam classes in hotsync folder", e);
-        }
-
-        // install l10n resources
-        try {
-            installResourceBundleFragments(resourceBundleFragments);
-        } catch (IOException e) {
-            log.error("Cannot install l10n resources", e);
-        }
+    protected List<File> installNewClassLoader(DevBundle[] bundles) throws IOException {
+        throw new UnsupportedOperationException();
+    	// install class loader
+//    	NuxeoDevWebappClassLoader devLoader = (NuxeoDevWebappClassLoader) classloader;
+//    	LocalClassLoader loader = devLoader.createLocalClassLoader();
+//        List<URL> bundleURLs = new ArrayList<URL>();
+//        List<File> seamDirs = new ArrayList<File>();
+//        List<File> resourceBundleFragments = new ArrayList<File>();
+//        // filter dev bundles types
+//        for (DevBundle bundle : bundles) {
+//            if (bundle.devBundleType == DevBundleType.Bundle) {
+//                try {
+//                    bundleURLs.add(bundle.url());
+//                } catch (IOException e) {
+//                    log.error("Cannot install " + bundle);
+//                }
+//            } else if (bundle.devBundleType == DevBundleType.BundleLibrary) {
+//            	bundleURLs.add(bundle.url());
+//            } else if (bundle.devBundleType == DevBundleType.Library) {
+//            	super.classloader.addURL(bundle.url());
+//            } else if (bundle.devBundleType == DevBundleType.Seam) {
+//                seamDirs.add(bundle.file());
+//            } else if (bundle.devBundleType == DevBundleType.ResourceBundleFragment) {
+//                resourceBundleFragments.add(bundle.file());
+//            }
+//        }
+//
+//
+//        // install seam classes in hot sync folder
+//        try {
+//            installSeamClasses(seamDirs.toArray(new File[seamDirs.size()]));
+//        } catch (IOException e) {
+//            log.error("Cannot install seam classes in hotsync folder", e);
+//        }
+//
+//        // install l10n resources
+//        try {
+//            installResourceBundleFragments(resourceBundleFragments);
+//        } catch (IOException e) {
+//            log.error("Cannot install l10n resources", e);
+//        }
+//
+//        return getJarFiles(bundleURLs);
     }
 
+    protected List<File> getJarFiles(List<URL> urls) {
+    	List<File> files = new ArrayList<File>();
+    	for (URL loc:urls) {
+    		files.add(new File(loc.getPath()));
+    	}
+    	return files;
+    }
     public void writeComponentIndex() {
         File file = new File(home.getParentFile(), "sdk");
         file.mkdirs();

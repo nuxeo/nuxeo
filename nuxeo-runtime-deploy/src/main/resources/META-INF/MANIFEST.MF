@@ -19,3 +19,5 @@ Import-Package: org.apache.commons.logging,
  org.nuxeo.common.xmap.annotation,
  org.w3c.dom
 Bundle-SymbolicName: org.nuxeo.runtime.nuxeo-runtime-deploy;singleton:=true
+Bundle-Activator: org.nuxeo.runtime.deployment.preprocessor.DeploymentActivator
+Nuxeo-Component: OSGI-INF/preprocessor-deployment.xml

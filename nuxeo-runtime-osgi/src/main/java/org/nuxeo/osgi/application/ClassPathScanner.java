@@ -22,14 +22,13 @@
 package org.nuxeo.osgi.application;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.jar.JarFile;
 
-import org.nuxeo.osgi.BundleFile;
-import org.nuxeo.osgi.DirectoryBundleFile;
-import org.nuxeo.osgi.JarBundleFile;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.osgi.OSGiAdapter;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,26 +36,29 @@ import org.nuxeo.osgi.JarBundleFile;
  */
 public class ClassPathScanner {
 
-    protected boolean scanForNestedJARs = true;
+    protected final Log log = LogFactory.getLog(ClassPathScanner.class);
+
+    protected final OSGiAdapter osgi;
+
     protected final Callback callback;
 
     /**
-     * If set points to a set of path prefixes to be excluded form bundle processing
+     * If set points to a set of path prefixes to be excluded form bundle
+     * processing
      */
-    protected String[] blackList;
+    protected final String[] blackList;
 
-    public ClassPathScanner(Callback callback) {
+    public ClassPathScanner(OSGiAdapter osgi, Callback callback) {
+        this.osgi = osgi;
         this.callback = callback;
+        blackList = new String[0];
     }
 
-    public ClassPathScanner(Callback callback, boolean scanForNestedJars, String[] blackList) {
+    public ClassPathScanner(OSGiAdapter osgi, Callback callback,
+            String[] blackList) {
+        this.osgi = osgi;
         this.callback = callback;
-        scanForNestedJARs = scanForNestedJars;
         this.blackList = blackList;
-    }
-
-    public void setScanForNestedJARs(boolean scanForNestedJars) {
-        scanForNestedJARs = scanForNestedJars;
     }
 
     /**
@@ -70,14 +72,19 @@ public class ClassPathScanner {
      */
     public void scan(List<File> classPath) {
         for (File file : classPath) {
-            scan(file);
+            try {
+                scan(file);
+            } catch (BundleException e) {
+                log.error("Cannot install bundle file " + file, e);
+            }
         }
     }
 
-    public void scan(File file) {
+    public void scan(File file) throws BundleException {
         String path = file.getAbsolutePath();
-        if (!(path.endsWith(".jar") || path.endsWith(".rar") || path.endsWith(".sar")
-                || path.endsWith("_jar") || path.endsWith("_rar") || path.endsWith("_sar"))) {
+        if (!(path.endsWith(".jar") || path.endsWith(".rar")
+                || path.endsWith(".sar") || path.endsWith("_jar")
+                || path.endsWith("_rar") || path.endsWith("_sar"))) {
             return;
         }
         if (blackList != null) {
@@ -87,93 +94,19 @@ public class ClassPathScanner {
                 }
             }
         }
-        try {
-            BundleFile bf;
-            if (file.isFile()) {
-                JarFile jar = new JarFile(file);
-                bf = new JarBundleFile(jar);
-            } else if (file.isDirectory()) {
-                bf = new DirectoryBundleFile(file);
-            } else {
-                return;
-            }
-            File nestedJARsDir;
-            if (bf.getSymbolicName() == null) { // a regular jar
-                nestedJARsDir = callback.handleJar(bf);
-            } else { // an osgi bundle
-                nestedJARsDir = callback.handleBundle(bf);
-            }
-            if (nestedJARsDir != null) {
-                Collection<BundleFile> nested = extractNestedJars(bf, nestedJARsDir);
-                if (nested != null) {
-                    for (BundleFile nestedJar : nested) {
-                        callback.handleNestedJar(nestedJar);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            // ignore exception since some manifest may be invalid (invalid ClassPath entries) etc.
-        }
-    }
-
-    public Collection<BundleFile> extractNestedJars(BundleFile bf, File nestedBundlesDir) throws IOException {
-        Collection<BundleFile> bundles = null;
-        if (scanForNestedJARs) {
-            bundles = bf.findNestedBundles(nestedBundlesDir);
-        } else { // use manifest to find nested jars
-            bundles = bf.getNestedBundles(nestedBundlesDir);
-        }
-        if (bundles != null && bundles.isEmpty()) {
-            bundles = null;
-        }
-        return bundles;
+        callback.handleBundle(osgi.install(file.toURI()));
     }
 
     public interface Callback {
 
         /**
-         * A nested JAR was found on the class path. Usually a callback should
-         * handle this by adding the JAR to a class loader
-         * <p>
-         * The callback should return a directory to be used to extract nested
-         * JARs from this JAR.
-         * <p>
-         * The callback may return null to skip nested JAR extraction
-         *
-         * @param bf the JAR found
-         */
-        void handleNestedJar(BundleFile bf);
-
-        /**
-         * A JAR was found on the class path. Usually a callback should handle
-         * this by adding the JAR to a class loader.
-         * <p>
-         * The callback should return a directory to be used to extract nested
-         * JARs from this JAR.
-         * <p>
-         * The callback may return null to skip nested JAR extraction.
-         *
-         * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip
-         *         extraction
-         */
-        File handleJar(BundleFile bf);
-
-        /**
          * A Bundle was found on the class path. Usually a callback should
          * handle this by adding the Bundle to a class loader and installing it
          * in an OSGi framework
-         * <p>
-         * The callback should return a directory to be used to extract nested
-         * JARs from this JAR.
-         * <p>
-         * The callback may return null to skip nested JAR extraction.
          *
          * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip
-         *         extraction
          */
-        File handleBundle(BundleFile bf);
+        void handleBundle(Bundle bundle);
 
     }
 

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -40,9 +40,6 @@ public class DeploymentSet {
     public void load(AnnotationScanner scanner, Class<?> clazz) {
         scanner.scan(clazz);
         List<? extends Annotation> annos = scanner.getAnnotations(clazz);
-        if (annos == null) {
-            return;
-        }
         for (Annotation anno : annos) {
             if (anno.annotationType() == Deploy.class) {
                 for (String key : ((Deploy) anno).value()) {

@@ -30,11 +30,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
@@ -78,7 +78,11 @@ public class NuxeoStarter implements ServletContextListener {
      */
     public static final String NUXEO_BUNDLES_LIST = ".nuxeo-bundles";
 
-    protected final Map<String, Object> env = new HashMap<>();
+    protected final Properties env = new Properties();
+
+    protected final List<File> bundleFiles = new ArrayList<File>();
+
+    protected final List<File> libraryFiles = new ArrayList<File>();
 
     protected List<File> bundleFiles = new ArrayList<>();
 
@@ -112,12 +116,13 @@ public class NuxeoStarter implements ServletContextListener {
 
     protected void start(ServletContextEvent event) throws Exception {
         ServletContext servletContext = event.getServletContext();
+        webinflib = servletContext.getResource("OSGI-INF").getFile();
+        findLibraries(servletContext);
         findBundles(servletContext);
         findEnv(servletContext);
 
-        ClassLoader cl = getClass().getClassLoader();
-        File home = new File((String) env.get(NUXEO_RUNTIME_HOME));
-        FrameworkLoader.initialize(cl, home, bundleFiles, env);
+        File home = new File(env.get(NUXEO_RUNTIME_HOME).toString());
+        FrameworkLoader.initialize(home, libraryFiles.toArray(new File[libraryFiles.size()]), bundleFiles.toArray(new File[bundleFiles.size()]), env);
         FrameworkLoader.start();
     }
 
@@ -157,7 +162,22 @@ public class NuxeoStarter implements ServletContextListener {
         }
     }
 
-    protected void findEnv(ServletContext servletContext) {
+    protected void findLibraries(ServletContext servletContext) throws Exception {
+        @SuppressWarnings("unchecked")
+        Set<String> ctxpaths = servletContext.getResourcePaths("/OSGI-INF/lib/");
+        for (String ctxpath : ctxpaths) {
+            if (!ctxpath.endsWith(".jar")) {
+                continue;
+            }
+            String path = servletContext.getRealPath(ctxpath);
+            if (path == null) {
+                continue;
+            }
+            bundleFiles.add(new File(path));
+        }
+    }
+
+    protected void findEnv(ServletContext servletContext) throws MalformedURLException {
         for (String param : Arrays.asList( //
                 NUXEO_RUNTIME_HOME, //
                 NUXEO_CONFIG_DIR, //
@@ -172,7 +192,7 @@ public class NuxeoStarter implements ServletContextListener {
         }
         // default env values
         if (!env.containsKey(NUXEO_CONFIG_DIR)) {
-            String webinf = servletContext.getRealPath("/WEB-INF");
+            String webinf = servletContext.getResource("OSGI-INF").getFile();
             env.put(NUXEO_CONFIG_DIR, webinf);
         }
         if (!env.containsKey(NUXEO_RUNTIME_HOME)) {

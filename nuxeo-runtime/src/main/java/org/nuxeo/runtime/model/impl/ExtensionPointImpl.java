@@ -46,7 +46,7 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
     public String documentation;
 
     @XNodeList(value = "object@class", type = Class[].class, componentType = Class.class)
-    public transient Class[] contributions;
+    public transient Class<?>[] contributions;
 
     public transient XMap xmap;
 
@@ -55,7 +55,7 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
 
 
     @Override
-    public Class[] getContributions() {
+    public Class<?>[] getContributions() {
         return contributions;
     }
 
@@ -84,20 +84,25 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
             // contributions already computed - this should e an overloaded (extended) extension point
             return contribs;
         }
-        // should compute now the contributions
-        if (contributions != null) {
-            if (xmap == null) {
-                xmap = new XMap();
-                for (Class contrib : contributions) {
-                    xmap.register(contrib);
-                }
-            }
-            contribs = xmap.loadAll(
-                    new XMapContext(extension.getContext()),
-                    extension.getElement());
-            extension.setContributions(contribs);
+        if (contributions == null) {
+            throw new IllegalStateException("No contributions defined " + this);
         }
+        // should compute now the contributions
+        if (xmap == null) {
+            xmap = new XMap();
+            for (Class<?> contrib : contributions) {
+                xmap.register(contrib);
+            }
+        }
+        contribs = xmap.loadAll(new XMapContext(extension.getContext()),
+                extension.getElement());
+        extension.setContributions(contribs);
+
         return contribs;
     }
 
+    @Override
+    public String toString() {
+        return "xp (" + ri.getContext().getBundle().toString() + ":" + ri.getName() + ":" + name + ")";
+    }
 }

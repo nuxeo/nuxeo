@@ -26,7 +26,14 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -37,6 +44,6 @@
       <artifactId>ejb-api</artifactId>
       <scope>test</scope>
     </dependency>
-  </dependencies>
 
+  </dependencies>
 </project>

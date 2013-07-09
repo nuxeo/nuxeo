@@ -22,13 +22,12 @@
 package org.nuxeo.osgi;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Dictionary;
 
-import org.nuxeo.osgi.services.ServiceReferenceImpl;
-import org.nuxeo.osgi.services.ServiceRegistrationImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleListener;
@@ -40,40 +39,49 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class OSGiBundleContext implements BundleContext {
 
-    final BundleImpl bundle;
+    protected final OSGiSystemContext osgi;
 
-    public OSGiBundleContext(BundleImpl bundle) {
-        this.bundle = bundle;
+    protected final OSGiBundleHost bundle;
+
+    protected OSGiLoader loader;
+
+    protected BundleActivator activator;
+
+    protected OSGiBundleContext(OSGiSystemBundle system) {
+        osgi = (OSGiSystemContext) this;
+        bundle = system;
     }
 
-    public OSGiAdapter getOSGiAdapter() {
-        return bundle.osgi;
+    public OSGiBundleContext(OSGiSystemContext osgi, OSGiBundleHost bundle)
+            throws BundleException {
+        this.osgi = osgi;
+        this.bundle = bundle;
     }
 
     @Override
     public void addBundleListener(BundleListener listener) {
-        bundle.osgi.addBundleListener(listener);
+        bundle.osgi.bundleListeners.add(listener);
     }
 
     @Override
     public void addFrameworkListener(FrameworkListener listener) {
-        bundle.osgi.addFrameworkListener(listener);
+        bundle.osgi.frameworkListeners.add(listener);
     }
 
     @Override
     public void addServiceListener(ServiceListener listener) {
-        bundle.osgi.addServiceListener(listener);
+        bundle.osgi.serviceListeners.add(listener);
     }
 
     @Override
     public void addServiceListener(ServiceListener listener, String filter)
             throws InvalidSyntaxException {
-        bundle.osgi.addServiceListener(listener, filter);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -83,10 +91,15 @@ public class OSGiBundleContext implements BundleContext {
     }
 
     @Override
-    public ServiceReference[] getAllServiceReferences(String clazz,
+    public ServiceReference<?>[] getAllServiceReferences(String clazz,
             String filter) throws InvalidSyntaxException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <S> Collection<ServiceReference<S>> getServiceReferences(
+            Class<S> clazz, String filter) throws InvalidSyntaxException {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -106,7 +119,7 @@ public class OSGiBundleContext implements BundleContext {
 
     @Override
     public File getDataFile(String filename) {
-        return new File(bundle.osgi.getWorkingDir(), filename);
+        return new File(bundle.osgi.dataDir, filename);
     }
 
     @Override
@@ -114,66 +127,62 @@ public class OSGiBundleContext implements BundleContext {
         return bundle.osgi.getProperty(key);
     }
 
-    @Override
-    public Object getService(ServiceReference reference) {
-        return ((ServiceReferenceImpl)reference).getService();
+    protected String getProperty(String key, String defaultValue) {
+        return bundle.osgi.getProperty(key, defaultValue);
     }
 
     @Override
-    public ServiceReference getServiceReference(String clazz) {
-        ServiceRegistration reg = bundle.osgi.services.get(clazz);
+    public <S> S getService(ServiceReference<S> reference) {
+        return ((OSGiServiceReference<S>) reference).getService();
+    }
+
+    @Override
+    public ServiceReference<?> getServiceReference(String clazz) {
+        ServiceRegistration<?> reg = bundle.osgi.services.get(clazz);
         return reg != null ? reg.getReference() : null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ServiceReference[] getServiceReferences(String clazz, String filter)
-            throws InvalidSyntaxException {
-        ServiceRegistration reg = bundle.osgi.services.get(clazz);
-        return reg != null ? new ServiceReference[] {reg.getReference()} : null;
+    public <S> ServiceReference<S> getServiceReference(Class<S> clazz) {
+        return (ServiceReference<S>) getServiceReference(clazz.getName());
+    }
+
+    @Override
+    public ServiceReference<?>[] getServiceReferences(String clazz,
+            String filter) throws InvalidSyntaxException {
+        ServiceRegistration<?> reg = bundle.osgi.services.get(clazz);
+        return reg != null ? new ServiceReference[] { reg.getReference() }
+                : null;
     }
 
     @Override
     public Bundle installBundle(String location) throws BundleException {
-        File file = new File(location);
-        try {
-            BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file) : new JarBundleFile(file);
-            BundleImpl b = new BundleImpl(bundle.osgi, bf, bundle.loader);
-            if (b.getSymbolicName() != null) {
-                bundle.osgi.install(b);
-            }
-            return b;
-        } catch (IOException e) {
-            throw new BundleException("Failed to install bundle at "+location, e);
-        }
+        return bundle.osgi.installBundle(location);
     }
 
     @Override
     public Bundle installBundle(String location, InputStream input)
             throws BundleException {
-        // TODO Auto-generated method stub
-        return null;
+        return bundle.osgi.installBundle(location, input);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public ServiceRegistration registerService(String[] clazzes,
-            Object service, Dictionary properties) {
-        ServiceRegistrationImpl reg = new ServiceRegistrationImpl(bundle.osgi, bundle, clazzes, service);
-        if (properties != null) {
-            reg.setProperties(properties);
-            return reg;
-        }
-        for (String c : clazzes) {
-            bundle.osgi.services.put(c, reg);
-        }
-        return reg;
+    public ServiceRegistration<?> registerService(String[] clazzes,
+            Object service, Dictionary<String, ?> properties) {
+        return bundle.osgi.registerService(clazzes, service, properties);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public ServiceRegistration registerService(String clazz, Object service,
-            Dictionary properties) {
-        return registerService(new String[] {clazz}, service, properties);
+    public ServiceRegistration<?> registerService(String clazz, Object service,
+            Dictionary<String, ?> properties) {
+        return bundle.osgi.registerService(clazz, service, properties);
+    }
+
+    @Override
+    public <S> ServiceRegistration<S> registerService(Class<S> clazz,
+            S service, Dictionary<String, ?> properties) {
+        return bundle.osgi.registerService(clazz, service, properties);
     }
 
     @Override
@@ -192,9 +201,72 @@ public class OSGiBundleContext implements BundleContext {
     }
 
     @Override
-    public boolean ungetService(ServiceReference reference) {
-        // not impl.
-        return false;
+    public boolean ungetService(ServiceReference<?> reference) {
+        return bundle.osgi.ungetService(reference);
+    }
+
+    @Override
+    public Bundle getBundle(String location) {
+        return bundle.osgi.getBundle(location);
+    }
+
+    protected BundleActivator loadActivator() throws BundleException {
+        String className = bundle.getActivatorClassName();
+        if (className == null) {
+            return OSGiNullActivator.INSTANCE;
+        }
+        try {
+            Class<?> clazz = loader.loadClass(className);
+            return (BundleActivator) clazz.newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new BundleException("Activator not found: " + className, e);
+        } catch (InstantiationException e) {
+            throw new BundleException("Activator not instantiable: "
+                    + className, e);
+        } catch (IllegalAccessException e) {
+            throw new BundleException("Activator not accessible: " + className,
+                    e);
+        }
+
+    }
+
+    public void start() throws BundleException {
+        loader = osgi.factory.newLoader(this);
+        loader.wire();
+    }
+
+    protected void activate() throws BundleException {
+        try {
+            activator = loadActivator();
+            activator.start(this);
+        } catch (InterruptedException e) {
+            // restore interrupted status
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (Exception e) { // InterruptedException caught above
+            throw new BundleException("Failed to start bundle at: " + bundle
+                    + " with activator: " + activator.getClass().getName(), e);
+        }
+    }
+
+    protected void stop() throws BundleException {
+        try {
+            activator.stop(this);
+        } catch (InterruptedException e) {
+            // restore interrupted status
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (Exception e) { // InterruptedException caught above
+            throw new BundleException("Failed to stop bundle at: " + bundle
+                    + " with activator: " + activator.getClass().getName(), e);
+        } finally {
+            activator = null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "OSGiBundleContext [bundle=" + bundle + "]";
     }
 
 }

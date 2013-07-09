@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.test.RuntimeFeature;
+import org.nuxeo.runtime.test.RuntimeHarness;
 import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 
 /**

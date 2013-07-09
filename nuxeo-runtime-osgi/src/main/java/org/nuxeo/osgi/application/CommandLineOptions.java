@@ -22,8 +22,10 @@
 package org.nuxeo.osgi.application;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
+import java.util.Properties;
+
+import org.nuxeo.osgi.OSGiAdapter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,8 +33,7 @@ import java.util.Set;
  */
 public class CommandLineOptions {
 
-    private final LinkedHashMap<Object, String> args = new LinkedHashMap<Object, String>();
-
+    private final LinkedHashMap<String, String> args = new LinkedHashMap<String, String>();
 
     public CommandLineOptions(String[] args) {
         String op = null;
@@ -45,7 +46,7 @@ public class CommandLineOptions {
                 this.args.put(op, arg);
                 op = null;
             } else {
-                this.args.put(i++, arg);
+                this.args.put("#".concat(Integer.toString(i++)), arg);
                 op = null;
             }
         }
@@ -63,12 +64,61 @@ public class CommandLineOptions {
         return args.containsKey(option);
     }
 
-    public LinkedHashMap<Object, String> getOptions() {
-        return args;
+    protected static class OptionKey {
+
+        protected final String fromKey;
+
+        protected final String toKey;
+
+        protected OptionKey(String fromKey, String toKey) {
+            this.fromKey = fromKey;
+            this.toKey = toKey;
+        }
+
+        protected boolean map(String key, String value, Properties props) {
+            if (!fromKey.equals(key)) {
+                return false;
+            }
+            props.put(toKey, value);
+            return true;
+        }
     }
 
-    public Set<Map.Entry<Object,String>> entrySet() {
-        return args.entrySet();
+    protected final OptionKey[] keys = new OptionKey[] {
+            new OptionKey("host", OSGiAdapter.HOST_NAME),
+            new OptionKey("version", OSGiAdapter.HOST_VERSION),
+            new OptionKey("home", OSGiAdapter.HOME_DIR),
+            new OptionKey("log", OSGiAdapter.LOG_DIR),
+            new OptionKey("data", OSGiAdapter.DATA_DIR),
+            new OptionKey("tmp", OSGiAdapter.TMP_DIR),
+            new OptionKey("web", OSGiAdapter.WEB_DIR),
+            new OptionKey("config", OSGiAdapter.CONFIG_DIR),
+            new OptionKey("libs", OSGiAdapter.LIBS),
+            new OptionKey("bundles", OSGiAdapter.BUNDLES),
+            new OptionKey("devmode", OSGiAdapter.DEVMODE),
+            new OptionKey("preprocessing", OSGiAdapter.PREPROCESSING),
+            new OptionKey("scanForNestedJars", OSGiAdapter.SCAN_FOR_NESTED_JARS),
+            new OptionKey("flushCache", OSGiAdapter.FLUSH_CACHE),
+            new OptionKey("args", OSGiAdapter.ARGS)
+    };
+
+    protected void mapOption(String option, String value, Properties props) {
+        for (OptionKey key:keys) {
+            if (key.map(option,value,props)) {
+                return;
+            }
+        }
+        if (!option.startsWith("#")) {
+            option = "?".concat(option);
+        }
+        props.put(option,value);
     }
 
+    public Properties getProperties() {
+        Properties properties = new Properties();
+        for (Entry<String,String> entry:args.entrySet()) {
+            mapOption(entry.getKey(), entry.getValue(), properties);
+        }
+        return properties;
+    }
 }

@@ -53,6 +53,7 @@ public interface ComponentManager {
      * the name given in RegistrationInfo.
      *
      * @param ri the registration info
+     * @return
      */
     void register(RegistrationInfo ri);
 
@@ -110,7 +111,7 @@ public interface ComponentManager {
      *
      * @return the pending registrations
      */
-    Map<ComponentName, Set<ComponentName>> getPendingRegistrations();
+    Map<ComponentName, Set<RegistrationInfo>> getPendingRegistrations();
 
     /**
      * Gets the pending extensions by component.

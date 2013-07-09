@@ -62,8 +62,10 @@ public class UnzipCommand implements Command {
     @Override
     public void exec(CommandContext ctx) throws IOException {
         File baseDir = ctx.getBaseDir();
-        File srcFile = new File(baseDir, ctx.expandVars(src.toString()));
-        File dstFile = new File(baseDir, ctx.expandVars(dst.toString()));
+        String srcPath = ctx.expandVars(src.toString());
+		File srcFile = srcPath.startsWith("/") ? new File(srcPath) : new File(baseDir, srcPath);
+		String dstPath = ctx.expandVars(dst.toString());
+        File dstFile =  new File(baseDir, dstPath);
 
         if (!srcFile.exists()) {
             throw new FileNotFoundException("Could not find the file " + srcFile.getAbsolutePath() + " to unzip.");

@@ -12,7 +12,6 @@
 package org.nuxeo.osgi.util;
 
 import java.util.Enumeration;
-import java.util.NoSuchElementException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -20,15 +19,15 @@ import java.util.NoSuchElementException;
  */
 public class CompoundEnumeration<E> implements Enumeration<E> {
 
-    private final Enumeration<E>[] enums;
-    private int index = 0;
+    protected final Enumeration<E>[] enums;
+    protected int index = 0;
 
     @SuppressWarnings("unchecked")
     public CompoundEnumeration(Enumeration<?>[] enums) {
         this.enums = (Enumeration<E>[])enums;
     }
 
-    private boolean next() {
+    protected boolean next() {
         while (index < enums.length) {
             if (enums[index] != null && enums[index].hasMoreElements()) {
                 return true;
@@ -45,9 +44,6 @@ public class CompoundEnumeration<E> implements Enumeration<E> {
 
     @Override
     public E nextElement() {
-        if (!next()) {
-            throw new NoSuchElementException();
-        }
         return enums[index].nextElement();
     }
 

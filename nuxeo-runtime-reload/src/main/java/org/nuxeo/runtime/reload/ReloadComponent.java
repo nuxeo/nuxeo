@@ -75,11 +75,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     @Override
-    public void reload() throws Exception {
+    public void reload(File[] additionalFiles) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("Starting reload");
         }
         reloadProperties();
+        runDeploymentPreprocessor(additionalFiles);
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this,
                 null));
@@ -284,17 +285,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
-    public void runDeploymentPreprocessor() throws Exception {
+    public void runDeploymentPreprocessor(File[] additionalFiles) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("Start running deployment preprocessor");
         }
-        String rootPath = Environment.getDefault().getHome().getAbsolutePath();
-        File root = new File(rootPath);
-        DeploymentPreprocessor processor = new DeploymentPreprocessor(root);
-        // initialize
-        processor.init();
-        // and predeploy
-        processor.predeploy();
+        DeploymentPreprocessor.reprocess(additionalFiles);
         if (log.isDebugEnabled()) {
             log.debug("Deployment preprocessing done");
         }

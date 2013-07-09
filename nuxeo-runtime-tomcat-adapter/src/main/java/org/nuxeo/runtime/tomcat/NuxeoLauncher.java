@@ -32,8 +32,6 @@ import org.apache.catalina.util.ServerInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.application.FrameworkBootstrap;
-import org.nuxeo.osgi.application.MutableClassLoader;
-import org.nuxeo.runtime.tomcat.dev.DevFrameworkBootstrap;
 import org.nuxeo.runtime.tomcat.dev.NuxeoDevWebappClassLoader;
 
 /**
@@ -94,22 +92,18 @@ public class NuxeoLauncher implements LifecycleListener {
     protected void handleEvent(NuxeoWebappLoader loader, LifecycleEvent event) {
         String type = event.getType();
         try {
-            MutableClassLoader cl = (MutableClassLoader)loader.getClassLoader();
+            ClassLoader cl = loader.getClassLoader();
             boolean devMode = cl instanceof NuxeoDevWebappClassLoader;
             if (type == Lifecycle.CONFIGURE_START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
-                if (devMode) {
-                    bootstrap = new DevFrameworkBootstrap(
-                            cl,
-                            homeDir);
-                    MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-                    server.registerMBean(bootstrap, new ObjectName(DEV_BUNDLES_NAME));
-                    server.registerMBean(cl, new ObjectName(WEB_RESOURCES_NAME));
-                    ((NuxeoDevWebappClassLoader) cl).setBootstrap((DevFrameworkBootstrap)bootstrap);
+                bootstrap = new FrameworkBootstrap(cl, homeDir);
+                String info = ServerInfo.getServerInfo();
+                int i = info.indexOf('/'); // Apache Tomcat/6.0.35
+                String version;
+                if (i > 0) {
+                    version = info.substring(i + 1);
                 } else {
-                    bootstrap = new FrameworkBootstrap(
-                            cl,
-                            homeDir);
+                    version = ServerInfo.getServerNumber(); // 6.0.35.0
                 }
                 bootstrap.setHostName("Tomcat");
                 bootstrap.setHostVersion(ServerInfo.getServerNumber());

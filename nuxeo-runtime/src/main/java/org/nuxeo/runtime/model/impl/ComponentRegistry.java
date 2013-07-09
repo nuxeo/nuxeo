@@ -19,7 +19,6 @@ package org.nuxeo.runtime.model.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,35 +39,23 @@ public class ComponentRegistry {
      * All registered components including unresolved ones. You can check the
      * state of a component for getting the unresolved ones.
      */
-    protected Map<ComponentName, RegistrationInfoImpl> components;
+    protected final Map<ComponentName, RegistrationInfoImpl> components = new HashMap<ComponentName, RegistrationInfoImpl>();
 
     /** Map of aliased name to canonical name. */
-    protected Map<ComponentName, ComponentName> aliases;
+    protected final Map<ComponentName, ComponentName> aliases = new HashMap<ComponentName, ComponentName>();
 
-    /**
-     * Maps a component name to a set of component names that are depending on
-     * that component. Values are always unaliased.
-     */
-    protected MappedSet requirements;
+    protected final MappedSet<ComponentName, RegistrationInfo> requiredPendings = new MappedSet<ComponentName, RegistrationInfo>();
 
-    /**
-     * Map pending components to the set of unresolved components they are
-     * waiting for. Key is always unaliased.
-     */
-    protected MappedSet pendings;
+    protected final ComponentManagerImpl manager;
 
-    public ComponentRegistry() {
-        components = new HashMap<ComponentName, RegistrationInfoImpl>();
-        aliases = new HashMap<ComponentName, ComponentName>();
-        requirements = new MappedSet();
-        pendings = new MappedSet();
+    protected ComponentRegistry(ComponentManagerImpl owner) {
+        manager = owner;
     }
 
     public void destroy() {
-        components = null;
-        aliases = null;
-        requirements = null;
-        pendings = null;
+        components.clear();
+        aliases.clear();
+        requiredPendings.clear();
     }
 
     protected ComponentName unaliased(ComponentName name) {
@@ -85,69 +72,62 @@ public class ComponentRegistry {
     }
 
     /**
-     * Fill the pending map with all unresolved dependencies of the given
-     * component. Returns false if no unresolved dependencies are found,
-     * otherwise returns true.
-     *
-     * @param ri
-     * @return
-     */
-    protected final boolean computePendings(RegistrationInfo ri) {
-        Set<ComponentName> set = ri.getRequiredComponents();
-        if (set == null || set.isEmpty()) {
-            return false;
-        }
-        boolean hasUnresolvedDependencies = false;
-        // fill the requirements and pending map
-        for (ComponentName name : set) {
-            if (!isResolved(name)) {
-                pendings.put(ri.getName(), name);
-                hasUnresolvedDependencies = true;
-            }
-            requirements.put(name, ri.getName());
-        }
-        return hasUnresolvedDependencies;
-    }
-
-    /**
      *
      * @param ri
      * @return true if the component was resolved, false if the component is
      *         pending
      */
+    @SuppressWarnings("unchecked")
     public boolean addComponent(RegistrationInfoImpl ri) throws Exception {
+        // update registry
         ComponentName name = ri.getName();
         Set<ComponentName> al = ri.getAliases();
-        String aliasInfo = al.isEmpty() ? "" : ", aliases=" + al;
-        log.info("Registering component: " + name + aliasInfo);
-        ri.register();
         components.put(name, ri);
         for (ComponentName n : al) {
             aliases.put(n, name);
         }
-        boolean hasUnresolvedDependencies = computePendings(ri);
-        if (!hasUnresolvedDependencies) {
-            resolveComponent(ri);
-            return true;
+        if (al != null && !al.isEmpty()) {
+            log.info("Aliasing component: " + name + " -> " + al);
         }
-        return false;
+
+        for (ComponentName pending : ri.requiredPendings) {
+            requiredPendings.put(pending, ri);
+        }
+
+        // set state
+        Set<RegistrationInfo> dependsOnMe = requiredPendings.remove(name);
+
+        ri.register((Set<? extends RegistrationInfoImpl>) dependsOnMe);
+
+        return ri.isResolved();
     }
 
     public RegistrationInfoImpl removeComponent(ComponentName name)
             throws Exception {
+        // update registry
         RegistrationInfoImpl ri = components.remove(name);
-        if (ri != null) {
-            try {
-                unresolveComponent(ri);
-            } finally {
-                ri.unregister();
+        if (ri == null) {
+            return null;
+        }
+        for (ComponentName alias : ri.aliases) {
+            aliases.remove(alias);
+        }
+        if (ri.isResolved()) {
+            for (ComponentName pending : ri.requiredPendings) {
+                requiredPendings.remove(pending, ri);
             }
+        }
+        // update state
+        try {
+            ri.unresolve();
+        } finally {
+            ri.unregister();
         }
         return ri;
     }
 
     public Set<ComponentName> getMissingDependencies(ComponentName name) {
-        return pendings.get(name);
+        return components.get(unaliased(name)).requiredPendings;
     }
 
     public RegistrationInfoImpl getComponent(ComponentName name) {
@@ -171,108 +151,4 @@ public class ComponentRegistry {
                 new RegistrationInfoImpl[components.size()]);
     }
 
-    public Map<ComponentName, Set<ComponentName>> getPendingComponents() {
-        return pendings.map;
-    }
-
-    protected void resolveComponent(RegistrationInfoImpl ri) throws Exception {
-        ComponentName riName = ri.getName();
-        Set<ComponentName> names = new HashSet<ComponentName>();
-        names.add(riName);
-        names.addAll(ri.getAliases());
-
-        ri.resolve();
-        // try to resolve pending components that are waiting the newly
-        // resolved component
-        Set<ComponentName> dependsOnMe = new HashSet<ComponentName>();
-        for (ComponentName n : names) {
-            Set<ComponentName> reqs = requirements.get(n);
-            if (reqs != null) {
-                dependsOnMe.addAll(reqs); // unaliased
-            }
-        }
-        if (dependsOnMe == null || dependsOnMe.isEmpty()) {
-            return;
-        }
-        for (ComponentName name : dependsOnMe) { // unaliased
-            for (ComponentName n : names) {
-                pendings.remove(name, n);
-            }
-            Set<ComponentName> set = pendings.get(name);
-            if (set == null || set.isEmpty()) {
-                RegistrationInfoImpl waitingRi = components.get(name);
-                resolveComponent(waitingRi);
-            }
-        }
-    }
-
-    protected void unresolveComponent(RegistrationInfoImpl ri) throws Exception {
-        Set<ComponentName> reqs = ri.getRequiredComponents();
-        ComponentName name = ri.getName();
-        ri.unresolve();
-        pendings.remove(name);
-        if (reqs != null) {
-            for (ComponentName req : reqs) {
-                requirements.remove(req, name);
-            }
-        }
-        Set<ComponentName> set = requirements.get(name); // unaliased
-        if (set != null && !set.isEmpty()) {
-            for (ComponentName dep : set.toArray(new ComponentName[set.size()])) {
-                RegistrationInfoImpl depRi = components.get(dep);
-                if (depRi != null) {
-                    unresolveComponent(depRi);
-                }
-            }
-        }
-    }
-
-    static class MappedSet {
-        protected Map<ComponentName, Set<ComponentName>> map;
-
-        public MappedSet() {
-            map = new HashMap<ComponentName, Set<ComponentName>>();
-        }
-
-        public Set<ComponentName> get(ComponentName name) {
-            return map.get(name);
-        }
-
-        public Set<ComponentName> put(ComponentName key, ComponentName value) {
-            Set<ComponentName> set = map.get(key);
-            if (set == null) {
-                set = new HashSet<ComponentName>();
-                map.put(key, set);
-            }
-            set.add(value);
-            return set;
-        }
-
-        public Set<ComponentName> remove(ComponentName key) {
-            return map.remove(key);
-        }
-
-        public Set<ComponentName> remove(ComponentName key, ComponentName value) {
-            Set<ComponentName> set = map.get(key);
-            if (set != null) {
-                set.remove(value);
-                if (set.isEmpty()) {
-                    map.remove(key);
-                }
-            }
-            return set;
-        }
-
-        public boolean isEmpty() {
-            return map.isEmpty();
-        }
-
-        public int size() {
-            return map.size();
-        }
-
-        public void clear() {
-            map.clear();
-        }
-    }
 }

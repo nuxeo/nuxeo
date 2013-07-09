@@ -26,16 +26,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.nuxeo.common.Environment;
-import org.nuxeo.osgi.BundleFile;
-import org.nuxeo.osgi.BundleImpl;
-import org.nuxeo.osgi.DirectoryBundleFile;
-import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
-import org.nuxeo.osgi.SystemBundle;
-import org.nuxeo.osgi.SystemBundleFile;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 
@@ -48,11 +42,9 @@ import org.osgi.framework.FrameworkEvent;
  */
 public class NuxeoApp {
 
-    protected final ClassLoader loader;
+    protected final Properties env = new Properties();
 
-    protected final Environment env;
-
-    private OSGiAdapter osgi;
+    protected OSGiAdapter osgi;
 
     public static ClassLoader getDefaultClassLoader() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -60,25 +52,11 @@ public class NuxeoApp {
     }
 
     public NuxeoApp() {
-        this(new File("."), getDefaultClassLoader());
+        this(new File("."));
     }
 
     public NuxeoApp(File home) {
-        this(home, getDefaultClassLoader());
-    }
-
-    public NuxeoApp(File home, ClassLoader loader) {
-        this.loader = loader;
-        env = new Environment(home);
-        Environment.setDefault(env);
-    }
-
-    public ClassLoader getLoader() {
-        return loader;
-    }
-
-    public Environment getEnvironment() {
-        return env;
+        env.setProperty(OSGiAdapter.HOME_DIR, home.getAbsolutePath());
     }
 
     public void deployBundles(String bundlePath) throws BundleException,
@@ -109,25 +87,15 @@ public class NuxeoApp {
         if (!file.getPath().endsWith(".jar")) {
             return; // not a valid bundle
         }
-        BundleFile bf = file.isDirectory() ? new DirectoryBundleFile(file)
-                : new JarBundleFile(file);
-        try {
-            BundleImpl bundle = new BundleImpl(osgi, bf, loader);
-            if (bundle.getSymbolicName() != null) {
-                osgi.install(bundle);
-            }
-        } catch (NullPointerException t) {
-            // do nothing: may happen with non OSGi manifests
-            // System.out.println("Ignore: "+file);
-        }
+        osgi.install(file.toURI());
     }
 
-    public synchronized void start() {
+    public synchronized void start() throws IOException, BundleException {
         if (osgi != null) {
             throw new IllegalStateException("Nuxeo Runtime already started");
         }
-        osgi = new OSGiAdapter(env.getHome(), env.getData(),
-                env.getProperties());
+        osgi = new OSGiAdapter(env);
+        osgi.start();
     }
 
     public synchronized boolean isStarted() {
@@ -138,7 +106,7 @@ public class NuxeoApp {
         return osgi;
     }
 
-    public synchronized void shutdown() throws IOException {
+    public synchronized void shutdown() throws IOException, BundleException {
         if (osgi == null) {
             throw new IllegalStateException("Nuxeo Runtime not started");
         }
@@ -224,15 +192,6 @@ public class NuxeoApp {
     }
 
     public void fireFrameworkStarted() throws BundleException {
-        if (osgi.getSystemBundle() == null) {
-            SystemBundleFile file;
-            try {
-                file = new SystemBundleFile(osgi.getWorkingDir());
-            } catch (IOException e) {
-                throw new BundleException("Cannot create system bundle file", e);
-            }
-            osgi.setSystemBundle(new SystemBundle(osgi, file, loader));
-        }
         osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
                 osgi.getSystemBundle(), null));
     }

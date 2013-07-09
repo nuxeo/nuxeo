@@ -15,10 +15,11 @@
 package org.nuxeo.runtime.osgi;
 
 import java.net.URL;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -29,25 +30,41 @@ import org.osgi.service.packageadmin.PackageAdmin;
 /**
  * The default BundleActivator for NXRuntime over an OSGi comp. platform.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class OSGiRuntimeActivator implements BundleActivator {
 
     private static final Log log = LogFactory.getLog(OSGiRuntimeActivator.class);
 
-    private static OSGiRuntimeActivator instance;
+    protected static OSGiRuntimeActivator instance;
 
     protected OSGiRuntimeService runtime;
-    protected OSGiComponentLoader componentLoader;
 
-    protected ServiceReference pkgAdmin;
+    // protected ServiceLoader<ConfigurationAdmin> configAdmin; TODO
 
     protected BundleContext context;
 
-
     public static OSGiRuntimeActivator getInstance() {
         return instance;
+    }
+
+    protected class ServiceLoader<T> {
+        protected final ServiceReference<T> ref;
+
+        protected final Class<T> clazz;
+
+        protected final T instance;
+
+        protected ServiceLoader(Class<T> clazz) {
+            this.clazz = clazz;
+            ref = context.getServiceReference(clazz);
+            instance = context.getService(ref);
+        }
+
+        public void unload() {
+            context.ungetService(ref);
+        }
     }
 
     @Override
@@ -56,38 +73,39 @@ public class OSGiRuntimeActivator implements BundleActivator {
         instance = this;
         this.context = context;
 
-        pkgAdmin = context.getServiceReference(PackageAdmin.class.getName());
-
-        // assert the environment is setup
-        if (Environment.getDefault() == null) {
-            throw new IllegalStateException("Environment is not setup");
+        Dictionary<String, Object> config = new Hashtable<>();
+        URL configLocation = context.getBundle().getResource(
+                "/OSGI-INF/nuxeo.properties");
+        if (configLocation != null) {
+            config.put(OSGiRuntimeService.PROP_CONFIG_DIR,
+                    configLocation.toExternalForm());
         }
 
-        // create the runtime
-        runtime = new OSGiRuntimeService(context);
-
-        // load main config file if any
-        URL config = context.getBundle().getResource("/OSGI-INF/nuxeo.properties");
-        if (config != null) {
-            System.setProperty(OSGiRuntimeService.PROP_CONFIG_DIR, config.toExternalForm());
-        }
+        runtime = createRuntime(context, config);
 
         initialize(runtime);
+
+        // load main config file if any
+        // URL config =
+        // context.getBundle().getResource("/OSGI-INF/nuxeo.properties");
+        // if (config != null) {
+        // System.setProperty(OSGiRuntimeService.PROP_CONFIG_DIR,
+        // config.toExternalForm());
+        // }
+
         // start it
         Framework.initialize(runtime);
-        // register bundle component loader
-        componentLoader = new OSGiComponentLoader(runtime);
-        // TODO register osgi services
+    }
+
+    protected OSGiRuntimeService createRuntime(BundleContext context,
+            Dictionary<String, Object> config) {
+        return new OSGiRuntimeService(context, config);
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         log.info("Stopping Runtime Activator");
         instance = null;
-        pkgAdmin = null;
-        // remove component loader
-        componentLoader.uninstall();
-        componentLoader = null;
         // unregister
         Framework.shutdown();
         uninitialize(runtime);
@@ -95,20 +113,12 @@ public class OSGiRuntimeActivator implements BundleActivator {
         context = null;
     }
 
-
-    public Bundle getBundle(String name) {
-        if (pkgAdmin == null) {
-            return null;
-        }
-        PackageAdmin pa = (PackageAdmin)context.getService(pkgAdmin);
-        Bundle[] bundles = pa.getBundles(name, null);
-        context.ungetService(pkgAdmin);
-        return bundles == null ? null : bundles[0];
-    }
-
     /**
-     * Load a class from another bundle given its reference as <code>bundleSymbolicName:className</code>
-     * If no <code>bundleSymbolicName:</code> prefix is given then a classForName will be done
+     * Load a class from another bundle given its reference as
+     * <code>bundleSymbolicName:className</code> If no
+     * <code>bundleSymbolicName:</code> prefix is given then a classForName will
+     * be done
+     *
      * @param ref
      * @return
      */
@@ -117,13 +127,25 @@ public class OSGiRuntimeActivator implements BundleActivator {
         if (i == -1) {
             return Class.forName(ref);
         }
-        return loadClass(ref.substring(0, i), ref.substring(i+1));
+        return loadClass(ref.substring(0, i), ref.substring(i + 1));
     }
 
-    public Class<?> loadClass(String bundleName, String className) throws Exception {
+    protected Bundle getBundle(String name) {
+        ServiceReference<PackageAdmin> ref = context.getServiceReference(PackageAdmin.class);
+        PackageAdmin srv = context.getService(ref);
+        try {
+            return srv.getBundles(name, null)[0];
+        } finally {
+            context.ungetService(ref);
+        }
+    }
+
+    public Class<?> loadClass(String bundleName, String className)
+            throws Exception {
         Bundle bundle = getBundle(bundleName);
         if (bundle == null) {
-            throw new ClassNotFoundException("No bundle found with name: "+bundleName+". Unable to load class "+className);
+            throw new ClassNotFoundException("No bundle found with name: "
+                    + bundleName + ". Unable to load class " + className);
         }
         return bundle.loadClass(className);
     }
@@ -132,13 +154,14 @@ public class OSGiRuntimeActivator implements BundleActivator {
         return loadClass(ref).newInstance();
     }
 
-    public Object newInstance(String bundleName, String className) throws Exception {
+    public Object newInstance(String bundleName, String className)
+            throws Exception {
         return loadClass(bundleName, className).newInstance();
     }
 
     /**
-     * Gives a chance to derived classes to initialize them before the runtime is
-     * started.
+     * Gives a chance to derived classes to initialize them before the runtime
+     * is started.
      *
      * @param runtime the current runtime
      */

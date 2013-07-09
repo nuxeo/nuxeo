@@ -33,6 +33,16 @@ import org.osgi.framework.Bundle;
  */
 public interface RuntimeContext {
 
+    int UNREGISTERED = 0;
+
+    int REGISTERED = 1;
+
+    int RESOLVED = 2;
+
+    int ACTIVATING = 3;
+
+    int ACTIVATED = 4;
+
     /**
      * Gets the current runtime service.
      *
@@ -55,6 +65,12 @@ public interface RuntimeContext {
      * @see ClassLoader#loadClass(String)
      */
     Class<?> loadClass(String className) throws ClassNotFoundException;
+
+    /**
+     * Returns this bundle class loader
+     * @return
+     */
+    ClassLoader getClassLoader();
 
     /**
      * Finds a resource having the given name.
@@ -89,7 +105,7 @@ public interface RuntimeContext {
      *         for some reason
      * @throws Exception if any error occurs
      */
-    RegistrationInfo deploy(URL url) throws Exception;
+    RegistrationInfo[] deploy(URL url) throws Exception;
 
     /**
      * Same as {@link #deploy(URL)} but using a {@link StreamRef} as argument.
@@ -98,7 +114,7 @@ public interface RuntimeContext {
      * @return
      * @throws Exception
      */
-    RegistrationInfo deploy(StreamRef ref) throws Exception;
+    RegistrationInfo[] deploy(StreamRef ref) throws Exception;
 
     /**
      * Undeploys a component XML descriptor given its URL.
@@ -153,7 +169,7 @@ public interface RuntimeContext {
      *         for some reason
      * @throws Exception
      */
-    RegistrationInfo deploy(String location) throws Exception;
+    RegistrationInfo[] deploy(String location) throws Exception;
 
     /**
      * Undeploys the component at the given location if any was deployed.
@@ -174,8 +190,19 @@ public interface RuntimeContext {
     boolean isDeployed(String location);
 
     /**
+     * @since 5.7
+     */
+    boolean isActivated();
+
+    /**
      * Destroys this context.
      */
     void destroy();
+
+    /**
+     * @since 5.7
+     */
+    int getState();
+
 
 }

@@ -23,7 +23,7 @@
 package org.nuxeo.runtime.tomcat.dev;
 
 public enum DevBundleType {
-    Bundle(true), Library(true), Seam(false), ResourceBundleFragment(false);
+    Bundle(true), Library(true), BundleLibrary(true), Seam(false), ResourceBundleFragment(false);
     
     protected final boolean isJar;
     

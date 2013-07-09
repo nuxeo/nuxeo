@@ -3,7 +3,6 @@ Export-Package: org.nuxeo.osgi,
  org.nuxeo.osgi.application.client,
  org.nuxeo.osgi.application.loader,
  org.nuxeo.osgi.services
-Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Manifest-Version: 1.0
 Bundle-Category: runtime
@@ -14,14 +13,7 @@ Bundle-Version: 5.4.1.qualifier
 Eclipse-BuddyPolicy: registered
 Bundle-ManifestVersion: 2
 Import-Package: org.apache.commons.logging,
- org.jboss.deployment;resolution:=optional,
- org.jboss.logging;resolution:=optional,
- org.jboss.mx.loading;resolution:=optional,
- org.jboss.system;resolution:=optional,
- org.jboss.system.server;resolution:=optional,
- org.nuxeo.common,
- org.nuxeo.common.collections,
- org.nuxeo.common.utils,
  org.osgi.framework,
  org.osgi.service.packageadmin
 Bundle-SymbolicName: org.nuxeo.osgi;singleton:=true
+Bundle-Activator: org.nuxeo.osgi.OSGiSystemActivator

@@ -16,16 +16,13 @@
  */
 package org.nuxeo.runtime.model.impl;
 
-import java.util.Set;
-
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
  * Deactivate components in the proper order to avoid exceptions at shutdown.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ShutdownTask {
 
@@ -42,25 +39,7 @@ public class ShutdownTask {
         if (name == null) {
             return; // already destroyed
         }
-        if (ri.getState() <= RegistrationInfo.RESOLVED) {
-            // not yet activated so we can destroy it right now
-            mgr.unregister(name);
-            return;
-        }
-        // an active component - get the components depending on it
-        Set<ComponentName> reqs = mgr.reg.requirements.get(name);
-        if (reqs != null && !reqs.isEmpty()) {
-            // there are some components depending on me - cannot shutdown
-            for (ComponentName req : reqs.toArray(new ComponentName[reqs.size()])) {
-                RegistrationInfoImpl parentRi = mgr.reg.components.get(req);
-                if (parentRi != null) {
-                    shutdown(mgr, parentRi);
-                }
-            }
-        } else {
-            // no components are depending on me - shutdown now
-            mgr.unregister(name);
-        }
+        mgr.unregister(name);
     }
 
 }

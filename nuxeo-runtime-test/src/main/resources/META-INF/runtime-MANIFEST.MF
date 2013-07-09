@@ -1,0 +1,8 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: Nuxeo Runtime Test
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
+Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator

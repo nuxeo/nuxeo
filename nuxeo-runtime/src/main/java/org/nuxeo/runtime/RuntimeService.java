@@ -22,6 +22,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.impl.AbstractRuntimeService;
 import org.osgi.framework.Bundle;
 
 /**
@@ -107,6 +108,13 @@ public interface RuntimeService {
      * @return the runtime properties
      */
     Properties getProperties();
+
+    /**
+     * Set runtime service properties
+     *
+     * @since 5.7
+     */
+    void setProperties(Properties properties);
 
     /**
      * Reread all property files loaded at startup.
@@ -242,5 +250,10 @@ public interface RuntimeService {
      * @return true if there are warnings/errors on current runtime.
      */
     boolean getStatusMessage(StringBuilder msg);
+
+    /**
+     * @since 5.7
+     */
+    void getConfigSummary(StringBuilder msg);
 
 }

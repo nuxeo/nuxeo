@@ -18,6 +18,8 @@ package org.nuxeo.runtime.tomcat.dev;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Invokes the ReloadService by reflection as this module does not have access
@@ -33,14 +35,6 @@ public class ReloadServiceInvoker {
     protected Method deployBundle;
 
     protected Method undeployBundle;
-
-    /**
-     * Method to run the deployment preprocessor, previously handled by the
-     * deployBundle method
-     *
-     * @since 5.6
-     */
-    protected Method runDeploymentPreprocessor;
 
     /**
      * Method to install local web resources, as the deployment preprocessor
@@ -69,16 +63,12 @@ public class ReloadServiceInvoker {
                 new Class<?>[] { File.class });
         undeployBundle = reloadServiceClass.getDeclaredMethod("undeployBundle",
                 new Class<?>[] { String.class });
-        runDeploymentPreprocessor = reloadServiceClass.getDeclaredMethod(
-                "runDeploymentPreprocessor", new Class<?>[0]);
         installWebResources = reloadServiceClass.getDeclaredMethod(
                 "installWebResources", new Class<?>[] { File.class });
-        flush = reloadServiceClass.getDeclaredMethod("flush", new Class<?>[0]);
-        reload = reloadServiceClass.getDeclaredMethod("reload", new Class<?>[0]);
-        flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents",
-                new Class<?>[0]);
-        reloadSeam = reloadServiceClass.getDeclaredMethod(
-                "reloadSeamComponents", new Class<?>[0]);
+        flush = reloadServiceClass.getDeclaredMethod("flush");
+        reload = reloadServiceClass.getDeclaredMethod("reload", File[].class);
+        flushSeam = reloadServiceClass.getDeclaredMethod("flushSeamComponents");
+        reloadSeam = reloadServiceClass.getDeclaredMethod("reloadSeamComponents");
     }
 
     public void hotDeployBundles(DevBundle[] bundles) throws Exception {
@@ -88,10 +78,6 @@ public class ReloadServiceInvoker {
                     reloadService.getClass().getClassLoader());
             flush();
             boolean hasSeam = false;
-            // rebuild existing war, this will remove previously copied web
-            // resources
-            // commented out for now, see NXP-9642
-            // runDeploymentPreprocessor();
             for (DevBundle bundle : bundles) {
                 if (bundle.devBundleType == DevBundleType.Bundle) {
                     bundle.name = (String) deployBundle.invoke(reloadService,
@@ -106,7 +92,7 @@ public class ReloadServiceInvoker {
             if (hasSeam) {
                 reloadSeam();
             }
-            reload();
+//            reload();
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }
@@ -143,16 +129,12 @@ public class ReloadServiceInvoker {
         flush.invoke(reloadService);
     }
 
-    protected void reload() throws Exception {
-        reload.invoke(reloadService);
+    protected void reload(File[] additionalFragments) throws Exception {
+        reload.invoke(reloadService, (Object)additionalFragments);
     }
 
     protected void reloadSeam() throws Exception {
         reloadSeam.invoke(reloadService);
-    }
-
-    protected void runDeploymentPreprocessor() throws Exception {
-        runDeploymentPreprocessor.invoke(reloadService);
     }
 
 }

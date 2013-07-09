@@ -30,7 +30,7 @@ import org.w3c.dom.Element;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@XObject("extension")
+@XObject(value="extension", order="target")
 public class ExtensionImpl implements Extension {
 
     // used to generate the extension id if none was provided

@@ -73,8 +73,15 @@ public class AnnotationScanner {
 
     @SuppressWarnings("unchecked")
     public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationType) {
-        if (!visitedClasses.contains(clazz)) {
-            scan(clazz);
+        List<Annotation> list = classes.get(clazz);
+        if (list != null) {
+            List<T> result = new ArrayList<T>();
+            for (Annotation anno : list) {
+                if (annotationType.equals(anno.annotationType())) {
+                    result.add((T)anno);
+                }
+            }
+            return result;
         }
         return (List<T>) ImmutableList.copyOf(Iterables.filter(classes.get(clazz), Predicates.instanceOf(annotationType)));
     }

@@ -44,7 +44,7 @@ public class ContributionPersistenceComponent extends DefaultComponent
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        this.ctx = context.getRuntimeContext();
+        ctx = context.getRuntimeContext();
         storage = new FileSystemStorage();
     }
 
@@ -103,12 +103,11 @@ public class ContributionPersistenceComponent extends DefaultComponent
     @Override
     public synchronized boolean installContribution(Contribution contrib)
             throws Exception {
-        RegistrationInfo ri = ctx.deploy(contrib);
-        if (ri == null) {
-            return false;
+        RegistrationInfo[] ris = ctx.deploy(contrib);
+        for (RegistrationInfo ri:ris) {
+            ri.setPersistent(true);
         }
-        ri.setPersistent(true);
-        return true;
+        return ris.length > 0;
     }
 
     @Override

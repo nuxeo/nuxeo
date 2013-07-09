@@ -18,111 +18,42 @@ import java.util.IllegalFormatException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 /**
  * @author Bogdan Stefanescu
  * @author Ian Smith
  * @author Florent Guillaume
  */
-public class OSGiComponentLoader implements SynchronousBundleListener {
+public class OSGiComponentLoader implements BundleTrackerCustomizer {
 
     private static final Log log = LogFactory.getLog(OSGiComponentLoader.class);
 
-    private final OSGiRuntimeService runtime;
+    protected final OSGiRuntimeService runtime;
+
+    protected BundleTracker tracker;
 
     public OSGiComponentLoader(OSGiRuntimeService runtime) {
         this.runtime = runtime;
-        install();
     }
 
-    public void install() {
-        BundleContext ctx = runtime.getBundleContext();
-        ctx.addBundleListener(this);
-        Bundle[] bundles = ctx.getBundles();
-        int mask = Bundle.STARTING | Bundle.ACTIVE;
-        for (Bundle bundle : bundles) {
-            String name = bundle.getSymbolicName();
-            runtime.bundles.put(name, bundle);
-            int state = bundle.getState();
-            bundleDebug("Install bundle: %s " + bundleStateAsString(state),
-                    name);
-            if ((state & mask) != 0) { // check only resolved bundles
-                if (OSGiRuntimeService.getComponentsList(bundle) != null) {
-                    bundleDebug("Install bundle: %s component list: " +
-                            OSGiRuntimeService.getComponentsList(bundle), name);
-                    // check only bundles containing nuxeo comp.
-                    try {
-                        runtime.createContext(bundle);
-                    } catch (Throwable e) {
-                        log.warn("Failed to load components for bundle: " +
-                                name, e);
-                    }
-                } else {
-                    bundleDebug("Install bundle: %s has no components", name);
-                }
-            } else {
-                bundleDebug("Install bundle: %s is not STARTING "
-                        + "or ACTIVE, so no context was created", name);
-            }
-        }
+    public void start() {
+        tracker = new BundleTracker(runtime.getBundleContext(), Bundle.RESOLVED
+                | Bundle.STARTING | Bundle.ACTIVE, this);
+        tracker.open();
     }
 
-    public void uninstall() {
-        runtime.getBundleContext().removeBundleListener(this);
-    }
-
-    @Override
-    public void bundleChanged(BundleEvent event) {
-        String name = event.getBundle().getSymbolicName();
-        int type = event.getType();
-
-        bundleDebug("Bundle changed: %s " + bundleEventAsString(type), name);
+    public void stop() {
         try {
-            Bundle bundle = event.getBundle();
-            String componentsList = OSGiRuntimeService.getComponentsList(bundle);
-            switch (type) {
-            case BundleEvent.INSTALLED:
-                runtime.bundles.put(bundle.getSymbolicName(), bundle);
-                break;
-            case BundleEvent.UNINSTALLED:
-                runtime.bundles.remove(bundle.getSymbolicName());
-                break;
-            case BundleEvent.STARTING:
-            case BundleEvent.LAZY_ACTIVATION:
-                if (componentsList != null) {
-                    bundleDebug(
-                            "Bundle changed: %s STARTING with components: " +
-                                    componentsList, name);
-                    runtime.createContext(bundle);
-                } else {
-                    bundleDebug(
-                            "Bundle changed: %s STARTING with no components",
-                            name);
-                }
-                break;
-            case BundleEvent.STOPPED:
-            case BundleEvent.UNRESOLVED:
-                if (componentsList != null) {
-                    bundleDebug(
-                            "Bundle changed: %s STOPPING with components: " +
-                                    componentsList, name);
-                    runtime.destroyContext(bundle);
-                } else {
-                    bundleDebug(
-                            "Bundle changed: %s STOPPING with no components",
-                            name);
-                }
-                break;
-            }
-        } catch (Exception e) {
-            log.error(e);
+            tracker.close();
+        } finally {
+            tracker = null;
         }
     }
 
@@ -207,6 +138,36 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
             }
             log.debug(msg);
         }
+    }
+
+    @Override
+    public Object addingBundle(Bundle bundle, BundleEvent event) {
+        try {
+            log.info("building runtime context " + bundle);
+            runtime.createContext(bundle);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Failed to resolve components for bundle: " + bundle, e);
+        }
+        bundleDebug("Registered bundle: %s component list: "
+                + OSGiRuntimeService.getComponentsList(bundle), bundle.getSymbolicName());
+        return bundle;
+    }
+
+    @Override
+    public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+        if (event.getType() == BundleEvent.STARTED) {
+            try {
+                runtime.activateContext(bundle);
+            } catch (Exception e) {
+                throw new IllegalStateException("Cannot activate " + bundle, e);
+            }
+        }
+    }
+
+    @Override
+    public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
+        runtime.destroyContext(bundle);
     }
 
 }

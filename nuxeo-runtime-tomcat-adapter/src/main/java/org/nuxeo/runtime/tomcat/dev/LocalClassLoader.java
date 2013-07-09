@@ -1,8 +1,10 @@
 package org.nuxeo.runtime.tomcat.dev;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
 
 /*
  * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
@@ -39,5 +41,5 @@ public interface LocalClassLoader {
     Enumeration<URL> getLocalResources(String name) throws IOException;
 
     InputStream getLocalResourceAsStream(String name) throws IOException;
-
+    
 }

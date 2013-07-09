@@ -21,29 +21,21 @@
 package org.nuxeo.osgi;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.osgi.services.PackageAdminImpl;
-import org.nuxeo.osgi.util.jar.JarFileCloser;
-import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  *
@@ -52,120 +44,169 @@ import org.osgi.service.packageadmin.PackageAdmin;
  */
 public class OSGiAdapter {
 
+    public static final String HOST_NAME = "org.nuxeo.app.host.name";
+
+    public static final String HOST_VERSION = "org.nuxeo.app.host.version";
+
+    public static final String HOST_SERVER = "org.nuxeo.app.host.server";
+
+    public static final String HOME_DIR = "org.nuxeo.app.home";
+
+    public static final String LOG_DIR = "org.nuxeo.app.log";
+
+    public static final String DATA_DIR = "org.nuxeo.app.data";
+
+    public static final String TMP_DIR = "org.nuxeo.app.tmp";
+
+    public static final String NESTED_DIR = "org.nuxeo.app.nested";
+
+    public static final String WEB_DIR = "org.nuxeo.app.web";
+
+    public static final String CONFIG_DIR = "org.nuxeo.app.config";
+
+    public static final String LIBS = "org.nuxeo.app.libs"; // class path
+
+    public static final String BUNDLES = "org.nuxeo.app.bundles"; // class path
+
+    public static final String DEVMODE = "org.nuxeo.app.devmode";
+
+    public static final String PREPROCESSING = "org.nuxeo.app.preprocessing";
+
+    public static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
+
+    public static final String BUNDLE_FACTORY = "org.nuxeo.app.bundleFactory";
+
+    public static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
+
+    public static final String ARGS = "org.nuxeo.app.args";
+
+    public static final String BOOT_DELEGATION = "org.osgi.framework.bootdelegation";
+
     private static final Log log = LogFactory.getLog(OSGiAdapter.class);
 
     protected final File workingDir;
 
     protected final File dataDir;
 
-    protected File idTableFile;
+    protected OSGiSystemBundle system;
 
-    protected BundleIdGenerator bundleIds;
+    protected OSGiSystemContext osgi;
 
-    protected ListenerList frameworkListeners;
+    protected final Properties properties = new Properties();
 
-    protected ListenerList bundleListeners;
-
-    protected ListenerList serviceListeners;
-
-    protected Map<String, ServiceRegistration> services;
-
-    protected BundleRegistry registry;
-
-    protected Properties properties;
-
-    protected SystemBundle systemBundle;
-
-    protected JarFileCloser jarFileCloser;
-
-    public OSGiAdapter(File workingDir) {
-        this(workingDir, new File(System.getProperty(
-                Environment.NUXEO_DATA_DIR, workingDir + File.separator
-                        + "data")), new Properties());
+    public OSGiAdapter() throws IOException {
+        this(System.getProperties());
     }
 
-    public OSGiAdapter(File workingDir, File dataDir, Properties properties) {
-        services = new ConcurrentHashMap<String, ServiceRegistration>();
-        this.workingDir = workingDir;
-        this.dataDir = dataDir;
-        this.dataDir.mkdirs();
-        this.workingDir.mkdirs();
-        initialize(properties);
-    }
-
-    public void removeService(String clazz) {
-        services.remove(clazz);
-    }
-
-    protected void initialize(Properties properties) {
-        this.properties = properties == null ? new Properties() : properties;
-        registry = new BundleRegistry();
-        frameworkListeners = new ListenerList();
-        bundleListeners = new ListenerList();
-        serviceListeners = new ListenerList();
-        bundleIds = new BundleIdGenerator();
-        idTableFile = new File(dataDir, "bundles.ids");
-        bundleIds.load(idTableFile);
+    public OSGiAdapter(Properties properties) throws IOException {
+        this.properties.putAll(properties);
         // setting up default properties
         properties.put(Constants.FRAMEWORK_VENDOR, "Nuxeo");
         properties.put(Constants.FRAMEWORK_VERSION, "1.0.0");
+        String workingDirPath = getProperty(HOME_DIR,
+                File.createTempFile("nxosgi", null).toString());
+        workingDir = new File(workingDirPath);
+        workingDir.mkdirs();
+        String dataDirPath = getProperty(DATA_DIR,
+                workingDirPath.concat("/data"));
+        dataDir = new File(dataDirPath);
+        dataDir.mkdirs();
     }
 
-    public void setSystemBundle(SystemBundle systemBundle)
-            throws BundleException {
-        if (this.systemBundle != null) {
-            throw new IllegalStateException("Cannot set system bundle");
+    public OSGiAdapter(File workingDir, File dataDir) {
+        properties.put(Constants.FRAMEWORK_VENDOR, "Nuxeo");
+        properties.put(Constants.FRAMEWORK_VERSION, "1.0.0");
+        this.workingDir = workingDir;
+        this.workingDir.mkdirs();
+        properties.put(HOME_DIR, workingDir.toPath());
+        this.dataDir = dataDir;
+        this.dataDir.mkdirs();
+        properties.put(DATA_DIR, dataDir);
+    }
+
+    public void start() throws IOException, BundleException {
+        try {
+            system = newSystemBundle();
+            system.init();
+            system.start();
+            osgi = system.osgi;
+            OSGiBundle workingBundle = newConfigBundle();
+            osgi.registry.register(workingBundle);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Cannot create system bundle for " + workingDir, e);
         }
-        install(systemBundle);
-        registry.addBundleAlias("system.bundle", systemBundle.getSymbolicName());
-        this.systemBundle = systemBundle;
-
-        systemBundle.getBundleContext().registerService(
-                PackageAdmin.class.getName(), new PackageAdminImpl(this), null);
     }
 
-    public BundleRegistry getRegistry() {
-        return registry;
-    }
-
-    public String getProperty(String key) {
-        String value = properties.getProperty(key);
-        if (value == null) {
-            value = System.getProperty(key);
+    protected OSGiSystemBundle newSystemBundle() throws IOException,
+            BundleException {
+        String path = OSGiAdapter.class.getCanonicalName().replace('.', '/').concat(
+                ".class");
+        URL loc = OSGiAdapter.class.getClassLoader().getResource(path);
+        String proto = loc.getProtocol();
+        String jarPath;
+        if ("jar".equals(proto)) {
+            JarURLConnection connection = (JarURLConnection) loc.openConnection();
+            jarPath = connection.getJarFileURL().getFile();
+        } else if ("file".equals(proto)) {
+            jarPath = loc.getFile();
+            jarPath = jarPath.substring(0, jarPath.length() - path.length());
+        } else {
+            throw new UnsupportedOperationException("unknown protocol " + proto);
         }
-        return value;
+        File file = new File(jarPath);
+        OSGiSystemBundleFile bfile = new OSGiSystemBundleFile(file.toPath());
+        return new OSGiSystemBundle(bfile, properties);
     }
 
-    public String getProperty(String key, String defvalue) {
-        String val = getProperty(key);
-        if (val == null) {
-            val = defvalue;
+    protected OSGiBundle newConfigBundle() throws BundleException, IOException {
+        OSGiBundleFile bf = new OSGiSystemFragmentFile(workingDir.toPath());
+        return new OSGiBundleFragment(bf);
+    }
+
+    public void initialize(Properties properties) {
+        this.properties.putAll(properties);
+        // setting up default properties
+        properties.put(Constants.FRAMEWORK_VENDOR, "Nuxeo");
+        properties.put(Constants.FRAMEWORK_VERSION, "1.0.0");
+
+    }
+
+    public void setHome(File home) {
+        if (osgi != null) {
+            throw new IllegalStateException("OSGi framework already started");
         }
-        return val;
+        properties.put("nuxeo.runtime.home", home.getPath());
+        File file = new File(home, "system.properties");
+        if (!file.isFile()) {
+            return;
+        }
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(file);
+            Properties p = new Properties();
+            p.load(in);
+            setProperties(p);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load system properties", e);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            }
+        }
+
     }
 
-    /**
-     * @param name the property name.
-     * @param value the property value.
-     */
-    public void setProperty(String name, String value) {
-        properties.put(name, value);
+    public String getHome() {
+        return properties.getProperty("nuxeo.runtime.home");
     }
 
-    public void shutdown() throws IOException {
-        bundleIds.store(idTableFile);
-        registry.shutdown();
-        properties.clear();
-        registry = null;
-        frameworkListeners = null;
-        bundleListeners = null;
-        serviceListeners = null;
-        properties = null;
-        jarFileCloser = null;
-    }
-
-    public long getBundleId(String symbolicName) {
-        return bundleIds.getBundleId(symbolicName);
+    public void shutdown() throws BundleException, IOException {
+        system.uninstall();
     }
 
     public File getWorkingDir() {
@@ -176,105 +217,66 @@ public class OSGiAdapter {
         return dataDir;
     }
 
-    public BundleImpl getBundle(String symbolicName) {
-        return registry.getBundle(symbolicName);
+    public Bundle getBundle(String symbolicName) {
+        OSGiBundleRegistration reg = osgi.registry.bundlesByName.get(symbolicName);
+        if (reg == null) {
+            return null;
+        }
+        return reg.bundle;
     }
 
-    public BundleImpl[] getInstalledBundles() {
-        return registry.getInstalledBundles();
+    public Bundle[] getInstalledBundles() {
+        return osgi.getBundles();
     }
 
-    public void install(BundleImpl bundle) throws BundleException {
-        double s = System.currentTimeMillis();
-        registry.install(bundle);
-        bundle.startupTime = System.currentTimeMillis() - s;
+    public Bundle install(URI location) throws BundleException {
+        return osgi.installBundle(location.toASCIIString());
     }
 
-    public void uninstall(BundleImpl bundle) throws BundleException {
-        registry.uninstall(bundle);
-    }
-
-    public void addFrameworkListener(FrameworkListener listener) {
-        frameworkListeners.add(listener);
-    }
-
-    public void removeFrameworkListener(FrameworkListener listener) {
-        frameworkListeners.remove(listener);
-    }
-
-    public void addServiceListener(ServiceListener listener) {
-        serviceListeners.add(listener);
-    }
-
-    public void addServiceListener(ServiceListener listener, String filter) {
-        // TODO?
-        throw new UnsupportedOperationException(
-                "This method is not implemented");
-    }
-
-    public void removeServiceListener(ServiceListener listener) {
-        serviceListeners.remove(listener);
-    }
-
-    public void addBundleListener(BundleListener listener) {
-        bundleListeners.add(listener);
-    }
-
-    public void removeBundleListener(BundleListener listener) {
-        bundleListeners.remove(listener);
+    public void uninstall(Bundle bundle) throws BundleException {
+        bundle.uninstall();
     }
 
     public void fireFrameworkEvent(FrameworkEvent event) {
-        log.debug("Firing FrameworkEvent on " + frameworkListeners.size()
-                + " listeners");
-        if (event.getType() == FrameworkEvent.STARTED) {
-            jarFileCloser = newJarFileCloser();
-        }
-        Object[] listeners = frameworkListeners.getListeners();
-        for (Object listener : listeners) {
-            log.debug("Start execution of " + listener.getClass() + " listener");
-            try {
-                ((FrameworkListener) listener).frameworkEvent(event);
-                log.debug("End execution of " + listener.getClass()
-                        + " listener");
-            } catch (RuntimeException e) {
-                log.error("Error during Framework Listener execution : "
-                        + listener.getClass(), e);
-            }
-        }
-    }
-
-    protected JarFileCloser newJarFileCloser() {
-        return new JarFileCloser(Framework.getResourceLoader(),
-                systemBundle.loader);
-    }
-
-    public void fireServiceEvent(ServiceEvent event) {
-        Object[] listeners = serviceListeners.getListeners();
-        for (Object listener : listeners) {
-            ((ServiceListener) listener).serviceChanged(event);
-        }
+        osgi.fireFrameworkEvent(event);
     }
 
     public void fireBundleEvent(BundleEvent event) {
-        Object[] listeners = bundleListeners.getListeners();
-        for (Object listener : listeners) {
-            ((BundleListener) listener).bundleChanged(event);
+
+    }
+
+    public OSGiSystemBundle getSystemBundle() {
+        return system;
+    }
+
+    public OSGiSystemContext getSytemContext() {
+        return (OSGiSystemContext) system.context;
+    }
+
+    public ClassLoader getSystemLoader() {
+        return osgi.loader;
+    }
+
+    public void setProperties(Properties properties) {
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            setProperty(entry.getKey().toString(), entry.getValue().toString());
         }
     }
 
-    public Bundle getSystemBundle() {
-        return systemBundle;
+    public void setProperty(String key, String value) {
+        properties.put(key, value);
     }
 
-    /**
-     * helper for closing jar files during bundle uninstall
-     * @since 5.6
-     */
-    public JarFileCloser getJarFileCloser() {
-        if (jarFileCloser == null) {
-            jarFileCloser = newJarFileCloser();
+    public String getProperty(String key, String defaultValue) {
+        String value = properties.getProperty(key);
+        if (value == null) {
+            value = defaultValue;
         }
-        return jarFileCloser;
+        return value;
     }
+
+    public Bundle install(OSGiBundleFile bf) throws BundleException {
+        return osgi.installBundle(bf);
+    }
+
 }

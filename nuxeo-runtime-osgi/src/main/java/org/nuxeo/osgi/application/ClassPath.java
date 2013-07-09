@@ -27,90 +27,67 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.URI;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.nuxeo.osgi.BundleFile;
-import org.nuxeo.osgi.DirectoryBundleFile;
-import org.nuxeo.osgi.JarBundleFile;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.osgi.OSGiAdapter;
+import org.nuxeo.osgi.nio.BundleWalker;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ClassPath implements ClassPathScanner.Callback {
+public class ClassPath {
 
-    protected final List<BundleFile> bundles;
-    protected final List<BundleFile> jars;
-    protected final List<BundleFile> nestedJars;
-    protected final SharedClassLoader loader;
-    protected final File nestedJARsDir;
+    protected final Log log = LogFactory.getLog(ClassPath.class);
 
-    public ClassPath(SharedClassLoader loader, File nestedJARsDir) {
-        bundles = new ArrayList<BundleFile>();
-        jars = new ArrayList<BundleFile>();
-        nestedJars = new ArrayList<BundleFile>();
-        this.loader = loader;
-        this.nestedJARsDir = nestedJARsDir;
-        nestedJARsDir.mkdirs();
+    protected final OSGiAdapter osgi;
+
+    protected Bundle[] bundles;
+
+    public ClassPath(OSGiAdapter osgi) {
+        this.osgi = osgi;
     }
 
-    public List<BundleFile> getBundles() {
+    public Bundle[] getBundles() {
         return bundles;
     }
 
-    public List<BundleFile> getJars() {
-        return jars;
+    protected static class BundleCollector implements BundleWalker.Callback {
+
+        protected final List<Bundle> bundles = new LinkedList<Bundle>();
+
+        @Override
+        public void visitBundle(Bundle bundle) {
+            bundles.add(bundle);
+        }
+
     }
 
-    public List<BundleFile> getNestedJars() {
-        return nestedJars;
+    public Bundle[] scan(List<File> files) {
+        BundleCollector collector = new BundleCollector();
+        new BundleWalker(osgi, collector);
+        return bundles = collector.bundles.toArray(new Bundle[collector.bundles.size()]);
     }
 
-    public void scan(List<File> files, boolean scanForNestedJARs, String[] blacklist) {
-        new ClassPathScanner(this, scanForNestedJARs, blacklist).scan(files);
+    public Bundle[] scan(List<File> files, String[] blacklist) {
+        BundleCollector collector = new BundleCollector();
+        new BundleWalker(osgi, collector, blacklist);
+        return bundles = collector.bundles.toArray(new Bundle[collector.bundles.size()]);
     }
 
-    @Override
-    public File handleBundle(BundleFile bf) {
-        bundles.add(bf);
-        loader.addURL(bf.getURL());
-        return nestedJARsDir;
-    }
-
-    @Override
-    public File handleJar(BundleFile bf) {
-        jars.add(bf);
-        loader.addURL(bf.getURL());
-        return nestedJARsDir;
-    }
-
-    @Override
-    public void handleNestedJar(BundleFile bf) {
-        nestedJars.add(bf);
-        loader.addURL(bf.getURL());
-    }
-
-    public void store(File file) throws IOException {
+    public void store(File storefile) throws IOException {
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(file));
-            for (BundleFile bf : bundles) {
-                writer.append(bf.getFile().getAbsolutePath());
-                writer.newLine();
-            }
-            writer.append("#");
-            writer.newLine();
-            for (BundleFile bf : jars) {
-                writer.append(bf.getFile().getAbsolutePath());
-                writer.newLine();
-            }
-            writer.append("#");
-            writer.newLine();
-            for (BundleFile bf : nestedJars) {
-                writer.append(bf.getFile().getAbsolutePath());
-                writer.newLine();
+            writer = new BufferedWriter(new FileWriter(storefile));
+            for (Bundle bundle : bundles) {
+                URI uri = URI.create(bundle.getLocation());
+                writer.append(uri.toURL().getFile());
             }
         } finally {
             if (writer != null) {
@@ -123,7 +100,7 @@ public class ClassPath implements ClassPathScanner.Callback {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
-            List<BundleFile> list = bundles;
+            List<Bundle> list = new LinkedList<Bundle>();
             String line = null;
             while (true) {
                 line = reader.readLine();
@@ -131,22 +108,14 @@ public class ClassPath implements ClassPathScanner.Callback {
                     break;
                 }
                 if (line.startsWith("#")) {
-                    if (list == bundles) {
-                        list = jars;
-                    } else if (list == jars) {
-                        list = nestedJars;
-                    }
                     continue;
                 }
-                BundleFile bf = null;
                 File f = new File(line.trim());
-                if (f.isDirectory()) {
-                    bf = new DirectoryBundleFile(f);
-                } else {
-                    bf = new JarBundleFile(f);
+                try {
+                    list.add(osgi.install(f.toURI()));
+                } catch (BundleException e) {
+                    log.error("Cannot reload bundle file " + f, e);
                 }
-                loader.addURL(bf.getURL());
-                list.add(bf);
             }
         } finally {
             if (reader != null) {

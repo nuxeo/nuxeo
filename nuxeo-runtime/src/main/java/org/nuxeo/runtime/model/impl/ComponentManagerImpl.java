@@ -57,7 +57,7 @@ public class ComponentManagerImpl implements ComponentManager {
     protected ComponentRegistry reg;
 
     public ComponentManagerImpl(RuntimeService runtime) {
-        reg = new ComponentRegistry();
+        reg = new ComponentRegistry(this);
         pendingExtensions = new HashMap<ComponentName, Set<Extension>>();
         listeners = new ListenerList();
         services = new ConcurrentHashMap<String, RegistrationInfoImpl>();
@@ -70,10 +70,8 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public synchronized Map<ComponentName, Set<ComponentName>> getPendingRegistrations() {
-        // TODO the set value is not cloned
-        return new HashMap<ComponentName, Set<ComponentName>>(
-                reg.getPendingComponents());
+    public synchronized Map<ComponentName, Set<RegistrationInfo>> getPendingRegistrations() {
+        return reg.requiredPendings.map;
     }
 
     public synchronized Collection<ComponentName> getNeededRegistrations() {
@@ -86,7 +84,8 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public synchronized RegistrationInfo getRegistrationInfo(ComponentName name) {
+    public synchronized RegistrationInfoImpl getRegistrationInfo(
+            ComponentName name) {
         return reg.getComponent(name);
     }
 
@@ -101,8 +100,8 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public synchronized ComponentInstance getComponent(ComponentName name) {
-        RegistrationInfo ri = reg.getComponent(name);
+    public synchronized ComponentInstanceImpl getComponent(ComponentName name) {
+        RegistrationInfoImpl ri = reg.getComponent(name);
         return ri != null ? ri.getComponent() : null;
     }
 
@@ -170,14 +169,15 @@ public class ComponentManagerImpl implements ComponentManager {
                 log.info("Registration delayed for component: " + name
                         + ". Waiting for: "
                         + reg.getMissingDependencies(ri.getName()));
+                return;
             }
         } catch (Throwable e) {
             String msg = "Failed to register component: " + name;
             log.error(msg, e);
             msg += " (" + e.toString() + ')';
             Framework.getRuntime().getWarnings().add(msg);
-            return;
         }
+        return;
     }
 
     @Override
@@ -208,27 +208,15 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public ComponentInstance getComponentProvidingService(
             Class<?> serviceClass) {
-        RegistrationInfoImpl ri = services.get(serviceClass.getName());
-        if (ri != null && ri.isActivated()) {
-            return ri.getComponent();
-        }
-        synchronized(this) {
-	    if (ri != null && !ri.isActivated()) {
-		if (ri.isResolved()) {
-		    try {
-			ri.activate();
-			return ri.getComponent();
-		    } catch (Exception e) {
-			log.error("Failed to get service: " + serviceClass + ", " + e.getMessage());
-		    }
-		} else {
-		    // Hack to avoid messages during TypeService activation
-		    if (!serviceClass.getSimpleName().equals("TypeProvider")) {
-			log.debug("The component exposing the service "
-				  + serviceClass + " is not resolved");
-		    }
-		}
-	    }
+        try {
+            RegistrationInfoImpl ri = services.get(serviceClass.getName());
+            if (ri != null) {
+                if (ri.lazyActivate()) {
+                    return ri.getComponent();
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to get service: " + serviceClass);
         }
         return null;
     }
@@ -254,7 +242,7 @@ public class ComponentManagerImpl implements ComponentManager {
         return activating;
     }
 
-    void sendEvent(ComponentEvent event) {
+    void sendEvent(ComponentEvent event) throws Exception {
         log.debug("Dispatching event: " + event);
         Object[] listeners = this.listeners.getListeners();
         for (Object listener : listeners) {
@@ -325,13 +313,16 @@ public class ComponentManagerImpl implements ComponentManager {
 
     public static void loadContributions(RegistrationInfoImpl ri, Extension xt) {
         ExtensionPointImpl xp = ri.getExtensionPoint(xt.getExtensionPoint());
-        if (xp != null && xp.contributions != null) {
-            try {
-                Object[] contribs = xp.loadContributions(ri, xt);
-                xt.setContributions(contribs);
-            } catch (Exception e) {
-                log.error("Failed to create contribution objects", e);
-            }
+        if (xp == null) {
+            throw new IllegalStateException(
+                    "Cannot load contributions, extension point not registered ("
+                            + xt + ")");
+        }
+        try {
+            Object[] contribs = xp.loadContributions(ri, xt);
+            xt.setContributions(contribs);
+        } catch (Exception e) {
+            log.error("Failed to create contribution objects", e);
         }
     }
 

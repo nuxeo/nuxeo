@@ -28,17 +28,14 @@ public class XMapContext extends Context {
     private static final long serialVersionUID = -7194560385886298218L;
 
     final RuntimeContext ctx;
-
+    
     public XMapContext(RuntimeContext ctx) {
         this.ctx = ctx;
     }
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-        if (className.startsWith("[")) {
-            return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
-        }
-        return ctx.loadClass(className);
+    	return Class.forName(className, true, ctx.getClassLoader());
     }
 
     @Override

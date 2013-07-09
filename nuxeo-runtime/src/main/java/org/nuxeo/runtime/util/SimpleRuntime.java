@@ -19,9 +19,8 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
-import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
+import org.nuxeo.runtime.model.impl.AbstractRuntimeService;
 
 /**
  * A runtime service used for JUnit tests.
@@ -56,7 +55,7 @@ public class SimpleRuntime extends AbstractRuntimeService {
     }
 
     public SimpleRuntime(File workingDir) {
-        super(new DefaultRuntimeContext());
+        super(new SimpleRuntimeContext());
         this.workingDir = workingDir;
     }
 
@@ -78,11 +77,11 @@ public class SimpleRuntime extends AbstractRuntimeService {
     }
 
     public void deploy(URL url) throws Exception {
-        context.deploy(url);
+        runtimeContext.deploy(url);
     }
 
     public void undeploy(URL url) throws Exception {
-        context.undeploy(url);
+        runtimeContext.undeploy(url);
     }
 
     @Override

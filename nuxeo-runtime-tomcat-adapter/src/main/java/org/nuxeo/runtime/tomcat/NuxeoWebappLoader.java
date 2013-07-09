@@ -54,4 +54,8 @@ public class NuxeoWebappLoader extends WebappLoader {
         return baseDir;
     }
 
+    @Override
+    public ClassLoader getClassLoader() {
+        return super.getClassLoader();
+    }
 }

@@ -38,8 +38,12 @@ import org.apache.commons.logging.LogFactory;
 
 
 /**
+ * @deprecated needs to be kept in sync with the one from nuxeo-runtime-launcher
+ *             until they are merged
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deprecated
 public class FrameworkBootstrap implements LoaderConstants {
 
     protected static final String DEFAULT_BUNDLES_CP = "bundles/*:plugins/*";
@@ -50,7 +54,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     protected File home;
 
-    protected MutableClassLoader loader;
+    protected BootstrapClassLoader bootstrapLoader;
 
     protected Map<String, Object> env;
 
@@ -58,18 +62,19 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     protected long startTime;
 
+    protected List<File> libraries = new ArrayList<File>();
+
+    protected final List<File> bundles = new ArrayList<File>();
+
     protected boolean scanForNestedJars = true;
 
     protected boolean flushCache = false;
 
-    public FrameworkBootstrap(ClassLoader cl, File home) throws IOException {
-        this(new MutableClassLoaderDelegate(cl), home);
-    }
-
-    public FrameworkBootstrap(MutableClassLoader loader, File home)
+    public FrameworkBootstrap(ClassLoader loader, File home)
             throws IOException {
         this.home = home.getCanonicalFile();
-        this.loader = loader;
+        bootstrapLoader = new BootstrapClassLoader(loader);
+
         initializeEnvironment();
     }
 
@@ -101,12 +106,9 @@ public class FrameworkBootstrap implements LoaderConstants {
         return env;
     }
 
-    public MutableClassLoader getLoader() {
-        return loader;
-    }
 
     public ClassLoader getClassLoader() {
-        return loader.getClassLoader();
+        return bootstrapLoader;
     }
 
     public File getHome() {
@@ -115,12 +117,13 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     public void initialize() throws Exception {
         startTime = System.currentTimeMillis();
-        List<File> bundleFiles = buildClassPath();
-        frameworkLoaderClass = getClassLoader().loadClass(
+        List<File> libraries = buildLibsClassPath();
+        List<File> bundles = buildBundlesClassPath(libraries);
+        frameworkLoaderClass = bootstrapLoader.loadClass(
                 "org.nuxeo.osgi.application.loader.FrameworkLoader");
-        Method init = frameworkLoaderClass.getMethod("initialize",
-                ClassLoader.class, File.class, List.class, Map.class);
-        init.invoke(null, loader.getClassLoader(), home, bundleFiles, env);
+        Method init = frameworkLoaderClass.getDeclaredMethod("initialize",
+                ClassLoader.class, File.class, File[].class, File[].class, Map.class);
+        init.invoke(null, bootstrapLoader, home, libraries.toArray(new File[libraries.size()]), bundles.toArray(new File[bundles.size()]), env);
     }
 
     public void start() throws Exception {
@@ -140,6 +143,15 @@ public class FrameworkBootstrap implements LoaderConstants {
         }
         Method stop = frameworkLoaderClass.getMethod("stop");
         stop.invoke(null);
+    }
+
+    protected ClassLoader getOSGiLoader() throws Exception {
+        if (frameworkLoaderClass == null) {
+            throw new IllegalStateException(
+                    "Framework Loader was not initialized. Call initialize() method first");
+        }
+        Method loader = frameworkLoaderClass.getMethod("getOSGiLoader");
+        return (ClassLoader)loader.invoke(null);
     }
 
     public String installBundle(File f) throws Exception {
@@ -209,67 +221,63 @@ public class FrameworkBootstrap implements LoaderConstants {
      *
      * @return the list of bundle files.
      */
-    protected List<File> buildClassPath() throws IOException {
-        List<File> bundleFiles = new ArrayList<File>();
-        String libsCp = (String) env.get(LIBS);
-        if (libsCp != null) {
-            buildLibsClassPath(libsCp);
-        }
+    protected List<File> buildBundlesClassPath(List<File> libraries) throws IOException {
         String bundlesCp = (String) env.get(BUNDLES);
-        if (bundlesCp != null) {
-            buildBundlesClassPath(bundlesCp, bundleFiles);
-        }
-        extractNestedJars(bundleFiles, new File(home, "tmp/nested-jars"));
-        return bundleFiles;
-    }
-
-    protected void buildLibsClassPath(String libsCp) throws IOException {
-        String[] ar = libsCp.split(":");
-        for (String entry : ar) {
-            File entryFile;
-            if (entry.endsWith("/*")) {
-                entryFile = newFile(entry.substring(0, entry.length() - 2));
-                File[] files = entryFile.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        loader.addURL(file.toURI().toURL());
-                    }
-                }
+        List<File> bundles = new ArrayList<File>();
+        for (String path : expandWildcard(bundlesCp)) {
+            File file = newFile(path);
+            if (path.contains("nuxeo-runtime-osgi")) {
+                bootstrapLoader.addURL(file.toURI().toURL());
             } else {
-                entryFile = newFile(entry);
-                loader.addURL(entryFile.toURI().toURL());
+                bundles.add(file);
             }
         }
+        extractNestedJars(libraries, bundles, new File(home, "tmp/nested-jars"));
+        return bundles;
     }
 
-    protected void buildBundlesClassPath(String bundlesCp,
-            List<File> bundleFiles) throws IOException {
-        String[] ar = bundlesCp.split(":");
-        for (String entry : ar) {
-            File entryFile;
-            if (entry.endsWith("/*")) {
-                entryFile = newFile(entry.substring(0, entry.length() - 2));
-                File[] files = entryFile.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        String path = file.getPath();
-                        if (path.endsWith(".jar") || path.endsWith(".zip")
-                                || path.endsWith(".war")
-                                || path.endsWith("rar")) {
-                            bundleFiles.add(file);
-                            loader.addURL(file.toURI().toURL());
-                        }
-                    }
-                }
+    protected List<File> buildLibsClassPath() throws IOException {
+        List<File> files = new ArrayList<File>();
+        String libsCp = (String) env.get(LIBS);
+        for (String path:expandWildcard(libsCp)) {
+            File file = newFile(path);
+            if  (path.contains("osgi-core")) {
+                bootstrapLoader.addURL(file.toURI().toURL());
+            } else if (path.contains("org.osgi.compendium")){
+                bootstrapLoader.addURL(file.toURI().toURL());
+            } else  if (path.contains("commons-io")) {
+                bootstrapLoader.addURL(file.toURI().toURL());
             } else {
-                entryFile = newFile(entry);
-                bundleFiles.add(entryFile);
-                loader.addURL(entryFile.toURI().toURL());
+                files.add(file);
             }
         }
+        return files;
     }
 
-    protected void extractNestedJars(List<File> bundleFiles, File dir)
+    protected String[] expandWildcard(String cp) throws IOException {
+        if (cp == null || cp.isEmpty()) {
+            return new String[0];
+        }
+        String[] patterns = cp.split(":");
+        List<String> paths = new ArrayList<String>(patterns.length);
+        for (String pattern : patterns) {
+            if (!pattern.endsWith("/*")) {
+                paths.add(pattern);
+            } else {
+                File dirPath = newFile(pattern.substring(0,
+                        pattern.length() - 2));
+                File[] files = dirPath.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        paths.add(file.getPath());
+                    }
+                }
+            }
+        }
+        return paths.toArray(new String[paths.size()]);
+    }
+
+    protected void extractNestedJars(List<File> libraries, List<File> bundles, File dir)
             throws IOException {
         if (!scanForNestedJars) {
             return;
@@ -281,23 +289,23 @@ public class FrameworkBootstrap implements LoaderConstants {
                 File[] files = dir.listFiles();
                 if (files != null) {
                     for (File f : files) {
-                        loader.addURL(f.toURI().toURL());
+                        libraries.add(f);
                     }
                 }
                 return;
             }
         }
         dir.mkdirs();
-        for (File f : bundleFiles) {
-            if (f.isFile()) {
-                extractNestedJars(f, dir);
+        for (File bundle : bundles) {
+            if (bundle.isFile()) {
+                extractNestedJars(libraries, bundle, dir);
             }
         }
     }
 
-    protected void extractNestedJars(File file, File tmpDir) throws IOException {
-        JarFile jarFile = new JarFile(file);
-        String fileName = file.getName();
+    protected void extractNestedJars(List<File> libraries, File bundle, File tmpDir) throws IOException {
+        JarFile jarFile = new JarFile(bundle);
+        String fileName = bundle.getName();
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
             JarEntry entry = entries.nextElement();
@@ -306,7 +314,7 @@ public class FrameworkBootstrap implements LoaderConstants {
                 String name = path.replace('/', '_');
                 File dest = new File(tmpDir, fileName + '-' + name);
                 extractNestedJar(jarFile, entry, dest);
-                loader.addURL(dest.toURI().toURL());
+                libraries.add(dest);
             }
         }
     }

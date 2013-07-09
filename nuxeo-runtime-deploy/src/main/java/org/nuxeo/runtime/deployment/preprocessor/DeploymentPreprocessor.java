@@ -24,6 +24,8 @@ package org.nuxeo.runtime.deployment.preprocessor;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +44,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.DependencyTree;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.JarUtils;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -50,6 +51,7 @@ import org.nuxeo.runtime.deployment.preprocessor.install.CommandContext;
 import org.nuxeo.runtime.deployment.preprocessor.install.CommandContextImpl;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateContribution;
 import org.nuxeo.runtime.deployment.preprocessor.template.TemplateParser;
+import org.osgi.framework.Bundle;
 
 /**
  * Initializer for the deployment skeleton, taking care of creating templates,
@@ -126,17 +128,15 @@ public class DeploymentPreprocessor {
             log.info("Running custom installation for container: " + cd.name);
             cd.install.exec(cd.context);
         }
+        // scan directories
+        if (cd.directories != null) {
+            for (String dirPath : cd.directories) {
+                init(cd, new File(dir, dirPath));
+            }
+        }
+        // scan files
         if (cd.files != null) {
             init(cd, cd.files);
-        } else {
-            // scan directories
-            if (cd.directories == null || cd.directories.isEmpty()) {
-                init(cd, dir);
-            } else {
-                for (String dirPath : cd.directories) {
-                    init(cd, new File(dir, dirPath));
-                }
-            }
         }
     }
 
@@ -169,12 +169,13 @@ public class DeploymentPreprocessor {
             } else {
                 fd = getJARFragment(file);
             }
+        } else if (file.isDirectory()) {
+            fd = getDirectoryFragment(file);
         }
         // register the fragment if any was found
         if (fd != null) {
             fd.fileName = fileName;
-            fd.filePath = getRelativeChildPath(cd.directory.getAbsolutePath(),
-                    file.getAbsolutePath());
+            fd.filePath = file.getAbsolutePath();
             cd.fragments.add(fd);
             if (fd.templates != null) {
                 for (TemplateDescriptor td : fd.templates.values()) {
@@ -402,8 +403,7 @@ public class DeploymentPreprocessor {
             } else {
                 cd.fragments.add(fd);
                 fd.fileName = fileName;
-                fd.filePath = getRelativeChildPath(
-                        cd.directory.getAbsolutePath(), file.getAbsolutePath());
+                fd.filePath = file.getAbsolutePath();
             }
         }
     }
@@ -445,29 +445,68 @@ public class DeploymentPreprocessor {
         return fd;
     }
 
+    protected FragmentDescriptor getFragment(Bundle bundle) throws Exception {
+        URL location = bundle.getEntry("OSGI-INF/deployment-fragment.xml");
+        if (location == null) {
+            return null;
+        }
+        File jarFile = getJarFile(location);
+        if (jarFile == null) {
+            log.warn("Cannot extract fragment from " + location);
+            return null;
+        }
+        InputStream stream = location.openStream();
+        try {
+            FragmentDescriptor fd = getFragment(bundle.getSymbolicName(), stream);
+            fd.fileName = jarFile.getName();
+            fd.filePath = jarFile.getAbsolutePath();
+            return fd;
+        } finally {
+            stream.close();
+        }
+    }
+
+    protected File getJarFile(URL location) throws MalformedURLException {
+        String spec = location.getFile();
+        String protocol = location.getProtocol();
+        if ("jar".equals(protocol)) {
+            int separator = spec.indexOf("!/");
+            URL jarFileLocation = new URL(spec.substring(0, separator));
+            return getJarFile(jarFileLocation);
+        } else if ("file".equals(protocol)) {
+            int separator = spec.indexOf(".jar");
+            String path = spec.substring(0, separator+4);
+            return new File(path);
+        } else {
+            return null;
+        }
+    }
+
+    protected FragmentDescriptor getFragment(String name, InputStream stream)
+            throws IOException {
+        InputStream buffered = new BufferedInputStream(stream);
+        FragmentDescriptor fd = (FragmentDescriptor) xmap.load(buffered);
+        if (fd.name == null) {
+            fd.name = name;
+        }
+        return fd;
+    }
+
     protected FragmentDescriptor getJARFragment(File file) throws Exception {
         FragmentDescriptor fd = null;
         JarFile jar = new JarFile(file);
         try {
             ZipEntry ze = jar.getEntry(FRAGMENT_FILE);
             if (ze != null) {
-                InputStream in = new BufferedInputStream(jar.getInputStream(ze));
+                InputStream in = jar.getInputStream(ze);
                 try {
-                    fd = (FragmentDescriptor) xmap.load(in);
+                    fd = getFragment(getJarArtifactName(file.getName()), in);
                 } finally {
                     in.close();
                 }
-                if (fd.name == null) {
-                    // fallback on symbolic name
-                    fd.name = getSymbolicName(file);
-                }
-                if (fd.name == null) {
-                    // fallback on artifact id
-                    fd.name = getJarArtifactName(file.getName());
-                }
-                if (fd.version == 0) { // compat with versions < 5.4
-                    processBundleForCompat(fd, file);
-                }
+            }
+            if (fd.version == 0) { // compat with versions < 5.4
+                processBundleForCompat(fd, file);
             }
         } finally {
             jar.close();
@@ -548,7 +587,7 @@ public class DeploymentPreprocessor {
     protected ContainerDescriptor getDefaultContainer(File directory)
             throws Exception {
         File file = new File(directory.getAbsolutePath() + '/' + CONTAINER_FILE);
-        if (!file.isFile()) {
+        if (!file.exists()) {
             file = new File(directory.getAbsolutePath() + '/'
                     + CONTAINER_FILE_COMPAT);
         }
@@ -559,27 +598,12 @@ public class DeploymentPreprocessor {
         return cd;
     }
 
-    public static String getRelativeChildPath(String parent, String child) {
-        // TODO optimize this method
-        // fix win32 case
-        if (parent.indexOf('\\') > -1) {
-            parent = parent.replace('\\', '/');
-        }
-        if (child.indexOf('\\') > -1) {
-            child = child.replace('\\', '/');
-        } // end fix win32
-        Path parentPath = new Path(parent);
-        Path childPath = new Path(child);
-        if (parentPath.isPrefixOf(childPath)) {
-            return childPath.removeFirstSegments(parentPath.segmentCount()).makeRelative().toString();
-        }
-        return null;
-    }
+    protected static DeploymentPreprocessor processor;
 
     /**
-     * Run preprocessing in the given home directory and using the given list
-     * of bundles. Bundles must be ordered by the caller to have same
-     * deployment order on all computers.
+     * Run preprocessing in the given home directory and using the given list of
+     * bundles. Bundles must be ordered by the caller to have same deployment
+     * order on all computers.
      * <p>
      * The metadata file is the metadat file to be used to configure the
      * processor. If null the default location will be used (relative to home):
@@ -587,10 +611,15 @@ public class DeploymentPreprocessor {
      */
     public static void process(File home, File metadata, File[] files)
             throws Exception {
-        DeploymentPreprocessor processor = new DeploymentPreprocessor(home);
+        processor = new DeploymentPreprocessor(home);
         // initialize
         processor.init(metadata, files);
         // run preprocessor
+        processor.predeploy();
+    }
+
+    public static void reprocess(File[] files) throws Exception {
+        processor.init(processor.root, files);
         processor.predeploy();
     }
 
@@ -613,6 +642,17 @@ public class DeploymentPreprocessor {
             System.exit(1);
         }
         System.out.println("Done.");
+    }
+
+    protected void processBundle(Bundle bundle) throws Exception {
+        FragmentDescriptor fd = getFragment(bundle);
+        if (fd != null) {
+            root.fragments.add(bundle.getSymbolicName(), fd);
+        }
+    }
+
+    protected void forgetBundle(Bundle bundle) {
+        root.fragments.remove(bundle.getSymbolicName());
     }
 
 }

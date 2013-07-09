@@ -18,7 +18,6 @@ package org.nuxeo.runtime.reload;
 
 import java.io.File;
 
-import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.service.TimestampedService;
 
 /**
@@ -50,7 +49,7 @@ public interface ReloadService extends TimestampedService {
      * @since 5.5
      * @see #reloadProperties()
      */
-    void reload() throws Exception;
+    void reload(File[] additionalFiles) throws Exception;
 
     /**
      * Reloads the Nuxeo repository configuration
@@ -133,15 +132,6 @@ public interface ReloadService extends TimestampedService {
      * @since 5.6
      */
     void undeployBundle(String bundleName) throws Exception;
-
-    /**
-     * Runs the deployment preprocessor
-     *
-     * @since 5.6
-     * @throws Exception
-     * @See {@link DeploymentPreprocessor}
-     */
-    public void runDeploymentPreprocessor() throws Exception;
 
     /**
      * Copies the bundle web resources into the nuxeo WAR directory.

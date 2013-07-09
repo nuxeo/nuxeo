@@ -212,4 +212,10 @@ public interface RegistrationInfo extends Serializable {
      * @throws Exception
      */
     void notifyApplicationStarted() throws Exception;
+
+    /**
+     * @return
+     * @since 5.7
+     */
+	void activate() throws Exception;
 }

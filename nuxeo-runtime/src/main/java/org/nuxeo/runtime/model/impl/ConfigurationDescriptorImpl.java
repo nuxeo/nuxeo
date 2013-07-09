@@ -62,7 +62,7 @@ public class ConfigurationDescriptorImpl {
             String klass = element.getAttribute("class");
             if (klass != null) {
                 try {
-                    Class cl = Thread.currentThread().getContextClassLoader().loadClass(klass);
+                    Class<?> cl = Thread.currentThread().getContextClassLoader().loadClass(klass);
                     xmap.register(cl);
                     config = xmap.load(element);
                 } catch (Exception e) {
