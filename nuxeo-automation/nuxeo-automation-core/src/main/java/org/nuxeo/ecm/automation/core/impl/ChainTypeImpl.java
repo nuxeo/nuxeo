@@ -12,28 +12,19 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
-import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.OperationChainContribution;
-import org.nuxeo.ecm.automation.core.OperationChainContribution.Operation;
-
-import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @since 5.7.2 Operation Type Implementation for a chain
  */
 public class ChainTypeImpl implements OperationType {
-
-    protected OperationChainContribution contribution;
 
     /**
      * The service that registered the operation
@@ -48,101 +39,60 @@ public class ChainTypeImpl implements OperationType {
     /**
      * Chain/Operation Parameters
      */
-    protected Param[] params;
+    protected Map<String, Object> chainParameters;
 
     /**
-     * Invocable methods
+     * The operations listing
      */
-    protected List<InvokableMethod> methods;
+    protected OperationParameters[] operations;
 
-    /**
-     * The contribution fragment name
-     */
-    protected String contributingComponent;
-
-    /**
-     * The operation list
-     */
-    protected List<OperationType> operationsList;
-
-    public ChainTypeImpl(AutomationService service,
-            OperationChainContribution contribution,
-            String contributingComponent) {
+    public ChainTypeImpl(AutomationService service, OperationChain chain) {
         this.service = service;
-        this.contribution = contribution;
-        this.contributingComponent = contributingComponent;
-        id = contribution.getId();
-        params = contribution.getParams();
+        this.operations = chain.getOperations().toArray(
+                new OperationParameters[chain.getOperations().size()]);
+        this.id = chain.getId();
+        this.chainParameters = chain.getChainParameters();
     }
 
-    public ChainTypeImpl(String chainId) {
-        this.id = chainId;
+    public ChainTypeImpl() {
+
+    }
+
+    public Map<String, Object> getChainParameters() {
+        return chainParameters;
     }
 
     public AutomationService getService() {
         return service;
     }
 
+    @Override
+    public OperationDocumentation getDocumentation() {
+        return null;
+    }
+
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public Class<?> getType() {
         return CompiledChainImpl.class;
     }
 
+    @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args)
             throws Exception {
-        Operation[] ops = contribution.getOps();
-        OperationParameters[] params = new OperationParameters[ops.length];
-        for (int i = 0; i < params.length; ++i) {
-            Map<String, Object> operationParameters = new HashMap<String, Object>();
-            for (OperationChainContribution.Param parameter : ops[i].getParams()) {
-                if (T_PROPERTIES.equals(parameter.getType())) {
-                    operationParameters.put(parameter.getName(),
-                            parameter.getMap());
-                } else {
-                    operationParameters.put(parameter.getName(),
-                            parameter.getValue());
-                }
-            }
-            params[i] = new OperationParameters(ops[i].getId(),
-                    operationParameters);
-        }
-        ctx.putAll(args);
-        return CompiledChainImpl.buildChain(service, ctx.getInput().getClass(),
-                params);
-    }
-
-    public OperationDocumentation getDocumentation() {
-        OperationDocumentation doc = new OperationDocumentation(id);
-        doc.label = contribution.getLabel();
-        doc.requires = contribution.getRequires();
-        doc.category = contribution.getCategory();
-        doc.since = contribution.getSince();
-        if (doc.requires.length() == 0) {
-            doc.requires = null;
-        }
-        if (doc.label.length() == 0) {
-            doc.label = doc.id;
-        }
-        doc.description = contribution.getDescription();
-        doc.params = contribution.getParams();
-        doc.signature = new String[] { "void:void" };
-        return doc;
-    }
-
-    public String getContributingComponent() {
-        return contributingComponent;
+        Object input = ctx.getInput();
+        Class<?> inputType = input == null ? Void.TYPE : input.getClass();
+        return CompiledChainImpl.buildChain(service, inputType,
+                operations);
     }
 
     @Override
-    public Map<String, Field> getParameters() {
+    public String getContributingComponent() {
         return null;
-    }
-
-    public void addOperations(List<OperationType> operationList) {
-        this.operationsList = operationList;
     }
 
 }

@@ -8,12 +8,15 @@
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier
  */
 package org.nuxeo.ecm.automation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Describes an operation chain execution.
@@ -26,34 +29,44 @@ public class OperationChain implements Serializable {
 
     protected final String id;
 
+    // (via REST for example)
+    protected final List<OperationParameters> operations;
+
+    protected final Map<String, Object> chainParameters;
+
     protected String description;
 
     protected boolean isPublic; // whether this chain is visible to clients
 
-    // (via REST for example)
-
-    protected final List<OperationParameters> ops;
-
     public OperationChain(String id) {
         this.id = id;
-        ops = new ArrayList<OperationParameters>();
+        this.operations = new ArrayList<OperationParameters>();
+        chainParameters = new HashMap<String, Object>();
     }
 
     public OperationChain(String id, List<OperationParameters> operations) {
         this.id = id;
-        ops = operations;
+        this.operations = operations;
+        chainParameters = new HashMap<String, Object>();
+    }
+
+    public OperationChain(String id, List<OperationParameters> operations,
+            Map<String, Object> chainParameters) {
+        this.id = id;
+        this.operations = operations;
+        this.chainParameters = chainParameters;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isPublic() {
@@ -65,17 +78,32 @@ public class OperationChain implements Serializable {
     }
 
     public List<OperationParameters> getOperations() {
-        return ops;
+        return operations;
     }
 
     public void add(OperationParameters op) {
-        ops.add(op);
+        operations.add(op);
     }
 
     public OperationParameters add(String operationId) {
         OperationParameters op = new OperationParameters(operationId);
-        ops.add(op);
+        operations.add(op);
         return op;
     }
 
+    /**
+     * @since 5.7.2
+     * Adding chain parameters
+     */
+    public void addChainParameters(Map<String, Object> chainParameter) {
+        chainParameters.putAll(chainParameter);
+    }
+
+    /**
+     * @since 5.7.2
+     * Getting chain parameters
+     */
+    public Map<String, Object> getChainParameters() {
+        return chainParameters;
+    }
 }

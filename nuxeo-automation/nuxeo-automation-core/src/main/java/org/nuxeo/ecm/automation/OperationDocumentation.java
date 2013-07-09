@@ -123,6 +123,9 @@ public class OperationDocumentation implements
         @XNode("@required")
         public boolean isRequired;
 
+        public Param() {
+        }
+
         public String getName() {
             return name;
         }

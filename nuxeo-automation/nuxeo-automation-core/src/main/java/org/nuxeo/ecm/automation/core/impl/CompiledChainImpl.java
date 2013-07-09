@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -128,8 +127,7 @@ class CompiledChainImpl implements CompiledChain {
     }
 
     public static CompiledChainImpl buildChain(AutomationService service,
-            Class<?> in, OperationParameters[] operations)
-            throws Exception {
+            Class<?> in, OperationParameters[] operations) throws Exception {
 
         // TODO PUT A CACHE of Compiled Chain By Input Type
 
@@ -138,13 +136,13 @@ class CompiledChainImpl implements CompiledChain {
         }
         OperationParameters params = operations[0];
 
-        CompiledChainImpl invocation = new CompiledChainImpl(service.getOperation(params.id()),
-                params.map());
+        CompiledChainImpl invocation = new CompiledChainImpl(
+                service.getOperation(params.id()), params.map());
         CompiledChainImpl last = invocation;
         for (int i = 1; i < operations.length; i++) {
             params = operations[i];
-            last = new CompiledChainImpl(last,service.getOperation(params.id()),
-                    params.map());
+            last = new CompiledChainImpl(last,
+                    service.getOperation(params.id()), params.map());
         }
         // find the best matching path in the chain
         if (!invocation.initializePath(in)) {
