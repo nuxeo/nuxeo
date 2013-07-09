@@ -50,7 +50,7 @@ public class AutomationInfo {
                 doc.description = chain.getDescription();
                 doc.category = "Chain";
                 doc.label = doc.id;
-                doc.params = Collections.emptyList();
+                doc.params = new OperationDocumentation.Param[0];
                 // compute chain signature
                 List<OperationParameters> ops = chain.getOperations();
                 if (ops.isEmpty()) {

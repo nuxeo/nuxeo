@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.server.jaxrs.io;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import org.codehaus.jackson.JsonEncoding;
@@ -181,7 +182,7 @@ public class JsonWriter {
             jg.writeString(s);
         }
         jg.writeEndArray();
-        writeParams(jg, op.params);
+        writeParams(jg, Arrays.asList(op.params));
         jg.writeEndObject();
         jg.flush();
     }

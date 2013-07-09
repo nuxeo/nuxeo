@@ -85,13 +85,6 @@ public class OperationTypeImpl implements OperationType {
         this(service, type, null);
     }
 
-    /**
-     * @since 5.7.2
-     */
-    public OperationTypeImpl(String operationId) {
-        this.id = operationId;
-    }
-
     public OperationTypeImpl(AutomationService service, Class<?> type,
             String contributingComponent) {
         Operation anno = type.getAnnotation(Operation.class);
@@ -290,6 +283,11 @@ public class OperationTypeImpl implements OperationType {
         return doc;
     }
 
+    @Override
+    public String getContributingComponent() {
+        return contributingComponent;
+    }
+
     protected String getParamDocumentationType(Class<?> type) {
         return getParamDocumentationType(type, false);
     }
@@ -314,15 +312,6 @@ public class OperationTypeImpl implements OperationType {
             t = type.getSimpleName().toLowerCase();
         }
         return t;
-    }
-
-    public String getContributingComponent() {
-        return contributingComponent;
-    }
-
-    @Override
-    public Map<String, Field> getParameters() {
-        return params;
     }
 
 }

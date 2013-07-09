@@ -43,8 +43,4 @@ public interface OperationType {
      */
     String getContributingComponent();
 
-    /**
-     * @since 5.7.2
-     */
-    Map<String,Field> getParameters();
 }
