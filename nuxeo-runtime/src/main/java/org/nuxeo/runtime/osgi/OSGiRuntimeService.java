@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.TextTemplate;
-import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.common.utils.Vars;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
@@ -57,6 +56,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
+
 import sun.misc.CompoundEnumeration;
 
 /**
@@ -326,7 +326,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
 
         Iterable<URL> provider = Environment.getDefault().getConfigurationProvider();
-        RuntimeContext context = runtimeContext;
+        RuntimeContext context = null;
 
         File dir = env.getConfig();
         if (dir.isDirectory()) {
@@ -702,5 +702,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     protected void addWarning(String message) {
         warnings.add(message);
     }
+
 
 }
