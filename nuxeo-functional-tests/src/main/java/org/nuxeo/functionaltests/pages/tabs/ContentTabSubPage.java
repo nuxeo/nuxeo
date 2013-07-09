@@ -48,6 +48,22 @@ public class ContentTabSubPage extends DocumentBasePage {
     @FindBy(linkText = "New")
     WebElement newButton;
 
+    @FindBy(id = "cv_document_content_0_quickFilterForm:nxl_document_content_filter:nxw_search_title")
+    WebElement filterInput;
+
+    @FindBy(id = "cv_document_content_0_quickFilterForm:submitFilter")
+    WebElement filterButton;
+
+    @FindBy(id = "cv_document_content_0_resetFilterForm:resetFilter")
+    WebElement clearFilterButton;
+
+    @FindBy(xpath = "//form[@id=\"document_content\"]//tbody//tr")
+    List<WebElement> childDocumentRows;
+
+    public List<WebElement> getChildDocumentRows() {
+        return childDocumentRows;
+    }
+
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -117,5 +133,39 @@ public class ContentTabSubPage extends DocumentBasePage {
         }
         alert.accept();
         return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * Perform filter on the given string.
+     *
+     * @param filter the strin gto filter
+     *
+     * @since 5.7.2
+     */
+    public void filterDocument(final String filter) {
+        filterInput.clear();
+        filterInput.sendKeys(filter);
+        filterButton.click();
+        try {
+            // This is an AJAX request and we need to wait a little bit the content is rerendered
+            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
+        } catch (InterruptedException e) {
+            /// ignore
+        }
+    }
+
+    /**
+     * Reset the filter.
+     *
+     * @since 5.7.2
+     */
+    public void clearFilter() {
+        clearFilterButton.click();
+        try {
+            // This is an AJAX request and we need to wait a little bit the content is rerendered
+            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
+        } catch (InterruptedException e) {
+            /// ignore
+        }
     }
 }
