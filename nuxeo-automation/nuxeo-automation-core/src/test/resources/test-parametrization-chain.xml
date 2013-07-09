@@ -9,16 +9,16 @@
 
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
-    <chain id="mychain">
-      <param type="string" name="message"/>
+    <chain id="contributedchain">
+      <param type="string" name="messageChain"/>
       <operation id="o1">
         <param type="string" name="message">Hello 1!</param>
       </operation>
       <operation id="o2">
         <param type="string" name="message">Hello 2!</param>
       </operation>
-      <operation id="o1">
-        <param type="string" name="message">Hello 3!</param>
+      <operation id="o3">
+        <param type="string" name="message">@{RuntimeParameters.messageChain}</param>
       </operation>
     </chain>
   </extension>

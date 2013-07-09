@@ -12,24 +12,18 @@
 package org.nuxeo.ecm.automation.core.test;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
-import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -41,14 +35,10 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import java.util.ArrayList;
-
 import com.google.inject.Inject;
 
 /**
- * Test to cover all new features related to new chain concept
- *
- * @since 5.7.2
+ * @since 5.7.2 Test for parametized chain
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -80,44 +70,42 @@ public class TestOperationChainParametrization {
     }
 
     /**
-     * Check if using old chain concept is working
+     * Check if using chain without parameters is working
      */
     @Test
     public void testSimpleChain() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        OperationChain chain = new OperationChain("mychain");
+        OperationChain chain = new OperationChain("notRegisteredChain");
         chain.add(FetchContextDocument.ID);
         chain.add("o1").set("message", "Hello 1!");
         chain.add("o2").set("message", "Hello 2!");
-        chain.add("o1").set("message", "Hello 3!");
+        chain.add("o3").set("message", "Hello 3!");
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         Assert.assertNotNull(doc);
     }
 
     /**
-     * Check if instantiating new chain and adding some operations is working
+     * Check if using chain with parameters is working
      */
     @Test
-    @Ignore
-     public void testParametizedChain() throws Exception {
+    public void testParametizedChain() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        // Operation Listing including the chain
-        List<OperationType> operationTypeList = new LinkedList<OperationType>();
-        ChainTypeImpl chain = new ChainTypeImpl("mychain");
-        List<OperationType> operations = new ArrayList<OperationType>();
-        operations.add(new OperationTypeImpl("o1"));
-        operations.add(new OperationTypeImpl(FetchContextDocument.ID));
-        chain.addOperations(operations);
-        // Setting parameters of the chain/operation
+        OperationChain chain = new OperationChain("notRegisteredChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add("o1").set("message", "Hello 1!");
+        chain.add("o2").set("message", "Hello 2!");
+        chain.add("o3").set("message",
+                "Message from chain: @{RuntimeParameters.messageChain}");
+        // Setting parameters of the chain
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("message", "Hello i'm a chain!");
+        params.put("messageChain", "Hello i'm a chain!");
+        chain.addChainParameters(params);
         // No need to put a message parameter, fallback is going to be done
-        DocumentModel doc = (DocumentModel) ((OperationServiceImpl)service).run(ctx,chain,
-                params);
+        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(
+                ctx, chain);
         Assert.assertNotNull(doc);
-
     }
 
     /**
@@ -127,13 +115,8 @@ public class TestOperationChainParametrization {
     public void testContributedParametizedChain() throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        // Setting parameters of the chain/operation
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("message", "Hello i'm a chain!");
         // No need to put a message parameter, fallback is going to be done
-        DocumentModel doc = (DocumentModel) service.run(ctx, "mychain",
-                params);
+        DocumentModel doc = (DocumentModel) service.run(ctx, "contributedchain");
         Assert.assertNotNull(doc);
-
     }
 }
