@@ -36,6 +36,9 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
 
     private static final Log log = LogFactory.getLog(AddThumbnailUnrestricted.class);
 
+    // duplicated from Audit module to avoid circular dependency
+    public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
+
     protected DocumentModel doc;
 
     public AddThumbnailUnrestricted(CoreSession coreSession, DocumentModel doc,
@@ -78,8 +81,10 @@ public class AddThumbnailUnrestricted extends UnrestrictedSessionRunner {
     }
 
     protected void saveDocument() throws ClientException {
-    	doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                Boolean.TRUE);
+        doc.putContextData(DISABLE_AUDIT_LOGGER, Boolean.TRUE);
         session.saveDocument(doc);
         session.save();
-	}
+    }
 }
