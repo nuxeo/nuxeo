@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.task.Task;
@@ -71,6 +72,12 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
         }
         DocumentModel routeDoc = session.getDocument(new IdRef(routeDocId));
         for (String userName : actors) {
+            if (userName.startsWith(NotificationConstants.GROUP_PREFIX)
+                    || userName.startsWith(NotificationConstants.USER_PREFIX)) {
+                // prefixed assignees with "user:" or "group:"
+                userName = userName.substring(userName.indexOf(":") + 1);
+            }
+
             ACP acp = routeDoc.getACP();
             ACL routeACL = acp.getOrCreateACL(DocumentRoutingConstants.ROUTE_TASK_LOCAL_ACL);
             routeACL.add(new ACE(userName, SecurityConstants.READ_WRITE, true));
