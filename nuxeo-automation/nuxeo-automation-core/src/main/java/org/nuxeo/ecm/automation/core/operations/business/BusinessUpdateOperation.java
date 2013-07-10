@@ -11,19 +11,15 @@
  */
 package org.nuxeo.ecm.automation.core.operations.business;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.apache.commons.beanutils.BeanUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * This operation map pojo client side to document adapter server side and
@@ -41,23 +37,10 @@ public class BusinessUpdateOperation {
 
     @OperationMethod
     public BusinessAdapter run(BusinessAdapter input) throws ClientException,
-            ClassNotFoundException {
-        // TODO: would be nice to get the document to reattach the doc to the
-        // session (but cannot access to it from the adapter input)
-        DocumentModel document = session.getDocument(new IdRef(input.getId()));
-        BusinessAdapter adapter = document.getAdapter(input.getClass());
-        mapObject(input, adapter);
-        document = session.saveDocument(adapter.getDocument());
-        return document.getAdapter(input.getClass());
+            ClassNotFoundException, DocumentException {
+        DocumentModel document = input.getDocument();
+        session.saveDocument(document);
+        return input;
     }
 
-    private void mapObject(Object input, Object adapter) {
-        try {
-            BeanUtils.copyProperties(adapter, input);
-        } catch (InvocationTargetException e) {
-            throw new ClientRuntimeException("cannot copy properties", e);
-        } catch (IllegalAccessException e) {
-            throw new ClientRuntimeException("cannot copy properties", e);
-        }
-    }
 }

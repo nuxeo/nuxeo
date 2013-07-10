@@ -35,55 +35,28 @@ public class BusinessBeanAdapter extends BusinessAdapter {
         super(documentModel);
     }
 
-    public String getTitle() {
-        try {
-            return (String) getDocument().getPropertyValue("dc:title");
-        } catch (ClientException e) {
-            log.error("cannot get property title", e);
-        }
-        return null;
+    public String getTitle() throws ClientException {
+        return (String) getDocument().getPropertyValue("dc:title");
     }
 
-    public void setTitle(String value) {
-        try {
-            getDocument().setPropertyValue("dc:title", value);
-        } catch (ClientException e) {
-            log.error("cannot set property title", e);
-        }
+    public void setTitle(String value) throws ClientException {
+        getDocument().setPropertyValue("dc:title", value);
     }
 
-    public String getDescription() {
-        try {
-            return (String) getDocument().getPropertyValue("dc:description");
-        } catch (ClientException e) {
-            log.error("cannot get description property", e);
-        }
-        return null;
+    public String getDescription() throws ClientException {
+        return (String) getDocument().getPropertyValue("dc:description");
     }
 
-    public void setDescription(String value) {
-        try {
-            getDocument().setPropertyValue("dc:description", value);
-        } catch (ClientException e) {
-            log.error("cannot set description property", e);
-        }
+    public void setDescription(String value) throws ClientException {
+        getDocument().setPropertyValue("dc:description", value);
     }
 
-    public String getNote() {
-        try {
-            return (String) getDocument().getPropertyValue("note:note");
-        } catch (ClientException e) {
-            log.error("cannot get note property", e);
-        }
-        return null;
+    public String getNote() throws ClientException {
+        return (String) getDocument().getPropertyValue("note:note");
     }
 
-    public void setNote(String value) {
-        try {
-            getDocument().setPropertyValue("note:note", value);
-        } catch (ClientException e) {
-            log.error("cannot get note property", e);
-        }
+    public void setNote(String value) throws ClientException {
+        getDocument().setPropertyValue("note:note", value);
     }
 
 }
