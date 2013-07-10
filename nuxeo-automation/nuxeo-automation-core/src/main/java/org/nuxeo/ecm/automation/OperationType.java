@@ -14,6 +14,8 @@ package org.nuxeo.ecm.automation;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+
 /**
  * Describe an operation class. Each registered operation will be stored in the
  * registry as an instance of this class.
@@ -42,5 +44,5 @@ public interface OperationType {
      * @return
      */
     String getContributingComponent();
-
+    InvokableMethod[] getMethodsMatchingInput(Class<?> in);
 }

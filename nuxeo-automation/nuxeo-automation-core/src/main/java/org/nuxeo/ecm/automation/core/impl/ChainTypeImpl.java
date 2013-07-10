@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -20,11 +22,19 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.OperationChainContribution;
 
 /**
  * @since 5.7.2 Operation Type Implementation for a chain
  */
 public class ChainTypeImpl implements OperationType {
+
+    /**
+     * Chain/Operation Parameters
+     */
+    protected Map<String, Object> chainParameters;
+
+    protected OperationChainContribution contribution;
 
     /**
      * The service that registered the operation
@@ -39,7 +49,17 @@ public class ChainTypeImpl implements OperationType {
     /**
      * Chain/Operation Parameters
      */
-    protected Map<String, Object> chainParameters;
+    protected OperationDocumentation.Param[] params;
+
+    /**
+     * Invocable methods
+     */
+    protected List<InvokableMethod> methods;
+
+    /**
+     * The contribution fragment name
+     */
+    protected String contributingComponent;
 
     /**
      * The operations listing
@@ -58,27 +78,20 @@ public class ChainTypeImpl implements OperationType {
 
     }
 
+    public ChainTypeImpl(AutomationService service,
+            OperationChainContribution contribution,
+            String contributingComponent) {
+        super();
+        this.service = service;
+        this.contribution = contribution;
+        this.contributingComponent = contributingComponent;
+        this.id = contribution.getId();
+        params = contribution.getParams();
+        registerOperations();
+    }
+
     public Map<String, Object> getChainParameters() {
         return chainParameters;
-    }
-
-    public AutomationService getService() {
-        return service;
-    }
-
-    @Override
-    public OperationDocumentation getDocumentation() {
-        return null;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public Class<?> getType() {
-        return CompiledChainImpl.class;
     }
 
     @Override
@@ -86,13 +99,64 @@ public class ChainTypeImpl implements OperationType {
             throws Exception {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-        return CompiledChainImpl.buildChain(service, inputType,
-                operations);
+        return CompiledChainImpl.buildChain(service, inputType, operations);
+    }
+
+    private void registerOperations() {
+        OperationChainContribution.Operation[] ops = contribution.getOps();
+        operations = new OperationParameters[ops.length];
+        for (int i = 0; i < operations.length; ++i) {
+            Map<String, Object> operationParameters = new HashMap<String, Object>();
+            for (OperationChainContribution.Param parameter : ops[i].getParams()) {
+                if ("properties".equals(parameter.getType())) {
+                    operationParameters.put(parameter.getName(),
+                            parameter.getMap());
+                } else {
+                    operationParameters.put(parameter.getName(),
+                            parameter.getValue());
+                }
+            }
+            operations[i] = new OperationParameters(ops[i].getId(),
+                    operationParameters);
+        }
+    }
+
+    public AutomationService getService() {
+        return service;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Class<?> getType() {
+        return CompiledChainImpl.class;
+    }
+
+    public OperationDocumentation getDocumentation() {
+        OperationDocumentation doc = new OperationDocumentation(id);
+        doc.label = contribution.getLabel();
+        doc.requires = contribution.getRequires();
+        doc.category = contribution.getCategory();
+        doc.since = contribution.getSince();
+        if (doc.requires.length() == 0) {
+            doc.requires = null;
+        }
+        if (doc.label.length() == 0) {
+            doc.label = doc.id;
+        }
+        id: doc.description = contribution.getDescription();
+        doc.params = contribution.getParams();
+        doc.signature = new String[] { "void", "void" };
+        return doc;
+    }
+
+    public String getContributingComponent() {
+        return contributingComponent;
     }
 
     @Override
-    public String getContributingComponent() {
-        return null;
+    public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
+        return new InvokableMethod[0];  //To change body of implemented methods use File | Settings | File Templates.
     }
-
 }

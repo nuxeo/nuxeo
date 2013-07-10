@@ -106,7 +106,7 @@ public class OperationServiceImpl implements AutomationService {
             Map<String, Object> params) throws Exception {
         CompiledChainImpl chain;
         // Put Chain parameters into the context
-        if (!params.isEmpty()) {
+        if (params != null && !params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
         Object input = ctx.getInput();
@@ -301,7 +301,7 @@ public class OperationServiceImpl implements AutomationService {
     public List<OperationDocumentation> getDocumentation() {
         List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
         Collection<OperationType> ops = operations.lookup().values();
-        for (OperationTypeImpl ot : ops.toArray(new OperationTypeImpl[ops.size()])) {
+        for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
             result.add(ot.getDocumentation());
         }
         Collections.sort(result);

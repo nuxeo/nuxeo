@@ -113,10 +113,10 @@ public class DocumentationChainTypeImpl extends ChainTypeImpl {
         }
         if (doc.label.length() == 0) {
             doc.label = doc.id;
-        }
+        }id:
         doc.description = contribution.getDescription();
         doc.params = contribution.getParams();
-        doc.signature = new String[] { "void:void" };
+        doc.signature = new String[] { "void","void" };
         return doc;
     }
 

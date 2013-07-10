@@ -232,7 +232,7 @@ public class OperationChainContribution {
     }
 
     public String getRequires() {
-        return null;
+        return "";
     }
 
     public String getCategory() {
@@ -240,7 +240,7 @@ public class OperationChainContribution {
     }
 
     public String getSince() {
-        return null;
+        return "";
     }
 
     public String getDescription() {

@@ -12,11 +12,11 @@
 package org.nuxeo.ecm.automation.core;
 
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.events.operations.FireEvent;
 import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
-import org.nuxeo.ecm.automation.core.impl.DocumentationChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.operations.FetchContextBlob;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
@@ -245,10 +245,8 @@ public class AutomationComponent extends DefaultComponent {
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             // Register the chain
-            ChainTypeImpl chainType = new ChainTypeImpl(service,occ.toOperationChain(contributor.getContext().getBundle()));
-            service.putOperation(chainType, occ.replace);
-            // Fill in the documentation
-            new DocumentationChainTypeImpl(service,occ,contributor.getName().toString());
+            OperationType docChainType = new ChainTypeImpl(service,occ,contributor.getName().toString());
+            service.putOperation(docChainType, occ.replace);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
             service.putTypeAdapter(tac.accept, tac.produce,

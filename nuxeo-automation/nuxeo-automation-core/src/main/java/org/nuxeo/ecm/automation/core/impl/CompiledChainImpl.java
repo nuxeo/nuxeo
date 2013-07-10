@@ -70,7 +70,7 @@ class CompiledChainImpl implements CompiledChain {
      * path is computed using a backtracking algorithm.
      */
     public boolean initializePath(Class<?> in) {
-        InvokableMethod[] methods =  ((OperationTypeImpl)op).getMethodsMatchingInput(in);
+        InvokableMethod[] methods =  op.getMethodsMatchingInput(in);
         if (methods == null) {
             return false;
         }
