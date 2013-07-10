@@ -20,9 +20,6 @@ author: lkemen@nuxeo.com
 .labelColumnLeftAlign { font-weight: bold; padding-right: 2.5em }
 .rank_block, .publication_block, .attachments { margin-top: 1.3em }
 
-.content_block table { margin-bottom: 1em; width: 100% }
-.content_block td { padding-left: .5em; vertical-align: top }
-.content_block .labelColumn { width: 100px }
 .content_block .actionsColumn { text-align: right; vertical-align: top; width: 20% }
 .actionsColumn img, .actionsColumn a { display: inline-block; vertical-align: bottom }
 .actionsColumn .smallButton { margin: 0 .2em; padding: .2em 0 }
@@ -67,9 +64,6 @@ author: lkemen@nuxeo.com
 .comments_block .commentBlock { border: none }
 .comments_block .commentQuote { margin: .4em 0 .4em 2em }
 
-.metadata_block .dataInput td { padding: .2em }
-.metadata_block .dataInput td.fieldColumn { padding-left: 2em }
-
 /*  =Manage tab */
 .rightsAdd { margin: 1em 0 }
 .rightsAddTitle { background-color: "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; padding: .4em; text-align: center }
@@ -87,8 +81,6 @@ author: lkemen@nuxeo.com
 
 .userAndGroupSearch { margin: 0 }
 .userAndGroupFilter { margin: 1.3em 0 0 }
-
-.buttonsGadgetNoForm { margin: 0 .4em }
 
 .directoryFilter, .searchField {
   border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
