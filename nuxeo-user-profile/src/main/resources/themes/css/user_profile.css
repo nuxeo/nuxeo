@@ -4,5 +4,5 @@ author: lkemen@nuxeo.com
 */
 /*----  =Avatar resize ----*/
 .pictureColumn { width: 150px }
-.profileAvatar { height: 70px; margin: 0 auto; width: 70px }
+.profileAvatar { height: 70px; width: 70px }
 .avatar { max-height: 70px; max-width: 70px }

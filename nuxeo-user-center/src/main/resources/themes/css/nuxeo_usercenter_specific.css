@@ -22,12 +22,10 @@ author: lkemen@nuxeo.com
 /* =Main Frame */
 .adminTabsColumn { min-height: 660px; height: auto!important; height: 660px }
 .adminViewContent { border-collapse: collapse; height: 100%; width: 100% }
-.adminViewContent td { vertical-align: top }
 .adminContentColumn { padding: 2em }
 .adminViewContent h2 { padding: 2em 0 1em }
 .adminViewContent p { padding: .4em 0 }
 .adminContentColumn .tabsContent { font-size: normal }
-
 
 /* =Override GWT styles*/
 body, table td, select { font-family: "default (__FLAVOR__ font)"; }
