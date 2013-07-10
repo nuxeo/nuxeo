@@ -84,13 +84,13 @@
   <c:if test="#{!hideSearchTypeText}">
     <h:outputText value="#{messages['label.security.searchUsers']}"
       rendered="#{searchType =='USER_TYPE'}"
-      class="rightsAddLabel" />
+      class="bold" />
     <h:outputText value="#{messages['label.security.searchGroups']}"
       rendered="#{searchType =='GROUP_TYPE'}"
-      class="rightsAddLabel" />
+      class="bold" />
     <h:outputText value="#{messages['label.security.search']}"
       rendered="#{searchType =='USER_GROUP_TYPE' or empty searchType}"
-      class="rightsAddLabel" />
+      class="bold" />
   </c:if>
 
   <div class="UserSuggestionInput">
@@ -136,10 +136,11 @@
             </h:column>
           </rich:suggestionbox>
           <c:if test="#{!hideHelpLabel}">
-            <br />
-            <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
-              <f:param value="#{minChars}" />
-            </h:outputFormat>
+            <p class="detail">
+              <h:outputFormat value="#{messages['label.suggestion.help.minChars']}">
+                <f:param value="#{minChars}" />
+              </h:outputFormat>
+            </p>
           </c:if>
         </h:panelGroup>
 
