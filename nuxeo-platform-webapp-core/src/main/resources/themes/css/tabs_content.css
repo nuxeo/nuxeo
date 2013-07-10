@@ -65,19 +65,8 @@ author: lkemen@nuxeo.com
 .comments_block .commentQuote { margin: .4em 0 .4em 2em }
 
 /*  =Manage tab */
-.rightsAdd { margin: 1em 0 }
-.rightsAddTitle { background-color: "neutral.lighter (__FLAVOR__ background)"; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; padding: .4em; text-align: center }
 .rightsAddLabel { font-weight: bold; padding: 0 .4em 0 0 }
 .rightsAddSelect { margin-top: 0}
-.rightsAddManager {
-  margin: .2em 0 3em;
-  width: 100% }
-.rightsAddManager td {
-  background-color: #fff;
-  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
-  margin: 0 1em 0 1em;
-  padding: 1em }
-.rightsAddManager .labelColumn { width: 80px }
 
 .userAndGroupSearch { margin: 0 }
 .userAndGroupFilter { margin: 1.3em 0 0 }
