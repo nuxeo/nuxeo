@@ -3,7 +3,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
-<table class="dataInput">
+<table class="dataTableNoBorder">
 <tbody>
   <tr>
     <td class="labelColumn">
@@ -11,7 +11,7 @@
     </td>
     <td class="fieldColumn">
       <h:selectOneMenu value="#{permissionActionListManager.selectedGrant}"
-      class="rightsAddSelect" id="rights_grant_select">
+       id="rights_grant_select">
       <f:selectItems
       value="#{permissionActionListManager.permissionActionItems}" />
       </h:selectOneMenu>
@@ -23,7 +23,7 @@
     </td>
     <td class="fieldColumn">
       <h:selectOneMenu value="#{permissionListManager.selectedPermission}"
-      class="rightsAddSelect" id="rights_permission_select">
+       id="rights_permission_select">
       <f:selectItems value="#{securityActions.settablePermissions}" />
       </h:selectOneMenu>
     </td>
@@ -33,7 +33,7 @@
     <td class="fieldColumn">
       <h:commandButton
       value="#{messages['command.security.addPerm']}"
-      class="button rightsAddButton"
+      class="button"
       disabled="#{!securityActions.canAddSecurityRules}"
       action="#{securityActions.addPermissions}"
       id="rights_add_button" />

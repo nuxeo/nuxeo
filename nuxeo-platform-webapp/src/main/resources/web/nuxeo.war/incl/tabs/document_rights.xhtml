@@ -10,7 +10,7 @@
   value="#{messages['label.security.parentDocumentsRights']}" /></h3>
 
 <h:form>
-  <h:dataTable var="user" class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+  <h:dataTable var="user" class="dataTableLine" rowClasses="dataRowEven,dataRowOdd"
     columnClasses="${columnHeader.id=='c4' ? 'iconColumn' : ''}"
     value="#{securityActions.parentDocumentsUsers}"
     rendered="#{securityActions.displayInheritedPermissions}">
@@ -84,7 +84,7 @@
 <a4j:region renderRegionOnly="true">
   <h:form id="rights_content">
     <nxu:dataTable var="user" id="dataTable_local_rights"
-      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataTableLine"
       value="#{securityActions.dataTableModel.data}"
       rendered="#{not empty securityActions.currentDocumentUsers}">
       <nxu:columns id="columns"
@@ -185,7 +185,7 @@
 <h:form id="validate_rights">
 <h:commandButton
       value="#{messages['label.security.save']}"
-      class="button rightsAddButton"
+      class="button"
       action="#{securityActions.saveSecurityUpdates}"
       rendered="#{securityActions.securityData.needSave}"
       id="document_rights_validate_button" />
@@ -200,10 +200,10 @@
         jQuery('#add_rights_form').focusFirst();
       });
     </script>
-    <table class="rightsAddManager">
+    <table class="dataTable">
       <tbody>
         <tr>
-          <td valign="top" align="center">
+          <td>
             <nxl:layout name="user_group_suggestion" mode="edit"
               value="#{securityActions.selectedEntries}" />
           </td>
