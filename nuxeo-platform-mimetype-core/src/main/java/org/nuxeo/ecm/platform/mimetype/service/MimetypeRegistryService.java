@@ -191,14 +191,18 @@ public class MimetypeRegistryService extends DefaultComponent implements
     @SuppressWarnings({"unchecked"})
     public String getMimetypeFromFile(File file)
             throws MimetypeNotFoundException, MimetypeDetectionException {
-        try {
-
-            if (file.length()>MAX_SIZE_FOR_SCAN) {
-                if (file.getAbsolutePath() != null) {
-                    return getMimetypeFromFilename(file.getAbsolutePath());
-                }
-                throw new MimetypeNotFoundException("Not able to determine mime type from filename and file is too big for binary scan.");
+        if (file.length() > MAX_SIZE_FOR_SCAN) {
+            String exceptionMessage = "Not able to determine mime type from filename and file is too big for binary scan.";
+            if (file.getAbsolutePath() == null) {
+                throw new MimetypeNotFoundException(exceptionMessage);
             }
+            try {
+                return getMimetypeFromFilename(file.getAbsolutePath());
+            } catch (MimetypeNotFoundException e) {
+                throw new MimetypeNotFoundException(exceptionMessage, e);
+            }
+        }
+        try {
             MagicMatch match = Magic.getMagicMatch(file, true, false);
             String mimeType;
 
