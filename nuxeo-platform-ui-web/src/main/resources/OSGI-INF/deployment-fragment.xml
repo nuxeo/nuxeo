@@ -274,6 +274,10 @@
 
     <!-- parameters of JSF server-side state saving -->
     <context-param>
+      <param-name>nuxeo.jsf.numberOfConversationsInSession</param-name>
+      <param-value>${nuxeo.jsf.numberOfConversationsInSession:=4}</param-value>
+    </context-param>
+    <context-param>
       <param-name>com.sun.faces.numberOfViewsInSession</param-name>
       <param-value>${nuxeo.jsf.numberOfViewsInSession:=4}</param-value>
     </context-param>
@@ -346,6 +350,9 @@
     <!-- This line should not strictly speaking be necessary, but it works
       around a minor bug in the RI.) -->
     <el-resolver>org.jboss.seam.el.SeamELResolver</el-resolver>
+
+    <!-- redefine the state manager -->
+    <state-manager>org.nuxeo.ecm.platform.ui.web.application.NuxeoStateManager</state-manager>
   </extension>
 
   <extension target="faces-config#FACTORY">
