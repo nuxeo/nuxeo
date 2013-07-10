@@ -444,7 +444,7 @@ public class DocumentModelFactory {
                 xpath = xpath.substring(i + 1);
             }
             start = start == null ? name : start + '/' + name;
-            Type type = ((Property) p).getType();
+            Type type = p.getType();
             if (type.isComplexType() || type.isCompositeType()) {
                 // complex type
                 try {
@@ -487,7 +487,7 @@ public class DocumentModelFactory {
 
         // we have a leaf property
 
-        Type type = ((Property) p).getType();
+        Type type = p.getType();
         if (type.isComplexType()) {
             // complex type
             return;
@@ -535,6 +535,30 @@ public class DocumentModelFactory {
         }
         // array or complex list?
         return ((ListType) type).getFieldType().isSimpleType();
+    }
+
+    /**
+     * Create an empty documentmodel for a given type with its id already setted. This
+     * can be useful when trying to attach a documentmodel that has been serialized
+     * and modified.
+     *
+     * @param type
+     * @param id
+     * @return
+     * @throws DocumentException
+     *
+     * @since 5.7.2
+     */
+    public static DocumentModel createDocumentModel(String type, String id) throws DocumentException {
+        SchemaManager sm = Framework.getLocalService(SchemaManager.class);
+        DocumentType docType = sm.getDocumentType(type);
+        DocumentModel doc = new DocumentModelImpl(null,
+                docType.getName(), id, null, null, new IdRef(id), null, null, null,
+                null, null);
+        for (Schema schema : docType.getSchemas()) {
+            ((DocumentModelImpl)doc).addDataModel(createDataModel(null, schema));
+        }
+        return doc;
     }
 
 }
