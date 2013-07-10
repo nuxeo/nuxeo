@@ -38,7 +38,7 @@
 					<br />
 
 					<h:dataTable var="deputy" value="#{userDeputies}"
-						styleClass="dataOutput">
+						styleClass="dataTableLine">
 						<h:column>
 							<f:facet name="header">
 								<h:outputText value="#{messages['label.deputies.user']}" />
@@ -80,22 +80,22 @@
 
 						<h:panelGroup id="deputy_search"
 							rendered="#{editableDeputy.deputies.deputy==null}">
-							<table class="dataInput">
+							<table class="dataTableNoBorder">
 								<tbody>
 									<a4j:region>
 										<tr>
 											<td class="labelColumn"><h:outputText
 													value="#{messages['label.deputy.search.user']}" />
 											</td>
-											<td class="labelField">
+											<td class="fieldColumn">
 												<div>
 													<ui:decorate template="/incl/select_users_search.xhtml">
 														<ui:param name="searchType" value="USER_TYPE" />
 													</ui:decorate>
 												</div>
-												<table class="rightsAddManager">
+												<table class="dataTable">
 													<tr>
-														<td valign="top"><ui:include
+														<td><ui:include
 																src="/incl/select_deputy_results.xhtml" />
 														</td>
 													</tr>
