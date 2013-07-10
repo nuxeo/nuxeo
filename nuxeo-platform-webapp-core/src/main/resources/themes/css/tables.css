@@ -9,14 +9,13 @@ table {
   border-spacing: 0;
   max-width: 100% }
 
-table th,
-table td {
-  color: "black (__FLAVOR__ color)";
-  vertical-align:top }
-
 table th {
+  color: "black (__FLAVOR__ color)";
   font-weight: bold;
   vertical-align: bottom }
+
+table td {
+  vertical-align:top }
 
 /* Table models */
 .dataTable,
@@ -62,7 +61,8 @@ table th {
 .dataTableLine th,
 .dataOutput th,
 .dataList th {
-  border-style: none none solid }
+  border-style: none none solid;
+  white-space: nowrap }
 
 .dataTable th a,
 .dataTableLine th a,
@@ -172,7 +172,8 @@ table.noHover tr:hover {
 
 .iconColumn img {
   background: none;
-  position: relative; z-index: 25 }
+  position: relative;
+  z-index: 25 }
 
 .dataTableNoHeader th {
   background-color: transparent }
