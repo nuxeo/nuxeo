@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.automation.core.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
@@ -34,7 +33,6 @@ public class ChainTypeImpl implements OperationType {
      */
     protected Map<String, Object> chainParameters;
 
-    protected OperationChainContribution contribution;
 
     /**
      * The service that registered the operation
@@ -54,7 +52,7 @@ public class ChainTypeImpl implements OperationType {
     /**
      * Invocable methods
      */
-    protected List<InvokableMethod> methods;
+    protected InvokableMethod[] methods = new InvokableMethod[] { runMethod() } ;
 
     /**
      * The contribution fragment name
@@ -66,12 +64,15 @@ public class ChainTypeImpl implements OperationType {
      */
     protected OperationParameters[] operations;
 
+    protected OperationChainContribution contribution;
+
+
     public ChainTypeImpl(AutomationService service, OperationChain chain) {
         this.service = service;
-        this.operations = chain.getOperations().toArray(
+        operations = chain.getOperations().toArray(
                 new OperationParameters[chain.getOperations().size()]);
-        this.id = chain.getId();
-        this.chainParameters = chain.getChainParameters();
+        id = chain.getId();
+        chainParameters = chain.getChainParameters();
     }
 
     public ChainTypeImpl() {
@@ -85,7 +86,7 @@ public class ChainTypeImpl implements OperationType {
         this.service = service;
         this.contribution = contribution;
         this.contributingComponent = contributingComponent;
-        this.id = contribution.getId();
+        id = contribution.getId();
         params = contribution.getParams();
         registerOperations();
     }
@@ -99,7 +100,9 @@ public class ChainTypeImpl implements OperationType {
             throws Exception {
         Object input = ctx.getInput();
         Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-        return CompiledChainImpl.buildChain(service, inputType, operations);
+        CompiledChainImpl op = CompiledChainImpl.buildChain(service, inputType, operations);
+        op.context = ctx;
+        return op;
     }
 
     private void registerOperations() {
@@ -121,18 +124,22 @@ public class ChainTypeImpl implements OperationType {
         }
     }
 
+    @Override
     public AutomationService getService() {
         return service;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public Class<?> getType() {
         return CompiledChainImpl.class;
     }
 
+    @Override
     public OperationDocumentation getDocumentation() {
         OperationDocumentation doc = new OperationDocumentation(id);
         doc.label = contribution.getLabel();
@@ -151,12 +158,26 @@ public class ChainTypeImpl implements OperationType {
         return doc;
     }
 
+    @Override
     public String getContributingComponent() {
         return contributingComponent;
     }
 
     @Override
     public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
-        return new InvokableMethod[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return methods;
+    }
+
+    protected InvokableMethod runMethod() {
+        try {
+            return new InvokableMethod(this, CompiledChainImpl.class.getMethod("run"));
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new UnsupportedOperationException("Cannot use reflection for run method", e);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ChainTypeImpl [id=" + id + "]";
     }
 }

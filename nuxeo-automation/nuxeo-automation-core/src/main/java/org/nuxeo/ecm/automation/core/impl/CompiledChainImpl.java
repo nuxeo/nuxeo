@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -33,6 +34,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 class CompiledChainImpl implements CompiledChain {
+
+    protected OperationContext context;
 
     protected AutomationService service;
 
@@ -54,7 +57,7 @@ class CompiledChainImpl implements CompiledChain {
             parent.next = this;
         }
         this.op = op;
-        this.compileParameters = args;
+        compileParameters = args;
     }
 
     public final InvokableMethod method() {
@@ -91,6 +94,12 @@ class CompiledChainImpl implements CompiledChain {
         return false;
     }
 
+    @OperationMethod
+    public Object run() throws OperationException {
+        return invoke(context);
+    }
+
+    @Override
     public Object invoke(OperationContext ctx) throws OperationException {
         try {
             return doInvoke(ctx);
@@ -118,6 +127,11 @@ class CompiledChainImpl implements CompiledChain {
         } else {
             return out;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "CompiledChainImpl [op=" + op + "]";
     }
 
     public static CompiledChainImpl buildChain(Class<?> in,

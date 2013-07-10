@@ -127,14 +127,17 @@ public class OperationTypeImpl implements OperationType {
         }
     }
 
+    @Override
     public AutomationService getService() {
         return service;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public Class<?> getType() {
         return type;
     }
@@ -172,6 +175,7 @@ public class OperationTypeImpl implements OperationType {
         }
     }
 
+    @Override
     public Object newInstance(OperationContext ctx, Map<String, Object> args)
             throws Exception {
         Object obj = type.newInstance();
@@ -210,6 +214,7 @@ public class OperationTypeImpl implements OperationType {
         }
     }
 
+    @Override
     public InvokableMethod[] getMethodsMatchingInput(Class<?> in) {
         List<Match> result = new ArrayList<Match>();
         for (InvokableMethod m : methods) {
@@ -233,6 +238,7 @@ public class OperationTypeImpl implements OperationType {
         return ar;
     }
 
+    @Override
     public OperationDocumentation getDocumentation() {
         Operation op = type.getAnnotation(Operation.class);
         OperationDocumentation doc = new OperationDocumentation(op.id());
@@ -312,6 +318,13 @@ public class OperationTypeImpl implements OperationType {
             t = type.getSimpleName().toLowerCase();
         }
         return t;
+    }
+
+
+    @Override
+    public String toString() {
+        return "OperationTypeImpl [id=" + id + ", type=" + type + ", params="
+                + params + "]";
     }
 
 }
