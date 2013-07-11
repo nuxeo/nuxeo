@@ -383,7 +383,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
             String username = principal == null ? "null" : principal.getName();
             String message = String.format(messageTemp, sid,
-                    this.getPathAsString(), username);
+                    getPathAsString(), username);
             log.error(message);
             throw e;
         }
@@ -480,7 +480,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             throws ClientException {
 
         if(log.isTraceEnabled()) {
-            log.trace("lazy loading of schema " + schema + " for doc " + this.toString());
+            log.trace("lazy loading of schema " + schema + " for doc " + toString());
         }
 
         if (!schemas.contains(schema)) {
@@ -1657,5 +1657,18 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             log.error("Error while retrieving dc:modified", e);
         }
         return null;
+    }
+
+    /**
+     * Sets the document id.
+     * May be useful when detaching from a repo and attaching to
+     * another one or when unmarshalling a documentModel from
+     * a XML or JSON representation
+     * @param id
+     *
+     * @since 5.7.2
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 }
