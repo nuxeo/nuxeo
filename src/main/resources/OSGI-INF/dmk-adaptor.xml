@@ -1,0 +1,7 @@
+<component name="org.nuxeo.dmk-adaptor">
+
+ <extension-point name="config">
+   <object class="org.nuxeo.dmk.DmkConfig"/>
+ </extension-point>
+ 
+</component>

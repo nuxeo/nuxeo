@@ -1,0 +1,12 @@
+syntax:glob
+.classpath
+.metadata
+.project
+.settings
+bin
+build.properties
+target
+*~
+*.orig
+.DS_Store
+nuxeo-webdav/data/

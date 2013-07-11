@@ -1,0 +1,5 @@
+<component name="config:dmk">
+ <extension target="org.nuxeo.dmk-adaptor" point="config">
+   <config secured="false" port="18089"/>
+ </extension>
+</component>
