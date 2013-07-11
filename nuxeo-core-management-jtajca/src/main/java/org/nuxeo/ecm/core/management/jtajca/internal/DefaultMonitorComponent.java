@@ -17,16 +17,26 @@
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
 
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.management.jtajca.Defaults;
 import org.nuxeo.ecm.core.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -39,6 +49,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 5.6
  */
 public class DefaultMonitorComponent extends DefaultComponent {
+
+    protected DefaultCoreSessionMonitor smon;
 
     protected DefaultTransactionMonitor tmon;
 
@@ -62,7 +74,12 @@ public class DefaultMonitorComponent extends DefaultComponent {
         super.deactivate(context);
     }
 
+    protected boolean installed;
+
     protected void install() throws Exception {
+        installed = true;
+        smon = new DefaultCoreSessionMonitor();
+        smon.install();
         tmon = new DefaultTransactionMonitor();
         tmon.install();
         RepositoryService repositoryService = NXCore.getRepositoryService();
@@ -89,14 +106,51 @@ public class DefaultMonitorComponent extends DefaultComponent {
     }
 
     protected void uninstall() throws JMException {
+        if (!installed) {
+            return;
+        }
+        installed = false;
         for (DefaultConnectionMonitor cmon : cmons.values()) {
             cmon.uninstall();
         }
+        smon.uninstall();
+        tmon.uninstall();
         cmons.clear();
-        if (tmon != null) {
-            tmon.uninstall();
-            tmon = null;
+        smon = null;
+        tmon = null;
+    }
+
+
+
+    protected static ObjectInstance bind(Object managed) {
+        return bind(managed, "jdoe");
+    }
+
+    protected static ObjectInstance bind(Class<?> itf, Object managed) {
+        return bind(itf, managed, "jdoe");
+    }
+
+    protected static ObjectInstance bind(Object managed, String name) {
+        return bind(managed.getClass().getInterfaces()[0], managed, name);
+    }
+
+    protected static ObjectInstance bind(Class<?> itf, Object managed, String name) {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        name = Defaults.instance.name(itf, name);
+        try {
+            return mbs.registerMBean(managed, new ObjectName(name));
+        } catch (InstanceAlreadyExistsException | MBeanRegistrationException
+                | NotCompliantMBeanException | MalformedObjectNameException e) {
+            throw new UnsupportedOperationException("Cannot bind " + managed + " on " + name, e);
         }
     }
 
+    protected static void unbind(ObjectInstance instance) {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        try {
+            mbs.unregisterMBean(instance.getObjectName());
+        } catch (MBeanRegistrationException | InstanceNotFoundException e) {
+            throw new UnsupportedOperationException("Cannot unbind " + instance, e);
+        }
+    }
 }

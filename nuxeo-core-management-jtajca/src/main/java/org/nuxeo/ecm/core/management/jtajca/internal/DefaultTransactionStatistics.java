@@ -47,7 +47,7 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
     protected Split split;
 
     protected DefaultTransactionStatistics(Object key) {
-        this.id = DefaultTransactionMonitor.id(key);
+        id = DefaultTransactionMonitor.id(key);
     }
 
     @Override
@@ -60,6 +60,7 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
         return threadName;
     }
 
+    @Override
     public Status getStatus() {
         return status;
     }
@@ -69,8 +70,8 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
         return new Date(startTimestamp);
     }
 
-    public Throwable getStartCapturedContext() {
-        return startCapturedContext;
+    public String getStartCapturedContext() {
+        return printCapturedContext(startCapturedContext);
     }
 
     @Override

@@ -28,19 +28,19 @@ import javax.management.MXBean;
  */
 @MXBean
 public interface TransactionMonitor {
-    
-    public static final String NAME = "org.nuxeo:name=TransactionMonitoring,type=service";
-    
+
+    public static String NAME = Defaults.instance.name(TransactionMonitor.class);
+
     long getActiveCount();
-    
+
     long getTotalCommits();
-    
+
     long getTotalRollbacks();
-    
+
     List<TransactionStatistics> getActiveStatistics();
-    
+
     TransactionStatistics getLastCommittedStatistics();
-    
+
     TransactionStatistics getLastRollbackedStatistics();
 
 }

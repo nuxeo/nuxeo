@@ -27,6 +27,6 @@ import org.apache.geronimo.connector.outbound.PoolingAttributes;
 @MXBean
 public interface ConnectionMonitor extends PoolingAttributes {
 
-    public static final String NAME_PATTERN = "org.nuxeo:name=ConnectionMonitoring,type=service,repositoryName=%s";
+    public static String NAME = Defaults.instance.name(ConnectionMonitor.class, "%s");
 
 }

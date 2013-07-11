@@ -16,15 +16,12 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import javax.management.JMException;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
+import javax.management.ObjectInstance;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
@@ -59,8 +56,6 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
     protected String repositoryName;
 
     protected AbstractConnectionManager cm;
-
-    protected MBeanServer mbs;
 
     protected DefaultConnectionMonitor(String repositoryName) {
         this.repositoryName = repositoryName;
@@ -192,14 +187,18 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         }
     }
 
-    public void install() {
-        AbstractConnectionManager cm = lookup(repositoryName);
-        this.cm = enhanceConnectionManager(cm);
-        bindManagementInterface(repositoryName, this);
+    protected ObjectInstance self;
+
+    protected void install() {
+        cm = lookup(repositoryName);
+        cm = enhanceConnectionManager(cm);
+        self = DefaultMonitorComponent.bind(this, repositoryName);
     }
 
-    public void uninstall() throws JMException {
-        unbindManagementInterface(repositoryName, this);
+    protected void uninstall() {
+        DefaultMonitorComponent.unbind(self);
+        self = null;
+        cm = null;
     }
 
     protected AbstractConnectionManager lookup(String repositoryName) {
@@ -224,34 +223,6 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
             throw new RuntimeException(
                     "Cannot access to geronimo connection manager", cause);
         }
-    }
-
-    protected void bindManagementInterface(String repositoryName,
-            DefaultConnectionMonitor monitor) {
-        try {
-            mbs = ManagementFactory.getPlatformMBeanServer();
-            mbs.registerMBean(monitor, getObjectName(repositoryName));
-        } catch (JMException cause) {
-            throw new RuntimeException("Cannot register connection monitor",
-                    cause);
-        }
-    }
-
-    protected void unbindManagementInterface(String repositoryName,
-            ConnectionMonitor monitor) {
-        try {
-            mbs.unregisterMBean(getObjectName(repositoryName));
-        } catch (JMException e) {
-            throw new RuntimeException("Cannot unregister connection monitor");
-        } finally {
-            mbs = null;
-        }
-    }
-
-    public static ObjectName getObjectName(String repositoryName)
-            throws JMException {
-        return new ObjectName(String.format(ConnectionMonitor.NAME_PATTERN,
-                repositoryName));
     }
 
     @Override
@@ -308,5 +279,6 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
     public void setIdleTimeoutMinutes(int idleTimeoutMinutes) {
         cm.setIdleTimeoutMinutes(idleTimeoutMinutes);
     }
+
 
 }
