@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.ui.web.application;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -116,7 +117,9 @@ public class NuxeoConversationStateHolder implements Serializable, StateHolder {
                 }
             }
         }
-        _log.warn("Could not find state. Maybe there are too many conversations running.");
+        if (_log.isDebugEnabled()) {
+            _log.debug("Could not find state. Maybe there are too many conversations running.");
+        }
         return null;
     }
 
@@ -131,27 +134,24 @@ public class NuxeoConversationStateHolder implements Serializable, StateHolder {
             } else {
                 conversationId = NO_LONGRUNNING_CONVERSATION_ID;
             }
-            StateHolder stateHolder = null;
-            if (!stateHolderByConversation.containsKey(conversationId)) {
-                synchronized (stateHolderByConversation) {
-                    if (!stateHolderByConversation.containsKey(conversationId)) {
-                        stateHolder = new NuxeoViewStateHolder(
-                                numbersOfViewsInSession, numbersOfLogicalViews);
-                        if (stateHolderByConversation.size() == this.numbersOfConversationsInSession) {
-                            _log.warn("Too many conversations, dumping the least recently used conversation ("
+            synchronized (stateHolderByConversation) {
+                StateHolder stateHolder = null;
+                if (!stateHolderByConversation.containsKey(conversationId)) {
+                    stateHolder = new NuxeoViewStateHolder(
+                            numbersOfViewsInSession, numbersOfLogicalViews);
+                    if (stateHolderByConversation.size() == this.numbersOfConversationsInSession) {
+                        if (_log.isDebugEnabled()) {
+                            _log.debug("Too many conversations, dumping the least recently used conversation ("
                                     + stateHolderByConversation.keySet().iterator().next()
                                     + ")");
                         }
-                        stateHolderByConversation.put(conversationId,
-                                stateHolder);
-                    } else {
-                        stateHolder = stateHolderByConversation.get(conversationId);
                     }
+                    stateHolderByConversation.put(conversationId, stateHolder);
+                } else {
+                    stateHolder = stateHolderByConversation.get(conversationId);
                 }
-            } else {
-                stateHolder = stateHolderByConversation.get(conversationId);
+                stateHolder.saveState(context, viewId, sequence, state);
             }
-            stateHolder.saveState(context, viewId, sequence, state);
 
             // serialization is synchronized in writeObject()
             updateInstance(context);
@@ -159,8 +159,8 @@ public class NuxeoConversationStateHolder implements Serializable, StateHolder {
     }
 
     /**
-     * Updates instance of NuxeoConversationStateHolder saved in session in order to force
-     * replication in clustered environment
+     * Updates instance of NuxeoConversationStateHolder saved in session in
+     * order to force replication in clustered environment
      *
      * @param context
      */
@@ -172,6 +172,20 @@ public class NuxeoConversationStateHolder implements Serializable, StateHolder {
         synchronized (session) {
             sessionMap.put(STATE_HOLDER, this);
         }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream stream)
+            throws IOException {
+        // Lock the LRUMap while writing the state holder in session map
+        synchronized (stateHolderByConversation) {
+            stream.defaultWriteObject();
+        }
+    }
+
+    private void readObject(java.io.ObjectInputStream stream)
+            throws IOException, ClassNotFoundException {
+
+        stream.defaultReadObject();
     }
 
 }

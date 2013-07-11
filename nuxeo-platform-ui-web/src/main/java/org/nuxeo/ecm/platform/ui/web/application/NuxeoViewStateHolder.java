@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Adaptation of the StateHolder from a4js.
  *
  * @author asmirnov
  *
@@ -37,117 +38,111 @@ import org.apache.commons.logging.LogFactory;
  */
 public class NuxeoViewStateHolder implements Serializable, StateHolder {
 
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-        private static final Log _log = LogFactory.getLog(NuxeoViewStateHolder.class);
+    private static final long serialVersionUID = 1L;
 
-        private final LRUMap<String, LRUMap<String, StateReference>> views;
+    private static final Log _log = LogFactory.getLog(NuxeoViewStateHolder.class);
 
-        private final int numberOfViews;
+    private final LRUMap<String, LRUMap<String, StateReference>> views;
 
-        public NuxeoViewStateHolder(int capacity, int numberOfViews) {
-            views = new LRUMap<String, LRUMap<String, StateReference>>(capacity+1);
-            this.numberOfViews = numberOfViews;
+    private final int numberOfViews;
+
+    public NuxeoViewStateHolder(int capacity, int numberOfViews) {
+        views = new LRUMap<String, LRUMap<String, StateReference>>(capacity + 1);
+        this.numberOfViews = numberOfViews;
+    }
+
+    @Override
+    public Object[] getState(FacesContext context, String viewId,
+            String sequence) {
+        if (null == viewId) {
+            throw new NullPointerException(
+                    "viewId parameter for get saved view state is null");
         }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.ajax4jsf.application.StateHolder#getState(java.lang.String,
-         * java.lang.Object)
-         */
-        public Object[] getState(FacesContext context, String viewId, String sequence) {
-            if (null == viewId) {
-                throw new NullPointerException(
-                        "viewId parameter for get saved view state is null");
+        Object state[] = null;
+        // Do we really need to keep this synchronized? The
+        // stateHolderByConversation access is synchronized in
+        // NuxeoConversationStateHolder...
+        synchronized (views) {
+            LRUMap<String, StateReference> viewVersions = views.get(viewId);
+            if (null != viewVersions) {
+                if (null != sequence) {
+                    StateReference stateReference = viewVersions.get(sequence);
+                    if (null != stateReference) {
+                        state = stateReference.getState();
+                    }
+                }
+                if (null == state) {
+                    if (_log.isDebugEnabled()) {
+                        _log.debug("No saved view state for sequence "
+                                + sequence);
+                    }
+                }
+            } else if (_log.isDebugEnabled()) {
+                _log.debug("No saved view states for viewId " + viewId);
             }
-            Object state[] = null;
+        }
+        return state;
+    }
+
+    @Override
+    public void saveState(FacesContext context, String viewId, String sequence,
+            Object[] state) {
+        if (null == viewId) {
+            throw new NullPointerException(
+                    "viewId parameter for  save view state is null");
+        }
+        if (null == sequence) {
+            throw new NullPointerException(
+                    "sequence parameter for save view state is null");
+        }
+        if (null != state) {
+            if (_log.isDebugEnabled()) {
+                _log.debug("Save new viewState in session for viewId " + viewId
+                        + " and sequence " + sequence);
+            }
+            // Do we really need to keep this synchronized? The
+            // stateHolderByConversation access is synchronized in
+            // NuxeoConversationStateHolder...
             synchronized (views) {
                 LRUMap<String, StateReference> viewVersions = views.get(viewId);
-                if (null != viewVersions) {
-                    if (null != sequence) {
-                        StateReference stateReference = viewVersions.get(sequence);
-                        if (null != stateReference) {
-                            state = stateReference.getState();
-                        }
-                    }
-                    if (null == state) {
-                        if (_log.isDebugEnabled()) {
-                            _log.debug("No saved view state for sequence "
-                                    + sequence);
-                        }
-                        // state = viewVersions.getMostRecent();
-                    }
-                } else if (_log.isDebugEnabled()) {
-                    _log.debug("No saved view states for viewId " + viewId);
-                }
-            }
-            return state;
-        }
-
-        /*
-         * (non-Javadoc)
-         *
-         * @see org.ajax4jsf.application.StateHolder#saveState(java.lang.String,
-         * java.lang.Object, java.lang.Object)
-         */
-        public void saveState(FacesContext context, String viewId, String sequence, Object[] state) {
-            if (null == viewId) {
-                throw new NullPointerException(
-                        "viewId parameter for  save view state is null");
-            }
-            if (null == sequence) {
-                throw new NullPointerException(
-                        "sequence parameter for save view state is null");
-            }
-            if (null != state) {
-                if (_log.isDebugEnabled()) {
-                    _log.debug("Save new viewState in session for viewId " + viewId
-                            + " and sequence " + sequence);
-                }
-                synchronized (views) {
-                    LRUMap<String, StateReference> viewVersions = views.get(viewId);
-                    StateReference stateReference = null;
-                    if (null == viewVersions) {
-                        // TODO - make size parameter configurable
-                        viewVersions = new LRUMap<String, StateReference>(
-                                this.numberOfViews+1);
-                        views.put(viewId, viewVersions);
+                StateReference stateReference = null;
+                if (null == viewVersions) {
+                    viewVersions = new LRUMap<String, StateReference>(
+                            this.numberOfViews + 1);
+                    views.put(viewId, viewVersions);
+                    stateReference = new StateReference(state);
+                    viewVersions.put(sequence, stateReference);
+                } else {
+                    stateReference = viewVersions.get(sequence);
+                    if (null == stateReference) {
                         stateReference = new StateReference(state);
                         viewVersions.put(sequence, stateReference);
                     } else {
-                        stateReference = viewVersions.get(sequence);
-                        if(null == stateReference){
-                            stateReference = new StateReference(state);
-                            viewVersions.put(sequence, stateReference);
-                        } else {
-                            stateReference.setState(state);
-                        }
+                        stateReference.setState(state);
                     }
                 }
             }
         }
+    }
 
-        @SuppressWarnings("serial")
-        private static class StateReference implements Serializable {
-            private Object[] state;
+    @SuppressWarnings("serial")
+    private static class StateReference implements Serializable {
+        private Object[] state;
 
-            public Object[] getState() {
-                return state;
-            }
+        public Object[] getState() {
+            return state;
+        }
 
-            public void setState(Object[] state) {
-                this.state = state;
-            }
+        public void setState(Object[] state) {
+            this.state = state;
+        }
 
-            /**
-             * @param state
-             */
-            public StateReference(Object[] state) {
-                super();
-                this.state = state;
-            }
+        /**
+         * @param state
+         */
+        public StateReference(Object[] state) {
+            super();
+            this.state = state;
         }
     }
+}
