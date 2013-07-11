@@ -13,12 +13,12 @@
  *
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
- *     dmetzler <dmetzler@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.operations.business.adapter;
 
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -27,15 +27,13 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 
 /**
  * Nuxeo document model abstract adapter to extend for mapping
- * This adapter can be created by the core adapter factory or
- * unmarshalled by Jackson from a JSON stream.
  *
  * @since 5.7
  */
@@ -45,10 +43,10 @@ public abstract class BusinessAdapter {
     private static final Log log = LogFactory.getLog(BusinessAdapter.class);
 
     @JsonProperty("id")
-    private String id;
+    protected String id;
 
     @JsonProperty("type")
-    private String type;
+    protected String type;
 
     private transient DocumentModel doc;
 
@@ -56,23 +54,13 @@ public abstract class BusinessAdapter {
      * Default constructor called by jackson
      */
     public BusinessAdapter() {
-        // For jackson we need to create a simple document model
-        // that accepts all schema and properties.
-        // When the "type" property will be set, then it
-        // will be replaced by a DocumentModelImpl
-        doc = new SimpleDocumentModel();
     }
 
-    /**
-     * Constructor used by the document adapter factory
-     * @param document
-     */
     public BusinessAdapter(DocumentModel document) {
         type = document.getType();
-        id = doc.getId();
         doc = document;
+        id = doc.getId();
     }
-
 
     public void save(CoreSession session) {
         try {
@@ -83,20 +71,45 @@ public abstract class BusinessAdapter {
     }
 
     @JsonIgnore
+    /**
+     * Fetches the adapted document in a lazy way
+     * @return
+     * @throws ClientException
+     *
+     * @since TODO
+     */
     public DocumentModel getDocument() throws ClientException {
+
+        // We need a document model so that the setter don't throw
+        // a NPE
+        // to get a document model we need
+        // * id and type for update
+        // * type for creation
+        // * nothing for a SimpleDocumentModel (that mocks any DM)
+        // Every time there is a call to that method we try to get
+        // a *better* documentModel in which we copy the datamodels
+        // of the precedent one:
+        // SimpleDocumentModel -> DocumentModel without id -> DocumentModel
+        try {
+            if (doc == null || doc instanceof SimpleDocumentModel) {
+                DocumentModel oldDoc = doc;
+                if (StringUtils.isBlank(id) && StringUtils.isBlank(type)) {
+                    doc = new SimpleDocumentModel();
+                } else if (StringUtils.isBlank(id)) {
+                    doc = DocumentModelFactory.createDocumentModel(type);
+                    copyDataModels(oldDoc, doc);
+                } else {
+                    doc = DocumentModelFactory.createDocumentModel(type, id);
+                    copyDataModels(oldDoc, doc);
+                }
+
+            }
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
         return doc;
     }
 
-    /**
-     * Copy the datamodel from one doc to another.
-     * The list of datamodel to use is taken from the destination
-     * datamodel.
-     * @param src
-     * @param dst
-     * @throws ClientException
-     *
-     * @since 5.7.2
-     */
     private void copyDataModels(DocumentModel src, DocumentModel dst)
             throws ClientException {
         if (src != null) {
@@ -116,22 +129,6 @@ public abstract class BusinessAdapter {
 
     public String getType() {
         return doc.getType();
-    }
-
-    public void setId(String id) {
-        this.id = id;
-        if (doc instanceof DocumentModelImpl) {
-            ((DocumentModelImpl) doc).setId(id);
-        }
-    }
-
-    public void setType(String type) throws ClientException {
-        if (!type.equals(doc.getType())) {
-            DocumentModel oldDoc = doc;
-            doc = DocumentModelFactory.createDocumentModel(type);
-            ((DocumentModelImpl) doc).setId(id);
-            copyDataModels(oldDoc, doc);
-        }
     }
 
 }
