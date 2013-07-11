@@ -16,7 +16,7 @@ endif
 
 
 # all test except bench
-all: start rest page test-nuxeo webengine dav stop
+all: start rest page test-nuxeo webengine dav multiconversation stop
 
 start:
 	-mkdir -p $(REPORT) $(LOG_HOME)
@@ -43,6 +43,9 @@ webengine:
 
 dav:
 	fl-run-test -v --simple-fetch test_dav.py $(FLOPS)
+
+multiconversation:
+	fl-run-test -v --simple-fetch test_multiconversation.py $(FLOPS)
 
 # test nuxeo ep
 init:

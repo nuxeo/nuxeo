@@ -19,7 +19,8 @@
         test_pages.py,
         test_nuxeo.py[testInit:testWriter:testReader],
         test_webengine.py,
-        test_dav.py
+        test_dav.py,
+        test_multiconversation.py
     " />
 
 </project>

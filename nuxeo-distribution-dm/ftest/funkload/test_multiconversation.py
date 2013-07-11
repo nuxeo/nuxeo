@@ -4,12 +4,8 @@
 $Id: $
 """
 import unittest
-from funkload.FunkLoadTestCase import FunkLoadTestCase
 from nuxeo.testcase import NuxeoTestCase
-from webunit.utility import Upload
-from funkload.utils import Data
 from nuxeo.pages import *
-#from funkload.utils import xmlrpc_get_credential
 
 class Multiconversation(NuxeoTestCase):
     """
