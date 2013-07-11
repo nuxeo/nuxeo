@@ -69,7 +69,7 @@ public abstract class BusinessAdapter {
      */
     public BusinessAdapter(DocumentModel document) {
         type = document.getType();
-        id = document.getId();
+        id = doc.getId();
         doc = document;
     }
 
