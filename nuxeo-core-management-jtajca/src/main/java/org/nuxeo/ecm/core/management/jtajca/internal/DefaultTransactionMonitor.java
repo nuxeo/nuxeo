@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,8 +26,7 @@ import java.util.Map;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
+import javax.management.ObjectInstance;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.Status;
@@ -60,8 +58,6 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
 
     protected TransactionManagerImpl tm;
 
-    protected MBeanServer mbs;
-
     public void install() {
         tm = lookup();
         tm.addTransactionAssociationListener(this);
@@ -74,24 +70,17 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         tm.removeTransactionAssociationListener(this);
     }
 
+    protected ObjectInstance self;
+
     protected void bindManagementInterface() {
-        try {
-            mbs = ManagementFactory.getPlatformMBeanServer();
-            mbs.registerMBean(this, new ObjectName(TransactionMonitor.NAME));
-        } catch (Exception cause) {
-            throw new RuntimeException("Cannot register tx monitor", cause);
-        }
+        self = DefaultMonitorComponent.bind(TransactionMonitor.class, this);
     }
 
     protected void unbindManagementInterface() {
-        try {
-            mbs.unregisterMBean(new ObjectName(TransactionMonitor.NAME));
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot unregister tx monitor");
-        } finally {
-            mbs = null;
-        }
+        DefaultMonitorComponent.unbind(self);
+        self = null;
     }
+
 
     public TransactionManagerImpl lookup() {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
@@ -233,7 +222,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         Object key = tm.getTransactionKey();
         DefaultTransactionStatistics stats;
         synchronized (this) {
-            stats = (DefaultTransactionStatistics) activeStatistics.get(key);
+            stats = activeStatistics.get(key);
         }
         if (stats == null) {
             log.debug(key + " not found in active statistics map");
