@@ -31,11 +31,16 @@ public class Defaults {
     }
 
     public String printStackTrace(RegistrationInfo info) {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
+        try {
             info.printStackTrace(new PrintStream(bos));
             return bos.toString();
-        } catch (IOException e) {
-            throw new Error("Cannot write stack to byte array", e);
+        } finally {
+            try {
+              bos.close();
+            } catch (IOException e) {
+              throw new Error("Cannot write stack to byte array", e);
+            }
         }
     }
 }

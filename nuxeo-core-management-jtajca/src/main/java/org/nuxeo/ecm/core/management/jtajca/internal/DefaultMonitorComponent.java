@@ -139,8 +139,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         name = Defaults.instance.name(itf, name);
         try {
             return mbs.registerMBean(managed, new ObjectName(name));
-        } catch (InstanceAlreadyExistsException | MBeanRegistrationException
-                | NotCompliantMBeanException | MalformedObjectNameException e) {
+        } catch (Exception e) {
             throw new UnsupportedOperationException("Cannot bind " + managed + " on " + name, e);
         }
     }
@@ -149,7 +148,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         try {
             mbs.unregisterMBean(instance.getObjectName());
-        } catch (MBeanRegistrationException | InstanceNotFoundException e) {
+        } catch (Exception e) {
             throw new UnsupportedOperationException("Cannot unbind " + instance, e);
         }
     }
