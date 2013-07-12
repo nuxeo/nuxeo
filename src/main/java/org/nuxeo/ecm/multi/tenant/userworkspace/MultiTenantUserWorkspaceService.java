@@ -73,12 +73,6 @@ public class MultiTenantUserWorkspaceService extends
     protected String computePathForUserWorkspace(CoreSession userCoreSession,
             String userName, DocumentModel currentDocument)
             throws ClientException {
-        if (isSameUserName(userCoreSession, userName)) {
-            // default behavior
-            return super.computePathForUserWorkspace(userCoreSession, userName,
-                    currentDocument);
-        }
-
         String tenantId = MultiTenantHelper.getTenantId(userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
@@ -106,12 +100,6 @@ public class MultiTenantUserWorkspaceService extends
     protected DocumentModel getCurrentUserPersonalWorkspace(String userName,
             CoreSession userCoreSession, DocumentModel context)
             throws ClientException {
-        if (isSameUserName(userCoreSession, userName)) {
-            // default behavior
-            return super.getCurrentUserPersonalWorkspace(userName,
-                    userCoreSession, context);
-        }
-
         String tenantId = MultiTenantHelper.getTenantId(userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
@@ -135,6 +123,10 @@ public class MultiTenantUserWorkspaceService extends
         return userCoreSession.getDocument(uwsDocRef);
     }
 
+    /**
+     * @deprecated since 5.7.2, not used anymore.
+     */
+    @Deprecated
     protected boolean isSameUserName(CoreSession session, String userName) {
         return session.getPrincipal().getName().equals(userName);
     }
