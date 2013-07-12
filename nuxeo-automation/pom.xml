@@ -20,6 +20,7 @@
     <module>nuxeo-automation-server</module>
     <module>nuxeo-automation-client</module>
     <module>nuxeo-automation-test</module>
+    <module>nuxeo-automation-restserver</module>
     <!--module>nuxeo-automation-hessian</module-->
   </modules>
 

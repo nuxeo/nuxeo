@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.rest.test.adapterContrib">
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+             point="adapters">
+    <adapter
+            class="org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapter"
+            factory="org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapterFactory" />
+  </extension>
+</component>
