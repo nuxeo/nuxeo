@@ -245,7 +245,8 @@ public class AutomationComponent extends DefaultComponent {
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             // Register the chain
-            OperationType docChainType = new ChainTypeImpl(service,occ,contributor.getName().toString());
+            //OperationType docChainType = new ChainTypeImpl(service,occ,contributor.getName().toString());
+            OperationType docChainType = new ChainTypeImpl(service,occ.toOperationChain(contributor.getContext().getBundle()),occ);
             service.putOperation(docChainType, occ.replace);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;

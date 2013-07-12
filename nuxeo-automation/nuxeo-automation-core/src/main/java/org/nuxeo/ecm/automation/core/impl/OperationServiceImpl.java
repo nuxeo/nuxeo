@@ -109,15 +109,25 @@ public class OperationServiceImpl implements AutomationService {
         if (params != null && !params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
-        Object input = ctx.getInput();
-        Class<?> inputType = input == null ? Void.TYPE : input.getClass();
-        if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
-            chain = (CompiledChainImpl) operationType.newInstance(ctx, params);
-        } else {
-            chain = CompiledChainImpl.buildChain(inputType,
-                    toParams(operationType.getId()));
+        try {
+            Object input = ctx.getInput();
+            Class<?> inputType = input == null ? Void.TYPE : input.getClass();
+            if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
+                chain = (CompiledChainImpl) operationType.newInstance(ctx,
+                        params);
+            } else {
+                chain = CompiledChainImpl.buildChain(inputType,
+                        toParams(operationType.getId()));
+            }
+            Object ret = chain.invoke(ctx);
+            if (ctx.getCoreSession() != null && ctx.isCommit()) {
+                // auto save session if any
+                ctx.getCoreSession().save();
+            }
+            return ret;
+        } finally {
+            ctx.dispose();
         }
-        return chain.invoke(ctx);
     }
 
     public static OperationParameters[] toParams(String... ids) {
