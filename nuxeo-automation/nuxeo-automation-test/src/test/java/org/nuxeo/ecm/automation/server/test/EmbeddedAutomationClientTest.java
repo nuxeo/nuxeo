@@ -34,6 +34,7 @@ import junit.framework.Assert;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -255,19 +256,15 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     /**
-     * test security on a chain - only disable flag is tested - TODO more tests
-     * to test each security filter
+     * We allow to call chain operation since 5.7.2. Test on it.
      */
     @Test
-    public void testChainSecurity() throws Exception {
+    public void testRemoteChain() throws Exception {
         OperationDocumentation opd = session.getOperation("principals");
         assertNotNull(opd);
-        try {
-            session.newRequest("principals").setInput(DocRef.newRef("/")).execute();
-            fail("chains invocation is supposed to fail since it is disabled - should return 404");
-        } catch (RemoteException e) {
-            assertEquals(404, e.getStatus());
-        }
+        Document doc = (Document) session.newRequest("principals").setInput(
+                DocRef.newRef("/")).execute();
+        assertNotNull(doc);
     }
 
     @Test(expected = RemoteException.class)
