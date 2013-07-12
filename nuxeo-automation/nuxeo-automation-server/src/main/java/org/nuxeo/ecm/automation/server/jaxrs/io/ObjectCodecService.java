@@ -39,6 +39,12 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterDescriptor;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterService;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -53,11 +59,12 @@ public class ObjectCodecService {
     protected static final Log log = LogFactory.getLog(ObjectCodecService.class);
 
     protected Map<Class<?>, ObjectCodec<?>> codecs;
+
     protected Map<String, ObjectCodec<?>> codecsByName;
 
     protected Map<Class<?>, ObjectCodec<?>> _codecs;
-    protected Map<String, ObjectCodec<?>> _codecsByName;
 
+    protected Map<String, ObjectCodec<?>> _codecsByName;
 
     public ObjectCodecService() {
         codecs = new HashMap<Class<?>, ObjectCodec<?>>();
@@ -133,7 +140,8 @@ public class ObjectCodecService {
         Map<String, ObjectCodec<?>> cache = _codecsByName;
         if (cache == null) {
             synchronized (this) {
-                _codecsByName = new HashMap<String, ObjectCodec<?>>(codecsByName);
+                _codecsByName = new HashMap<String, ObjectCodec<?>>(
+                        codecsByName);
                 cache = _codecsByName;
             }
         }
@@ -144,17 +152,19 @@ public class ObjectCodecService {
         return toString(object, false);
     }
 
-    public String toString(Object object, boolean preetyPrint) throws IOException {
+    public String toString(Object object, boolean preetyPrint)
+            throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         write(baos, object, preetyPrint);
         return baos.toString("UTF-8");
     }
 
     public void write(OutputStream out, Object object) throws IOException {
-        write (out, object, false);
+        write(out, object, false);
     }
 
-    public void write(OutputStream out, Object object, boolean prettyPint) throws IOException {
+    public void write(OutputStream out, Object object, boolean prettyPint)
+            throws IOException {
         JsonGenerator jg = JsonWriter.createGenerator(out);
         if (prettyPint) {
             jg.useDefaultPrettyPrinter();
@@ -177,31 +187,36 @@ public class ObjectCodecService {
                 jg.writeStartObject();
                 jg.writeStringField("entity-type", codec.getType());
                 jg.writeFieldName("value");
-                ((ObjectCodec)codec).write(jg, object);
+                ((ObjectCodec) codec).write(jg, object);
                 jg.writeEndObject();
             }
         }
         jg.flush();
     }
 
-    public Object read(String json) throws IOException, ClassNotFoundException {
-        return read(json, null);
+    public Object read(String json, CoreSession session) throws IOException,
+            ClassNotFoundException {
+        return read(json, null, session);
     }
 
-    public Object read(String json, ClassLoader cl) throws IOException, ClassNotFoundException {
+    public Object read(String json, ClassLoader cl, CoreSession session)
+            throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(json.getBytes());
-        return read(in, cl);
+        return read(in, cl, session);
     }
 
-    public Object read(InputStream in) throws IOException, ClassNotFoundException {
-        return read(in, null);
+    public Object read(InputStream in, CoreSession session) throws IOException,
+            ClassNotFoundException {
+        return read(in, null, session);
     }
 
-    public Object read(InputStream in, ClassLoader cl) throws IOException, ClassNotFoundException {
-        return read(JsonWriter.getFactory().createJsonParser(in), cl);
+    public Object read(InputStream in, ClassLoader cl, CoreSession session)
+            throws IOException, ClassNotFoundException {
+        return read(JsonWriter.getFactory().createJsonParser(in), cl, session);
     }
 
-    public Object read(JsonParser jp, ClassLoader cl) throws IOException, ClassNotFoundException {
+    public Object read(JsonParser jp, ClassLoader cl, CoreSession session)
+            throws IOException, ClassNotFoundException {
         JsonToken tok = jp.getCurrentToken();
         if (tok == null) {
             tok = jp.nextToken();
@@ -209,27 +224,31 @@ public class ObjectCodecService {
         if (tok == JsonToken.START_OBJECT) {
             tok = jp.nextToken();
         } else if (tok != JsonToken.FIELD_NAME) {
-            throw new IllegalStateException("Invalid parser state. Current token must be either start_object or field_name");
+            throw new IllegalStateException(
+                    "Invalid parser state. Current token must be either start_object or field_name");
         }
         String key = jp.getCurrentName();
         if (!"entity-type".equals(key)) {
-            throw new IllegalStateException("Invalid parser state. Current field must be 'entity-type'");
+            throw new IllegalStateException(
+                    "Invalid parser state. Current field must be 'entity-type'");
         }
         jp.nextToken();
         String name = jp.getText();
         if (name == null) {
-            throw new IllegalStateException("Invalid stream. Entity-Type is null");
+            throw new IllegalStateException(
+                    "Invalid stream. Entity-Type is null");
         }
         jp.nextValue(); // move to next value
         ObjectCodec<?> codec = codecs.get(name);
         if (codec == null) {
             return readGenericObject(jp, name, cl);
         } else {
-            return codec.read(jp);
+            return codec.read(jp, session);
         }
     }
 
-    public Object readNode(JsonNode node, ClassLoader cl) throws IOException, ClassNotFoundException {
+    public Object readNode(JsonNode node, ClassLoader cl, CoreSession session)
+            throws IOException, ClassNotFoundException {
         // Handle simple scalar types
         if (node.isNumber()) {
             return node.getNumberValue();
@@ -254,29 +273,32 @@ public class ObjectCodecService {
             if (codec == null) {
                 return readGenericObject(valueParser, type, cl);
             } else {
-                return codec.read(valueParser);
+                return codec.read(valueParser, session);
             }
         }
         // fallback to returning the original json node
         return node;
     }
 
-    public Object readNode(JsonNode node) throws IOException, ClassNotFoundException {
-        return readNode(node, null);
+    public Object readNode(JsonNode node, CoreSession session)
+            throws IOException, ClassNotFoundException {
+        return readNode(node, null, session);
     }
 
-    protected final void writeGenericObject(JsonGenerator jg, Class<?> clazz, Object object) throws IOException {
+    protected final void writeGenericObject(JsonGenerator jg, Class<?> clazz,
+            Object object) throws IOException {
         jg.writeStartObject();
         if (clazz.isPrimitive()) {
             if (clazz == Boolean.TYPE) {
                 jg.writeStringField("entity-type", "boolean");
-                jg.writeBooleanField("value", (Boolean)object);
+                jg.writeBooleanField("value", (Boolean) object);
             } else if (clazz == Double.TYPE || clazz == Float.TYPE) {
                 jg.writeStringField("entity-type", "number");
-                jg.writeNumberField("value", ((Number)object).doubleValue());
-            } else if (clazz == Integer.TYPE || clazz == Long.TYPE || clazz == Short.TYPE || clazz == Byte.TYPE) {
+                jg.writeNumberField("value", ((Number) object).doubleValue());
+            } else if (clazz == Integer.TYPE || clazz == Long.TYPE
+                    || clazz == Short.TYPE || clazz == Byte.TYPE) {
                 jg.writeStringField("entity-type", "number");
-                jg.writeNumberField("value", ((Number)object).longValue());
+                jg.writeNumberField("value", ((Number) object).longValue());
             } else if (clazz == Character.TYPE) {
                 jg.writeStringField("entity-type", "string");
                 jg.writeStringField("value", object.toString());
@@ -301,7 +323,8 @@ public class ObjectCodecService {
         jg.writeEndObject();
     }
 
-    protected final Object readGenericObject(JsonParser jp, String name, ClassLoader cl) throws IOException, ClassNotFoundException {
+    protected final Object readGenericObject(JsonParser jp, String name,
+            ClassLoader cl) throws IOException, ClassNotFoundException {
         if (jp.getCodec() == null) {
             jp.setCodec(new ObjectMapper());
         }
@@ -322,27 +345,32 @@ public class ObjectCodecService {
         return jp.readValueAs(clazz);
     }
 
-
     public static class StringCodec extends ObjectCodec<String> {
         public StringCodec() {
-            super (String.class);
+            super(String.class);
         }
+
         @Override
         public String getType() {
             return "string";
         }
+
         @Override
         public void write(JsonGenerator jg, String value) throws IOException {
             jg.writeString(value);
         }
+
         @Override
-        public String read(JsonParser jp) throws IOException {
+        public String read(JsonParser jp, CoreSession session)
+                throws IOException {
             return jp.getText();
         }
+
         @Override
         public boolean isBuiltin() {
             return true;
         }
+
         public void register(ObjectCodecService service) {
             service.codecs.put(String.class, this);
             service.codecsByName.put(getType(), this);
@@ -351,24 +379,29 @@ public class ObjectCodecService {
 
     public static class DateCodec extends ObjectCodec<Date> {
         public DateCodec() {
-            super (Date.class);
+            super(Date.class);
         }
+
         @Override
         public String getType() {
             return "date";
         }
+
         @Override
         public void write(JsonGenerator jg, Date value) throws IOException {
             jg.writeString(DateParser.formatW3CDateTime(value));
         }
+
         @Override
-        public Date read(JsonParser jp) throws IOException {
+        public Date read(JsonParser jp, CoreSession session) throws IOException {
             return DateParser.parseW3CDateTime(jp.getText());
         }
+
         @Override
         public boolean isBuiltin() {
             return true;
         }
+
         public void register(ObjectCodecService service) {
             service.codecs.put(Date.class, this);
             service.codecsByName.put(getType(), this);
@@ -377,26 +410,32 @@ public class ObjectCodecService {
 
     public static class CalendarCodec extends ObjectCodec<Calendar> {
         public CalendarCodec() {
-            super (Calendar.class);
+            super(Calendar.class);
         }
+
         @Override
         public String getType() {
             return "date";
         }
+
         @Override
         public void write(JsonGenerator jg, Calendar value) throws IOException {
             jg.writeString(DateParser.formatW3CDateTime(value.getTime()));
         }
+
         @Override
-        public Calendar read(JsonParser jp) throws IOException {
+        public Calendar read(JsonParser jp, CoreSession session)
+                throws IOException {
             Calendar c = Calendar.getInstance();
             c.setTime(DateParser.parseW3CDateTime(jp.getText()));
             return c;
         }
+
         @Override
         public boolean isBuiltin() {
             return true;
         }
+
         public void register(ObjectCodecService service) {
             service.codecs.put(Calendar.class, this);
         }
@@ -404,24 +443,30 @@ public class ObjectCodecService {
 
     public static class BooleanCodec extends ObjectCodec<Boolean> {
         public BooleanCodec() {
-            super (Boolean.class);
+            super(Boolean.class);
         }
+
         @Override
         public String getType() {
             return "boolean";
         }
+
         @Override
         public void write(JsonGenerator jg, Boolean value) throws IOException {
             jg.writeBoolean(value);
         }
+
         @Override
-        public Boolean read(JsonParser jp) throws IOException {
+        public Boolean read(JsonParser jp, CoreSession session)
+                throws IOException {
             return jp.getBooleanValue();
         }
+
         @Override
         public boolean isBuiltin() {
             return true;
         }
+
         public void register(ObjectCodecService service) {
             service.codecs.put(Boolean.class, this);
             service.codecs.put(Boolean.TYPE, this);
@@ -431,12 +476,14 @@ public class ObjectCodecService {
 
     public static class NumberCodec extends ObjectCodec<Number> {
         public NumberCodec() {
-            super (Number.class);
+            super(Number.class);
         }
+
         @Override
         public String getType() {
             return "number";
         }
+
         @Override
         public void write(JsonGenerator jg, Number value) throws IOException {
             Class<?> cl = value.getClass();
@@ -446,18 +493,22 @@ public class ObjectCodecService {
                 jg.writeNumber(value.longValue());
             }
         }
+
         @Override
-        public Number read(JsonParser jp) throws IOException {
+        public Number read(JsonParser jp, CoreSession session)
+                throws IOException {
             if (jp.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
                 return jp.getDoubleValue();
             } else {
                 return jp.getLongValue();
             }
         }
+
         @Override
         public boolean isBuiltin() {
             return true;
         }
+
         public void register(ObjectCodecService service) {
             service.codecs.put(Integer.class, this);
             service.codecs.put(Integer.TYPE, this);
@@ -475,7 +526,8 @@ public class ObjectCodecService {
         }
     }
 
-    public static class DocumentAdapterCodec extends ObjectCodec<Object> {
+    public static class DocumentAdapterCodec extends
+            ObjectCodec<BusinessAdapter> {
 
         protected final DocumentAdapterDescriptor descriptor;
 
@@ -505,6 +557,47 @@ public class ObjectCodecService {
                 service.codecsByName.put(codec.getType(), codec);
             }
         }
+
+        /**
+         * When the object codec is called the stream is positioned on the first
+         * value. For inlined objects this is the first value after the
+         * "entity-type" property. For non inlined objects this will be the
+         * object itself (i.e. '{' or '[')
+         *
+         * @param jp
+         * @return
+         * @throws IOException
+         */
+        @Override
+        public BusinessAdapter read(JsonParser jp, CoreSession session)
+                throws IOException {
+            if (jp.getCodec() == null) {
+                jp.setCodec(new ObjectMapper());
+            }
+            BusinessAdapter fromBa = jp.readValueAs(type);
+
+            try {
+                DocumentModel doc = fromBa.getId() != null ? session.getDocument(new IdRef(
+                        fromBa.getId()))
+                        : DocumentModelFactory.createDocumentModel(fromBa.getType());
+                BusinessAdapter ba = doc.getAdapter(fromBa.getClass());
+
+                // And finally copy the fields sets from the adapter
+                for (String schema : fromBa.getDocument().getSchemas()) {
+                    DataModel dataModel = ba.getDocument().getDataModel(schema);
+                    DataModel fromDataModel = fromBa.getDocument().getDataModel(
+                            schema);
+
+                    for (String field : fromDataModel.getDirtyFields()) {
+                        dataModel.setData(field, fromDataModel.getData(field));
+                    }
+                }
+                return ba;
+            } catch (ClientException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -521,7 +614,7 @@ public class ObjectCodecService {
         String json = s.toString(map, true);
         System.out.println(json);
         System.out.println("================");
-        System.out.println(s.toString(s.read(json), true));
+        System.out.println(s.toString(s.read(json, null), true));
     }
 
 }

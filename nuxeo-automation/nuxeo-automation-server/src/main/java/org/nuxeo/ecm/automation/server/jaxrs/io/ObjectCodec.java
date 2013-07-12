@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -92,7 +93,7 @@ public abstract class ObjectCodec<T> {
      * @return
      * @throws IOException
      */
-    public T read(JsonParser jp) throws IOException {
+    public T read(JsonParser jp, CoreSession session) throws IOException {
         if (jp.getCodec() == null) {
             jp.setCodec(new ObjectMapper());
         }
