@@ -142,9 +142,6 @@ class CompiledChainImpl implements CompiledChain {
 
     public static CompiledChainImpl buildChain(AutomationService service,
             Class<?> in, OperationParameters[] operations) throws Exception {
-
-        // TODO PUT A CACHE of Compiled Chain By Input Type
-
         if (operations.length == 0) {
             throw new InvalidChainException("Null operation chain.");
         }

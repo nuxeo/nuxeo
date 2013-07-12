@@ -16,6 +16,7 @@ package org.nuxeo.ecm.automation.core.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,9 @@ import org.nuxeo.ecm.automation.core.Constants;
 public class OperationServiceImpl implements AutomationService {
 
     protected final OperationTypeRegistry operations;
+
+    protected Map<String, CompiledChainImpl> compiledChains = new HashMap<String, CompiledChainImpl>();
+
     protected final ChainEntryRegistry chains;
     /**
      * Adapter registry
@@ -105,7 +109,7 @@ public class OperationServiceImpl implements AutomationService {
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws Exception {
         CompiledChainImpl chain;
-        // Put Chain parameters into the context
+        // Put Chain parameters into the context - even for cached chains
         if (params != null && !params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
@@ -113,8 +117,16 @@ public class OperationServiceImpl implements AutomationService {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
             if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
-                chain = (CompiledChainImpl) operationType.newInstance(ctx,
-                        params);
+                chain = compiledChains.get(operationType.getId());
+                if (chain == null) {
+                    chain = (CompiledChainImpl) operationType.newInstance(ctx,
+                            params);
+                    // Registered Chains are the only ones that can be cached
+                    // Runtime ones can update their operations, model...
+                    if (hasOperation(operationType.getId())) {
+                        compiledChains.put(operationType.getId(), chain);
+                    }
+                }
             } else {
                 chain = CompiledChainImpl.buildChain(inputType,
                         toParams(operationType.getId()));
@@ -186,9 +198,8 @@ public class OperationServiceImpl implements AutomationService {
         return chain;
     }
 
-    @Deprecated
     public synchronized void flushCompiledChains() {
-        chains.flushCompiledChains();
+        compiledChains.clear();
     }
 
     @Override
@@ -231,7 +242,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    public OperationType getOperation(String id)
+     public OperationType getOperation(String id)
             throws OperationNotFoundException {
         OperationType op = operations.lookup().get(id);
         if (op == null) {
@@ -239,6 +250,20 @@ public class OperationServiceImpl implements AutomationService {
                     "No operation was bound on ID: " + id);
         }
         return op;
+    }
+
+    /**
+     * @since 5.7.2
+     * @param id operation ID
+     * @return true if operation registry contains the given operation
+     */
+    @Override
+    public boolean hasOperation(String id) {
+        OperationType op = operations.lookup().get(id);
+        if (op == null) {
+           return false;
+        }
+        return true;
     }
 
     @Override

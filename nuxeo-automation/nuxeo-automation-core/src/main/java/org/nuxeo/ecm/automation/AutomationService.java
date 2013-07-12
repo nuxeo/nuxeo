@@ -184,4 +184,10 @@ public interface AutomationService {
      */
     List<OperationDocumentation> getDocumentation();
 
+    /**
+     * @since 5.7.2
+     * @param id operation ID
+     * @return true if operation registry contains the given operation
+     */
+    boolean hasOperation(String id);
 }
