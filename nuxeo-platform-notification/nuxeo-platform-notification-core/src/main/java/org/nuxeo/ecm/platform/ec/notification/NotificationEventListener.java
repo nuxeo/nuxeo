@@ -176,7 +176,14 @@ public class NotificationEventListener implements
                             users.add(member);
                         }
                     } else {
-                        users.add(recipient);
+                        // test if the unprefixed recipient corresponds to a
+                        // group, to fetch its members
+                        if (NotificationServiceHelper.getUsersService().getGroup(
+                                recipient) != null) {
+                            users.addAll(getGroupMembers(recipient));
+                        } else {
+                            users.add(recipient);
+                        }
                     }
 
                 }
