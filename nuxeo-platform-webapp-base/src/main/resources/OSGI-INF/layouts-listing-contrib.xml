@@ -599,6 +599,20 @@
                   <field>localize</field>
                 </fields>
               </widget>
+              <widget name="hideExternalLink" type="checkbox">
+                <labels>
+                  <label mode="any">Hide External Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7.2. Flag indicating that
+                    the external link, opening the document in a new conversation, must be hidden.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideExternalLink</field>
+                </fields>
+              </widget>
             </layout>
           </layouts>
         </properties>
