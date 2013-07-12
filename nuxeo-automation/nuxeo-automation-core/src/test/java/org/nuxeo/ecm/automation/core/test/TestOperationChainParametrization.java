@@ -97,12 +97,11 @@ public class TestOperationChainParametrization {
         chain.add("o1").set("message", "Hello 1!");
         chain.add("o2").set("message", "Hello 2!");
         chain.add("o3").set("message",
-                "Message from chain: @{RuntimeParameters.messageChain}");
+                "Message from chain: @{ChainParameters['messageChain']}");
         // Setting parameters of the chain
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("messageChain", "Hello i'm a chain!");
         chain.addChainParameters(params);
-        // No need to put a message parameter, fallback is going to be done
         DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(
                 ctx, chain);
         Assert.assertNotNull(doc);

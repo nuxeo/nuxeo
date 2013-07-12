@@ -18,7 +18,7 @@
         <param type="string" name="message">Hello 2!</param>
       </operation>
       <operation id="o3">
-        <param type="string" name="message">@{RuntimeParameters.messageChain}</param>
+        <param type="string" name="message">@{ChainParameters['messageChain']}</param>
       </operation>
     </chain>
   </extension>
