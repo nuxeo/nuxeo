@@ -81,24 +81,22 @@
     <a4j:form rendered="#{!empty directoryUIActions.currentDirectoryEntries}"
       id="viewDirectoryEntries">
 
-      <table class="dataOutput">
-        <tbody>
-          <c:forEach var="entry" items="#{directoryUIActions.currentDirectoryEntries}"
-            varStatus="status">
-            <c:if test="#{status.index%2 == 0}">
-              <c:set var="directoryEntryClass" value="dataRowOdd" />
-            </c:if>
-            <c:if test="#{status.index%2 != 0}">
-              <c:set var="directoryEntryClass" value="dataRowEven" />
-            </c:if>
-            <c:if test="#{status.index == 0}">
-              <nxl:layout name="#{currentVoc.layout}" mode="view_list_and_header" value="#{entry}" />
-            </c:if>
-            <c:if test="#{status.index != 0}">
-              <nxl:layout name="#{currentVoc.layout}" mode="view_list" value="#{entry}" />
-            </c:if>
-          </c:forEach>
-        </tbody>
+      <table class="dataTable">
+        <c:forEach var="entry" items="#{directoryUIActions.currentDirectoryEntries}"
+          varStatus="status">
+          <c:if test="#{status.index%2 == 0}">
+            <c:set var="directoryEntryClass" value="dataRowOdd" />
+          </c:if>
+          <c:if test="#{status.index%2 != 0}">
+            <c:set var="directoryEntryClass" value="dataRowEven" />
+          </c:if>
+          <c:if test="#{status.index == 0}">
+            <nxl:layout name="#{currentVoc.layout}" mode="view_list_and_header" value="#{entry}" />
+          </c:if>
+          <c:if test="#{status.index != 0}">
+            <nxl:layout name="#{currentVoc.layout}" mode="view_list" value="#{entry}" />
+          </c:if>
+        </c:forEach>
       </table>
 
     </a4j:form>
