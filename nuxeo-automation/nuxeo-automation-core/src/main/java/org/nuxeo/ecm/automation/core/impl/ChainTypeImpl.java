@@ -27,7 +27,10 @@ import org.nuxeo.ecm.automation.core.OperationChainContribution;
  */
 public class ChainTypeImpl implements OperationType {
 
+    protected final OperationChain chain;
+
     /**
+     *
      * Chain/Operation Parameters
      */
     protected Map<String, Object> chainParameters;
@@ -70,6 +73,7 @@ public class ChainTypeImpl implements OperationType {
                 new OperationParameters[chain.getOperations().size()]);
         this.id = chain.getId();
         this.chainParameters = chain.getChainParameters();
+        this.chain = chain;
     }
 
     public ChainTypeImpl(AutomationService service, OperationChain chain,
@@ -80,6 +84,11 @@ public class ChainTypeImpl implements OperationType {
         this.id = chain.getId();
         this.chainParameters = chain.getChainParameters();
         this.contribution = contribution;
+        this.chain = chain;
+    }
+
+    public OperationChain getChain() {
+        return chain;
     }
 
     public Map<String, Object> getChainParameters() {
@@ -152,5 +161,9 @@ public class ChainTypeImpl implements OperationType {
     @Override
     public String toString() {
         return "ChainTypeImpl [id=" + id + "]";
+    }
+
+    public OperationChainContribution getContribution() {
+        return contribution;
     }
 }

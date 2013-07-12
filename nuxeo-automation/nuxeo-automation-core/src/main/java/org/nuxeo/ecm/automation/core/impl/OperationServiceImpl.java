@@ -48,7 +48,6 @@ public class OperationServiceImpl implements AutomationService {
 
     protected Map<String, CompiledChainImpl> compiledChains = new HashMap<String, CompiledChainImpl>();
 
-    protected final ChainEntryRegistry chains;
     /**
      * Adapter registry
      */
@@ -56,16 +55,7 @@ public class OperationServiceImpl implements AutomationService {
 
     public OperationServiceImpl() {
         operations = new OperationTypeRegistry();
-        chains = new ChainEntryRegistry();
         adapters = new AdapterKeyedRegistry();
-    }
-    static class ChainEntry {
-        OperationChain chain;
-        CompiledChain cchain;
-
-        ChainEntry(OperationChain chain) {
-            this.chain = chain;
-        }
     }
 
     @Override
@@ -150,52 +140,71 @@ public class OperationServiceImpl implements AutomationService {
         return operationParameters;
     }
 
+    /**
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
+     * became an operation - use #putOperation method instead
+     */
     @Override
+    @Deprecated
     public synchronized void putOperationChain(OperationChain chain)
             throws OperationException {
         putOperationChain(chain, false);
     }
 
+    /**
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
+     * became an operation - use #putOperation method instead
+     */
     @Override
+    @Deprecated
     public synchronized void putOperationChain(OperationChain chain,
             boolean replace) throws OperationException {
-        chains.addContribution(new ChainEntry(chain), replace);
+        OperationType docChainType = new ChainTypeImpl(this,chain);
+        this.putOperation(docChainType, replace);
     }
 
+    /**
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
+     * became an operation - use #removeOperation method instead
+     */
     @Override
+    @Deprecated
     public synchronized void removeOperationChain(String id) {
-        ChainEntry contrib = chains.getChainEntry(id);
-        chains.removeContribution(contrib);
+        OperationChain chain = new OperationChain(id);
+        OperationType docChainType = new ChainTypeImpl(this,chain);
+        operations.removeContribution(docChainType);
     }
 
+    /**
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
+     * became an operation - use #getOperation method instead
+     */
     @Override
+    @Deprecated
     public OperationChain getOperationChain(String id)
             throws OperationNotFoundException {
-        ChainEntry chain = chains.lookup().get(id);
-        if (chain == null) {
-            throw new OperationNotFoundException(
-                    "No such chain was registered: " + id);
-        }
-        return chain.chain;
+        ChainTypeImpl chain = (ChainTypeImpl) getOperation(id);
+        return chain.getChain();
     }
 
+    /**
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
+     * became an operation - use #getOperations method instead
+     */
     @Override
-    public List<OperationChain> getOperationChains() {
-        List<OperationChain> result = new ArrayList<OperationChain>();
-        Map<String, ChainEntry> ochains = chains.lookup();
-        for (ChainEntry entry : ochains.values()) {
-            result.add(entry.chain);
-        }
-        return result;
-    }
-
     @Deprecated
-    public ChainEntry getChainEntry(String id) throws OperationException {
-        ChainEntry chain = chains.lookup().get(id);
-        if (chain == null) {
-            throw new OperationException("No such chain was registered: " + id);
+    public List<OperationChain> getOperationChains() {
+        List<ChainTypeImpl> chainsType = new ArrayList<ChainTypeImpl>();
+        List<OperationChain> chains = new ArrayList<OperationChain>();
+        for (OperationType operationType : operations.lookup().values()) {
+            if (operationType instanceof ChainTypeImpl) {
+                chainsType.add((ChainTypeImpl) operationType);
+            }
         }
-        return chain;
+        for (ChainTypeImpl chainType : chainsType) {
+            chains.add(chainType.getChain());
+        }
+        return chains;
     }
 
     public synchronized void flushCompiledChains() {
