@@ -236,10 +236,6 @@
       </properties>
     </action>
 
-    <action id="CURRENT_SELECTION_COPY">
-      <category>DAM_CURRENT_SELECTION_LIST</category>
-    </action>
-
     <action id="CURRENT_SELECTION_ADDTOLIST">
       <category>DAM_CURRENT_SELECTION_LIST</category>
     </action>
