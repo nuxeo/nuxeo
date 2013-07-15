@@ -80,7 +80,7 @@
         <c:forEach items="#{defaultDiffDisplayBlocks}" var="diffDisplayBlock">
           <div class="foldableBox">
             <h3 class="unfolded">
-              <a href="#nologo" onclick="return toggleBox(this)">
+              <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
                 <h:outputText value="#{messages[diffDisplayBlock.label]}" />
               </a>
               <span class="breaker"></span>
