@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 
 <component
-  name="org.nuxeo.ecm.notifiactions.contribution.test">
+  name="org.nuxeo.ecm.notifiactions.contribution.test.disabled">
 
   <extension
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="notifications">
 
-    <notification name="test" channel="email" enabled="true" availableIn="section"
+    <notification name="test" channel="email" enabled="false" availableIn="section"
       autoSubscribed="false" template="test-template" subject="Test Notification Subject"
       label="Test Notification Label" subjectTemplate="Test Notification Subject Template"
-      templateExpr="NotificationContext['exp1']">
+      templateExpr="Test Notification Template Expr">
       <event name="testEvent"/>
     </notification>
 
