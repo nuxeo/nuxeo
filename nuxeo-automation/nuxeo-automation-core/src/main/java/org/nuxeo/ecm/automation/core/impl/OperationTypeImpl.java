@@ -190,6 +190,11 @@ public class OperationTypeImpl implements OperationType {
             if (obj instanceof Expression) {
                 obj = ((Expression) obj).eval(ctx);
             }
+            // Trying to fallback on Chain Parameters sub context if cannot find
+            // it
+            if (obj == null) {
+                obj = ((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get(entry.getKey());
+            }
             if (obj == null) {
                 if (entry.getValue().getAnnotation(Param.class).required()) {
                     throw new OperationException(
