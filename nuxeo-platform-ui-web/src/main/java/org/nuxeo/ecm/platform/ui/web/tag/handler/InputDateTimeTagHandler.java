@@ -68,7 +68,7 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         m.ignore("showsTime");
         // locale ok
         // timeZone ok
-        m.alias("styleClass", "inputStyle");
+        m.alias("styleClass", "inputClass");
         m.alias("triggerLabel", "buttonLabel");
         m.alias("triggerImg", "buttonIcon");
         m.alias("triggerStyleClass", "buttonClass");
