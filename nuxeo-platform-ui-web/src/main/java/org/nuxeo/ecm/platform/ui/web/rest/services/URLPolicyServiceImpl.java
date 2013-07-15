@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.rest.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +60,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     protected StaticNavigationHandler viewIdManager;
 
     public URLPolicyServiceImpl() {
-        descriptors = new HashMap<String, URLPatternDescriptor>();
+        // make sure the descriptors list order follows registration order, as
+        // order may have an impact on resolved pattern
+        descriptors = new LinkedHashMap<String, URLPatternDescriptor>();
     }
 
     protected List<URLPatternDescriptor> getURLPatternDescriptors() {
