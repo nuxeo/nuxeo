@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.automation;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
