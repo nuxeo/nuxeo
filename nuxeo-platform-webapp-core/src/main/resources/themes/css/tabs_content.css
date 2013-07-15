@@ -40,12 +40,12 @@ author: lkemen@nuxeo.com
 .note_content_block h6 { color: "title.minor (__FLAVOR__ color)";font-size: 1.1em; padding: .35em 0 .25em }
 .note_content_block ul, .note_content_block ol { list-style: disc outside none; padding: 0 0 0 2.7em ; margin: 0 0 .4em }
 .note_content_block li { line-height: 1.6em; list-style: inherit }
-.note_content_block ul ul ul, .note_content_block ul ul ul ul ul { list-style-type: disc }
-.note_content_block ul ul, .note_content_block ul ul ul ul, .note_content_block ul ul ul ul ul ul { list-style-type: circle }
-.note_content_block ul ul ul { list-style-type: disc }
-.note_content_block ol, .note_content_block ol ol ol ol { list-style-type: decimal }
-.note_content_block ol ol, .note_content_block ol ol ol ol ol { list-style-type: lower-alpha }
-.note_content_block ol ol ol, .note_content_block ol ol ol ol ol { list-style-type: lower-roman }
+.note_content_block ul ul ul, .note_content_block ul ul ul ul ul { list-style: disc outside none }
+.note_content_block ul ul, .note_content_block ul ul ul ul, .note_content_block ul ul ul ul ul ul { list-style: circle outside none }
+.note_content_block ul ul ul { list-style: disc outside none }
+.note_content_block ol, .note_content_block ol ol ol ol { list-style: decimal outside none }
+.note_content_block ol ol, .note_content_block ol ol ol ol ol { list-style: lower-alpha outside none }
+.note_content_block ol ol ol, .note_content_block ol ol ol ol ol { list-style: lower-roman outside none }
 
 .note_content_block pre, .note_content_block code { background-color: #F7F7F7; border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 3px; font-family: "Lucida Console","Monaco","Courier",monospace; font-size: 90%;	line-height: normal; overflow: auto; padding: 0 .2em }
 .note_content_block pre { border-color: "neutral.light (__FLAVOR__ border)"; margin: 0 0 1em; padding: .4em }
