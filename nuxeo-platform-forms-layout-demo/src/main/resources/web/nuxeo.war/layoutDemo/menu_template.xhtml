@@ -14,7 +14,7 @@ needed parameters:
 
   <nxu:set var="widgetsSelected" value="#{currentWidgetType.category == category}">
     <h3 class="#{nxu:test(widgetsSelected or (currentWidgetType==null and openByDefault), 'unfolded', 'folded')}">
-      <a href="#nogo" onclick="return toggleBox(this)">
+      <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
         <h:outputText value="#{categoryTitle}" />
       </a>
     </h3>
