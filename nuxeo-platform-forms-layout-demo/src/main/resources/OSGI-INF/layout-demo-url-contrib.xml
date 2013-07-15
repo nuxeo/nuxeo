@@ -24,6 +24,17 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
     point="urlpatterns">
 
+    <!-- do not make preview urls impact contextual information
+      make it just handle the view, and make sure pattern is defined before
+      layoutDemo -->
+    <urlPattern name="layoutDemoPreview" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>layoutDemoPreview</codecName>
+    </urlPattern>
+
     <urlPattern name="layoutDemo" enabled="true">
       <defaultURLPolicy>false</defaultURLPolicy>
       <needBaseURL>true</needBaseURL>
@@ -37,16 +48,6 @@
         <binding name="tabId">#{layoutDemoActions.currentTabId}</binding>
         <binding name="subTabId">#{layoutDemoActions.currentSubTabId}</binding>
       </bindings>
-    </urlPattern>
-
-    <!-- do not make preview urls impact contextual information
-      make it just handle the view -->
-    <urlPattern name="layoutDemoPreview" enabled="true">
-      <defaultURLPolicy>false</defaultURLPolicy>
-      <needBaseURL>true</needBaseURL>
-      <needRedirectFilter>true</needRedirectFilter>
-      <needFilterPreprocessing>true</needFilterPreprocessing>
-      <codecName>layoutDemoPreview</codecName>
     </urlPattern>
 
   </extension>
