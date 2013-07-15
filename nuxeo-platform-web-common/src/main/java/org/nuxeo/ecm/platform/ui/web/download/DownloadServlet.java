@@ -258,7 +258,10 @@ public class DownloadServlet extends HttpServlet {
         OutputStream out = resp.getOutputStream();
         try {
 
-            String digest = ((SQLBlob) blob).getBinary().getDigest();
+            String digest = null;
+            if (blob instanceof SQLBlob) {
+                digest = ((SQLBlob) blob).getBinary().getDigest();
+            }
 
             String previousToken = req.getHeader("If-None-Match");
             if (previousToken != null && previousToken.equals(digest)) {
