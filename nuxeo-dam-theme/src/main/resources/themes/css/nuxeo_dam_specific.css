@@ -162,7 +162,8 @@ author: lkemen@nuxeo.com
 	font-weight: normal }
 
 /* Smaller tables display in foldableBox, apply .dataTableLine styles */
-.nxDamAssetView .dataInput {
+.nxDamAssetView .dataInput,
+.nxDamAssetView .containerField {
   border-collapse: collapse;
   border-spacing: 0;
   font-size: .9em;
@@ -195,9 +196,6 @@ author: lkemen@nuxeo.com
   display: block }
 
 /* smaller buttons in Foldable boxes*/
-.foldableBox h3.folded,
-.foldableBox h3.unfolded {
-  border-bottom: none 0 }
 .foldableBox .buttonsGadget {
   margin: .1em 0 0.2em;
   text-align: right }
