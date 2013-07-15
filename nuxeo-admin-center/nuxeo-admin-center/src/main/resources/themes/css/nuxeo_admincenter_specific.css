@@ -34,11 +34,12 @@ author: lkemen@nuxeo.com
 .actionBar form { display: inline }
 .actionBar form select, .actionBar form input { margin: 0 .4em }
 .actionBar h3 { padding: .3em 0 }
+.actionBar a {
+  vertical-align: top }
 
 /* =Marketplace, Nuxeo Connect & Updates */
 .marketplace { background-color: #fbfbfb }
 .marketplace .marketplaceLogo {}
-.marketplace .label { color: #1d91ce; display: inline-block; margin: 0 .9em 0 4em; padding: .4em 0 0; vertical-align: top }
 
 .login { width: 100% }
 .loginBlock { background-color: #f6f6f6; border: 1px solid #f0f0f0; border-radius: 3px; margin: 1em auto 3em; padding: 1em; width: 93%; }
