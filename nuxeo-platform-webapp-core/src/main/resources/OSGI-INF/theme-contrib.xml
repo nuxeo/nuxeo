@@ -446,9 +446,6 @@
       <view id="/editor_image_upload.xhtml">
         <theme>galaxy/popup</theme>
       </view>
-      <view id="/search/choose_searchscope_popup.xhtml">
-        <theme>galaxy/popup</theme>
-      </view>
 
     </application>
   </extension>
