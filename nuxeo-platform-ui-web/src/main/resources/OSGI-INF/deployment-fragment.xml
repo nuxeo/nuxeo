@@ -347,10 +347,6 @@
 
     <el-resolver>org.nuxeo.ecm.platform.el.DocumentModelResolver</el-resolver>
 
-    <!-- This line should not strictly speaking be necessary, but it works
-      around a minor bug in the RI.) -->
-    <el-resolver>org.jboss.seam.el.SeamELResolver</el-resolver>
-
     <!-- redefine the state manager -->
     <state-manager>org.nuxeo.ecm.platform.ui.web.application.NuxeoStateManager</state-manager>
   </extension>
