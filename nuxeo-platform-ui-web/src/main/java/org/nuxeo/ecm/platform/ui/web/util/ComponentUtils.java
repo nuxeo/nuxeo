@@ -46,6 +46,7 @@ import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.runtime.api.Framework;
 
@@ -193,28 +194,39 @@ public final class ComponentUtils {
                     filename = "file";
                 }
                 HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
-                String inline = request.getParameter("inline");
-                if (inline == null) {
-                    inline = (String) request.getAttribute("inline");
-                }
-                boolean inlineFlag = (inline == null || "false".equals(inline)) ? false
-                        : true;
-                String userAgent = request.getHeader("User-Agent");
-                String contentDisposition = RFC2231.encodeContentDisposition(
-                        filename, inlineFlag, userAgent);
-                response.setHeader("Content-Disposition", contentDisposition);
 
-                addCacheControlHeaders(request, response);
+                String digest = ((SQLBlob) blob).getBinary().getDigest();
 
-                log.debug("Downloading with mime/type : " + blob.getMimeType());
-                response.setContentType(blob.getMimeType());
-                long fileSize = blob.getLength();
-                if (fileSize > 0) {
-                    response.setContentLength((int) fileSize);
-                }
                 try {
-                    blob.transferTo(response.getOutputStream());
-                    response.flushBuffer();
+                    String previousToken = request.getHeader("If-None-Match");
+                    if (previousToken != null && previousToken.equals(digest)) {
+                        response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                    } else {
+                        response.setHeader("ETag", digest);
+                        String inline = request.getParameter("inline");
+                        if (inline == null) {
+                            inline = (String) request.getAttribute("inline");
+                        }
+                        boolean inlineFlag = (inline == null || "false".equals(inline)) ? false
+                                : true;
+                        String userAgent = request.getHeader("User-Agent");
+                        String contentDisposition = RFC2231.encodeContentDisposition(
+                                filename, inlineFlag, userAgent);
+                        response.setHeader("Content-Disposition",
+                                contentDisposition);
+
+                        addCacheControlHeaders(request, response);
+
+                        log.debug("Downloading with mime/type : "
+                                + blob.getMimeType());
+                        response.setContentType(blob.getMimeType());
+                        long fileSize = blob.getLength();
+                        if (fileSize > 0) {
+                            response.setContentLength((int) fileSize);
+                        }
+                        blob.transferTo(response.getOutputStream());
+                        response.flushBuffer();
+                    }
                 } catch (IOException e) {
                     // XXX: better throw the exception instead of hiding the
                     // root cause of a potential error
@@ -240,9 +252,9 @@ public final class ComponentUtils {
 
     /*
      * Internet Explorer file downloads over SSL do not work with certain HTTP
-     * cache control headers See http://support.microsoft.com/kb/323308/ What
-     * is not mentioned in the above Knowledge Base is that "Pragma: no-cache"
-     * also breaks download in MSIE over SSL
+     * cache control headers See http://support.microsoft.com/kb/323308/ What is
+     * not mentioned in the above Knowledge Base is that "Pragma: no-cache" also
+     * breaks download in MSIE over SSL
      */
     private static void addCacheControlHeaders(HttpServletRequest request,
             HttpServletResponse response) {
@@ -353,8 +365,8 @@ public final class ComponentUtils {
     }
 
     /**
-     * Returns the component specified by the {@code componentId} parameter
-     * from the {@code base} component.
+     * Returns the component specified by the {@code componentId} parameter from
+     * the {@code base} component.
      * <p>
      * Does not throw any exception if the component is not found, returns
      * {@code null} instead.
