@@ -33,7 +33,7 @@ author: lkemen@nuxeo.com
   padding-right: 1em }
 .foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)" }
 .foldableBox .boxBody { clear: both; font-size: 1.1em; padding: 1em }
-.foldableBox .listingLayoutSelector { margin: 0 0 -3em .7em }
+.foldableBox .listingLayoutSelector { margin: 0 0 0 .7em }
 
 /* =Light boxes */
 .foldableLightBox { margin-bottom: 1.8em }
