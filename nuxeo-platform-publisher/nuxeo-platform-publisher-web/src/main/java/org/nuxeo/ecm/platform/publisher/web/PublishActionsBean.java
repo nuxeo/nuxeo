@@ -434,10 +434,17 @@ public class PublishActionsBean extends AbstractPublishActions implements
         @Override
         public void run() throws ClientException {
             sourceDocument = session.getDocument(doc.getSourceDocumentRef());
-            liveDocument = session.getSourceDocument(sourceDocument.getRef());
 
+            // soft dependency on Rendition system
+            if (sourceDocument.hasFacet("Rendition")) {
+                String uid = (String) sourceDocument.getPropertyValue("rend:sourceId");
+                liveDocument = session.getDocument(new IdRef(uid));
+            } else {
+                liveDocument = session.getSourceDocument(sourceDocument.getRef());
+            }
             sendApprovalEventToSourceDocument(session, sourceDocument,
                     liveDocument, comment);
+
         }
 
         protected void sendApprovalEventToSourceDocument(CoreSession session,
