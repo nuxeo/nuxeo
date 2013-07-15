@@ -75,12 +75,17 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FaceletHandler leaf = null;
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ValidatorConfig validatorConfig = TagConfigFactory.createValidatorConfig(
-                    tagConfig, widget.getTagConfigId(), new TagAttributes(new TagAttribute[0]),
-                    new LeafFaceletHandler(), org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator.VALIDATOR_ID);
-            ValidateHandler validateHandler = new ValidateHandler(validatorConfig);
+                    tagConfig,
+                    widget.getTagConfigId(),
+                    new TagAttributes(new TagAttribute[0]),
+                    new LeafFaceletHandler(),
+                    org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator.VALIDATOR_ID);
+            ValidateHandler validateHandler = new ValidateHandler(
+                    validatorConfig);
 
             if (subHandlers != null) {
-                leaf = new CompositeFaceletHandler(addNewSubHandler(subHandlers, validateHandler));
+                leaf = new CompositeFaceletHandler(addNewSubHandler(
+                        subHandlers, validateHandler));
             } else {
                 leaf = validateHandler;
             }
@@ -97,11 +102,13 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(
                     tagConfig, widget.getTagConfigId(), attributes,
-                    new LeafFaceletHandler(), javax.faces.convert.DateTimeConverter.CONVERTER_ID);
+                    new LeafFaceletHandler(),
+                    javax.faces.convert.DateTimeConverter.CONVERTER_ID);
             ConvertHandler convert = new ConvertDateTimeHandler(convertConfig);
 
             if (subHandlers != null) {
-                leaf = new CompositeFaceletHandler(addNewSubHandler(subHandlers, convert));
+                leaf = new CompositeFaceletHandler(addNewSubHandler(
+                        subHandlers, convert));
             } else {
                 leaf = convert;
             }
@@ -121,16 +128,18 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
     }
 
     /**
-     * Create an array of FaceletHandler which contains all the elements of originalSubHandlers plus newSubHandler
+     * Create an array of FaceletHandler which contains all the elements of
+     * originalSubHandlers plus newSubHandler
      *
      * @param originalSubHandlers
      * @param newSubHandler
      * @return the new array
-     *
      * @since 5.7.2
      */
-    private FaceletHandler[] addNewSubHandler(FaceletHandler[] originalSubHandlers, FaceletHandler newSubHandler) {
-        FaceletHandler[] newSubHandlers = Arrays.copyOf(originalSubHandlers, originalSubHandlers.length + 1);
+    private FaceletHandler[] addNewSubHandler(
+            FaceletHandler[] originalSubHandlers, FaceletHandler newSubHandler) {
+        FaceletHandler[] newSubHandlers = Arrays.copyOf(originalSubHandlers,
+                originalSubHandlers.length + 1);
         newSubHandlers[newSubHandlers.length - 1] = newSubHandler;
         return newSubHandlers;
     }
