@@ -110,13 +110,13 @@
     </action>
 
     <action id="ConnectAppsUpdates" link="/incl/appcenter/connectUpdates.xhtml"
-      label="tab.appstore.updates" order="20">
+      label="tab.appstore.updates" order="30">
       <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsStudio" link="/incl/appcenter/studio.xhtml"
-      label="tab.appstore.studio" order="30">
+      label="tab.appstore.studio" order="20">
       <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
