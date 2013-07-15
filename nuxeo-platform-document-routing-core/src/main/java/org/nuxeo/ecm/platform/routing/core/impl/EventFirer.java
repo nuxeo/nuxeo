@@ -18,10 +18,12 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
@@ -50,6 +52,31 @@ public class EventFirer {
         envContext.setProperties(eventProperties);
         try {
             getEventProducer().fireEvent(envContext.newEvent(eventName));
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Fires an event in the category 'routing' for every document in the list
+     *
+     * @since 5.7.2
+     */
+    static public void fireEvent(CoreSession coreSession,
+            List<DocumentModel> docs,
+            Map<String, Serializable> eventProperties, String eventName) {
+        if (eventProperties == null) {
+            eventProperties = new HashMap<String, Serializable>();
+        }
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                DocumentRoutingConstants.ROUTING_CATEGORY);
+        try {
+            for (DocumentModel doc : docs) {
+                DocumentEventContext envContext = new DocumentEventContext(
+                        coreSession, coreSession.getPrincipal(), doc);
+                envContext.setProperties(eventProperties);
+                getEventProducer().fireEvent(envContext.newEvent(eventName));
+            }
         } catch (ClientException e) {
             throw new RuntimeException(e);
         }

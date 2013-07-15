@@ -59,7 +59,7 @@ public interface DocumentRoutingEngineService {
 
     /**
      * Cancels a route using an unrestricted session.
-     *
+     * (@since 5.7.2 the event 'workflowCanceled' is notified.)
      * @param routeInstance the route instance
      * @param session the session
      * @since 5.6

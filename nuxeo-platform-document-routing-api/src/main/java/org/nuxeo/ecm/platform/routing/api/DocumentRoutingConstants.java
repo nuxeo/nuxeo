@@ -165,7 +165,11 @@ public interface DocumentRoutingConstants {
         /**
          * after the undo operation is run on the step.
          */
-        afterUndoingStep
+        afterUndoingStep,
+        /**
+         * @since 2.7.2
+         */
+        workflowCanceled
     }
 
     String DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY = "documentElementEventContextKey";

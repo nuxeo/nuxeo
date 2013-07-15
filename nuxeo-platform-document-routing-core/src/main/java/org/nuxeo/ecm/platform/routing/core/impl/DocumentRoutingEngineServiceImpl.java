@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -56,5 +57,9 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+
+        EventFirer.fireEvent(session,
+                routeInstance.getAttachedDocuments(session), null,
+                DocumentRoutingConstants.Events.workflowCanceled.name());
     }
 }
