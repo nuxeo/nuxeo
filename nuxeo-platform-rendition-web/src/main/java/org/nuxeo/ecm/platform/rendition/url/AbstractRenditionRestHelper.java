@@ -16,40 +16,57 @@
 
 package org.nuxeo.ecm.platform.rendition.url;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+
 
 /**
  * Base class for Rendition url codec bindings.
  * <p>
  * This class is shared with Template rendering system.
- * 
+ *
  * @since 5.6
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 public abstract class AbstractRenditionRestHelper implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    protected static final Log log = LogFactory.getLog(AbstractRenditionRestHelper.class);
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected Map<String, String> messages;
 
     protected abstract Blob renderAsBlob(DocumentModel doc, String renditionName)
             throws Exception;
@@ -67,7 +84,33 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
         if (doc != null) {
             String renditionName = docView.getViewId();
             FacesContext context = FacesContext.getCurrentInstance();
-            Blob rendered = renderAsBlob(doc, renditionName);
+            Blob rendered = null;
+            try {
+                rendered = renderAsBlob(doc, renditionName);
+            } catch (RenditionException e) {
+                log.error("Unable to generate rendition " + renditionName, e);
+                facesMessages.add(
+                        StatusMessage.Severity.WARN,
+                        messages.get(
+                                "rendition.not.available"), renditionName);
+                // now we need to redirect
+                // otherwise the page will be rendered via Seam PDF
+                HttpServletRequest req = (HttpServletRequest) context.getExternalContext().getRequest();
+                String url = DocumentModelFunctions.documentUrl(doc, req);
+
+                HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+                try {
+                    response.sendRedirect(url);
+                    // be sure we block the codec chain
+                    response.flushBuffer();
+                    FacesContext.getCurrentInstance().responseComplete();
+                } catch (IOException ioe) {
+                    log.error(
+                            "Error while redirecting to standard view",
+                            ioe);
+                }
+                return;
+            }
             if (rendered != null) {
                 if (rendered.getMimeType() != null
                         && rendered.getMimeType().startsWith("text/")) {
