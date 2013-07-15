@@ -62,6 +62,7 @@
     <nuxeo.csv.version>5.7.2-SNAPSHOT</nuxeo.csv.version>
     <nuxeo.drive.version>5.7.2-SNAPSHOT</nuxeo.drive.version>
     <nuxeo.dam.pdf.export.version>5.7.2-SNAPSHOT</nuxeo.dam.pdf.export.version>
+    <nuxeo.resources.compat.version>5.7.2-SNAPSHOT</nuxeo.resources.compat.version>
   </properties>
 
   <modules>
@@ -122,6 +123,7 @@
     <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-drive</module>
     <module>nuxeo-dam-pdf-export</module>
+    <module>nuxeo-resources-compat</module>
   </modules>
 
   <dependencyManagement>
@@ -1100,6 +1102,14 @@
         <artifactId>nuxeo-dam-pdf-export</artifactId>
         <version>${nuxeo.dam.pdf.export.version}</version>
       </dependency>
+
+      <!-- Nuxeo Resources Compat -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform.resources</groupId>
+        <artifactId>nuxeo-resources-compat</artifactId>
+        <version>${nuxeo.resources.compat.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
