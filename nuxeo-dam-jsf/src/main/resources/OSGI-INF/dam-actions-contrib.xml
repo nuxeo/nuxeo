@@ -288,12 +288,14 @@
     <filter id="create" append="true">
       <rule grant="true">
         <type>AssetLibrary</type>
+        <type>ImportRoot</type> <!-- for backward compatibility -->
       </rule>
     </filter>
 
     <filter id="importFile" append="true">
       <rule grant="true">
         <type>AssetLibrary</type>
+        <type>ImportRoot</type> <!-- for backward compatibility -->
       </rule>
     </filter>
 

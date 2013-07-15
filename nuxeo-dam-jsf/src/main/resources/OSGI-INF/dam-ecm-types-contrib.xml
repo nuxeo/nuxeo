@@ -124,7 +124,8 @@
 
     <!--
       Keep ImportRoot, ImportFolder and ImportSet for compatibility.
-      Nothing can be created inside it.
+      Nothing can be created inside ImportFolder and ImportSet.
+      Allow creation of documents inside ImportRoot for backward compatibility
     -->
 
     <type id="ImportRoot">
@@ -135,6 +136,7 @@
       <description>ImportRoot.description</description>
       <default-view>view_documents</default-view>
       <subtypes>
+        <type>Folder</type>
         <type>File</type>
         <type>Picture</type>
         <type>Video</type>
