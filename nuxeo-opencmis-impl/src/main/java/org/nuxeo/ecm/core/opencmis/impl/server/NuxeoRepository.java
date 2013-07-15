@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.chemistry.opencmis.commons.data.PermissionMapping;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PermissionDefinition;
@@ -39,6 +41,7 @@ import org.apache.chemistry.opencmis.commons.enums.SupportedPermissions;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AclCapabilitiesDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabilitiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl;
+import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -53,6 +56,14 @@ public class NuxeoRepository {
     public static final String NUXEO_VERSION_PROP = "org.nuxeo.distribution.version";
 
     public static final String NUXEO_URL_PROP = "nuxeo.url";
+
+    private static final String NUXEO_CONTEXT_PATH_PROP = "org.nuxeo.ecm.contextPath";
+
+    private static final String NUXEO_CONTEXT_PATH_DEFAULT = "/nuxeo";
+
+    private static final String X_FORWARDED_HOST = "x-forwarded-host";
+
+    private static final String NUXEO_VH_HEADER = "nuxeo-virtual-host";
 
     protected final String repositoryId;
 
@@ -159,7 +170,8 @@ public class NuxeoRepository {
         return rootFolderId;
     }
 
-    public RepositoryInfo getRepositoryInfo(String latestChangeLogToken) {
+    public RepositoryInfo getRepositoryInfo(String latestChangeLogToken,
+            CallContext callContext) {
         RepositoryInfoImpl repositoryInfo = new RepositoryInfoImpl();
         repositoryInfo.setId(repositoryId);
         repositoryInfo.setName("Nuxeo Repository " + repositoryId);
@@ -167,7 +179,7 @@ public class NuxeoRepository {
         repositoryInfo.setCmisVersionSupported("1.0");
         repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
         repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
-        repositoryInfo.setThinClientUri(Framework.getProperty(NUXEO_URL_PROP));
+        repositoryInfo.setThinClientUri(getBaseURL(callContext));
         repositoryInfo.setChangesIncomplete(Boolean.FALSE);
         repositoryInfo.setChangesOnType(Arrays.asList(BaseTypeId.CMIS_DOCUMENT,
                 BaseTypeId.CMIS_FOLDER));
@@ -222,4 +234,75 @@ public class NuxeoRepository {
         return getTypeManager().getTypeDescendants(typeId, depth,
                 includePropertyDefinitions);
     }
+
+    /** Returns the server base URL (including context). */
+    private static String getBaseURL(CallContext callContext) {
+        HttpServletRequest request = (HttpServletRequest) callContext.get(CallContext.HTTP_SERVLET_REQUEST);
+        if (request != null) {
+            String baseURL = getServerURL(request);
+            String contextPath = request.getContextPath();
+            if (contextPath == null) {
+                contextPath = Framework.getProperty(NUXEO_CONTEXT_PATH_PROP,
+                        NUXEO_CONTEXT_PATH_DEFAULT);
+            }
+            // add context path
+            return baseURL + contextPath + '/';
+        } else {
+            return Framework.getProperty(NUXEO_URL_PROP);
+        }
+    }
+
+    /**
+     * Returns the server URL according to virtual hosting headers (without
+     * trailing slash).
+     */
+    private static String getServerURL(HttpServletRequest request) {
+        String url = null;
+        // Detect Nuxeo specific header for VH
+        String nuxeoVH = request.getHeader(NUXEO_VH_HEADER);
+        if (nuxeoVH != null && nuxeoVH.startsWith("http")) {
+            url = nuxeoVH;
+        } else {
+            // default values
+            String scheme = request.getScheme();
+            String serverName = request.getServerName();
+            int serverPort = request.getServerPort();
+            // Detect virtual hosting based in standard header
+            String forwardedHost = request.getHeader(X_FORWARDED_HOST);
+            if (forwardedHost != null) {
+                if (forwardedHost.contains(":")) {
+                    String[] split = forwardedHost.split(":");
+                    serverName = split[0];
+                    serverPort = Integer.parseInt(split[1]);
+                } else {
+                    serverName = forwardedHost;
+                    serverPort = 80; // fallback
+                }
+            }
+            url = buildURL(scheme, serverName, serverPort);
+        }
+        // strip trailing slash
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        return url;
+    }
+
+    /** Builds an URL (without trailing slash). */
+    private static String buildURL(String scheme, String serverName,
+            int serverPort) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(scheme);
+        sb.append("://");
+        sb.append(serverName);
+        if (serverPort != 0) {
+            if ("http".equals(scheme) && serverPort != 80
+                    || "https".equals(scheme) && serverPort != 443) {
+                sb.append(':');
+                sb.append(serverPort);
+            }
+        }
+        return sb.toString();
+    }
+
 }

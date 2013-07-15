@@ -260,7 +260,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         List<RepositoryInfo> infos = new ArrayList<RepositoryInfo>(repos.size());
         for (NuxeoRepository repo : repos) {
             String latestChangeLogToken = getLatestChangeLogToken(repo.getId());
-            infos.add(repo.getRepositoryInfo(latestChangeLogToken));
+            infos.add(repo.getRepositoryInfo(latestChangeLogToken, callContext));
         }
         return infos;
     }
@@ -270,7 +270,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             ExtensionsData extension) {
         String latestChangeLogToken = getLatestChangeLogToken(repositoryId);
         return NuxeoRepositories.getRepository(repositoryId).getRepositoryInfo(
-                latestChangeLogToken);
+                latestChangeLogToken, callContext);
     }
 
     @Override
