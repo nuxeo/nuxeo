@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -256,49 +257,57 @@ public class DownloadServlet extends HttpServlet {
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
         try {
-            if (fileName == null || fileName.length() == 0) {
-                if (blob.getFilename() != null
-                        && blob.getFilename().length() > 0) {
-                    fileName = blob.getFilename();
-                } else {
-                    fileName = "file";
-                }
-            }
-            boolean inline = req.getParameter("inline") != null;
-            String userAgent = req.getHeader("User-Agent");
-            String contentDisposition = RFC2231.encodeContentDisposition(
-                    fileName, inline, userAgent);
-            resp.setHeader("Content-Disposition", contentDisposition);
-            resp.setContentType(blob.getMimeType());
 
-            long fileSize = blob.getLength();
-            if (fileSize > 0) {
-                String range = req.getHeader("Range");
-                ByteRange byteRange = null;
-                if (range != null) {
-                    try {
-                        byteRange = parseRange(range, fileSize);
-                    } catch (ClientException e) {
-                        log.error(e.getMessage(), e);
+            String digest = ((SQLBlob) blob).getBinary().getDigest();
+
+            String previousToken = req.getHeader("If-None-Match");
+            if (previousToken != null && previousToken.equals(digest)) {
+                resp.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+            } else {
+                resp.setHeader("ETag", digest);
+                if (fileName == null || fileName.length() == 0) {
+                    if (blob.getFilename() != null
+                            && blob.getFilename().length() > 0) {
+                        fileName = blob.getFilename();
+                    } else {
+                        fileName = "file";
                     }
                 }
-                if (byteRange != null) {
-                    resp.setHeader("Accept-Ranges", "bytes");
-                    resp.setHeader(
-                            "Content-Range",
-                            "bytes " + byteRange.getStart() + "-"
-                                    + byteRange.getEnd() + "/" + fileSize);
-                    long length = byteRange.getLength();
-                    if (length < Integer.MAX_VALUE) {
-                        resp.setContentLength((int)length);
+                boolean inline = req.getParameter("inline") != null;
+                String userAgent = req.getHeader("User-Agent");
+                String contentDisposition = RFC2231.encodeContentDisposition(
+                        fileName, inline, userAgent);
+                resp.setHeader("Content-Disposition", contentDisposition);
+                resp.setContentType(blob.getMimeType());
+
+                long fileSize = blob.getLength();
+                if (fileSize > 0) {
+                    String range = req.getHeader("Range");
+                    ByteRange byteRange = null;
+                    if (range != null) {
+                        try {
+                            byteRange = parseRange(range, fileSize);
+                        } catch (ClientException e) {
+                            log.error(e.getMessage(), e);
+                        }
                     }
-                    resp.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-                    writeStream(in, out, byteRange);
-                } else {
-                    if (fileSize < Integer.MAX_VALUE) {
-                        resp.setContentLength((int)fileSize);
+                    if (byteRange != null) {
+                        resp.setHeader("Accept-Ranges", "bytes");
+                        resp.setHeader("Content-Range",
+                                "bytes " + byteRange.getStart() + "-"
+                                        + byteRange.getEnd() + "/" + fileSize);
+                        long length = byteRange.getLength();
+                        if (length < Integer.MAX_VALUE) {
+                            resp.setContentLength((int) length);
+                        }
+                        resp.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+                        writeStream(in, out, byteRange);
+                    } else {
+                        if (fileSize < Integer.MAX_VALUE) {
+                            resp.setContentLength((int) fileSize);
+                        }
+                        writeStream(in, out, new ByteRange(0, fileSize - 1));
                     }
-                    writeStream(in, out, new ByteRange(0, fileSize - 1));
                 }
             }
 
@@ -358,7 +367,7 @@ public class DownloadServlet extends HttpServlet {
         in.skip(offset);
         while (offset <= range.getEnd() && (read = in.read(buffer)) != -1) {
             read = Math.min(read, range.getEnd() - offset + 1);
-            out.write(buffer, 0, (int)read);
+            out.write(buffer, 0, (int) read);
             out.flush();
             offset += BUFFER_SIZE;
         }
