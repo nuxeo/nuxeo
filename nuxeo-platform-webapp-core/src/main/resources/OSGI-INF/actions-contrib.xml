@@ -325,30 +325,50 @@
     </action>
 
     <action id="MOVE_TOP" link="#{orderableDocumentActions.moveToTop}"
-      enabled="true" label="command.order.movetotop" icon="" order="200">
-      <category>CURRENT_SELECTION_LIST</category>
-      <filter-id>orderable</filter-id>
+      enabled="true" label="command.order.movetotop" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canMoveToTop</filter-id>
     </action>
 
     <action id="MOVE_UP" link="#{orderableDocumentActions.moveUp}"
-      enabled="true" label="command.order.moveup" icon="" order="250">
-      <category>CURRENT_SELECTION_LIST</category>
-      <filter-id>orderable</filter-id>
+      enabled="true" label="command.order.moveup" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canMoveUp</filter-id>
     </action>
 
     <action id="MOVE_DOWN" link="#{orderableDocumentActions.moveDown}"
-      enabled="true" label="command.order.movedown" icon="" order="300">
-      <category>CURRENT_SELECTION_LIST</category>
-      <filter-id>orderable</filter-id>
+      enabled="true" label="command.order.movedown" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canMoveDown</filter-id>
     </action>
 
     <action id="MOVE_BOTTOM" link="#{orderableDocumentActions.moveToBottom}"
-      enabled="true" label="command.order.movetobottom" icon="" order="350">
-      <category>CURRENT_SELECTION_LIST</category>
-      <filter-id>orderable</filter-id>
+      enabled="true" label="command.order.movetobottom" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
+      <filter-id>canMoveToBottom</filter-id>
+    </action>
+
+    <action id="MOVE_TOP_IN_SECTION" link="#{orderableDocumentActions.moveToTop}"
+      enabled="true" label="command.order.movetotop" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter-id>canMoveToTop</filter-id>
+    </action>
+
+    <action id="MOVE_UP_IN_SECTION" link="#{orderableDocumentActions.moveUp}"
+      enabled="true" label="command.order.moveup" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter-id>canMoveUp</filter-id>
+    </action>
+
+    <action id="MOVE_DOWN_IN_SECTION" link="#{orderableDocumentActions.moveDown}"
+      enabled="true" label="command.order.movedown" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter-id>canMoveDown</filter-id>
+    </action>
+
+    <action id="MOVE_BOTTOM_IN_SECTION" link="#{orderableDocumentActions.moveToBottom}"
+      enabled="true" label="command.order.movetobottom" icon="">
+      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveToBottom</filter-id>
     </action>
 
