@@ -9,8 +9,10 @@ author: lkemen@nuxeo.com
 /* =Default boxes */
 .foldableBox { border-radius: 5px; border-width: 1px; border-style: solid; border-color:"neutral.lighter (__FLAVOR__ border)"; font-size: .9em; margin-bottom: 1.8em }
 
-.foldableBox h3, .gridBox .foldableBox h3 {
+.foldableBox h3,
+.gridBox .foldableBox h3 {
   background-color: #fff;
+  border-bottom: none;
   font-size: 1.1em;
   height: 20px;
   margin: 0;
@@ -31,6 +33,7 @@ author: lkemen@nuxeo.com
   padding-right: 1em }
 .foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)" }
 .foldableBox .boxBody { clear: both; font-size: 1.1em; padding: 1em }
+.foldableBox .listingLayoutSelector { margin: 0 0 -3em .7em }
 
 /* =Light boxes */
 .foldableLightBox { margin-bottom: 1.8em }

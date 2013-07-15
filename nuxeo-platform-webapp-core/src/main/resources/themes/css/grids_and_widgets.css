@@ -32,8 +32,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .gridStyle3 { width: 25% }
 .gridStyle2 { width: 16% }
 
-.gridBox.gridStyle12 { float: none }
-
 .gridBox h3,
 .gridBox h4 {
   border-width: 1px;

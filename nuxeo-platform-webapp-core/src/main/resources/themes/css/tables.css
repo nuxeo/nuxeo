@@ -12,6 +12,7 @@ table {
 table th {
   color: "black (__FLAVOR__ color)";
   font-weight: bold;
+  text-align: left;
   vertical-align: bottom }
 
 table td {
@@ -35,7 +36,7 @@ table td {
 .dataTableLine th,
 .dataOutput th,
 .dataList th {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
+  background-color: "neutral.light (__FLAVOR__ background)";
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-width: 1px;
   padding: .6em .4em }
