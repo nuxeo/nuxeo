@@ -11,25 +11,28 @@ author: lkemen@nuxeo.com
 
 .foldableBox h3,
 .gridBox .foldableBox h3 {
-  background-color: #fff;
+  background-color: "neutral.medium (__FLAVOR__ background)";
   border-bottom: none;
   font-size: 1.1em;
   height: 20px;
   margin: 0;
-  padding: .3em .3em .3em 1.7em }
-.foldableBox h3.folded {
-  background:url("${basePath}/icons/arrow_folded.gif") no-repeat left 5px; background-color: "neutral.medium (__FLAVOR__ background)" }
-.foldableBox h3.unfolded {
-  background:url("${basePath}/icons/arrow_unfolded.gif") no-repeat left 3px; background-color: "neutral.medium (__FLAVOR__ background)";
+  padding: .3em }
+.foldableBox .folded a.foldableHeaderLink,
+.foldableLightBox .folded a.foldableHeaderLink {
+  background:url("${basePath}/icons/arrow_folded.gif") no-repeat left 1px;
+  padding:0 1em 0 1.7em }
+.foldableBox .unfolded a.foldableHeaderLink,
+.foldableLightBox .unfolded a.foldableHeaderLink {
+  background:url("${basePath}/icons/arrow_unfolded.gif") no-repeat left top;
+  padding:0 1em 0 1.7em;
   clear: both }
 .foldableBox h3.foldedDisabled {
-  background:"neutral.medium (__FLAVOR__ background)" none;
-  border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)";
   color: #555 }
 .foldableBox h3 span, .foldableBox h3 a, .foldableBox h3 a:visited {
   color: "black (__FLAVOR__ color)";
   display: block;
   float: left;
+  text-decoration: none;
   padding-right: 1em }
 .foldableBox h3 a.warningLink { color: "warning.status (__FLAVOR__ color)" }
 .foldableBox .boxBody { clear: both; font-size: 1.1em; padding: 1em }
@@ -37,23 +40,24 @@ author: lkemen@nuxeo.com
 
 /* =Light boxes */
 .foldableLightBox { margin-bottom: 1.8em }
-.foldableLightBox div.folded { background: #fff url("${basePath}/icons/arrow_folded.gif") no-repeat left 5px }
-.foldableLightBox div.unfolded { background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat left 3px }
+.foldableLightBox div.folded,
+.foldableLightBox div.unfolded {
+  background: #fff }
 .foldableLightBox div.folded a,
 .foldableLightBox div.unfolded a {
   color: "gray.dark (__FLAVOR__ color)";
   float: left;
   font-size: 1em;
   margin: 0;
-  padding: 0 .4em }
+  padding: 0 .4em;
+  text-decoration: none }
 .foldableLightBox div.folded,
 .foldableLightBox div.unfolded {
   border-width: 1px; border-style: none none solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "gray.dark (__FLAVOR__ color)";
   font-size: .9em;
-  height: 18px;
-  padding: .3em .3em .3em 1.7em }
+  height: 18px }
 .foldableLightBox .boxBody {
   border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";

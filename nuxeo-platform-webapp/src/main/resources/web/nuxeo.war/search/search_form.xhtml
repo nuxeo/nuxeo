@@ -32,7 +32,7 @@
 
       <div class="foldableBox">
         <h3 class="unfolded">
-          <a href="#nologo" onclick="return toggleBox(this)">
+          <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
             <h:outputText value="#{messages['label.search.criteria']}"/>
           </a>
         </h3>
@@ -49,7 +49,7 @@
 
       <div class="foldableBox">
         <h3 class="unfolded">
-         <a href="#nologo" onclick="return toggleBox(this)">
+         <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
            <h:outputText value="#{messages['label.search.results']}" />
          </a>
         </h3>
@@ -109,7 +109,7 @@
   <c:if test="#{currentNuxeoPrincipal.administrator}">
     <div class="foldableBox">
       <h3 class="unfolded">
-        <a href="#nologo" onclick="return toggleBox(this)">
+        <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
           <h:outputText value="#{messages['label.search.administrate']}"/>
         </a>
       </h3>
