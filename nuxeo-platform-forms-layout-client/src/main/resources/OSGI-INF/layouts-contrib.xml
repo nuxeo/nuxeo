@@ -169,7 +169,8 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          String representing a short hint (a word or short phrase)
+          String representing a short hint (a word or short
+          phrase)
           intended to aid the user with data entry.
         </label>
       </helpLabels>
@@ -522,7 +523,7 @@
       </fields>
     </widget>
 
-    <widget name="file_iconRendered" type="checkbox">
+    <widget name="file_iconRendered" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -538,6 +539,10 @@
       <fields>
         <field>iconRendered</field>
       </fields>
+      <selectOptions>
+        <option itemLabel="Yes (default value)" itemValue="true" />
+        <option itemLabel="No" itemValue="false" />
+      </selectOptions>
     </widget>
 
     <widget name="htmltext_disableHtmlInit" type="checkbox">
