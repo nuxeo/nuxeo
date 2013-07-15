@@ -99,6 +99,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 }
                 if ("#{currentDocument.id}".equals(expression)) {
                     return currentDocument.getId();
+                } else if ("#{currentDocument.path}".equals(expression)) {
+                    return currentDocument.getPath();
                 } else {
                     log.error("Cannot evaluate expression: " + expression);
                 }
@@ -436,8 +438,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     }
 
     /**
-     * Non regression test for NXP-11419, showing an issue when restoring with a
-     * search doc and a current page > 0
+     * Non regression test for NXP-11419, showing an issue when restoring with
+     * a search doc and a current page > 0
      */
     @Test
     public void testRestoreContentViewWithSearchDocAndCurrentPage()
@@ -507,6 +509,26 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
                 "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuYfBMbcpHWqlsU3dBgc0VVFqRkSaFCfRVKr%2BdxwqdnPej8dWJtDeRXTx1eBtp3oEAfLcNJvdqS338vySB1nV25Kl9q0%2BVe1xs25kdXehgEFd8Wh%2BuPtUgE5EzDuwBmJVwHdCGg%2BKmB2RAoj3SwEBFenP0uvUcxbEBHEc8u5nYzETyQ9I0WDIXqdFNNFmfyk%2BfOF489QFmGeGeYq1%2B%2FCZPf29pLepdxy%2FN5fUOmh0nXFXEJESznwJYUg2btXoE9%2FhkrX%2F2gLJUP6jPLaPcJl%2FAbtiVTcxAQAA",
+                encodedJson);
+    }
+
+    @Test
+    public void testSaveJSONContentViewWithPathParam() throws Exception {
+        ContentView contentView = service.getContentView("CURRENT_DOCUMENT_WITH_PATH_PARAM");
+        assertNotNull(contentView);
+        ContentViewState state = service.saveContentView(contentView);
+
+        String json = JSONContentViewState.toJSON(state, false);
+
+        String expectedJson = "{"
+                + "\"contentViewName\":\"CURRENT_DOCUMENT_WITH_PATH_PARAM\","
+                + "\"queryParameters\":[\"/\"]," + "\"searchDocument\":null,"
+                + "\"sortInfos\":[]," + "\"resultLayout\":null" + "}";
+        assertEquals(expectedJson, json);
+
+        String encodedJson = JSONContentViewState.toJSON(state, true);
+        assertEquals(
+                "H4sIAAAAAAAAAKtWSs7PK0nNKwnLTC33S8xNVbJScg4NCnL1C4l38XcO9QUxwj1DPOIDHMFEkKOvko5SYWlqUWVAYhFQQ0lqUbGSVbSSvlKsjlJxamJRcoZLfnJpLtBMJau80pwcoGh%2BUYlnXlo%2BSB1QUVFqcWlOiU9iZX4pVEktAMoXe7GHAAAA",
                 encodedJson);
     }
 

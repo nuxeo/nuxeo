@@ -171,6 +171,18 @@
       </pageProvider>
     </contentView>
 
+    <contentView name="CURRENT_DOCUMENT_WITH_PATH_PARAM">
+      <title>current document children with path param</title>
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
+        <pattern>
+          SELECT * FROM Document WHERE ecm:path STARTSWITH ?
+        </pattern>
+        <parameter>#{currentDocument.path}</parameter>
+      </coreQueryPageProvider>
+    </contentView>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"

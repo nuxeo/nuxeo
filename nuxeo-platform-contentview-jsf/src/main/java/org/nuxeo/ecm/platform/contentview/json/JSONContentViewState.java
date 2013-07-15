@@ -24,7 +24,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,8 +61,8 @@ public class JSONContentViewState {
      * Returns the String serialization in JSON format of a content view state.
      *
      * @param state the state to serialize
-     * @param encode if true, the resulting String will be zipped and encoded in
-     *            Base-64 format.
+     * @param encode if true, the resulting String will be zipped and encoded
+     *            in Base-64 format.
      * @throws ClientException
      * @throws UnsupportedEncodingException
      */
@@ -85,7 +84,16 @@ public class JSONContentViewState {
         JSONArray jsonQueryParams = new JSONArray();
         Object[] queryParams = state.getQueryParameters();
         if (queryParams != null) {
-            jsonQueryParams.addAll(Arrays.asList(queryParams));
+            // serialize to String before
+            List<String> stringParams = new ArrayList<String>();
+            for (Object queryParam : queryParams) {
+                if (queryParam == null) {
+                    stringParams.add(null);
+                } else {
+                    stringParams.add(queryParam.toString());
+                }
+            }
+            jsonQueryParams.addAll(stringParams);
         }
         jsonObject.element("queryParameters", jsonQueryParams);
 
