@@ -27,14 +27,18 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
@@ -43,15 +47,15 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 /**
  * Listener to manage initialization :
- * 
+ *
  * <ul>
  * <li>of the TemplateSourceDocument : init the parameters</li>
  * <li>of the other DocumentModels if they need to be automatically associated
  * to a template</li>
  * </ul>
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
- * 
+ *
  */
 public class TemplateInitListener implements EventListener {
 
@@ -85,7 +89,8 @@ public class TemplateInitListener implements EventListener {
 
                     // init template source
                     List<TemplateInput> params = templateDoc.getParams();
-                    if (params == null || params.size() == 0) {
+                    if (params == null || params.size() == 0
+                            || isBlobDirty(targetDoc)) {
                         try {
                             templateDoc.initTemplate(false);
                         } catch (Exception e) {
@@ -140,6 +145,20 @@ public class TemplateInitListener implements EventListener {
                     }
                 }
             }
+        }
+    }
+
+    protected boolean isBlobDirty(DocumentModel targetDoc)
+            throws ClientException {
+        BlobHolder bh = targetDoc.getAdapter(BlobHolder.class);
+        Blob mainBlob = bh.getBlob();
+        if (mainBlob.getDigest() == null) {
+            // Blobs that have not changed should be SQL Blobs and have a digest
+            return true;
+        } else {
+            // newly uploaded Blob should be FileBlob, and anyway Digest can not
+            // have been computed so far
+            return false;
         }
     }
 }
