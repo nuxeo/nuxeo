@@ -158,6 +158,9 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     protected final CoreSession coreSession;
 
+    /* To avoid refetching it several times per session. */
+    protected String cachedChangeLogToken;
+
     /** When false, we don't own the core session and shouldn't close it. */
     protected final boolean coreSessionOwned;
 
@@ -253,6 +256,11 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
     }
 
+    protected void save() throws ClientException {
+        coreSession.save();
+        cachedChangeLogToken = null;
+    }
+
     /* This is the only method that does not have a repositoryId / coreSession. */
     @Override
     public List<RepositoryInfo> getRepositoryInfos(ExtensionsData extension) {
@@ -268,7 +276,13 @@ public class NuxeoCmisService extends AbstractCmisService {
     @Override
     public RepositoryInfo getRepositoryInfo(String repositoryId,
             ExtensionsData extension) {
-        String latestChangeLogToken = getLatestChangeLogToken(repositoryId);
+        String latestChangeLogToken;
+        if (cachedChangeLogToken != null) {
+            latestChangeLogToken = cachedChangeLogToken;
+        } else {
+            latestChangeLogToken = getLatestChangeLogToken(repositoryId);
+            cachedChangeLogToken = latestChangeLogToken;
+        }
         return NuxeoRepositories.getRepository(repositoryId).getRepositoryInfo(
                 latestChangeLogToken, callContext);
     }
@@ -523,7 +537,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 doc = coreSession.saveDocument(doc);
             }
             data.doc = doc;
-            coreSession.save();
+            save();
         } catch (ClientException e) {
             throw new CmisRuntimeException("Cannot create", e);
         }
@@ -617,18 +631,18 @@ public class NuxeoCmisService extends AbstractCmisService {
             case NONE: // cannot be made non-versionable in Nuxeo
             case CHECKEDOUT:
                 object.doc.setLock();
-                object.doc.getCoreSession().save();
+                save();
                 id = object.getId();
                 break;
             case MINOR:
                 ref = object.doc.checkIn(VersioningOption.MINOR, null);
-                object.doc.getCoreSession().save();
+                save();
                 // id = ref.toString();
                 id = object.getId();
                 break;
             case MAJOR:
                 ref = object.doc.checkIn(VersioningOption.MAJOR, null);
-                object.doc.getCoreSession().save();
+                save();
                 // id = ref.toString();
                 id = object.getId();
                 break;
@@ -710,7 +724,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 updateProperties(copy, null, properties, false);
                 copy.doc = coreSession.saveDocument(copyDoc);
             }
-            coreSession.save();
+            save();
             return setInitialVersioningState(copy, versioningState);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -731,7 +745,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 updateProperties(copy, null, properties, type, false);
                 copy.doc = coreSession.saveDocument(copyDoc);
             }
-            coreSession.save();
+            save();
             String id = setInitialVersioningState(copy, versioningState);
             NuxeoObjectData res;
             if (id.equals(copy.getId())) {
@@ -771,7 +785,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                         + folderId);
             }
             coreSession.removeDocument(new IdRef(folderId));
-            coreSession.save();
+            save();
             // TODO returning null fails in opencmis 0.1.0 due to
             // org.apache.chemistry.opencmis.client.runtime.PersistentFolderImpl.deleteTree
             return new FailedToDeleteDataImpl();
@@ -1030,7 +1044,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                         "Target is not a folder: " + targetFolderId);
             }
             coreSession.move(docRef, new IdRef(targetFolderId), null);
-            coreSession.save();
+            save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -1053,7 +1067,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             NuxeoPropertyData.setContentStream(doc, contentStream,
                     !Boolean.FALSE.equals(overwriteFlag));
             coreSession.saveDocument(doc);
-            coreSession.save();
+            save();
         } catch (CmisBaseException e) {
             throw e;
         } catch (Exception e) {
@@ -1077,7 +1091,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         updateProperties(object, changeToken, properties, false);
         try {
             coreSession.saveDocument(doc);
-            coreSession.save();
+            save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -1707,7 +1721,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             coreSession.saveDocument(doc);
             DocumentRef ver = doc.checkIn(option, checkinComment);
             doc.removeLock();
-            coreSession.save();
+            save();
             objectIdHolder.setValue(getIdFromDocumentRef(ver));
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -1737,7 +1751,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             coreSession.saveDocument(doc);
             DocumentRef ver = doc.checkIn(option, checkinComment);
             doc.removeLock();
-            coreSession.save();
+            save();
             return getIdFromDocumentRef(ver);
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -1788,7 +1802,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
             pwc.setLock();
             pwc.checkOut();
-            coreSession.save();
+            save();
             return pwc.getId();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
@@ -1819,7 +1833,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 coreSession.restoreToVersion(docRef, verRef, true, true);
                 doc.removeLock();
             }
-            coreSession.save();
+            save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
@@ -1982,7 +1996,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 }
             }
             coreSession.removeDocument(doc.getRef());
-            coreSession.save();
+            save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
