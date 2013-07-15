@@ -616,6 +616,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             switch (versioningState) {
             case NONE: // cannot be made non-versionable in Nuxeo
             case CHECKEDOUT:
+                object.doc.setLock();
+                object.doc.getCoreSession().save();
                 id = object.getId();
                 break;
             case MINOR:
