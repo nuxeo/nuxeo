@@ -88,6 +88,8 @@ public class UserProfileActions implements Serializable {
 
     protected DocumentModel userProfileDocument;
 
+    protected DocumentModel currentUserProfile;
+
     public void updateUser() throws ClientException {
         if (userProfileDocument != null) {
             // Ensure to remove user schema from datamodel when saving changes
@@ -123,7 +125,8 @@ public class UserProfileActions implements Serializable {
     public DocumentModel getCurrentUserModel() {
         DocumentModel selectedUser = userManagementActions.getSelectedUser();
         DocumentModel currentUserModel = currentUser.getModel();
-        if (selectedUser == null || !selectedUser.getId().equals(currentUserModel.getId())) {
+        if (selectedUser == null
+                || !selectedUser.getId().equals(currentUserModel.getId())) {
             userManagementActions.setSelectedUser(currentUserModel);
         }
         return currentUserModel;
@@ -157,8 +160,11 @@ public class UserProfileActions implements Serializable {
     }
 
     public DocumentModel getUserProfile() throws ClientException {
-        return getUserProfileService().getUserProfile(getCurrentUserModel(),
-                documentManager);
+        if (currentUserProfile == null) {
+            currentUserProfile = getUserProfileService().getUserProfile(
+                    getCurrentUserModel(), documentManager);
+        }
+        return currentUserProfile;
     }
 
     public DocumentModel getSelectedUserProfile() throws ClientException {
@@ -198,5 +204,6 @@ public class UserProfileActions implements Serializable {
     @BypassInterceptors
     public void resetState() {
         userProfileDocument = null;
+        currentUserProfile = null;
     }
 }
