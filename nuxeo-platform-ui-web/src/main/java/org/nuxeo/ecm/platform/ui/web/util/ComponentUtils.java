@@ -195,7 +195,10 @@ public final class ComponentUtils {
                 }
                 HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
 
-                String digest = ((SQLBlob) blob).getBinary().getDigest();
+                String digest = null;
+                if (blob instanceof SQLBlob) {
+                    digest = ((SQLBlob) blob).getBinary().getDigest();
+                }
 
                 try {
                     String previousToken = request.getHeader("If-None-Match");
