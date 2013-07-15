@@ -42,7 +42,7 @@
         <h3 class="#{titleClass}">
 
           <c:if test="#{hasLocalConfigurationFacet}">
-            <a href="#nologo" onclick="return toggleBox(this)">
+            <a class="foldableHeaderLink" href="#nologo" onclick="return toggleBox(this)">
               <c:if test="#{not empty layoutProperty_foldableBoxLabel}">
                 <h:outputText value="#{messages[layoutProperty_foldableBoxLabel]}" />
               </c:if>
