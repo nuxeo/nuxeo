@@ -251,6 +251,7 @@
     <action id="CLIPBOARD_PASTE" link="#{clipboardActions.pasteClipboard}"
       label="command.clipboard.paste" icon="" order="20">
       <category>CURRENT_SELECTION_LIST</category>
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter id="canPastFromClipboard">
         <rule grant="true">
           <condition>#{clipboardActions.canPasteFromClipboard}</condition>
@@ -284,6 +285,7 @@
       label="command.trashDocs" icon="" help="comand.trashDocs.help"
       confirm="if( !confirmDeleteDocuments() ) return false;" order="40">
       <category>CURRENT_SELECTION_LIST</category>
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter id="canDelete">
         <rule grant="true">
           <condition>#{deleteActions.canDelete}</condition>
@@ -294,6 +296,7 @@
     <action id="CURRENT_SELECTION_EDIT" type="fancybox"
       label="command.bulk.edit" icon="" order="0">
       <category>CURRENT_SELECTION_LIST</category>
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canEditCurrentSelection</filter-id>
       <properties>
         <property name="include">/incl/bulk_edit_box.xhtml</property>
@@ -310,12 +313,14 @@
     <action id="CURRENT_SELECTION_COPY" link="#{clipboardActions.putSelectionInClipboard}"
       label="command.clipboard.copy" icon="" order="10">
       <category>CURRENT_SELECTION_LIST</category>
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
     </action>
 
     <action id="CURRENT_SELECTION_ADDTOLIST" link="#{clipboardActions.putSelectionInDefaultWorkList}"
       label="help.command.clipboard.addworklist" icon="" order="30">
       <category>CURRENT_SELECTION_LIST</category>
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canCopyFromCurrentSelection</filter-id>
       <filter id="no_addtolist_for_domains">
         <rule grant="false">
@@ -325,50 +330,26 @@
     </action>
 
     <action id="MOVE_TOP" link="#{orderableDocumentActions.moveToTop}"
-      enabled="true" label="command.order.movetotop" icon="">
+      enabled="true" label="command.order.movetotop" icon="" order="200">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canMoveToTop</filter-id>
     </action>
 
     <action id="MOVE_UP" link="#{orderableDocumentActions.moveUp}"
-      enabled="true" label="command.order.moveup" icon="">
+      enabled="true" label="command.order.moveup" icon="" order="250">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canMoveUp</filter-id>
     </action>
 
     <action id="MOVE_DOWN" link="#{orderableDocumentActions.moveDown}"
-      enabled="true" label="command.order.movedown" icon="">
+      enabled="true" label="command.order.movedown" icon="" order="300">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canMoveDown</filter-id>
     </action>
 
     <action id="MOVE_BOTTOM" link="#{orderableDocumentActions.moveToBottom}"
-      enabled="true" label="command.order.movetobottom" icon="">
+      enabled="true" label="command.order.movetobottom" icon="" order="350">
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
-      <filter-id>canMoveToBottom</filter-id>
-    </action>
-
-    <action id="MOVE_TOP_IN_SECTION" link="#{orderableDocumentActions.moveToTop}"
-      enabled="true" label="command.order.movetotop" icon="">
-      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
-      <filter-id>canMoveToTop</filter-id>
-    </action>
-
-    <action id="MOVE_UP_IN_SECTION" link="#{orderableDocumentActions.moveUp}"
-      enabled="true" label="command.order.moveup" icon="">
-      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
-      <filter-id>canMoveUp</filter-id>
-    </action>
-
-    <action id="MOVE_DOWN_IN_SECTION" link="#{orderableDocumentActions.moveDown}"
-      enabled="true" label="command.order.movedown" icon="">
-      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
-      <filter-id>canMoveDown</filter-id>
-    </action>
-
-    <action id="MOVE_BOTTOM_IN_SECTION" link="#{orderableDocumentActions.moveToBottom}"
-      enabled="true" label="command.order.movetobottom" icon="">
-      <category>ORDERABLE_CURRENT_SELECTION_SECTIONS_LIST</category>
       <filter-id>canMoveToBottom</filter-id>
     </action>
 
