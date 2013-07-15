@@ -129,6 +129,7 @@ empty:
 <c:if test="#{finalShowPageSizeSelector}">
   <div class="listingLayoutSelector">
 
+    #{contentViewActions.setCurrentContentView(contentView)}
     <c:if test="#{contentView.useGlobalPageSize}">
       <c:set var="pageSizeBinding" value="#{contentViewActions.currentGlobalPageSize}" />
     </c:if>
