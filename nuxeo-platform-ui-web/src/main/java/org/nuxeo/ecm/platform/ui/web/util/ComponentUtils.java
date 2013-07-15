@@ -250,11 +250,14 @@ public final class ComponentUtils {
                 FORCE_NO_CACHE_ON_MSIE, "false"));
     }
 
-    /*
+    /**
      * Internet Explorer file downloads over SSL do not work with certain HTTP
-     * cache control headers See http://support.microsoft.com/kb/323308/ What is
-     * not mentioned in the above Knowledge Base is that "Pragma: no-cache" also
-     * breaks download in MSIE over SSL
+     * cache control headers
+     * <p>
+     * See http://support.microsoft.com/kb/323308/
+     * <p>
+     * What is not mentioned in the above Knowledge Base is that
+     * "Pragma: no-cache" also breaks download in MSIE over SSL
      */
     private static void addCacheControlHeaders(HttpServletRequest request,
             HttpServletResponse response) {
@@ -365,8 +368,8 @@ public final class ComponentUtils {
     }
 
     /**
-     * Returns the component specified by the {@code componentId} parameter from
-     * the {@code base} component.
+     * Returns the component specified by the {@code componentId} parameter
+     * from the {@code base} component.
      * <p>
      * Does not throw any exception if the component is not found, returns
      * {@code null} instead.
