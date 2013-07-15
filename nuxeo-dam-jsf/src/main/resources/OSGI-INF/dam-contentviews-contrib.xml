@@ -56,7 +56,7 @@
       <searchLayout name="dam_search_layout" />
 
       <showPageSizeSelector>true</showPageSizeSelector>
-      <useGlobalPageSize>true</useGlobalPageSize>
+      <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
@@ -114,7 +114,7 @@
       <showFilterForm>true</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
-      <useGlobalPageSize>true</useGlobalPageSize>
+      <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
