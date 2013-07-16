@@ -157,4 +157,13 @@ public class DocResource {
         return "";
     }
 
+    public boolean hasOperation(OperationDocumentation op) {
+        if (op == null) {
+            throw new IllegalArgumentException("Operation must not be null");
+        }
+        if (op.getOperations() == null || op.getOperations().length == 0) {
+            return false;
+        }
+        return true;
+    }
 }

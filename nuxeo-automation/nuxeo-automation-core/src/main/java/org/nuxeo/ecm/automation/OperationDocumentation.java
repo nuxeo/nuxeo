@@ -18,6 +18,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.automation.core.OperationChainContribution;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,6 +47,11 @@ public class OperationDocumentation implements
     public String description;
 
     public Param[] params;
+
+    /**
+     * The operations listing in case of a chain
+     */
+    public OperationChainContribution.Operation[] operations;
 
     // optional URL indicating the relative path (relative to the automation
     // service home)
@@ -93,6 +99,10 @@ public class OperationDocumentation implements
 
     public Param[] getParams() {
         return params;
+    }
+
+    public OperationChainContribution.Operation[] getOperations() {
+        return operations;
     }
 
     @Override
