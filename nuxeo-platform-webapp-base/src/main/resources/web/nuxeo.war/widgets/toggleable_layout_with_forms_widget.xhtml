@@ -50,8 +50,15 @@
       layout. For instance Studio can generate expressions like:
       #{layoutWidgetMode == 'edit'? 'myLayout@edit': 'myLayout@view'}
     </c:if>
+
+    <nxu:set var="initialLayoutName"
+      value="#{widget.properties['initialLayoutName']}"
+      resolveTwice="true" cache="true">
     <nxu:set var="toggledLayoutName"
-      value="#{nxu:test(empty widgetProperty_toggledLayoutName, widgetProperty_initialLayoutName, widgetProperty_toggledLayoutName)}"
+      value="#{widget.properties['toggledLayoutName']}"
+      resolveTwice="true" cache="true">
+    <nxu:set var="toggledLayoutName"
+      value="#{nxu:test(empty toggledLayoutName, initialLayoutName, toggledLayoutName)}"
       cache="false">
 
       <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
@@ -297,6 +304,8 @@
         </ui:define>
       </ui:decorate>
 
+    </nxu:set>
+    </nxu:set>
     </nxu:set>
     </nxu:valueHolder>
 
