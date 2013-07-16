@@ -19,6 +19,7 @@ package org.nuxeo.drive.operations;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,9 +54,6 @@ public class NuxeoDriveGenerateConflictedItemName {
     @Param(name = "name")
     protected String name;
 
-    @Param(name = "timezone", required = false)
-    protected String timezone;
-
     @OperationMethod
     public Blob run() throws ClientException, IOException {
 
@@ -74,12 +72,8 @@ public class NuxeoDriveGenerateConflictedItemName {
             // build more user friendly name from user info
             userName = principal.getFirstName() + " " + principal.getLastName();
         }
-        Calendar userDate;
-        if (timezone != null) {
-            userDate = Calendar.getInstance(TimeZone.getTimeZone(timezone));
-        } else {
-            userDate = Calendar.getInstance();
-        }
+        Calendar userDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh-mm");
         dateFormat.setCalendar(userDate);
         String formatedDate = dateFormat.format(userDate.getTime());
