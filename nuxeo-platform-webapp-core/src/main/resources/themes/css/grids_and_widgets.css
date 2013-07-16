@@ -43,7 +43,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .gridBox h4 {
   font-size: 1.1em }
 
-.summaryTitle, .gridBox .summaryTitle {
+.summaryTitle,
+.gridBox .summaryTitle {
   border-width: 1px;
   border-style: none none solid;
   border-color: "color.major.medium (__FLAVOR__ border)";
@@ -99,6 +100,10 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .widgetPanel .actionsWidgetPanel {
   padding: 0 }
 
+.widgetTable,
+.containerWidgetTable {
+  width: 100% }
+
 /* =Advanced Widgets */
 .containerField {
   padding-bottom: 1.5em }
@@ -109,7 +114,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin-left: -0.5em }
 
 /* =Specifics */
-
 .indicators {
   margin: 0 .2em .5em 0 }
 .indicators .widgetPanel.actionsWidgetPanel > div {
