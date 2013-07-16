@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -291,11 +291,10 @@ public class DownloadServlet extends HttpServlet {
                         fileName = "file";
                     }
                 }
-                boolean inline = req.getParameter("inline") != null;
-                String userAgent = req.getHeader("User-Agent");
-                String contentDisposition = RFC2231.encodeContentDisposition(
-                        fileName, inline, userAgent);
-                resp.setHeader("Content-Disposition", contentDisposition);
+
+                resp.setHeader("Content-Disposition",
+                        ServletHelper.getRFC2231ContentDisposition(req,
+                                fileName));
                 resp.setContentType(blob.getMimeType());
 
                 long fileSize = blob.getLength();
