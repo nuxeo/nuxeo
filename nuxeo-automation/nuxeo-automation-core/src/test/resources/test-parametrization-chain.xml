@@ -4,7 +4,7 @@
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <operation class="org.nuxeo.ecm.automation.core.test.Operation1" />
     <operation class="org.nuxeo.ecm.automation.core.test.Operation2" />
-    <operation class="org.nuxeo.ecm.automation.core.test.Operation3" />
+    <operation class="org.nuxeo.ecm.automation.core.test.OperationCheckChainContext" />
   </extension>
 
   <extension point="chains"
@@ -17,8 +17,8 @@
       <operation id="o2">
         <param type="string" name="message">Hello 2!</param>
       </operation>
-      <operation id="o3">
-        <param type="string" name="message">@{ChainParameters['messageChain']}</param>
+      <operation id="oChainCtx">
+        <param type="string" name="message">expr:@{ChainParameters['messageChain']}</param>
       </operation>
     </chain>
   </extension>
