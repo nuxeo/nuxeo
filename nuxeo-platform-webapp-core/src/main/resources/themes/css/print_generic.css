@@ -64,7 +64,6 @@ a:visited { background: transparent; color: #000; text-decoration: none }
 .metadata_block,
 .comments_block,
 .entitiesBlock,
-.relation_block,
 .widgetPanel { margin: 1em 0 2em }
 .widgetPanel { padding: 0 10px 10px }
 
