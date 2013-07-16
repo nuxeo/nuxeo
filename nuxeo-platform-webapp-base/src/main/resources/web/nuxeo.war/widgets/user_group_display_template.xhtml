@@ -29,8 +29,7 @@
 <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
 <c:set var="firstNameField" value="#{nxu:test(showEmail and hideFirstLabel and hideSecondLabel, thirdLabelField, firstLabelField)}" />
-<h:outputText rendered="#{info.type == 'USER_TYPE'}">
-  <span class="tag user">
+<a4j:outputPanel rendered="#{info.type == 'USER_TYPE'}" styleClass="tag user">
   <c:if test="#{showEmail}">
     <c:set var="userDisplayName"
       value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema][firstNameField], nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]), nxu:test(hideThirdLabel or not showEmail, null, info.entry[userSchema][thirdLabelField]))}" />
@@ -55,10 +54,8 @@
       <h:outputText value="#{userDisplayName}" />
     </a4j:commandLink>
   </c:if>
-  </span>
-</h:outputText>
-<h:outputText rendered="#{info.type == 'GROUP_TYPE'}">
-  <span class="tag group">
+</a4j:outputPanel>
+<a4j:outputPanel rendered="#{info.type == 'GROUP_TYPE'}" styleClass="tag group">
   <h:outputText value=" " />
   <c:set var="groupDisplayName"
     value="#{nxu:groupDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[groupSchema].grouplabel))}" />
@@ -77,8 +74,7 @@
       <h:outputText value="#{groupDisplayName}"/>
     </a4j:commandLink>
   </c:if>
-  </span>
-</h:outputText>
+</a4j:outputPanel>
 <h:outputText rendered="#{empty info.type}">
   <h:outputText value="#{item}" />
 </h:outputText>
