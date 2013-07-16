@@ -34,6 +34,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -78,7 +79,11 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Clock;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.SystemClock;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * Base functions for all pages.
@@ -91,7 +96,8 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
-     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+     * @since 5.7
+     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
      *        doesn't work
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
@@ -150,8 +156,6 @@ public abstract class AbstractTest {
     protected static ProxyServer proxyServer = null;
 
     /**
-     *
-     *
      * @since 5.7
      */
     protected class LogTestWatchman extends TestWatchman {
@@ -376,8 +380,10 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Introspects the classpath and returns the list of files in it.
-     * FIXME: should use HarnessRuntime#getClassLoaderFiles that returns the same thing
+     * Introspects the classpath and returns the list of files in it. FIXME:
+     * should use HarnessRuntime#getClassLoaderFiles that returns the same
+     * thing
+     *
      * @return
      * @throws Exception
      */
@@ -697,6 +703,45 @@ public abstract class AbstractTest {
     }
 
     /**
+     * Fluent wait for an element to be present, checking every 5 seconds
+     *
+     * @since 5.7.2
+     */
+    public WebElement waitUntilElementPresent(final By locator) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
+                TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
+        WebElement elt = wait.until(new Function<WebDriver, WebElement>() {
+            public WebElement apply(WebDriver driver) {
+                return driver.findElement(locator);
+            }
+        });
+        return elt;
+    };
+
+    /**
+     * Fluent wait for an element not to be present, checking every 5 seconds
+     *
+     * @since 5.7.2
+     */
+    public void waitUntilElementNotPresent(final By locator) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
+                TimeUnit.SECONDS);
+        wait.until((new Function<WebDriver, By>() {
+            public By apply(WebDriver driver) {
+                try {
+                    driver.findElement(locator);
+                } catch (NoSuchElementException ex) {
+                    // ok
+                    return locator;
+                }
+                return null;
+            }
+        }));
+    };
+
+    /**
      * Finds the first {@link WebElement} using the given method, with a
      * timeout.
      *
@@ -748,8 +793,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}.
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -806,8 +851,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -1041,10 +1086,10 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Get the current document id stored in the javascript ctx.currentDocument variable of the current page.
+     * Get the current document id stored in the javascript ctx.currentDocument
+     * variable of the current page.
      *
      * @return the current document id
-     *
      * @since 5.7
      */
     protected String getCurrentDocumentId() {

@@ -33,9 +33,11 @@ import org.openqa.selenium.WebElement;
  */
 public class ITSelectAndFilterTest extends AbstractTest {
 
-    private final String checkBoxXPath = "td/input[@type=\"checkbox\"]";
+    protected final String checkBoxXPath = "td/input[@type=\"checkbox\"]";
 
-    private final String documentTitleXPath = "td//span[@id[starts-with(.,\"title_\")]]";
+    protected final String documentTitleXPath = "td//span[@id[starts-with(.,\"title_\")]]";
+
+    protected final String resetFilterId = "cv_document_content_0_resetFilterForm:resetFilter";
 
     /**
      * This tests create 2 documents in a workspace, select one of them, filter
@@ -43,7 +45,6 @@ public class ITSelectAndFilterTest extends AbstractTest {
      * document is still selected.
      *
      * @throws Exception
-     *
      * @since 5.7.2
      */
     @Test
@@ -70,23 +71,27 @@ public class ITSelectAndFilterTest extends AbstractTest {
         List<WebElement> trelements = contentTabSubPage.getChildDocumentRows();
 
         // We must have 2 files
-        assertTrue(trelements != null && trelements.size() == 2);
+        assertTrue(trelements != null);
+        assertTrue(trelements.size() == 2);
 
         // Select the first document
         trelements.get(0).findElement(By.xpath(checkBoxXPath)).click();
-        final Boolean selectedFileName = Boolean.parseBoolean(trelements.get(0).findElement(
+        boolean selectedFileName = Boolean.parseBoolean(trelements.get(0).findElement(
                 By.xpath(documentTitleXPath)).getText());
 
         // Filter on the name of the other document
         contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName));
+        waitUntilElementPresent(By.id(resetFilterId));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
         // We must have only 1 file
-        assertTrue(trelements != null && trelements.size() == 1);
+        assertTrue(trelements != null);
+        assertTrue(trelements.size() == 1);
 
         // Reset filter
         workspacePage.getContentTab().clearFilter();
+        waitUntilElementNotPresent(By.id(resetFilterId));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
@@ -98,8 +103,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
         for (WebElement tr : trelements) {
             final boolean isCurrentTrSelected = tr.findElement(
                     By.xpath(checkBoxXPath)).isSelected();
-            String s = tr.findElement(
-                    By.xpath(documentTitleXPath)).getText();
+            String s = tr.findElement(By.xpath(documentTitleXPath)).getText();
             final boolean isPreviouslySelectedDoc = (Boolean.parseBoolean(s) == selectedFileName);
             if (isCurrentTrSelected ^ isPreviouslySelectedDoc) {
                 isSelectionOk = false;
