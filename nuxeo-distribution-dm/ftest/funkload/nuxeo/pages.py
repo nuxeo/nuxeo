@@ -413,7 +413,7 @@ class BasePage:
         fl.get(fl.server_url + "/facetedsearch/faceted_search_results.faces?conversationId=0NXMAIN",
             description="Get redirection to faceted search after " + description)
 
-        fl.assert_('Default Faceted Search' in fl.getBody(),
+        fl.assert_('Default search' in fl.getBody(),
                      'Not a search result page')
         return self
 
