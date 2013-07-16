@@ -34,6 +34,10 @@ public interface NotificationRegistry extends Serializable {
 
     void registerNotification(Notification notif, List<String> events);
 
+    @Deprecated
+    /**
+     * Deperecated since 5.7.2. Prefer to use unregisterNotification(Notification notif)
+     */
     void unregisterNotification(Notification notif, List<String> events);
 
     /**
@@ -48,5 +52,12 @@ public interface NotificationRegistry extends Serializable {
     List<Notification> getNotifications();
 
     List<Notification> getNotificationsForSubscriptions(String parentType);
+
+    /**
+     * Unregister notification contribution and remove reference in event registry
+     *
+     * @since 5.6
+     */
+    void unregisterNotification(Notification notif);
 
 }

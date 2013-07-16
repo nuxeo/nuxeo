@@ -21,11 +21,11 @@ package org.nuxeo.ecm.platform.ec.notification;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
