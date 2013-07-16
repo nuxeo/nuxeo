@@ -35,6 +35,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -75,7 +76,11 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Clock;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.SystemClock;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * Base functions for all pages.
@@ -527,6 +532,45 @@ public abstract class AbstractTest {
             throws NoSuchElementException {
         return driver.findElements(by);
     }
+
+    /**
+     * Fluent wait for an element to be present, checking every 5 seconds
+     *
+     * @since 5.7.2
+     */
+    public WebElement waitUntilElementPresent(final By locator) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
+                TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
+        WebElement elt = wait.until(new Function<WebDriver, WebElement>() {
+            public WebElement apply(WebDriver driver) {
+                return driver.findElement(locator);
+            }
+        });
+        return elt;
+    };
+
+    /**
+     * Fluent wait for an element not to be present, checking every 5 seconds
+     *
+     * @since 5.7.2
+     */
+    public void waitUntilElementNotPresent(final By locator) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
+                TimeUnit.SECONDS);
+        wait.until((new Function<WebDriver, By>() {
+            public By apply(WebDriver driver) {
+                try {
+                    driver.findElement(locator);
+                } catch (NoSuchElementException ex) {
+                    // ok
+                    return locator;
+                }
+                return null;
+            }
+        }));
+    };
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
