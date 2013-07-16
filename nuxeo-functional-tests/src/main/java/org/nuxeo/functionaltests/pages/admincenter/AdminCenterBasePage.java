@@ -32,10 +32,10 @@ public class AdminCenterBasePage extends AbstractPage {
 
     // for ajax refresh wait until by adding required element
     @Required
-    @FindBy(linkText = "System information")
+    @FindBy(linkText = "System Information")
     public WebElement systemInformationLink;
 
-    @FindBy(linkText = "Users & groups")
+    @FindBy(linkText = "Users & Groups")
     public WebElement userAndGroupsLink;
 
     @FindBy(linkText = "Document Management")

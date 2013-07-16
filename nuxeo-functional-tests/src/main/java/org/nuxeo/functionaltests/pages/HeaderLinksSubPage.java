@@ -24,7 +24,7 @@ import org.openqa.selenium.support.FindBy;
 
 public class HeaderLinksSubPage extends AbstractPage {
 
-    @FindBy(linkText = "Users & groups")
+    @FindBy(linkText = "Users & Groups")
     @Deprecated
     WebElement userAndGroupsLink;
 
