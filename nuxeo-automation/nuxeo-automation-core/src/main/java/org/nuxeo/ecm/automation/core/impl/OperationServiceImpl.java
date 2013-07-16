@@ -68,14 +68,12 @@ public class OperationServiceImpl implements AutomationService {
     @Override
     public Object run(OperationContext ctx, OperationChain chain)
             throws Exception {
+        Map<String, Object> chainParameters = Collections.<String, Object> emptyMap();
+        if (!chain.getChainParameters().isEmpty()) {
+            chainParameters = chain.getChainParameters();
+        }
         ChainTypeImpl chainType = new ChainTypeImpl(this, chain);
-        return run(ctx, chainType, Collections.<String, Object> emptyMap());
-    }
-
-    public Object run(OperationContext ctx, OperationChain chain, Map<String,Object> runtimeParameters)
-            throws Exception {
-        ChainTypeImpl chainType = new ChainTypeImpl(this, chain);
-        return run(ctx, chainType, runtimeParameters);
+        return run(ctx, chainType, chainParameters);
     }
 
     /**
