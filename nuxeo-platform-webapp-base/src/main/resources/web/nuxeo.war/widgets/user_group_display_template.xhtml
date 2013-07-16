@@ -30,6 +30,7 @@
 <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
 <c:set var="firstNameField" value="#{nxu:test(showEmail and hideFirstLabel and hideSecondLabel, thirdLabelField, firstLabelField)}" />
 <h:outputText rendered="#{info.type == 'USER_TYPE'}">
+  <span class="tag user">
   <c:if test="#{showEmail}">
     <c:set var="userDisplayName"
       value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema][firstNameField], nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]), nxu:test(hideThirdLabel or not showEmail, null, info.entry[userSchema][thirdLabelField]))}" />
@@ -38,7 +39,6 @@
     <c:set var="userDisplayName"
       value="#{nxu:userDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[userSchema][firstNameField]), nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]))}" />
   </c:if>
-  <h:graphicImage value="/icons/user.png" alt="user.png" />
   <h:outputText value=" " />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
     <h:outputText value="#{userDisplayName}" />
@@ -55,9 +55,10 @@
       <h:outputText value="#{userDisplayName}" />
     </a4j:commandLink>
   </c:if>
+  </span>
 </h:outputText>
 <h:outputText rendered="#{info.type == 'GROUP_TYPE'}">
-  <h:graphicImage value="/icons/group.png" alt="group.png" />
+  <span class="tag group">
   <h:outputText value=" " />
   <c:set var="groupDisplayName"
     value="#{nxu:groupDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[groupSchema].grouplabel))}" />
@@ -76,6 +77,7 @@
       <h:outputText value="#{groupDisplayName}"/>
     </a4j:commandLink>
   </c:if>
+  </span>
 </h:outputText>
 <h:outputText rendered="#{empty info.type}">
   <h:outputText value="#{item}" />
