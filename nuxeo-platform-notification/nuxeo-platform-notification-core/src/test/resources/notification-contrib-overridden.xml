@@ -1,34 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<component name="com.nuxeo.project.arevanc.geide.notifiactions">
+<component name="org.nuxeo.ecm.notifiactions.contribution.test.override">
 
   <extension
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="notifications">
 
-    <!-- Remove some default Nuxeo notifications -->
-    <notification name="Modification" enabled="false" />
-    <notification name="Publication" enabled="false" />
-
-    <!-- Additional notifications -->
-    <notification name="Publication de contenu" channel="email" enabled="true" availableIn="section"
-      autoSubscribed="false" template="publishContent">
-      <event name="sectionContentPublished"/>
-    </notification>
-
-    <notification name="Ajout d'un commentaire" channel="email" enabled="true" availableIn="*"
-      autoSubscribed="false" template="addComent">
-      <event name="commentAdded"/>
-    </notification>
-
-    <notification name="Cr&#233;ation/modification de contenu" channel="email" enabled="true" availableIn="workspace"
-      autoSubscribed="false" template="modifContent">
-      <event name="contentSubdocumentModified"/>
-    </notification>
-
-    <notification name="Something important" channel="email" enabled="true" availableIn="section, workspace"
-      autoSubscribed="false" template="someTemplate">
-      <event name="someEvent"/>
+    <notification name="test" channel="email-ov" enabled="true" availableIn="folder"
+      autoSubscribed="true" template="test-template-ov" subject="Test Notification Subject-ov"
+      label="Test Notification Label-ov" subjectTemplate="Test Notification Subject Template-ov"
+      templateExpr="NotificationContext['exp1-ov']">
+      <event name="testEvent-ov"/>
     </notification>
 
   </extension>
@@ -36,12 +18,8 @@
   <extension
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="templates">
-
-    <template name="publishContent" src="templates/publishContent.ftl" />
-    <template name="addComent" src="templates/commentAdded.ftl" />
-    <template name="modifContent" src="templates/modifContent.ftl" />
-    <template name="modif" src="templates/modif_fr.ftl" />
-
+    <template name="test-template-ov" src="templates/test-template-ov.ftl" />
+    <template name="test-template" src="templates/test-template-ov.ftl" />
   </extension>
 
   <extension
