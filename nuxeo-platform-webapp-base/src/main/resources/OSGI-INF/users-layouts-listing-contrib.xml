@@ -97,7 +97,6 @@
         <property name="hideFirstLabel">true</property>
         <property name="hideSecondLabel">true</property>
         <property name="displayAction">edit</property>
-        <property name="hideIcon">true</property>
       </properties>
     </widget>
 
@@ -151,7 +150,6 @@
         <property name="userSuggestionSearchType">GROUP_TYPE</property>
         <property name="hideFirstLabel">true</property>
         <property name="displayAction">edit</property>
-        <property name="hideIcon">true</property>
       </properties>
     </widget>
 
