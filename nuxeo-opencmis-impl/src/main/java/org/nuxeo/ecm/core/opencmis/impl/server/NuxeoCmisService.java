@@ -41,6 +41,7 @@ import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
+import org.apache.chemistry.opencmis.commons.data.BulkUpdateObjectIdAndChangeToken;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
 import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
@@ -74,9 +75,10 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.Converter;
+import org.apache.chemistry.opencmis.commons.impl.WSConverter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyData;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.BulkUpdateObjectIdAndChangeTokenImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ChangeEventInfoDataImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.FailedToDeleteDataImpl;
@@ -296,7 +298,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         }
         // TODO copy only when local binding
         // clone
-        return Converter.convert(Converter.convert(type));
+        return WSConverter.convert(WSConverter.convert(type));
 
     }
 
@@ -308,7 +310,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                 includePropertyDefinitions, maxItems, skipCount);
         // TODO copy only when local binding
         // clone
-        return Converter.convert(Converter.convert(types));
+        return WSConverter.convert(WSConverter.convert(types));
     }
 
     @Override
@@ -322,8 +324,8 @@ public class NuxeoCmisService extends AbstractCmisService {
         // TODO copy only when local binding
         List<CmisTypeContainer> tmp = new ArrayList<CmisTypeContainer>(
                 types.size());
-        Converter.convertTypeContainerList(types, tmp);
-        return Converter.convertTypeContainerList(tmp);
+        WSConverter.convertTypeContainerList(types, tmp);
+        return WSConverter.convertTypeContainerList(tmp);
     }
 
     protected DocumentModel getDocumentModel(String id) {
@@ -1079,6 +1081,18 @@ public class NuxeoCmisService extends AbstractCmisService {
     public void updateProperties(String repositoryId,
             Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
             Properties properties, ExtensionsData extension) {
+        try {
+            updateProperties(objectIdHolder, changeTokenHolder, properties);
+            save();
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+    }
+
+    /* does not save the session */
+    protected void updateProperties(Holder<String> objectIdHolder,
+            Holder<String> changeTokenHolder, Properties properties)
+            throws ClientException {
         String objectId;
         if (objectIdHolder == null
                 || (objectId = objectIdHolder.getValue()) == null) {
@@ -1089,12 +1103,32 @@ public class NuxeoCmisService extends AbstractCmisService {
         String changeToken = changeTokenHolder == null ? null
                 : changeTokenHolder.getValue();
         updateProperties(object, changeToken, properties, false);
+        coreSession.saveDocument(doc);
+    }
+
+    @Override
+    public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(
+            String repositoryId,
+            List<BulkUpdateObjectIdAndChangeToken> objectIdAndChangeToken,
+            Properties properties, List<String> addSecondaryTypeIds,
+            List<String> removeSecondaryTypeIds, ExtensionsData extension) {
+        List<BulkUpdateObjectIdAndChangeToken> list = new ArrayList<BulkUpdateObjectIdAndChangeToken>(
+                objectIdAndChangeToken.size());
         try {
-            coreSession.saveDocument(doc);
+            for (BulkUpdateObjectIdAndChangeToken idt : objectIdAndChangeToken) {
+                String id = idt.getId();
+                Holder<String> objectIdHolder = new Holder<String>(id);
+                Holder<String> changeTokenHolder = new Holder<String>(
+                        idt.getChangeToken());
+                updateProperties(objectIdHolder, changeTokenHolder, properties);
+                list.add(new BulkUpdateObjectIdAndChangeTokenImpl(id,
+                        objectIdHolder.getValue(), changeTokenHolder.getValue()));
+            }
             save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+        return list;
     }
 
     @Override

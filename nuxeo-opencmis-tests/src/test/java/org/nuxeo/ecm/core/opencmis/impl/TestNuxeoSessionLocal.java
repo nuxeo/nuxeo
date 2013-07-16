@@ -11,23 +11,31 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
+import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
+import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
@@ -38,6 +46,10 @@ import org.nuxeo.ecm.core.opencmis.tests.Helper;
  */
 public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
 
+    private static final int THRESHOLD = 4 * 1024 * 1024;
+
+    private static final int MAX_SIZE = -1;
+
     @Override
     @Before
     public void setUpCmisSession() throws Exception {
@@ -46,14 +58,17 @@ public class TestNuxeoSessionLocal extends NuxeoSessionTestCase {
 
     @Override
     protected void setUpCmisSession(String username) throws Exception {
-        boolean objectInfoRequired = true; // for tests
+        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
+                new File((String) System.getProperty("java.io.tmpdir")),
+                THRESHOLD, MAX_SIZE, false);
+        HttpServletRequest request = null;
+        HttpServletResponse response = null;
         CallContextImpl context = new CallContextImpl(
-                CallContext.BINDING_LOCAL, getRepositoryId(),
-                objectInfoRequired);
+                CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, getRepositoryId(),
+                FakeServletContext.getServletContext(), request, response,
+                new NuxeoCmisServiceFactory(), streamFactory);
         context.put(CallContext.USERNAME, username);
         context.put(CallContext.PASSWORD, PASSWORD);
-        context.put(CallContext.SERVLET_CONTEXT,
-                FakeServletContext.getServletContext());
         NuxeoRepository repository = new NuxeoRepository(getRepositoryId(),
                 getRootFolderId());
         session = new NuxeoSession(getCoreSession(), repository, context);

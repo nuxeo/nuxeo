@@ -781,7 +781,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
             r.add(elem);
         }
         Collections.sort(r);
-        return r;
+        return r.isEmpty() ? null : r;
     }
 
     protected static String flat(List<ObjectInFolderContainer> tree)
@@ -820,33 +820,33 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(3), null, null, null, null, null, null);
         assertEquals("testfolder1_Title[" //
-                + /* */"testfile1_Title[], " //
-                + /* */"testfile2_Title[], " //
-                + /* */"testfile3_Title[]], " //
+                + /* */"testfile1_Title, " //
+                + /* */"testfile2_Title, " //
+                + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title[testfile4_Title], " //
-                + /* */"testfolder4_Title[]]", //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(4), null, null, null, null, null, null);
         assertEquals("testfolder1_Title[" //
-                + /* */"testfile1_Title[], " //
-                + /* */"testfile2_Title[], " //
-                + /* */"testfile3_Title[]], " //
+                + /* */"testfile1_Title, " //
+                + /* */"testfile2_Title, " //
+                + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[testfile4_Title[]], " //
-                + /* */"testfolder4_Title[]]", //
+                + /* */"testfolder3_Title[testfile4_Title], " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId,
                 BigInteger.valueOf(-1), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[testfile1_Title[], "
-                + /* */"testfile2_Title[], " //
-                + /* */"testfile3_Title[]], " //
+        assertEquals("testfolder1_Title[testfile1_Title, "
+                + /* */"testfile2_Title, " //
+                + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[testfile4_Title[]], " //
-                + /* */"testfolder4_Title[]]", //
+                + /* */"testfolder3_Title[testfile4_Title], " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         ObjectData ob = getObjectByPath("/testfolder2");
@@ -858,19 +858,17 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         tree = navService.getDescendants(repositoryId, folder2Id,
                 BigInteger.valueOf(2), null, null, null, null, null, null);
-        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title[]",
+        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title",
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id,
                 BigInteger.valueOf(3), null, null, null, null, null, null);
-        assertEquals(
-                "testfolder3_Title[testfile4_Title[]], testfolder4_Title[]",
+        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title",
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id,
                 BigInteger.valueOf(-1), null, null, null, null, null, null);
-        assertEquals(
-                "testfolder3_Title[testfile4_Title[]], testfolder4_Title[]",
+        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title",
                 flat(tree));
     }
 
@@ -893,7 +891,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         tree = navService.getFolderTree(repositoryId, rootFolderId,
                 BigInteger.valueOf(2), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[], " //
+        assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title, " //
                 + /* */"testfolder4_Title]", //
@@ -901,26 +899,26 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         tree = navService.getFolderTree(repositoryId, rootFolderId,
                 BigInteger.valueOf(3), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[], " //
+        assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[], " //
-                + /* */"testfolder4_Title[]]", //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         tree = navService.getFolderTree(repositoryId, rootFolderId,
                 BigInteger.valueOf(4), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[], " //
+        assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[], " //
-                + /* */"testfolder4_Title[]]", //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         tree = navService.getFolderTree(repositoryId, rootFolderId,
                 BigInteger.valueOf(-1), null, null, null, null, null, null);
-        assertEquals("testfolder1_Title[], " //
+        assertEquals("testfolder1_Title, " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[], " //
-                + /* */"testfolder4_Title[]]", //
+                + /* */"testfolder3_Title, " //
+                + /* */"testfolder4_Title]", //
                 flat(tree));
 
         ObjectData ob = getObjectByPath("/testfolder2");
@@ -932,15 +930,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         tree = navService.getFolderTree(repositoryId, folder2Id,
                 BigInteger.valueOf(2), null, null, null, null, null, null);
-        assertEquals("testfolder3_Title[], testfolder4_Title[]", flat(tree));
+        assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
 
         tree = navService.getFolderTree(repositoryId, folder2Id,
                 BigInteger.valueOf(3), null, null, null, null, null, null);
-        assertEquals("testfolder3_Title[], testfolder4_Title[]", flat(tree));
+        assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
 
         tree = navService.getFolderTree(repositoryId, folder2Id,
                 BigInteger.valueOf(-1), null, null, null, null, null, null);
-        assertEquals("testfolder3_Title[], testfolder4_Title[]", flat(tree));
+        assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
     }
 
     @Test

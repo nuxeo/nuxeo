@@ -26,7 +26,7 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
-import org.apache.chemistry.opencmis.commons.impl.Converter;
+import org.apache.chemistry.opencmis.commons.impl.WSConverter;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractPropertyDefinition;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractTypeDefinition;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.TypeDefinitionContainerImpl;
@@ -94,7 +94,7 @@ public class TypeManagerImpl implements TypeManager {
         for (TypeDefinitionContainer tdc : types) {
             TypeDefinition type = tdc.getTypeDefinition();
             if (!Boolean.TRUE.equals(includePropertyDefinitions)) {
-                type = Converter.convert(Converter.convert(type)); // clone
+                type = WSConverter.convert(WSConverter.convert(type)); // clone
                 // TODO avoid recomputing type-without-properties
                 type.getPropertyDefinitions().clear();
             }
@@ -247,7 +247,7 @@ public class TypeManagerImpl implements TypeManager {
             Map<String, PropertyDefinition<?>> propDefs,
             Map<String, PropertyDefinition<?>> superPropDefs) {
         for (PropertyDefinition<?> superPropDef : superPropDefs.values()) {
-            PropertyDefinition<?> clone = Converter.convert(Converter.convert(superPropDef));
+            PropertyDefinition<?> clone = WSConverter.convert(WSConverter.convert(superPropDef));
             ((AbstractPropertyDefinition<?>) clone).setIsInherited(Boolean.TRUE);
             propDefs.put(superPropDef.getId(), clone);
         }

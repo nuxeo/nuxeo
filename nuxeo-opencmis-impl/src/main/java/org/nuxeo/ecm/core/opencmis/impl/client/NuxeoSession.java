@@ -41,6 +41,7 @@ import org.apache.chemistry.opencmis.client.runtime.util.CollectionIterable;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
+import org.apache.chemistry.opencmis.commons.data.BulkUpdateObjectIdAndChangeToken;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectList;
@@ -54,6 +55,7 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.BulkUpdateObjectIdAndChangeTokenImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -167,7 +169,7 @@ public class NuxeoSession implements Session {
         if (type == null) {
             throw new IllegalArgumentException("Unknown type: " + typeId);
         }
-        return objectFactory.convertProperties(properties, type, null);
+        return objectFactory.convertProperties(properties, type, null, null);
     }
 
     @Override
@@ -242,6 +244,17 @@ public class NuxeoSession implements Session {
                 objectFactory.convertAces(addAces),
                 objectFactory.convertAces(removeAces), null);
         return createObjectId(id);
+    }
+
+    @Override
+    public ObjectId createItem(Map<String, ?> properties, ObjectId folderId,
+            List<Policy> policies, List<Ace> addAces, List<Ace> removeAces) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public ObjectId createItem(Map<String, ?> properties, ObjectId folderId) {
+        throw new CmisNotSupportedException();
     }
 
     @Override
@@ -493,6 +506,11 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public Acl setAcl(ObjectId objectId, List<Ace> aces) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
     public Acl applyAcl(ObjectId objectId, List<Ace> addAces,
             List<Ace> removeAces, AclPropagation aclPropagation) {
         throw new CmisNotSupportedException();
@@ -514,6 +532,63 @@ public class NuxeoSession implements Session {
 
     @Override
     public void removeObjectFromCache(String objectId) {
+    }
+
+    @Override
+    public void delete(ObjectId objectId) {
+        delete(objectId, true);
+    }
+
+    @Override
+    public void delete(ObjectId objectId, boolean allVersions) {
+        service.deleteObject(repositoryId, objectId.getId(),
+                Boolean.valueOf(allVersions), null);
+    }
+
+    @Override
+    public ContentStream getContentStream(ObjectId docId) {
+        return getContentStream(docId, null, null, null);
+    }
+
+    @Override
+    public ContentStream getContentStream(ObjectId docId, String streamId,
+            BigInteger offset, BigInteger length) {
+        if (docId == null) {
+            throw new CmisInvalidArgumentException("Missing object ID");
+        }
+        return service.getContentStream(repositoryId, docId.getId(), streamId,
+                offset, length, null);
+    }
+
+    @Override
+    public ObjectType createType(TypeDefinition type) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public ObjectType updateType(TypeDefinition type) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public void deleteType(String typeId) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public List<BulkUpdateObjectIdAndChangeToken> bulkUpdateProperties(
+            List<CmisObject> objects, Map<String, ?> properties,
+            List<String> addSecondaryTypeIds,
+            List<String> removeSecondaryTypeIds) {
+        List<BulkUpdateObjectIdAndChangeToken> idts = new ArrayList<BulkUpdateObjectIdAndChangeToken>(
+                objects.size());
+        for (CmisObject object : objects) {
+            idts.add(new BulkUpdateObjectIdAndChangeTokenImpl(object.getId(),
+                    object.getChangeToken()));
+        }
+        return service.bulkUpdateProperties(repositoryId, idts,
+                convertProperties(properties), addSecondaryTypeIds,
+                removeSecondaryTypeIds, null);
     }
 
 }

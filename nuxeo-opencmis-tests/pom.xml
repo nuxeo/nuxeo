@@ -226,7 +226,6 @@
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>
       <artifactId>chemistry-opencmis-server-bindings</artifactId>
-      <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.chemistry.opencmis</groupId>

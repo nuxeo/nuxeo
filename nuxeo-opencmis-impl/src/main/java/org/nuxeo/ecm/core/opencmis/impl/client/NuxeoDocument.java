@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
@@ -138,14 +140,25 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
     @Override
     public ContentStream getContentStream() {
-        return getContentStream(null);
+        return getContentStream(null, null, null);
     }
 
     @Override
     public ContentStream getContentStream(String streamId) {
+        return getContentStream(streamId, null, null);
+    }
+
+    @Override
+    public ContentStream getContentStream(BigInteger offset, BigInteger length) {
+        return getContentStream(null, offset, length);
+    }
+
+    @Override
+    public ContentStream getContentStream(String streamId, BigInteger offset,
+            BigInteger length) {
         try {
             return service.getContentStream(getRepositoryId(), getId(),
-                    streamId, null, null, null);
+                    streamId, offset, length, null);
         } catch (CmisConstraintException e) {
             return null;
         }
@@ -231,6 +244,11 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
+    public Boolean isPrivateWorkingCopy() {
+        return getPropertyValue(PropertyIds.IS_PRIVATE_WORKING_COPY);
+    }
+
+    @Override
     public Document setContentStream(ContentStream contentStream,
             boolean overwrite) {
         ObjectId objectId = setContentStream(contentStream, overwrite, true);
@@ -250,6 +268,19 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
         String objectId = objectIdHolder.getValue(); // never null
         return session.createObjectId(objectId);
+    }
+
+    @Override
+    public Document appendContentStream(ContentStream contentStream,
+            boolean isLastChunk) {
+        ObjectId objectId = appendContentStream(contentStream, isLastChunk, true);
+        return (Document) session.getObject(objectId);
+    }
+
+    @Override
+    public ObjectId appendContentStream(ContentStream contentStream,
+            boolean isLastChunk, boolean refresh) {
+        throw new CmisNotSupportedException();
     }
 
 }

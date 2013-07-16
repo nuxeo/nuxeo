@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Rendition;
+import org.apache.chemistry.opencmis.client.api.SecondaryType;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.runtime.PropertyImpl;
 import org.apache.chemistry.opencmis.client.runtime.RenditionImpl;
@@ -147,6 +149,13 @@ public class NuxeoObjectFactory implements ObjectFactory {
     }
 
     @Override
+    public ContentStream createContentStream(String filename, long length,
+            String mimetype, InputStream stream, boolean partial) {
+        // TODO partial
+        return createContentStream(filename, length, mimetype, stream);
+    }
+
+    @Override
     public Acl convertAces(List<Ace> aces) {
         return aces == null ? null : new AccessControlListImpl(aces);
     }
@@ -170,13 +179,15 @@ public class NuxeoObjectFactory implements ObjectFactory {
 
     @Override
     public Map<String, Property<?>> convertProperties(ObjectType objectType,
-            Properties properties) {
+            Collection<SecondaryType> secondaryTypes, Properties properties) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Properties convertProperties(Map<String, ?> properties,
-            ObjectType type, Set<Updatability> updatabilityFilter) {
+            ObjectType type, Collection<SecondaryType> secondaryTypes,
+            Set<Updatability> updatabilityFilter) {
+        // TODO secondaryTypes
         // TODO updatabilityFilter
         PropertiesImpl props = new PropertiesImpl();
         for (Entry<String, ?> es : properties.entrySet()) {

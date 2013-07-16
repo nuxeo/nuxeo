@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -27,10 +27,8 @@ import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
+import org.apache.chemistry.opencmis.client.api.SecondaryType;
 import org.apache.chemistry.opencmis.client.api.TransientCmisObject;
-import org.apache.chemistry.opencmis.client.api.TransientDocument;
-import org.apache.chemistry.opencmis.client.api.TransientFolder;
-import org.apache.chemistry.opencmis.client.api.TransientRelationship;
 import org.apache.chemistry.opencmis.client.runtime.RenditionImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -96,23 +94,12 @@ public abstract class NuxeoObject implements CmisObject {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapterInterface) {
-        if (TransientDocument.class.isAssignableFrom(adapterInterface)
-                && this instanceof NuxeoDocument) {
-            return (T) new NuxeoTransientDocument(this);
-        }
-        if (TransientFolder.class.isAssignableFrom(adapterInterface)
-                && this instanceof NuxeoFolder) {
-            return (T) new NuxeoTransientFolder(this);
-        }
-        if (TransientRelationship.class.isAssignableFrom(adapterInterface)
-                && this instanceof NuxeoRelationship) {
-            return (T) new NuxeoTransientRelationship(this);
-        }
         throw new CmisRuntimeException("Cannot adapt to "
                 + adapterInterface.getName());
     }
 
     @Override
+    @Deprecated
     public TransientCmisObject getTransientObject() {
         return (TransientCmisObject) getAdapter(TransientCmisObject.class);
     }
@@ -139,6 +126,21 @@ public abstract class NuxeoObject implements CmisObject {
     @Override
     public ObjectType getBaseType() {
         return session.getTypeDefinition(getBaseTypeId().value());
+    }
+
+    @Override
+    public List<SecondaryType> getSecondaryTypes() {
+        // TODO secondary types
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<ObjectType> findObjectType(String id) {
+        if (type.getPropertyDefinitions().containsKey(id)) {
+            return Collections.singletonList(type);
+        }
+        // TODO secondary types
+        return null;
     }
 
     @Override
@@ -172,9 +174,19 @@ public abstract class NuxeoObject implements CmisObject {
     }
 
     @Override
+    public String getDescription() {
+        return getPropertyValue(PropertyIds.DESCRIPTION);
+    }
+
+    @Override
     public void delete(boolean allVersions) {
         service.deleteObject(getRepositoryId(), getId(),
                 Boolean.valueOf(allVersions), null);
+    }
+
+    @Override
+    public void delete() {
+        delete(true);
     }
 
     @Override
@@ -227,6 +239,11 @@ public abstract class NuxeoObject implements CmisObject {
     @Override
     public Acl applyAcl(List<Ace> addAces, List<Ace> removeAces,
             AclPropagation aclPropagation) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public Acl setAcl(List<Ace> aces) {
         throw new CmisNotSupportedException();
     }
 

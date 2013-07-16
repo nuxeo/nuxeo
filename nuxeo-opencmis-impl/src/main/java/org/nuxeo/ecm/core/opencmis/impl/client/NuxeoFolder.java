@@ -19,6 +19,7 @@ import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.FileableCmisObject;
 import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.Item;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.ObjectFactory;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
@@ -132,6 +133,18 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
     public Policy createPolicy(Map<String, ?> properties,
             List<Policy> policies, List<Ace> addAces, List<Ace> removeAces,
             OperationContext context) {
+        throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public Item createItem(Map<String, ?> properties) {
+        return createItem(properties, null, null, null,
+                session.getDefaultContext());
+    }
+
+    @Override
+    public Item createItem(Map<String, ?> properties, List<Policy> policies,
+            List<Ace> addAces, List<Ace> removeAces, OperationContext context) {
         throw new CmisNotSupportedException();
     }
 

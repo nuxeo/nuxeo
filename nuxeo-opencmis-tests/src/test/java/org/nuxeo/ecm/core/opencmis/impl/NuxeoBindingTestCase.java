@@ -11,13 +11,19 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.chemistry.opencmis.commons.SessionParameter;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
+import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
@@ -31,6 +37,10 @@ public class NuxeoBindingTestCase {
     public static final String USERNAME = "test";
 
     public static final String PASSWORD = "test";
+
+    private static final int THRESHOLD = 4 * 1024 * 1024;
+
+    private static final int MAX_SIZE = -1;
 
     public String repositoryId;
 
@@ -97,14 +107,17 @@ public class NuxeoBindingTestCase {
         CoreSession coreSession = nuxeotc.getSession();
         rootFolderId = coreSession.getRootDocument().getId();
 
-        boolean objectInfoRequired = true; // for tests
+        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
+                new File((String) System.getProperty("java.io.tmpdir")),
+                THRESHOLD, MAX_SIZE, false);
+        HttpServletRequest request = null;
+        HttpServletResponse response = null;
         CallContextImpl context = new CallContextImpl(
-                CallContext.BINDING_LOCAL, repositoryId, objectInfoRequired);
+                CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, repositoryId,
+                FakeServletContext.getServletContext(), request, response,
+                new NuxeoCmisServiceFactory(), streamFactory);
         context.put(CallContext.USERNAME, USERNAME);
-        context.put("useranme", USERNAME); // misspelled in older versions
         context.put(CallContext.PASSWORD, PASSWORD);
-        context.put(CallContext.SERVLET_CONTEXT,
-                FakeServletContext.getServletContext());
         NuxeoRepository repository = new NuxeoRepository(repositoryId,
                 rootFolderId);
         // use manual local bindings to keep the session open
