@@ -42,12 +42,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -206,17 +206,8 @@ public final class ComponentUtils {
                         response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
                     } else {
                         response.setHeader("ETag", digest);
-                        String inline = request.getParameter("inline");
-                        if (inline == null) {
-                            inline = (String) request.getAttribute("inline");
-                        }
-                        boolean inlineFlag = (inline == null || "false".equals(inline)) ? false
-                                : true;
-                        String userAgent = request.getHeader("User-Agent");
-                        String contentDisposition = RFC2231.encodeContentDisposition(
-                                filename, inlineFlag, userAgent);
                         response.setHeader("Content-Disposition",
-                                contentDisposition);
+                                ServletHelper.getRFC2231ContentDisposition(request, filename));
 
                         addCacheControlHeaders(request, response);
 
@@ -371,8 +362,8 @@ public final class ComponentUtils {
     }
 
     /**
-     * Returns the component specified by the {@code componentId} parameter
-     * from the {@code base} component.
+     * Returns the component specified by the {@code componentId} parameter from
+     * the {@code base} component.
      * <p>
      * Does not throw any exception if the component is not found, returns
      * {@code null} instead.
