@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -108,9 +109,12 @@ public class FileService extends DefaultAdapter {
                 }
             }
 
+            String contentDisposition = ServletHelper.getRFC2231ContentDisposition(
+                    ctx.getRequest(), fileName);
+
             // cached resource did change or no ETag -> serve updated content
             ResponseBuilder builder = Response.ok(blob).header(
-                    "Content-Disposition", "attachment;filename=" + fileName).type(
+                    "Content-Disposition", contentDisposition).type(
                     blob.getMimeType());
             if (etag != null) {
                 builder.tag(etag);
