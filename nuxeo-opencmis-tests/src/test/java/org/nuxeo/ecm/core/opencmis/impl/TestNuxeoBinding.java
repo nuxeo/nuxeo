@@ -241,7 +241,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(version, info.getProductVersion());
         assertEquals(rootFolderId, info.getRootFolderId());
         assertEquals("Guest", info.getPrincipalIdAnonymous());
-        assertEquals("1.0", info.getCmisVersionSupported());
+        assertEquals("1.1", info.getCmisVersionSupported());
         // TODO assertEquals("...", info.getThinClientUri());
         assertNotNull(info.getLatestChangeLogToken());
         assertEquals(Boolean.FALSE, info.getChangesIncomplete());
