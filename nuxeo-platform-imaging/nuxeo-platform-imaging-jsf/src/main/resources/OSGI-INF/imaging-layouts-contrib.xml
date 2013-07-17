@@ -8,6 +8,7 @@
 
     <widgetType name="picture_view">
       <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Picture view</title>
         <description>
           <p>
@@ -15,22 +16,12 @@
             having the Picture facet.
           </p>
           <p>
-            It accepts the following properties:
-            <ul>
-              <li>
-                pictureView: the name of the view. Defaults to the 'Medium'
-                view.
-              </li>
-              <li>
-                width: the width of the img tag.
-              </li>
-              <li>
-                height: the height of the img tag.
-              </li>
-            </ul>
+            It requires the following fields configuration: first field maps
+            the document model.
           </p>
         </description>
-        <properties>widgetProperty_pictureView
+        <handlingLabels>true</handlingLabels>
+        <properties>
           <layouts mode="view">
             <layout name="picture_view_widget_type_properties_view">
               <rows>
@@ -44,18 +35,25 @@
                   <widget>height</widget>
                 </row>
               </rows>
-              <widget name="pictureView" type="text">
+              <widget name="pictureView" type="selectOneListbox">
                 <labels>
                   <label mode="any">Picture view</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The name of the picture view, default to 'Medium'.
+                    The name of the picture view, defaults to
+                    'Medium'.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>pictureView</field>
                 </fields>
+                <selectOptions>
+                  <option itemLabel="Medium (default value)" itemValue="Medium" />
+                  <option itemLabel="Small" itemValue="Small" />
+                  <option itemLabel="Thumbnail" itemValue="Thumbnail" />
+                  <option itemLabel="OriginalJpeg" itemValue="OriginalJpeg" />
+                </selectOptions>
               </widget>
               <widget name="width" type="int">
                 <labels>
@@ -87,7 +85,7 @@
           </layouts>
         </properties>
         <categories>
-          <category>document</category>
+          <category>summary</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
@@ -115,18 +113,7 @@
       </fields>
     </widget>
 
-    <widget name="summary_picture_view" type="picture_view">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <translated>true</translated>
-      <fields>
-        <field></field>
-      </fields>
-      <properties widgetMode="any">
-        <property name="pictureView">Medium</property>
-      </properties>
-    </widget>
+    <widget name="summary_picture_view" type="picture_view" />
 
   </extension>
 

@@ -3,12 +3,17 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
-    <widgetType name="summary_document_annotations_status">
+
+    <widgetType name="document_annotations_count">
       <configuration>
-        <sinceVersion>5.7</sinceVersion>
-        <title>Annotations Summary</title>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Annotations Count</title>
         <description>
-          <p>This widgets displays how many annotations a document has</p>
+          <p>This widget displays how many annotations a document has.</p>
+          <p>
+            It requires the following fields configuration: first field maps
+            the document model.
+          </p>
         </description>
         <categories>
           <category>summary</category>
@@ -22,25 +27,26 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/summary/annotations_status_widget_template.xhtml
+        /widgets/summary/annotations_count_widget_template.xhtml
       </property>
     </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="summary_document_annotations_status" type="summary_document_annotations_status" />
+    <widget name="document_annotations_count" type="document_annotations_count" />
 
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="summary_document_annotations_status" type="widget" order="20">
+    <action id="summary_document_annotations_count" type="widget" order="20">
       <category>SUMMARY_INDICATORS</category>
       <properties>
-        <property name="widgetName">summary_document_annotations_status</property>
+        <property name="widgetName">document_annotations_count</property>
       </properties>
     </action>
 
