@@ -176,7 +176,7 @@ public class NuxeoRepository {
         repositoryInfo.setId(repositoryId);
         repositoryInfo.setName("Nuxeo Repository " + repositoryId);
         repositoryInfo.setDescription("Nuxeo Repository " + repositoryId);
-        repositoryInfo.setCmisVersionSupported("1.0");
+        repositoryInfo.setCmisVersionSupported("1.1");
         repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
         repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
         repositoryInfo.setThinClientUri(getBaseURL(callContext));

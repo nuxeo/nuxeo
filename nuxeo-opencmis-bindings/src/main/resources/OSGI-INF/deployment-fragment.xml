@@ -21,6 +21,10 @@
         <param-name>callContextHandler</param-name>
         <param-value>org.nuxeo.ecm.core.opencmis.bindings.NuxeoAuthCallContextHandler</param-value>
       </init-param>
+      <init-param>
+        <param-name>cmisVersion</param-name>
+        <param-value>1.1</param-value>
+      </init-param>
     </servlet>
   </extension>
 
