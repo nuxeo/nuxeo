@@ -24,6 +24,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,11 +44,10 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @WebAdapter(name = "children", type = "ChildrenService")
-@Produces("application/json")
+@Produces({"application/json+nxentity", MediaType.APPLICATION_JSON})
 public class ChildrenAdapter extends DefaultAdapter {
     @SuppressWarnings("unchecked")
     @GET
-    @Produces("application/json")
     public DocumentModelList getDocs(@QueryParam("page")
     @DefaultValue("0")
     Long page, @QueryParam("pagesize")

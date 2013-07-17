@@ -16,10 +16,18 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -34,16 +42,46 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 
 @WebObject(type = "Document")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces({"application/json+nxentity", MediaType.APPLICATION_JSON})
 public class JSONDocumentObject extends DocumentObject {
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    /**
+     *
+     */
+    private static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
+
     @Override
+    @GET
     public DocumentModel doGet() {
         return doc;
     }
 
+
+    @PUT
+
+    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    public DocumentModel doPut(DocumentModel doc) throws ClientException {
+        CoreSession session = ctx.getCoreSession();
+        doc = session.saveDocument(doc);
+        session.save();
+        return doc;
+    }
+
+    @POST
+    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    public Response doPost(DocumentModel doc) throws ClientException {
+        CoreSession session = ctx.getCoreSession();
+        doc = session.createDocument(doc);
+        session.save();
+        return Response.ok(doc).status(Status.CREATED).build();
+    }
+
+    @DELETE
+    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
+    public DocumentModel doDeleteJson() {
+        super.doDelete();
+        return null;
+    }
 
     @Override
     public DocumentObject newDocument(String path) {
