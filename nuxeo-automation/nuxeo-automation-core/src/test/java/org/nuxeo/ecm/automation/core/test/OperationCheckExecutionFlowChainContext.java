@@ -11,19 +11,17 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-@Operation(id = "oChainCtx")
-public class OperationCheckChainContext {
-
-    @Param(name = "message")
-    protected String message;
+@Operation(id = "oChainFlowCtx")
+public class OperationCheckExecutionFlowChainContext {
 
     @Context
     OperationContext ctx;
@@ -33,11 +31,13 @@ public class OperationCheckChainContext {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        // Check if message is filled by the chain parameter in contribution
-        if (message.isEmpty()) {
-            return null;
+        // Check if chain parameters injected into execution flow operation
+        // exists
+        if (((Map) ctx.get("ChainParameters")).get("exampleKey2").equals(
+                "exampleValue2")) {
+            return doc;
         }
-        return doc;
+        return null;
     }
 
 }

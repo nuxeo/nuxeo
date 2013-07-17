@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.Properties;
 
 /**
  * Run an embedded operation chain using the current input. The output is
@@ -54,6 +55,9 @@ public class RunOperationOnList {
     @Param(name = "isolate", required = false, values = "true")
     protected boolean isolate = true;
 
+    @Param(name = "parameters", required = false)
+    protected Properties chainParameters;
+
     @OperationMethod
     public void run() throws Exception {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
@@ -71,10 +75,9 @@ public class RunOperationOnList {
             throw new UnsupportedOperationException(
                     ctx.get(listName).getClass() + " is not a Collection");
         }
-
         for (Object value : list) {
             subctx.put(itemName, value);
-            service.run(subctx, chainId);
+            service.run(subctx, chainId, (Map) chainParameters);
         }
     }
 

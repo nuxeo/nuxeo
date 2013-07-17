@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
@@ -61,6 +62,9 @@ public class RunInNewTransaction {
     @Param(name = "rollbackGlobalOnError", required = false, values = "false")
     protected boolean rollbackGlobalOnError = false;
 
+    @Param(name = "parameters", required = false)
+    protected Properties chainParameters;
+
     @OperationMethod
     public void run() throws Exception {
         // if the transaction was already marked for rollback, do nothing
@@ -78,7 +82,7 @@ public class RunInNewTransaction {
         try {
             TransactionHelper.startTransaction();
             try {
-                service.run(subctx, chainId);
+                service.run(subctx, chainId, (Map) chainParameters);
             } catch (Exception e) {
                 handleRollbackOnlyOnGlobal(globalTx, e);
             } finally {

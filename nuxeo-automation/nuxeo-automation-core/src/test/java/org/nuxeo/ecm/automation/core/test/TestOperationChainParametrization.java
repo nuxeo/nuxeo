@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,8 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
+import org.nuxeo.ecm.automation.core.operations.execution.RunDocumentChain;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
@@ -122,5 +126,24 @@ public class TestOperationChainParametrization {
         DocumentModel doc = (DocumentModel) service.run(ctx,
                 "contributedchain", params);
         Assert.assertNotNull(doc);
+    }
+
+    /**
+     * Check if using new chain parameters in an execution flow operation is
+     * working
+     */
+    @Test
+    public void testExecutionFlowOperation() throws Exception {
+        // Run Document Chain
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add(RunDocumentChain.ID).set("id", "contributedchain2").set(
+                "parameters",
+                new Properties(
+                        "exampleKey=exampleValue\nexampleKey2=exampleValue2"));
+        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
+        assertNotNull(doc);
     }
 }
