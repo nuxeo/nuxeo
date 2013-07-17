@@ -28,8 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
 import javax.resource.cci.Interaction;
@@ -64,12 +62,11 @@ import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -118,17 +115,16 @@ public class SessionImpl implements Session, XAResource {
     private String threadName;
 
     // @since 5.7
-    private final Counter sessionCount = Metrics.defaultRegistry().newCounter(
+    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+
+    private final Counter sessionCount = metrics.newCounter(
             getClass(), "session");
 
-    private final Timer saveTimer = Metrics.defaultRegistry().newTimer(getClass(), "save",
-            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+    private final Timer saveTimer = metrics.newTimer(getClass(), "save");
 
-    private final Timer queryTimer = Metrics.defaultRegistry().newTimer(getClass(), "query",
-            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+    private final Timer queryTimer = metrics.newTimer(getClass(), "query");
 
-    private final Timer aclrUpdateTimer = Metrics.defaultRegistry().newTimer(getClass(), "aclr-update",
-            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+    private final Timer aclrUpdateTimer = metrics.newTimer(getClass(), "aclr-update");
 
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
@@ -318,7 +314,7 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void save() throws StorageException {
-        final TimerContext timerContext = saveTimer.time();
+        final Timer.Context timerContext = saveTimer.time();
         try {
             checkLive();
             flush();
@@ -644,7 +640,7 @@ public class SessionImpl implements Session, XAResource {
         // get hier fragments
         List<RowId> hierRowIds = new ArrayList<RowId>(ids.size());
         for (Serializable id : ids) {
-            hierRowIds.add(new RowId(model.HIER_TABLE_NAME, id));
+            hierRowIds.add(new RowId(Model.HIER_TABLE_NAME, id));
         }
 
         List<Fragment> hierFragments = context.getMulti(hierRowIds, false);
@@ -702,13 +698,13 @@ public class SessionImpl implements Session, XAResource {
             // get proxies fragments
             List<RowId> proxiesRowIds = new ArrayList<RowId>(proxyIds.size());
             for (Serializable id : proxyIds) {
-                proxiesRowIds.add(new RowId(model.PROXY_TABLE_NAME, id));
+                proxiesRowIds.add(new RowId(Model.PROXY_TABLE_NAME, id));
             }
             List<Fragment> proxiesFragments = context.getMulti(proxiesRowIds,
                     true);
             Set<Serializable> targetIds = new HashSet<Serializable>();
             for (Fragment fragment : proxiesFragments) {
-                Serializable targetId = ((SimpleFragment) fragment).get(model.PROXY_TARGET_KEY);
+                Serializable targetId = ((SimpleFragment) fragment).get(Model.PROXY_TARGET_KEY);
                 targetIds.add(targetId);
             }
 
@@ -716,7 +712,7 @@ public class SessionImpl implements Session, XAResource {
             targetIds.removeAll(ids); // only those we don't have already
             hierRowIds = new ArrayList<RowId>(targetIds.size());
             for (Serializable id : targetIds) {
-                hierRowIds.add(new RowId(model.HIER_TABLE_NAME, id));
+                hierRowIds.add(new RowId(Model.HIER_TABLE_NAME, id));
             }
             hierFragments = context.getMulti(hierRowIds, true);
             for (Fragment fragment : hierFragments) {
@@ -762,8 +758,8 @@ public class SessionImpl implements Session, XAResource {
         Serializable id = hierFragment.row.id;
 
         // find type
-        String typeName = (String) hierFragment.get(model.MAIN_PRIMARY_TYPE_KEY);
-        if (model.PROXY_TYPE.equals(typeName)) {
+        String typeName = (String) hierFragment.get(Model.MAIN_PRIMARY_TYPE_KEY);
+        if (Model.PROXY_TYPE.equals(typeName)) {
             if (proxyIds != null) {
                 proxyIds.add(id);
             }
@@ -777,12 +773,12 @@ public class SessionImpl implements Session, XAResource {
         }
 
         // add row id for each table name
-        Serializable parentId = hierFragment.get(model.HIER_PARENT_KEY);
+        Serializable parentId = hierFragment.get(Model.HIER_PARENT_KEY);
         for (String tableName : tableNames) {
-            if (model.HIER_TABLE_NAME.equals(tableName)) {
+            if (Model.HIER_TABLE_NAME.equals(tableName)) {
                 continue; // already fetched
             }
-            if (parentId != null && model.VERSION_TABLE_NAME.equals(tableName)) {
+            if (parentId != null && Model.VERSION_TABLE_NAME.equals(tableName)) {
                 continue; // not a version, don't fetch this table
                 // TODO incorrect if we have filed versions
             }
@@ -804,7 +800,7 @@ public class SessionImpl implements Session, XAResource {
         if (node == null) {
             throw new IllegalArgumentException("Illegal null node");
         }
-        Serializable id = node.getHierFragment().get(model.HIER_PARENT_KEY);
+        Serializable id = node.getHierFragment().get(Model.HIER_PARENT_KEY);
         return id == null ? null : getNodeById(id);
     }
 
@@ -893,12 +889,12 @@ public class SessionImpl implements Session, XAResource {
             throws StorageException {
         requireReadAclsUpdate();
         // main info
-        Row hierRow = new Row(model.HIER_TABLE_NAME, id);
-        hierRow.putNew(model.HIER_PARENT_KEY, parentId);
-        hierRow.putNew(model.HIER_CHILD_NAME_KEY, name);
-        hierRow.putNew(model.HIER_CHILD_POS_KEY, pos);
-        hierRow.putNew(model.MAIN_PRIMARY_TYPE_KEY, typeName);
-        hierRow.putNew(model.HIER_CHILD_ISPROPERTY_KEY,
+        Row hierRow = new Row(Model.HIER_TABLE_NAME, id);
+        hierRow.putNew(Model.HIER_PARENT_KEY, parentId);
+        hierRow.putNew(Model.HIER_CHILD_NAME_KEY, name);
+        hierRow.putNew(Model.HIER_CHILD_POS_KEY, pos);
+        hierRow.putNew(Model.MAIN_PRIMARY_TYPE_KEY, typeName);
+        hierRow.putNew(Model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
         SimpleFragment hierFragment = context.createHierarchyFragment(hierRow);
         // TODO if non-lazy creation of some fragments, create them here
@@ -915,9 +911,9 @@ public class SessionImpl implements Session, XAResource {
             throw new StorageException("Proxies are disabled by configuration");
         }
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
-        proxy.setSimpleProperty(model.PROXY_TARGET_PROP, targetId);
-        proxy.setSimpleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
-        SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
+        proxy.setSimpleProperty(Model.PROXY_TARGET_PROP, targetId);
+        proxy.setSimpleProperty(Model.PROXY_VERSIONABLE_PROP, versionableId);
+        SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(Model.PROXY_TABLE_NAME);
         context.createdProxyFragment(proxyFragment);
         return proxy;
     }
@@ -931,7 +927,7 @@ public class SessionImpl implements Session, XAResource {
         SimpleProperty prop = proxy.getSimpleProperty(Model.PROXY_TARGET_PROP);
         Serializable oldTargetId = prop.getValue();
         if (!oldTargetId.equals(targetId)) {
-            SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(model.PROXY_TABLE_NAME);
+            SimpleFragment proxyFragment = (SimpleFragment) proxy.fragments.get(Model.PROXY_TABLE_NAME);
             context.removedProxyTarget(proxyFragment);
             proxy.setSimpleProperty(Model.PROXY_TARGET_PROP, targetId);
             context.addedProxyTarget(proxyFragment);
@@ -1069,7 +1065,7 @@ public class SessionImpl implements Session, XAResource {
         }
         List<Node> versions = getVersions(versionSeriesId);
         for (Node node : versions) {
-            String l = (String) node.getSimpleProperty(model.VERSION_LABEL_PROP).getValue();
+            String l = (String) node.getSimpleProperty(Model.VERSION_LABEL_PROP).getValue();
             if (label.equals(l)) {
                 return node;
             }
@@ -1112,7 +1108,7 @@ public class SessionImpl implements Session, XAResource {
             Serializable versionSeriesId;
             if (document.isProxy()) {
                 versionSeriesId = document.getSimpleProperty(
-                        model.PROXY_VERSIONABLE_PROP).getValue();
+                        Model.PROXY_VERSIONABLE_PROP).getValue();
             } else {
                 versionSeriesId = document.getId();
             }
@@ -1155,7 +1151,7 @@ public class SessionImpl implements Session, XAResource {
         allIds.addAll(ids);
         List<RowId> rowIds = new ArrayList<RowId>(allIds.size());
         for (Serializable id : allIds) {
-            rowIds.add(new RowId(model.HIER_TABLE_NAME, id));
+            rowIds.add(new RowId(Model.HIER_TABLE_NAME, id));
         }
         return context.getMulti(rowIds, true);
     }
@@ -1164,7 +1160,7 @@ public class SessionImpl implements Session, XAResource {
     public PartialList<Serializable> query(String query,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        final TimerContext timerContext = queryTimer.time();
+        final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.query(query, NXQL.NXQL, queryFilter, countTotal);
         } finally  {
@@ -1176,7 +1172,7 @@ public class SessionImpl implements Session, XAResource {
     public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, boolean countTotal)
             throws StorageException {
-        final TimerContext timerContext = queryTimer.time();
+        final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.query(query, queryType, queryFilter, countTotal);
         } finally  {
@@ -1187,7 +1183,7 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, long countUpTo) throws StorageException {
-        final TimerContext timerContext = queryTimer.time();
+        final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.query(query, queryType, queryFilter, countUpTo);
         } finally  {
@@ -1198,7 +1194,7 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws StorageException {
-        final TimerContext timerContext = queryTimer.time();
+        final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.queryAndFetch(query, queryType, queryFilter, params);
         } finally  {
@@ -1232,7 +1228,7 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void updateReadAcls() throws StorageException {
-        final TimerContext timerContext = aclrUpdateTimer.time();
+        final Timer.Context timerContext = aclrUpdateTimer.time();
         try {
             mapper.updateReadAcls();
             readAclsChanged = false;
@@ -1269,7 +1265,7 @@ public class SessionImpl implements Session, XAResource {
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
         Serializable id = generateNewId(null);
-        return addNode(id, null, "", null, model.ROOT_TYPE, false);
+        return addNode(id, null, "", null, Model.ROOT_TYPE, false);
     }
 
     private void addRootACP() throws StorageException {

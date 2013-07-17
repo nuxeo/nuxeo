@@ -48,9 +48,9 @@ import org.nuxeo.ecm.core.storage.sql.net.MapperServlet;
 import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
 import org.nuxeo.ecm.core.storage.sql.net.NetServer;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
+import com.codahale.metrics.Counter;
 
 /**
  * {@link Repository} implementation, to be extended by backend-specific
@@ -88,8 +88,10 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
-    private final Counter sessionCount = Metrics.defaultRegistry().newCounter(
-                getClass(), "session");
+    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+
+    protected final Counter sessionCount = metrics.newCounter(getClass(),
+            "session");
 
     private LockManager lockManager;
 
@@ -241,7 +243,8 @@ public class RepositoryImpl implements Repository {
             log.info("VCS Mapper cache using: " + cachingMapperClass.getName());
             cachingMapper = cachingMapperClass.newInstance();
             cachingMapper.initialize(model, mapper, cachePropagator,
-                    eventPropagator, repositoryEventQueue, repositoryDescriptor.cachingMapperProperties);
+                    eventPropagator, repositoryEventQueue,
+                    repositoryDescriptor.cachingMapperProperties);
         } catch (Exception e) {
             throw new StorageException(e);
         }
@@ -509,7 +512,7 @@ public class RepositoryImpl implements Repository {
             session.closeSession();
         }
         sessions.clear();
-        sessionCount.clear();
+        sessionCount.dec(sessionCount.getCount());
         if (lockManager != null) {
             lockManager.shutdown();
         }

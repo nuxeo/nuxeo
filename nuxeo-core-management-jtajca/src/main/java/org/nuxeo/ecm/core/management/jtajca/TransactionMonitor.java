@@ -20,11 +20,9 @@ import java.util.List;
 
 import javax.management.MXBean;
 
-
-
 /**
  * @author matic
- *
+ * 
  */
 @MXBean
 public interface TransactionMonitor {

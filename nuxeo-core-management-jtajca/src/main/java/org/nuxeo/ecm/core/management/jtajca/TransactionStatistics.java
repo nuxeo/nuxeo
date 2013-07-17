@@ -23,7 +23,7 @@ import javax.transaction.Transaction;
 
 /**
  * @author matic
- *
+ * 
  */
 public interface TransactionStatistics {
 

@@ -18,15 +18,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Gauge;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
 
 /**
  * A {@link SelectionContext} holds information for a set {@link Selection}
@@ -58,13 +58,15 @@ public class SelectionContext {
     private final Set<Serializable> modifiedInTransaction;
 
     // @since 5.7
-    private final Counter cacheHitCount = Metrics.defaultRegistry().newCounter(
+
+    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+
+    protected final Counter cacheHitCount = metrics.newCounter(
             SelectionContext.class, "cache-hit");
 
     // @since 5.7
-    private final Timer cacheGetTimer = Metrics.defaultRegistry().newTimer(
-            SelectionContext.class, "cache-get", TimeUnit.MICROSECONDS,
-            TimeUnit.SECONDS);
+    protected final Timer cacheGetTimer = metrics.newTimer(
+            SelectionContext.class, "cache-get");
 
     @SuppressWarnings("unchecked")
     public SelectionContext(SelectionType selType, Serializable criterion,
@@ -73,17 +75,10 @@ public class SelectionContext {
         this.criterion = criterion;
         this.mapper = mapper;
         this.context = context;
-        softMap = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+        softMap = new ReferenceMap(AbstractReferenceMap.HARD,
+                AbstractReferenceMap.SOFT);
         hardMap = new HashMap<Serializable, Selection>();
         modifiedInTransaction = new HashSet<Serializable>();
-
-        Metrics.defaultRegistry().newGauge(
-                SelectionContext.class, "cache-size", new Gauge<Integer>() {
-                    @Override
-                    public Integer getValue() {
-                        return softMap == null ? 0: softMap.size();
-                    }
-                });
     }
 
     public int clearCaches() {
@@ -94,9 +89,13 @@ public class SelectionContext {
         return n;
     }
 
+    public int getSize() {
+        return softMap == null ? 0 : softMap.size();
+    }
+
     /** Gets the proper selection cache. Creates one if missing. */
     private Selection getSelection(Serializable selId) {
-        final TimerContext timerContext = cacheGetTimer.time();
+        final Timer.Context timerContext = cacheGetTimer.time();
         try {
             Selection selection = softMap.get(selId);
             if (selection != null) {

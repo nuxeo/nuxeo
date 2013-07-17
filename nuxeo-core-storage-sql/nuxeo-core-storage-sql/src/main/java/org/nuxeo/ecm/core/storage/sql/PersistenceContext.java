@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,12 +42,11 @@ import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 import org.nuxeo.ecm.core.storage.sql.SimpleFragment.FieldComparator;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
-import com.yammer.metrics.core.Gauge;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
 
 /**
  * This class holds persistence context information.
@@ -69,12 +68,12 @@ import com.yammer.metrics.core.Gauge;
  */
 public class PersistenceContext {
 
-    private static final Log log = LogFactory.getLog(PersistenceContext.class);
+    protected static final Log log = LogFactory.getLog(PersistenceContext.class);
 
-    private static final FieldComparator POS_COMPARATOR = new FieldComparator(
+    protected static final FieldComparator POS_COMPARATOR = new FieldComparator(
             Model.HIER_CHILD_POS_KEY);
 
-    private static final FieldComparator VER_CREATED_COMPARATOR = new FieldComparator(
+    protected static final FieldComparator VER_CREATED_COMPARATOR = new FieldComparator(
             Model.VERSION_CREATED_KEY);
 
     protected final Model model;
@@ -82,10 +81,10 @@ public class PersistenceContext {
     // protected because accessed by Fragment.refetch()
     protected final RowMapper mapper;
 
-    private final SessionImpl session;
+    protected final SessionImpl session;
 
     // selection context for complex properties
-    private final SelectionContext hierComplex;
+    protected final SelectionContext hierComplex;
 
     // selection context for non-complex properties
     // public because used by unit tests
@@ -140,15 +139,15 @@ public class PersistenceContext {
      *
      * @since 5.7
      */
-    private final Counter cacheHitCount = Metrics.defaultRegistry().newCounter(
+    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final Counter cacheHitCount = metrics.newCounter(
             PersistenceContext.class, "cache-hit");
 
-    private final Counter cacheSize = Metrics.defaultRegistry().newCounter(
+    protected final Counter cacheSize = metrics.newCounter(
             PersistenceContext.class, "cache-size");
 
-    private final Timer cacheGetTimer = Metrics.defaultRegistry().newTimer(
-            PersistenceContext.class, "cache-get", TimeUnit.MICROSECONDS,
-            TimeUnit.SECONDS);
+    protected final Timer cacheGetTimer = metrics.newTimer(
+            PersistenceContext.class, "cache-get");
 
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
@@ -531,7 +530,7 @@ public class PersistenceContext {
      * @return the fragment, or {@code null} if not found
      */
     protected Fragment getIfPresent(RowId rowId) {
-        final TimerContext context = cacheGetTimer.time();
+        final Timer.Context context = cacheGetTimer.time();
         try {
             Fragment fragment = pristine.get(rowId);
             if (fragment == null) {

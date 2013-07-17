@@ -81,7 +81,6 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         self = null;
     }
 
-
     public TransactionManagerImpl lookup() {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm == null) { // try setup trough NuxeoTransactionManagerFactory
@@ -113,7 +112,7 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
 
     public static String id(Object key) {
         if (key instanceof XidImpl) {
-            byte[] globalId = ((XidImpl)key).getGlobalTransactionId();
+            byte[] globalId = ((XidImpl) key).getGlobalTransactionId();
             StringBuffer buffer = new StringBuffer();
             for (int i = 0; i < globalId.length; i++) {
                 buffer.append(Integer.toHexString(globalId[i]));
@@ -191,7 +190,6 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
         });
         return l;
     }
-
 
     @Override
     public long getActiveCount() {

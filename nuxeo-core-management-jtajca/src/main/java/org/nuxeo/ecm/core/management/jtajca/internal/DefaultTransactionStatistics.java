@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.management.jtajca.TransactionStatistics;
 
 /**
  * @author matic
- *
+ * 
  */
 public class DefaultTransactionStatistics implements TransactionStatistics {
 

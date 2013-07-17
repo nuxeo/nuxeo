@@ -19,22 +19,21 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Timer;
 
 /**
  * A {@link RowMapper} that has an internal cache.
@@ -110,27 +109,27 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * Cache statistics
      * @since 5.7
      */
-    private final Counter cacheHitCount = Metrics.defaultRegistry().newCounter(
+    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+
+    private final Counter cacheHitCount = metrics.newCounter(
             SoftRefCachingRowMapper.class, "cache-hit");
 
-    private final Counter cacheSize = Metrics.defaultRegistry().newCounter(
+    private final Counter cacheSize = metrics.newCounter(
             SoftRefCachingRowMapper.class, "cache-size");
 
-    private final Timer cacheGetTimer = Metrics.defaultRegistry().newTimer(
-            SoftRefCachingRowMapper.class, "cache-get",
-            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+    private final Timer cacheGetTimer = metrics.newTimer(
+            SoftRefCachingRowMapper.class, "cache-get");
 
     // sor means system of record (database access)
-    private final Counter sorRows = Metrics.defaultRegistry().newCounter(
+    private final Counter sorRows = metrics.newCounter(
             SoftRefCachingRowMapper.class, "sor-rows");
 
-    private final Timer sorGetTimer = Metrics.defaultRegistry().newTimer(
-            SoftRefCachingRowMapper.class, "sor-get",
-            TimeUnit.MICROSECONDS, TimeUnit.SECONDS);
+    private final Timer sorGetTimer = metrics.newTimer(
+            SoftRefCachingRowMapper.class, "sor-get");
 
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
-        cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+        cache = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
         localInvalidations = new Invalidations();
         cacheQueue = new InvalidationsQueue("mapper-" + this);
         forRemoteClient = false;
@@ -210,7 +209,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected Row cacheGet(RowId rowId) {
-        final TimerContext context = cacheGetTimer.time();
+        final Timer.Context context = cacheGetTimer.time();
         try {
             Row row = cache.get(rowId);
             if (row != null && !isAbsent(row)) {
@@ -368,7 +367,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
             }
         }
         if (!todo.isEmpty()) {
-            final TimerContext context = sorGetTimer.time();
+            final Timer.Context context = sorGetTimer.time();
             try {
                 // ask missing ones to underlying row mapper
                 List<? extends RowId> fetched = rowMapper.read(todo, cacheOnly);
@@ -506,7 +505,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
         }
         // we only put as absent the root fragment, to avoid polluting the cache
         // with lots of absent info. the rest is removed entirely
-        cachePutAbsent(new RowId(model.HIER_TABLE_NAME, rootInfo.id));
+        cachePutAbsent(new RowId(Model.HIER_TABLE_NAME, rootInfo.id));
         return infos;
     }
 

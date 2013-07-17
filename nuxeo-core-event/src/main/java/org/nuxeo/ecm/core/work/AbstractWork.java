@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.yammer.metrics.Metrics;
 
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the

@@ -41,7 +41,10 @@ import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.storage.sql.SoftRefCachingMapper;
 import org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.metrics.MetricsServiceImpl;
 
 /**
  * @author matic
@@ -166,8 +169,8 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
     private static final Field SESSION_FIELD = field(
             ManagedConnectionImpl.class, "session");
 
-    private static final Field WRAPPED_FIELD = field(SoftRefCachingMapper.class,
-            "mapper");
+    private static final Field WRAPPED_FIELD = field(
+            SoftRefCachingMapper.class, "mapper");
 
     protected Identification mapperId(ConnectionInfo info) {
         ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
@@ -193,6 +196,12 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         cm = lookup(repositoryName);
         cm = enhanceConnectionManager(cm);
         self = DefaultMonitorComponent.bind(this, repositoryName);
+        String mbean = self.getObjectName().toString();
+        MetricsService metrics = Framework.getLocalService(MetricsService.class);
+        metrics.newGauge(mbean,
+                "connectionCount", MetricsServiceImpl.class, "storage-xaConnectionCount");
+        metrics.newGauge(mbean,
+                "idleConnectionCount", MetricsServiceImpl.class, "storage-xaConnectionIdle");
     }
 
     protected void uninstall() {
@@ -209,7 +218,8 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
                 cm = (ConnectionManager) ic.lookup(NUXEO_CONNECTION_MANAGER_PREFIX
                         + repositoryName);
             } catch (NamingException cause) {
-                throw new RuntimeException("Cannot lookup connection manager", cause);
+                throw new RuntimeException("Cannot lookup connection manager",
+                        cause);
             }
         }
         if (!(cm instanceof NuxeoContainer.ConnectionManagerWrapper)) {
@@ -279,6 +289,5 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
     public void setIdleTimeoutMinutes(int idleTimeoutMinutes) {
         cm.setIdleTimeoutMinutes(idleTimeoutMinutes);
     }
-
 
 }

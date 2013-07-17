@@ -107,11 +107,11 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
+import com.codahale.metrics.Counter;
 
 /**
  * Abstract implementation of the client interface.
@@ -152,19 +152,23 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     private Long maxResults;
 
+
     // @since 5.7
-    protected final static Counter createDocumentCount = Metrics.defaultRegistry().newCounter(
+    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+
+    protected final Counter createDocumentCount = metrics.newCounter(
             AbstractSession.class, "create-document");
 
-    protected final static Counter deleteDocumentCount = Metrics.defaultRegistry().newCounter(
-            AbstractSession.class, "delete-document");
+    protected final Counter deleteDocumentCount =
+            metrics.newCounter(
+                    AbstractSession.class, "delete-document");
 
-    protected final static Counter updateDocumentCount = Metrics.defaultRegistry().newCounter(
-            AbstractSession.class, "update-document");
+    protected final Counter updateDocumentCount =
+            metrics.newCounter(
+                    AbstractSession.class, "update-document");
 
-
-    public static class QueryAndFetchExecuteContextException extends ClientRuntimeException {
-
+    public static class QueryAndFetchExecuteContextException extends
+            ClientRuntimeException {
 
         private static final long serialVersionUID = 1L;
 
@@ -177,8 +181,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     }
 
-    protected final Set<QueryAndFetchExecuteContextException> queryResults =
-            new HashSet<QueryAndFetchExecuteContextException>();
+    protected final Set<QueryAndFetchExecuteContextException> queryResults = new HashSet<QueryAndFetchExecuteContextException>();
 
     /**
      * Private access to protected it again direct access since this field is
@@ -246,7 +249,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         // register this session locally -> this way document models can
         // retrieve their session on the server side
         CoreInstance.getInstance().registerSession(sessionId, this);
-
 
         return sessionId;
     }
@@ -551,7 +553,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
-            // add the destination name, destination, resetLifeCycle flag and source references in
+            // add the destination name, destination, resetLifeCycle flag and
+            // source references in
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
@@ -589,17 +592,18 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name) throws ClientException{
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name)
+            throws ClientException {
         return copy(src, dst, name, false);
     }
 
     @Override
-    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle)
-            throws ClientException {
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst,
+            boolean resetLifeCycle) throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
-            newDocuments.add(copy(ref, dst, null,resetLifeCycle));
+            newDocuments.add(copy(ref, dst, null, resetLifeCycle));
         }
 
         return newDocuments;
@@ -663,11 +667,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     @Override
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
-            DocumentRef dst,boolean resetLifeCycle) throws ClientException {
+            DocumentRef dst, boolean resetLifeCycle) throws ClientException {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
-            newDocuments.add(copyProxyAsDocument(ref, dst, null,resetLifeCycle));
+            newDocuments.add(copyProxyAsDocument(ref, dst, null, resetLifeCycle));
         }
 
         return newDocuments;
@@ -1499,14 +1503,15 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     protected long getMaxResults() {
         if (maxResults == null) {
-            maxResults = Long.parseLong(Framework.getProperty(MAX_RESULTS_PROPERTY, DEFAULT_MAX_RESULTS));
+            maxResults = Long.parseLong(Framework.getProperty(
+                    MAX_RESULTS_PROPERTY, DEFAULT_MAX_RESULTS));
         }
         return maxResults;
     }
 
     protected boolean isLimitedResults() {
         if (limitedResults == null) {
-                limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPERTY));
+            limitedResults = Boolean.parseBoolean(Framework.getProperty(LIMIT_RESULTS_PROPERTY));
         }
         return limitedResults;
     }
@@ -1645,9 +1650,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
             QueryFilter queryFilter = new QueryFilter(principal, principals,
                     permissions, null, transformers, 0, 0);
-            IterableQueryResult result =
-             getSession().queryAndFetch(query, queryType, queryFilter,
-                    params);
+            IterableQueryResult result = getSession().queryAndFetch(query,
+                    queryType, queryFilter, params);
             queryResults.add(new QueryAndFetchExecuteContextException(result));
             return result;
         } catch (Exception e) {
@@ -1669,7 +1673,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             } catch (Exception e) {
                 log.error("Cannot close query result", e);
             } finally {
-                log.warn("Closing a query results for you, check stack trace for allocating point", context);
+                log.warn(
+                        "Closing a query results for you, check stack trace for allocating point",
+                        context);
             }
 
         }
@@ -1907,7 +1913,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 String name = docModel.getName();
                 notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                         options, null, null, true, true);
-                // did the event change the name? not applicable to Root whose name is null/empty
+                // did the event change the name? not applicable to Root whose
+                // name is null/empty
                 if (name != null && !name.equals(docModel.getName())) {
                     doc = getSession().move(doc, doc.getParent(),
                             docModel.getName());
@@ -1942,11 +1949,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             if (!docModel.isImmutable()) {
                 // pre-save versioning
-                boolean checkout = getVersioningService().isPreSaveDoingCheckOut(doc, dirty,
-                        versioningOption, options);
+                boolean checkout = getVersioningService().isPreSaveDoingCheckOut(
+                        doc, dirty, versioningOption, options);
                 if (checkout) {
-                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options,
-                            null, null, true, true);
+                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
+                            options, null, null, true, true);
                 }
                 versioningOption = getVersioningService().doPreSave(doc, dirty,
                         versioningOption, checkinComment, options);
@@ -1966,8 +1973,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 boolean checkin = getVersioningService().isPostSaveDoingCheckIn(
                         doc, versioningOption, options);
                 if (checkin) {
-                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options,
-                            null, null, true, true);
+                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel,
+                            options, null, null, true, true);
                 }
                 checkedInDoc = getVersioningService().doPostSave(doc,
                         versioningOption, checkinComment, options);
@@ -3045,15 +3052,15 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     if (!doc.isCheckedOut()) {
                         // last version was deleted while leaving a checked in
                         // doc. recreate a version
-                        notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel,
-                                options, null, null, true, true);
+                        notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT,
+                                docModel, options, null, null, true, true);
                         getVersioningService().doCheckOut(doc);
                         docModel = readModel(doc);
-                        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel,
-                                options, null, null, true, false);
+                        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT,
+                                docModel, options, null, null, true, false);
                     }
-                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options,
-                            null, null, true, true);
+                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel,
+                            options, null, null, true, true);
                     Document version = getVersioningService().doCheckIn(doc,
                             null, checkinComment);
                     docModel.refresh(DocumentModel.REFRESH_STATE

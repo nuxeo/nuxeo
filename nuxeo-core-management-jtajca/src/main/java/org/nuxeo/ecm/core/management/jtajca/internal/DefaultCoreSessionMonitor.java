@@ -6,10 +6,13 @@ import java.util.Comparator;
 
 import javax.management.ObjectInstance;
 
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 
 public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 
@@ -23,7 +26,8 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
         return toInfos(toSortedRegistration(CoreInstance.getInstance().getRegistrationInfos()));
     }
 
-    public RegistrationInfo[] toSortedRegistration(Collection<RegistrationInfo> infos) {
+    public RegistrationInfo[] toSortedRegistration(
+            Collection<RegistrationInfo> infos) {
         RegistrationInfo[] sortedInfos = infos.toArray(new RegistrationInfo[infos.size()]);
         Arrays.sort(sortedInfos, new Comparator<RegistrationInfo>() {
 
@@ -49,6 +53,10 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 
     protected void install() {
         self = DefaultMonitorComponent.bind(this);
+        String mbean = self.getObjectName().toString();
+        MetricsService metrics = Framework.getLocalService(MetricsService.class);
+        metrics.newGauge(mbean,
+                "count", AbstractSession.class, "count");
     }
 
     protected void uninstall() {

@@ -39,6 +39,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
 import org.nuxeo.ecm.core.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.metrics.MetricsServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -66,6 +69,13 @@ public class DefaultMonitorComponent extends DefaultComponent {
     public void applicationStarted(ComponentContext context) throws Exception {
         uninstall();
         install();
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        // should deploy after metrics service
+        return ((MetricsServiceImpl) Framework.getRuntime().getComponent(
+                MetricsService.class.getName())).getApplicationStartedOrder() + 1;
     }
 
     @Override
@@ -120,8 +130,6 @@ public class DefaultMonitorComponent extends DefaultComponent {
         tmon = null;
     }
 
-
-
     protected static ObjectInstance bind(Object managed) {
         return bind(managed, "jdoe");
     }
@@ -134,14 +142,16 @@ public class DefaultMonitorComponent extends DefaultComponent {
         return bind(managed.getClass().getInterfaces()[0], managed, name);
     }
 
-    protected static ObjectInstance bind(Class<?> itf, Object managed, String name) {
+    protected static ObjectInstance bind(Class<?> itf, Object managed,
+            String name) {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         name = Defaults.instance.name(itf, name);
         try {
             return mbs.registerMBean(managed, new ObjectName(name));
         } catch (InstanceAlreadyExistsException | MBeanRegistrationException
                 | NotCompliantMBeanException | MalformedObjectNameException e) {
-            throw new UnsupportedOperationException("Cannot bind " + managed + " on " + name, e);
+            throw new UnsupportedOperationException("Cannot bind " + managed
+                    + " on " + name, e);
         }
     }
 
@@ -150,7 +160,8 @@ public class DefaultMonitorComponent extends DefaultComponent {
         try {
             mbs.unregisterMBean(instance.getObjectName());
         } catch (MBeanRegistrationException | InstanceNotFoundException e) {
-            throw new UnsupportedOperationException("Cannot unbind " + instance, e);
+            throw new UnsupportedOperationException(
+                    "Cannot unbind " + instance, e);
         }
     }
 }

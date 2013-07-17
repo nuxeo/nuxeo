@@ -22,9 +22,10 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
+import com.codahale.metrics.Counter;
 
 /**
  *
@@ -35,12 +36,13 @@ import com.yammer.metrics.core.Counter;
  */
 public class EventCounterListener implements PostCommitEventListener {
 
+    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
     // Counters used
-    public final Counter createCount = Metrics.defaultRegistry().newCounter(
+    public final Counter createCount = metrics.newCounter(
             EventCounterListener.class, "create");
-    public final Counter updateCount = Metrics.defaultRegistry().newCounter(
+    public final Counter updateCount = metrics.newCounter(
             EventCounterListener.class, "update");
-    public final Counter removeCount = Metrics.defaultRegistry().newCounter(
+    public final Counter removeCount = metrics.newCounter(
             EventCounterListener.class, "remove");
 
     // Event tracked
