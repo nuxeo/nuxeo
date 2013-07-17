@@ -8,14 +8,22 @@
 
     <widgetType name="audio_player">
       <configuration>
-        <sinceVersion>5.5</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Audio Player</title>
         <description>
           <p>This widgets displays a html5 or flash audio player</p>
         </description>
+        <handlingLabels>true</handlingLabels>s
         <categories>
-          <category>document</category>
+          <category>summary</category>
         </categories>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+        </fields>
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
@@ -26,6 +34,30 @@
             <type>blob</type>
           </supportedTypes>
         </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="video_player_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>width</widget>
+                </row>
+              </rows>
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The width of the Audio player.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
         <!-- no configurable properties -->
       </configuration>
       <handler-class>
@@ -38,35 +70,15 @@
 
     <widgetType name="audio_file">
       <configuration>
-        <sinceVersion>5.7</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Audio File</title>
         <description>
           <p>
             The audio widget displays a file uploader/editor in create or edit
             mode, with additional message tag for errors.
           </p>
-          <li>
-            duration: the duration of the audio file in view mode.
-          </li>
         </description>
         <properties>
-          <layouts mode="view">
-            <layout name="audio_file_widget_type_properties_view">
-              <rows>
-                <row>
-                  <widget>duration</widget>
-                </row>
-              </rows>
-              <widget name="duration" type="int">
-                <labels>
-                  <label mode="any">Duration</label>
-                </labels>
-                <fields>
-                  <field>duration</field>
-                </fields>
-              </widget>
-            </layout>
-          </layouts>
           <layouts mode="edit">
             <layout name="audio_file_widget_type_properties_edit">
               <rows>
@@ -84,7 +96,8 @@
                 <helpLabels>
                   <label mode="any">
                     A comma separated list of supported file
-                    extensions. Default value: '.mp3, .ogg, .oga, .flac, .m4a, .aac, .ac3, .aif, .aiff, .aifc, .au, .snd, .asf, .wav'.
+                    extensions. Default value: '.mp3, .ogg, .oga, .flac, .m4a,
+                    .aac, .ac3, .aif, .aiff, .aifc, .au, .snd, .asf, .wav'.
                   </label>
                 </helpLabels>
                 <fields>
