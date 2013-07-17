@@ -21,6 +21,8 @@
     usually defaults to false
   - hideThirdLabel: boolean stating that third label should not be shown,
     usually defaults to false
+  - hideIcon: optional marker to hide the icon associated to a user or group,
+    defaults to false
   - showEmail: boolean stating that email should be shown (here for compat),
     usually defaults to false
   - displayAction: optional marker to control display for a user or group,
@@ -38,7 +40,9 @@
     <c:set var="userDisplayName"
       value="#{nxu:userDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[userSchema][firstNameField]), nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]))}" />
   </c:if>
-  <h:outputText value=" " />
+  <h:graphicImage value="/icons/user.png" alt="user.png"
+    rendered="#{not hideIcon}" />
+  <h:outputText value=" " rendered="#{not hideIcon}" />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
     <h:outputText value="#{userDisplayName}" />
   </c:if>
@@ -56,7 +60,9 @@
   </c:if>
 </a4j:outputPanel>
 <a4j:outputPanel rendered="#{info.type == 'GROUP_TYPE'}" styleClass="tag group">
-  <h:outputText value=" " />
+  <h:graphicImage value="/icons/group.png" alt="group.png"
+    rendered="#{not hideIcon}" />
+  <h:outputText value=" " rendered="#{not hideIcon}" />
   <c:set var="groupDisplayName"
     value="#{nxu:groupDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[groupSchema].grouplabel))}" />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
