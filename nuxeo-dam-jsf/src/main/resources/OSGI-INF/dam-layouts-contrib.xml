@@ -16,13 +16,8 @@
             This widget type displays the title of a document.
           </p>
           <p>
-            It requires the following fields configuration:
-            <ul>
-              <li>
-                first field maps the document model, it will be used to
-                display the title
-              </li>
-            </ul>
+            It requires the following fields configuration: first field maps
+            the document.
           </p>
         </description>
       </configuration>
@@ -360,11 +355,7 @@
       </fields>
     </widget>
 
-    <widget name="damAssetViewPicture" type="picture_view">
-      <properties widgetMode="any">
-        <property name="pictureView">Medium</property>
-      </properties>
-    </widget>
+    <widget name="damAssetViewPicture" type="picture_view" />
 
     <widget name="damAssetViewVideo" type="video_player">
       <properties widgetMode="any">
@@ -396,11 +387,11 @@
 
     <widget name="damAssetViewStates" type="summary_current_document_states" />
 
-    <widget name="damAssetViewLikeStatus" type="summary_document_like_status" />
+    <widget name="damAssetViewLikesCount" type="document_likes_count" />
 
-    <widget name="damAssetViewAnnotationsStatus" type="summary_document_annotations_status" />
+    <widget name="damAssetViewAnnotationsCount" type="document_annotations_count" />
 
-    <widget name="damAssetViewCommentsStatus" type="summary_document_comments_status" />
+    <widget name="damAssetViewCommentsCount" type="document_comments_count" />
 
     <widget name="damAssetViewVideoStoryboard" type="container">
       <labels>
@@ -778,26 +769,26 @@
       </properties>
     </action>
 
-    <action id="damAssetViewLikeStatus" type="widget" order="10">
+    <action id="damAssetViewLikesCount" type="widget" order="10">
       <category>DAM_ASSET_VIEW_INDICATORS</category>
       <properties>
-        <property name="widgetName">damAssetViewLikeStatus</property>
+        <property name="widgetName">damAssetViewLikesCount</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewAnnotationsStatus" type="widget" order="20">
+    <action id="damAssetViewAnnotationsCount" type="widget" order="20">
       <category>DAM_ASSET_VIEW_INDICATORS</category>
       <properties>
-        <property name="widgetName">damAssetViewAnnotationsStatus</property>
+        <property name="widgetName">damAssetViewAnnotationsCount</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
-    <action id="damAssetViewCommentsStatus" type="widget" order="30">
+    <action id="damAssetViewCommentsCount" type="widget" order="30">
       <category>DAM_ASSET_VIEW_INDICATORS</category>
       <properties>
-        <property name="widgetName">damAssetViewCommentsStatus</property>
+        <property name="widgetName">damAssetViewCommentsCount</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
