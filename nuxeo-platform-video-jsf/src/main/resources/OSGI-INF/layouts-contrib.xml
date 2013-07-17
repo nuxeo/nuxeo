@@ -5,16 +5,23 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
+
     <widgetType name="video_player">
       <configuration>
-        <sinceVersion>5.6</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Video player</title>
         <description>
           <p>
             This widget displays a HTML5 video player for browsers
-            supporting it, and fallback on a Flash player for others.
-            It uses the WebM or MP4 conversion (in 480p) of
+            supporting
+            it, and fallback on a Flash player for others.
+            It uses the WebM or
+            MP4 conversion (in 480p) of
             a document having the facet 'Video'.
+          </p>
+          <p>
+            It requires the following fields configuration: first field maps
+            the document model.
           </p>
         </description>
         <handlingLabels>true</handlingLabels>
@@ -76,12 +83,13 @@
 
     <widgetType name="video_storyboard">
       <configuration>
-        <sinceVersion>5.6</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Video storyboard</title>
         <description>
           <p>
             This widget displays the story board of
-            a document having the facet 'Video'.
+            a document having the facet
+            'Video'.
           </p>
         </description>
         <handlingLabels>true</handlingLabels>
@@ -104,12 +112,13 @@
 
     <widgetType name="video_conversions">
       <configuration>
-        <sinceVersion>5.6</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Video conversions</title>
         <description>
           <p>
             This widget displays the list of available
-            video conversions for the given Video document.
+            video conversions for the
+            given Video document.
           </p>
         </description>
         <handlingLabels>true</handlingLabels>
@@ -132,12 +141,13 @@
 
     <widgetType name="video_info">
       <configuration>
-        <sinceVersion>5.6</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Video info</title>
         <description>
           <p>
             This widget displays the information of the main video of
-            a document having the facet 'Video'.
+            a document
+            having the facet 'Video'.
           </p>
         </description>
         <handlingLabels>true</handlingLabels>
@@ -160,7 +170,7 @@
 
     <widgetType name="video_file">
       <configuration>
-        <sinceVersion>5.7</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Video File</title>
         <description>
           <p>
@@ -169,15 +179,6 @@
           </p>
         </description>
         <properties>
-          <layouts mode="view">
-            <layout name="video_file_widget_type_properties_view">
-              <rows>
-                <row>
-                  <widget>summary_video_info</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
           <layouts mode="edit">
             <layout name="video_file_widget_type_properties_edit">
               <rows>
@@ -231,12 +232,14 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
+
     <widget name="summary_video_player" type="video_player">
       <properties widgetMode="any">
         <property name="width">550</property>
         <property name="height">310</property>
       </properties>
     </widget>
+
     <widget name="summary_video_storyboard" type="video_storyboard">
       <labels>
         <label mode="any">heading.storyboard</label>
@@ -246,12 +249,25 @@
         <control name="handleLabels">true</control>
       </controls>
     </widget>
+
     <widget name="summary_video_conversions" type="video_conversions">
+      <labels>
+        <label mode="any">heading.videoConversions</label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
-    <widget name="summary_video_info" type="video_info" />
+
+    <widget name="summary_video_info" type="video_info">
+      <labels>
+        <label mode="any">heading.video.info</label>
+      </labels>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
 
     <widget name="video_info_duration" type="text">
       <labels>
@@ -428,7 +444,7 @@
       </rows>
     </layout>
 
-    <!-- deprecated since 5.6, here for comat -->
+    <!-- deprecated since 5.6, here for compat -->
     <layout name="video_summary_layout">
       <templates>
         <template mode="any">/layouts/layout_summary_template.xhtml</template>

@@ -4,13 +4,13 @@
 
   <c:if test="#{value.hasFacet('Video')}">
 
-  <h3 class="summaryTitle">
-    <h:outputText value="#{messages['heading.video.info']}" />
-  </h3>
+    <c:if test="#{!empty widget.label and widget.handlingLabels}">
+      <ui:include src="/widgets/incl/widget_label_template.xhtml">
+        <ui:param name="labelStyleClass" value="summaryTitle" />
+      </ui:include>
+    </c:if>
 
-  <c:if test="#{value.hasFacet('Video')}">
     <nxl:layout value="#{value}" name="video_info" mode="view" />
-  </c:if>
 
   </c:if>
 

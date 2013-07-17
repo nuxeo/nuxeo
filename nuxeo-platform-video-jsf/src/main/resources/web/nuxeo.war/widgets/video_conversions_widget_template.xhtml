@@ -11,7 +11,11 @@
 
   <c:if test="#{value.hasFacet('Video')}">
 
-  <h3 class="summaryTitle">#{messages['heading.videoConversions']}</h3>
+  <c:if test="#{!empty widget.label and widget.handlingLabels}">
+    <ui:include src="/widgets/incl/widget_label_template.xhtml">
+      <ui:param name="labelStyleClass" value="summaryTitle" />
+    </ui:include>
+  </c:if>
 
   <table width="100%" cellspacing="0">
     <tbody>

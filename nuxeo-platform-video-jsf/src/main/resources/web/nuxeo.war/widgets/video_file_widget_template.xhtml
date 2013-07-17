@@ -2,10 +2,21 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{field.filename}</c:if>
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+    <nxh:outputLink
+      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field.filename)}">
+      <nxh:graphicImage value="#{nxd:fileIconPath(field)}"
+        rendered="#{! empty nxd:fileIconPath(field)}" />
+      <nxh:outputText value="#{field.filename}" />
+    </nxh:outputLink>
+
+</c:if>
 <c:if test="#{widget.mode == 'edit'}">
 
   <c:set var="acceptedExtensions"
