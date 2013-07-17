@@ -922,21 +922,6 @@ public class TestFileSystemItemOperations {
         assertTrue(newName.startsWith("The Clashing File (Joe Strummer - "));
         assertTrue(newName.endsWith(").xls"));
 
-        // Check that the client can choose the timezone
-        jsonOut = (Blob) clientSession.newRequest(
-                NuxeoDriveGenerateConflictedItemName.ID).set("name",
-                "The Clashing File.xls").set("timezone", "BST").execute();
-        assertNotNull(jsonOut);
-        String bstName = mapper.readValue(jsonOut.getStream(), String.class);
-        jsonOut = (Blob) clientSession.newRequest(
-                NuxeoDriveGenerateConflictedItemName.ID).set("name",
-                "The Clashing File.xls").set("timezone", "PST").execute();
-        assertNotNull(jsonOut);
-        String pstName = mapper.readValue(jsonOut.getStream(), String.class);
-        assertFalse(String.format(
-                "Conflicted filenames should be different. Got '%s' twice.",
-                pstName), bstName.equals(pstName));
-
         deleteUser("joe");
     }
 
