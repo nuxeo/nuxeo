@@ -40,7 +40,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
  *
  * @since 5.6
  */
-@Operation(id = RunInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain in new Tx", description = "Run an operation chain in a separate tx.")
+@Operation(id = RunInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run Document Chain in new Tx", description = "Run an operation chain in a separate tx. The 'parameters' injected are accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.")
 public class RunInNewTransaction {
 
     public static final String ID = "Context.RunDocumentOperationInNewTx";
