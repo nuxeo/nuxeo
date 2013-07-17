@@ -591,13 +591,14 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Available since 5.7.1. Flag indicating that the title is localized.
+                    Available since 5.7.1. Flag indicating that
+                    the title is localized.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>localize</field>
                 </fields>
-            </widget>
+              </widget>
             </layout>
           </layouts>
         </properties>
@@ -841,17 +842,25 @@
 
     <widgetType name="listing_thumbnail">
       <configuration>
-        <sinceVersion>5.7</sinceVersion>
+        <sinceVersion>5.7.2</sinceVersion>
         <title>Thumbnail</title>
         <description>
           <p>This widget type displays the document thumbnail.</p>
+          <p>
+            It requires the following fields configuration: first field maps
+            the document model.
+          </p>
         </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
         <categories>
           <category>listing</category>
         </categories>
-        <defaultConfiguration>
-          <field>data</field>
-        </defaultConfiguration>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -860,6 +869,7 @@
         /widgets/listing/listing_thumbnail_widget_template.xhtml
       </property>
     </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
