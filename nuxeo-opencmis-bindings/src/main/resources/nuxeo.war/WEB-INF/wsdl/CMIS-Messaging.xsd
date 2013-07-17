@@ -353,6 +353,103 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<!-- createType Operation -->
+	<xs:element name="createType">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="repositoryId" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="type" type="cmis:cmisTypeDefinitionType" minOccurs="1" maxOccurs="1" />
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="createTypeResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" type="cmis:cmisTypeDefinitionType"
+					minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- updateType Operation -->
+	<xs:element name="updateType">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="repositoryId" type="xs:string"
+					minOccurs="1" maxOccurs="1" />
+				<xs:element name="type" type="cmis:cmisTypeDefinitionType"
+					minOccurs="1" maxOccurs="1" />
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="updateTypeResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="type" type="cmis:cmisTypeDefinitionType"
+					minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- deleteType Operation -->
+	<xs:element name="deleteType">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="repositoryId" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="typeId" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="deleteTypeResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 	<!-- [Navigation Services] -->
 	
@@ -923,6 +1020,52 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<!-- createItem Operation -->
+	<xs:element name="createItem">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="repositoryId" type="xs:string"
+					minOccurs="1" maxOccurs="1" />
+				<xs:element name="properties" type="cmis:cmisPropertiesType"
+					minOccurs="1" maxOccurs="1" />
+				<xs:element name="folderId" type="xs:string" minOccurs="0"
+					maxOccurs="1" nillable="true" />
+				<xs:element name="addACEs" type="cmis:cmisAccessControlListType"
+					minOccurs="0" maxOccurs="1" nillable="true" />
+				<xs:element name="removeACEs" type="cmis:cmisAccessControlListType"
+					minOccurs="0" maxOccurs="1" nillable="true" />
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="createItemResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="objectId" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	
 	<!-- getAllowableActions Operation -->
 	<xs:element name="getAllowableActions">
 		<xs:complexType>
@@ -1163,6 +1306,49 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+	<!-- bulkUpdateProperties Operation -->
+	<xs:element name="bulkUpdateProperties">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="repositoryId" type="xs:string"
+					minOccurs="1" maxOccurs="1" />
+					
+				<xs:element name="bulkUpdateData" type="cmis:cmisBulkUpdateType"
+					minOccurs="1" maxOccurs="1" />
+					
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+					</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="bulkUpdatePropertiesResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="objectIdAndChangeToken" type="cmis:cmisObjectIdAndChangeTokenType"
+					minOccurs="1" maxOccurs="1" />
+
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+					</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 	<!-- moveObject Operation -->
 	<xs:element name="moveObject">
@@ -1325,6 +1511,57 @@
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="setContentStreamResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="objectId" type="xs:string" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element name="changeToken" type="xs:string"
+					minOccurs="0" maxOccurs="1" />
+
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- appendContentStream Operation -->
+	<xs:element name="appendContentStream">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="repositoryId" type="xs:string"
+					minOccurs="1" maxOccurs="1" />
+				<xs:element name="objectId" type="xs:string" minOccurs="1"
+					maxOccurs="1" />
+				<xs:element name="isLastChunk" type="xs:boolean"
+					minOccurs="0" maxOccurs="1" nillable="true" />
+				<xs:element name="changeToken" type="xs:string"
+					minOccurs="0" maxOccurs="1" nillable="true" />
+				<xs:element name="contentStream" type="cmism:cmisContentStreamType"
+					minOccurs="1" maxOccurs="1" />
+
+				<xs:element name="extension" type="cmism:cmisExtensionType"
+					minOccurs="0" maxOccurs="1" nillable="true">
+					<xs:annotation>
+						<xs:documentation>
+							This is an extension element to hold any
+							repository or
+							vendor-specific extensions
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="appendContentStreamResponse">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="objectId" type="xs:string" minOccurs="1"

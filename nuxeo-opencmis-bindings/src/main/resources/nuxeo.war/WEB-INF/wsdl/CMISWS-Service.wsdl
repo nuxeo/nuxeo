@@ -140,6 +140,12 @@
 	<message name="createPolicyResponse">
 		<part name="parameters" element="cmism:createPolicyResponse" />
 	</message>
+		<message name="createItemRequest">
+		<part name="parameters" element="cmism:createItem" />
+	</message>
+	<message name="createItemResponse">
+		<part name="parameters" element="cmism:createItemResponse" />
+	</message>
 	<message name="getAllowableActionsRequest">
 		<part name="parameters" element="cmism:getAllowableActions" />
 	</message>
@@ -178,6 +184,12 @@
 	<message name="updatePropertiesResponse">
 		<part name="parameters" element="cmism:updatePropertiesResponse" />
 	</message>
+	<message name="bulkUpdatePropertiesRequest">
+		<part name="parameters" element="cmism:bulkUpdateProperties" />
+	</message>
+	<message name="bulkUpdatePropertiesResponse">
+		<part name="parameters" element="cmism:bulkUpdatePropertiesResponse" />
+	</message>
 	<message name="moveObjectRequest">
 		<part name="parameters" element="cmism:moveObject" />
 	</message>
@@ -201,6 +213,12 @@
 	</message>
 	<message name="setContentStreamResponse">
 		<part name="parameters" element="cmism:setContentStreamResponse" />
+	</message>
+	<message name="appendContentStreamRequest">
+		<part name="parameters" element="cmism:appendContentStream" />
+	</message>
+	<message name="appendContentStreamResponse">
+		<part name="parameters" element="cmism:appendContentStreamResponse" />
 	</message>
 	<message name="deleteContentStreamRequest">
 		<part name="parameters" element="cmism:deleteContentStream" />
@@ -264,6 +282,24 @@
 	</message>
 	<message name="getTypeDefinitionResponse">
 		<part name="parameters" element="cmism:getTypeDefinitionResponse" />
+	</message>
+	<message name="createTypeRequest">
+		<part name="parameters" element="cmism:createType" />
+	</message>
+	<message name="createTypeResponse">
+		<part name="parameters" element="cmism:createTypeResponse" />
+	</message>
+	<message name="updateTypeRequest">
+		<part name="parameters" element="cmism:updateType" />
+	</message>
+	<message name="updateTypeResponse">
+		<part name="parameters" element="cmism:updateTypeResponse" />
+	</message>
+	<message name="deleteTypeRequest">
+		<part name="parameters" element="cmism:deleteType" />
+	</message>
+	<message name="deleteTypeResponse">
+		<part name="parameters" element="cmism:deleteTypeResponse" />
 	</message>
 
 	<message name="checkOutRequest">
@@ -393,6 +429,11 @@
 			<output message="cmisw:createPolicyResponse" />
 			<fault message="cmisw:cmisException" name="cmisException" />
 		</operation>
+		<operation name="createItem">
+			<input message="cmisw:createItemRequest" />
+			<output message="cmisw:createItemResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
 		<operation name="getAllowableActions">
 			<input message="cmisw:getAllowableActionsRequest" />
 			<output message="cmisw:getAllowableActionsResponse" />
@@ -428,6 +469,11 @@
 			<output message="cmisw:updatePropertiesResponse" />
 			<fault message="cmisw:cmisException" name="cmisException" />
 		</operation>
+		<operation name="bulkUpdateProperties">
+			<input message="cmisw:bulkUpdatePropertiesRequest" />
+			<output message="cmisw:bulkUpdatePropertiesResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
 		<operation name="moveObject">
 			<input message="cmisw:moveObjectRequest" />
 			<output message="cmisw:moveObjectResponse" />
@@ -446,6 +492,11 @@
 		<operation name="setContentStream">
 			<input message="cmisw:setContentStreamRequest" />
 			<output message="cmisw:setContentStreamResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+		<operation name="appendContentStream">
+			<input message="cmisw:appendContentStreamRequest" />
+			<output message="cmisw:appendContentStreamResponse" />
 			<fault message="cmisw:cmisException" name="cmisException" />
 		</operation>
 		<operation name="deleteContentStream">
@@ -505,6 +556,21 @@
 			<output message="cmisw:getTypeDefinitionResponse" />
 			<fault message="cmisw:cmisException" name="cmisException" />
 		</operation>
+	 	<operation name="createType">
+			<input message="cmisw:createTypeRequest" />
+			<output message="cmisw:createTypeResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	 	<operation name="updateType">
+			<input message="cmisw:updateTypeRequest" />
+			<output message="cmisw:updateTypeResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
+	 	<operation name="deleteType">
+			<input message="cmisw:deleteTypeRequest" />
+			<output message="cmisw:deleteTypeResponse" />
+			<fault message="cmisw:cmisException" name="cmisException" />
+		</operation>
 	</portType>
 	<portType name="VersioningServicePort">
 		<operation name="checkOut">
@@ -556,7 +622,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="query">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="query" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -568,7 +634,7 @@
 			</fault>
 		</operation>
 		<operation name="getContentChanges">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getContentChanges" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -584,7 +650,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="addObjectToFolder">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="addObjectToFolder" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -596,7 +662,7 @@
 			</fault>
 		</operation>
 		<operation name="removeObjectFromFolder">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="removeObjectFromFolder" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -612,7 +678,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="getDescendants">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getDescendants" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -624,7 +690,7 @@
 			</fault>
 		</operation>
 		<operation name="getChildren">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getChildren" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -636,7 +702,7 @@
 			</fault>
 		</operation>
 		<operation name="getFolderParent">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getFolderParent" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -648,7 +714,7 @@
 			</fault>
 		</operation>
 		<operation name="getFolderTree">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getFolderTree" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -660,7 +726,7 @@
 			</fault>
 		</operation>
 		<operation name="getObjectParents">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getObjectParents" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -672,7 +738,7 @@
 			</fault>
 		</operation>
 		<operation name="getCheckedOutDocs">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getCheckedOutDocs" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -688,7 +754,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="createDocument">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="createDocument" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -700,7 +766,7 @@
 			</fault>
 		</operation>
 		<operation name="createDocumentFromSource">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="createDocumentFromSource" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -712,7 +778,7 @@
 			</fault>
 		</operation>
 		<operation name="createFolder">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="createFolder" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -724,7 +790,7 @@
 			</fault>
 		</operation>
 		<operation name="createRelationship">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="createRelationship" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -736,6 +802,18 @@
 			</fault>
 		</operation>
 		<operation name="createPolicy">
+			<soap:operation soapAction="createPolicy" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="createItem">
 			<soap:operation soapAction="" />
 			<input>
 				<soap:body use="literal" />
@@ -748,7 +826,7 @@
 			</fault>
 		</operation>
 		<operation name="getAllowableActions">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getAllowableActions" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -760,7 +838,7 @@
 			</fault>
 		</operation>
 		<operation name="getObject">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getObject" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -772,7 +850,7 @@
 			</fault>
 		</operation>
 		<operation name="getProperties">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getProperties" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -784,7 +862,7 @@
 			</fault>
 		</operation>
 		<operation name="getRenditions">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getRenditions" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -796,7 +874,7 @@
 			</fault>
 		</operation>
 		<operation name="getObjectByPath">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getObjectByPath" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -808,7 +886,7 @@
 			</fault>
 		</operation>
 		<operation name="getContentStream">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getContentStream" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -820,7 +898,19 @@
 			</fault>
 		</operation>
 		<operation name="updateProperties">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="updateProperties" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="bulkUpdateProperties">
+			<soap:operation soapAction="bulkUpdateProperties" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -832,7 +922,7 @@
 			</fault>
 		</operation>
 		<operation name="moveObject">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="moveObject" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -844,7 +934,7 @@
 			</fault>
 		</operation>
 		<operation name="deleteObject">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="deleteObject" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -856,7 +946,7 @@
 			</fault>
 		</operation>
 		<operation name="deleteTree">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="deleteTree" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -868,7 +958,19 @@
 			</fault>
 		</operation>
 		<operation name="setContentStream">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="setContentStream" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="appendContentStream">
+			<soap:operation soapAction="appendContentStream" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -880,7 +982,7 @@
 			</fault>
 		</operation>
 		<operation name="deleteContentStream">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="deleteContentStream" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -896,7 +998,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="applyPolicy">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="applyPolicy" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -908,7 +1010,7 @@
 			</fault>
 		</operation>
 		<operation name="removePolicy">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="removePolicy" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -920,7 +1022,7 @@
 			</fault>
 		</operation>
 		<operation name="getAppliedPolicies">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getAppliedPolicies" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -936,7 +1038,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="getObjectRelationships">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getObjectRelationships" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -952,7 +1054,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="getRepositories">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getRepositories" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -964,7 +1066,7 @@
 			</fault>
 		</operation>
 		<operation name="getRepositoryInfo">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getRepositoryInfo" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -976,7 +1078,7 @@
 			</fault>
 		</operation>
 		<operation name="getTypeChildren">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getTypeChildren" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -988,7 +1090,7 @@
 			</fault>
 		</operation>
 		<operation name="getTypeDescendants">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getTypeDescendants" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1000,7 +1102,43 @@
 			</fault>
 		</operation>
 		<operation name="getTypeDefinition">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getTypeDefinition" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="createType">
+			<soap:operation soapAction="createType" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="updateType">
+			<soap:operation soapAction="updateType" />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+			<fault name="cmisException">
+				<soap:fault name="cmisException" use="literal" />
+			</fault>
+		</operation>
+		<operation name="deleteType">
+			<soap:operation soapAction="deleteType" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1016,7 +1154,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="checkOut">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="checkOut" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1028,7 +1166,7 @@
 			</fault>
 		</operation>
 		<operation name="cancelCheckOut">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="cancelCheckOut" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1040,7 +1178,7 @@
 			</fault>
 		</operation>
 		<operation name="checkIn">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="checkIn" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1052,7 +1190,7 @@
 			</fault>
 		</operation>
 		<operation name="getObjectOfLatestVersion">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getObjectOfLatestVersion" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1064,7 +1202,7 @@
 			</fault>
 		</operation>
 		<operation name="getPropertiesOfLatestVersion">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getPropertiesOfLatestVersion" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1076,7 +1214,7 @@
 			</fault>
 		</operation>
 		<operation name="getAllVersions">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getAllVersions" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1092,7 +1230,7 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 		<operation name="getACL">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="getACL" />
 			<input>
 				<soap:body use="literal" />
 			</input>
@@ -1104,7 +1242,7 @@
 			</fault>
 		</operation>
 		<operation name="applyACL">
-			<soap:operation soapAction="" />
+			<soap:operation soapAction="applyACL" />
 			<input>
 				<soap:body use="literal" />
 			</input>

@@ -75,6 +75,8 @@
 
   <extension target="jaxws#ENDPOINT">
 
+    <!-- CMIS 1.1 endpoints -->
+
     <endpoint name="RepositoryService" wsdl="WEB-INF/wsdl/CMISWS-Service.wsdl"
       implementation="org.apache.chemistry.opencmis.server.impl.webservices.RepositoryService"
       service="{http://docs.oasis-open.org/ns/cmis/ws/200908/}RepositoryService"
