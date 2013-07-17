@@ -19,7 +19,7 @@
         <layout name="document_listing_2" title="label.document_listing.layout_2"
           translateTitle="true" />
       </resultLayouts>
-      <searchLayout name="search_layout_2" />
+      <searchLayout name="search_layout_2" filterUnfolded="true" />
       <useGlobalPageSize>true</useGlobalPageSize>
       <flags>
         <flag>foo2</flag>

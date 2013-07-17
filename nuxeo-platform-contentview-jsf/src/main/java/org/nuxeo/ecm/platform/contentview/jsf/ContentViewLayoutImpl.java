@@ -52,6 +52,12 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     @XNode("@filterDisplayType")
     protected String filterDisplayType;
 
+    /**
+     * @since 5.7.2, see {@link #isFilterUnfolded()}
+     */
+    @XNode("@filterUnfolded")
+    protected boolean filterUnfolded = false;
+
     public ContentViewLayoutImpl() {
     }
 
@@ -101,6 +107,11 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
     }
 
     @Override
+    public boolean isFilterUnfolded() {
+        return filterUnfolded;
+    }
+
+    @Override
     public String toString() {
         return String.format("ContentViewLayoutImpl [name=%s, title=%s, "
                 + "translateTitle=%s, iconPath=%s, showCSVExport=%s]", name,
@@ -118,6 +129,7 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
         clone.showPDFExport = getShowPDFExport();
         clone.showSyndicationLinks = getShowSyndicationLinks();
         clone.filterDisplayType = getFilterDisplayType();
+        clone.filterUnfolded = isFilterUnfolded();
         return clone;
     }
 

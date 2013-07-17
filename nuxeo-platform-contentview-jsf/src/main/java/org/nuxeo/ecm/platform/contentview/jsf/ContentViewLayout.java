@@ -78,6 +78,16 @@ public interface ContentViewLayout extends Serializable {
      */
     String getFilterDisplayType();
 
+    /**
+     * Returns true is the filter should be unfolded by default.
+     * <p>
+     * Does not have any impact on the filter display if filter display type is
+     * "quick" (i.e. opens in a popup)
+     *
+     * @since 5.7.2
+     */
+    boolean isFilterUnfolded();
+
     ContentViewLayout clone();
 
 }

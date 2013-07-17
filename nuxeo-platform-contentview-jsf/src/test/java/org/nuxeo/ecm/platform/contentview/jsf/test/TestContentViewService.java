@@ -91,6 +91,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertTrue(resultLayouts.get(0).getShowCSVExport());
 
         assertEquals("search_layout", contentView.getSearchLayout().getName());
+        assertFalse(contentView.getSearchLayout().isFilterUnfolded());
         assertNull(contentView.getSearchLayout().getTitle());
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
         assertNull(contentView.getEmptySentence());
@@ -180,6 +181,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertFalse(contentView.getSearchLayout().getTranslateTitle());
         assertNull(contentView.getSearchLayout().getIconPath());
         assertFalse(contentView.getSearchLayout().getShowCSVExport());
+        assertTrue(contentView.getSearchLayout().isFilterUnfolded());
 
         assertEquals("CURRENT_SELECTION_2", contentView.getSelectionListName());
         List<String> eventNames = contentView.getRefreshEventNames();

@@ -28,7 +28,7 @@ empty:
     cache="true">
   <nxu:set var="resetFilterFormId" value="#{cvid}_resetFilterForm"
     cache="true">
-  <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId)}"
+  <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId) or contentView.searchLayout.filterUnfolded}"
     cache="true">
   <nxu:set var="elementsToReRender"
     value="#{cvid}_resultsPanel, #{resetFilterFormId}, #{filterFormId}, #{cvid}_contentViewActionsPanel"
