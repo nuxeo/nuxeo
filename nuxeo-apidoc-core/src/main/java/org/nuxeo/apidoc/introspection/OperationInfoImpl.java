@@ -16,6 +16,7 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -34,7 +35,7 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
     public final String version;
 
     protected final String operationClass;
-    
+
     protected final String contributingComponent;
 
     public OperationInfoImpl(OperationDocumentation op, String version, String operationClass, String contributingComponent) {
@@ -46,13 +47,13 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
         } else {
             String[] parts = contributingComponent.split(":");
             if (parts.length>1) {
-                this.contributingComponent=parts[1];    
+                this.contributingComponent=parts[1];
             } else {
                 this.contributingComponent=contributingComponent;
             }
         }
-    }    
-    
+    }
+
     @Override
     public String getName() {
         return op.getId();
@@ -100,7 +101,7 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
 
     @Override
     public List<Param> getParams() {
-        return op.getParams();
+        return Arrays.asList(op.getParams());
     }
 
     @Override
@@ -132,5 +133,5 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements
     public String getContributingComponent() {
         return contributingComponent;
     }
-    
+
 }
