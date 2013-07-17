@@ -24,10 +24,12 @@
       class="org.nuxeo.ecm.platform.routing.api.operation.MapPropertiesOnTaskOperation" />
     <operation
       class="org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow" /> 
-     <operation
+    <operation
       class="org.nuxeo.ecm.platform.routing.core.api.operation.CancelWorkflowOperation" />
-      <operation
-      class="org.nuxeo.ecm.platform.routing.core.api.operation.ResumeNodeOperation" />  
+    <operation
+      class="org.nuxeo.ecm.platform.routing.core.api.operation.ResumeNodeOperation" /> 
+    <operation
+      class="org.nuxeo.ecm.platform.routing.core.api.operation.CompleteTaskOperation" />  
        
   </extension>
 

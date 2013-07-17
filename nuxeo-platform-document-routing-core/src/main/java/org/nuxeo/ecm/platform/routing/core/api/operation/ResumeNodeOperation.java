@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
  * @since 5.7.2
  *
  */
-@Operation(id = ResumeNodeOperation.ID, category = Constants.CAT_WORKFLOW, label = "Cancel workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Resumes a route instance on a give node.")
+@Operation(id = ResumeNodeOperation.ID, category = Constants.CAT_WORKFLOW, label = "Resume workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Resumes a route instance on a give node.")
 public class ResumeNodeOperation {
     public static final String ID = "Workflow.ResumeNodeOperation";
 
@@ -50,7 +50,7 @@ public class ResumeNodeOperation {
     protected DocumentRoutingService documentRoutingService;
 
     @OperationMethod
-    public void cancelWorkflow() throws ClientException {
+    public void resumeWorkflow() throws ClientException {
         if (nodeId == null) {
             nodeId = (String) ctx.get("nodeId");
         }
