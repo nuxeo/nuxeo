@@ -103,5 +103,4 @@ public class GraphVariablesUtil {
             throw new ClientRuntimeException(e);
         }
     }
-
 }

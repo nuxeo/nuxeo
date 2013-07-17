@@ -17,13 +17,18 @@
      <operation
       class="org.nuxeo.ecm.platform.routing.api.operation.SetWorkflowNodeVar" /> 
     <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.SetWorkflowVar" />   
+      class="org.nuxeo.ecm.platform.routing.core.api.operation.SetWorkflowVar" />   
     <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.StartWorkflowOperation" />   
+      class="org.nuxeo.ecm.platform.routing.core.api.operation.StartWorkflowOperation" />   
     <operation
       class="org.nuxeo.ecm.platform.routing.api.operation.MapPropertiesOnTaskOperation" />
     <operation
-      class="org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow" />  
+      class="org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow" /> 
+     <operation
+      class="org.nuxeo.ecm.platform.routing.core.api.operation.CancelWorkflowOperation" />
+      <operation
+      class="org.nuxeo.ecm.platform.routing.core.api.operation.ResumeNodeOperation" />  
+       
   </extension>
 
 </component>
