@@ -165,8 +165,7 @@ public class SecurityActionsBean extends InputController implements
 
     /**
      * @return update the dataTableModel from the current {@link SecurityData}
-     *         this method is automatically called by rebuildSecurityData
-     *         method
+     *         this method is automatically called by rebuildSecurityData method
      */
     protected UserPermissionsTableModel reconstructTableModel()
             throws ClientException {
@@ -192,12 +191,12 @@ public class SecurityActionsBean extends InputController implements
 
         /*
          * This is a fix for NXP-1122 issue (ghost users in access rights
-         * lists): for the parent document users list and current document
-         * users list are now used the new getters defined in this class, not
-         * the ones defined in SecurityData. The best solution would be to
-         * remove de user from the ACP/ACE entries too at the deletion moment.
-         * When this will be done, the getters from SecurityData will have to
-         * be used again (here and in documents_rights.xhtml)
+         * lists): for the parent document users list and current document users
+         * list are now used the new getters defined in this class, not the ones
+         * defined in SecurityData. The best solution would be to remove de user
+         * from the ACP/ACE entries too at the deletion moment. When this will
+         * be done, the getters from SecurityData will have to be used again
+         * (here and in documents_rights.xhtml)
          */
         // for (String user : securityData.getCurrentDocumentUsers()) {
         for (String user : getCurrentDocumentUsers()) {
@@ -304,7 +303,7 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public String addPermission(String principalName, String permissionName,
-            boolean grant) throws ClientException  {
+            boolean grant) throws ClientException {
         if (securityData == null) {
             try {
                 securityData = getSecurityData();
@@ -430,7 +429,8 @@ public class SecurityActionsBean extends InputController implements
         removePermission();
 
         if (!checkPermissions()) {
-            facesMessages.add(StatusMessage.Severity.ERROR,
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get(
                             "message.updated.rights"));
             return null;
@@ -445,7 +445,8 @@ public class SecurityActionsBean extends InputController implements
         for (String user : getDataTableModel().getSelectedUsers()) {
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "message.error.removeRight"));
                 return null;
@@ -459,7 +460,8 @@ public class SecurityActionsBean extends InputController implements
         for (String user : getDataTableModel().getSelectedUsers()) {
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
-                facesMessages.add(StatusMessage.Severity.ERROR,
+                facesMessages.add(
+                        StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get(
                                 "message.error.removeRight"));
                 return null;
@@ -487,9 +489,11 @@ public class SecurityActionsBean extends InputController implements
         }
     }
 
-    public List<UserVisiblePermission> getVisibleUserPermissions(String documentType) throws ClientException  {
+    public List<UserVisiblePermission> getVisibleUserPermissions(
+            String documentType) throws ClientException {
         try {
-            return Framework.getLocalService(PermissionProvider.class).getUserVisiblePermissionDescriptors(documentType);
+            return Framework.getLocalService(PermissionProvider.class).getUserVisiblePermissionDescriptors(
+                    documentType);
         } catch (ClientException e) {
             throw e;
         } catch (Throwable t) {
