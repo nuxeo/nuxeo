@@ -8,7 +8,7 @@ author: lkemen@nuxeo.com
 */
 
 /* =Vertical Tabs in left column */
-.adminTabsColumn { background: "neutral.light (__FLAVOR__ background)"; box-shadow: -2px -1px 5px #9F9F9F inset;  height: auto!important; padding: 0; vertical-align: top; width: 210px }
+.adminTabsColumn { background: "neutral.light (__FLAVOR__ background)"; box-shadow: -2px -1px 5px #9F9F9F inset;  height: auto!important; padding: 0; width: 210px }
 
 .adminTabBlock { height: 100%; margin: 0 }
 
@@ -24,11 +24,9 @@ author: lkemen@nuxeo.com
 /* Main fragment*/
 .adminViewContent { width: 100% }
 .adminViewContent p { padding: .4em 0 }
-.adminContentColumn { padding: 2em; vertical-align: top }
+.adminContentColumn { padding: 2em }
 
 .tabsContent { padding: 1.5em 0 }
-
-.dataOutput td { vertical-align: top }
 
 /* ActionBar*/
 .actionBar { background-color: #efefef; border-bottom: 1px solid #bde7F3; padding: .9em }
@@ -36,14 +34,14 @@ author: lkemen@nuxeo.com
 .actionBar form { display: inline }
 .actionBar form select, .actionBar form input { margin: 0 .4em }
 .actionBar h3 { padding: .3em 0 }
+.actionBar a {
+  vertical-align: top }
 
 /* =Marketplace, Nuxeo Connect & Updates */
 .marketplace { background-color: #fbfbfb }
 .marketplace .marketplaceLogo {}
-.marketplace .label { color: #1d91ce; display: inline-block; margin: 0 .9em 0 4em; padding: .4em 0 0; vertical-align: top }
 
 .login { width: 100% }
-.login td, .repoInfos .dataOuput td { vertical-align: top }
 .loginBlock { background-color: #f6f6f6; border: 1px solid #f0f0f0; border-radius: 3px; margin: 1em auto 3em; padding: 1em; width: 93%; }
 .loginBlock .title h3 { border-bottom: 1px solid #f0f0f0; margin: 0 0 1em; padding: 0 0 1em }
 .loginBlock .loginTable .labelColumn { font-weight: normal; width: 200px }
@@ -62,10 +60,9 @@ author: lkemen@nuxeo.com
 .studioUpdateActions span { color: #000; font-weight: bold; margin: 0 }
 
 .hostInfos pre { font-size: 135%; padding: 1em }
-.repoInfos .dataOutput th { padding: 0 0 .4em .6em; text-align: left }
 
 /* =Setup Panel */
-.setupPanel .dataOutput th { border-bottom: 1px solid #C7C7C7; font-size: 1.05em; padding: 0 0 .4em; text-align: left }
+.setupPanel .dataOutput th { border-bottom: 1px solid #C7C7C7; font-size: 1.05em; padding: 0 0 .4em }
 .setupPanel .dataOutput td { border: none; padding: 0 0 .4em .6em }
 .setupPanel .dataOutput td.wideLabel { width: 340px }
 .setupPanel .dataOutput td table { margin-top: 1em }

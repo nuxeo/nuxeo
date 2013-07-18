@@ -30,6 +30,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -82,6 +83,7 @@ public class MailActionsBean implements Serializable {
         facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get(
                         "feedback.check.mail.success"));
+        Events.instance().raiseEvent("documentChildrenChanged");   
 
         return CURRENT_PAGE;
     }

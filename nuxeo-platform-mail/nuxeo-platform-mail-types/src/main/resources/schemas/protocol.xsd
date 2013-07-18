@@ -15,7 +15,7 @@
   
   <!-- IMAP specific fields -->
   <xs:element name="starttls_enable" type="xs:boolean" default="true" />
-  <xs:element name="ssl_protocols" type="xs:string" default="SSL" />
+  <xs:element name="ssl_protocols" type="xs:string" default="SSLv3" />
 
   <xs:element name="emails_limit" type="xs:integer" default="100" /> 
 </xs:schema>

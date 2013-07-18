@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ec.notification.NotificationImpl;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 public class NotificationRegistryImpl implements NotificationRegistry {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Log log = LogFactory.getLog(NotificationRegistryImpl.class);
 
     // maps Notifications to Strings that are names of the objects
     private final Map<String, List<Notification>> notificationRegistry = new HashMap<String, List<Notification>>();
@@ -51,18 +55,32 @@ public class NotificationRegistryImpl implements NotificationRegistry {
 
     @Override
     public void registerNotification(Notification notif, List<String> events) {
-        NotificationImpl notification = new NotificationImpl(notif.getName(),
-                notif.getTemplate(), notif.getChannel(),
-                notif.getSubjectTemplate(), notif.getAutoSubscribed(),
-                notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
-        if (notif.getTemplateExpr() != null) {
-            notification.setTemplateExpr(notif.getTemplateExpr());
+        if (notif.getName() == null) {
+            log.error("Notifications contributions must have a name");
         }
+
         if (notif.getEnabled()) {
+            NotificationImpl notification = new NotificationImpl(
+                    notif.getName(), notif.getTemplate(), notif.getChannel(),
+                    notif.getSubjectTemplate(), notif.getAutoSubscribed(),
+                    notif.getSubject(), notif.getAvailableIn(),
+                    notif.getLabel());
+
+            if (notif.getTemplateExpr() != null) {
+                notification.setTemplateExpr(notif.getTemplateExpr());
+            }
+
+            if (notificationList.contains(notification)) {
+                unregisterNotification(notification, events);
+            }
             notificationList.add(notification);
+
             if (events != null && !events.isEmpty()) {
                 for (String event : events) {
-                    getNotificationsForEvent(event).add(notification);
+                    List<Notification> regNotifs = getNotificationsForEvent(event);
+                    if (!regNotifs.contains(notification)) {
+                        regNotifs.add(notification);
+                    }
                 }
             }
         } else {
@@ -71,14 +89,37 @@ public class NotificationRegistryImpl implements NotificationRegistry {
     }
 
     @Override
+    @Deprecated
+    /**
+     * Please use unregisterNotification(Notification notif) instead.
+     * Deprecated since 5.7.2
+     */
     public void unregisterNotification(Notification notif, List<String> events) {
+        unregisterNotification(notif);
+    }
+
+    @Override
+    public void unregisterNotification(Notification notif) {
+        if (notif == null) {
+            log.warn("Try to unregister a null notification, do nothing");
+            return;
+        }
+
         NotificationImpl notification = new NotificationImpl(notif.getName(),
-                notif.getTemplate(), notif.getChannel(), notif.getSubjectTemplate(),
-                notif.getAutoSubscribed(), notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
-        notificationList.remove(notification);
-        if (events != null && !events.isEmpty()) {
-            for (String event : events) {
-                getNotificationsForEvent(event).remove(notification);
+                notif.getTemplate(), notif.getChannel(),
+                notif.getSubjectTemplate(), notif.getAutoSubscribed(),
+                notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
+
+        if (notificationList.contains(notification)) {
+            notificationList.remove(notification);
+        }
+
+        for (String event : notificationRegistry.keySet()) {
+            for (int i = notificationRegistry.get(event).size() - 1; i >= 0; i--) {
+                List<Notification> regNotifs = notificationRegistry.get(event);
+                if (regNotifs.contains(notification)) {
+                    regNotifs.remove(notification);
+                }
             }
         }
     }
@@ -87,7 +128,7 @@ public class NotificationRegistryImpl implements NotificationRegistry {
     public Set<String> getNotificationEventNames() {
         Set<String> ret = new HashSet<String>();
         for (String name : notificationRegistry.keySet()) {
-            if (! notificationRegistry.get(name).isEmpty()) {
+            if (!notificationRegistry.get(name).isEmpty()) {
                 ret.add(name);
             }
         }
