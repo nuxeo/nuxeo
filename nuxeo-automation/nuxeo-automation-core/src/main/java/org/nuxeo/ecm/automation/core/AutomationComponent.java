@@ -241,12 +241,14 @@ public class AutomationComponent extends DefaultComponent {
             throws Exception {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             OperationContribution opc = (OperationContribution) contribution;
-            service.putOperation(opc.type, opc.replace, contributor.getName().toString());
+            service.putOperation(opc.type, opc.replace,
+                    contributor.getName().toString());
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             // Register the chain
-            //OperationType docChainType = new ChainTypeImpl(service,occ,contributor.getName().toString());
-            OperationType docChainType = new ChainTypeImpl(service,occ.toOperationChain(contributor.getContext().getBundle()),occ);
+            OperationType docChainType = new ChainTypeImpl(service,
+                    occ.toOperationChain(contributor.getContext().getBundle()),
+                    occ);
             service.putOperation(docChainType, occ.replace);
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
@@ -270,7 +272,7 @@ public class AutomationComponent extends DefaultComponent {
             service.removeOperation(((OperationContribution) contribution).type);
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
-            //service.removeOperationChain(occ.id);
+            service.removeOperationChain(occ.getId());
         } else if (XP_ADAPTERS.equals(extensionPoint)) {
             TypeAdapterContribution tac = (TypeAdapterContribution) contribution;
             service.removeTypeAdapter(tac.accept, tac.produce);

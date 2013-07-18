@@ -30,13 +30,12 @@ public class ChainTypeImpl implements OperationType {
     protected final OperationChain chain;
 
     /**
-     *
-     * Chain/Operation Parameters
+     * Chain/Operation Parameters.
      */
     protected Map<String, Object> chainParameters;
 
     /**
-     * The service that registered the operation
+     * The service that registered the operation.
      */
     protected AutomationService service;
 
@@ -46,22 +45,22 @@ public class ChainTypeImpl implements OperationType {
     protected String id;
 
     /**
-     * Chain/Operation Parameters
+     * Chain/Operation Parameters.
      */
     protected OperationDocumentation.Param[] params;
 
     /**
-     * Invocable methods
+     * Invocable methods.
      */
     protected InvokableMethod[] methods = new InvokableMethod[] { runMethod() };
 
     /**
-     * The contribution fragment name
+     * The contribution fragment name.
      */
     protected String contributingComponent;
 
     /**
-     * The operations listing
+     * The operations listing.
      */
     protected OperationParameters[] operations;
 

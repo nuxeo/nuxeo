@@ -13,7 +13,6 @@ package org.nuxeo.ecm.automation;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -32,7 +31,7 @@ public class OperationDocumentation implements
 
     /**
      * an array of size multiple of 2. Each pair in the array is the input and
-     * output type of a method
+     * output type of a method.
      */
     public String[] signature;
 
@@ -49,7 +48,7 @@ public class OperationDocumentation implements
     public Param[] params;
 
     /**
-     * The operations listing in case of a chain
+     * The operations listing in case of a chain.
      */
     public OperationChainContribution.Operation[] operations;
 
@@ -61,55 +60,6 @@ public class OperationDocumentation implements
     public OperationDocumentation(String id) {
         this.id = id;
         this.url = id;
-    }
-
-    public int compareTo(OperationDocumentation o) {
-        String s1 = label == null ? id : label;
-        String s2 = o.label == null ? o.id : o.label;
-        return s1.compareTo(s2);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String[] getSignature() {
-        return signature;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public String getRequires() {
-        return requires;
-    }
-
-    public Param[] getParams() {
-        return params;
-    }
-
-    public OperationChainContribution.Operation[] getOperations() {
-        return operations;
-    }
-
-    @Override
-    public String toString() {
-        return category + " > " + label + " [" + id + ": "
-                + Arrays.asList(signature) + "] (" + params + ")\n"
-                + description;
     }
 
     @XObject("param")
@@ -182,5 +132,54 @@ public class OperationDocumentation implements
             }
             return name.compareTo(o.name);
         }
+    }
+
+    public int compareTo(OperationDocumentation o) {
+        String s1 = label == null ? id : label;
+        String s2 = o.label == null ? o.id : o.label;
+        return s1.compareTo(s2);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String[] getSignature() {
+        return signature;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getRequires() {
+        return requires;
+    }
+
+    public Param[] getParams() {
+        return params;
+    }
+
+    public OperationChainContribution.Operation[] getOperations() {
+        return operations;
+    }
+
+    @Override
+    public String toString() {
+        return category + " > " + label + " [" + id + ": "
+                + Arrays.asList(signature) + "] (" + params + ")\n"
+                + description;
     }
 }

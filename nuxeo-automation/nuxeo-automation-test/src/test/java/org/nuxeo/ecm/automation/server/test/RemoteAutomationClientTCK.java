@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.adapters.BusinessService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
+import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.client.model.StringBlob;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
@@ -62,6 +63,8 @@ public class RemoteAutomationClientTCK {
     }
 
     public void testBlobSuite() throws Exception {
+        testCreateFile();
+        testCreateBlobText();
         testAttachBlob();
         testGetBlob();
     }
@@ -175,6 +178,27 @@ public class RemoteAutomationClientTCK {
      * Managing Blobs
      */
 
+    public void testCreateFile() throws Exception {
+        Document file = (Document) session.newRequest("Document.Create").setInput(
+                "/").set("type", "File").set("name", "FileBlob").execute();
+        assertNotNull(file);
+    }
+
+    // Create documents from Blob using muti-part encoding
+    public void testCreateBlobText() throws Exception {
+        Document file = (Document) session.newRequest("Document.Fetch").set(
+                "value", "/FileBlob").execute();
+        assertNotNull(file);
+        assertEquals("/FileBlob", file.getPath());
+        StringBlob blob = new StringBlob("some fake bin content");
+        file = (Document) session.newRequest("FileManager.Import").setInput(
+                blob).setContextProperty("currentDocument", file.getPath()).execute();
+        Blob sameBlob = file.getProperties().getBlob("file:content");
+        assertNotNull(sameBlob);
+        assertEquals("some fake bin content", sameBlob.toString());
+    }
+
+    // Test attaching blob
     public void testAttachBlob() throws Exception {
         // get the root
         Document root = (Document) session.newRequest("Document.Fetch").set(
@@ -190,6 +214,7 @@ public class RemoteAutomationClientTCK {
                 fb).set("document", "/myfile").execute();
     }
 
+    // Test attaching blob
     public void testGetBlob() throws Exception {
         // get the file document where blob was attached
         Document doc = (Document) session.newRequest("Document.Fetch").setHeader(
@@ -262,9 +287,6 @@ public class RemoteAutomationClientTCK {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description",
                 "Note Content", "Note");
-        @SuppressWarnings("unchecked")
-        BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
-        assertNotNull(businessService);
 
         // Marshaller for bean 'note' registration
         client.registerPojoMarshaller(note.getClass());

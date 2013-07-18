@@ -59,8 +59,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    public Object run(OperationContext ctx, String chainId)
-            throws Exception {
+    public Object run(OperationContext ctx, String chainId) throws Exception {
         ChainTypeImpl chain = (ChainTypeImpl) getOperation(chainId);
         return run(ctx, chain, chain.getChainParameters());
     }
@@ -90,15 +89,13 @@ public class OperationServiceImpl implements AutomationService {
 
     /**
      * @since 5.7.2
-     * @param ctx the operation context
-     * @param operationType a chain or an operation
-     * @param params The chain parameters
+     * @param ctx the operation context.
+     * @param operationType a chain or an operation.
+     * @param params The chain parameters.
      */
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws Exception {
         CompiledChainImpl chain;
-        // Init chain parameters sub context with empty params
-        HashMap<String, Object> emptyParams = new HashMap<String, Object>();
         ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         // Put Chain parameters into the context - even for cached chains
         if (params != null && !params.isEmpty()) {
@@ -142,8 +139,8 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
-     * became an operation - use #putOperation method instead
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
+     * became an operation - use #putOperation method instead.
      */
     @Override
     @Deprecated
@@ -153,32 +150,32 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
-     * became an operation - use #putOperation method instead
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
+     * became an operation - use #putOperation method instead.
      */
     @Override
     @Deprecated
     public synchronized void putOperationChain(OperationChain chain,
             boolean replace) throws OperationException {
-        OperationType docChainType = new ChainTypeImpl(this,chain);
+        OperationType docChainType = new ChainTypeImpl(this, chain);
         this.putOperation(docChainType, replace);
     }
 
     /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
-     * became an operation - use #removeOperation method instead
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
+     * became an operation - use #removeOperation method instead.
      */
     @Override
     @Deprecated
     public synchronized void removeOperationChain(String id) {
         OperationChain chain = new OperationChain(id);
-        OperationType docChainType = new ChainTypeImpl(this,chain);
+        OperationType docChainType = new ChainTypeImpl(this, chain);
         operations.removeContribution(docChainType);
     }
 
     /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
-     * became an operation - use #getOperation method instead
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
+     * became an operation - use #getOperation method instead.
      */
     @Override
     @Deprecated
@@ -189,8 +186,8 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain
-     * became an operation - use #getOperations method instead
+     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
+     * became an operation - use #getOperations method instead.
      */
     @Override
     @Deprecated
@@ -232,8 +229,8 @@ public class OperationServiceImpl implements AutomationService {
         putOperation(op, replace);
     }
 
-    public synchronized void putOperation(OperationType op,
-            boolean replace) throws OperationException {
+    public synchronized void putOperation(OperationType op, boolean replace)
+            throws OperationException {
         operations.addContribution(op, replace);
     }
 
@@ -252,7 +249,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-     public OperationType getOperation(String id)
+    public OperationType getOperation(String id)
             throws OperationNotFoundException {
         OperationType op = operations.lookup().get(id);
         if (op == null) {
@@ -264,14 +261,14 @@ public class OperationServiceImpl implements AutomationService {
 
     /**
      * @since 5.7.2
-     * @param id operation ID
-     * @return true if operation registry contains the given operation
+     * @param id operation ID.
+     * @return true if operation registry contains the given operation.
      */
     @Override
     public boolean hasOperation(String id) {
         OperationType op = operations.lookup().get(id);
         if (op == null) {
-           return false;
+            return false;
         }
         return true;
     }

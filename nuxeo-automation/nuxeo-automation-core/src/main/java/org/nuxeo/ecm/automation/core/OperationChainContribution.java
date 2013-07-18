@@ -23,9 +23,7 @@ import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -68,6 +66,58 @@ public class OperationChainContribution {
 
     @XNodeList(value = "param", type = OperationDocumentation.Param[].class, componentType = OperationDocumentation.Param.class)
     protected OperationDocumentation.Param[] params = new OperationDocumentation.Param[0];
+
+    @XObject("operation")
+    public static class Operation {
+        @XNode("@id")
+        protected String id;
+
+        @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
+        protected ArrayList<Param> params;
+
+        public String getId() {
+            return id;
+        }
+
+        public ArrayList<Param> getParams() {
+            return params;
+        }
+
+    }
+
+    @XObject("param")
+    public static class Param {
+        @XNode("@name")
+        protected String name;
+
+        // string, boolean, date, integer, float, uid, path, expression,
+        // template, resource
+        @XNode("@type")
+        protected String type = "string";
+
+        @XContent
+        protected String value;
+
+        // Optional map for properties type values
+        @XNodeMap(value = "property", key = "@key", type = HashMap.class, componentType = String.class, nullByDefault = true)
+        protected Map<String, String> map;
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public Map<String, String> getMap() {
+            return map;
+        }
+    }
 
     public OperationDocumentation.Param[] getParams() {
         return params;
@@ -171,59 +221,7 @@ public class OperationChainContribution {
         return chain;
     }
 
-    @XObject("operation")
-    public static class Operation {
-        @XNode("@id")
-        protected String id;
-
-        @XNodeList(value = "param", type = ArrayList.class, componentType = Param.class)
-        protected ArrayList<Param> params;
-
-        public String getId() {
-            return id;
-        }
-
-        public ArrayList<Param> getParams() {
-            return params;
-        }
-
-    }
-
-    @XObject("param")
-    public static class Param {
-        @XNode("@name")
-        protected String name;
-
-        // string, boolean, date, integer, float, uid, path, expression,
-        // template, resource
-        @XNode("@type")
-        protected String type = "string";
-
-        @XContent
-        protected String value;
-
-        // Optional map for properties type values
-        @XNodeMap(value = "property", key = "@key", type = HashMap.class, componentType = String.class, nullByDefault = true)
-        protected Map<String, String> map;
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public Map<String, String> getMap() {
-            return map;
-        }
-    }
-
-  public Operation[] getOps() {
+    public Operation[] getOps() {
         return ops;
     }
 
