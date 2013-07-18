@@ -21,7 +21,8 @@ if (!log) {
   var completedUploads = new Array();
   var currentDropZone;
 
-  $.fn.dropzone = function (options) {
+
+  $.fn.dropzone = function (options, loadAlreadyUploadedFiles) {
 
     // Extend our default options with those provided.
     var opts = jQuery.extend({}, $.fn.dropzone.defaults, options);
@@ -53,6 +54,27 @@ if (!log) {
         dragenter(event, jQueryDropzone, opts);
       });
       jQueryDropzone.bind("dragover", dragover);
+    }
+
+    // load already uploaded files for this batch
+    if (loadAlreadyUploadedFiles) {
+      var targetUrl = opts.url;
+      if (targetUrl.indexOf("/", targetUrl.length - 1) == -1) {
+        targetUrl = targetUrl + "/";
+      }
+      targetUrl = targetUrl + "batch/files/" + opts.handler.batchStarted();
+      jQuery.ajax({
+        type: 'GET',
+        contentType: 'application/json+nxrequest',
+        url: targetUrl,
+        timeout: 10000
+      }).done(function (data) {
+          for (var i = 0, len = data.length; i < len; i++) {
+            opts.handler.uploadStarted(i, data[i]);
+            opts.handler.uploadFinished(i, data[i], null);
+          }
+          uploadIdx = data.length
+        });
     }
 
     return this;
