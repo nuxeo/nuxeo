@@ -63,8 +63,8 @@ public class RemoteAutomationClientTCK {
     }
 
     public void testBlobSuite() throws Exception {
-        testCreateFile();
-        testCreateBlobText();
+        //testCreateFile();
+        //testCreateBlobText();
         testAttachBlob();
         testGetBlob();
     }
