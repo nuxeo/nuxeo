@@ -75,8 +75,8 @@ function DropZoneUIHandler(idx, dropZoneId, options, targetSelectedCB, cancelCB)
   this.batchId = null;
   this.nxUploaded = 0;
   this.nxUploadStarted = 0;
-  this.url=options.url;
-  this.ctx=options.dropContext;
+  this.url = options.url;
+  this.ctx = options.dropContext;
   this.operationsDef = null;
   this.uploadedFiles = [];
   this.targetSelectedCB = targetSelectedCB;
@@ -87,11 +87,11 @@ function DropZoneUIHandler(idx, dropZoneId, options, targetSelectedCB, cancelCB)
   this.cancelCB = cancelCB;
 }
 
-DropZoneUIHandler.prototype.uploadStarted = function(fileIndex, file) {
+DropZoneUIHandler.prototype.uploadStarted = function (fileIndex, file) {
   this.nxUploadStarted++;
 
-  jQuery("#dndMsgUploadInProgress").css("display","block");
-  jQuery("#dndMsgUploadCompleted").css("display","none");
+  jQuery("#dndMsgUploadInProgress").css("display", "block");
+  jQuery("#dndMsgUploadCompleted").css("display", "none");
 
   // UI Display
   var infoDiv = jQuery("<div></div>");
@@ -112,8 +112,8 @@ DropZoneUIHandler.prototype.uploadStarted = function(fileIndex, file) {
   jQuery("#dropzone-info").after(fileDiv);
 };
 
-DropZoneUIHandler.prototype.uploadFinished = function(fileIndex, file, duration){
-  jQuery("#dropzone-info-item-" + this.idx + "-" + fileIndex).css("display","none");
+DropZoneUIHandler.prototype.uploadFinished = function (fileIndex, file, duration) {
+  jQuery("#dropzone-info-item-" + this.idx + "-" + fileIndex).css("display", "none");
   var fileDiv = jQuery("<div></div>");
   fileDiv.addClass("dropzone-info-summary-item");
   fileDiv.html(file.name + " (" + getReadableFileSizeString(file.size) + ") in " + (getReadableDurationString(duration)));
@@ -123,11 +123,11 @@ DropZoneUIHandler.prototype.uploadFinished = function(fileIndex, file, duration)
   jQuery("#dropzone-bar-msg").html(this.nxUploaded + "/" + this.nxUploadStarted);
 };
 
-DropZoneUIHandler.prototype.fileUploadProgressUpdated = function(fileIndex, file, newProgress){
+DropZoneUIHandler.prototype.fileUploadProgressUpdated = function (fileIndex, file, newProgress) {
   jQuery("#dropzone-speed-" + this.idx + "-" + fileIndex).css("width", newProgress + "%");
 };
 
-DropZoneUIHandler.prototype.fileUploadSpeedUpdated = function(fileIndex, file, KBperSecond){
+DropZoneUIHandler.prototype.fileUploadSpeedUpdated = function (fileIndex, file, KBperSecond) {
   var dive = jQuery("#dropzone-speed-" + this.idx + "-" + fileIndex);
   dive.html(getReadableSpeedString(KBperSecond));
 };
@@ -138,7 +138,7 @@ DropZoneUIHandler.prototype.selectTargetZone = function () {
   this.targetSelectedCB(this.dropZoneId);
 };
 
-DropZoneUIHandler.prototype.fetchOptions = function(){
+DropZoneUIHandler.prototype.fetchOptions = function () {
   log("Fetching options");
   var handler = this; // deRef object !
   var context = jQuery("#" + this.dropZoneId).attr("context");
@@ -149,10 +149,10 @@ DropZoneUIHandler.prototype.fetchOptions = function(){
   } else {
     getOptions = jQuery().automation('Actions.GET');
   }
-  getOptions.addParameter("category",context);
+  getOptions.addParameter("category", context);
   getOptions.setContext(this.ctx);
   getOptions.execute(
-    function(data, textStatus, xhr) {
+    function (data, textStatus, xhr) {
       if (data.length == 0) {
         handler.operationsDef = null;
         handler.canNotUpload(false, true);
@@ -170,34 +170,34 @@ DropZoneUIHandler.prototype.fetchOptions = function(){
         }
         handler.operationsDef[i].chainOrOperationId = chainOrOperationId;
       }
-      if(handler.executionPending) {
+      if (handler.executionPending) {
         // execution was waiting for the op definitions
         handler.executionPending = false;
         handler.selectOperation(handler.batchId, handler.dropZoneId, handler.url);
       }
     },
-    function(xhr, status, e) {
+    function (xhr, status, e) {
       log(e);
       handler.canNotUpload(true, false);
     }, false);
 };
 
-DropZoneUIHandler.prototype.canNotUpload = function(isError, noop) {
+DropZoneUIHandler.prototype.canNotUpload = function (isError, noop) {
   this.cancelUpload();
   if (isError) {
     alert(jQuery("#dndErrorMessage").html());
-  } else if (noop){
+  } else if (noop) {
     alert(jQuery("#dndMessageNoOperation").html());
   }
   window.location.reload(true);
 };
 
-DropZoneUIHandler.prototype.cancelUpload = function() {
-  this.cancelled=true;
-  jQuery("#dndContinueButton").css("display","none");
-  jQuery("#dropzone-info-panel").css("display","none");
+DropZoneUIHandler.prototype.cancelUpload = function () {
+  this.cancelled = true;
+  jQuery("#dndContinueButton").css("display", "none");
+  jQuery("#dropzone-info-panel").css("display", "none");
   jQuery(".dropzoneTargetOverlay").remove();
-  var dzone = jQuery("#"+this.dropZoneId);
+  var dzone = jQuery("#" + this.dropZoneId);
   dzone.removeClass("dropzoneTarget");
   dzone.removeClass("dropzoneTargetExtended");
   var dragoverTimer = dzone.data("dragoverTimer");
@@ -209,37 +209,37 @@ DropZoneUIHandler.prototype.cancelUpload = function() {
   if (this.batchId) {
     var targetUrl = this.url + 'batch/drop/' + this.batchId;
     jQuery.ajax({
-        type: 'GET',
-        contentType : 'application/json+nxrequest',
-        url: targetUrl,
-        timeout: 10000});
+      type: 'GET',
+      contentType: 'application/json+nxrequest',
+      url: targetUrl,
+      timeout: 10000});
   }
 };
 
-DropZoneUIHandler.prototype.batchStarted = function(){
-    this.cancelled=false;
-    if (this.batchId==null) {
-      // select the target DropZone
-      this.selectTargetZone();
-      // generate a batchId
-      this.batchId = "batch-" + new Date().getTime() + "-" + Math.floor(Math.random()*1000);
-      // fetch import options
-      this.fetchOptions();
-    }
-    // Add the status bar on top of body
-    var panel=jQuery("#dropzone-info-panel");
-    panel.css({ position : 'absolute', left : '30%', top : '30%' });
-    //panel.css("width",jQuery("body").width()-100);
-    panel.css("display","block");
-    jQuery("#dndMsgUploadInProgress").css("display","block");
-    jQuery("#dndMsgUploadCompleted").css("display","none");
-    jQuery("#dropzone-bar-msg").html("...");
-    jQuery("#dropzone-bar-btn").css("visibility","hidden");
+DropZoneUIHandler.prototype.batchStarted = function () {
+  this.cancelled = false;
+  if (this.batchId == null) {
+    // select the target DropZone
+    this.selectTargetZone();
+    // generate a batchId
+    this.batchId = "batch-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
+    // fetch import options
+    this.fetchOptions();
+  }
+  // Add the status bar on top of body
+  var panel = jQuery("#dropzone-info-panel");
+  panel.css({ position: 'absolute', left: '30%', top: '30%' });
+  //panel.css("width",jQuery("body").width()-100);
+  panel.css("display", "block");
+  jQuery("#dndMsgUploadInProgress").css("display", "block");
+  jQuery("#dndMsgUploadCompleted").css("display", "none");
+  jQuery("#dropzone-bar-msg").html("...");
+  jQuery("#dropzone-bar-btn").css("visibility", "hidden");
 
-    return this.batchId;
+  return this.batchId;
 };
 
-DropZoneUIHandler.prototype.batchFinished = function(batchId) {
+DropZoneUIHandler.prototype.batchFinished = function (batchId) {
   if (!this.cancelled) {
     if (this.extendedMode) {
       this.showContinue(batchId);
@@ -247,77 +247,77 @@ DropZoneUIHandler.prototype.batchFinished = function(batchId) {
       this.selectOperation(this.batchId, this.dropZoneId, this.url);
     }
   } else {
-    this.cancelled=false;
+    this.cancelled = false;
   }
 };
 
-DropZoneUIHandler.prototype.positionContinueButton = function() {
-    // Show the continue button at center of dropzone
-    var continueButton = jQuery("#dndContinueButton");
-    continueButton.css("position","absolute");
-    continueButton.css("display","block");
-    continueButton.css("z-index","5000");
-    var zone = jQuery("#" + this.dropZoneId);
-    var btnPosition = zone.position();
-    btnPosition.top = btnPosition.top + zone.height() / 2 - continueButton.height() / 2;
-    btnPosition.left = btnPosition.left + zone.width() / 2 - continueButton.width() / 2;
-    continueButton.css(btnPosition);
-    return continueButton
+DropZoneUIHandler.prototype.positionContinueButton = function () {
+  // Show the continue button at center of dropzone
+  var continueButton = jQuery("#dndContinueButton");
+  continueButton.css("position", "absolute");
+  continueButton.css("display", "block");
+  continueButton.css("z-index", "5000");
+  var zone = jQuery("#" + this.dropZoneId);
+  var btnPosition = zone.position();
+  btnPosition.top = btnPosition.top + zone.height() / 2 - continueButton.height() / 2;
+  btnPosition.left = btnPosition.left + zone.width() / 2 - continueButton.width() / 2;
+  continueButton.css(btnPosition);
+  return continueButton
 };
 
 
-DropZoneUIHandler.prototype.showContinue = function(batchId) {
+DropZoneUIHandler.prototype.showContinue = function (batchId) {
   // Show the continue button in bar
-  jQuery("#dndMsgUploadInProgress").css("display","none");
-  jQuery("#dndMsgUploadCompleted").css("display","block");
+  jQuery("#dndMsgUploadInProgress").css("display", "none");
+  jQuery("#dndMsgUploadCompleted").css("display", "block");
   var continueButtonInBar = jQuery("#dropzone-bar-btn");
-  continueButtonInBar.css("visibility","visible");
-  continueButtonInBar.attr("value","Continue");
+  continueButtonInBar.css("visibility", "visible");
+  continueButtonInBar.attr("value", "Continue");
 
   // Show the continue button at center of dropzone
   var continueButton = this.positionContinueButton();
 
   // bind click
-  var handler=this; // deRef object !
+  var handler = this; // deRef object !
   continueButtonInBar.unbind();
-  continueButtonInBar.bind("click",function(event) {
+  continueButtonInBar.bind("click", function (event) {
     handler.selectOperation(batchId, handler.dropZoneId, handler.url)
   });
   continueButton.unbind();
-  continueButton.bind("click",function(event) {
-    continueButton.css("display","none");
+  continueButton.bind("click", function (event) {
+    continueButton.css("display", "none");
     handler.selectOperation(batchId, handler.dropZoneId, handler.url)
   });
 };
 
 DropZoneUIHandler.prototype.updateForm = function (event, value) {
   log("updateForm: " + value);
-  for (var i=0; i< this.operationsDef.length; i++) {
-    if(this.operationsDef[i].id == value) {
-     var desc = jQuery("<div></div>");
-     desc.html(this.operationsDef[i].help + "<br/>");
-     jQuery("#dndSubForm").html(desc);
-     if (this.operationsDef[i].link != '') {
-       jQuery("#dndFormSubmitButton").css("display","none");
-       var iframe = jQuery("<iframe></iframe>");
-       iframe.attr("width", "330px");
-       iframe.attr("height", "550px");
-       iframe.attr("frameborder", "0");
-       var src = this.operationsDef[i].link;
-       if (src.indexOf("?") != -1) {
-         src += "&conversationId=" + currentConversationId;
-       } else {
-         src += "?conversationId=" + currentConversationId;
-       }
-       iframe.attr("src", src);
-       desc.append(iframe);
-       var handler = this;
-       window.dndFormFunctionCB = function(fData) {
-         handler.executeBatch(value, fData);
-       };
-     } else {
-       jQuery("#dndFormSubmitButton").css("display","block");
-     }
+  for (var i = 0; i < this.operationsDef.length; i++) {
+    if (this.operationsDef[i].id == value) {
+      var desc = jQuery("<div></div>");
+      desc.html(this.operationsDef[i].help + "<br/>");
+      jQuery("#dndSubForm").html(desc);
+      if (this.operationsDef[i].link != '') {
+        jQuery("#dndFormSubmitButton").css("display", "none");
+        var iframe = jQuery("<iframe></iframe>");
+        iframe.attr("width", "330px");
+        iframe.attr("height", "550px");
+        iframe.attr("frameborder", "0");
+        var src = this.operationsDef[i].link;
+        if (src.indexOf("?") != -1) {
+          src += "&conversationId=" + currentConversationId;
+        } else {
+          src += "?conversationId=" + currentConversationId;
+        }
+        iframe.attr("src", src);
+        desc.append(iframe);
+        var handler = this;
+        window.dndFormFunctionCB = function (fData) {
+          handler.executeBatch(value, fData);
+        };
+      } else {
+        jQuery("#dndFormSubmitButton").css("display", "block");
+      }
       break;
     }
   }
@@ -344,7 +344,7 @@ DropZoneUIHandler.prototype.selectOperation = function (batchId, dropId, url) {
   var o = this, // deRef object !
     i;
 
-  jQuery("#dropzone-info-panel").css("display","none");
+  jQuery("#dropzone-info-panel").css("display", "none");
 
 
   log(this.operationsDef);
@@ -368,10 +368,10 @@ DropZoneUIHandler.prototype.selectOperation = function (batchId, dropId, url) {
   var fileList = jQuery("#uploadedFileList");
   fileList.html("");
   for (i = 0; i < this.uploadedFiles.length; i++) {
-      var fileItem = jQuery("<div></div>");
-      var file = this.uploadedFiles[i];
-      fileItem.html(file.name + " ("+getReadableFileSizeString(file.size) + ")");
-      fileList.append(fileItem);
+    var fileItem = jQuery("<div></div>");
+    var file = this.uploadedFiles[i];
+    fileItem.html(file.name + " (" + getReadableFileSizeString(file.size) + ")");
+    fileList.append(fileItem);
   }
 
   // fill the selector
@@ -379,85 +379,85 @@ DropZoneUIHandler.prototype.selectOperation = function (batchId, dropId, url) {
   selector.html("");
   for (i = 0; i < this.operationsDef.length; i++) {
     var optionEntry = jQuery("<option></option>");
-    optionEntry.attr("value",this.operationsDef[i].chainOrOperationId);
+    optionEntry.attr("value", this.operationsDef[i].chainOrOperationId);
     optionEntry.text(this.operationsDef[i].label);
     selector.append(optionEntry);
   }
   selector.unbind();
-  selector.bind("change", function(event) {
+  selector.bind("change", function (event) {
     o.updateForm(event, selector.val())
   });
   var buttonForm = jQuery("#dndFormSubmitButton");
 
-  panel.css("z-index","5000");
-  panel.css("display","block");
+  panel.css("z-index", "5000");
+  panel.css("display", "block");
   this.updateForm(null, this.operationsDef[0].id);
 
   buttonForm.unbind();
-  buttonForm.bind("click", function(event) {
-      // execute automation batch call
-      var operationId = jQuery("#operationIdSelector").val();
-      o.executeBatch(operationId, {});
+  buttonForm.bind("click", function (event) {
+    // execute automation batch call
+    var operationId = jQuery("#operationIdSelector").val();
+    o.executeBatch(operationId, {});
   });
 };
 
-DropZoneUIHandler.prototype.executeBatch = function(operationId, params) {
-    log("exec operation " + operationId + ", batchId=" + this.batchId);
+DropZoneUIHandler.prototype.executeBatch = function (operationId, params) {
+  log("exec operation " + operationId + ", batchId=" + this.batchId);
 
-    // hide the top panel
-    jQuery("#dropzone-info-panel").css("display","none");
-    jQuery("#dndFormPanel").css("display","none");
+  // hide the top panel
+  jQuery("#dropzone-info-panel").css("display", "none");
+  jQuery("#dndFormPanel").css("display", "none");
 
-    // change the continue button to a loading anim
-    var continueButton = this.positionContinueButton();
-    continueButton.unbind();
-    jQuery("#dndContinueButtonNext").css("display","none");
-    jQuery("#dndContinueButtonWait").css("display","block");
-    continueButton.css("display","block");
+  // change the continue button to a loading anim
+  var continueButton = this.positionContinueButton();
+  continueButton.unbind();
+  jQuery("#dndContinueButtonNext").css("display", "none");
+  jQuery("#dndContinueButtonWait").css("display", "block");
+  continueButton.css("display", "block");
 
-    var batchExec = jQuery().automation(operationId, this.opts);
-    log(this.ctx);
-    batchExec.setContext(this.ctx);
-    batchExec.addParameters(params);
-    log(batchExec);
-    var cancelHandler = this;
-    batchExec.batchExecute(this.batchId,
-        function(data, status, xhr) {
-            log("Import operation executed OK");
-            window.location.reload(true);
-            log("refresh-done");
-        },
-        function(xhr, status, errorMessage) {
-          cancelHandler.cancelUpload();
-          if (status == "timeout") {
-            alert(jQuery("#dndTimeoutMessage").html());
-          } else if (xhr.readyState != 4) {
-            alert(jQuery("#dndNoResponseMessage").html());
+  var batchExec = jQuery().automation(operationId, this.opts);
+  log(this.ctx);
+  batchExec.setContext(this.ctx);
+  batchExec.addParameters(params);
+  log(batchExec);
+  var cancelHandler = this;
+  batchExec.batchExecute(this.batchId,
+    function (data, status, xhr) {
+      log("Import operation executed OK");
+      window.location.reload(true);
+      log("refresh-done");
+    },
+    function (xhr, status, errorMessage) {
+      cancelHandler.cancelUpload();
+      if (status == "timeout") {
+        alert(jQuery("#dndTimeoutMessage").html());
+      } else if (xhr.readyState != 4) {
+        alert(jQuery("#dndNoResponseMessage").html());
+      } else {
+        if (xhr.status == 403) {
+          alert(jQuery("#dndSecurityErrorMessage").html());
+          logError(errorMessage);
+        } else {
+          if (errorMessage && errorMessage != 'null') {
+            alert(jQuery("#dndServerErrorMessage").html());
+            logError(errorMessage);
           } else {
-            if (xhr.status == 403) {
-              alert(jQuery("#dndSecurityErrorMessage").html());
-              logError(errorMessage);
-            } else {
-              if (errorMessage && errorMessage != 'null') {
-                alert(jQuery("#dndServerErrorMessage").html());
-                logError(errorMessage);
-              } else {
-                alert(jQuery("#dndUnknownErrorMessage").html());
-              }
-            }
+            alert(jQuery("#dndUnknownErrorMessage").html());
           }
-          window.location.reload(true);
-        },
-        true
-    );
+        }
+      }
+      window.location.reload(true);
+    },
+    true
+  );
 };
 
-DropZoneUIHandler.prototype.enableExtendedMode = function(dropId) {
+DropZoneUIHandler.prototype.enableExtendedMode = function (dropId) {
   this.extendedMode = true;
   jQuery("#" + dropId).addClass('dropzoneTargetExtended');
 };
 
-DropZoneUIHandler.prototype.removeDropPanel = function(dropId, batchId) {
+DropZoneUIHandler.prototype.removeDropPanel = function (dropId, batchId) {
   var dropPanel = jQuery("#dropPanel-" + this.idx);
   dropPanel.after(jQuery("#" + dropId));
   dropPanel.remove();
@@ -473,7 +473,7 @@ DropZoneUIHandler.prototype.removeDropPanel = function(dropId, batchId) {
 
 var NXDropZone = {
   handlerIdx: 0,
-  highLightOn: false ,
+  highLightOn: false,
   targetSelected: false,
   initDone: false
 };
@@ -487,7 +487,7 @@ var NXDropZone = {
   $.fn.nxDropZone = function (options) {
     // reinitialize NXDropZone object state
     NXDropZone.handlerIdx = 0;
-    NXDropZone.highLightOn = false ;
+    NXDropZone.highLightOn = false;
     NXDropZone.targetSelected = false;
     NXDropZone.initDone = false;
 
@@ -529,7 +529,7 @@ var NXDropZone = {
 
   function highlightDropZones(event, ids, options) {
 
-    var targetSelect = function(targetId) {
+    var targetSelect = function (targetId) {
       NXDropZone.targetSelected = true;
       jQuery.each(ids, function (idx, id) {
         var ele = jQuery("#" + id);
@@ -540,7 +540,7 @@ var NXDropZone = {
       });
     };
 
-    var cancel = function() {
+    var cancel = function () {
       NXDropZone.highLightOn = true;
       NXDropZone.initDone = false;
       removeHighlights(null, ids)
