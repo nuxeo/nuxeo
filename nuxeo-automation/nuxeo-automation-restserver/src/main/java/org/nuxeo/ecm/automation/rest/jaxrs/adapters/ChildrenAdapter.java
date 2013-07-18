@@ -44,8 +44,23 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @WebAdapter(name = "children", type = "ChildrenService")
-@Produces({"application/json+nxentity", MediaType.APPLICATION_JSON})
+@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class ChildrenAdapter extends DefaultAdapter {
+
+    @Override
+    public <A> A getAdapter(Class<A> adapter) {
+        if (adapter.isAssignableFrom(DocumentModelList.class)) {
+            try {
+                return (A) getDocs(0L, 50L);
+            } catch (ClientException e) {
+                return null;
+            }
+
+        }
+        return super.getAdapter(adapter);
+
+    }
+
     @SuppressWarnings("unchecked")
     @GET
     public DocumentModelList getDocs(@QueryParam("page")

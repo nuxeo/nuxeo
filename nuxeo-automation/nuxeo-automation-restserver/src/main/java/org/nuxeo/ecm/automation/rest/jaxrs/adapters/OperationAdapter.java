@@ -37,6 +37,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
@@ -49,7 +50,6 @@ import org.nuxeo.runtime.api.Framework;
 @WebAdapter(name = "op", type = "OperationService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class OperationAdapter extends DefaultAdapter {
-
 
     @POST
     @Path("{operationName}")
@@ -65,7 +65,12 @@ public class OperationAdapter extends DefaultAdapter {
             AutomationService service = Framework.getLocalService(AutomationService.class);
 
             DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-            xreq.setInput(doc);
+            if (doc != null) {
+                xreq.setInput(doc);
+            } else {
+                DocumentModelList docs = getTarget().getAdapter(DocumentModelList.class);
+                xreq.setInput(docs);
+            }
 
             OperationContext ctx = xreq.createContext(request,
                     getContext().getCoreSession());

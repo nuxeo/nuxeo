@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +39,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Inject;
+import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * Test the Rest binding to run operations
@@ -51,6 +54,8 @@ import com.google.inject.Inject;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OperationBindingTest extends BaseTest {
+
+    private static String PARAMS = "{\"params\":{\"one\":\"1\",\"two\": 2}}";
 
     @Inject
     CoreSession session;
@@ -69,12 +74,11 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        String params = "{\"params\":{\"one\":\"1\",\"two\": 2}}";
-        getResponse(RequestType.POSTREQUEST, "id/" + note.getId()
-                + "/@op/testOp", params);
+        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId()
+                + "/@op/testOp", PARAMS);
 
         // Then the operation is called on the document
-
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         List<OperationCall> calls = TestOperation.getCalls();
         assertEquals(1, calls.size());
 
@@ -90,10 +94,11 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        getResponse(RequestType.POSTREQUEST, "id/" + note.getId()
+        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId()
                 + "/@op/Chain.testChain","{}");
 
         // Then the operation is called twice on the document
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         List<OperationCall> calls = TestOperation.getCalls();
         assertEquals(2, calls.size());
@@ -106,6 +111,23 @@ public class OperationBindingTest extends BaseTest {
         call = calls.get(1);
         assertEquals("Two", call.getParamOne());
         assertEquals(4, call.getParamTwo());
+
+    }
+
+    @Test
+    public void itCanRunAChainOnMutlipleDocuments() throws Exception {
+        // Given a folder
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+
+        // When i call the REST binding on the children resource
+
+        getResponse(RequestType.POSTREQUEST, "id/" + folder.getId()
+                + "/@children/@op/testOp",PARAMS);
+
+        // Then the operation is called on all children documents
+        List<OperationCall> calls = TestOperation.getCalls();
+        assertEquals(session.getChildren(folder.getRef()).size(), calls.size());
+
 
     }
 
