@@ -51,9 +51,6 @@ public class DamImport {
     protected CoreSession session;
 
     @Context
-    protected AutomationService as;
-
-    @Context
     protected FileManager fileManager;
 
     @Context
@@ -62,25 +59,12 @@ public class DamImport {
     @Param(name = "overwrite", required = false)
     protected Boolean overwrite = false;
 
-    protected DocumentModel getCurrentDocument() throws Exception {
-        String cdRef = (String) ctx.get("currentDocument");
-        return as.getAdaptedValue(ctx, cdRef, DocumentModel.class);
-    }
-
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
-        DocumentModel parent = getCurrentDocument();
-        String parentPath;
-        if (parent != null) {
-            parentPath = parent.getPathAsString();
-        } else {
-            AssetLibrary assetLibrary = damService.getAssetLibrary();
-            parentPath = assetLibrary.getPath();
-        }
-
+        AssetLibrary assetLibrary = damService.getAssetLibrary();
         ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
-        return fileManager.createDocumentFromBlob(session, blob, parentPath,
-                overwrite, blob.getFilename());
+        return fileManager.createDocumentFromBlob(session, blob,
+                assetLibrary.getPath(), overwrite, blob.getFilename());
     }
 
     @OperationMethod
