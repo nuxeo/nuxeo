@@ -20,7 +20,9 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +44,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
@@ -164,6 +167,27 @@ public class BatchResource {
                         "{\"error\" : \"" + e.getMessage() + "\"}").build();
             }
         }
+    }
+
+    @GET
+    @Path("files/{batchId}")
+    public Object getFilesBatch(@PathParam(REQUEST_BATCH_ID)
+    String batchId) throws Exception {
+        BatchManager bm = Framework.getLocalService(BatchManager.class);
+        List<Blob> blobs = bm.getBlobs(batchId);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Blob blob : blobs) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", blob.getFilename());
+            map.put("size", blob.getLength());
+            result.add(map);
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        ByteArrayOutputStream out = new ByteArrayOutputStream(128);
+        mapper.writeValue(out, result);
+        return buildFromString(out.toString("UTF-8"));
     }
 
     @GET
