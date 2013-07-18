@@ -193,7 +193,9 @@ public class OperationTypeImpl implements OperationType {
             // Trying to fallback on Chain Parameters sub context if cannot find
             // it
             if (obj == null) {
-                obj = ((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get(entry.getKey());
+                if (ctx.containsKey(Constants.VAR_RUNTIME_CHAIN)) {
+                    obj = ((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get(entry.getKey());
+                }
             }
             if (obj == null) {
                 if (entry.getValue().getAnnotation(Param.class).required()) {
