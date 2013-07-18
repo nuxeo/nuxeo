@@ -203,9 +203,19 @@ public class DamImportActions implements Serializable {
      */
 
     public String generateBatchId() {
-        currentBatchId = "batch-" + new Date().getTime() + "-"
-                + random.nextInt(1000);
+        if (currentBatchId == null) {
+            currentBatchId = "batch-" + new Date().getTime() + "-"
+                    + random.nextInt(1000);
+        }
         return currentBatchId;
+    }
+
+    public boolean hasUploadedFiles() {
+        if (currentBatchId != null) {
+            BatchManager batchManager = Framework.getLocalService(BatchManager.class);
+            return !batchManager.getBlobs(currentBatchId).isEmpty();
+        }
+        return false;
     }
 
     public String importAssets() throws ClientException {
@@ -305,6 +315,7 @@ public class DamImportActions implements Serializable {
         importDocumentModel = null;
         selectedImportFolderId = null;
         uploadedFiles = null;
+        currentBatchId = null;
     }
 
     public Collection<UploadItem> getUploadedFiles() {

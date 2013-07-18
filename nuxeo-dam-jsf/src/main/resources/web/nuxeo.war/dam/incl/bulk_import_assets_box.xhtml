@@ -58,7 +58,8 @@
                   </p>
 
                   <c:if test="#{useHtml5DragAndDrop}">
-                    <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}">
+                    <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}"
+                      data-loadalreadyuploadedfiles="#{damImportActions.hasUploadedFiles()}">
                       <div class="dropZoneLabel jsTips">
                         #{messages['label.dam.bulk.import.assets.tips']}
                       </div>
@@ -111,19 +112,20 @@
 
           </a4j:outputPanel>
 
-
           <c:if test="#{useHtml5DragAndDrop}">
             <script type="text/javascript">
-              jQuery(".damAssetImportZone").nxDropZone({
-                url : "#{contextPath}/site/automation/",
-                uploadRateRefreshTime : 500,
-                numConcurrentUploads : 3,
-                dropContext : ctx,
-                uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
-                execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
-                extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
-                handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
-              });
+              if (jQuery('#fancybox-content').html() !== '') {
+                jQuery(".damAssetImportZone").nxDropZone({
+                  url : "#{contextPath}/site/automation/",
+                  uploadRateRefreshTime : 500,
+                  numConcurrentUploads : 3,
+                  dropContext : ctx,
+                  uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+                  execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+                  extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
+                  handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
+                });
+              }
             </script>
           </c:if>
 
@@ -143,9 +145,11 @@
         styleClass="button" />
     </div>
 
-    <script type="text/javascript">
-      nuxeo.dam.disableBulkImportButton();
-    </script>
+    <c:if test="#{!damImportActions.hasUploadedFiles()}">
+      <script type="text/javascript">
+        nuxeo.dam.disableBulkImportButton();
+      </script>
+    </c:if>
 
   </h:form>
 
