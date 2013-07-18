@@ -80,7 +80,7 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         if (group != null) {
             groupInput.sendKeys(group);
             // add a space since there is one just after the icon
-            findElementWaitUntilEnabledAndClick(By.xpath("//td[text()=\" "
+            findElementWaitUntilEnabledAndClick(By.xpath("//span[text()=\""
                     + group + "\"]"));
         }
         saveButton.click();
