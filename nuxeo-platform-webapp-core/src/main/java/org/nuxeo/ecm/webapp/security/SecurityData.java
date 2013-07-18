@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.Labeler;
 
-
 /**
  * Holds the formatted security data, ready to be displayed. Holds the data on
  * each map on the following structure: <br>
@@ -58,7 +57,8 @@ import org.nuxeo.common.utils.i18n.Labeler;
  */
 public class SecurityData implements Serializable {
 
-    protected static final Labeler labeler = new Labeler("label.security.permission");
+    protected static final Labeler labeler = new Labeler(
+            "label.security.permission");
 
     private static final long serialVersionUID = -7958330304227141087L;
 
@@ -136,7 +136,8 @@ public class SecurityData implements Serializable {
         return parentDocumentsUsers;
     }
 
-    protected Map<String, List<String>> buildLabelMap(Map<String, List<String>> permissions) {
+    protected Map<String, List<String>> buildLabelMap(
+            Map<String, List<String>> permissions) {
         Map<String, List<String>> labelMap = new HashMap<String, List<String>>();
 
         for (String user : permissions.keySet()) {
@@ -174,8 +175,8 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * Adds a privilege to the displayed list. This does not submit anything
-     * to the backend.
+     * Adds a privilege to the displayed list. This does not submit anything to
+     * the backend.
      */
     public void addModifiablePrivilege(String principalName,
             String permissionName, boolean grant) {
@@ -239,8 +240,8 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * Removes a privilege from the displayed list. This does not submit anything
-     * to backend.
+     * Removes a privilege from the displayed list. This does not submit
+     * anything to backend.
      *
      * @return true if a privilege was indeed removed
      */
@@ -262,7 +263,7 @@ public class SecurityData implements Serializable {
                 while (permissionIterator.hasNext()) {
                     if (permissionIterator.next().equals(permissionName)) {
                         permissionIterator.remove();
-                        removed=true;
+                        removed = true;
                         break;
                     }
                 }
@@ -275,7 +276,7 @@ public class SecurityData implements Serializable {
                 while (permissionIterator.hasNext()) {
                     if (permissionIterator.next().equals(permissionName)) {
                         permissionIterator.remove();
-                        removed=true;
+                        removed = true;
                         break;
                     }
                 }
@@ -287,8 +288,7 @@ public class SecurityData implements Serializable {
     }
 
     /**
-     * Removes all privileges for a given user. This does not edit the
-     * backend.
+     * Removes all privileges for a given user. This does not edit the backend.
      */
     public void removeModifiablePrivilege(String principalName) {
         if (null == principalName) {
@@ -377,7 +377,7 @@ public class SecurityData implements Serializable {
         parentDocumentsUsers.clear();
 
         log.debug("Cleared data...");
-        needSave=false;
+        needSave = false;
     }
 
     public String getDocumentType() {
