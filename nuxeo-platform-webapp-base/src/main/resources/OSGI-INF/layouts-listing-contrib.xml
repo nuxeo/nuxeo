@@ -553,6 +553,9 @@
                 <row>
                   <widget category="widgetTypeConf">localize</widget>
                 </row>
+                <row>
+                  <widget>hideExternalLink</widget>
+                </row>
               </rows>
               <widget name="tab" type="text">
                 <labels>
