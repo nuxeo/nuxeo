@@ -38,7 +38,7 @@ public interface MetricsService {
      * @return
      * @since 5.7.2
      */
-    Gauge<?> newGauge(Gauge<?> gauge, Class<?> clazz,
+    <T> Gauge<T> newGauge(Gauge<T> gauge, Class<?> clazz,
             String... names);
     /**
      * @since 5.7.2

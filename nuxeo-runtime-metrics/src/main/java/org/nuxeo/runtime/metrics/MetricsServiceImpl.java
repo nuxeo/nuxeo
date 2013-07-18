@@ -82,7 +82,7 @@ public class MetricsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public Gauge<?> newGauge(Gauge<?> gauge, Class<?> clazz, String... names) {
+    public <T> Gauge<T> newGauge(Gauge<T> gauge, Class<?> clazz, String... names) {
         registry.register(MetricRegistry.name(clazz, names), gauge);
         return gauge;
     }
