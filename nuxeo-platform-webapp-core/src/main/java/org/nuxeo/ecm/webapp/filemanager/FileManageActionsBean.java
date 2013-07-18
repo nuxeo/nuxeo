@@ -137,6 +137,7 @@ public class FileManageActionsBean extends InputController implements
         return "view_documents";
     }
 
+
     /**
      * Creates a document from the file held in the fileUploadHolder.
      *
@@ -177,7 +178,7 @@ public class FileManageActionsBean extends InputController implements
                     "Caught general system exception, throwing client exception ",
                     e);
         }
-        eventManager.raiseEventsOnDocumentSelected(createdDoc);
+        EventManager.raiseEventsOnDocumentSelected(createdDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
 
@@ -230,9 +231,16 @@ public class FileManageActionsBean extends InputController implements
             }
             return addBinaryFileFromPlugin(bcontent, mimetype, fullName,
                     morePath);
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(TRANSF_ERROR, fullName);
+        } catch (ClientException e) {
+            throw new RecoverableClientException(
+                    "Cannot validate, caught client exception",
+                    "message.operation.fails.generic", null, e);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof RecoverableClientException) {
+                throw e;
+            }
+            throw new RecoverableClientException(
+                    "Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
@@ -288,7 +296,7 @@ public class FileManageActionsBean extends InputController implements
         }
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
-        eventManager.raiseEventsOnDocumentSelected(createdDoc);
+        EventManager.raiseEventsOnDocumentSelected(createdDoc);
         return createdDoc.getName();
     }
 
@@ -342,9 +350,12 @@ public class FileManageActionsBean extends InputController implements
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
             return createdDoc.getName();
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(TRANSF_ERROR, fullName);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof RecoverableClientException) {
+                throw e;
+            }
+            throw new RecoverableClientException(
+                    "Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
@@ -480,7 +491,7 @@ public class FileManageActionsBean extends InputController implements
             // delCopyWithId(docId);
             documentManager.save();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            eventManager.raiseEventsOnDocumentChildrenChange(currentDocument);
+            EventManager.raiseEventsOnDocumentChildrenChange(currentDocument);
 
             // notify current container
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
@@ -528,10 +539,18 @@ public class FileManageActionsBean extends InputController implements
             docsToAdd.add(srcDoc);
             clipboardActions.putSelectionInWorkList(docsToAdd, true);
             return debug;
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(COPY_ERROR, docId);
+        } catch (ClientException e) {
+            throw new RecoverableClientException(
+                    "Cannot validate, caught client exception",
+                    "message.operation.fails.generic", null, e);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof RecoverableClientException) {
+                throw e;
+            }
+            throw new RecoverableClientException(
+                    "Cannot validate, caught runtime", "error.db.fs", null, e);
         }
+
     }
 
     @Override
@@ -552,9 +571,16 @@ public class FileManageActionsBean extends InputController implements
             pasteDocs.add(srcDoc);
             clipboardActions.pasteDocumentList(pasteDocs);
             return debug;
-        } catch (Throwable t) {
-            log.error(t, t);
-            return getErrorMessage(PASTE_ERROR, docId);
+        } catch (ClientException e) {
+            throw new RecoverableClientException(
+                    "Cannot validate, caught client exception",
+                    "message.operation.fails.generic", null, e);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof RecoverableClientException) {
+                throw e;
+            }
+            throw new RecoverableClientException(
+                    "Cannot validate, caught runtime", "error.db.fs", null, e);
         }
     }
 
@@ -638,6 +664,7 @@ public class FileManageActionsBean extends InputController implements
     }
 
     public String validate() throws ClientException {
+
         File tempFile;
         if (fileUploadHolder == null
                 || (tempFile = fileUploadHolder.getTempFile()) == null) {
@@ -808,6 +835,7 @@ public class FileManageActionsBean extends InputController implements
      * @deprecated Since 5.7.2. See
      *             {@link org.nuxeo.ecm.platform.ui.web.util.files.FileUtils#createTemporaryFileBlob}
      */
+    @Deprecated
     protected static Blob createTemporaryFileBlob(File file, String filename,
             String mimeType) {
         return FileUtils.createTemporaryFileBlob(file, filename, mimeType);
