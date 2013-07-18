@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -72,7 +73,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
         // We must have 2 files
         assertTrue(trelements != null);
-        assertTrue(trelements.size() == 2);
+        assertEquals(2, trelements.size());
 
         // Select the first document
         trelements.get(0).findElement(By.xpath(checkBoxXPath)).click();
@@ -80,23 +81,24 @@ public class ITSelectAndFilterTest extends AbstractTest {
                 By.xpath(documentTitleXPath)).getText());
 
         // Filter on the name of the other document
-        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName));
+        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName), 1, AJAX_TIMEOUT_SECONDS * 1000);
         waitUntilElementPresent(By.id(resetFilterId));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
         // We must have only 1 file
         assertTrue(trelements != null);
-        assertTrue(trelements.size() == 1);
+        assertEquals(1, trelements.size());
 
         // Reset filter
-        workspacePage.getContentTab().clearFilter();
+        workspacePage.getContentTab().clearFilter(2, AJAX_TIMEOUT_SECONDS * 1000);
         waitUntilElementNotPresent(By.id(resetFilterId));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
         // We must have 2 files
-        assertTrue(trelements != null && trelements.size() == 2);
+        assertTrue(trelements != null);
+        assertEquals(2, trelements.size());
 
         // Now check that the selection is the same than before filtering
         boolean isSelectionOk = true;
