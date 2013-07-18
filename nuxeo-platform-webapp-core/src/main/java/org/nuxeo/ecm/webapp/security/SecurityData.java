@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.Labeler;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * Holds the formatted security data, ready to be displayed. Holds the data on
@@ -296,7 +297,22 @@ public class SecurityData implements Serializable {
             return;
         }
         currentDocGrant.remove(principalName);
-        currentDocDeny.remove(principalName);
+
+        if (principalName.equals(SecurityConstants.EVERYONE)) {
+
+            final List<String> deniedPerms = currentDocDeny.get(principalName);
+            boolean keepDenyAll = deniedPerms != null ? deniedPerms.contains(SecurityConstants.EVERYTHING)
+                    : false;
+
+            currentDocDeny.remove(principalName);
+
+            if (keepDenyAll) {
+                addModifiablePrivilege(SecurityConstants.EVERYONE,
+                        SecurityConstants.EVERYTHING, false);
+            }
+        } else {
+            currentDocDeny.remove(principalName);
+        }
         needSave = true;
         rebuildUserLists();
     }

@@ -216,13 +216,16 @@ public class SecurityActionsBean extends InputController implements
 
         List<AbstractTableCell> cells = new ArrayList<AbstractTableCell>();
 
+        List<String> grantedPerms = securityData.getCurrentDocGrant().get(user);
+        List<String> deniedPerms = securityData.getCurrentDocDeny().get(user);
         if (user.equals(SecurityConstants.EVERYONE)) {
-            List<String> deniedPerms = securityData.getCurrentDocDeny().get(
-                    user);
+
             if (deniedPerms != null
                     && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
                 // remove DENY EveryThing to EveryOne from display list
                 blockRightInheritance = true;
+            }
+            if (grantedPerms == null) {
                 return null;
             }
         }
@@ -237,11 +240,9 @@ public class SecurityActionsBean extends InputController implements
 
         cells.add(new UserTableCell(user, principalType));
 
-        cells.add(new PermissionsTableCell(user,
-                securityData.getCurrentDocGrant().get(user)));
+        cells.add(new PermissionsTableCell(user, grantedPerms));
 
-        cells.add(new PermissionsTableCell(user,
-                securityData.getCurrentDocDeny().get(user)));
+        cells.add(new PermissionsTableCell(user, deniedPerms));
 
         return new UserPermissionsTableRow(user, cells);
     }
