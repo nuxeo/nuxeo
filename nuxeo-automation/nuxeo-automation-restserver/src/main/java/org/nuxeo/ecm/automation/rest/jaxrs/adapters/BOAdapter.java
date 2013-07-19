@@ -39,21 +39,22 @@ import org.nuxeo.runtime.api.Framework;
 /**
  *
  *
- * @since TODO
+ * @since 5.7.2
  */
 @WebAdapter(name = "bo", type = "BOService", targetType = "Document")
+@Produces({ "application/json+nxentity", "application/json" })
 public class BOAdapter extends DefaultAdapter {
 
     @GET
     @Path("{adapterName}")
-    @Produces({ "application/json+nxentity", "application/json" })
+
     public Object doGetAdapter(@PathParam("adapterName")
     String adapterName) throws Exception {
         BusinessAdapter adapter = getAdapter(adapterName);
         return new DefaultJsonAdapter(adapter);
     }
 
-    @POST
+    @PUT
     @Path("{adapterName}")
     @Consumes({ "application/json+nxentity", "application/json" })
     public Object doPostAdapter(@PathParam("adapterName")
@@ -66,7 +67,7 @@ public class BOAdapter extends DefaultAdapter {
         return new DefaultJsonAdapter(input);
     }
 
-    @PUT
+    @POST
     @Path("{adapterName}/{docName}")
     public Object doPutAdapter(@PathParam("adapterName")
     String adapterName, @PathParam("docName")

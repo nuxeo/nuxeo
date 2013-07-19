@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,9 +41,11 @@ public class RestServerInit implements RepositoryInit {
         }
 
         for (int i = 0; i < 5; i++) {
-            DocumentModel doc = session.createDocumentModel("/folder_1", "note_" + i,
-                    "Note");
+            DocumentModel doc = session.createDocumentModel("/folder_1",
+                    "note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
+
+            doc.getAdapter(BusinessBeanAdapter.class).setNote("Note " + i);
             doc = session.createDocument(doc);
         }
 
@@ -50,11 +53,13 @@ public class RestServerInit implements RepositoryInit {
 
     }
 
-    public static DocumentModel getFolder(int index, CoreSession session) throws ClientException {
+    public static DocumentModel getFolder(int index, CoreSession session)
+            throws ClientException {
         return session.getDocument(new PathRef("/folder_" + index));
     }
 
-    public static DocumentModel getNote(int index, CoreSession session) throws ClientException {
+    public static DocumentModel getNote(int index, CoreSession session)
+            throws ClientException {
         return session.getDocument(new PathRef("/folder_1/note_" + index));
     }
 

@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
@@ -45,30 +44,29 @@ public class BusinessBeanAdapter extends BusinessAdapter {
         super(documentModel);
     }
 
-
-
-    public String getTitle() throws DocumentException, PropertyException, ClientException {
-            return (String) getDocument().getPropertyValue("dc:title");
+    public String getTitle() throws ClientException {
+        return (String) getDocument().getPropertyValue("dc:title");
     }
 
-    public void setTitle(String value) throws PropertyException, ClientException, DocumentException {
-            getDocument().setPropertyValue("dc:title", value);
+    public void setTitle(String value) throws PropertyException,
+            ClientException {
+        getDocument().setPropertyValue("dc:title", value);
     }
 
-    public String getDescription() throws PropertyException, ClientException, DocumentException {
-            return (String) getDocument().getPropertyValue("dc:description");
+    public String getDescription() throws ClientException {
+        return (String) getDocument().getPropertyValue("dc:description");
     }
 
-    public void setDescription(String value) throws PropertyException, ClientException, DocumentException {
-            getDocument().setPropertyValue("dc:description", value);
+    public void setDescription(String value) throws ClientException {
+        getDocument().setPropertyValue("dc:description", value);
     }
 
-    public String getNote() throws DocumentException, PropertyException, ClientException {
-            return (String) getDocument().getPropertyValue("note:note");
+    public String getNote() throws ClientException {
+        return (String) getDocument().getPropertyValue("note:note");
     }
 
-    public void setNote(String value) throws PropertyException, ClientException, DocumentException {
-            getDocument().setPropertyValue("note:note", value);
+    public void setNote(String value) throws ClientException {
+        getDocument().setPropertyValue("note:note", value);
     }
 
 }
