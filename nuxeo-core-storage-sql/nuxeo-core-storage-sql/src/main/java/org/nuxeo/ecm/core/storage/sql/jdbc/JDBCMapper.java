@@ -103,9 +103,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private final RepositoryImpl repository;
 
-    private boolean limitedResults;
-
-    private long maxResults;
     protected boolean clusteringEnabled;
 
     /**
