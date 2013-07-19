@@ -12,15 +12,32 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationCompoundExceptionBuilder;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
+import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentRefList;
 
 /**
  * @since 5.7.2 Operation Type Implementation for a chain
@@ -64,7 +81,20 @@ public class ChainTypeImpl implements OperationType {
      */
     protected OperationParameters[] operations;
 
+    /**
+     * The operation chain XMAP contribution
+     */
     protected OperationChainContribution contribution;
+
+    /**
+     * An output of operation type
+     */
+    protected Class<?> outputChain;
+
+    /**
+     * A method of operation type
+     */
+    protected InvokableMethod method;
 
     public ChainTypeImpl(AutomationService service, OperationChain chain) {
         this.service = service;
@@ -121,12 +151,13 @@ public class ChainTypeImpl implements OperationType {
     }
 
     @Override
-    public OperationDocumentation getDocumentation() {
+    public OperationDocumentation getDocumentation() throws OperationException {
         OperationDocumentation doc = new OperationDocumentation(id);
         doc.label = id;
         doc.requires = contribution.getRequires();
         doc.category = contribution.getCategory();
-        doc.operations = contribution.getOps();
+        OperationChainContribution.Operation[] operations = contribution.getOps();
+        doc.operations = operations;
         doc.since = contribution.getSince();
         if (doc.requires.length() == 0) {
             doc.requires = null;
@@ -136,8 +167,83 @@ public class ChainTypeImpl implements OperationType {
         }
         id: doc.description = contribution.getDescription();
         doc.params = contribution.getParams();
-        doc.signature = new String[] { "void", "void" };
+        // load signature
+        if (operations.length != 0) {
+            // Fill signature with first inputs of the first operation and
+            // related outputs of last operation
+            // following the proper automation path
+            OperationCompoundExceptionBuilder errorBuilder = new OperationCompoundExceptionBuilder();
+            try {
+                ArrayList<String> result = getSignature(operations);
+                doc.signature = result.toArray(new String[result.size()]);
+            } catch (OperationNotFoundException e) {
+                errorBuilder.add(e);
+            }
+            errorBuilder.throwOnError();
+        } else {
+            doc.signature = new String[] { "void", "void" };
+        }
         return doc;
+    }
+
+    /**
+     * @since 5.7.2
+     * @param operations operations listing that chain contains.
+     * @return the chain signature.
+     */
+    protected ArrayList<String> getSignature(
+            OperationChainContribution.Operation[] operations)
+            throws OperationException {
+        ArrayList<String> result = new ArrayList<String>();
+        Collection<String> collectedSigs = new HashSet<String>();
+        OperationType operationType = service.getOperation(operations[0].getId());
+        for (InvokableMethod method : operationType.getMethods()) {
+            String inputChain = getParamDocumentationType(
+                    method.getInputType(), method.isIterable());
+            outputChain = method.getInputType();
+            String outputChain = getParamDocumentationType(getChainOutput(operations));
+            String sigKey = inputChain + ":" + outputChain;
+            if (!collectedSigs.contains(sigKey)) {
+                result.add(inputChain);
+                result.add(outputChain);
+                collectedSigs.add(sigKey);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @since 5.7.2
+     */
+    protected Class<?> getChainOutput(
+            OperationChainContribution.Operation[] operations)
+            throws OperationException {
+        for (OperationChainContribution.Operation operation : operations) {
+            OperationType operationType = service.getOperation(operation.getId());
+            if (operationType instanceof OperationTypeImpl) {
+                outputChain = getOperationOutput(outputChain, operationType);
+            } else {
+                outputChain = getChainOutput(operationType.getDocumentation().getOperations());
+            }
+        }
+        return outputChain;
+    }
+
+    /**
+     * @since 5.7.2
+     */
+    public Class<?> getOperationOutput(Class<?> input,
+            OperationType operationType) {
+        InvokableMethod[] methods = operationType.getMethodsMatchingInput(input);
+        if (methods == null) {
+            return input;
+        }
+        Class<?> nextInput = methods[0].getOutputType();
+        // If output is void, skip this method
+        if (nextInput == Void.TYPE) {
+            return input;
+        }
+        return nextInput;
     }
 
     @Override
@@ -158,6 +264,38 @@ public class ChainTypeImpl implements OperationType {
         }
     }
 
+    /**
+     * @since 5.7.2
+     */
+    protected String getParamDocumentationType(Class<?> type) {
+        return getParamDocumentationType(type, false);
+    }
+
+    /**
+     * @since 5.7.2
+     */
+    protected String getParamDocumentationType(Class<?> type, boolean isIterable) {
+        String t;
+        if (DocumentModel.class.isAssignableFrom(type)
+                || DocumentRef.class.isAssignableFrom(type)) {
+            t = isIterable ? Constants.T_DOCUMENTS : Constants.T_DOCUMENT;
+        } else if (DocumentModelList.class.isAssignableFrom(type)
+                || DocumentRefList.class.isAssignableFrom(type)) {
+            t = Constants.T_DOCUMENTS;
+        } else if (BlobList.class.isAssignableFrom(type)) {
+            t = Constants.T_BLOBS;
+        } else if (Blob.class.isAssignableFrom(type)) {
+            t = isIterable ? Constants.T_BLOBS : Constants.T_BLOB;
+        } else if (URL.class.isAssignableFrom(type)) {
+            t = Constants.T_RESOURCE;
+        } else if (Calendar.class.isAssignableFrom(type)) {
+            t = Constants.T_DATE;
+        } else {
+            t = type.getSimpleName().toLowerCase();
+        }
+        return t;
+    }
+
     @Override
     public String toString() {
         return "ChainTypeImpl [id=" + id + "]";
@@ -165,5 +303,12 @@ public class ChainTypeImpl implements OperationType {
 
     public OperationChainContribution getContribution() {
         return contribution;
+    }
+
+    /**
+     * @since 5.7.2
+     */
+    public List<InvokableMethod> getMethods() {
+        return Arrays.asList(methods);
     }
 }
