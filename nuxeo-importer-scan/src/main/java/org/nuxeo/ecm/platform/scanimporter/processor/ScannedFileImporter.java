@@ -123,7 +123,7 @@ public class ScannedFileImporter {
         log.info("Starting import process on path " + config.getTargetPath()
                 + " from source " + folder.getAbsolutePath());
         ScanedFileSourceNode src = new ScanedFileSourceNode(folder);
-        src.useXMLMapping = config.useXMLMapping();
+        ScanedFileSourceNode.useXMLMapping = config.useXMLMapping();
         GenericMultiThreadedImporter importer = new GenericMultiThreadedImporter(
                 src, config.getTargetPath(), config.getBatchSize(),
                 config.getNbThreads(), new BasicLogger(log));

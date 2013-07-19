@@ -102,14 +102,27 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
                 String target = fieldMap.getTargetXPath();
                 if ("string".equalsIgnoreCase(fieldMap.getTargetType())) {
                     data.put(target, value);
+                    continue;
                 } else if ("integer".equalsIgnoreCase(fieldMap.getTargetType())) {
                     data.put(target, Integer.parseInt(value));
+                    continue;
                 } else if ("double".equalsIgnoreCase(fieldMap.getTargetType())) {
                     data.put(target, Double.parseDouble(value));
+                    continue;
                 } else if ("date".equalsIgnoreCase(fieldMap.getTargetType())) {
                     data.put(target, fieldMap.getDateFormat().parse(value));
+                    continue;
+                } else if ("boolean".equalsIgnoreCase(fieldMap.getTargetType())) {
+                    data.put(target, Boolean.parseBoolean(value));
+                    continue;
                 }
+                log.error("Unknown target type, please look the scan importer configuration: "
+                        + fieldMap.getTargetType());
             }
+            log.error("Mulliple or no element(s) found for: "
+                    + fieldMap.sourceXPath + " for "
+                    + xmlFile.getAbsolutePath());
+
         }
 
         List<Blob> blobs = new ArrayList<Blob>();

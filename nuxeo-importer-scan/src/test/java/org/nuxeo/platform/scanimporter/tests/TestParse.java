@@ -52,12 +52,15 @@ public class TestParse extends ImportTestCase {
         ScanFileBlobHolder bh = sfms.parseMetaData(xmlFile);
 
         assertNotNull(bh);
-        assertEquals(7, bh.getProperties().size());
+        assertEquals(9, bh.getProperties().size());
         assertEquals("MyTitle", bh.getProperties().get("dc:title"));
         assertEquals("MyDesc", bh.getProperties().get("dc:description"));
         assertEquals(12, bh.getProperties().get("foo:int"));
         assertEquals(1.2, bh.getProperties().get("foo:double"));
         assertEquals("file1", ((Blob)bh.getProperties().get("file:content")).getFilename());
+
+        assertEquals(true, bh.getProperties().get("foo:bool1"));
+        assertEquals(false, bh.getProperties().get("foo:bool2"));
 
         Calendar cal = new GregorianCalendar();
         cal.setTime(((Date)bh.getProperties().get("foo:date")));

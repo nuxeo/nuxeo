@@ -12,6 +12,8 @@
             <fieldMapping sourceXPath="//double" targetXPath="foo:double" targetType="double"/>
             <fieldMapping sourceXPath="//date" targetXPath="foo:date" targetType="date"/>
             <fieldMapping sourceXPath="//date2" targetXPath="foo:date2" targetType="date" dateFormat="yyyy-MM-dd"/>
+            <fieldMapping sourceXPath="//boolean1" targetXPath="foo:bool1" targetType="boolean"/>
+            <fieldMapping sourceXPath="//boolean2" targetXPath="foo:bool2" targetType="boolean"/>
         </fieldMappings>
 
         <blobMappings>
