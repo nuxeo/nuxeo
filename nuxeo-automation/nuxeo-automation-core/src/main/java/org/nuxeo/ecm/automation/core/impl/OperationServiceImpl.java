@@ -96,6 +96,9 @@ public class OperationServiceImpl implements AutomationService {
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws Exception {
         CompiledChainImpl chain;
+        if (params == null) {
+            params = new HashMap<String, Object>();
+        }
         ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         // Put Chain parameters into the context - even for cached chains
         if (params != null && !params.isEmpty()) {
