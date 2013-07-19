@@ -4,6 +4,11 @@
   xmlns:f="http://java.sun.com/jsf/core"
   class="syndicationButton">
 
+<c:if test="true">
+  Deprecated since 5.7, syndications actions have been moved to the
+  top right corner with other actions
+</c:if>
+
   <div class="syndicationLinks">
     <nxu:set var="contentViewState"
       value="#{contentViewRestActions.getContentViewState(contentView)}">
