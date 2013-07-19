@@ -125,7 +125,7 @@ public class ScannedFileImporter {
         ScanedFileSourceNode src = new ScanedFileSourceNode(folder);
         ScanedFileSourceNode.useXMLMapping = config.useXMLMapping();
         GenericMultiThreadedImporter importer = new GenericMultiThreadedImporter(
-                src, config.getTargetPath(), config.getBatchSize(),
+                src, config.getTargetPath(), !config.isCreateInitialFolder(), config.getBatchSize(),
                 config.getNbThreads(), new BasicLogger(log));
         importer.setFactory(new ScanedFileFactory(config));
         importer.run();
