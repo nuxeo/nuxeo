@@ -32,12 +32,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
@@ -49,9 +46,7 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, EmbeddedAutomationServerFeature.class })
-@Deploy("nuxeo-automation-restserver")
-@LocalDeploy({ "nuxeo-automation-restserver:adapter-contrib.xml" })
+@Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentBrowsingTest extends BaseTest {
