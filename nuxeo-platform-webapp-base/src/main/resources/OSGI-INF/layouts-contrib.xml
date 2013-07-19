@@ -2350,6 +2350,335 @@
       </property>
     </widgetType>
 
+    <widgetType name="toggleableDocumentLayoutWithForms">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Toggleable Document Form</title>
+        <description>
+          This widget displays the document layouts of a document which mode
+          can be toggled, with forms inside it.
+
+          Note that usually layouts do not contain
+          any forms, but are surrounded by one, and nesting forms breaks the
+          available actions. So you should make sure there is no enclosing form
+          around the layout, or around this widget, when using it.
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <handlingLabels>true</handlingLabels>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="toggleableLayoutViewWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>initialLayoutName</widget>
+                </row>
+                <row>
+                  <widget>toggledLayoutName</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+                <row>
+                  <widget>canToggleMode</widget>
+                </row>
+                <row>
+                  <widget>hideDefaultActions</widget>
+                </row>
+                <row>
+                  <widget>additionalActionsCategory</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">formActionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">widgetsDisplay</widget>
+                </row>
+                <row>
+                  <widget>showEditOptions</widget>
+                </row>
+                <row>
+                  <widget>useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget>foldable</widget>
+                </row>
+                <row>
+                  <widget>foldedByDefault</widget>
+                </row>
+                <row>
+                  <widget>displayToggleActionInHeader</widget>
+                </row>
+                <row>
+                  <widget>initialActionLabel</widget>
+                </row>
+                <row>
+                  <widget>cancelActionLabel</widget>
+                </row>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="initialLayoutName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Layout(s)</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout to display before toggling the
+                    mode. Also accepts a list of multiple layout names,
+                    separated by commas.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>initialLayoutName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layouts</property>
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="toggledLayoutName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Toggled layout(s)</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout to display after toggling the
+                    mode. Also accepts a list of multiple layout names,
+                    separated by commas. If not filled, defaults to the initial
+                    layout name(s).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>toggledLayoutName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layouts</property>
+                </properties>
+              </widget>
+              <widget name="template" type="selectOneResource">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The layout template to use instead of the
+                    one already set
+                    on the layout(s) definition(s).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">layout_templates</property>
+                </properties>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be put in a "div"
+                    element around the layout.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+              <widget name="canToggleMode" type="text">
+                <labels>
+                  <label mode="any">Can toggle mode</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean property to resolve when
+                    deciding whether the toggle button should be displayed or
+                    not. Defaults to an EL expression checking permission
+                    'Write' on the document. Examples: false,
+                    #{nxd:hasPermission(value, 'Write') and
+                    currentUser.isMemberOf('togglers_groups')}.
+                    Default
+                    expression used:
+                    #{webActions.checkFilter('canToggleLayoutToEditMode')}
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>canToggleMode</field>
+                </fields>
+              </widget>
+              <widget name="hideDefaultActions" type="checkbox">
+                <labels>
+                  <label mode="any">Hide default actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions from the default
+                    category 'EDIT_DOCUMENT_FORM' will not be displayed on the
+                    layout in toggled mode. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideDefaultActions</field>
+                </fields>
+              </widget>
+              <widget name="additionalActionsCategory" type="text">
+                <labels>
+                  <label mode="any">Additional actions category</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The additional actions category to use when
+                    displaying the layout in toggled mode.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>additionalActionsCategory</field>
+                </fields>
+              </widget>
+              <widget name="showEditOptions" type="checkbox">
+                <labels>
+                  <label mode="any">Show edit options</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, additional edit options
+                    (like a textarea for comment to be visible in the document
+                    history) will be visible after the layout in toggled (edit)
+                    mode. Only visible if value bound to the layout is a
+                    document model. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>showEditOptions</field>
+                </fields>
+              </widget>
+              <widget name="displayToggleActionInHeader" type="checkbox">
+                <labels>
+                  <label mode="any">Display toggle action in header</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true (and widget has a header,
+                    because it handles its label), actions will be displayed in
+                    the header. This includes the "toggle" action, as well as
+                    "save" actions. Only the "toggle" action is hidden from the
+                    rendering when it is displayed on top. "Save" actions are
+                    shown twice. Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>displayToggleActionInHeader</field>
+                </fields>
+              </widget>
+              <widget name="useAjaxForm" type="checkbox">
+                <labels>
+                  <label mode="any">Use ajax actions</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, actions will be performed
+                    using ajax. Note that sometimes, actions will require you to
+                    reload the whole page for other elements than the current
+                    zone to be re-rendered, so using ajax will not be user
+                    friendly in these cases. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>useAjaxForm</field>
+                </fields>
+              </widget>
+              <widget name="initialActionLabel" type="text">
+                <labels>
+                  <label mode="any">Initial action label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The initial action label to display.
+                    Defaults to 'action.view.modification' (Edit), is translated
+                    when the widget is translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>initialActionLabel</field>
+                </fields>
+              </widget>
+              <widget name="cancelActionLabel" type="text">
+                <labels>
+                  <label mode="any">Cancel action label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The toggled action label to display.
+                    Defaults to 'command.cancel' (Cancel), is translated when
+                    the widget is translated.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cancelActionLabel</field>
+                </fields>
+              </widget>
+              <widget name="foldable" type="checkbox">
+                <labels>
+                  <label mode="any">Make this content view foldable</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    If set to true, the content view will be
+                    displayed in a box that can be folded if users would like to
+                    hide this content view content. Note that this state is not
+                    persisted. Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldable</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+              <widget name="foldedByDefault" type="checkbox">
+                <labels>
+                  <label mode="any">Folded by default</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Available since 5.7, defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>foldedByDefault</field>
+                </fields>
+                <widgetModes>
+                  <mode value="view_reference">view</mode>
+                </widgetModes>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/toggleable_document_layout_with_forms_widget.xhtml
+      </property>
+    </widgetType>
+
     <widgetType name="actions">
       <configuration>
         <sinceVersion>5.6</sinceVersion>
