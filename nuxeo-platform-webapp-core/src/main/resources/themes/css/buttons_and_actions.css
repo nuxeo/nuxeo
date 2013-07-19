@@ -97,6 +97,13 @@ div.syndicationButton div.syndicationLinks a:hover { color: "link.hover (__FLAVO
 .listingLayoutSelector { color: "gray.medium (__FLAVOR__ color)"; float: right; margin: 1.1em 0 1em .7em; text-align: right }
 .listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 .4em 0 0 }
 .listingLayoutSelector .langSelect { float: left; font-size: .8em; padding: .1em }
+/*
+Temp changes waiting for NXP-12005 to be fixed
+*/
+.contentViewUpperActions { color: "gray.medium (__FLAVOR__ color)"; float: right; margin: 1.1em 0 1em .7em; text-align: right }
+.contentViewUpperAction { display: inline }
+.contentViewUpperAction .contentViewPageSelectorDesc { float: left; padding: 0 .4em 0 0 }
+.contentViewUpperAction .contentViewPageSelector { float: left; font-size: .8em; padding: .1em }
 
 /* =Actionbar in Home */
 .headerTitleAndTools h1 { display: inline }

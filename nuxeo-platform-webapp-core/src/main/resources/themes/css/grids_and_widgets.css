@@ -77,6 +77,21 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   border: 1px solid;
   border-color: "neutral.medium (__FLAVOR__ border)" }
 
+/*
+Temp changes waiting for NXP-12005 to be fixed
+*/
+.resultLayoutSelection {
+  margin: 0;
+  padding: 0;
+  display: inline }
+.resultLayoutSelection a img {
+  border: 1px solid;
+  border-color: "noborder (__FLAVOR__ border)" }
+.resultLayoutSelection a:hover img,
+.resultLayoutSelection .selected img {
+  border: 1px solid;
+  border-color: "neutral.medium (__FLAVOR__ border)" }
+
 .thumbnailContainer {
   height: 11em;
   max-width: 14em }
