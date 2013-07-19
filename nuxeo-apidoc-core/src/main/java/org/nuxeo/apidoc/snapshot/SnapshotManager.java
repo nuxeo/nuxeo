@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +49,7 @@ public interface SnapshotManager {
 
     List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session);
 
-    List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem);
+    List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) throws OperationException;
 
     void exportSnapshot(CoreSession session, String key, OutputStream out)
             throws Exception;
@@ -56,13 +57,13 @@ public interface SnapshotManager {
     void importSnapshot(CoreSession session, InputStream is) throws Exception;
 
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session)
-            throws ClientException;
+            throws ClientException, OperationException;
 
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name)
-            throws ClientException;
+            throws ClientException, OperationException;
 
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
-            String name, SnapshotFilter filter) throws ClientException;
+            String name, SnapshotFilter filter) throws ClientException, OperationException;
 
     void validateImportedSnapshot(CoreSession session, String name,
             String version, String pathSegment, String title) throws Exception;

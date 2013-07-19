@@ -49,6 +49,7 @@ import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -158,7 +159,7 @@ public class SnapshotPersister {
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot,
             CoreSession session, String label, SnapshotFilter filter)
-            throws ClientException {
+            throws ClientException, OperationException {
 
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(
                 snapshot, session, label);

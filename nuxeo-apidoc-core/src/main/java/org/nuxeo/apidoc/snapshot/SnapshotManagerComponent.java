@@ -40,6 +40,7 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -151,19 +152,19 @@ public class SnapshotManagerComponent extends DefaultComponent implements
 
     @Override
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session)
-            throws ClientException {
+            throws ClientException, OperationException {
         return persistRuntimeSnapshot(session, null);
     }
 
     @Override
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
-            String name) throws ClientException {
+            String name) throws ClientException, OperationException {
         return persistRuntimeSnapshot(session, name, null);
     }
 
     @Override
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session,
-            String name, SnapshotFilter filter) throws ClientException {
+            String name, SnapshotFilter filter) throws ClientException, OperationException {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
         DistributionSnapshot snap = persister.persist(liveSnapshot, session,
                 name, filter);
@@ -173,7 +174,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements
 
     @Override
     public List<String> getAvailableVersions(CoreSession session,
-            NuxeoArtifact nxItem) {
+            NuxeoArtifact nxItem) throws OperationException {
         List<String> versions = new ArrayList<String>();
 
         List<DistributionSnapshot> distribs = new ArrayList<DistributionSnapshot>();

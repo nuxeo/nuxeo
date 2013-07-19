@@ -36,6 +36,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.doc.SimpleDocumentationItem;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -68,7 +69,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
                 Boolean.TRUE);
     }
 
-    public abstract NuxeoArtifact getNxArtifact();
+    public abstract NuxeoArtifact getNxArtifact() throws OperationException;
 
     protected abstract Object doGet() throws Exception;
 
@@ -76,7 +77,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return (String) ctx.getProperty(Distribution.DIST_ID);
     }
 
-    public AssociatedDocuments getAssociatedDocuments() {
+    public AssociatedDocuments getAssociatedDocuments() throws OperationException {
         NuxeoArtifact nxItem = getNxArtifact();
         return nxItem.getAssociatedDocuments(ctx.getCoreSession());
     }

@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 @WebObject(type = "operation")
@@ -37,13 +38,13 @@ public class OperationWO extends NuxeoArtifactWebObject {
         return getView("view").arg("operation", getTargetComponentInfo());
     }
 
-    public OperationInfo getTargetComponentInfo() {
+    public OperationInfo getTargetComponentInfo() throws OperationException {
         return getSnapshotManager().getSnapshot(getDistributionId(),
                 ctx.getCoreSession()).getOperation(nxArtifactId);
     }
 
     @Override
-    public NuxeoArtifact getNxArtifact() {
+    public NuxeoArtifact getNxArtifact() throws OperationException {
         return getTargetComponentInfo();
     }
 

@@ -39,6 +39,7 @@ import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.seam.SeamRuntimeIntrospector;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.runtime.api.Framework;
 
@@ -423,7 +424,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         seamInitialized = true;
     }
 
-    public void initOperations() {
+    public void initOperations() throws OperationException{
         if (opsInitialized) {
             return;
         }
@@ -471,7 +472,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
     }
 
     @Override
-    public OperationInfo getOperation(String id) {
+    public OperationInfo getOperation(String id) throws OperationException {
         if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
             id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
         }
@@ -484,7 +485,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
     }
 
     @Override
-    public List<OperationInfo> getOperations() {
+    public List<OperationInfo> getOperations() throws OperationException {
         initOperations();
         return operations;
     }
