@@ -26,15 +26,15 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
+ * Adapter that returns the children of the pointed resource
  *
  * @since 5.7.2
  */
-@WebAdapter(name = "children", type = "ChildrenService")
+@WebAdapter(name = ChildrenAdapter.NAME, type = "ChildrenService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class ChildrenAdapter extends PaginableAdapter {
 
-
+    public static final String NAME = "children";
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {

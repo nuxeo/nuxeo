@@ -37,9 +37,10 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
+ * This object basically overrides the default DocumentObject that
+ * doesn't know how to produce/consume JSON
  *
- *
- * @since TODO
+ * @since 5.7.2
  */
 
 @WebObject(type = "Document")

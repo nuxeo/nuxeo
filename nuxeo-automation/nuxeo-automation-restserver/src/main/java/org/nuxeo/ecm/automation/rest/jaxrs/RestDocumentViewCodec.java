@@ -26,9 +26,9 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 import com.google.common.base.Joiner;
 
 /**
+ * Codec that resolve the Rest url for a document
  *
- *
- * @since TODO
+ * @since 5.7.2
  */
 public class RestDocumentViewCodec extends AbstractDocumentViewCodec {
 

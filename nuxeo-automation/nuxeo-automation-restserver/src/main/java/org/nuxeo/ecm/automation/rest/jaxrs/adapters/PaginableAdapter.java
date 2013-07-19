@@ -35,7 +35,10 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
+ * Abstract adapter to be used when one want to contribute
+ * an adapter base on PageProviders. In order to use it,
+ * just override the {@link PaginableAdapter#getPageProviderDefinition()}
+ * and {@link PaginableAdapter#getParams()}
  *
  * @since 5.7.2
  */

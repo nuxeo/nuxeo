@@ -31,14 +31,16 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Adapter that expose a page provider that needs only one parameter
- * that is the document Id
+ * Adapter that expose a page provider that needs only one parameter that is the
+ * document Id
  *
  * @since 5.7.2
  */
-@WebAdapter(name = "pp", type = "PageProviderService")
+@WebAdapter(name = PageProviderAdapter.NAME, type = "PageProviderService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class PageProviderAdapter extends PaginableAdapter {
+
+    public static final String NAME = "pp";
 
     private String pageProviderName = "CURRENT_DOC_CHILDREN";
 
@@ -50,13 +52,13 @@ public class PageProviderAdapter extends PaginableAdapter {
 
     @Override
     protected Object[] getParams() {
-        return new Object[]{ getTarget().getAdapter(DocumentModel.class).getId()};
+        return new Object[] { getTarget().getAdapter(DocumentModel.class).getId() };
     }
-
 
     @GET
     @Path("{pageProviderName}")
-    public DocumentModelList getProviderDocs(@PathParam("pageProviderName") String providerName) throws ClientException {
+    public DocumentModelList getProviderDocs(@PathParam("pageProviderName")
+    String providerName) throws ClientException {
         pageProviderName = providerName;
         return getDocs();
     }

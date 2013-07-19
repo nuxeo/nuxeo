@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
  * Repo init to test Rest API
  *
  *
- * @since TODO
+ * @since 5.7.2
  */
 public class RestServerInit implements RepositoryInit {
 

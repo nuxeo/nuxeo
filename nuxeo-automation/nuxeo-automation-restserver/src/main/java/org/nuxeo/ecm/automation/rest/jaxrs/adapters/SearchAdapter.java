@@ -31,9 +31,11 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
  *
  * @since 5.7.3
  */
-@WebAdapter(name = "search", type = "SearchService")
+@WebAdapter(name = SearchAdapter.NAME, type = "SearchService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class SearchAdapter extends PaginableAdapter {
+
+    public static final String NAME = "search";
 
     private String extractQueryFromRequest(final HttpServletRequest request) {
         String query = request.getParameter("query");

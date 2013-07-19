@@ -19,9 +19,9 @@ package org.nuxeo.ecm.automation.test.helpers;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
+ * Object that represent a call to the TestOperation automation operation
  *
- *
- * @since TODO
+ * @since 5.7.2
  */
 public class OperationCall {
 

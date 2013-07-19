@@ -26,6 +26,13 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
+/**
+ * Basic operation that just record the documents on which it was called and the
+ * parameters used
+ *
+ *
+ * @since 5.7.2
+ */
 @Operation(id = TestOperation.ID, category = Constants.CAT_SERVICES, label = "log call params", description = "Test operation that log call in a static map")
 public class TestOperation {
 
@@ -53,10 +60,22 @@ public class TestOperation {
         return docs;
     }
 
+    /**
+     * Returns the list of calls since last reset
+     * @return
+     *
+     * @since 5.7.2
+     */
     public static List<OperationCall> getCalls() {
         return calls;
     }
 
+    /**
+     * Resets the calls to the operation
+     *
+     *
+     * @since 5.7.2
+     */
     public static void reset() {
         calls.clear();
     }

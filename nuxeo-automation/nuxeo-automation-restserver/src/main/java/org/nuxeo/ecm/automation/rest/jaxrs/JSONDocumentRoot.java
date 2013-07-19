@@ -23,9 +23,9 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
+ * Basically do the same thing than DocumentRoot but with JSONDocumentObject
  *
- *
- * @since TODO
+ * @since 5.7.2
  */
 public class JSONDocumentRoot extends JSONDocumentObject{
 

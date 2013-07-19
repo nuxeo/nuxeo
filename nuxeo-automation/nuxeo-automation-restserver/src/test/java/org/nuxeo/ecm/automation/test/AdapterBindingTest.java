@@ -24,8 +24,8 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.rest.jaxrs.adapters.BOAdapter;
 import org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapter;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
@@ -49,8 +48,6 @@ import com.sun.jersey.api.client.ClientResponse;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class AdapterBindingTest extends BaseTest {
 
-    @Inject
-    CoreSession session;
 
     @Test
     public void iCanGetAnAdapter() throws Exception {
@@ -60,7 +57,8 @@ public class AdapterBindingTest extends BaseTest {
 
         // When i browse the adapter
         ClientResponse response = getResponse(RequestType.GET,
-                "/id/" + note.getId() + "/@bo/BusinessBeanAdapter");
+                "/id/" + note.getId() + "/@" + BOAdapter.NAME
+                        + "/BusinessBeanAdapter");
 
         // Then i receive a formatted response
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -76,14 +74,17 @@ public class AdapterBindingTest extends BaseTest {
     public void iCanSaveAnAdapter() throws Exception {
         // Given a note and a modified business object representation
         DocumentModel note = RestServerInit.getNote(1, session);
-        String ba = String.format("{\"entity-type\":\"BusinessBeanAdapter\",\"value\":{\"type\""
-                + ":\"Note\",\"id\":\"%s\","
-                + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}",note.getId());
+        String ba = String.format(
+                "{\"entity-type\":\"BusinessBeanAdapter\",\"value\":{\"type\""
+                        + ":\"Note\",\"id\":\"%s\","
+                        + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}",
+                note.getId());
         assertTrue(StringUtils.isBlank((String) note.getPropertyValue("dc:description")));
 
         // When i do a put request on it
         ClientResponse response = getResponse(RequestType.PUT,
-                "/id/" + note.getId() + "/@bo/BusinessBeanAdapter", ba);
+                "/id/" + note.getId() + "/@" + BOAdapter.NAME
+                        + "/BusinessBeanAdapter", ba);
 
         // Then it modifies the description
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -96,17 +97,19 @@ public class AdapterBindingTest extends BaseTest {
 
     @Test
     public void iCanCreateAnAdapter() throws Exception {
-     // Given a note and a modified business object representation
+        // Given a note and a modified business object representation
         DocumentModel folder = RestServerInit.getFolder(0, session);
-        String ba = String.format("{\"entity-type\":\"BusinessBeanAdapter\",\"value\":{\"type\""
-                + ":\"Note\","
-                + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}",folder.getId());
+        String ba = String.format(
+                "{\"entity-type\":\"BusinessBeanAdapter\",\"value\":{\"type\""
+                        + ":\"Note\","
+                        + "\"note\":\"Note 1\",\"title\":\"Note 1\",\"description\":\"description\"}}",
+                folder.getId());
         assertTrue(session.getChildren(folder.getRef()).isEmpty());
-
 
         // When i do a put request on it
         ClientResponse response = getResponse(RequestType.POST,
-                "/id/" + folder.getId() + "/@bo/BusinessBeanAdapter/note2", ba);
+                "/id/" + folder.getId() + "/@" + BOAdapter.NAME
+                        + "/BusinessBeanAdapter/note2", ba);
 
         // Then it modifies the description
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

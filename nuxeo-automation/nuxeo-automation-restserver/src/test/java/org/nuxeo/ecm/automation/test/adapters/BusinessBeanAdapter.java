@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.test.adapters;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -26,11 +24,10 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 /**
  *
  *
- * @since TODO
+ * @since 5.7.2
  */
 public class BusinessBeanAdapter extends BusinessAdapter {
 
-    private static final Log log = LogFactory.getLog(BusinessBeanAdapter.class);
 
     /**
      * Default constructor is needed for jackson mapping

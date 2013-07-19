@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 /**
  *
  *
- * @since TODO
+ * @since 5.7.2
  */
 public class BusinessBeanAdapterFactory implements DocumentAdapterFactory{
 

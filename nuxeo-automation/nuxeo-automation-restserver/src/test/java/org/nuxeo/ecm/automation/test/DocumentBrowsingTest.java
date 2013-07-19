@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -36,7 +35,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
@@ -50,9 +48,6 @@ import com.sun.jersey.api.client.ClientResponse;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentBrowsingTest extends BaseTest {
-
-    @Inject
-    CoreSession session;
 
     @Test
     public void iCanBrowseTheRepoByItsPath() throws Exception {

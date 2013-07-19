@@ -37,13 +37,15 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
+ * Basic CRUD with a BusinessAdapter
  *
  * @since 5.7.2
  */
-@WebAdapter(name = "bo", type = "BOService", targetType = "Document")
+@WebAdapter(name = BOAdapter.NAME, type = "BOService", targetType = "Document")
 @Produces({ "application/json+nxentity", "application/json" })
 public class BOAdapter extends DefaultAdapter {
+
+    public static final String NAME = "bo";
 
     @GET
     @Path("{adapterName}")

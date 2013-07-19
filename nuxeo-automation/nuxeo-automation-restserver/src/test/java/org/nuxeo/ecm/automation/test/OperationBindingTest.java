@@ -25,9 +25,9 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.rest.jaxrs.adapters.OperationAdapter;
 import org.nuxeo.ecm.automation.test.helpers.OperationCall;
 import org.nuxeo.ecm.automation.test.helpers.TestOperation;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -36,7 +36,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
@@ -46,15 +45,12 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
-@LocalDeploy({"nuxeo-automation-restserver:operation-contrib.xml" })
+@LocalDeploy({ "nuxeo-automation-restserver:operation-contrib.xml" })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class OperationBindingTest extends BaseTest {
 
     private static String PARAMS = "{\"params\":{\"one\":\"1\",\"two\": 2}}";
-
-    @Inject
-    CoreSession session;
 
     @Override
     @Before
@@ -70,8 +66,9 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId()
-                + "/@op/testOp", PARAMS);
+        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/"
+                + note.getId() + "/@" + OperationAdapter.NAME + "/testOp",
+                PARAMS);
 
         // Then the operation is called on the document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -90,8 +87,9 @@ public class OperationBindingTest extends BaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // When i call the REST binding on the document resource
-        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/" + note.getId()
-                + "/@op/Chain.testChain","{}");
+        ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/"
+                + note.getId() + "/@" + OperationAdapter.NAME
+                + "/Chain.testChain", "{}");
 
         // Then the operation is called twice on the document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -118,12 +116,11 @@ public class OperationBindingTest extends BaseTest {
         // When i call the REST binding on the children resource
 
         getResponse(RequestType.POSTREQUEST, "id/" + folder.getId()
-                + "/@children/@op/testOp",PARAMS);
+                + "/@children/@" + OperationAdapter.NAME + "/testOp", PARAMS);
 
         // Then the operation is called on all children documents
         List<OperationCall> calls = TestOperation.getCalls();
         assertEquals(session.getChildren(folder.getRef()).size(), calls.size());
-
 
     }
 

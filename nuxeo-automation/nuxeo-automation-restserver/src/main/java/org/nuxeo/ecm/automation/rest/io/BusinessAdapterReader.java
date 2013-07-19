@@ -41,9 +41,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
+ * JAX-RS Message body reeader to decode BusinessAdapter
  *
- *
- * @since TODO
+ * @since 5.7.2
  */
 @Provider
 @Consumes({"application/json+nxentity","application/json"})

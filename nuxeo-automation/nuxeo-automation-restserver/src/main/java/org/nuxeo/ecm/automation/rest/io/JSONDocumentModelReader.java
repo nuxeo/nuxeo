@@ -50,7 +50,9 @@ import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
- *
+ * JAX-RS reader for a DocumentModel. If an id is given, it tries
+ * to reattach the document to the session. If not, it creates a
+ * ready to create DocumentModel filled with the properties found.
  *
  * @since 5.7.2
  */
@@ -92,7 +94,7 @@ public class JSONDocumentModelReader implements
      * @return
      * @throws Exception
      *
-     * @since TODO
+     * @since 5.7.2
      */
     protected DocumentModel readRequest(String content,
             MultivaluedMap<String, String> httpHeaders) throws Exception {

@@ -47,9 +47,11 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.7.2
  */
-@WebAdapter(name = "op", type = "OperationService")
+@WebAdapter(name = OperationAdapter.NAME, type = "OperationService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class OperationAdapter extends DefaultAdapter {
+
+    public static final String NAME = "op";
 
     @POST
     @Path("{operationName}")
@@ -68,7 +70,8 @@ public class OperationAdapter extends DefaultAdapter {
             if (doc != null) {
                 xreq.setInput(doc);
             } else {
-                DocumentModelList docs = getTarget().getAdapter(DocumentModelList.class);
+                DocumentModelList docs = getTarget().getAdapter(
+                        DocumentModelList.class);
                 xreq.setInput(docs);
             }
 

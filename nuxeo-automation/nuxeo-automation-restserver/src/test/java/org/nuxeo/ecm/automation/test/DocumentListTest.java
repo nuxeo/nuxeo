@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +26,9 @@ import javax.ws.rs.core.Response;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.rest.jaxrs.adapters.ChildrenAdapter;
+import org.nuxeo.ecm.automation.rest.jaxrs.adapters.PageProviderAdapter;
+import org.nuxeo.ecm.automation.rest.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -55,7 +58,7 @@ public class DocumentListTest extends BaseTest {
 
         // When I query for it children
         ClientResponse response = getResponse(RequestType.GET,
-                "id/" + folder.getId() + "/@children");
+                "id/" + folder.getId() + "/@" + ChildrenAdapter.NAME);
 
         // Then I get its children as JSON
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -76,8 +79,8 @@ public class DocumentListTest extends BaseTest {
         // When I search for "nuxeo"
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("fullText", "nuxeo");
-        ClientResponse response = getResponse(RequestType.GET, "path/@search",
-                queryParams);
+        ClientResponse response = getResponse(RequestType.GET, "path/@"
+                + SearchAdapter.NAME, queryParams);
 
         // Then I get the document in the result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -93,7 +96,8 @@ public class DocumentListTest extends BaseTest {
 
         // When I search for "nuxeo"
         ClientResponse response = getResponse(RequestType.GET,
-                "path" + folder.getPathAsString() + "/@pp/TEST_PP");
+                "path" + folder.getPathAsString() + "/@"
+                        + PageProviderAdapter.NAME + "/TEST_PP");
 
         // Then I get the two document in the result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
