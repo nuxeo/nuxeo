@@ -48,42 +48,6 @@
       </property>
     </widgetType>
 
-    <widgetType name="toggleableDocumentLayoutWithForms">
-      <configuration>
-        <sinceVersion>5.6</sinceVersion>
-        <title>Toggleable document layout</title>
-        <description>
-          This widget displays a form layout which mode can be
-          toggled, with forms inside it.
-
-          Note that usually layouts do not contain
-          any forms, but are surrounded by one, and nesting forms breaks the
-          available actions. So you should make sure there is no enclosing form
-          around the layout, or around this widget, when using it.
-        </description>
-        <categories>
-          <category>tab_designer</category>
-        </categories>
-        <fields>
-          <defaultConfiguration>
-            <field></field>
-          </defaultConfiguration>
-        </fields>
-        <containingForm>true</containingForm>
-        <handlingLabels>true</handlingLabels>
-        <supportedModes>
-          <mode>view</mode>
-          <mode>edit</mode>
-        </supportedModes>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /dam/widgets/toggleable_document_layout_with_forms_widget.xhtml
-      </property>
-    </widgetType>
-
     <widgetType name="damSingleDocumentSuggestion">
       <configuration>
         <title>Single document suggestion</title>
