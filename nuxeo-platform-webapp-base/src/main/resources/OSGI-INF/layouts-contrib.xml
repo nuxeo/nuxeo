@@ -1927,6 +1927,70 @@
       </property>
     </widgetType>
 
+    <widgetType name="contentViewSearchLayout">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Content view search layout</title>
+        <description>
+          This widget displays the search layout of a content view.
+        </description>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+        <properties>
+          <layouts mode="any">
+            <layout name="contentView_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>contentViewName</widget>
+                </row>
+                <row>
+                  <widget>styleClass</widget>
+                </row>
+              </rows>
+              <widget name="contentViewName" type="selectOneResource">
+                <labels>
+                  <label mode="any">Content View name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Displays the search layout of this content view.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>contentViewName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="resourceName">contentViews</property>
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="styleClass" type="text">
+                <labels>
+                  <label mode="any">Style class</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The given style class will be put in a "div"
+                    element around the search layout.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>styleClass</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/content_view_search_layout_widget.xhtml
+      </property>
+    </widgetType>
+
     <widgetType name="saveBox">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
