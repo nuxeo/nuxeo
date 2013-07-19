@@ -86,7 +86,7 @@
             </tr>
             <tr>
                 <td style="font-weight:bold; font-size:16px; line-height: 24px;">
-                  ${Runtime.getProperty('nuxeo.notification.eMailSignatory')}
+                  ${Runtime.getProperty('nuxeo.notification.eMailSigner')}
                 </td>
             </tr>
             </tbody>
