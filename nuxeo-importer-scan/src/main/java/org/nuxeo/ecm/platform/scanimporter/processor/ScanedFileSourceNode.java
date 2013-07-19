@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.scanimporter.processor;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +81,6 @@ public class ScanedFileSourceNode extends FileSourceNode {
 
     @Override
     public List<SourceNode> getChildren() {
-
         List<SourceNode> children = new ArrayList<SourceNode>();
 
         ScannedFileMapperService sfms = Framework.getLocalService(ScannedFileMapperService.class);
@@ -100,13 +100,17 @@ public class ScanedFileSourceNode extends FileSourceNode {
                     log.error("Error during properties parsing", e);
                 }
             } else if (child.isDirectory()) {
-                if (useXMLMapping) {
-                    if (child.list(new XmlMetaDataFileFilter()).length > 0) {
-                        children.add(new ScanedFileSourceNode(child));
-                    }
+                if (child.listFiles(new DirectoryFilter()).length > 0) {
+                    children.add(new ScanedFileSourceNode(child));
                 } else {
-                    if (child.list().length > 0) {
-                        children.add(new ScanedFileSourceNode(child));
+                    if (useXMLMapping) {
+                        if (child.list(new XmlMetaDataFileFilter()).length > 0) {
+                            children.add(new ScanedFileSourceNode(child));
+                        }
+                    } else {
+                        if (child.list().length > 0) {
+                            children.add(new ScanedFileSourceNode(child));
+                        }
                     }
                 }
             } else if (!useXMLMapping) {
@@ -138,5 +142,14 @@ public class ScanedFileSourceNode extends FileSourceNode {
 
     public String getDescriptorFileName() {
         return file.getAbsolutePath();
+    }
+
+    private class DirectoryFilter implements FileFilter {
+
+        @Override
+        public boolean accept(File file) {
+            return file.isDirectory();
+        }
+
     }
 }
