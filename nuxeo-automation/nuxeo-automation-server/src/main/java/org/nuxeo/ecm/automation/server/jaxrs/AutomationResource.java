@@ -25,6 +25,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource;
 import org.nuxeo.ecm.automation.server.jaxrs.debug.DebugResource;
@@ -102,7 +103,7 @@ public class AutomationResource {
     }
 
     @GET
-    public AutomationInfo doGet() {
+    public AutomationInfo doGet() throws OperationException {
         return new AutomationInfo(service);
     }
 
