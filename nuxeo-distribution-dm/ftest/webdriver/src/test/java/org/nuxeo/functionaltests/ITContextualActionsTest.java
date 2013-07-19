@@ -44,7 +44,7 @@ public class ITContextualActionsTest extends AbstractTest {
 
     public final static String DOCUMENT_STATE = "Project";
 
-    public final static String DOCUMENT_LOCKED = "LOCKED";
+    public final static String DOCUMENT_LOCKED = "Locked";
 
     public final static String NOTE_TYPE = "Note";
 
