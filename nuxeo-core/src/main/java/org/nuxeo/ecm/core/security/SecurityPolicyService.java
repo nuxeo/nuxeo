@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.security;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -85,5 +86,14 @@ public interface SecurityPolicyService extends Serializable {
      */
     Collection<SQLQuery.Transformer> getPoliciesQueryTransformers(
             String repositoryName);
+
+    /**
+     * Gets the list of registered security policies.
+     *
+     * @return the policies
+     *
+     * @since 5.7.2
+     */
+    List<SecurityPolicy> getPolicies();
 
 }

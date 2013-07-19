@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,6 +45,22 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
     }
 
     @Override
+    public QueryTransformer getQueryTransformer(String repositoryName,
+            String queryLanguage) {
+        /*
+         * By default in this abstract class: If we're expressible in NXQL and
+         * the query transformer is IDENTITY, then express as
+         * QueryTransformer.IDENTITY in any language.
+         */
+        if (isExpressibleInQuery(repositoryName)
+                && getQueryTransformer(repositoryName) == Transformer.IDENTITY) {
+            return QueryTransformer.IDENTITY;
+        }
+        // else we don't know how to transform
+        throw new UnsupportedOperationException(queryLanguage);
+    }
+
+    @Override
     public boolean isExpressibleInQuery(String repositoryName) {
         return isExpressibleInQuery();
     }
@@ -57,6 +73,18 @@ public abstract class AbstractSecurityPolicy implements SecurityPolicy {
     public boolean isExpressibleInQuery() {
         // by default, we don't know, so no
         return false;
+    }
+
+    @Override
+    public boolean isExpressibleInQuery(String repositoryName,
+            String queryLanguage) {
+        /*
+         * By default in this abstract class: If we're expressible in NXQL and
+         * the query transformer is IDENTITY, then we're expressible (as
+         * QueryTransformer.IDENTITY) in any language.
+         */
+        return isExpressibleInQuery(repositoryName)
+                && getQueryTransformer(repositoryName) == Transformer.IDENTITY;
     }
 
 }
