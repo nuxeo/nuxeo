@@ -45,6 +45,9 @@
 
     <action id="summary_document_annotations_count" type="widget" order="20">
       <category>SUMMARY_INDICATORS</category>
+      <filter-id>view_preview</filter-id>
+      <filter-id>not_folder</filter-id>
+      <filter-id>not_anonymous</filter-id>
       <properties>
         <property name="widgetName">document_annotations_count</property>
       </properties>

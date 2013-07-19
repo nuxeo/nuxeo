@@ -45,6 +45,9 @@
 
     <action id="summary_document_comments_count" type="widget" order="30">
       <category>SUMMARY_INDICATORS</category>
+      <filter-id>commentable</filter-id>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>not_anonymous</filter-id>
       <properties>
         <property name="widgetName">document_comments_count</property>
       </properties>
