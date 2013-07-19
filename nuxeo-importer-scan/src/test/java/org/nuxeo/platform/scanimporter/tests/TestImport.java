@@ -90,6 +90,33 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
+    public void shouldSkipInitialContainerCreationSkipped() throws Exception {
+        String testPath = deployTestFiles("test3");
+        File xmlFile = new File(testPath + "/descriptor.xml");
+        assertTrue(xmlFile.exists());
+
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "OSGI-INF/importerservice-test-contrib3.xml");
+
+        ScannedFileImporter importer = new ScannedFileImporter();
+
+        ImporterConfig config = new ImporterConfig();
+        config.setTargetPath("/");
+        config.setNbThreads(1);
+        config.setBatchSize(10);
+        config.setCreateInitialFolder(false);
+        config.setUseXMLMapping(true);
+
+        importer.doImport(new File(testPath), config);
+
+        session.save();
+        DocumentModelList alldocs = session.query("select * from File order by ecm:path");
+        assertEquals("/testFile.txt", alldocs.get(0).getPathAsString());
+
+    }
+
+
+    @Test
     public void testDocTypeMappingInImport() throws Exception {
 
         String testPath = deployTestFiles("test4");
