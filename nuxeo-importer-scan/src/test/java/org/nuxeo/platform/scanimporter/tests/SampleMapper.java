@@ -20,7 +20,7 @@ public class SampleMapper implements DocumentTypeMapper {
     public String getTargetDocumentType(Document xmlDoc, File file) {
         try {
             XPath xpath = new Dom4jXPath("//resource-definition");
-            List nodes = xpath.selectNodes(xmlDoc);
+            List<?> nodes = xpath.selectNodes(xmlDoc);
             if (nodes.size()>=1) {
                 DefaultElement  elem = (DefaultElement ) nodes.get(0);
                 return elem.attribute("name").getValue();

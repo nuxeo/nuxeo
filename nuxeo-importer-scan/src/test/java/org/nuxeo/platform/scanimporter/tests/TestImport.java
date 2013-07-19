@@ -52,7 +52,8 @@ public class TestImport extends ImportTestCase {
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib3.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "OSGI-INF/importerservice-test-contrib3.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -60,14 +61,14 @@ public class TestImport extends ImportTestCase {
         config.setTargetPath("/");
         config.setNbThreads(1);
         config.setBatchSize(10);
+        config.setUpdate(false);
         config.setUseXMLMapping(true);
 
         importer.doImport(new File(testPath), config);
 
         session.save();
 
-        DocumentModelList alldocs = session
-                .query("select * from File order by ecm:path");
+        DocumentModelList alldocs = session.query("select * from File order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
             log.info("imported : " + doc.getPathAsString() + "-"
@@ -82,8 +83,10 @@ public class TestImport extends ImportTestCase {
         assertEquals("3-77-2", doc.getPropertyValue("dc:title"));
         assertEquals("12345", doc.getPropertyValue("dc:coverage"));
 
-        assertEquals("testFile.txt", ((Blob)doc.getPropertyValue("file:content")).getFilename());
-        assertEquals("This is a test.", ((Blob)doc.getPropertyValue("file:content")).getString());
+        assertEquals("testFile.txt",
+                ((Blob) doc.getPropertyValue("file:content")).getFilename());
+        assertEquals("This is a test.",
+                ((Blob) doc.getPropertyValue("file:content")).getString());
 
         assertFalse(new File(testPath + "/descriptor.xml").exists());
 
@@ -184,7 +187,6 @@ public class TestImport extends ImportTestCase {
 
     }
 
-
     @Test
     public void testDocTypeMappingInImport() throws Exception {
 
@@ -192,8 +194,8 @@ public class TestImport extends ImportTestCase {
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
 
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test", "OSGI-INF/importerservice-test-contrib4.xml");
-
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "OSGI-INF/importerservice-test-contrib4.xml");
 
         ScannedFileImporter importer = new ScannedFileImporter();
 
@@ -207,8 +209,7 @@ public class TestImport extends ImportTestCase {
 
         session.save();
 
-        DocumentModelList alldocs = session
-                .query("select * from Picture order by ecm:path");
+        DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
 
         for (DocumentModel doc : alldocs) {
             log.info("imported : " + doc.getPathAsString() + "-"

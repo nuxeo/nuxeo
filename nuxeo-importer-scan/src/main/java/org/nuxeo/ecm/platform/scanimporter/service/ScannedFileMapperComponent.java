@@ -89,7 +89,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
         for (ScanFileFieldMapping fieldMap : mappingDesc.getFieldMappings()) {
 
             XPath xpath = new Dom4jXPath(fieldMap.getSourceXPath());
-            List nodes = xpath.selectNodes(xmlDoc);
+            List<?> nodes = xpath.selectNodes(xmlDoc);
             if (nodes.size() == 1) {
                 DefaultElement elem = (DefaultElement) nodes.get(0);
                 String value = null;
@@ -129,7 +129,7 @@ public class ScannedFileMapperComponent extends DefaultComponent implements
 
         for (ScanFileBlobMapping blobMap : mappingDesc.getBlobMappings()) {
             XPath xpath = new Dom4jXPath(blobMap.getSourceXPath());
-            List nodes = xpath.selectNodes(xmlDoc);
+            List<?> nodes = xpath.selectNodes(xmlDoc);
             for (Object node : nodes) {
                 DefaultElement elem = (DefaultElement) node;
                 String filePath = elem.attributeValue(blobMap.getSourcePathAttribute());
