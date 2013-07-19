@@ -279,9 +279,9 @@
       </subWidgetRefs>
     </widget>
 
-    <widget name="damSearchFilters" type="template">
+    <widget name="damSearchFilters" type="contentViewSearchLayout">
       <properties widgetMode="any">
-        <property name="template">/dam/widgets/dam_search_filters_widget_template.xhtml</property>
+        <property name="contentViewName">#{damSearchActions.currentContentViewName}</property>
       </properties>
     </widget>
 
