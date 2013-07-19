@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.Principal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -55,10 +56,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.security.SecurityPolicy;
+import org.nuxeo.ecm.core.security.SecurityPolicy.QueryTransformer;
+import org.nuxeo.ecm.core.security.SecurityPolicyService;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
@@ -74,6 +79,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Transformer of CMISQL queries into real SQL queries for the actual database.
@@ -238,6 +244,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         hierTable = database.getTable(Model.HIER_TABLE_NAME);
 
         query = new QueryObject(typeManager);
+        statement = applySecurityPolicyQueryTransformers(service,
+                queryFilter.getPrincipal(), statement);
         CmisQueryWalker walker = null;
         try {
             walker = QueryUtil.getWalker(statement);
@@ -255,7 +263,8 @@ public class CMISQLQueryMaker implements QueryMaker {
         } catch (QueryParseException e) {
             throw e;
         } catch (Exception e) {
-            throw new QueryParseException(e.getMessage(), e);
+            throw new QueryParseException(e.getMessage() + " for query: "
+                    + statement, e);
         }
 
         resolveQualifiers();
@@ -566,6 +575,38 @@ public class CMISQLQueryMaker implements QueryMaker {
         q.selectParams.addAll(fromParams);
         q.selectParams.addAll(whereParams);
         return q;
+    }
+
+    /**
+     * Applies security policies query transformers to the statement, if
+     * possible. Otherwise raises an exception.
+     *
+     * @since 5.7.2
+     * @throws CmisRuntimeException If a security policy prevents doing CMIS
+     *             queries.
+     */
+    protected String applySecurityPolicyQueryTransformers(
+            NuxeoCmisService service, Principal principal, String statement) {
+        SecurityPolicyService securityPolicyService = Framework.getLocalService(SecurityPolicyService.class);
+        if (securityPolicyService == null) {
+            return statement;
+        }
+        String repositoryId = service.getNuxeoRepository().getId();
+        for (SecurityPolicy policy : securityPolicyService.getPolicies()) {
+            if (!policy.isRestrictingPermission(SecurityConstants.BROWSE)) {
+                continue;
+            }
+            // check CMISQL transformer (new @since 5.7.2)
+            if (!policy.isExpressibleInQuery(repositoryId, TYPE)) {
+                throw new CmisRuntimeException("Security policy "
+                        + policy.getClass().getName()
+                        + " prevents CMISQL execution");
+            }
+            QueryTransformer transformer = policy.getQueryTransformer(
+                    repositoryId, TYPE);
+            statement = transformer.transform(principal, statement);
+        }
+        return statement;
     }
 
     protected void findVersionableQualifiers() {

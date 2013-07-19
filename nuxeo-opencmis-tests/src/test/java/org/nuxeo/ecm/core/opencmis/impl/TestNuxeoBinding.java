@@ -89,6 +89,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -2727,6 +2728,50 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryWithSecurityPolicy() throws Exception {
+        CoreSession session = nuxeotc.session;
+        DocumentModel doc = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        doc.setPropertyValue("dc:title", "SECRET should not be listed");
+        session.saveDocument(doc);
+        session.save();
+
+        ObjectList res = query("SELECT cmis:objectId FROM File");
+        assertEquals(3, res.getNumItems().intValue());
+
+        // manually check
+        res = query("SELECT cmis:objectId FROM File WHERE dc:title NOT LIKE 'SECRET%'");
+        assertEquals(2, res.getNumItems().intValue());
+
+        // deploy a security policy with a non-trivial query transformer
+        // that has no CMISQL equivalent
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/security-policy-contrib.xml");
+        // check that queries now fail
+        try {
+            query("SELECT cmis:objectId FROM File");
+            fail("Should be denied due to security policy");
+        } catch (CmisRuntimeException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Security policy"));
+        }
+
+        // without it it works again
+        nuxeotc.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/security-policy-contrib.xml");
+        res = query("SELECT cmis:objectId FROM File");
+        assertEquals(3, res.getNumItems().intValue());
+
+        // deploy a security policy with a CMISQL transformer
+        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                "OSGI-INF/security-policy-contrib2.xml");
+        res = query("SELECT cmis:objectId FROM File");
+        assertEquals(2, res.getNumItems().intValue());
+        res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
+        assertEquals(2, res.getNumItems().intValue());
     }
 
 }
