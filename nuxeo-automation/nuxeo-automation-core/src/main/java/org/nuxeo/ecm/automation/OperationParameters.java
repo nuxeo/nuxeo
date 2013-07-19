@@ -15,7 +15,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.scripting.Scripting;
 
 /**
  * An object holding the runtime parameters that should be used by an operation
@@ -58,6 +60,20 @@ public class OperationParameters implements Serializable {
     }
 
     public OperationParameters set(String key, Object valueRef) {
+        if (valueRef instanceof String) {
+            if (((String) valueRef).startsWith("expr:")) {
+                valueRef = ((String) valueRef).substring(5);
+                // Unescape xml checking
+                valueRef = StringEscapeUtils.unescapeXml(((String) valueRef));
+                if (((String) valueRef).contains("@{")) {
+                    params.put(key, Scripting.newTemplate(((String) valueRef)));
+                } else {
+                    params.put(key,
+                            Scripting.newExpression(((String) valueRef)));
+                }
+                return this;
+            }
+        }
         params.put(key, valueRef);
         return this;
     }
