@@ -216,17 +216,17 @@ public class SecurityActionsBean extends InputController implements
 
         List<AbstractTableCell> cells = new ArrayList<AbstractTableCell>();
 
-        List<String> grantedPerms = securityData.getCurrentDocGrant().get(user);
-        List<String> deniedPerms = securityData.getCurrentDocDeny().get(user);
+        final List<String> grantedPerms = securityData.getCurrentDocGrant().get(user);
+        final List<String> deniedPerms = securityData.getCurrentDocDeny().get(user);
         if (user.equals(SecurityConstants.EVERYONE)) {
 
             if (deniedPerms != null
                     && deniedPerms.contains(SecurityConstants.EVERYTHING)) {
-                // remove DENY EveryThing to EveryOne from display list
                 blockRightInheritance = true;
-            }
-            if (grantedPerms == null) {
-                return null;
+                if (grantedPerms == null && deniedPerms.size() == 1) {
+                    // the only perm is deny everything, there is no need to display the row
+                    return null;
+                }
             }
         }
 

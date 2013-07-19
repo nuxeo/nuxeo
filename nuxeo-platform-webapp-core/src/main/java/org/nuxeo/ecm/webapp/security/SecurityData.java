@@ -298,6 +298,8 @@ public class SecurityData implements Serializable {
         }
         currentDocGrant.remove(principalName);
 
+        // if user everyone had deny everything perm, then we have to
+        // keep this perm
         if (principalName.equals(SecurityConstants.EVERYONE)) {
 
             final List<String> deniedPerms = currentDocDeny.get(principalName);
@@ -313,6 +315,7 @@ public class SecurityData implements Serializable {
         } else {
             currentDocDeny.remove(principalName);
         }
+
         needSave = true;
         rebuildUserLists();
     }
