@@ -111,6 +111,9 @@
         <field>file:content</field>
         <field>file:filename</field>
       </fields>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+      </properties>
     </widget>
 
     <widget name="summary_picture_view" type="picture_view" />
