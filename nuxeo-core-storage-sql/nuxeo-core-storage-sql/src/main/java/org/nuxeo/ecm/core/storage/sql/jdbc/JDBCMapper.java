@@ -230,9 +230,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         st.execute(sql);
                         countExecute();
                     } catch (SQLException e) {
-                        throw new SQLException("Error creating table: " + sql
-                                + " : " + e.getMessage(), e);
+                        try {
+                            closeStatement(st);
+                        } finally {
+                            throw new SQLException("Error creating table: "
+                                    + sql + " : " + e.getMessage(), e);
+                        }
                     }
+
                     for (String s : table.getPostCreateSqls(model)) {
                         logger.log(s);
                         try {
