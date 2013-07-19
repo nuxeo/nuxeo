@@ -60,6 +60,9 @@ public class ImporterConfig implements Serializable {
     @XNode("mergeInitialFolder")
     protected boolean mergeInitialFolder = false;
 
+    @XNode("update")
+    protected boolean update = true;
+
     public String getSourcePath() {
         if (sourcePath == null) {
             return null;
@@ -92,6 +95,10 @@ public class ImporterConfig implements Serializable {
 
     public boolean isCreateInitialFolder() {
         return createInitialFolder;
+    }
+
+    public boolean isUpdate() {
+        return update;
     }
 
     public void setCreateInitialFolder(boolean createInitialFolder) {
@@ -128,6 +135,10 @@ public class ImporterConfig implements Serializable {
 
     public void setUseXMLMapping(boolean useXMLMapping) {
         this.useXMLMapping = useXMLMapping;
+    }
+
+    public void setUpdate(boolean update) {
+        this.update = update;
     }
 
 }

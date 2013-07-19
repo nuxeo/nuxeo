@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
@@ -67,30 +68,44 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
 
         String docType = getTargetContainerType();
         String name = getValidNameFromFileName(node.getName());
+        boolean isUpdateDocument = false;
 
+        PathRef ref = new PathRef(parent.getPathAsString(), name);
         if (parent.getPathAsString().equals(config.getTargetPath())
                 && node.getSourcePath().equals(config.getSourcePath())) {
             // initial root creation
             if (!config.isCreateInitialFolder()) {
                 return parent;
             }
-            PathRef ref = new PathRef(parent.getPathAsString(), name);
             if (config.isMergeInitialFolder()) {
                 if (session.exists(ref)) {
                     return session.getDocument(ref);
                 }
             } else {
                 if (session.exists(ref)) {
-                    name = name + "-" + System.currentTimeMillis();
+                    if (config.isUpdate()) {
+                        isUpdateDocument = true;
+                    } else {
+                        name = name + "-" + System.currentTimeMillis();
+                    }
                 }
+            }
+        } else {
+            if (session.exists(ref) && config.isUpdate()) {
+                isUpdateDocument = true;
             }
         }
 
         Map<String, Object> options = new HashMap<String, Object>();
-        DocumentModel doc = session.createDocumentModel(docType, options);
-        doc.setPathInfo(parent.getPathAsString(), name);
-        doc.setProperty("dublincore", "title", node.getName());
-        doc = session.createDocument(doc);
+        DocumentModel doc;
+        if (isUpdateDocument) {
+            doc = session.getDocument(ref);
+        } else {
+            doc = session.createDocumentModel(docType, options);
+            doc.setPathInfo(parent.getPathAsString(), name);
+            doc.setProperty("dublincore", "title", node.getName());
+            doc = session.createDocument(doc);
+        }
         return doc;
     }
 
@@ -106,6 +121,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
             docType = scanBH.getTargetType();
             setLeafType(docType);
         }
+
         DocumentModel doc = defaultCreateLeafNode(session, parent, node);
 
         // XXX should be a callback on commit !!!
@@ -117,4 +133,43 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
         return doc;
     }
 
+    protected DocumentModel defaultCreateLeafNode(CoreSession session,
+            DocumentModel parent, SourceNode node) throws Exception {
+
+        BlobHolder bh = node.getBlobHolder();
+
+        String mimeType = bh.getBlob().getMimeType();
+        if (mimeType == null) {
+            mimeType = getMimeType(node.getName());
+        }
+
+        String name = getValidNameFromFileName(node.getName());
+        String fileName = node.getName();
+
+        DocumentRef docRef = new PathRef(parent.getPathAsString(), name);
+
+        DocumentModel doc;
+        boolean docExists = session.exists(docRef);
+        if (docExists && config.isUpdate()) {
+            doc = session.getDocument(docRef);
+        } else {
+            Map<String, Object> options = new HashMap<String, Object>();
+            doc = session.createDocumentModel(leafType, options);
+            doc.setPathInfo(parent.getPathAsString(), name);
+            doc.setProperty("dublincore", "title", node.getName());
+        }
+        doc.setProperty("file", "filename", fileName);
+        doc.setProperty("file", "content", bh.getBlob());
+
+        if (docExists && config.isUpdate()) {
+            doc = session.saveDocument(doc);
+        } else {
+            doc = session.createDocument(doc);
+        }
+
+        doc = setDocumentProperties(session, bh.getProperties(), doc);
+
+
+        return doc;
+    }
 }

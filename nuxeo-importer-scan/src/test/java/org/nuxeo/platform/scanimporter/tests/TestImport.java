@@ -86,7 +86,76 @@ public class TestImport extends ImportTestCase {
         assertEquals("This is a test.", ((Blob)doc.getPropertyValue("file:content")).getString());
 
         assertFalse(new File(testPath + "/descriptor.xml").exists());
+
+    }
+
+    @Test
+    public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled() throws Exception {
+        String testPath = deployTestFiles("test3");
+        File xmlFile = new File(testPath + "/descriptor.xml");
+        assertTrue(xmlFile.exists());
+
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "OSGI-INF/importerservice-test-contrib3.xml");
+
+        ScannedFileImporter importer = new ScannedFileImporter();
+
+        ImporterConfig config = new ImporterConfig();
+        config.setTargetPath("/");
+        config.setNbThreads(1);
+        config.setBatchSize(10);
+        config.setUpdate(false);
+        config.setUseXMLMapping(true);
+
+        // Import once
+        importer.doImport(new File(testPath), config);
+        session.save();
+        DocumentModelList alldocs = session.query("select * from Folder");
+        assertEquals(1, alldocs.size());
+
+        // Import twice
+        importer.doImport(new File(testPath), config);
+        session.save();
+        alldocs = session.query("select * from Folder");
+        assertEquals(2, alldocs.size());
+
         closeSession();
+
+    }
+
+    @Test
+    public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled() throws Exception {
+        String testPath = deployTestFiles("test3");
+        File xmlFile = new File(testPath + "/descriptor.xml");
+        assertTrue(xmlFile.exists());
+
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "OSGI-INF/importerservice-test-contrib3.xml");
+
+        ScannedFileImporter importer = new ScannedFileImporter();
+
+        ImporterConfig config = new ImporterConfig();
+        config.setTargetPath("/");
+        config.setNbThreads(1);
+        config.setBatchSize(10);
+        // Enabled Update new Feature
+        config.setUpdate(true);
+        config.setUseXMLMapping(true);
+
+        // Import once
+        importer.doImport(new File(testPath), config);
+        session.save();
+        DocumentModelList alldocs = session.query("select * from Folder");
+        assertEquals(1, alldocs.size());
+
+        // Import twice
+        importer.doImport(new File(testPath), config);
+        session.save();
+        alldocs = session.query("select * from Folder");
+        assertEquals(1, alldocs.size());
+
+        closeSession();
+
     }
 
     @Test
