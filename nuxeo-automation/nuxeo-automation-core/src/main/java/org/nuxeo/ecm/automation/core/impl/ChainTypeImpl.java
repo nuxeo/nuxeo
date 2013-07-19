@@ -235,15 +235,31 @@ public class ChainTypeImpl implements OperationType {
     public Class<?> getOperationOutput(Class<?> input,
             OperationType operationType) {
         InvokableMethod[] methods = operationType.getMethodsMatchingInput(input);
-        if (methods == null) {
+        if (methods == null || methods.length == 0) {
             return input;
         }
-        Class<?> nextInput = methods[0].getOutputType();
+        // Choose the top priority method
+        InvokableMethod topMethod = getTopMethod(methods);
+        Class<?> nextInput = topMethod.getOutputType();
         // If output is void, skip this method
         if (nextInput == Void.TYPE) {
             return input;
         }
         return nextInput;
+    }
+
+    /**
+     * @since 5.7.2 Define the top priority method to take into account for
+     *        chain operations signature.
+     */
+    protected InvokableMethod getTopMethod(InvokableMethod[] methods) {
+        InvokableMethod topMethod = methods[0];
+        for (InvokableMethod method : methods) {
+            if (method.getPriority() > topMethod.getPriority()) {
+                topMethod = method;
+            }
+        }
+        return topMethod;
     }
 
     @Override
