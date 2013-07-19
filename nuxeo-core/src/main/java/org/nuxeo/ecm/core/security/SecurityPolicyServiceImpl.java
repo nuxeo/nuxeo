@@ -83,7 +83,8 @@ public class SecurityPolicyServiceImpl implements SecurityPolicyService {
         log.debug("Ordered security policies: " + policyNames.toString());
     }
 
-    private List<SecurityPolicy> getPolicies() {
+    @Override
+    public synchronized List<SecurityPolicy> getPolicies() {
         if (policies == null) {
             computePolicies();
         }

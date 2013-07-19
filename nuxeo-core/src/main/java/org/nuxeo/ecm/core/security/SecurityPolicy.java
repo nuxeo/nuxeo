@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,7 @@ import java.security.Principal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 
 /**
  * Interface for pluggable core security policy.
@@ -71,6 +71,21 @@ public interface SecurityPolicy {
     boolean isExpressibleInQuery(String repositoryName);
 
     /**
+     * Checks if this policy can be expressed in a string-based query for given
+     * repository.
+     * <p>
+     * If not, then any query made will have to be post-filtered, if possible,
+     * otherwise denied.
+     *
+     * @param repositoryName the target repository name.
+     * @return {@code true} if the policy can be expressed in a string-based
+     *         query
+     *
+     * @since 5.7.2
+     */
+    boolean isExpressibleInQuery(String repositoryName, String queryLanguage);
+
+    /**
      * Get the transformer to use to apply this policy to a query.
      * <p>
      * Called only when {@link #isExpressibleInQuery()} returned {@code true}
@@ -78,6 +93,59 @@ public interface SecurityPolicy {
      * @param repositoryName the target repository name.
      * @return the transformer
      */
-    SQLQuery.Transformer getQueryTransformer(String repositoryName);
+    Transformer getQueryTransformer(String repositoryName);
+
+    /**
+     * Get the string-based transformer to use to apply this policy to a query.
+     * <p>
+     * Called only when {@link #isExpressibleInQuery(String, String)} returned
+     * {@code true}
+     *
+     * @param repositoryName the target repository name.
+     * @return the transformer
+     *
+     * @since 5.7.2
+     */
+    QueryTransformer getQueryTransformer(String repositoryName,
+            String queryLanguage);
+
+    /**
+     * Interface for a class that can transform a string-based query into
+     * another. Not used for NXQL.
+     *
+     * @since 5.7.2
+     */
+    interface QueryTransformer {
+
+        /**
+         * Query transformer that does nothing.
+         */
+        QueryTransformer IDENTITY = new IdentityQueryTransformer();
+
+        /**
+         * Transforms a query into another query that has the security policy
+         * applied.
+         *
+         * @param principal the principal making the query
+         * @param query the query
+         * @return the query with security policy applied
+         *
+         * @since 5.7.2
+         */
+        String transform(Principal principal, String query);
+    }
+
+    /**
+     * Query transformer that does nothing. Use
+     * {@link QueryTransformer#IDENTITY} instead of instantiating this class.
+     *
+     * @since 5.7.2
+     */
+    class IdentityQueryTransformer implements QueryTransformer {
+        @Override
+        public String transform(Principal principal, String query) {
+            return query;
+        }
+    }
 
 }
