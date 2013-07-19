@@ -81,6 +81,11 @@
       <artifactId>servlet-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+    </dependency>
+
     <!-- Needed by H2 fulltext -->
     <dependency>
       <groupId>org.apache.lucene</groupId>
