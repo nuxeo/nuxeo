@@ -16,8 +16,10 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -33,11 +35,14 @@ import org.openqa.selenium.WebElement;
  */
 public class ITSelectAndFilterTest extends AbstractTest {
 
-    protected final String checkBoxXPath = "td/input[@type=\"checkbox\"]";
+    protected final String CHECK_BOX_XPATH = "td/input[@type=\"checkbox\"]";
 
-    protected final String documentTitleXPath = "td//span[@id[starts-with(.,\"title_\")]]";
+    protected final String DOCUMENT_TITLE_XPATH = "td//span[@id[starts-with(.,\"title_\")]]";
 
-    protected final String resetFilterId = "cv_document_content_0_resetFilterForm:resetFilter";
+    protected final String RESET_FILTER_XPATH = "cv_document_content_0_resetFilterForm:resetFilter";
+
+    private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
+            + new Date().getTime();
 
     /**
      * This tests create 2 documents in a workspace, select one of them, filter
@@ -52,19 +57,20 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
         DocumentBasePage defaultDomain = login();
 
-        DocumentBasePage workspacePage = initRepository(defaultDomain);
+        DocumentBasePage workspacePage = createWorkspace(defaultDomain,
+                WORKSPACE_TITLE, null);
 
         // Create test File 1
         DocumentBasePage newFile = createFile(workspacePage,
                 Boolean.toString(true), null, false, null, null, null);
         workspacePage = newFile.getNavigationSubPage().goToDocument(
-                "Test Workspace");
+                WORKSPACE_TITLE);
 
         // Create test File 2
         newFile = createFile(workspacePage, Boolean.toString(false), null,
                 false, null, null, null);
         workspacePage = newFile.getNavigationSubPage().goToDocument(
-                "Test Workspace");
+                WORKSPACE_TITLE);
 
         ContentTabSubPage contentTabSubPage = workspacePage.getContentTab();
 
@@ -72,38 +78,41 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
         // We must have 2 files
         assertTrue(trelements != null);
-        assertTrue(trelements.size() == 2);
+        assertEquals(2, trelements.size());
 
         // Select the first document
-        trelements.get(0).findElement(By.xpath(checkBoxXPath)).click();
+        trelements.get(0).findElement(By.xpath(CHECK_BOX_XPATH)).click();
         boolean selectedFileName = Boolean.parseBoolean(trelements.get(0).findElement(
-                By.xpath(documentTitleXPath)).getText());
+                By.xpath(DOCUMENT_TITLE_XPATH)).getText());
 
         // Filter on the name of the other document
-        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName));
-        waitUntilElementPresent(By.id(resetFilterId));
+        contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName),
+                1, AJAX_TIMEOUT_SECONDS * 1000);
+        waitUntilElementPresent(By.id(RESET_FILTER_XPATH));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
         // We must have only 1 file
         assertTrue(trelements != null);
-        assertTrue(trelements.size() == 1);
+        assertEquals(1, trelements.size());
 
         // Reset filter
-        workspacePage.getContentTab().clearFilter();
-        waitUntilElementNotPresent(By.id(resetFilterId));
+        workspacePage.getContentTab().clearFilter(2,
+                AJAX_TIMEOUT_SECONDS * 1000);
+        waitUntilElementNotPresent(By.id(RESET_FILTER_XPATH));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
         // We must have 2 files
-        assertTrue(trelements != null && trelements.size() == 2);
+        assertTrue(trelements != null);
+        assertEquals(2, trelements.size());
 
         // Now check that the selection is the same than before filtering
         boolean isSelectionOk = true;
         for (WebElement tr : trelements) {
             final boolean isCurrentTrSelected = tr.findElement(
-                    By.xpath(checkBoxXPath)).isSelected();
-            String s = tr.findElement(By.xpath(documentTitleXPath)).getText();
+                    By.xpath(CHECK_BOX_XPATH)).isSelected();
+            String s = tr.findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText();
             final boolean isPreviouslySelectedDoc = (Boolean.parseBoolean(s) == selectedFileName);
             if (isCurrentTrSelected ^ isPreviouslySelectedDoc) {
                 isSelectionOk = false;
@@ -112,7 +121,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
         }
         assertTrue(isSelectionOk);
 
-        cleanRepository(workspacePage);
+        deleteWorkspace(workspacePage, WORKSPACE_TITLE);
 
         logout();
     }

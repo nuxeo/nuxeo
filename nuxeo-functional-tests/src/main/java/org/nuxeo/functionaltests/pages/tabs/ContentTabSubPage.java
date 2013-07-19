@@ -32,6 +32,8 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Clock;
+import org.openqa.selenium.support.ui.SystemClock;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents
@@ -57,7 +59,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     @FindBy(id = "cv_document_content_0_resetFilterForm:resetFilter")
     WebElement clearFilterButton;
 
-    @FindBy(xpath = "//form[@id=\"document_content\"]//tbody//tr")
+    @FindBy(xpath = "//form[@id=\"document_content\"]//table[@class=\"dataOutput\"]/tbody//tr")
     List<WebElement> childDocumentRows;
 
     public List<WebElement> getChildDocumentRows() {
@@ -138,34 +140,58 @@ public class ContentTabSubPage extends DocumentBasePage {
     /**
      * Perform filter on the given string.
      *
-     * @param filter the strin gto filter
+     * @param filter the string to filter
+     * @param expectedDisplayedElt
+     * @param timeout
      *
      * @since 5.7.2
      */
-    public void filterDocument(final String filter) {
+    public void filterDocument(final String filter,
+            final int expectedNbOfDisplayedResult, final int timeout) {
         filterInput.clear();
         filterInput.sendKeys(filter);
         filterButton.click();
-        try {
-            // This is an AJAX request and we need to wait a little bit the content is rerendered
-            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
-        } catch (InterruptedException e) {
-            /// ignore
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(timeout);
+        while (clock.isNowBefore(end)) {
+            try {
+                if (getChildDocumentRows().size() == expectedNbOfDisplayedResult) {
+                    return;
+                }
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            } catch (NoSuchElementException ex) {
+                // ignore
+            }
         }
+
     }
 
     /**
      * Reset the filter.
      *
+     * @param expectedNbOfDisplayedResult
+     * @param timeout
+     *
      * @since 5.7.2
      */
-    public void clearFilter() {
+    public void clearFilter(final int expectedNbOfDisplayedResult,
+            final int timeout) {
         clearFilterButton.click();
-        try {
-            // This is an AJAX request and we need to wait a little bit the content is rerendered
-            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
-        } catch (InterruptedException e) {
-            /// ignore
+        Clock clock = new SystemClock();
+        long end = clock.laterBy(timeout);
+        while (clock.isNowBefore(end)) {
+            try {
+                if (getChildDocumentRows().size() == expectedNbOfDisplayedResult) {
+                    return;
+                }
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            } catch (NoSuchElementException ex) {
+                // ignore
+            }
         }
     }
 }
