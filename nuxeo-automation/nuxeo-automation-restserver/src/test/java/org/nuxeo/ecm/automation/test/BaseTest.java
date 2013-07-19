@@ -17,11 +17,17 @@
 package org.nuxeo.ecm.automation.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
 
@@ -73,13 +79,28 @@ public class BaseTest {
     CoreSession session;
 
     protected ClientResponse getResponse(RequestType requestType, String path) {
-        return getResponse(requestType, path, null);
+        return getResponse(requestType, path, null,null);
     }
 
+    protected ClientResponse getResponse(RequestType requestType, String path, Map<String,String> queryParams) {
+        return getResponse(requestType, path, null,queryParams);
+    }
+
+    protected ClientResponse getResponse(RequestType requestType, String path, String data) {
+        return getResponse(requestType, path, data, null);
+    }
+
+
     protected ClientResponse getResponse(RequestType requestType, String path,
-            String data) {
-        Builder builder = service.path(path) //
-        .accept(MediaType.APPLICATION_JSON) //
+            String data, Map<String,String> queryParams) {
+        WebResource wr= service.path(path);
+        if(queryParams != null && !queryParams.isEmpty()) {
+           for(Entry<String, String> entry : queryParams.entrySet()) {
+               wr = wr.queryParam(entry.getKey(), entry.getValue());
+           }
+        }
+
+        Builder builder = wr.accept(MediaType.APPLICATION_JSON) //
         .header("X-NXDocumentProperties", "dublincore");
 
         if(requestType == RequestType.POSTREQUEST) {
@@ -90,6 +111,7 @@ public class BaseTest {
 
         switch (requestType) {
         case GET:
+
             return builder.get(ClientResponse.class);
         case POST:
         case POSTREQUEST:
@@ -125,6 +147,18 @@ public class BaseTest {
         assertEquals(note.getPathAsString(), node.get("path").getValueAsText());
         assertEquals(note.getId(), node.get("uid").getValueAsText());
         assertEquals(note.getTitle(), node.get("title").getValueAsText());
+    }
+
+
+    protected List<JsonNode> getEntries(JsonNode node) {
+        assertEquals("documents", node.get("entity-type").getValueAsText());
+        assertTrue(node.get("entries").isArray());
+        List<JsonNode> result = new ArrayList<>();
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        while(elements.hasNext()) {
+            result.add(elements.next());
+        }
+        return result;
     }
 
     protected void assertEntityEqualsDoc(InputStream in, DocumentModel doc)

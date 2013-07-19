@@ -1,22 +1,15 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.automation.rest.pageprovider.contrib">
+<component name="org.nuxeo.ecm.automation.rest.pageprovider.test.contrib">
 
-  <documentation>
-    Default QueryModel contributions used to fetch document lists.
-
-    @author
-    <a href="mailto:dmetzler@nuxeo.com">Damien Metzler</a>
-  </documentation>
 
   <extension
     target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
-    <coreQueryPageProvider name="CURRENT_DOC_CHILDREN">
-      <property name="maxResults">PAGE_SIZE</property>
+    <coreQueryPageProvider name="TEST_PP">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:mixinType != 'HiddenInNavigation'
+        ecm:mixinType != 'HiddenInNavigation' AND dc:title IN ('Note 1','Note 2')
         AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
         'deleted'
       </pattern>

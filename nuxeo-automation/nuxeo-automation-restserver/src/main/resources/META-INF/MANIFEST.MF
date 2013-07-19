@@ -8,4 +8,5 @@ Bundle-Version: 5.7.2.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: nuxeo-automation-restserver
 Nuxeo-WebModule: org.nuxeo.ecm.automation.rest.RestServerModule;name=api;extends=base;package=org/nuxeo/ecm/automation/rest/jaxrs
-Nuxeo-Component: OSGI-INF/pageprovider-contrib.xml
+Nuxeo-Component: OSGI-INF/pageprovider-contrib.xml,
+ OSGI-INF/docviewurl-service-contrib.xml

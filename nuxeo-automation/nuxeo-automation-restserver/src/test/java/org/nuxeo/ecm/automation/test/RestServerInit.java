@@ -35,14 +35,14 @@ public class RestServerInit implements RepositoryInit {
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.createDocumentModel("/", "folder_" + i,
                     "Folder");
-            doc.setPropertyValue("dc:title", "Folder " + 1);
+            doc.setPropertyValue("dc:title", "Folder " + i);
             doc = session.createDocument(doc);
         }
 
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.createDocumentModel("/folder_1", "note_" + i,
                     "Note");
-            doc.setPropertyValue("dc:title", "Note " + 1);
+            doc.setPropertyValue("dc:title", "Note " + i);
             doc = session.createDocument(doc);
         }
 
