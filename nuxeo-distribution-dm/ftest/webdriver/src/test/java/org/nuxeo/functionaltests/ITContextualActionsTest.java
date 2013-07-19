@@ -42,7 +42,7 @@ public class ITContextualActionsTest extends AbstractTest {
 
     public final static String DOCUMENT_DESC = "Document Test Description";
 
-    public final static String DOCUMENT_STATE = "PROJECT";
+    public final static String DOCUMENT_STATE = "Project";
 
     public final static String DOCUMENT_LOCKED = "LOCKED";
 
