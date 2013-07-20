@@ -85,11 +85,7 @@ public class PictureChangedListener implements EventListener {
                     workManager.schedule(work,
                             WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
                 }
-            } else if (fileProp.getValue() == null) {
-                // no main Blob
-                preFillPictureViews(docCtx.getCoreSession(), doc);
             }
-
         }
     }
 
