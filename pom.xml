@@ -845,6 +845,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-restserver</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-test</artifactId>
         <version>${nuxeo.features.version}</version>
         <scope>test</scope>
