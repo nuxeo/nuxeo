@@ -43,7 +43,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogCaptureFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features",
+        "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.ecm.core.persistence" })
 @LogCaptureFeature.FilterWith(TestRestoreInputFromScriptAndLogOperation.MyLogFilter.class)
 public class TestRestoreInputFromScriptAndLogOperation {
     @Inject
@@ -90,7 +91,7 @@ public class TestRestoreInputFromScriptAndLogOperation {
         chain.add(RestoreDocumentInputFromScript.ID).set("script",
                 "Context[\"test\"]");
         chain.add(LogOperation.ID).set("category", "loggerName").set("message",
-                "expr:Input title @{This.title}. next id : @{Fn.getNextId(\"pouet\")}").set(
+                "expr:Input title @{This.title}. next id : @{Fn.getNextId('pouet')}").set(
                 "level", "error");
 
         // assert that the output is "/test" is the one retrieved from the
