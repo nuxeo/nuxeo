@@ -17,8 +17,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.net.URLDecoder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -26,11 +28,13 @@ import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
- * Reads {@link ExecutionRequest} from a urlencoded POST
- * (Needed for OAuth calls)
+ * Reads {@link ExecutionRequest} from a urlencoded POST (Needed for OAuth
+ * calls)
  *
  * @author Tiry (tdelprat@nuxeo.com)
  *
@@ -39,6 +43,13 @@ import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 @Consumes("application/x-www-form-urlencoded")
 public class UrlEncodedFormRequestReader implements
         MessageBodyReader<ExecutionRequest> {
+
+    @Context
+    protected HttpServletRequest request;
+
+    public CoreSession getCoreSession() {
+        return SessionFactory.getSession(request);
+    }
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
@@ -54,10 +65,12 @@ public class UrlEncodedFormRequestReader implements
 
         String content = FileUtils.read(entityStream);
         String jsonString = null;
-        if (content==null || content.isEmpty()) {
-            // body was consumed by OAuth Filter and but Request parameters must have been cached
+        if (content == null || content.isEmpty()) {
+            // body was consumed by OAuth Filter and but Request parameters must
+            // have been cached
             // => need to get access to the request params
-            jsonString = RequestContext.getActiveContext().getRequest().getParameter("jsondata");
+            jsonString = RequestContext.getActiveContext().getRequest().getParameter(
+                    "jsondata");
         } else {
             if (content.startsWith("jsondata=")) {
                 jsonString = content.substring(9);
@@ -67,11 +80,12 @@ public class UrlEncodedFormRequestReader implements
             }
         }
 
-        if (jsonString==null) {
+        if (jsonString == null) {
             return null;
         }
 
-        return JsonRequestReader.readRequest(jsonString, httpHeaders);
+        return JsonRequestReader.readRequest(jsonString, httpHeaders,
+                getCoreSession());
     }
 
 }

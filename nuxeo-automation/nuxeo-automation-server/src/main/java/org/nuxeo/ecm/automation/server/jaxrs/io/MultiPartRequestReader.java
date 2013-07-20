@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.mail.BodyPart;
 import javax.mail.internet.MimeMultipart;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
@@ -37,9 +36,11 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -54,12 +55,19 @@ public class MultiPartRequestReader implements
     @Context
     protected HttpServletRequest request;
 
+
+    public CoreSession getCoreSession() {
+        return SessionFactory.getSession(request);
+    }
+
+    @Override
     public boolean isReadable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
         return ExecutionRequest.class.isAssignableFrom(arg0); // TODO check
         // media type too
     }
 
+    @Override
     public ExecutionRequest readFrom(Class<ExecutionRequest> arg0, Type arg1,
             Annotation[] arg2, MediaType arg3,
             MultivaluedMap<String, String> headers, InputStream in)
@@ -81,7 +89,7 @@ public class MultiPartRequestReader implements
                         in, ctype));
                 BodyPart part = mp.getBodyPart(0); // use content ids
                 InputStream pin = part.getInputStream();
-                req = JsonRequestReader.readRequest(pin, headers);
+                req = JsonRequestReader.readRequest(pin, headers, getCoreSession());
                 int cnt = mp.getCount();
                 if (cnt == 2) { // a blob
                     req.setInput(readBlob(request, mp.getBodyPart(1)));
@@ -122,6 +130,7 @@ public class MultiPartRequestReader implements
         FileBlob blob = new FileBlob(tmp, ctype, null, fname, null);
         RequestContext.getActiveContext(request).addRequestCleanupHandler(
                 new RequestCleanupHandler() {
+                    @Override
                     public void cleanup(HttpServletRequest req) {
                         tmp.delete();
                     }
