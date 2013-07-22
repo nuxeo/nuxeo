@@ -172,6 +172,11 @@ public class GraphRouteTest {
         return session.createDocument(node);
     }
 
+    protected Map<String, Serializable> transition(String name, String target)
+            throws ClientException {
+        return transition(name, target, "true");
+    }
+
     protected Map<String, Serializable> transition(String name, String target,
             String condition) throws ClientException {
         Map<String, Serializable> m = new HashMap<String, Serializable>();
@@ -316,7 +321,7 @@ public class GraphRouteTest {
     public void testExceptionIfLooping() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans1", "node1", "true"));
+        setTransitions(node1, transition("trans1", "node1"));
         node1 = session.saveDocument(node1);
         try {
             instantiateAndRun();
@@ -419,7 +424,7 @@ public class GraphRouteTest {
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        setTransitions(node2, transition("trans23", "node3", "true"));
+        setTransitions(node2, transition("trans23", "node3"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
@@ -451,7 +456,7 @@ public class GraphRouteTest {
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        setTransitions(node2, transition("trans23", "node3", "true"));
+        setTransitions(node2, transition("trans23", "node3"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
@@ -506,18 +511,18 @@ public class GraphRouteTest {
     public void testForkMergeAll2() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans1", "node2", "true"),
-                transition("trans2", "node3", "true"));
+        setTransitions(node1, transition("trans1", "node2"),
+                transition("trans2", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
-        setTransitions(node2, transition("trans1", "node4", "true"));
+        setTransitions(node2, transition("trans1", "node4"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
         node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
-        setTransitions(node3, transition("trans2", "node4", "true"));
+        setTransitions(node3, transition("trans2", "node4"));
         node3 = session.saveDocument(node3);
 
         DocumentModel node4 = createNode(routeDoc, "node4");
@@ -550,14 +555,13 @@ public class GraphRouteTest {
 
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans1", "node2", "true"),
-                transition("trans2", "node3", "true"),
-                transition("trans3", "node4", "true"));
+        setTransitions(node1, transition("trans1", "node2"),
+                transition("trans2", "node3"), transition("trans3", "node4"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
-        setTransitions(node2, transition("trans1", "node5", "true"));
+        setTransitions(node2, transition("trans1", "node5"));
 
         node2.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
         node2.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
@@ -572,7 +576,7 @@ public class GraphRouteTest {
 
         DocumentModel node3 = createNode(routeDoc, "node3");
         node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
-        setTransitions(node3, transition("trans2", "node5", "true"));
+        setTransitions(node3, transition("trans2", "node5"));
 
         node3.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
         node3.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
@@ -587,7 +591,7 @@ public class GraphRouteTest {
 
         DocumentModel node4 = createNode(routeDoc, "node4");
         node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
-        setTransitions(node4, transition("trans3", "node5", "true"));
+        setTransitions(node4, transition("trans3", "node5"));
 
         node4.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_rights1");
         node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
@@ -663,23 +667,23 @@ public class GraphRouteTest {
     public void testForkMergeOne() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans12", "node2", "true"),
-                transition("trans13", "node3", "true"));
+        setTransitions(node1, transition("trans12", "node2"),
+                transition("trans13", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
-        setTransitions(node2, transition("trans25", "node5", "true"));
+        setTransitions(node2, transition("trans25", "node5"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
         node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
-        setTransitions(node3, transition("trans34", "node4", "true"));
+        setTransitions(node3, transition("trans34", "node4"));
         node3 = session.saveDocument(node3);
 
         DocumentModel node4 = createNode(routeDoc, "node4");
         node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr2");
-        setTransitions(node4, transition("trans45", "node5", "true"));
+        setTransitions(node4, transition("trans45", "node5"));
         node4 = session.saveDocument(node4);
 
         DocumentModel node5 = createNode(routeDoc, "node5");
@@ -739,8 +743,8 @@ public class GraphRouteTest {
         DocumentModel startNode = createNode(routeDoc, "startNode");
         startNode.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(startNode,
-                transition("transToParallel1", "parallelNode1", "true"),
-                transition("transToParallel2", "parallelNode2", "true"));
+                transition("transToParallel1", "parallelNode1"),
+                transition("transToParallel2", "parallelNode2"));
         startNode = session.saveDocument(startNode);
 
         DocumentModel parallelNode1 = createNode(routeDoc, "parallelNode1");
@@ -850,7 +854,8 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore // see NXP-10538
+    @Ignore
+    // see NXP-10538
     public void testForkWithLoopFromParallelToFork() throws Exception {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
@@ -1263,7 +1268,8 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore // randomly failing see NXP-11287
+    @Ignore
+    // randomly failing see NXP-11287
     public void testRestartWorkflowOperation() throws Exception {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1");
@@ -1274,7 +1280,7 @@ public class GraphRouteTest {
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        setTransitions(node2, transition("trans23", "node3", "true"));
+        setTransitions(node2, transition("trans23", "node3"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
@@ -1320,24 +1326,24 @@ public class GraphRouteTest {
     public void testMergeOneWhenHavinOpenedTasks() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans12", "node2", "true"),
-                transition("trans13", "node3", "true"));
+        setTransitions(node1, transition("trans12", "node2"),
+                transition("trans13", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
         node2.setPropertyValue(GraphNode.PROP_HAS_TASK, "true");
-        setTransitions(node2, transition("trans25", "node5", "true"));
+        setTransitions(node2, transition("trans25", "node5"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
         node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
-        setTransitions(node3, transition("trans34", "node4", "true"));
+        setTransitions(node3, transition("trans34", "node4"));
         node3 = session.saveDocument(node3);
 
         DocumentModel node4 = createNode(routeDoc, "node4");
         node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr2");
-        setTransitions(node4, transition("trans45", "node5", "true"));
+        setTransitions(node4, transition("trans45", "node5"));
         node4.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         node4.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES,
@@ -1388,24 +1394,24 @@ public class GraphRouteTest {
     public void testForceResumeOnMerge() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1, transition("trans12", "node2", "true"),
-                transition("trans13", "node3", "true"));
+        setTransitions(node1, transition("trans12", "node2"),
+                transition("trans13", "node3"));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_title1");
         node2.setPropertyValue(GraphNode.PROP_HAS_TASK, "true");
-        setTransitions(node2, transition("trans25", "node5", "true"));
+        setTransitions(node2, transition("trans25", "node5"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
         node3.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr1");
-        setTransitions(node3, transition("trans34", "node4", "true"));
+        setTransitions(node3, transition("trans34", "node4"));
         node3 = session.saveDocument(node3);
 
         DocumentModel node4 = createNode(routeDoc, "node4");
         node4.setPropertyValue(GraphNode.PROP_INPUT_CHAIN, "testchain_descr2");
-        setTransitions(node4, transition("trans45", "node5", "true"));
+        setTransitions(node4, transition("trans45", "node5"));
         node4 = session.saveDocument(node4);
 
         DocumentModel node5 = createNode(routeDoc, "node5");
@@ -1470,11 +1476,11 @@ public class GraphRouteTest {
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
-        setTransitions(node2, transition("trans24", "node4", "true"));
+        setTransitions(node2, transition("trans24", "node4"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
-        setTransitions(node3, transition("trans34", "node4", "true"));
+        setTransitions(node3, transition("trans34", "node4"));
         node3 = session.saveDocument(node3);
 
         DocumentModel node4 = createNode(routeDoc, "node4");
@@ -1491,4 +1497,5 @@ public class GraphRouteTest {
         DocumentModel docR = session.getDocument(doc.getRef());
         assertEquals("title 1", docR.getTitle());
     }
+
 }
