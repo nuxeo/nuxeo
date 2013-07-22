@@ -21,9 +21,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.WORKFLOW_FORCE_RESUME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ExecutionTypeValues.graph;
 
 import java.io.Serializable;
@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
@@ -162,8 +161,6 @@ public class GraphRouteTest {
                 DOCUMENT_ROUTE_DOCUMENT_TYPE);
         route.setPropertyValue(EXECUTION_TYPE_PROPERTY_NAME, graph.name());
         route.setPropertyValue("dc:title", name);
-        route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME,
-                (Serializable) Collections.singletonList(doc.getId()));
         return session.createDocument(route);
     }
 
@@ -191,8 +188,10 @@ public class GraphRouteTest {
         return m;
     }
 
-    protected void setTransitions(DocumentModel node,
-            Map<String, Serializable>... transitions) throws ClientException {
+    protected void setTransitions(
+            DocumentModel node,
+            @SuppressWarnings("unchecked") Map<String, Serializable>... transitions)
+            throws ClientException {
         node.setPropertyValue(GraphNode.PROP_TRANSITIONS,
                 (Serializable) Arrays.asList(transitions));
     }
@@ -207,22 +206,25 @@ public class GraphRouteTest {
     }
 
     protected void setButtons(DocumentModel node,
-            Map<String, Serializable>... buttons) throws ClientException {
+            @SuppressWarnings("unchecked") Map<String, Serializable>... buttons)
+            throws ClientException {
         node.setPropertyValue(GraphNode.PROP_TASK_BUTTONS,
                 (Serializable) Arrays.asList(buttons));
     }
 
     protected DocumentRoute instantiateAndRun() throws ClientException {
-        return instantiateAndRun(session, null);
+        return instantiateAndRun(session);
     }
 
     protected DocumentRoute instantiateAndRun(CoreSession session)
             throws ClientException {
-        return instantiateAndRun(session, null);
+        return instantiateAndRun(session,
+                Collections.singletonList(doc.getId()), null);
     }
 
     protected DocumentRoute instantiateAndRun(CoreSession session,
-            Map<String, Serializable> map) throws ClientException {
+            List<String> docIds, Map<String, Serializable> map)
+            throws ClientException {
         // route model
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
         // draft -> validated
@@ -231,7 +233,7 @@ public class GraphRouteTest {
         }
         // create instance and start
         String id = routing.createNewInstance(route.getDocument().getName(),
-                Collections.singletonList(doc.getId()), map, session, true);
+                docIds, map, session, true);
         return session.getDocument(new IdRef(id)).getAdapter(
                 DocumentRoute.class);
     }
@@ -301,7 +303,8 @@ public class GraphRouteTest {
         node1 = session.saveDocument(node1);
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("stringfield", "ABC");
-        DocumentRoute route = instantiateAndRun(session, map);
+        DocumentRoute route = instantiateAndRun(session,
+                Collections.singletonList(doc.getId()), map);
         assertTrue(route.isDone());
         String v = (String) route.getDocument().getPropertyValue(
                 "fctroute1:stringfield");
@@ -1174,7 +1177,7 @@ public class GraphRouteTest {
         node2 = session.saveDocument(node2);
 
         session.save();
-        instantiateAndRun(session);
+        instantiateAndRun();
 
         List<Task> tasks = taskService.getTaskInstances(doc,
                 (NuxeoPrincipal) session.getPrincipal(), session);
@@ -1414,7 +1417,7 @@ public class GraphRouteTest {
         DocumentRoute route = instantiateAndRun();
         // force resume on normal node, shouldn't change anything
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME, true);
+        data.put(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
         routing.resumeInstance(route.getDocument().getId(), "node2", data,
                 null, session);
         session.save();
@@ -1431,7 +1434,7 @@ public class GraphRouteTest {
         assertTrue(State.WAITING.equals(nodeMerge.getState()));
 
         data = new HashMap<String, Object>();
-        data.put(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME, true);
+        data.put(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
         routing.resumeInstance(route.getDocument().getId(), "node5", data,
                 null, session);
         session.save();
@@ -1460,7 +1463,7 @@ public class GraphRouteTest {
         DocumentModel node1 = createNode(routeDoc, "node1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_EXECUTE_ONLY_FIRST_TRANSITION,
-                true);
+                Boolean.TRUE);
         setTransitions(node1,
                 transition("trans12", "node2", "true", "testchain_title1"),
                 transition("trans13", "node3", "true", "testchain_title2"));
@@ -1476,7 +1479,7 @@ public class GraphRouteTest {
 
         DocumentModel node4 = createNode(routeDoc, "node4");
         node4.setPropertyValue(GraphNode.PROP_MERGE, "one");
-        node4.setPropertyValue(GraphNode.PROP_STOP, true);
+        node4.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node4 = session.saveDocument(node4);
 
         DocumentRoute route = instantiateAndRun();
