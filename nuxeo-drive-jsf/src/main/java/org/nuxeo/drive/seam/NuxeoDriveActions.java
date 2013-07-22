@@ -39,6 +39,7 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.common.Environment;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -48,7 +49,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 @Name("nuxeoDriveActions")
-@Scope(ScopeType.CONVERSATION)
+@Scope(ScopeType.PAGE)
 @Install(precedence = Install.FRAMEWORK)
 public class NuxeoDriveActions implements Serializable {
 
@@ -78,6 +78,8 @@ public class NuxeoDriveActions implements Serializable {
     public static final String NXDRIVE_PROTOCOL = "nxdrive";
 
     public static final String PROTOCOL_COMMAND_EDIT = "edit";
+
+    protected FileSystemItem currentFileSystemItem;
 
     @In(required = false)
     NavigationContext navigationContext;
@@ -117,14 +119,15 @@ public class NuxeoDriveActions implements Serializable {
 
     @Factory(value = "canEditCurrentDocument", scope = ScopeType.EVENT)
     public boolean canEditCurrentDocument() throws ClientException {
-        if (getCurrentSynchronizationRoot() == null
-                || navigationContext == null || documentManager == null
-                || navigationContext.getCurrentDocument() == null) {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument.isFolder()) {
             return false;
         }
-        BlobHolder blobHolder = navigationContext.getCurrentDocument().getAdapter(
-                BlobHolder.class);
-        return (blobHolder != null && blobHolder.getBlob() != null);
+        if (getCurrentSynchronizationRoot() == null) {
+            return false;
+        }
+        // Check if current document can be adapted as a FileSystemItem
+        return getCurrentFileSystemItem() != null;
     }
 
     /**
@@ -138,19 +141,15 @@ public class NuxeoDriveActions implements Serializable {
      *
      */
     public String getDriveEditURL() throws ClientException {
-
-        FileSystemItemAdapterService fsAdapterService = Framework.getLocalService(FileSystemItemAdapterService.class);
-        // TODO: optim: add a new method to FileSystemItemAdapterService to
-        // quickly compute the fsitem id from a doc (without having to
-        // recursively adapt the parents)
-        FileSystemItem fileSystemItem = fsAdapterService.getFileSystemItem(navigationContext.getCurrentDocument());
-        if (fileSystemItem == null) {
-            log.warn(String.format(
-                    "Failed to adapt '%s' to generate drive edit link",
-                    navigationContext.getCurrentDocument().getTitle()));
-            return "";
+        // Current document must be adaptable as a FileSystemItem
+        if (getCurrentFileSystemItem() == null) {
+            throw new ClientException(
+                    String.format(
+                            "Document %s (%s) is not adaptable as a FileSystemItem thus not Drive editable, \"driveEdit\" action should not be displayed.",
+                            navigationContext.getCurrentDocument().getId(),
+                            navigationContext.getCurrentDocument().getPathAsString()));
         }
-        String fsItemId = fileSystemItem.getId();
+        String fsItemId = currentFileSystemItem.getId();
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
         StringBuffer sb = new StringBuffer();
@@ -318,6 +317,32 @@ public class NuxeoDriveActions implements Serializable {
     public String downloadClientPackage(String name, File file) {
         FacesContext facesCtx = FacesContext.getCurrentInstance();
         return ComponentUtils.downloadFile(facesCtx, name, file);
+    }
+
+    protected FileSystemItem getCurrentFileSystemItem() throws ClientException {
+        if (currentFileSystemItem == null) {
+            // TODO: optim: add a new method to FileSystemItemAdapterService to
+            // quickly compute the fsitem id from a doc (without having to
+            // recursively adapt the parents)
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            try {
+                currentFileSystemItem = Framework.getLocalService(
+                        FileSystemItemAdapterService.class).getFileSystemItem(
+                        currentDocument);
+            } catch (RootlessItemException e) {
+                log.debug(String.format(
+                        "RootlessItemException thrown while trying to adapt document %s (%s) as a FileSystemItem.",
+                        currentDocument.getId(),
+                        currentDocument.getPathAsString()));
+            }
+            if (currentFileSystemItem == null) {
+                log.debug(String.format(
+                        "Document %s (%s) is not adaptable as a FileSystemItem => currentFileSystemItem is null.",
+                        currentDocument.getId(),
+                        currentDocument.getPathAsString()));
+            }
+        }
+        return currentFileSystemItem;
     }
 
 }
