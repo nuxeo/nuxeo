@@ -101,38 +101,42 @@
     layout="block"
     ajaxRendered="true"
     rendered="#{widget.properties.multipleValues}">
-    <table class="dataInput thin">
+    <div class="clear">
       <nxu:inputList id="#{widget.id}_list" value="#{field}"
         model="model">
-        <tr>
-          <td>
-          <p><h:outputText value="#{vocabularyTreeActions.getLabelFor(widget.properties.directoryName, model.rowData, widget.properties.selectIdOnly)}" /></p>
-          </td>
-          <td><a4j:commandLink immediate="true"
+        <span class="sticker">
+          <label>
+            <h:outputText value="#{vocabularyTreeActions.getLabelFor(widget.properties.directoryName, model.rowData, widget.properties.selectIdOnly)}" />
+          </label>
+          <a4j:commandLink immediate="true"
             actionListener="#{editableListBean.performAction}"
             id="#{widget.id}_delete" reRender="#{widget.id}_multipleValuePanel"
             bypassUpdates="true">
-            <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
+            <img src="#{contextPath}/icons/delete.png" alt="Delete" />
             <f:param name="for" value="#{widget.id}_list" />
             <f:param name="index" value="#{model.rowIndex}" />
             <f:param name="type" value="remove" />
-          </a4j:commandLink></td>
-        </tr>
+          </a4j:commandLink>
+        </span>
       </nxu:inputList>
-    </table>
+    </div>
   </a4j:outputPanel>
 
   <f:subview id="#{widget.id}_singleValuePanel" rendered="#{!widget.properties.multipleValues}">
-    <h:outputText id="#{widget.id}_outputText" styleClass="#{widget.id}_outputText"
-      value="#{vocabularyTreeActions.getLabelFor(widget.properties.directoryName, field, widget.properties.selectIdOnly)}" />
-    <a4j:commandLink
-      id="#{widget.id}_deleteSingleValueLink"
-      immediate="true"
-      onclick="remove#{widget.id}SingleValue()"
-      styleClass="#{widget.id}_deleteSingleValueLink">
-      <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
-    </a4j:commandLink>
-    <h:inputText id="#{widget.id}_inputHidden" styleClass="#{widget.id}_inputHidden" style="display:none" value="#{field}" />
+    <span class="sticker">
+      <label>
+        <h:outputText id="#{widget.id}_outputText" styleClass="#{widget.id}_outputText"
+          value="#{vocabularyTreeActions.getLabelFor(widget.properties.directoryName, field, widget.properties.selectIdOnly)}" />
+      </label>
+      <a4j:commandLink
+        id="#{widget.id}_deleteSingleValueLink"
+        immediate="true"
+        onclick="remove#{widget.id}SingleValue()"
+        styleClass="#{widget.id}_deleteSingleValueLink">
+        <img src="#{contextPath}/icons/delete.png" alt="Delete" />
+      </a4j:commandLink>
+      <h:inputText id="#{widget.id}_inputHidden" styleClass="#{widget.id}_inputHidden" style="display:none" value="#{field}" />
+    </span>
   </f:subview >
 </c:if>
 

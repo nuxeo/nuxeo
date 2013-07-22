@@ -104,25 +104,25 @@
 
   <a4j:outputPanel id="#{widget.id}_listRegion" ajaxRendered="true"
     layout="block">
-    <table class="dataInput thin">
+    <div class="clear">
       <nxu:inputList id="#{widget.id}_list" value="#{field_0}"
         model="model">
-        <tr>
-          <td>
-          <p><h:outputText value="#{nxd:titleOrId(treeWidgetActions.getDocumentFromPath(model.rowData))}" /></p>
-          </td>
-          <td><a4j:commandLink immediate="true"
+        <span class="sticker">
+          <label>
+            <h:outputText value="#{nxd:titleOrId(treeWidgetActions.getDocumentFromPath(model.rowData))}" />
+          </label>
+          <a4j:commandLink immediate="true"
             actionListener="#{editableListBean.performAction}"
             id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
             bypassUpdates="true">
-            <img src="#{contextPath}/icons/action_delete_mini_over.png" alt="Delete" />
+            <img src="#{contextPath}/icons/delete.png" alt="Delete" />
             <f:param name="for" value="#{widget.id}_list" />
             <f:param name="index" value="#{model.rowIndex}" />
             <f:param name="type" value="remove" />
-          </a4j:commandLink></td>
-        </tr>
+          </a4j:commandLink>
+        </span>
       </nxu:inputList>
-    </table>
+    </div>
   </a4j:outputPanel>
 
 </c:if>
