@@ -71,7 +71,7 @@ public class PictureChangedListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(PICTURE_FACET)) {
+        if (doc.hasFacet(PICTURE_FACET) && !(doc.isProxy() || doc.isVersion())) {
             Property fileProp = doc.getProperty("file:content");
             if (fileProp.isDirty()) {
                 Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
@@ -80,7 +80,8 @@ public class PictureChangedListener implements EventListener {
                     preFillPictureViews(docCtx.getCoreSession(), doc);
                     // launch work doing the actual views generation
                     PictureViewsGenerationWork work = new PictureViewsGenerationWork(
-                            doc.getRepositoryName(), doc.getRef());
+                            doc.getRepositoryName(), doc.getRef(),
+                            "file:content");
                     WorkManager workManager = Framework.getLocalService(WorkManager.class);
                     workManager.schedule(work,
                             WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
