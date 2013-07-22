@@ -280,7 +280,7 @@ public class ContentViewImpl implements ContentView,
             currentPage = null;
         }
         if (pageSize == null) {
-            if (currentPageSize != null) {
+            if (currentPageSize != null && currentPageSize.longValue() >= 0) {
                 pageSize = currentPageSize;
             }
             if (pageSize == null) {
@@ -395,7 +395,7 @@ public class ContentViewImpl implements ContentView,
     }
 
     public Long getCurrentPageSize() {
-        if (currentPageSize != null) {
+        if (currentPageSize != null && currentPageSize.longValue() >= 0) {
             return currentPageSize;
         }
         if (pageProvider != null) {
