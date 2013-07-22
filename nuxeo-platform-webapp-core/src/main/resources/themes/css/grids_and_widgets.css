@@ -174,7 +174,7 @@ Temp changes waiting for NXP-12005 to be fixed
   width: auto }
 .compactLayout select {
   width: 100% }
-.compactLayout input.rich-calendar-input {
+.compactLayout input[type="text"].rich-calendar-input {
   margin: .1em .3em .1em 0em;
   max-width: 56%;
   min-width: 50% }
@@ -266,7 +266,8 @@ Temp changes waiting for NXP-12005 to be fixed
 .compactLayout .dataTableNoBorder.containerWidgetTable {
 	margin-bottom: .5em }
 
-.compactLayout .dataInput {
+.compactLayout .dataInput,
+.compactLayout .dataTableNoBorder {
   clear: both;
   margin-top: 0;
   width: 100% }
