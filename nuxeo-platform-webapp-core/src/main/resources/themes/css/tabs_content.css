@@ -20,10 +20,7 @@ author: lkemen@nuxeo.com
 .labelColumnLeftAlign { font-weight: bold; padding-right: 2.5em }
 .rank_block, .publication_block, .attachments { margin-top: 1.3em }
 
-.content_block .actionsColumn { text-align: right; vertical-align: top; width: 20% }
-.actionsColumn img, .actionsColumn a { display: inline-block; vertical-align: bottom }
-.actionsColumn .smallButton { margin: 0 .2em; padding: .2em 0 }
-.content_block img { padding: 0 .5em }
+.content_block .actionsColumn { width: 20% }
 
 .note_content_block { background-color: #fff;	border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; color: "black (__FLAVOR__ color)"; font-size: 115%; margin: 0 0 1.4em; padding: 1.4em 1.7em; text-align: justify }
 /* override styles for a beautiful formatted Note */
