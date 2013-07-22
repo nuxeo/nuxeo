@@ -31,6 +31,10 @@ table td {
   margin: 0 0 .8em;
   width: 100% }
 
+.dataTableNoBorder,
+.dataInput {
+  max-width: 68em }
+
 .dataTable th,
 .dataTableLine th,
 .dataTableLine th,
@@ -137,10 +141,11 @@ table.smallTable td {
 .buttonsGadgetNoForm {
   margin: 0 .4em }
 
-.dataTableNoBorder .button,
 .dataInput .button,
+.dataTableNoBorder .button,
 .buttonsGadgetNoForm .button {
-  margin: 0 1em 0 0 }
+  margin: 0 1em 0 0;
+  vertical-align: top }
 
 .dataOutput .button {
   margin: .2em 1em .2em 0 !important }
@@ -176,6 +181,15 @@ table.noHover tr:hover {
   position: relative;
   z-index: 25 }
 
+.actionsColumn {
+  text-align: right }
+.actionsColumn img,
+.actionsColumn a {
+  margin: 0 0 0 .2em }
+.actionsColumn .smallButton {
+  margin: 0 .2em;
+  padding: .2em 0 }
+
 .dataTableNoHeader th {
   background-color: transparent }
 
@@ -184,7 +198,7 @@ table.noHover tr:hover {
 .smallButtonsGadget {
   margin: 0 0 .4em 7em }
 
-.dataOutput .iconColumn .nxDraggable {
+.iconColumn .nxDraggable {
   cursor: move }
 
 .labelColumn {
@@ -194,16 +208,13 @@ table.noHover tr:hover {
   display: block }
 
 .fieldColumn img {
-  margin: 0 .4em }
+  margin: 0 .4em -0.2em .2em }
 
 #fancybox-content .labelColumn {
   width: 10em }
 
 .labelColumn .widgetHelpLabel span {
   display: inline }
-
-.listShuttleTable {
-  margin-left: 3em }
 
 /* =Generic table styles for Widgets in Layouts */
 .containerSubWidget {
@@ -252,6 +263,3 @@ table.palettePreviewColors td div {
 .vocabularyEntryContent { margin-left: 1.6em }
 .vocabularyEntryContent .notEditable { background-color: #fff }
 .vocabularyEntryContent .dataInput { border: none; margin-bottom: 1.4em }
-
-.selectDocumentType td { padding: .3em }
-.selectDocumentType td a img { margin-right: .4em }
