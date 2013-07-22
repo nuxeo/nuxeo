@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 
@@ -66,6 +67,13 @@ public class SecurityDataConverter implements Serializable {
                 } else {
                     securityData.addUnModifiablePrivilege(entry.getUsername(),
                             entry.getPermission(), entry.isGranted());
+                }
+                if (!entry.isGranted()
+                        && entry.getUsername().equals(
+                                SecurityConstants.EVERYONE)
+                        && entry.getPermission().equals(
+                                SecurityConstants.EVERYTHING)) {
+                    break;
                 }
             }
         }
