@@ -25,7 +25,7 @@ org.nuxeo.ecm.product.version=5.7.2-SNAPSHOT
 #nuxeo.db.password=
 
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
-nuxeo.notification.eMailSignatory=The Nuxeo team
+nuxeo.notification.eMailSigner=The Nuxeo team
 
 # SMTP gateway server
 mail.transport.host=localhost
