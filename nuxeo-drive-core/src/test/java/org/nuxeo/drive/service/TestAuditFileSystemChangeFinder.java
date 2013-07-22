@@ -239,6 +239,14 @@ public class TestAuditFileSystemChangeFinder {
             // synchronized root
             session.followTransition(doc1.getRef(), "undelete");
             session.move(doc3.getRef(), folder2.getRef(), null);
+            // Wait 100 ms as next assertion randomly fails because of
+            // "documentMoved" being placed before "documentModified" in the
+            // audit query result list. Both log entries probably have the same
+            // event date to the millisecond in this case.
+            // Don't know why it only seems to fail for this set of changes,
+            // maybe the move operation is very fast?
+            // cf. https://jira.nuxeo.com/browse/NXP-11964
+            Thread.sleep(100);
             nuxeoDriveManager.registerSynchronizationRoot(
                     session.getPrincipal(), folder2, session);
         } finally {
