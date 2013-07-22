@@ -68,13 +68,13 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = Install.FRAMEWORK)
 public class NuxeoDriveActions implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(NuxeoDriveActions.class);
 
     protected static final String IS_UNDER_SYNCHRONIZATION_ROOT = "nuxeoDriveIsUnderSynchronizationRoot";
 
     protected static final String CURRENT_SYNCHRONIZATION_ROOT = "nuxeoDriveCurrentSynchronizationRoot";
-
-    private static final long serialVersionUID = 1L;
 
     public static final String NXDRIVE_PROTOCOL = "nxdrive";
 
@@ -82,20 +82,17 @@ public class NuxeoDriveActions implements Serializable {
 
     protected FileSystemItem currentFileSystemItem;
 
-    @In(required = false)
-    NavigationContext navigationContext;
+    @In(create = true, required = false)
+    protected transient NavigationContext navigationContext;
 
-    @In(required = false)
-    CoreSession documentManager;
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
-    @In(required = false, create = true)
-    UserCenterViewManager userCenterViews;
+    @In(create = true, required = false)
+    protected transient UserCenterViewManager userCenterViews;
 
     @Factory(value = CURRENT_SYNCHRONIZATION_ROOT, scope = ScopeType.EVENT)
     public DocumentModel getCurrentSynchronizationRoot() throws ClientException {
-        if (navigationContext == null || documentManager == null) {
-            return null;
-        }
         // Use the event context as request cache
         Context cache = Contexts.getEventContext();
         Boolean isUnderSync = (Boolean) cache.get(IS_UNDER_SYNCHRONIZATION_ROOT);
@@ -164,9 +161,6 @@ public class NuxeoDriveActions implements Serializable {
 
     @Factory(value = "canSynchronizeCurrentDocument")
     public boolean canSynchronizeCurrentDocument() throws ClientException {
-        if (navigationContext == null) {
-            return false;
-        }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return isSyncRootCandidate(currentDocument)
                 && getCurrentSynchronizationRoot() == null;
@@ -203,9 +197,6 @@ public class NuxeoDriveActions implements Serializable {
 
     @Factory(value = "currentDocumentUserWorkspace", scope = ScopeType.PAGE)
     public boolean isCurrentDocumentUserWorkspace() throws ClientException {
-        if (navigationContext == null) {
-            return false;
-        }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
