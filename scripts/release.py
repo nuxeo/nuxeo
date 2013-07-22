@@ -595,6 +595,8 @@ Default files and properties patterns are respectively:
                 props_pattern = f.readline().split("=")[1].strip()
                 options.other_versions = ':'.join((files_pattern, props_pattern,
                                                    other_versions))
+            if options.other_versions == "::":
+                options.other_versions = None
 
         repo = Repository(os.getcwd(), options.remote_alias)
         if options.branch == "auto":
