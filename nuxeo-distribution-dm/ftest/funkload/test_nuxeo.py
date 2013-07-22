@@ -133,5 +133,12 @@ class Nuxeo(NuxeoTestCase):
 
         p.logout()
 
+    def testAutomation(self):
+        p = LoginPage(self)
+        p.fl.setBasicAuth(self.cred_admin[0],
+                          self.cred_admin[1])
+        p.auto_DocumentQuery("SELECT * FROM Workspace")
+        self.assert_(p.fl.getBody().count('"uid"') > 1)
+
 if __name__ in ('main', '__main__'):
     unittest.main()

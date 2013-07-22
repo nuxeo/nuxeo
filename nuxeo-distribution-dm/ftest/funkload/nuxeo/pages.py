@@ -504,6 +504,13 @@ class BasePage:
                                    description="View manage tab")
         return ret
 
+    def auto_DocumentQuery(self, nxql):
+        data = Data('application/json+nxrequest',
+                    '{"params":{"query":"' + nxql + '"},"context":{}}')
+        self.fl.post(self.fl.server_url + '/site/automation/Document.Query',
+                     data)
+
+
 
 class LoginPage(BasePage):
     """The Login page."""

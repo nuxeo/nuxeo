@@ -19,7 +19,7 @@ endif
 all: start rest page test-nuxeo webengine dav multiconversation stop
 
 start:
-	-mkdir -p $(REPORT) $(LOG_HOME)
+	-mkdir -p $(REPORT) $(LOG_HOME)o
 	$(CREDCTL) restart
 	-$(MONCTL) restart
 	sleep 2 # sometime credential server is not yet listening
@@ -47,6 +47,16 @@ dav:
 multiconversation:
 	fl-run-test -v --simple-fetch test_multiconversation.py $(FLOPS)
 
+automation: start test-automation stop
+
+test-automation:
+	fl-run-test -v --simple-fetch test_nuxeo.py -e testAutomation $(FLOPS)
+
+drive: start test-drive stop
+
+test-drive:
+	fl-run-test -v --simple-fetch test_drive.py -e testDrive $(FLOPS)
+
 # test nuxeo ep
 init:
 	fl-run-test -v --simple-fetch test_nuxeo.py -e testInit $(FLOPS)
@@ -60,7 +70,7 @@ reader:
 test-nuxeo: init writer reader
 
 test-dashboard:
-	fl-run-test -dv --simple-fetch test_nuxeo.py -e testDashboard $(FLOPS)	
+	fl-run-test -dv --simple-fetch test_nuxeo.py -e testDashboard $(FLOPS)
 
 navigation-init:
 	fl-run-test -v --simple-fetch test_navigation.py -e testBrowse $(FLOPS)
@@ -92,6 +102,10 @@ warmup:
 
 bench-reader: warmup
 	-fl-run-bench --simple-fetch -c 1:5:10:15:20:25:30:35:40:45:50 -D 60 -m 0.1 -M 1 -s 1 test_nuxeo.py Nuxeo.testReader $(FLOPS)
+	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
+
+bench-automation: automation
+	-fl-run-bench --simple-fetch -c 1:2:5:10 -D 30 -m 0.1 -M 1 -s 1 test_nuxeo.py Nuxeo.testAutomation $(FLOPS)
 	-fl-build-report $(LOG_HOME)/nuxeo-bench.xml --html -o $(REPORT)
 
 
