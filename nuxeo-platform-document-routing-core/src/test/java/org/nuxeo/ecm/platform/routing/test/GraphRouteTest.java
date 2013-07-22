@@ -847,7 +847,7 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore
+    @Ignore // see NXP-10538
     public void testForkWithLoopFromParallelToFork() throws Exception {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
@@ -1260,7 +1260,7 @@ public class GraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    @Ignore
+    @Ignore // randomly failing see NXP-11287
     public void testRestartWorkflowOperation() throws Exception {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1");
