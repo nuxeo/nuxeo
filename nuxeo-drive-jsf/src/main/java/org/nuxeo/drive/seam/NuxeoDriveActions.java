@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
@@ -167,23 +168,16 @@ public class NuxeoDriveActions implements Serializable {
             return false;
         }
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (!currentDocument.isFolder()) {
-            return false;
-        }
-        boolean hasPermission = documentManager.hasPermission(
-                currentDocument.getRef(), SecurityConstants.ADD_CHILDREN);
-        if (!hasPermission) {
-            return false;
-        }
-        return getCurrentSynchronizationRoot() == null;
+        return isSyncRootCandidate(currentDocument)
+                && getCurrentSynchronizationRoot() == null;
     }
 
     @Factory(value = "canUnSynchronizeCurrentDocument")
     public boolean canUnSynchronizeCurrentDocument() throws ClientException {
-        if (navigationContext == null) {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (!isSyncRootCandidate(currentDocument)) {
             return false;
         }
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRef currentDocRef = currentDocument.getRef();
         DocumentModel currentSyncRoot = getCurrentSynchronizationRoot();
         if (currentSyncRoot == null) {
@@ -195,10 +189,10 @@ public class NuxeoDriveActions implements Serializable {
     @Factory(value = "canNavigateToCurrentSynchronizationRoot")
     public boolean canNavigateToCurrentSynchronizationRoot()
             throws ClientException {
-        if (navigationContext == null) {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (LifeCycleConstants.DELETED_STATE.equals(currentDocument.getCurrentLifeCycleState())) {
             return false;
         }
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRef currentDocRef = currentDocument.getRef();
         DocumentModel currentSyncRoot = getCurrentSynchronizationRoot();
         if (currentSyncRoot == null) {
@@ -317,6 +311,21 @@ public class NuxeoDriveActions implements Serializable {
     public String downloadClientPackage(String name, File file) {
         FacesContext facesCtx = FacesContext.getCurrentInstance();
         return ComponentUtils.downloadFile(facesCtx, name, file);
+    }
+
+    protected boolean isSyncRootCandidate(DocumentModel doc)
+            throws ClientException {
+        if (!doc.isFolder()) {
+            return false;
+        }
+        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            return false;
+        }
+        if (!documentManager.hasPermission(doc.getRef(),
+                SecurityConstants.ADD_CHILDREN)) {
+            return false;
+        }
+        return true;
     }
 
     protected FileSystemItem getCurrentFileSystemItem() throws ClientException {
