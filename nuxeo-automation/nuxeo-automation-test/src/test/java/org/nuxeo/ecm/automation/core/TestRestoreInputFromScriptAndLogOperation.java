@@ -35,7 +35,9 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+
 import com.google.inject.Inject;
 
 /**
@@ -43,8 +45,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, LogCaptureFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features",
-        "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.ecm.core.persistence" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
 @LogCaptureFeature.FilterWith(TestRestoreInputFromScriptAndLogOperation.MyLogFilter.class)
 public class TestRestoreInputFromScriptAndLogOperation {
     @Inject
@@ -91,7 +92,7 @@ public class TestRestoreInputFromScriptAndLogOperation {
         chain.add(RestoreDocumentInputFromScript.ID).set("script",
                 "Context[\"test\"]");
         chain.add(LogOperation.ID).set("category", "loggerName").set("message",
-                "expr:Input title @{This.title}. next id : @{Fn.getNextId('pouet')}").set(
+                "expr:Input title @{This.title}.").set(
                 "level", "error");
 
         // assert that the output is "/test" is the one retrieved from the
