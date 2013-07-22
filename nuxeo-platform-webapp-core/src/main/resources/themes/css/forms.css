@@ -92,7 +92,7 @@ select:focus > optgroup > option:checked {
 .chainSelect input[type="image"] {
   margin: -0.1em .3em 0 -0.2em;
   padding: 0;
-  vertical-align: top; }
+  vertical-align: top }
 
 /* =Calendar */
 .calendarTrigger {

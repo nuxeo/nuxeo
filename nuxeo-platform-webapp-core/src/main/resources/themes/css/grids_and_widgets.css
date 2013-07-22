@@ -209,6 +209,20 @@ Temp changes waiting for NXP-12005 to be fixed
 .compactLayout .fieldColumn .button {
 	float: right }
 
+.compactLayout .sticker {
+  margin: .1em .2em .1em 0 }
+.compactLayout .sticker label {
+  color: "black (__FLAVOR__ color)";
+  float: left;
+  font-size: .9em;
+  max-width: 88% }
+.compactLayout .sticker a {
+  float: right;
+  vertical-align: top }
+.compactLayout .sticker a img {
+  margin: 0;
+  width: 95% }
+
 /* Compact Action bar*/
 .compactLayout .contextActions .actionsWidgetPanel {
 	margin: 0 }
