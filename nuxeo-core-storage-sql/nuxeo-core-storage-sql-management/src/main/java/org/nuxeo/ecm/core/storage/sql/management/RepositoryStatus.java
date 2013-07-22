@@ -91,13 +91,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public String listActiveSessions() {
-        List<RepositoryManagement> repositories;
-        try {
-            repositories = getRepositories();
-        } catch (NamingException e) {
-            log.error("Error getting repositories", e);
-            return "Error!";
-        }
+        List<RepositoryManagement> repositories = repositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Actives sessions for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
@@ -110,12 +104,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public int getActiveSessionsCount() {
-        List<RepositoryManagement> repositories;
-        try {
-            repositories = getRepositories();
-        } catch (NamingException e) {
-            throw new IllegalStateException("Cannot get repositories", e);
-        }
+        List<RepositoryManagement> repositories = repositories();
         int count = 0;
         for (RepositoryManagement repository : repositories) {
             count += repository.getActiveSessionsCount();
@@ -125,13 +114,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public String clearCaches() {
-        List<RepositoryManagement> repositories;
-        try {
-            repositories = getRepositories();
-        } catch (NamingException e) {
-            log.error("Error getting repositories", e);
-            return "Error!";
-        }
+        List<RepositoryManagement> repositories = repositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Cleared cached objects for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
@@ -142,15 +125,28 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         return buf.toString();
     }
 
+    protected List<RepositoryManagement> repositories() {
+        try {
+            return getRepositories();
+        } catch (NamingException e) {
+            throw new UnsupportedOperationException("Cannot fetch repositories", e);
+        }
+    }
+
+
+    @Override
+    public long getCachesSize() {
+        List<RepositoryManagement> repositories = repositories();
+        long size = 0;
+        for (RepositoryManagement repository : repositories) {
+            size += repository.getCacheSize();
+        }
+        return size;
+    }
+
     @Override
     public String listRemoteSessions() {
-        List<RepositoryManagement> repositories;
-        try {
-            repositories = getRepositories();
-        } catch (NamingException e) {
-            log.error("Error getting repositories", e);
-            return "Error!";
-        }
+        List<RepositoryManagement> repositories = repositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Actives remote session for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
@@ -178,15 +174,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
     @Override
     public BinaryManagerStatus gcBinaries(boolean delete) {
         BinaryManagerStatus status = new BinaryManagerStatus();
-        List<RepositoryManagement> repositories;
-        try {
-            repositories = getRepositories();
-        } catch (NamingException e) {
-            log.error("Error getting repositories", e);
-            status.numBinaries = -1;
-            status.sizeBinaries = -1;
-            return status;
-        }
+        List<RepositoryManagement> repositories = repositories();
         long start = System.currentTimeMillis();
         Map<String, BinaryGarbageCollector> repogcs = new LinkedHashMap<String, BinaryGarbageCollector>();
         Map<String, BinaryGarbageCollector> gcs = new LinkedHashMap<String, BinaryGarbageCollector>();
@@ -223,16 +211,12 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public boolean isBinariesGCInProgress() {
-        try {
-            List<RepositoryManagement> repositories = getRepositories();
-            for (RepositoryManagement repo : repositories) {
-                BinaryGarbageCollector gc = repo.getBinaryGarbageCollector();
-                if (gc != null & gc.isInProgress()) {
-                    return true;
-                }
+        List<RepositoryManagement> repositories = repositories();
+        for (RepositoryManagement repo : repositories) {
+            BinaryGarbageCollector gc = repo.getBinaryGarbageCollector();
+            if (gc != null & gc.isInProgress()) {
+                return true;
             }
-        } catch (NamingException e) {
-            log.error("Error getting repositories", e);
         }
         return false;
     }

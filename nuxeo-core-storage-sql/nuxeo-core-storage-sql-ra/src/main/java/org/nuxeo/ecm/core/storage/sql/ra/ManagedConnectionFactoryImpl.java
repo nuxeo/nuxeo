@@ -238,6 +238,20 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         }
         return repository.clearCaches();
     }
+    @Override
+    public long getCacheSize() {
+        return repository.getCacheSize();
+    }
+
+    @Override
+    public long getCachePristineSize() {
+        return repository.getCachePristineSize();
+    }
+
+    @Override
+    public long getCacheSelectionSize() {
+        return repository.getCacheSelectionSize();
+    }
 
     @Override
     public void processClusterInvalidationsNext() {

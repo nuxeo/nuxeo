@@ -91,7 +91,7 @@ public class SessionImpl implements Session, XAResource {
     private static final boolean COMPAT_REPOSITORY_NAME = Boolean.parseBoolean(Framework.getProperty(
             COMPAT_REPOSITORY_NAME_KEY, "true"));
 
-    private final RepositoryImpl repository;
+    protected final RepositoryImpl repository;
 
     private final Mapper mapper;
 
@@ -180,6 +180,10 @@ public class SessionImpl implements Session, XAResource {
         return context.clearCaches();
     }
 
+    protected PersistenceContext getContext() {
+        return context;
+    }
+
     protected void rollback() {
         context.clearCaches();
     }
@@ -237,6 +241,7 @@ public class SessionImpl implements Session, XAResource {
 
     protected void closeSession() throws StorageException {
         live = false;
+        context.clearCaches();
         // close the mapper and therefore the connection
         mapper.close();
         // don't clean the caches, we keep the pristine cache around
@@ -431,6 +436,7 @@ public class SessionImpl implements Session, XAResource {
             document.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
                     model.idToString(document.getId()));
             fulltextParser.setDocument(document, this);
+            try {
             for (String indexName : model.getFulltextInfo().indexNames) {
                 Set<String> paths;
                 if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
@@ -448,6 +454,9 @@ public class SessionImpl implements Session, XAResource {
                 info.indexName = indexName;
                 info.text = text;
                 infos.add(info);
+            }
+            } finally {
+                fulltextParser.setDocument(null, this);
             }
         }
         if (infos.isEmpty()) {
@@ -1444,6 +1453,22 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public int getTransactionTimeout() throws XAException {
         return mapper.getTransactionTimeout();
+    }
+
+    public long getCacheSize() {
+        return context.getCacheSize();
+    }
+
+    public long getCacheMapperSize() {
+        return context.getCacheMapperSize();
+    }
+
+    public long getCachePristineSize() {
+        return context.getCachePristineSize();
+    }
+
+    public long getCacheSelectionSize() {
+        return context.getCacheSelectionSize();
     }
 
 }

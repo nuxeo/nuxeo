@@ -30,9 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.Set;
 
 import javax.sql.XADataSource;
@@ -130,6 +128,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     @Override
     public void clearCache() {
         // no cache
+    }
+
+    @Override
+    public long getCacheSize() {
+        return 0;
     }
 
     @Override

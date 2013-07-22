@@ -40,6 +40,11 @@ public interface RepositoryStatusMBean {
     String clearCaches();
 
     /**
+     * Evaluate caches size
+     * @since 5.7.2
+     */
+    long getCachesSize();
+    /**
      * GC the unused binaries.
      *
      * @param delete if {@code false} don't actually delete the GCed binaries

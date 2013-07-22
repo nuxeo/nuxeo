@@ -64,7 +64,6 @@ public class SelectionContext {
     protected final Counter cacheHitCount = metrics.newCounter(
             SelectionContext.class, "cache-hit");
 
-    // @since 5.7
     protected final Timer cacheGetTimer = metrics.newTimer(
             SelectionContext.class, "cache-get");
 

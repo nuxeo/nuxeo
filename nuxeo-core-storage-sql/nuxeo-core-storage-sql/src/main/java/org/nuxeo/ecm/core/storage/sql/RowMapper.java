@@ -379,6 +379,13 @@ public interface RowMapper {
     void clearCache();
 
     /**
+     * Evaluate the cached elements size
+     *
+     * @since 5.7.2
+     */
+    long getCacheSize();
+
+    /**
      * Rollback the XA Resource.
      * <p>
      * This is in the {@link RowMapper} interface because on rollback the cache

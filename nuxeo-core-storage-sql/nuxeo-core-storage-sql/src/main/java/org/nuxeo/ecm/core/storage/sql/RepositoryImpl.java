@@ -51,6 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
 
 /**
  * {@link Repository} implementation, to be extended by backend-specific
@@ -92,6 +93,35 @@ public class RepositoryImpl implements Repository {
 
     protected final Counter sessionCount = metrics.newCounter(getClass(),
             "session");
+
+    protected final Gauge<Long> cacheSize = metrics.newGauge(new Gauge<Long>() {
+
+        @Override
+        public Long getValue() {
+            return getCacheSize();
+        }
+
+    }, getClass(), "cache-size");
+
+    protected final Gauge<Long> cachePristineSize = metrics.newGauge(
+            new Gauge<Long>() {
+
+                @Override
+                public Long getValue() {
+                    return getCachePristineSize();
+                }
+
+            }, PersistenceContext.class, "cache-size");
+
+    protected final Gauge<Long> cacheSelectionSize = metrics.newGauge(
+            new Gauge<Long>() {
+
+                @Override
+                public Long getValue() {
+                    return getCacheSelectionSize();
+                }
+
+            }, SelectionContext.class, "cache-size");
 
     private LockManager lockManager;
 
@@ -542,6 +572,41 @@ public class RepositoryImpl implements Repository {
             lockManager.clearCaches();
         }
         return n;
+    }
+
+    @Override
+    public long getCacheSize() {
+        long size = 0;
+        for (SessionImpl session : sessions) {
+            size += session.getCacheSize();
+        }
+        return size;
+    }
+
+    public long getCacheMapperSize() {
+        long size = 0;
+        for (SessionImpl session : sessions) {
+            size += session.getCacheMapperSize();
+        }
+        return size;
+    }
+
+    @Override
+    public long getCachePristineSize() {
+        long size = 0;
+        for (SessionImpl session : sessions) {
+            size += session.getCachePristineSize();
+        }
+        return size;
+    }
+
+    @Override
+    public long getCacheSelectionSize() {
+        long size = 0;
+        for (SessionImpl session : sessions) {
+            size += session.getCacheSelectionSize();
+        }
+        return size;
     }
 
     @Override

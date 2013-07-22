@@ -107,6 +107,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     /**
      * Cache statistics
+     *
      * @since 5.7
      */
     protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
@@ -176,8 +177,9 @@ public class SoftRefCachingRowMapper implements RowMapper {
                 && row.values[0] instanceof ACLRow) {
             row.values = sortACLRows((ACLRow[]) row.values);
         }
-        cache.put(new RowId(row), row);
-        cacheSize.inc();
+        if (cache.put(new RowId(row), row) == null) {
+            cacheSize.inc();
+        }
     }
 
     protected ACLRow[] sortACLRows(ACLRow[] acls) {
@@ -188,8 +190,9 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected void cachePutAbsent(RowId rowId) {
-        cache.put(new RowId(rowId), new Row(ABSENT, (Serializable) null));
-        cacheSize.inc();
+        if (cache.put(new RowId(rowId), new Row(ABSENT, (Serializable) null)) == null) {
+            cacheSize.inc();
+        }
     }
 
     protected void cachePutAbsentIfNull(RowId rowId, Row row) {
@@ -225,7 +228,9 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected void cacheRemove(RowId rowId) {
-        cache.remove(rowId);
+        if (cache.remove(rowId) != null) {
+            cacheSize.dec();
+        }
     }
 
     /*
@@ -329,13 +334,16 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     @Override
+    public long getCacheSize() {
+        return cacheSize.getCount();
+    }
+
+    @Override
     public void rollback(Xid xid) throws XAException {
         try {
             rowMapper.rollback(xid);
         } finally {
-            cacheSize.dec(cache.size());
-            cache.clear();
-            localInvalidations.clear();
+            clearCache();
         }
     }
 

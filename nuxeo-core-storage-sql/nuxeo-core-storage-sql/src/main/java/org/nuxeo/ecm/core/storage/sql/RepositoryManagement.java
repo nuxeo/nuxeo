@@ -33,6 +33,25 @@ public interface RepositoryManagement {
     int getActiveSessionsCount();
 
     /**
+     * Evaluate number of elements in all caches
+     *
+     * @since 5.7.2
+     */
+    long getCacheSize();
+
+    /**
+     * Evaluate number of elements in hier cache
+     * @since 5.7.2
+     */
+    long getCachePristineSize();
+
+
+    /**
+     * Evaluate number of elements in selection cache
+     * @since 5.7.2
+     */
+    long getCacheSelectionSize();
+    /**
      * Clears all the caches.
      *
      * @return an indicative count of objects removed

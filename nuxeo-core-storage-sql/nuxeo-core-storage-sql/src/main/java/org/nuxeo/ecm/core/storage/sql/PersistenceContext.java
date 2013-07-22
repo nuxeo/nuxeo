@@ -140,11 +140,9 @@ public class PersistenceContext {
      * @since 5.7
      */
     protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+
     protected final Counter cacheHitCount = metrics.newCounter(
             PersistenceContext.class, "cache-hit");
-
-    protected final Counter cacheSize = metrics.newCounter(
-            PersistenceContext.class, "cache-size");
 
     protected final Timer cacheGetTimer = metrics.newTimer(
             PersistenceContext.class, "cache-get");
@@ -202,8 +200,27 @@ public class PersistenceContext {
         }
         int n = pristine.size();
         pristine.clear();
-        cacheSize.dec(n);
         return n;
+    }
+
+    protected long getCacheSize() {
+        return getCachePristineSize() + getCacheSelectionSize() + getCacheMapperSize();
+    }
+
+    protected long getCacheMapperSize() {
+        return mapper.getCacheSize();
+    }
+
+    protected long getCachePristineSize() {
+        return pristine.size();
+    }
+
+    protected long getCacheSelectionSize() {
+        int size = 0;
+        for (SelectionContext sel:selections) {
+            size += sel.getSize();
+        }
+        return size;
     }
 
     /**
@@ -242,7 +259,6 @@ public class PersistenceContext {
             fragment.clearDirty();
             fragment.setPristine();
             pristine.put(rowId, fragment);
-            cacheSize.inc();
         }
         createdIds.clear();
 
@@ -257,7 +273,6 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
-                cacheSize.inc();
                 break;
             case MODIFIED:
                 if (fragment.row.isCollection()) {
@@ -275,7 +290,6 @@ public class PersistenceContext {
                 fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(rowId, fragment);
-                cacheSize.inc();
                 break;
             case DELETED:
                 // TODO deleting non-hierarchy fragments is done by the database
@@ -431,7 +445,6 @@ public class PersistenceContext {
         RowId rowId = fragment.row;
         modified.remove(rowId);
         pristine.put(rowId, fragment);
-        cacheSize.inc();
     }
 
     /**
@@ -478,7 +491,6 @@ public class PersistenceContext {
                 Fragment fragment = pristine.remove(rowId);
                 if (fragment != null) {
                     fragment.setInvalidatedModified();
-                    cacheSize.dec();
                 }
             }
             for (SelectionContext sel : selections) {
@@ -490,7 +502,6 @@ public class PersistenceContext {
                 Fragment fragment = pristine.remove(rowId);
                 if (fragment != null) {
                     fragment.setInvalidatedDeleted();
-                    cacheSize.dec();
                 }
             }
         }
@@ -971,11 +982,9 @@ public class PersistenceContext {
         case ABSENT:
         case INVALIDATED_DELETED:
             pristine.remove(rowId);
-            cacheSize.dec();
             break;
         case CREATED:
             modified.remove(rowId);
-            cacheSize.dec();
             break;
         case PRISTINE:
         case INVALIDATED_MODIFIED:
@@ -1009,7 +1018,6 @@ public class PersistenceContext {
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
             pristine.remove(rowId);
-            cacheSize.dec();
             break;
         case CREATED:
         case MODIFIED:

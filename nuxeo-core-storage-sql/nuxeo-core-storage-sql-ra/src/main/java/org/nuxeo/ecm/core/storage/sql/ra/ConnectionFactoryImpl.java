@@ -270,6 +270,21 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     @Override
+    public long getCacheSize() {
+        return managedConnectionFactory.getCacheSize();
+    }
+
+    @Override
+    public long getCachePristineSize() {
+        return managedConnectionFactory.getCachePristineSize();
+    }
+
+    @Override
+    public long getCacheSelectionSize() {
+        return managedConnectionFactory.getCacheSelectionSize();
+    }
+
+    @Override
     public int clearCaches() {
         return managedConnectionFactory.clearCaches();
     }
@@ -325,4 +340,5 @@ public class ConnectionFactoryImpl implements Repository,
     public String getServerURL() {
         return managedConnectionFactory.getServerURL();
     }
+
 }
