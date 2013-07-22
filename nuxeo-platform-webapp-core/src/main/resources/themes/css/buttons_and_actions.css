@@ -61,7 +61,13 @@ input.button[disabled], input.button[disabled]:hover {
 	background: none repeat scroll 0 0 #01a2df;
 	border: 1px solid #0186b8 }
 
-.smallButton, input.smallButton { font-size: .85em; padding: 0 .4em}
+.smallButton,
+input.smallButton,
+a.smallButton {
+  background-color: #fff;
+  color: "link (__FLAVOR__ color)";
+  font-size: .85em;
+  padding: 0 .4em }
 
 .dropdown, .dropdown:hover { background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
   background-color: "button (__FLAVOR__ background)";
@@ -170,14 +176,6 @@ Temp changes waiting for NXP-12005 to be fixed
   display: inline-block;
   font-weight: bold;
   padding: 0 .3em 0 1.6em }
-
-.tagInput {
-	background: url("${basePath}/icons/tag.png") no-repeat scroll 2px center / 12px auto transparent;
-	border-color: "neutral.lighter (__FLAVOR__ border)";
-	box-shadow: none;
-	font-size: .95em;
-	padding: .1em .5em .2em 1.8em;
-	max-width: 7em }
 
 .user, span.user, .group, span.group { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; box-shadow: -1px -2px 2px rgba(140, 140, 140, 0.2) inset, 1px 1px 1px #fff inset; color: "gray.dark (__FLAVOR__ color)"; display: inline-block; opacity: 1; padding: .1em .3em .1em 1.8em; white-space: nowrap }
 .group, span.group { background: url("${basePath}/icons/group.png") no-repeat scroll 2px 2px transparent }
