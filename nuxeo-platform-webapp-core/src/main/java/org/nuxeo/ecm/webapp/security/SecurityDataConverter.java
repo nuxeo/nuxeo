@@ -92,8 +92,8 @@ public class SecurityDataConverter implements Serializable {
 
         Map<String, List<String>> grants = securityData.getCurrentDocGrant();
         Map<String, List<String>> denies = securityData.getCurrentDocDeny();
-        List<UserEntry> entries = new ArrayList<UserEntry>(grants.size() +
-                denies.size());
+        List<UserEntry> entries = new ArrayList<UserEntry>(grants.size()
+                + denies.size());
 
         for (Entry<String, List<String>> e : grants.entrySet()) {
             UserEntry entry = new UserEntryImpl(e.getKey());
