@@ -117,7 +117,7 @@ public class NuxeoDriveActions implements Serializable {
         return (DocumentModel) cache.get(CURRENT_SYNCHRONIZATION_ROOT);
     }
 
-    @Factory(value = "canEditCurrentDocument", scope = ScopeType.EVENT)
+    @Factory(value = "canEditCurrentDocument")
     public boolean canEditCurrentDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument.isFolder()) {
@@ -161,8 +161,8 @@ public class NuxeoDriveActions implements Serializable {
         return sb.toString();
     }
 
-    @Factory(value = "canSynchronizeCurrentDocument", scope = ScopeType.EVENT)
-    public boolean getCanSynchronizeCurrentDocument() throws ClientException {
+    @Factory(value = "canSynchronizeCurrentDocument")
+    public boolean canSynchronizeCurrentDocument() throws ClientException {
         if (navigationContext == null) {
             return false;
         }
@@ -178,8 +178,8 @@ public class NuxeoDriveActions implements Serializable {
         return getCurrentSynchronizationRoot() == null;
     }
 
-    @Factory(value = "canUnSynchronizeCurrentDocument", scope = ScopeType.EVENT)
-    public boolean getCanUnSynchronizeCurrentDocument() throws ClientException {
+    @Factory(value = "canUnSynchronizeCurrentDocument")
+    public boolean canUnSynchronizeCurrentDocument() throws ClientException {
         if (navigationContext == null) {
             return false;
         }
@@ -192,8 +192,8 @@ public class NuxeoDriveActions implements Serializable {
         return currentDocRef.equals(currentSyncRoot.getRef());
     }
 
-    @Factory(value = "canNavigateToCurrentSynchronizationRoot", scope = ScopeType.EVENT)
-    public boolean getCanNavigateToCurrentSynchronizationRoot()
+    @Factory(value = "canNavigateToCurrentSynchronizationRoot")
+    public boolean canNavigateToCurrentSynchronizationRoot()
             throws ClientException {
         if (navigationContext == null) {
             return false;
