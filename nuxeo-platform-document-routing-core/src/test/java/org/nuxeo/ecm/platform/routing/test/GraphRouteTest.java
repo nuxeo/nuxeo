@@ -955,8 +955,8 @@ public class GraphRouteTest {
         assertTrue(route.isDone());
     }
 
-    // @SuppressWarnings("unchecked")
-    // @Test
+    @SuppressWarnings("unchecked")
+    @Test
     public void testRouteWithTasks() throws Exception {
 
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
