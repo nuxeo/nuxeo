@@ -83,43 +83,40 @@ A templating zone is also available for compatibility:
       </c:if>
     </nxu:set>
 
-    <ui:define name="syndication_buttons">
-      <ui:insert name="content_view_syndication_buttons">
+    <ui:insert name="content_view_syndication_buttons">
 
-        <nxu:set var="finalShowSyndicationLinks"
-          value="#{nxu:test(empty showSyndicationLinks, contentView.currentResultLayout.showSyndicationLinks, showSyndicationLinks)}">
+      <nxu:set var="finalShowSyndicationLinks"
+        value="#{nxu:test(empty showSyndicationLinks, contentView.currentResultLayout.showSyndicationLinks, showSyndicationLinks)}">
 
-          <c:if test="#{finalShowSyndicationLinks}">
+        <c:if test="#{finalShowSyndicationLinks}">
 
-            <div class="contentViewUpperAction">
-              <nxd:restDocumentLink document="#{currentDocument}"
-                view="rss" addTabInfo="false"
-                newConversation="true" target="_blank">
-                <f:param name="contentViewName" value="#{contentView.name}" />
-                <f:param name="currentPage" value="0" />
-                <f:param name="contentViewState" value="#{contentViewState}" />
-                <h:outputText value="#{messages['label.syndication.rss']}"/>
-              </nxd:restDocumentLink>
-            </div>
+          <div class="contentViewUpperAction">
+            <nxd:restDocumentLink document="#{currentDocument}"
+              view="rss" addTabInfo="false"
+              newConversation="true" target="_blank">
+              <f:param name="contentViewName" value="#{contentView.name}" />
+              <f:param name="currentPage" value="0" />
+              <f:param name="contentViewState" value="#{contentViewState}" />
+              <h:outputText value="#{messages['label.syndication.rss']}"/>
+            </nxd:restDocumentLink>
+          </div>
 
-            <div class="contentViewUpperAction">
-              <nxd:restDocumentLink document="#{currentDocument}"
-                view="atom" addTabInfo="false"
-                newConversation="true" target="_blank">
-                <f:param name="contentViewName" value="#{contentView.name}" />
-                <f:param name="currentPage" value="0" />
-                <f:param name="contentViewState" value="#{contentViewState}" />
-                <h:outputText value="#{messages['label.syndication.atom']}" />
-              </nxd:restDocumentLink>
-            </div>
+          <div class="contentViewUpperAction">
+            <nxd:restDocumentLink document="#{currentDocument}"
+              view="atom" addTabInfo="false"
+              newConversation="true" target="_blank">
+              <f:param name="contentViewName" value="#{contentView.name}" />
+              <f:param name="currentPage" value="0" />
+              <f:param name="contentViewState" value="#{contentViewState}" />
+              <h:outputText value="#{messages['label.syndication.atom']}" />
+            </nxd:restDocumentLink>
+          </div>
 
-          </c:if>
+        </c:if>
 
-        </nxu:set>
+      </nxu:set>
 
-      </ui:insert>
-    </ui:define>
-
+    </ui:insert>
 
   </nxu:set>
 
