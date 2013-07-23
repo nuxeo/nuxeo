@@ -598,6 +598,22 @@
       </properties>
     </widget>
 
+    <widget name="dam_edit_tags" type="select_tags">
+      <labels>
+        <label mode="any">label.dam.search.tagSearch</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>contextData['request/dam_bulk_edit_tags']</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="canSelectNewTag">true</property>
+        <property name="placeholder">
+          #{messages['label.dam.search.tags.placeholder']}
+        </property>
+      </properties>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -1002,6 +1018,9 @@
         <template mode="any">/layouts/layout_bulkedit_template.xhtml</template>
       </templates>
       <rows>
+        <row>
+          <widget>dam_edit_tags</widget>
+        </row>
         <row>
           <widget>damc_author</widget>
         </row>
