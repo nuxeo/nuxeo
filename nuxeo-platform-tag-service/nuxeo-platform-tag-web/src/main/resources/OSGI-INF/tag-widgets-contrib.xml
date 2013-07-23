@@ -33,7 +33,23 @@
                 <row>
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
+                <row>
+                  <widget>canSelectNewTag</widget>
+                </row>
               </rows>
+              <widget name="canSelectNewTag" type="string">
+                <labels>
+                  <label mode="any">Can Select New Tag</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Allow to select tags that don't exist yet.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>canSelectNewTag</field>
+                </fields>
+              </widget>
             </layout>
           </layouts>
         </properties>
