@@ -199,9 +199,9 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         String mbean = self.getObjectName().toString();
         MetricsService metrics = Framework.getLocalService(MetricsService.class);
         metrics.newGauge(mbean,
-                "connectionCount", MetricsServiceImpl.class, "storage-xaConnectionCount");
+                "ConnectionCount", MetricsServiceImpl.class, "storage-xaConnectionCount");
         metrics.newGauge(mbean,
-                "idleConnectionCount", MetricsServiceImpl.class, "storage-xaConnectionIdle");
+                "IdleConnectionCount", MetricsServiceImpl.class, "storage-xaConnectionIdle");
     }
 
     protected void uninstall() {
