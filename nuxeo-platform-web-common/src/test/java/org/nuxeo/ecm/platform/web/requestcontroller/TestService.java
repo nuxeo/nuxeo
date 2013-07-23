@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.web.requestcontroller;
 
+import javax.servlet.FilterConfig;
+
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -110,6 +112,33 @@ public class TestService extends NXRuntimeTestCase {
         assertTrue(config.isCached());
         assertTrue(config.isPrivate());
         assertEquals("3000", config.getCacheTime());
+    }
+
+    @Test
+    public void testCorsContrib() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.web.common",
+                "OSGI-INF/web-request-controller-contrib-test.xml");
+
+        RequestControllerManager rcm = Framework
+                .getLocalService(RequestControllerManager.class);
+        assertNotNull(rcm);
+
+        String uri = "";
+        FilterConfig fc;
+
+        RequestControllerService rcs = (RequestControllerService) rcm;
+        assertNull(rcs.computeCorsFilterConfigForUri("/dummy/uri"));
+
+        uri = "/nuxeo/site/minimal/something/long/dummy.html";
+        fc = rcs.computeCorsFilterConfigForUri(uri);
+        assertEquals("-1", fc.getInitParameter("cors.maxAge"));
+        assertEquals(null, fc.getInitParameter("cors.allowOrigin"));
+
+        uri = "/nuxeo/site/dummy/";
+        fc = rcs.computeCorsFilterConfigForUri(uri);
+        assertEquals("3600", fc.getInitParameter("cors.maxAge"));
+        assertEquals("http://example.com http://example.com:8080", fc.getInitParameter("cors.allowOrigin"));
+        assertEquals("false", fc.getInitParameter("cors.supportsCredentials"));
     }
 
 }

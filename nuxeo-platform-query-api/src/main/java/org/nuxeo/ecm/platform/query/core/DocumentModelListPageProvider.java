@@ -34,7 +34,10 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
-public class DocumentModelListPageProvider extends AbstractPageProvider<DocumentModel> {
+public class DocumentModelListPageProvider extends
+        AbstractPageProvider<DocumentModel> {
+
+    private static final long serialVersionUID = 1L;
 
     protected final DocumentModelList docs;
 

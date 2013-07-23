@@ -19,16 +19,26 @@
 
 package org.nuxeo.ecm.platform.web.common.requestcontroller.service;
 
+import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Interface for the service used to manage what {@link HttpServletRequest}
- * must be protected by the Filter.
+ * Interface for the service used to manage what {@link HttpServletRequest} must
+ * be protected by the Filter.
  *
  * @author tiry
  */
 public interface RequestControllerManager {
 
     RequestFilterConfig getConfigForRequest(HttpServletRequest request);
+
+    /**
+     * Get contributed FilterConfig for an HttpServletRequest.
+     *
+     * @since 5.7.2
+     * @return filter config to init CorsFilter if there is a matching request,
+     *         null otherwise.
+     */
+    FilterConfig getCorsConfigForRequest(HttpServletRequest request);
 
 }

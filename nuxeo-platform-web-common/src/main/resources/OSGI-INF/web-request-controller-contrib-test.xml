@@ -45,4 +45,20 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+    point="corsConfig">
+    <corsConfig name="minimal">
+      <pattern>/nuxeo/site/minimal/.*</pattern>
+    </corsConfig>
+
+    <corsConfig name="dummy" allowGenericHttpRequests="true"
+      allowOrigin="http://example.com http://example.com:8080"
+      allowSubdomains="true" supportedMethods="GET"
+      supportedHeaders="Content-Type, X-Requested-With"
+      exposedHeaders="X-Custom-1, X-Custom-2"
+      supportsCredentials="false" maxAge="3600">
+      <pattern>/nuxeo/site/dummy/.*</pattern>
+    </corsConfig>
+  </extension>
+
 </component>
