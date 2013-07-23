@@ -1,60 +1,63 @@
 #!/usr/bin/env python
-##
-## (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
-##
-## All rights reserved. This program and the accompanying materials
-## are made available under the terms of the GNU Lesser General Public License
-## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl.html
-##
-## This library is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-## Lesser General Public License for more details.
-##
-## Contributors:
-##     Julien Carsique
-##
-## This script manages releasing of Nuxeo source code.
-## It applies on current Git repository and its sub-repositories.
-##
-## Examples from Nuxeo root, checkout on master:
-## $ ./scripts/release.py
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6-I20120102_1741
-## Next version:            5.6-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -f
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6
-## Next version:            5.7-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
-## Releasing from branch:   master
-## Current version:         5.6-SNAPSHOT
-## Tag:                     5.6
-## Next version:            5.7-SNAPSHOT
-## Maintenance version:     5.6.1-SNAPSHOT
-##
-## $ ./scripts/release.py -f -b 5.5.0
-## Releasing from branch:   5.5.0
-## Current version:         5.5.0-HF01-SNAPSHOT
-## Tag:                     5.5.0-HF01
-## Next version:            5.5.0-HF02-SNAPSHOT
-## No maintenance branch
-##
-## $ ./scripts/release.py -b 5.5.0 -t sometag
-## Releasing from branch 5.5.0
-## Current version:      5.5.0-HF01-SNAPSHOT
-## Tag:                  sometag
-## Next version:         5.5.0-HF01-SNAPSHOT
-## No maintenance branch
-##
+# #
+# # (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+# #
+# # All rights reserved. This program and the accompanying materials
+# # are made available under the terms of the GNU Lesser General Public License
+# # (LGPL) version 2.1 which accompanies this distribution, and is available at
+# # http://www.gnu.org/licenses/lgpl.html
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# # Lesser General Public License for more details.
+# #
+# # Contributors:
+# #     Julien Carsique
+# #
+# # This script manages releasing of Nuxeo source code.
+# # It applies on current Git repository and its sub-repositories.
+# #
+# # Examples from Nuxeo root, checkout on master:
+# # $ ./scripts/release.py
+# # Releasing from branch:   master
+# # Current version:         5.6-SNAPSHOT
+# # Tag:                     5.6-I20120102_1741
+# # Next version:            5.6-SNAPSHOT
+# # No maintenance branch
+# #
+# # $ ./scripts/release.py -f
+# # Releasing from branch:   master
+# # Current version:         5.6-SNAPSHOT
+# # Tag:                     5.6
+# # Next version:            5.7-SNAPSHOT
+# # No maintenance branch
+# #
+# # $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
+# # Releasing from branch:   master
+# # Current version:         5.6-SNAPSHOT
+# # Tag:                     5.6
+# # Next version:            5.7-SNAPSHOT
+# # Maintenance version:     5.6.1-SNAPSHOT
+# #
+# # $ ./scripts/release.py -f -b 5.5.0
+# # Releasing from branch:   5.5.0
+# # Current version:         5.5.0-HF01-SNAPSHOT
+# # Tag:                     5.5.0-HF01
+# # Next version:            5.5.0-HF02-SNAPSHOT
+# # No maintenance branch
+# #
+# # $ ./scripts/release.py -b 5.5.0 -t sometag
+# # Releasing from branch 5.5.0
+# # Current version:      5.5.0-HF01-SNAPSHOT
+# # Tag:                  sometag
+# # Next version:         5.5.0-HF01-SNAPSHOT
+# # No maintenance branch
+# #
+from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
+from collections import namedtuple
 from datetime import datetime
+from distutils.log import Log
 from lxml import etree
 from nxutils import ExitException
 from nxutils import Repository
@@ -64,6 +67,9 @@ from nxutils import extract_zip
 from nxutils import log
 from nxutils import make_zip
 from nxutils import system
+from optparse import IndentedHelpFormatter
+from optparse import TitledHelpFormatter
+from terminalsize import get_terminal_size
 import fnmatch
 import hashlib
 import optparse
@@ -77,7 +83,6 @@ import sys
 import tempfile
 import time
 import urllib
-
 
 PKG_RENAMINGS = {
     # JBoss packages
@@ -109,15 +114,14 @@ class Release(object):
 
     See 'self.perpare()', 'self.perform()'."""
     def __init__(self, repo, branch, tag, next_snapshot, maintenance="auto",
-                 is_final=False, skipTests=False, other_version=None):
+                 is_final=False, skipTests=False, other_versions=None):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
         self.maintenance = maintenance
         self.skipTests = skipTests
-        if other_version is not None and other_version != "None":
-            self.o_old_version, self.o_new_version = other_version.split('/', 1)
         # Evaluate default values, if not provided
+        self.set_other_versions_and_patterns(other_versions)
         self.set_snapshot()
         self.set_tag(tag)
         self.set_next_snapshot(next_snapshot)
@@ -129,6 +133,58 @@ class Release(object):
             log("Releasing Nuxeo main repository...")
         else:
             log("Releasing custom repository...")
+
+    def set_other_versions_and_patterns(self, other_versions=None):
+        """Set other versions and replacement patterns"""
+        Patterns = namedtuple('Patterns', ['files', 'props'])
+        self.default_patterns = Patterns(
+            # Files extentions
+            "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
+            # Properties like nuxeo.*.version
+            "{%s}(nuxeo|marketplace)\..*version" % namespaces.get("pom"))
+        custom_files_pattern = ""
+        custom_props_pattern = ""
+        other_versions_split = []
+        if other_versions:
+            # Parse custom patterns
+            other_versions_split = other_versions.split(':')
+            if (len(other_versions_split) == 3):
+                if other_versions_split[0]:
+                    custom_files_pattern = other_versions_split[0]
+                    try:
+                        re.compile(custom_files_pattern)
+                    except re.error, e:
+                        raise ExitException(1, "Bad pattern: '%s'\n%s" %
+                                            (custom_files_pattern, e.message))
+                if other_versions_split[1]:
+                    try:
+                        re.compile(other_versions_split[1])
+                    except re.error, e:
+                        raise ExitException(e, 1, "Bad pattern: '%s'\n/s" %
+                                            other_versions_split[1], e.message)
+                    custom_props_pattern = "{%s}%s" % (namespaces.get("pom"),
+                                                       other_versions_split[1])
+                other_versions = other_versions_split[2]
+            elif len(other_versions_split) == 1:
+                other_versions = other_versions_split[0]
+            else:
+                raise ExitException(1, "Could not parse other_versions parameter %s."
+                                    % other_versions)
+            # Parse version replacements
+            other_versions_split = []
+            for other_version in other_versions.split(","):
+                other_version_split = other_version.split("/")
+                if (len(other_version_split) < 2 or
+                    len(other_version_split) > 3 or
+                    other_version_split.count(None) > 0 or
+                    other_version_split.count("") > 0):
+                    raise ExitException(1,
+                        "Could not parse other_versions parameter %s."
+                        % other_versions)
+                other_versions_split.append(other_version_split)
+        self.other_versions = other_versions_split
+        self.custom_patterns = Patterns(custom_files_pattern,
+                                        custom_props_pattern)
 
     def set_snapshot(self):
         """Set current version from root POM."""
@@ -174,12 +230,15 @@ class Release(object):
             log("Maintenance version:".ljust(25) + self.maintenance)
         if self.skipTests:
             log("Tests execution is skipped")
-        if hasattr(self, 'o_old_version'):
-            log("Also replace version:".ljust(25) + self.o_old_version)
-            log("with ".rjust(25) + self.o_new_version)
-            other_version = self.o_old_version + '/' + self.o_new_version
-        else:
-            other_version = None
+        if self.custom_patterns.files:
+            log("Custom files pattern: ".ljust(25) +
+                self.custom_patterns.files)
+        if self.custom_patterns.props:
+            log("Custom props pattern: ".ljust(25) +
+                self.custom_patterns.props[35:])
+        if self.other_versions:
+            for other_version in self.other_versions:
+                log("Also replace version:".ljust(25) + '/'.join(other_version))
         if store_params:
             release_log = os.path.abspath(os.path.join(self.repo.basedir,
                                                        os.pardir,
@@ -187,17 +246,37 @@ class Release(object):
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
                         "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
-                        "OTHER_VERSION=%s" %
+                        "OTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
+                        "PROPS_PATTERN=%s" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance, self.is_final,
-                         self.skipTests, other_version))
+                         self.skipTests,
+                         (','.join('/'.join(other_version)
+                                   for other_version in self.other_versions)),
+                         self.custom_patterns.files,
+                         self.custom_patterns.props[35:]))
             log("Parameters stored in %s" % release_log)
         log("")
 
     def update_versions(self, old_version, new_version):
-        """Update all occurrences of 'old_version' with 'new_version'."""
-        log("Replacing occurrences of %s with %s" % (old_version, new_version))
-        pattern = re.compile("^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$")
+        """Update all occurrences of 'old_version' with 'new_version'.
+        Return True if there was some change."""
+        changed = False
+        if old_version == new_version:
+            return changed
+        log("[INFO] Replacing occurrences of %s with %s" % (old_version,
+                                                            new_version))
+        if self.custom_patterns.files:
+            files_pattern = re.compile("(%s)|(%s)" % (self.default_patterns.files,
+                                 self.custom_patterns.files))
+        else:
+            files_pattern = re.compile(self.default_patterns.files)
+        if self.custom_patterns.props:
+            props_pattern = re.compile("(%s)|(%s)" % (self.default_patterns.props,
+                                 self.custom_patterns.props))
+        else:
+            props_pattern = re.compile(self.default_patterns.props)
+
         for root, dirs, files in os.walk(os.getcwd(), True, None, True):
             for dir in set(dirs) & set([".git", "target"]):
                 dirs.remove(dir)
@@ -217,20 +296,17 @@ class Release(object):
                     if elem is not None and elem.text == old_version:
                         elem.text = new_version
                         replaced = True
-                    # Properties like nuxeo.*.version
-                    prop_pattern = re.compile("{" + namespaces.get("pom") +
-                                              "}(nuxeo|marketplace)\..*version")
                     properties = tree.getroot().find("pom:properties",
                                                      namespaces)
                     if properties is not None:
                         for property in properties.getchildren():
                             if (not isinstance(property, etree._Comment)
-                                and prop_pattern.match(property.tag)
+                                and props_pattern.match(property.tag)
                                 and property.text == old_version):
                                 property.text = new_version
                                 replaced = True
                     tree.write_c14n(os.path.join(root, name))
-                elif pattern.match(name):
+                elif files_pattern.match(name):
                     with open(os.path.join(root, name), "rb") as f:
                         content = f.read()
                         if content.find(old_version) > -1:
@@ -240,10 +316,13 @@ class Release(object):
                         f.write(content)
                 if replaced:
                     log(os.path.join(root, name))
+                    changed = True
+        return changed
 
     def test(self):
         """For current script development purpose."""
-        self.package_all(self.snapshot)
+        self.prepare(dryrun=True)
+#         self.package_all(self.snapshot)
 
     def package_all(self, version=None):
         """Repackage files to be uploaded.
@@ -317,45 +396,57 @@ class Release(object):
         sources_archive_name = "nuxeo-%s-sources.zip" % version
         self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
 
-    def prepare(self, dodeploy=False):
+    def prepare(self, dodeploy=False, dryrun=False):
         """ Prepare the release: build, change versions, tag and package source
         and distributions."""
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch)
 
-        # check release-ability
+        log("[INFO] Check release-ability...")
         self.check()
 
-        # Create release branches, update version, commit and tag
+        log("\n[INFO] Releasing branch {0}, create branch {1}, update versions, "
+            "commit and tag as release-{1}...".format(self.branch, self.tag))
         self.repo.system_recurse("git checkout -b %s" % self.tag)
         self.update_versions(self.snapshot, self.tag)
-        if hasattr(self, 'o_old_version'):
-            self.update_versions(self.o_old_version, self.o_new_version)
+        for other_version in self.other_versions:
+            if len(other_version) > 0:
+                self.update_versions(other_version[0], other_version[1])
         self.repo.system_recurse("git commit -m'Release %s' -a" % self.tag)
         self.repo.system_recurse("git tag release-%s" % self.tag)
 
-        ## TODO NXP-8569 Optionally merge maintenance branch on source
-
+        # TODO NXP-8569 Optionally merge maintenance branch on source
         if self.maintenance != "auto":
             # Maintenance branches are kept, so update their versions
+            log("\n[INFO] Maintenance branch (update version and commit)...")
             self.update_versions(self.tag, self.maintenance)
             self.repo.system_recurse("git commit -m'Post release %s' -a" %
                                      self.tag)
 
+        log("\n[INFO] Released branch %s (update version and commit)..." %
+            self.branch)
         self.repo.system_recurse("git checkout %s" % self.branch)
-        if self.snapshot != self.next_snapshot:
-            # Update released branches
-            self.update_versions(self.snapshot, self.next_snapshot)
+        # Update released branches with next versions
+        post_release_change = self.update_versions(self.snapshot,
+                                                   self.next_snapshot)
+        for other_version in self.other_versions:
+            if len(other_version) == 3:
+                post_release_change = (
+                    self.update_versions(other_version[0], other_version[2]) or
+                    post_release_change)
+        if post_release_change:
             self.repo.system_recurse("git commit -m'Post release %s' -a" %
                                      self.tag)
 
         if self.maintenance == "auto":
-            # Delete maintenance branches
+            log("\n[INFO] Delete maintenance branch %s..." % self.tag)
             self.repo.system_recurse("git branch -D %s" % self.tag)
 
-        # Build and package
+        log("\n[INFO] Build and package release-%s..." % self.tag)
         self.repo.system_recurse("git checkout release-%s" % self.tag)
+        if dryrun:
+            return
         if dodeploy:
             self.repo.mvn("clean deploy", skip_tests=self.skipTests,
                         profiles="release,-qa,nightly")
@@ -399,59 +490,85 @@ def main():
         if not os.path.isdir(".git"):
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
-        usage = ("usage: %prog [options] <command>\n\nCommands:\n"
-                 "  prepare: Prepare the release (build, change versions, tag "
-                 "and package source and distributions). The release "
-                 "parameters are stored in a release.log file.\n"
-                 "  perform: Perform the release (push sources, deploy "
-                 "artifacts and upload packages). If no parameter is given, "
-                 "they are read from the release.log file.\n"
-                 "  package: Package distributions and source code in the "
-                 "archives directory.")
-        parser = optparse.OptionParser(usage=usage,
-                                       description="""Release Nuxeo from
-a given branch, tag the release, then set the next SNAPSHOT version.  If a
-maintenance version was provided, then a maintenance branch is kept, else it is
-deleted after release.""")
+        usage = ("""usage: %prog <command> [options]
+       %prog prepare [-r alias] [-f] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [-d] [--skipTests] [--arv versions_replacements]
+       %prog perform [-r alias] [-f] [-b branch] [-t tag] [-m maintenance]
+       %prog package [--skipTests]
+\nCommands:
+  prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
+  perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release.log file.
+  package: Package distributions and source code in the archives directory.""")
+        description = """Release Nuxeo from a given branch, tag the release, then
+set the next SNAPSHOT version. If a maintenance version was provided, then a
+maintenance branch is kept, else it is deleted after release."""
+        help_formatter = IndentedHelpFormatterWithNL(
+#                 max_help_position=6,
+                 width=get_terminal_size()[0])
+        parser = optparse.OptionParser(usage=usage, description=description,
+                                       formatter=help_formatter)
         parser.add_option('-r', action="store", type="string",
                           dest='remote_alias',
                           default='origin',
-                          help="""the Git alias of remote URL
-                          (default: %default)""")
-        parser.add_option('-f', '--final', action="store_true",
-                          dest='is_final', default=False,
-                          help='is it a final release? (default: %default)')
-        parser.add_option("-b", "--branch", action="store", type="string",
-                          help='branch to release (default: current branch)',
-                          dest="branch", default="auto")
-        parser.add_option("-t", "--tag", action="store", type="string",
-                          dest="tag", default="auto",
-                          help="""if final option is True, then the default tag
-is the current version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is
-replaced with a date (aka 'date-based release')""")
-        parser.add_option("-n", "--next", action="store", type="string",
-                          dest="next_snapshot", default="auto",
-                          help="""next snapshot. If final option is True, then
-the next snapshot is the current one increased, else it is equal to the current
-""")
-        parser.add_option('-m', '--maintenance', action="store",
-                          dest='maintenance', default="auto",
-                          help="""maintenance version (by default, the
-maintenance branch is deleted after release)""")
+                          help="""The Git alias of remote URL.
+Default: %default""")
         parser.add_option('-i', '--interactive', action="store_true",
                           dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive
-mode.""")
+mode. Default: %default""")
         parser.add_option('-d', '--deploy', action="store_true",
                           dest='deploy', default=False,
-                          help="""deploy artifacts to nightly repository""")
+                          help="""Deploy artifacts to nightly/staging repository
+by activating the 'nightly' Maven profile. Default: %default""")
         parser.add_option('--skipTests', action="store_true",
                           dest='skipTests', default=False,
-                          help="""skip tests execution (but compile them)""")
-        parser.add_option('--arv', '--also-replace-version', action="store",
-                          dest='other_version', default=None,
-                          help="""other version to replace; use a slash ('/') as
-a separator between old and new version: '1.0-SNAPSHOT/1.0-beta'""")
+                          help="""Skip tests execution (but compile them).
+Default: %default""")
+        versioning_options = optparse.OptionGroup(parser, 'Version policy')
+        versioning_options.add_option('-f', '--final', action="store_true",
+                          dest='is_final', default=False,
+                          help='Is it a final release? Default: %default')
+        versioning_options.add_option("-b", "--branch", action="store",
+                          type="string",
+                          help="""Branch to release. Default: %default = the
+current branch""",
+                          dest="branch", default="auto")
+        versioning_options.add_option("-t", "--tag", action="store",
+                          type="string", dest="tag", default="auto",
+                          help="""Released version. SCM tag is 'release-$TAG'.
+Default: %default\n
+In mode 'auto', if final option is True, then the default value is the current
+version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is replaced with a date
+(aka 'date-based release').""")
+        versioning_options.add_option("-n", "--next", action="store", type="string",
+                          dest="next_snapshot", default="auto",
+                          help="""Version post-release. Default: %default\n
+In mode 'auto', if final option is True, then the next snapshot is the current
+one increased, else it is equal to the current.""")
+        versioning_options.add_option('-m', '--maintenance', action="store",
+                          dest='maintenance', default="auto",
+                          help="""Maintenance version. Default: %default\n
+The maintenance branch is always named like the tag without the 'release-'
+prefix. If set, the version will be used on the maintenance branch, else, in
+mode 'auto', the maintenance branch is deleted after release.""")
+        versioning_options.add_option('--arv', '--also-replace-version',
+                          action="store", dest='other_versions', default=None,
+                          help="""Other version(s) to replace. Default: %default\n
+Use a slash ('/') as a separator between old and new version: '1.0-SNAPSHOT/1.0'.\n
+A version post-release can also be specified: '1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT'.\n
+Multiple versions can be replaced using a coma (',') separator:
+'1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT,0.0-SNAPSHOT/2.0.1'.\n
+It only applies on files named with xml, properties, txt, defaults, sh, html or
+nxftl extension and on 'pom.xml' files. On POM files, it only applies on the
+parent version, the POM version and the properties named
+'nuxeo|marketplace.*version'. Other patterns for filename extensions and
+properties can be provided using two colon (':') separators:
+'.*\\.customextension:my.property:1.0-SNAPSHOT/1.0', '.*\\.text::',
+':my.property:1.0-SNAPSHOT/1.0/1.1-SNAPSHOT', ...
+Those patterns are common to all replacements, including the released version.\n
+Default files and properties patterns are respectively:
+'^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$' and
+'(nuxeo|marketplace)\..*version'. They can't be removed.""")
+        parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
@@ -473,7 +590,13 @@ a separator between old and new version: '1.0-SNAPSHOT/1.0-beta'""")
                 options.maintenance = f.readline().split("=")[1].strip()
                 options.is_final = f.readline().split("=")[1].strip() == "True"
                 options.skipTests = f.readline().split("=")[1].strip() == "True"
-                options.other_version = f.readline().split("=")[1].strip()
+                other_versions = f.readline().split("=")[1].strip()
+                files_pattern = f.readline().split("=")[1].strip()
+                props_pattern = f.readline().split("=")[1].strip()
+                options.other_versions = ':'.join((files_pattern, props_pattern,
+                                                   other_versions))
+            if options.other_versions == "::":
+                options.other_versions = None
 
         repo = Repository(os.getcwd(), options.remote_alias)
         if options.branch == "auto":
@@ -483,7 +606,7 @@ a separator between old and new version: '1.0-SNAPSHOT/1.0-beta'""")
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance,
                           options.is_final, options.skipTests,
-                          options.other_version)
+                          options.other_versions)
         release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")

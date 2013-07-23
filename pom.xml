@@ -125,7 +125,7 @@
 
     <nuxeo.connect.client.version>1.4.7</nuxeo.connect.client.version>
     <nuxeo.distribution.tools.version>1.13</nuxeo.distribution.tools.version>
-    <nuxeo.ftest.version>1.7.5-SNAPSHOT</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.7.5</nuxeo.ftest.version>
     <nuxeo.richfaces.version>3.3.1.GA-NX8</nuxeo.richfaces.version>
 
     <tomcat.version>6.0.35</tomcat.version>
@@ -137,7 +137,7 @@
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating-nx1</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
-    <chemistry.opencmis.version>0.7.0</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.9.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcomponents.version>4.2.4</apache.httpcomponents.version>
     <jodreport.version>2.4.0</jodreport.version>
@@ -841,6 +841,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-server</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-restserver</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
@@ -3651,7 +3656,11 @@
       <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-server-bindings</artifactId>
-        <classifier>classes</classifier>
+        <version>${chemistry.opencmis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.chemistry.opencmis</groupId>
+        <artifactId>chemistry-opencmis-client-bindings</artifactId>
         <version>${chemistry.opencmis.version}</version>
       </dependency>
 
@@ -3912,6 +3921,11 @@
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.thetransactioncompany</groupId>
+        <artifactId>cors-filter</artifactId>
+        <version>1.7.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -4474,7 +4488,7 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
+                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                 </excludes>
               </requireReleaseDeps>

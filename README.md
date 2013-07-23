@@ -45,7 +45,7 @@ Update to master branch: `git checkout master`
 
 Finally run `python clone.py [wanted branch/tag]`
 
-See [How to download the Nuxeo Platform source code ](http://doc.nuxeo.com/x/cwQz)
+See [How to download the Nuxeo Platform source code ](http://doc.nuxeo.com/x/DIBH)
 for more information if needed.
 
 #### Launch the build
