@@ -279,8 +279,8 @@ public class MetricsDescriptor implements Serializable {
                 return;
             }
             LogFactory.getLog(MetricsServiceImpl.class).info(this);
-            // TODO: do not hard code the common datasource name
-            String pool = "Catalina:type=DataSource,class=javax.sql.DataSource,name=jdbc/nuxeo";
+            // TODO: do not hard code the common datasource nameenable(registry)
+            String pool = "Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"";
             String connector = String.format(
                     "Catalina:type=ThreadPool,name=http-%s-%s",
                     Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
