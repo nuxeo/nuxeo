@@ -74,7 +74,7 @@ class BasePage:
 
     def getConversationId(self):
         fl = self.fl
-        cId = extractToken(fl.getBody(), "var currentConversationId='", "'")
+        cId = extractToken(fl.getBody(), "var currentConversationId = '", "'")
         fl.assert_(cId, 'Current conversation id not found')
         return cId
 
@@ -635,7 +635,6 @@ class FolderPage(BasePage):
 
     def selectItem(self, title, item_type="Workspace"):
         fl = self.fl
-        conversation_id = self.getConversationId()
         folder_uid = self.getDocUid()
         html = fl.getBody()
         if item_type in ['Section', 'SectionRoot']:
@@ -645,22 +644,6 @@ class FolderPage(BasePage):
         end = html.find(title, start)
         fl.assert_(end > 0, 'Item with title "%s" not found.' % title)
         start = html.rfind('<tr class', start, end)
-
-        # seam remoting selection is now done in ajax
-#        doc_uid = extractToken(html[start:end], 'docRef:', '"')
-#        fl.assert_(doc_uid, 'item "%s" not found.' % title)
-#        sel = 'CURRENT_SELECTION'
-#        if item_type == "Section":
-#            sel = 'CURRENT_SELECTION_SECTIONS'
-#        xml = '''<envelope><header><context><conversationId>%s</conversationId></context></header><body><call component="documentActions" method="checkCurrentDocAndProcessSelectRow" id="0">
-#<params><param><str>%s</str></param><param><str>CURRENT_DOC_CHILDREN</str></param><param><str>%s</str></param><param><bool>true</bool></param><param><str>%s</str></param></params><refs></refs></call></body></envelope>''' % (
-#            conversation_id, doc_uid, sel, folder_uid)
-#        #print "%s" % xml
-#        fl.post(fl.server_url + "/seam/resource/remoting/execute",
-#                Data('application/xml; charset=UTF-8',
-#                     xml),
-#                description="Select document")
-#        fl.assert_(sel + "_TRASH" in fl.getBody())
 
         checkbox_id = extractToken(html[start:end], 'input id="', '"')
         fl.assert_(checkbox_id, 'item "%s" not found.' % title)
