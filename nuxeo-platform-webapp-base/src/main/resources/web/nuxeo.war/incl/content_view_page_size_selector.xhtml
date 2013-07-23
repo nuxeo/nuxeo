@@ -30,7 +30,7 @@ empty:
       <c:set var="pageSizeBinding" value="#{contentView.currentPageSize}" />
     </c:if>
 
-    <div class="contentViewUpperAction">
+    <span class="contentViewUpperAction">
       <a4j:form id="contentViewGlobalPageSizeFrom_#{contentViewRenderId}"
         ajaxSubmit="true">
 
@@ -55,7 +55,7 @@ empty:
         </div>
 
       </a4j:form>
-    </div>
+    </span>
 
   </c:if>
 </nxu:set>

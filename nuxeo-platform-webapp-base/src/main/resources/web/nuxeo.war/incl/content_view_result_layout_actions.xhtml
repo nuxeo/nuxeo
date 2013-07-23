@@ -12,7 +12,7 @@ Needed parameters:
 
   <c:if test="#{contentView.getResultLayouts().size() > 1}">
     <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
-      <div class="resultLayoutSelection #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
+      <span class="contentViewUpperAction #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
         <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
           reRender="#{contentIdToBeReRendered}, #{contentViewRenderId}_contentViewActionsPanel"
           ajaxSingle="true">
@@ -22,7 +22,7 @@ Needed parameters:
             value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
           <nxu:graphicImage value="#{iconPath}" title="#{title}" />
         </a4j:commandLink>
-      </div>
+      </span>
     </c:forEach>
   </c:if>
 

@@ -28,7 +28,7 @@ A templating zone is also available for compatibility:
   <nxu:set var="finalShowRefreshCommand"
     value="#{nxu:test(empty showRefreshCommand, contentView.showRefreshCommand, showRefreshCommand)}">
     <c:if test="#{finalShowRefreshCommand}">
-      <div class="contentViewUpperAction">
+      <span class="contentViewUpperAction">
         <a4j:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
           id="refreshContentViewLink"
           reRender="#{contentIdToBeReRendered}"
@@ -38,7 +38,7 @@ A templating zone is also available for compatibility:
            title="#{messages['label.refresh']}"
            id="refreshContentViewImage" />
         </a4j:commandLink>
-      </div>
+      </span>
     </c:if>
   </nxu:set>
 
@@ -48,7 +48,7 @@ A templating zone is also available for compatibility:
     <nxu:set var="finalShowCSVExport"
       value="#{nxu:test(empty showCSVExport, contentView.currentResultLayout.showCSVExport, showCSVExport)}">
       <c:if test="#{finalShowCSVExport}">
-        <div class="contentViewUpperAction">
+        <span class="contentViewUpperAction">
           <nxd:restDocumentLink document="#{currentDocument}"
             view="xl" addTabInfo="false"
             newConversation="true" target="_blank">
@@ -60,14 +60,14 @@ A templating zone is also available for compatibility:
               alt="#{messages['label.contentview.export.xl']}"
               title="#{messages['label.contentview.export.xl']}" />
           </nxd:restDocumentLink>
-        </div>
+        </span>
       </c:if>
     </nxu:set>
 
     <nxu:set var="finalShowPDFExport"
       value="#{nxu:test(empty showPDFExport, contentView.currentResultLayout.showPDFExport, showPDFExport)}">
       <c:if test="#{finalShowPDFExport}">
-        <div class="contentViewUpperAction">
+        <span class="contentViewUpperAction">
           <nxd:restDocumentLink document="#{currentDocument}"
             view="content_view_pdf" addTabInfo="false"
             newConversation="true" target="_blank">
@@ -79,7 +79,7 @@ A templating zone is also available for compatibility:
               alt="#{messages['label.contentview.export.pdf']}"
               title="#{messages['label.contentview.export.pdf']}" />
           </nxd:restDocumentLink>
-        </div>
+        </span>
       </c:if>
     </nxu:set>
 
@@ -90,7 +90,7 @@ A templating zone is also available for compatibility:
 
         <c:if test="#{finalShowSyndicationLinks}">
 
-          <div class="contentViewUpperAction">
+          <span class="contentViewUpperAction">
             <nxd:restDocumentLink document="#{currentDocument}"
               view="rss" addTabInfo="false"
               newConversation="true" target="_blank">
@@ -99,9 +99,9 @@ A templating zone is also available for compatibility:
               <f:param name="contentViewState" value="#{contentViewState}" />
               <h:outputText value="#{messages['label.syndication.rss']}"/>
             </nxd:restDocumentLink>
-          </div>
+          </span>
 
-          <div class="contentViewUpperAction">
+          <span class="contentViewUpperAction">
             <nxd:restDocumentLink document="#{currentDocument}"
               view="atom" addTabInfo="false"
               newConversation="true" target="_blank">
@@ -110,7 +110,7 @@ A templating zone is also available for compatibility:
               <f:param name="contentViewState" value="#{contentViewState}" />
               <h:outputText value="#{messages['label.syndication.atom']}" />
             </nxd:restDocumentLink>
-          </div>
+          </span>
 
         </c:if>
 
