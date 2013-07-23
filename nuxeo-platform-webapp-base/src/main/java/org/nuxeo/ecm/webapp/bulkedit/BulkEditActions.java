@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
@@ -56,6 +54,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 public class BulkEditActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static final String SELECTION_EDITED = "selectionEdited";
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
@@ -104,7 +104,6 @@ public class BulkEditActions implements Serializable {
         return BulkEditHelper.getCommonSchemas(selectedDocuments);
     }
 
-    @Factory(value = "bulkEditDocumentModel", scope = ScopeType.EVENT)
     public DocumentModel getBulkEditDocumentModel() {
         if (fictiveDocumentModel == null) {
             fictiveDocumentModel = new SimpleDocumentModel();
@@ -117,7 +116,6 @@ public class BulkEditActions implements Serializable {
             List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
             BulkEditHelper.copyMetadata(documentManager, fictiveDocumentModel,
                     selectedDocuments);
-            fictiveDocumentModel = null;
             for (DocumentModel doc : selectedDocuments) {
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, doc);
             }
@@ -125,6 +123,10 @@ public class BulkEditActions implements Serializable {
             facesMessages.add(StatusMessage.Severity.INFO,
                     messages.get("label.bulk.edit.documents.updated"),
                     selectedDocuments.size());
+
+            Events.instance().raiseEvent(SELECTION_EDITED, selectedDocuments,
+                    fictiveDocumentModel);
+            fictiveDocumentModel = null;
         }
         return null;
     }
