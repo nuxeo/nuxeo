@@ -38,6 +38,9 @@ select,
   margin-bottom: .3em;
   padding: .3em }
 
+.dataInputText {
+  vertical-align: top }
+
 input[type="file"] {
   margin-left: .6em }
 
@@ -58,7 +61,7 @@ input[type="password"]:focus {
   border-color: "color.major.strong (__FLAVOR__ border)";
   box-shadow: 0 0 3px #ffd820;
   color: "info.status (__FLAVOR__ color)";
-  outline: 0 none  }
+  outline: 0 none }
 
 select:focus > option:checked,
 select:focus > optgroup > option:checked {

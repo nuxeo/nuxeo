@@ -63,23 +63,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding: 0 }
 
 /* Layout View and Summary Tab Styles - layout view selector list */
-.layoutViewMode {
-  margin: 0;
-  padding: 0 }
-.layoutViewMode li {
-  display: inline }
-.layoutViewMode a img {
-  border: 1px solid;
-  border-color: "noborder (__FLAVOR__ border)" }
-
-.layoutViewMode a:hover img,
-.layoutViewMode li.selected img {
-  border: 1px solid;
-  border-color: "neutral.medium (__FLAVOR__ border)" }
-
-/*
-Temp changes waiting for NXP-12005 to be fixed
-*/
 .resultLayoutSelection {
   margin: 0;
   padding: 0;
@@ -88,7 +71,7 @@ Temp changes waiting for NXP-12005 to be fixed
   border: 1px solid;
   border-color: "noborder (__FLAVOR__ border)" }
 .resultLayoutSelection a:hover img,
-.resultLayoutSelection .selected img {
+.resultLayoutSelection.selected img {
   border: 1px solid;
   border-color: "neutral.medium (__FLAVOR__ border)" }
 

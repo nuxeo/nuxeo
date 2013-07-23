@@ -100,16 +100,30 @@ div.syndicationButton div.syndicationLinks a:hover { color: "link.hover (__FLAVO
 .action_bar input.button { margin-top: 0 }
 .contentViewQuickFilterForm .action_bar a { margin: 0 }
 
-.listingLayoutSelector { color: "gray.medium (__FLAVOR__ color)"; float: right; margin: 1.1em 0 1em .7em; text-align: right }
-.listingLayoutSelector .contentViewPageSelectorDesc { float: left; padding: 0 .4em 0 0 }
-.listingLayoutSelector .langSelect { float: left; font-size: .8em; padding: .1em }
-/*
-Temp changes waiting for NXP-12005 to be fixed
-*/
-.contentViewUpperActions { color: "gray.medium (__FLAVOR__ color)"; float: right; margin: 1.1em 0 1em .7em; text-align: right }
-.contentViewUpperAction { display: inline }
-.contentViewUpperAction .contentViewPageSelectorDesc { float: left; padding: 0 .4em 0 0 }
-.contentViewUpperAction .contentViewPageSelector { float: left; font-size: .8em; padding: .1em }
+.contentViewUpperActions {
+  color: "gray.medium (__FLAVOR__ color)";
+  float: right;
+  font-size: .9em;
+  margin: 1em 0;
+  text-align: right }
+.contentViewUpperAction {
+  display: inline-block;
+  padding: 0 0 0 .1em;
+  vertical-align: top }
+.contentViewUpperAction a {
+  color: "gray.medium (__FLAVOR__ color)";
+  font-size: .85em }
+.contentViewUpperAction .contentViewPageSelectorDesc {
+  display: inline;
+  vertical-align: top }
+.contentViewUpperAction .langSelect {
+  font-size: .8em;
+  margin: 0;
+  padding: 0 }
+.contentViewUpperAction .contentViewPageSelector {
+  float: left;
+  font-size: .8em;
+  padding: .1em }
 
 /* =Actionbar in Home */
 .headerTitleAndTools h1 { display: inline }
