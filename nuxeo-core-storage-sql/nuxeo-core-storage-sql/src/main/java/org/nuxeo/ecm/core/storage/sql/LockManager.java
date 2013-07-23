@@ -12,18 +12,15 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 /**
  * Manager of locks that serializes access to them.
@@ -48,8 +45,6 @@ public class LockManager {
      * prefetch.
      */
     protected final Mapper mapper;
-
-    protected Connection connection;
 
     /**
      * If clustering is enabled then we have to wrap test/set and test/remove in
@@ -102,17 +97,11 @@ public class LockManager {
     public LockManager(Mapper mapper, boolean clusteringEnabled)
             throws StorageException {
         this.mapper = mapper;
-        this.connection = ((JDBCMapper) mapper).connection;
         this.clusteringEnabled = clusteringEnabled;
         serializationLock = new ReentrantLock(true); // fair
         caching = !clusteringEnabled;
         lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE)
                 : null;
-        try {
-            connection.setAutoCommit(true);
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
     }
 
     /**
@@ -218,12 +207,7 @@ public class LockManager {
                     && oldLock != NULL_LOCK) {
                 return oldLock;
             }
-            oldLock = callInTransaction(new Callable<Lock>() {
-                @Override
-                public Lock call() throws Exception {
-                    return mapper.setLock(id, lock);
-                }
-            });
+            oldLock = mapper.setLock(id, lock);
             if (caching && oldLock == null) {
                 lockCache.put(id, lock == null ? NULL_LOCK : lock);
             }
@@ -249,12 +233,7 @@ public class LockManager {
                 oldLock = new Lock(oldLock, true);
             } else {
                 if (oldLock == null) {
-                    oldLock = callInTransaction(new Callable<Lock>() {
-                        @Override
-                        public Lock call() throws Exception {
-                            return mapper.removeLock(id, owner, false);
-                        }
-                    });
+                    oldLock = mapper.removeLock(id, owner, false);
                 } else {
                     // we know the previous lock, we can force
                     // no transaction needed, single operation
@@ -275,60 +254,6 @@ public class LockManager {
         }
     }
 
-    /**
-     * Calls the callable, inside a transaction if in cluster mode.
-     * <p>
-     * Called under {@link #serializationLock}.
-     */
-    protected Lock callInTransaction(Callable<Lock> callable)
-            throws StorageException {
-        boolean tx = clusteringEnabled;
-        boolean ok = false;
-        try {
-            if (tx) {
-                try {
-                    connection.setAutoCommit(false);
-                } catch (SQLException e) {
-                    throw new StorageException(e);
-                }
-            }
-            // else no need to process invalidations,
-            // only this mapper writes locks
-
-            // actual call
-            Lock result;
-            try {
-                result = callable.call();
-            } catch (StorageException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new StorageException(e);
-            }
-
-            ok = true;
-            return result;
-        } finally {
-            if (tx) {
-                try {
-                    try {
-                        if (ok) {
-                            connection.commit();
-                        } else {
-                            connection.rollback();
-                        }
-                    } catch (SQLException e) {
-                        throw new StorageException(e);
-                    }
-                } finally {
-                    try {
-                        connection.setAutoCommit(true);
-                    } catch (SQLException e) {
-                        throw new StorageException(e);
-                    }
-                }
-            }
-        }
-    }
 
     public void clearCaches() {
         serializationLock.lock();
@@ -339,6 +264,11 @@ public class LockManager {
         } finally {
             serializationLock.unlock();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "LockManager [mapper=" + mapper + "]";
     }
 
     /**

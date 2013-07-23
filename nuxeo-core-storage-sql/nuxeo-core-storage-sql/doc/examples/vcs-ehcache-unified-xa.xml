@@ -1,0 +1,20 @@
+<ehcache name="vcs" updateCheck="false">
+
+  <diskStore path="java.io.tmpdir"/>
+
+  <transactionManagerLookup
+      class="org.nuxeo.ecm.core.storage.sql.NuxeoEhcacheTransactionManagerLookup" />
+      
+  <cache name="unifiedVCSCache"
+    maxEntriesLocalHeap="10000"
+    maxEntriesLocalDisk="100000"
+    eternal="true"
+    timeToLiveSeconds="0"
+    timeToIdleSeconds="0"
+    overflowToDisk="true"
+    diskPersistent="false"
+    memoryStoreEvictionPolicy="LRU"
+    transactionalMode="xa"    
+    statistics="true">
+  </cache>
+</ehcache>

@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import javax.sql.XADataSource;
@@ -101,9 +103,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private final RepositoryImpl repository;
 
-    private boolean limitedResults;
-
-    private long maxResults;
+    protected boolean clusteringEnabled;
 
     /**
      * Creates a new Mapper.
@@ -124,6 +124,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 connectionPropagator, noSharing);
         this.pathResolver = pathResolver;
         this.repository = repository;
+        clusteringEnabled = clusterNodeHandler != null;
         try {
             queryMakerService = Framework.getService(QueryMakerService.class);
         } catch (Exception e) {
@@ -229,9 +230,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         st.execute(sql);
                         countExecute();
                     } catch (SQLException e) {
-                        throw new SQLException("Error creating table: " + sql
-                                + " : " + e.getMessage(), e);
+                        try {
+                            closeStatement(st);
+                        } finally {
+                            throw new SQLException("Error creating table: "
+                                    + sql + " : " + e.getMessage(), e);
+                        }
                     }
+
                     for (String s : table.getPostCreateSqls(model)) {
                         logger.log(s);
                         try {
@@ -1101,9 +1107,58 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * ----- Locking -----
      */
 
+    protected Connection connection(boolean autocommit) throws StorageException {
+        checkConnectionValid();
+        try {
+            connection.setAutoCommit(autocommit);
+        } catch (SQLException e) {
+            throw new StorageException("Cannot set auto commit mode onto " + this + "'s connection", e);
+        }
+        return connection;
+    }
+    /**
+     * Calls the callable, inside a transaction if in cluster mode.
+     * <p>
+     * Called under {@link #serializationLock}.
+     */
+    protected Lock callInTransaction(Callable<Lock> callable, boolean tx)
+            throws StorageException {
+        boolean ok = false;
+        checkConnectionValid();
+        try {
+            connection.setAutoCommit(!tx);
+        } catch (SQLException e) {
+            throw new StorageException("Cannot set auto commit mode onto " + this + "'s connection", e);
+        }
+        try {
+            Lock result;
+            try {
+                result = callable.call();
+            } catch (StorageException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new StorageException(e);
+            }
+
+            ok = true;
+            return result;
+        } finally {
+            if (tx) {
+                try {
+                    if (ok) {
+                        connection.commit();
+                    } else {
+                        connection.rollback();
+                    }
+                } catch (SQLException e) {
+                    throw new StorageException(e);
+                }
+            }
+        }
+    }
+
     @Override
     public Lock getLock(Serializable id) throws StorageException {
-        checkConnectionValid();
         RowId rowId = new RowId(Model.LOCK_TABLE_NAME, id);
         Row row;
         try {
@@ -1118,39 +1173,76 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Lock setLock(Serializable id, Lock lock) throws StorageException {
-        Lock oldLock = getLock(id);
-        if (oldLock == null) {
-            Row row = new Row(Model.LOCK_TABLE_NAME, id);
-            row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
-            row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-            insertSimpleRows(Model.LOCK_TABLE_NAME,
-                    Collections.singletonList(row));
-        }
-        return oldLock;
+    public Lock setLock(final Serializable id, final Lock lock) throws StorageException {
+        SetLock call = new SetLock(id, lock);
+        return callInTransaction(call, clusteringEnabled);
     }
 
-    @Override
-    public Lock removeLock(Serializable id, String owner, boolean force)
-            throws StorageException {
-        Lock oldLock = force ? null : getLock(id);
-        if (!force && owner != null) {
+    protected class SetLock implements Callable<Lock> {
+        protected final Serializable id;
+
+        protected final Lock lock;
+
+        protected SetLock(Serializable id, Lock lock) {
+            super();
+            this.id = id;
+            this.lock = lock;
+        }
+
+        @Override
+        public Lock call() throws StorageException {
+            Lock oldLock = getLock(id);
             if (oldLock == null) {
-                // not locked, nothing to do
-                return null;
+                Row row = new Row(Model.LOCK_TABLE_NAME, id);
+                row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
+                row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
+                insertSimpleRows(Model.LOCK_TABLE_NAME,
+                        Collections.singletonList(row));
             }
-            if (!LockManager.canLockBeRemoved(oldLock, owner)) {
-                // existing mismatched lock, flag failure
-                return new Lock(oldLock, true);
-            }
+            return oldLock;
         }
-        if (force || oldLock != null) {
-            deleteRows(Model.LOCK_TABLE_NAME, Collections.singleton(id));
-        }
-        return oldLock;
     }
 
     @Override
+    public Lock removeLock(final Serializable id, final String owner, final boolean force)
+            throws StorageException {
+        RemoveLock call = new RemoveLock(id, owner, force);
+        return callInTransaction(call, !force);
+    }
+
+    protected class RemoveLock implements Callable<Lock> {
+        protected final Serializable id;
+        protected final String owner;
+        protected final boolean force;
+
+        protected RemoveLock(Serializable id, String owner, boolean force) {
+            super();
+            this.id = id;
+            this.owner = owner;
+            this.force = force;
+        }
+
+        @Override
+        public Lock call() throws StorageException {
+            Lock oldLock = force ? null : getLock(id);
+            if (!force && owner != null) {
+                if (oldLock == null) {
+                    // not locked, nothing to do
+                    return null;
+                }
+                if (!LockManager.canLockBeRemoved(oldLock, owner)) {
+                    // existing mismatched lock, flag failure
+                    return new Lock(oldLock, true);
+                }
+            }
+            if (force || oldLock != null) {
+                deleteRows(Model.LOCK_TABLE_NAME, Collections.singleton(id));
+            }
+            return oldLock;
+        }
+    }
+
+     @Override
     public void markReferencedBinaries(BinaryGarbageCollector gc)
             throws StorageException {
         log.debug("Starting binaries GC mark");
