@@ -185,7 +185,7 @@
                 <helpLabels>
                   <label mode="any">
                     A comma separated list of supported file
-                    extensions. Default value: '.jpg, .jpeg, .png, .gif'.
+                    extensions. Default value: '.jpg, .jpeg, .png, .gif, .tif, .tiff, .psd, .raw, .ai, .svg, .ps, .eps, .epsi, .epsf, .xcf, .bmp'.
                   </label>
                 </helpLabels>
                 <fields>
