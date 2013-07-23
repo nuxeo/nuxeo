@@ -1,8 +1,11 @@
 NXVideo = {};
 
-NXVideo.loadVideoPlayer = function() {
-  jQuery(".video-js").VideoJS();
-
+NXVideo.initializeVideoThumbnails = function(options) {
+  var videoJsElement = jQuery(".video-js");
+  if (videoJsElement.length > 0 && videoJsElement[0].player !== 'undefined') {
+    var videoPlayer = videoJsElement[0].player;
+    videoPlayer.thumbnails(options);
+  }
 };
 
 NXVideo.initializeStoryBoard = function() {

@@ -9,9 +9,11 @@
       <format-type>widget</format-type>
       <resource>video-js.css</resource>
       <resource>video-js.nx.css</resource>
+      <resource>videojs.thumbnails.css</resource>
 
       <resource>video-js.js</resource>
       <resource>video-player-util.js</resource>
+      <resource>videojs.thumbnails.js</resource>
     </view>
 
   </extension>
@@ -24,12 +26,19 @@
       <path>css/video-js.nx.css</path>
       <require>video-js.css</require>
     </resource>
+    <resource name="videojs.thumbnails.css">
+      <path>css/videojs.thumbnails.css</path>
+    </resource>
 
     <resource name="video-js.js">
       <path>scripts/video.js</path>
     </resource>
     <resource name="video-player-util.js">
       <path>scripts/video-player-util.js</path>
+      <require>video-js.js</require>
+    </resource>
+    <resource name="videojs.thumbnails.js">
+      <path>scripts/videojs.thumbnails.js</path>
       <require>video-js.js</require>
     </resource>
   </extension>

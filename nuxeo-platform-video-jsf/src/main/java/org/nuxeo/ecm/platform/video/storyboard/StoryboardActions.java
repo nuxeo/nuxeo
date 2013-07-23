@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -40,17 +42,37 @@ import org.nuxeo.ecm.platform.video.VideoConstants;
 @Scope(ScopeType.EVENT)
 public class StoryboardActions {
 
+    private List<StoryboardItem> storyboardItems;
+
     public List<StoryboardItem> getItems(DocumentModel doc)
             throws PropertyException, ClientException {
+        if (storyboardItems != null) {
+            return storyboardItems;
+        }
         if (!doc.hasFacet(VideoConstants.HAS_STORYBOARD_FACET)) {
-            return Collections.emptyList();
+            storyboardItems = Collections.emptyList();
+            return storyboardItems;
         }
         int size = doc.getProperty(STORYBOARD_PROPERTY).getValue(List.class).size();
         List<StoryboardItem> items = new ArrayList<StoryboardItem>(size);
         for (int i = 0; i < size; i++) {
             items.add(new StoryboardItem(doc, STORYBOARD_PROPERTY, i));
         }
-        return items;
+        storyboardItems = items;
+        return storyboardItems;
+    }
+
+    public String getStoryboardItemsAsJsonSettings(DocumentModel doc)
+            throws PropertyException, ClientException {
+        List<StoryboardItem> items = getItems(doc);
+        ObjectMapper o = new ObjectMapper();
+        ObjectNode settings = o.createObjectNode();
+        for (StoryboardItem storyboardItem : items) {
+            ObjectNode thumb = o.createObjectNode();
+            thumb.put("src", storyboardItem.getUrl());
+            settings.put(storyboardItem.getTimecode().split("\\.")[0], thumb);
+        }
+        return settings.toString();
     }
 
 }

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.video;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Map;
 
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.video.service.VideoConversionId;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.ecm.platform.web.common.UserAgentMatcher;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * @author "<a href=\"mailto:bjalon@nuxeo.com\">Benjamin JALON</a>"
@@ -51,7 +51,7 @@ public class VideoActions implements Serializable {
     protected FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected Map<String, String> messages;
 
     @In(create = true)
     protected VideoService videoService;
@@ -95,7 +95,7 @@ public class VideoActions implements Serializable {
         if (status == null) {
             return "";
         }
-        String i18nMessageTemplate = resourcesAccessor.getMessages().get(
+        String i18nMessageTemplate = messages.get(
                 status.getMessage());
         if (i18nMessageTemplate == null) {
             return "";
