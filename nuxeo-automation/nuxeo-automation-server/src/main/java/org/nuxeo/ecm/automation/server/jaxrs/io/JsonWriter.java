@@ -194,6 +194,7 @@ public class JsonWriter {
         for (Param p : params) {
             jg.writeStartObject();
             jg.writeStringField("name", p.name);
+            jg.writeStringField("description", p.description);
             jg.writeStringField("type", p.type);
             jg.writeBooleanField("required", p.isRequired);
 

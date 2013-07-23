@@ -266,6 +266,7 @@ public class OperationTypeImpl implements OperationType {
             Param p = field.getAnnotation(Param.class);
             OperationDocumentation.Param param = new OperationDocumentation.Param();
             param.name = p.name();
+            param.description = p.description();
             param.type = getParamDocumentationType(field.getType());
             param.widget = p.widget();
             if (param.widget.length() == 0) {

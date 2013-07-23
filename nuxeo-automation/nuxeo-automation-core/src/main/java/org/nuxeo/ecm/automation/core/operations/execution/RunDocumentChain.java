@@ -49,7 +49,7 @@ public class RunDocumentChain {
     @Param(name="isolate", required = false, values = "false")
     protected boolean isolate = false;
 
-    @Param(name = "parameters", required = false)
+    @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
     protected Properties chainParameters;
 
 

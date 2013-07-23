@@ -124,6 +124,7 @@
                     <table width="100%">
                         <tr align="left">
                             <th>Name</th>
+                            <th>Description</th>
                             <th>Type</th>
                             <th>Required</th>
                             <th>Default value</th>
@@ -131,6 +132,7 @@
                         <#list operation.params as para>
                             <tr>
                                 <td><#if para.isRequired()><b></#if>${para.name}<#if para.isRequired()><b></#if></td>
+                                <td>${para.description}</td>
                                 <td>${para.type}</td>
                                 <td><#if para.isRequired()>true<#else>false</#if></td>
                                 <td>${This.getParamDefaultValue(para)}&nbsp;</td>

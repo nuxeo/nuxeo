@@ -93,6 +93,8 @@ public class JsonOperationMarshaller {
                 para.name = jp.getText();
             } else if ("type".equals(key)) {
                 para.type = jp.getText();
+            } else if ("description".equals(key)) {
+                para.description = jp.getText();
             } else if ("required".equals(key)) {
                 para.isRequired = jp.getBooleanValue();
             } else if ("widget".equals(key)) {

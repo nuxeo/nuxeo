@@ -69,6 +69,9 @@ public class OperationDocumentation implements
         @XNode("@name")
         public String name;
 
+        @XNode("@description")
+        public String description;
+
         @XNode("@type")
         public String type; // the data type
 
@@ -88,6 +91,13 @@ public class OperationDocumentation implements
 
         public String getName() {
             return name;
+        }
+
+        /**
+         * @since 5.7.3
+         */
+        public String getDescription() {
+            return description;
         }
 
         public String getType() {

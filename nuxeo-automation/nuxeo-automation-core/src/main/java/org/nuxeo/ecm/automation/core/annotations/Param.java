@@ -39,6 +39,12 @@ public @interface Param {
     String name();
 
     /**
+     * @since 5.7.3
+     * The parameter description to explicit its purpose.
+     */
+    String description() default "";
+
+    /**
      * If the parameter to inject cannot be found in the operation parameters
      * map (or it is set to null) then if required is true then an error is
      * thrown otherwise the injection will not be done (and any default value

@@ -55,7 +55,7 @@ public class RunOperationOnList {
     @Param(name = "isolate", required = false, values = "true")
     protected boolean isolate = true;
 
-    @Param(name = "parameters", required = false)
+    @Param(name = "parameters", description = "Accessible in the subcontext ChainParameters. For instance, @{ChainParameters['parameterKey']}.", required = false)
     protected Properties chainParameters;
 
     @OperationMethod
