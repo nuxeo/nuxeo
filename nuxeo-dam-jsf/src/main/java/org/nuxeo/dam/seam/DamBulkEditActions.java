@@ -20,7 +20,6 @@ package org.nuxeo.dam.seam;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.seam.annotations.In;
@@ -49,24 +48,12 @@ public class DamBulkEditActions implements Serializable {
     @In(create = true)
     protected transient CoreSession documentManager;
 
-    protected List<String> tags;
-
-    public List<String> getTags() {
-        if (tags == null) {
-            tags = new ArrayList<>();
-        }
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
     @Observer(BulkEditActions.SELECTION_EDITED)
     @SuppressWarnings("unchecked")
-    public void addTagsOnSelection(List<DocumentModel> selectedDocuments, DocumentModel bulkEditDoc)
-            throws ClientException {
-        List<String> tags = (List<String>) bulkEditDoc.getContextData(ScopeType.REQUEST, "dam_bulk_edit_tags");
+    public void addTagsOnSelection(List<DocumentModel> selectedDocuments,
+            DocumentModel bulkEditDoc) throws ClientException {
+        List<String> tags = (List<String>) bulkEditDoc.getContextData(
+                ScopeType.REQUEST, "dam_bulk_edit_tags");
         if (tags != null && !tags.isEmpty()) {
             TagService tagService = Framework.getLocalService(TagService.class);
             String username = documentManager.getPrincipal().getName();
