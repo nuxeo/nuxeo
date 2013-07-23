@@ -19,9 +19,7 @@
 
 package org.nuxeo.ecm.platform.mail.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.PARENT_PATH_KEY;
 
 import java.io.FileInputStream;
@@ -108,6 +106,18 @@ public class TesteMailInjection extends
         assertNotNull(children);
         assertTrue(!children.isEmpty());
         assertEquals(2, children.size());
+    }
+    
+    @Test public void testPathSegmentService() throws Exception {
+        injectEmail("data/test_mail3.eml",
+                mailFolder1.getPathAsString());
+        DocumentModelList children = session.getChildren(mailFolder1.getRef());
+        assertNotNull(children);
+        assertTrue(!children.isEmpty());
+        assertEquals(1, children.size());
+        DocumentModel mail = children.get(0);
+        assertEquals("Fwd: correspondence-test", mail.getName());
+        assertEquals("Fwd: correspondence/test", mail.getTitle());
     }
 
     private void injectEmail(String filePath, String parentPath) throws Exception {
