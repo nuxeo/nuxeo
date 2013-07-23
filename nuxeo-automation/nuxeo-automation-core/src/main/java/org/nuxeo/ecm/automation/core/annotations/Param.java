@@ -22,8 +22,8 @@ import org.nuxeo.ecm.automation.OperationParameters;
  * To be used on an operation field to inject operation parameters from the
  * current context. If the parameter to inject cannot be found in the operation
  * parameters map (or it is set to null) then if required is true then an error
- * is thrown otherwise the injection will not be done (and any default value
- * set in the code will be preserved). The default is true - i.e. do not allow
+ * is thrown otherwise the injection will not be done (and any default value set
+ * in the code will be preserved). The default is true - i.e. do not allow
  * missing entries in operation parameter map.
  *
  * @see OperationParameters
