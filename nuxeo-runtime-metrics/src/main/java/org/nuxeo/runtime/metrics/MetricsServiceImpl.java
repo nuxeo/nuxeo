@@ -58,11 +58,6 @@ public class MetricsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        log.debug("Activate component.");
-    }
-
-    @Override
     public void deactivate(ComponentContext context) {
         try {
             config.disable(registry);

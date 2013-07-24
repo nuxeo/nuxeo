@@ -18,6 +18,7 @@ package org.nuxeo.runtime.metrics;
 
 import java.io.File;
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -42,6 +43,11 @@ import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
+import com.codahale.metrics.jvm.BufferPoolMetricSet;
+import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
+import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
+import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
+import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.codahale.metrics.log4j.InstrumentedAppender;
 
 @XObject("metrics")
@@ -320,17 +326,52 @@ public class MetricsDescriptor implements Serializable {
         }
     }
 
+    @XObject(value = "jvmInstrumentation")
+    public static class JvmInstrumentationDescriptor {
+
+        public static final String ENABLED_PROPERTY = "metrics.jvm.enabled";
+
+        @XNode("@enabled")
+        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(
+                ENABLED_PROPERTY, "true"));
+
+        public void enable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            registry.register("jvm-memory", new MemoryUsageGaugeSet());
+            registry.register("jvm-garbage", new GarbageCollectorMetricSet());
+            registry.register("jvm-threads", new ThreadStatesGaugeSet());
+            registry.register("jvm-files", new FileDescriptorRatioGauge());
+            registry.register("jvm-buffers", new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+        }
+
+        public void disable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            registry.remove("jvm-memory");
+            registry.remove("jvm-garbage");
+            registry.remove("jvm-threads");
+            registry.remove("jvm-files");
+            registry.remove("jvm-buffers");
+        }
+    }
+
     @XNode("graphiteReporter")
-    public GraphiteDescriptor graphiteReporter;
+    public GraphiteDescriptor graphiteReporter = new GraphiteDescriptor();
 
     @XNode("csvReporter")
-    public CsvDescriptor csvReporter;
+    public CsvDescriptor csvReporter = new CsvDescriptor();
 
     @XNode("log4jInstrumentation")
-    public Log4jInstrumentationDescriptor log4jInstrumentation;
+    public Log4jInstrumentationDescriptor log4jInstrumentation = new Log4jInstrumentationDescriptor();
 
     @XNode("tomcatInstrumentation")
-    public TomcatInstrumentationDescriptor tomcatInstrumentation;
+    public TomcatInstrumentationDescriptor tomcatInstrumentation = new TomcatInstrumentationDescriptor();
+
+    @XNode(value = "jvmInstrumentation")
+    public JvmInstrumentationDescriptor jvmInstrumentation = new JvmInstrumentationDescriptor();
 
     protected JmxReporter jmxReporter;
 
@@ -341,6 +382,7 @@ public class MetricsDescriptor implements Serializable {
         csvReporter.enable(registry);
         log4jInstrumentation.enable(registry);
         tomcatInstrumentation.enable(registry);
+        jvmInstrumentation.enable(registry);
     }
 
     public void disable(MetricRegistry registry) {
@@ -350,6 +392,7 @@ public class MetricsDescriptor implements Serializable {
             csvReporter.disable(registry);
             log4jInstrumentation.disable(registry);
             tomcatInstrumentation.disable(registry);
+            jvmInstrumentation.disable(registry);
         } finally {
             jmxReporter = null;
         }
