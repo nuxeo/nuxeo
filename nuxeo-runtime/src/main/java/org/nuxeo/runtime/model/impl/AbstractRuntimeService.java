@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +39,7 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServiceManager;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -58,13 +60,13 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     protected class StateHandler implements ComponentListener {
 
         @Override
-        public void handleEvent(ComponentEvent event) throws Exception {
+        public void handleEvent(ComponentEvent event) throws RuntimeModelException  {
             if (event.id != ComponentEvent.COMPONENT_RESOLVED) {
                 return;
             }
             RegistrationInfo info = event.registrationInfo;
             AbstractRuntimeContext context = (AbstractRuntimeContext) info.getContext();
-            context.handleComponentResolved((RegistrationInfoImpl)event.registrationInfo);
+            context.handleComponentResolved((RegistrationInfoImpl) event.registrationInfo);
         }
     }
 
@@ -89,6 +91,8 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     protected ComponentManagerImpl manager;
 
     protected final AbstractRuntimeContext runtimeContext;
+
+    protected final Map<String, RuntimeContext> contextsByName = new HashMap<String, RuntimeContext>();
 
     protected final List<RuntimeExtension> extensions = new ArrayList<RuntimeExtension>();
 
@@ -141,7 +145,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             StringBuilder sb = new StringBuilder();
             getConfigSummary(sb);
             log.info("Starting Nuxeo Runtime service " + getName()
-                    + "; version: " + getVersion()+sb.toString());
+                    + "; version: " + getVersion() + sb.toString());
             // NXRuntime.setInstance(this);
             manager = createComponentManager();
             manager.addComponentListener(stateHandler);
@@ -155,7 +159,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                     RuntimeServiceEvent.RUNTIME_STARTED, this));
         }
     }
-
 
     @Override
     public synchronized void stop() throws Exception {
@@ -282,6 +285,11 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return runtimeContext;
     }
 
+    @Override
+    public RuntimeContext getContext(String name) {
+        return contextsByName.get(name);
+    }
+
     protected void startExtensions() {
         for (RuntimeExtension ext : extensions) {
             try {
@@ -310,7 +318,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public String expandVars(String expression) {
         return Vars.expand(expression, properties);
-     }
+    }
 
     @Override
     public File getBundleFile(Bundle bundle) {

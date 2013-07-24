@@ -14,6 +14,8 @@
 
 package org.nuxeo.runtime;
 
+import org.nuxeo.runtime.model.RuntimeModelException;
+
 /**
  * Listener to be notified about components life cycle events.
  *
@@ -22,6 +24,6 @@ package org.nuxeo.runtime;
  */
 public interface ComponentListener {
 
-    void handleEvent(ComponentEvent event) throws Exception;
+    void handleEvent(ComponentEvent event) throws RuntimeModelException;
 
 }

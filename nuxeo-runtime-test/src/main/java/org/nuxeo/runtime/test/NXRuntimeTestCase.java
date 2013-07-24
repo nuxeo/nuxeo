@@ -30,17 +30,6 @@ import junit.framework.TestCase;
 import org.jmock.Mockery;
 import org.junit.runner.RunWith;
 import org.nuxeo.osgi.OSGiAdapter;
-import org.nuxeo.osgi.SystemBundle;
-import org.nuxeo.osgi.SystemBundleFile;
-import org.nuxeo.osgi.application.StandaloneBundleLoader;
-import org.nuxeo.runtime.AbstractRuntimeService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
-import org.nuxeo.runtime.osgi.OSGiRuntimeService;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.osgi.OSGiBundleFile;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.AbstractRuntimeService;
@@ -144,30 +133,6 @@ public class NXRuntimeTestCase extends TestCase implements RuntimeHarness {
         return harness.isStarted();
     }
 
-    /**
-     * @deprecated use <code>deployContrib()</code> instead
-     */
-    @Override
-    @Deprecated
-    public void deploy(String contrib) {
-        harness.deployContrib(contrib);
-    }
-
-    /**
-     * Deploys a contribution file by looking for it in the class loader.
-     * <p>
-     * The first contribution file found by the class loader will be used. You
-     * have no guarantee in case of name collisions.
-     *
-     * @deprecated use the less ambiguous
-     *             {@link #deployContrib(OSGiBundleFile,String)}
-     * @param contrib the relative path to the contribution file
-     */
-    @Override
-    @Deprecated
-    public void deployContrib(String contrib) {
-        harness.deployContrib(contrib);
-    }
 
     @Override
     public void deployContrib(String name, String contrib) throws Exception {
@@ -185,25 +150,6 @@ public class NXRuntimeTestCase extends TestCase implements RuntimeHarness {
             throws Exception {
         return harness.deployTestContrib(bundle, contrib);
     }
-
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Override
-    @Deprecated
-    public void undeploy(String contrib) {
-        harness.undeployContrib(contrib);
-    }
-
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Override
-    @Deprecated
-    public void undeployContrib(String contrib) {
-        harness.undeploy(contrib);
-    }
-
 
     /**
      * Undeploys a contribution from a given bundle.

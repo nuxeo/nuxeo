@@ -29,7 +29,7 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.RuntimeService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -128,7 +128,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public synchronized void register(RegistrationInfo regInfo) {
+    public synchronized void register(RegistrationInfo regInfo) throws RuntimeModelException {
         RegistrationInfoImpl ri = (RegistrationInfoImpl) regInfo;
         ComponentName name = ri.getName();
         if (blacklist.contains(name.getName())) {
@@ -137,47 +137,23 @@ public class ComponentManagerImpl implements ComponentManager {
             return;
         }
         if (reg.contains(name)) {
-            if (name.getName().startsWith("org.nuxeo.runtime.")) {
-                // XXX we hide the fact that nuxeo-runtime bundles are
-                // registered twice
-                // TODO fix the root cause and remove this
-                return;
-            }
-            String msg = "Duplicate component name: " + name;
-            log.error(msg);
-            Framework.getRuntime().getWarnings().add(msg);
-            return;
-            // throw new
-            // IllegalStateException("Component was already registered: " +
-            // name);
+            throw new RuntimeModelException(this + " : Duplicate component name " + name);
         }
         for (ComponentName n : ri.getAliases()) {
             if (reg.contains(n)) {
-                String msg = "Duplicate component name: " + n + " (alias for "
-                        + name + ")";
-                log.error(msg);
-                Framework.getRuntime().getWarnings().add(msg);
-                return;
+                throw new RuntimeModelException(this + " : Duplicate component name " +  n + " (alias for "
+                        + name + ")");
             }
         }
 
         ri.attach(this);
 
-        try {
-            log.info("Registering component: " + name);
-            if (!reg.addComponent(ri)) {
-                log.info("Registration delayed for component: " + name
-                        + ". Waiting for: "
-                        + reg.getMissingDependencies(ri.getName()));
-                return;
-            }
-        } catch (Throwable e) {
-            String msg = "Failed to register component: " + name;
-            log.error(msg, e);
-            msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getWarnings().add(msg);
+        log.info("Registering component: " + name);
+        if (!reg.addComponent(ri)) {
+            log.info("Registration delayed for component: " + name
+                    + ". Waiting for: "
+                    + reg.getMissingDependencies(ri.getName()));
         }
-        return;
     }
 
     @Override
@@ -242,16 +218,24 @@ public class ComponentManagerImpl implements ComponentManager {
         return activating;
     }
 
-    void sendEvent(ComponentEvent event) throws Exception {
-        log.debug("Dispatching event: " + event);
-        Object[] listeners = this.listeners.getListeners();
-        for (Object listener : listeners) {
-            ((ComponentListener) listener).handleEvent(event);
+    void sendEvent(ComponentEvent event) throws RuntimeModelException {
+        if (log.isDebugEnabled()) {
+            log.debug("Dispatching event: " + event);
         }
+        Object[] listeners = this.listeners.getListeners();
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
+        for (Object listener : listeners) {
+            try {
+                ((ComponentListener) listener).handleEvent(event);
+            } catch (RuntimeModelException e) {
+                errors.add(e);
+            }
+        }
+        errors.throwOnError();
     }
 
     public synchronized void registerExtension(Extension extension)
-            throws Exception {
+            throws RuntimeModelException {
         ComponentName name = extension.getTargetComponent();
         RegistrationInfoImpl ri = reg.getComponent(name);
         if (ri != null && ri.component != null) {
@@ -259,7 +243,11 @@ public class ComponentManagerImpl implements ComponentManager {
                 log.debug("Register contributed extension: " + extension);
             }
             loadContributions(ri, extension);
-            ri.component.registerExtension(extension);
+            try {
+                ri.component.registerExtension(extension);
+            } catch (Exception e) {
+                throw new RuntimeModelException(ri + " : cannot register " + extension, e);
+            }
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
                     ((ComponentInstanceImpl) extension.getComponent()).ri,
                     extension));
@@ -284,7 +272,7 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     public synchronized void unregisterExtension(Extension extension)
-            throws Exception {
+            throws RuntimeModelException {
         // TODO check if framework is shutting down and in that case do nothing
         if (log.isDebugEnabled()) {
             log.debug("Unregister contributed extension: " + extension);
@@ -294,7 +282,11 @@ public class ComponentManagerImpl implements ComponentManager {
         if (ri != null) {
             ComponentInstance co = ri.getComponent();
             if (co != null) {
-                co.unregisterExtension(extension);
+                try {
+                    co.unregisterExtension(extension);
+                } catch (Exception e) {
+                    throw new RuntimeModelException(ri + " : cannot unregister " + extension, e);
+                }
             }
         } else { // maybe it's pending
             Set<Extension> extensions = pendingExtensions.get(name);

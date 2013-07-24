@@ -499,7 +499,7 @@ public final class Framework {
             t.printStackTrace();
             System.exit(1);
         } else {
-            log.error(t, t);
+            log.error("Caught framework error, ignoring", t);
         }
     }
 

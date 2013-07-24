@@ -2,7 +2,7 @@ package org.nuxeo.osgi;
 
 import java.util.List;
 
-import org.nuxeo.osgi.nio.BundleWalker.CompoundExceptionBuilder;
+import org.nuxeo.osgi.nio.CompoundExceptionBuilder;
 import org.osgi.framework.BundleException;
 
 public class OSGiCompoundBundleExceptionBuilder extends

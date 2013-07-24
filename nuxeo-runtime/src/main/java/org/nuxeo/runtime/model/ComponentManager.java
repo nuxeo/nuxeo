@@ -54,8 +54,9 @@ public interface ComponentManager {
      *
      * @param ri the registration info
      * @return
+     * @throws RuntimeModelException
      */
-    void register(RegistrationInfo ri);
+    void register(RegistrationInfo ri) throws RuntimeModelException;
 
     /**
      * Handles the unregistration of the given registration info.

@@ -31,6 +31,7 @@ import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Component;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.ConfigurationDescriptor;
@@ -77,8 +78,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     // the registration state
     protected int state = UNREGISTERED;
-
-
 
     // the object names I depend of
     @XNodeList(value = "require", type = HashSet.class, componentType = ComponentName.class)
@@ -150,8 +149,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
      * fields are initialized.
      *
      * @param manager
+     * @throws RuntimeModelException
      */
-    public void attach(ComponentManagerImpl manager) {
+    public void attach(ComponentManagerImpl manager) throws RuntimeModelException {
         if (this.manager != null) {
             throw new IllegalStateException("Registration '" + name
                     + "' was already attached to a manager");
@@ -168,24 +168,33 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
-    protected void computePendings() {
+    protected void computePendings() throws RuntimeModelException {
         if (requires == null || requires.isEmpty()) {
             return;
         }
         // fill the requirements and pending map
+        RuntimeModelException.CompoundBuilder  errors = RuntimeModelException.newErrors();
         for (ComponentName otherName : requires) {
             RegistrationInfoImpl other = manager.getRegistrationInfo(otherName);
             if (other != null) {
-               if (other.isResolved()) {
-                   requiredResolved.add(other);
-               } else {
-                   requiredRegistered.add(other);
-               }
-               other.dependsOnMe.add(this);
+                if (other.isResolved()) {
+                    if (other.isActivated()) {
+                        try {
+                            other.deactivate();
+                        } catch (RuntimeModelException e) {
+                            errors.add(e);
+                        }
+                    }
+                    requiredResolved.add(other);
+                } else {
+                    requiredRegistered.add(other);
+                }
+                other.dependsOnMe.add(this);
             } else {
                 requiredPendings.add(otherName);
             }
         }
+        errors.throwOnError();
     }
 
     public void setContext(AbstractRuntimeContext rc) {
@@ -206,7 +215,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public void setPersistent(boolean isPersistent) {
         this.isPersistent = isPersistent;
     }
-
 
     public final boolean isDisposed() {
         return manager == null;
@@ -303,9 +311,11 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return manager;
     }
 
-    protected synchronized void register(Set<? extends RegistrationInfoImpl> dependsOnMe) throws Exception {
+    protected synchronized void register(
+            Set<? extends RegistrationInfoImpl> dependsOnMe) throws RuntimeModelException {
         if (state != UNREGISTERED) {
-            throw new IllegalStateException("Component not in registered state" + this);
+            throw new IllegalStateException("Component not in registered state"
+                    + this);
         }
         this.dependsOnMe.addAll(dependsOnMe);
         state = REGISTERED;
@@ -315,7 +325,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         handleRegistered();
     }
 
-
     protected void handlePreRegistered() {
         for (RegistrationInfoImpl other : dependsOnMe) { // unaliased
             RegistrationInfoImpl otherImpl = other;
@@ -324,7 +333,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
     }
 
-    protected void handleRegistered() throws Exception {
+    protected void handleRegistered() throws RuntimeModelException {
         if (requiredPendings.isEmpty() && requiredRegistered.isEmpty()) {
             resolve();
         }
@@ -332,18 +341,19 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     synchronized void unregister() throws Exception {
         if (state != REGISTERED) {
-            throw new IllegalStateException("Component not in registered state" + this);
+            throw new IllegalStateException("Component not in registered state"
+                    + this);
         }
         state = UNREGISTERED;
         manager.sendEvent(new ComponentEvent(
                 ComponentEvent.COMPONENT_UNREGISTERED, this));
-        for (RegistrationInfoImpl other:requiredResolved) {
+        for (RegistrationInfoImpl other : requiredResolved) {
             other.dependsOnMe.remove(this);
         }
         manager = null;
     }
 
-    protected ComponentInstanceImpl createComponentInstance() throws Exception {
+    protected ComponentInstanceImpl createComponentInstance() throws RuntimeModelException {
         try {
             return new ComponentInstanceImpl(this);
         } catch (Exception e) {
@@ -397,21 +407,24 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         try {
             activate();
         } catch (Exception e) {
-           log.error("Cannot lazy activate " + this, e);
-           Framework.handleDevError(e);
-           return false;
+            log.error("Cannot lazy activate " + this, e);
+            Framework.handleDevError(e);
+            return false;
         }
         return true;
     }
 
     @Override
-    public synchronized void activate() throws Exception  {
+    public synchronized void activate() throws RuntimeModelException {
         if (state != RESOLVED) {
-            throw new IllegalStateException("component not in resolved state (" + this + ")");
+            throw new IllegalStateException("component not in resolved state ("
+                    + this + ")");
         }
 
-        if (context.state != RuntimeContext.ACTIVATING && context.state != RuntimeContext.ACTIVATED) {
-            throw new IllegalStateException("context not in activating state (" + context + ")");
+        if (context.state != RuntimeContext.ACTIVATING
+                && context.state != RuntimeContext.ACTIVATED) {
+            throw new IllegalStateException("context not in activating state ("
+                    + context + ")");
         }
 
         state = ACTIVATING;
@@ -428,13 +441,15 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     }
 
-    protected void handleActivating() throws Exception {
+    protected void handleActivating() throws RuntimeModelException {
         // check required component
         for (RegistrationInfoImpl other : requiredResolved) {
             if (context == other.context) {
                 other.lazyActivate();
             } else if (other.state != ACTIVATED) {
-                throw new IllegalStateException("required component is not activated (" + this + "->" + other);
+                throw new IllegalStateException(
+                        "required component is not activated (" + this + "->"
+                                + other);
             }
         }
 
@@ -490,25 +505,37 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     }
 
-    public synchronized void deactivate() throws Exception {
+    public synchronized void deactivate() throws RuntimeModelException {
         if (state != ACTIVATED) {
             return;
         }
 
         state = DEACTIVATING;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.DEACTIVATING_COMPONENT, this));
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
+
+        try {
+            manager.sendEvent(new ComponentEvent(
+                    ComponentEvent.DEACTIVATING_COMPONENT, this));
+        } catch (RuntimeModelException e) {
+            errors.add(e);
+        }
 
         handleDeactivating();
 
         state = RESOLVED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_DEACTIVATED, this));
+        try {
+            manager.sendEvent(new ComponentEvent(
+                    ComponentEvent.COMPONENT_DEACTIVATED, this));
+        } catch (RuntimeModelException e) {
+            errors.add(e);
+        }
 
         handleDeactivated();
+
+        errors.throwOnError();
     }
 
-    protected void handleDeactivating()  {
+    protected void handleDeactivating() {
         // deactivate depends
         Iterator<RegistrationInfoImpl> it = dependsOnMe.iterator();
         while (it.hasNext()) {
@@ -517,12 +544,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             try {
                 other.deactivate();
             } catch (Exception e) {
-                log.error("Failed to de-activate dependent component (" + this + "->" + other + ")");
+                log.error("Failed to de-activate dependent component (" + this
+                        + "->" + other + ")");
             }
         }
-
-        // un-register services
-        manager.unregisterServices(this);
 
         // unregister contributed extensions if any
         if (extensions != null) {
@@ -554,7 +579,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     }
 
-    public synchronized void resolve() throws Exception {
+    public synchronized void resolve() throws RuntimeModelException {
         if (state != REGISTERED) {
             return;
         }
@@ -572,32 +597,33 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     }
 
-
     protected void handleResolving() {
         manager.registerServices(this);
     }
 
-    protected void handlePreResolved() throws Exception {
+    protected void handlePreResolved() throws RuntimeModelException {
         for (RegistrationInfoImpl other : dependsOnMe) {
             if (other.context != context) {
                 continue;
             }
             other.requiredRegistered.remove(this);
             other.requiredResolved.add(this);
-            if (other.requiredPendings.isEmpty() && other.requiredRegistered.isEmpty()) {
+            if (other.requiredPendings.isEmpty()
+                    && other.requiredRegistered.isEmpty()) {
                 other.resolve();
             }
         }
     }
 
-    protected void handleResolved() throws Exception {
+    protected void handleResolved() throws RuntimeModelException {
         for (RegistrationInfoImpl other : dependsOnMe) {
             if (other.context == context) {
                 continue;
             }
             other.requiredRegistered.remove(this);
             other.requiredResolved.add(this);
-            if (other.requiredPendings.isEmpty() && other.requiredRegistered.isEmpty()) {
+            if (other.requiredPendings.isEmpty()
+                    && other.requiredRegistered.isEmpty()) {
                 other.resolve();
             }
         }
@@ -612,11 +638,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             deactivate();
         }
 
+        manager.unregisterServices(this);
+
         state = REGISTERED;
         manager.sendEvent(new ComponentEvent(
                 ComponentEvent.COMPONENT_UNRESOLVED, this));
     }
-
 
     @Override
     public synchronized boolean isActivated() {

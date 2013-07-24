@@ -43,6 +43,7 @@ public class ReloadableComponent extends DefaultComponent implements Reloadable 
         super.unregisterExtension(extension);
     }
 
+    @Override
     public void reload(ComponentContext context) throws Exception {
         deactivate(context);
         activate(context);

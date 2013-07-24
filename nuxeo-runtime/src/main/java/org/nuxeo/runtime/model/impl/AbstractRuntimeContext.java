@@ -14,6 +14,7 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -23,6 +24,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -62,7 +64,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
         this.name = name;
     }
 
-    public void setRegistered(AbstractRuntimeService runtime) throws Exception {
+    public void setRegistered(AbstractRuntimeService runtime) throws RuntimeModelException {
         if (state != UNREGISTERED) {
             throw new IllegalArgumentException("Not in unregistered state ("
                     + this + ")");
@@ -73,11 +75,11 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
         handleRegistered();
     }
 
-    protected void handleRegistering() throws Exception {
+    protected void handleRegistering() throws RuntimeModelException {
 
     }
 
-    protected void handleRegistered() throws Exception {
+    protected void handleRegistered() throws RuntimeModelException {
         if (pendingInfos.isEmpty() && requiredContextsPendings.isEmpty()) {
             setResolved();
         }
@@ -87,25 +89,25 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
         return state == REGISTERED;
     }
 
-    public void setResolved() {
+    public void setResolved() throws RuntimeModelException {
         if (state != REGISTERED) {
-            throw new IllegalArgumentException("Not in registered state ("
-                    + this + ")");
+            throw new RuntimeModelException(this + " : not in registered state");
         }
         handleResolving();
         state = RESOLVED;
         handleResolved();
     }
 
-    protected void handleResolving() {
+    protected void handleResolving() throws RuntimeModelException {
         ComponentName selfName = new ComponentName(name);
         RegistrationInfoImpl info = runtime.manager.getRegistrationInfo(selfName);
-        if (info == null) {
-            info = new RegistrationInfoImpl(selfName);
-            info.setContext(this);
-            pendingInfos.add(info);
-            runtime.manager.register(info);
+        if (info != null) {
+            return;
         }
+        info = new RegistrationInfoImpl(selfName);
+        info.setContext(this);
+        pendingInfos.add(info);
+        runtime.manager.register(info);
     }
 
     protected void handleResolved() {
@@ -138,14 +140,19 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
         }
     }
 
-    protected void handleActivated() {
+    protected void handleActivated() throws RuntimeModelException {
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         for (AbstractRuntimeContext other : dependsOnMeContexts) {
             other.requiredContextsPendings.remove(this);
             other.requiredContexts.add(this);
             if (other.isRegistered()) {
                 if (other.pendingInfos.isEmpty()
                         && other.requiredContextsPendings.isEmpty()) {
-                    other.setResolved();
+                    try {
+                        other.setResolved();
+                    } catch (RuntimeModelException e) {
+                       errors.add(e);
+                    }
                 }
             } else if (other.isActivated()) {
                 for (RegistrationInfoImpl info : other.resolvedInfos) {
@@ -155,6 +162,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
                 }
             }
         }
+        errors.throwOnError();
     }
 
     @Override
@@ -184,11 +192,16 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public RegistrationInfo[] deploy(URL url) throws Exception {
+    public RegistrationInfo[] deploy(URL url) throws RuntimeModelException  {
         if (deployedFiles.containsKey(url)) {
             return null;
         }
-        RegistrationInfoImpl[] ris = reader.read(this, url);
+        RegistrationInfoImpl[] ris;
+        try {
+            ris = reader.read(this, url);
+        } catch (IOException e) {
+            throw new RuntimeModelException("Cannot read components of " + url, e);
+        }
         for (RegistrationInfoImpl ri : ris) {
             ComponentName name = ri.getName();
             if (name == null) {
@@ -207,12 +220,12 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public RegistrationInfo[] deploy(StreamRef ref) throws Exception {
+    public RegistrationInfo[] deploy(StreamRef ref) throws RuntimeModelException  {
         return deploy(ref.asURL());
     }
 
     @Override
-    public void undeploy(URL url) throws Exception {
+    public void undeploy(URL url)  {
         RegistrationInfo[] infos = deployedFiles.remove(url);
         for (RegistrationInfo info : infos) {
             runtime.getComponentManager().unregister(info);
@@ -220,7 +233,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public void undeploy(StreamRef ref) throws Exception {
+    public void undeploy(StreamRef ref)  {
         undeploy(ref.asURL());
     }
 
@@ -235,7 +248,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public RegistrationInfo[] deploy(String location) throws Exception {
+    public RegistrationInfo[] deploy(String location) throws RuntimeModelException {
         URL url = getLocalResource(location);
         if (url == null) {
             log.warn("No local resources was found with this name: " + location);
@@ -245,7 +258,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
 
     @Override
-    public void undeploy(String location) throws Exception {
+    public void undeploy(String location) throws RuntimeModelException {
         URL url = getLocalResource(location);
         if (url != null) {
             undeploy(url);
@@ -334,7 +347,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
 
     protected void handleComponentResolved(RegistrationInfoImpl info)
-            throws Exception {
+            throws RuntimeModelException {
         if (!pendingInfos.remove(info)) {
             return;
         }

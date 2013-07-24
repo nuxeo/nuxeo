@@ -215,6 +215,25 @@ public class OSGiBundleHost extends OSGiBundle {
     }
 
     @Override
+    public URL getEntry(String name) {
+        URL location = super.getEntry(name);
+        if (location != null) {
+            if (!allowHostOverride()) {
+                return location;
+            }
+        }
+
+        for (Bundle fragment : osgi.registry.getFragments(symbolicName)) {
+            URL fragmentLocation = fragment.getEntry(name);
+            if (fragmentLocation != null) {
+                return fragmentLocation;
+            }
+        }
+
+        return location;
+    }
+
+    @Override
     public Enumeration<URL> findEntries(String path, String filePattern,
             boolean recurse) {
         Enumeration<URL> hostEntries = super.findEntries(path, filePattern,

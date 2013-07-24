@@ -45,6 +45,7 @@ import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.common.utils.Vars;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -93,8 +94,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected final BundleContext bundleContext;
 
-    protected final Map<String, OSGiRuntimeContext> contexts;
-
     protected boolean appStarted = false;
 
     protected final OSGiComponentLoader componentLoader = new OSGiComponentLoader(
@@ -105,7 +104,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
      * table is used to map symbolic names to bundles. This map is not handling
      * bundle versions.
      */
-    protected final Map<String, Bundle> bundles;
+    protected final Map<String, Bundle> bundlesByName = new ConcurrentHashMap<String, Bundle>();
 
     protected final ComponentPersistence persistence;
 
@@ -132,10 +131,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             BundleContext context, Map<String, String> props) {
         super(runtimeContext, props);
         bundleContext = context;
-        bundles = new ConcurrentHashMap<String, Bundle>();
         Bundle bundle = context.getBundle();
-        contexts = new ConcurrentHashMap<String, OSGiRuntimeContext>();
-        contexts.put(bundle.getSymbolicName(), runtimeContext);
+        contextsByName.put(bundle.getSymbolicName(), runtimeContext);
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
@@ -174,26 +171,24 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     @Override
     public Bundle getBundle(String symbolicName) {
-        return bundles.get(symbolicName);
+        return bundlesByName.get(symbolicName);
     }
 
     public Map<String, Bundle> getBundlesMap() {
-        return bundles;
+        return bundlesByName;
     }
 
     public ComponentPersistence getComponentPersistence() {
         return persistence;
     }
 
-    public synchronized RuntimeContext createContext(Bundle bundle)
-            throws Exception {
+    public synchronized RuntimeContext createContext(Bundle bundle) throws RuntimeModelException {
         OSGiRuntimeContext ctx;
         if (bundle.equals(runtimeContext.getBundle())) {
-            ctx = (OSGiRuntimeContext)runtimeContext;
+            ctx = (OSGiRuntimeContext) runtimeContext;
         } else {
-            bundles.put(bundle.getSymbolicName(), bundle);
             ctx = new OSGiRuntimeContext(bundle);
-            contexts.put(bundle.getSymbolicName(), ctx);
+            contextsByName.put(bundle.getSymbolicName(), ctx);
             ctx.setRegistered(this);
         }
         if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0) {
@@ -208,27 +203,33 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     public synchronized void activateContext(Bundle bundle) throws Exception {
         String symbolicName = bundle.getSymbolicName();
-        if (!contexts.containsKey(symbolicName)) {
+        if (!contextsByName.containsKey(symbolicName)) {
             throw new IllegalStateException(
                     "Trying to activate missing bundle context, check deps ("
                             + symbolicName + ")");
         }
-        getContext(bundle).setActivated();
+        OSGiRuntimeContext context = getContext(bundle);
+        if (context.getState() == RuntimeContext.RESOLVED) {
+            context.setActivated();
+        }
     }
 
     public synchronized void destroyContext(Bundle bundle) {
-        RuntimeContext ctx = contexts.remove(bundle.getSymbolicName());
+        RuntimeContext ctx = contextsByName.remove(bundle.getSymbolicName());
         if (ctx != null) {
             ctx.destroy();
         }
     }
 
     public synchronized OSGiRuntimeContext getContext(Bundle bundle) {
-        return contexts.get(bundle.getSymbolicName());
+        return (OSGiRuntimeContext)contextsByName.get(bundle.getSymbolicName());
     }
 
+    @Override
     public synchronized OSGiRuntimeContext getContext(String symbolicName) {
-        return contexts.get(symbolicName);
+        Bundle bundle = getBundle(symbolicName);
+        bundle = findHostBundle(bundle);
+        return (OSGiRuntimeContext)contextsByName.get(symbolicName);
     }
 
     @Override
@@ -331,7 +332,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         File dir = env.getConfig();
         if (dir.isDirectory()) {
             Bundle config = bundleContext.installBundle(dir.getPath());
-            context = contexts.get(config.getSymbolicName());
+            context = contextsByName.get(config.getSymbolicName());
             if (provider == null) {
                 provider = new BundleConfigurationProvider(config);
             }
@@ -553,23 +554,29 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
     }
 
-    public void fireApplicationStarted() {
+    public void fireApplicationStarted() throws RuntimeModelException {
         synchronized (this) {
             if (appStarted) {
                 return;
             }
             appStarted = true;
         }
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         try {
             persistence.loadPersistedComponents();
-        } catch (Exception e) {
-            log.error("Failed to load persisted components", e);
+        } catch (RuntimeModelException e) {
+            errors.add(e);
         }
         // deploy a fake component that is marking the end of startup
         // XML components that needs to be deployed at the end need to put a
         // requirement
         // on this marker component
-        deployFrameworkStartedComponent();
+        try {
+            deployFrameworkStartedComponent();
+        } catch (RuntimeModelException e) {
+            errors.add(e);
+        }
+        errors.throwOnError();
         notifyComponentsOnStarted();
         // print the startup message
         printStatusMessage();
@@ -580,7 +587,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     @Override
     public void frameworkEvent(FrameworkEvent event) {
         if (event.getType() == FrameworkEvent.STARTED) {
-            fireApplicationStarted();
+            try {
+                fireApplicationStarted();
+            } catch (RuntimeModelException e) {
+                Framework.handleDevError(e);
+            }
         }
     }
 
@@ -594,7 +605,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         }
     }
 
-    protected void deployFrameworkStartedComponent() {
+    protected void deployFrameworkStartedComponent() throws RuntimeModelException {
         RegistrationInfoImpl ri = new RegistrationInfoImpl(
                 FRAMEWORK_STARTED_COMP);
         ri.setContext(runtimeContext);
@@ -607,21 +618,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         String hostId = bundle.getHeaders().get(Constants.FRAGMENT_HOST);
         log.debug("Looking for host bundle: " + bundle.getSymbolicName()
                 + " host id: " + hostId);
-        if (hostId != null) {
-            int p = hostId.indexOf(';');
-            if (p > -1) { // remove version or other extra information if any
-                hostId = hostId.substring(0, p);
-            }
-            RuntimeContext ctx = contexts.get(hostId);
-            if (ctx != null) {
-                log.debug("Context was found for host id: " + hostId);
-                return ctx.getBundle();
-            } else {
-                log.warn("No context found for host id: " + hostId);
-
-            }
+        if (hostId == null) {
+            return bundle;
         }
-        return null;
+        int p = hostId.indexOf(';');
+        if (p > -1) { // remove version or other extra information if any
+            hostId = hostId.substring(0, p);
+        }
+        return bundlesByName.get(hostId);
     }
 
     protected File getEclipseBundleFileUsingReflection(Bundle bundle) {
@@ -703,5 +707,9 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         warnings.add(message);
     }
 
+    public void installBundle(Bundle bundle) throws RuntimeModelException {
+        bundlesByName.put(bundle.getSymbolicName(), bundle);
+        createContext(bundle);
+    }
 
 }

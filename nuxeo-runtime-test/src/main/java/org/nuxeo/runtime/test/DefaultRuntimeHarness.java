@@ -20,7 +20,6 @@
 package org.nuxeo.runtime.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -159,43 +158,18 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
                 resource);
     }
 
-    /**
-     * @deprecated use <code>deployContrib()</code> instead
-     */
-    @Override
-    @Deprecated
-    public void deploy(String contrib) {
-        deployContrib(contrib);
-    }
 
-    protected void deployContrib(URL url) {
+    protected void deployContrib(RuntimeContext context, URL url) {
         assertEquals(runtime, Framework.getRuntime());
         log.info("Deploying contribution from " + url.toString());
         try {
-            runtime.getContext().deploy(url);
+            context.deploy(url);
         } catch (Exception e) {
             log.error(e);
             fail("Failed to deploy contrib " + url.toString());
         }
     }
 
-    /**
-     * Deploys a contribution file by looking for it in the class loader.
-     * <p>
-     * The first contribution file found by the class loader will be used. You
-     * have no guarantee in case of name collisions.
-     *
-     * @deprecated use the less ambiguous
-     *             {@link #deployContrib(OSGiBundleFile,String)}
-     * @param contrib the relative path to the contribution file
-     */
-    @Override
-    @Deprecated
-    public void deployContrib(String contrib) {
-        URL url = getResource(contrib);
-        assertNotNull("Test contribution not found: " + contrib, url);
-        deployContrib(url);
-    }
 
     @Override
     public void deployContrib(String name, String contrib) {
@@ -205,7 +179,8 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
             fail(String.format("Could not find entry %s in bundle '%s",
                     contrib, name));
         }
-        deployContrib(url);
+        RuntimeContext context = runtime.getContext(name);
+        deployContrib(context, url);
     }
 
     /**
@@ -248,25 +223,6 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
         }
     }
 
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Override
-    @Deprecated
-    public void undeploy(String contrib) {
-        undeployContrib(contrib);
-    }
-
-    /**
-     * @deprecated use {@link #undeployContrib(String, String)} instead
-     */
-    @Override
-    @Deprecated
-    public void undeployContrib(String contrib) {
-        URL url = getResource(contrib);
-        assertNotNull("Test contribution not found: " + contrib, url);
-        deployContrib(url);
-    }
 
     /**
      * Undeploys a contribution from a given bundle.

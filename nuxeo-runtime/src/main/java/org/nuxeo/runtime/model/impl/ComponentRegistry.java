@@ -25,6 +25,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
@@ -78,7 +79,7 @@ public class ComponentRegistry {
      *         pending
      */
     @SuppressWarnings("unchecked")
-    public boolean addComponent(RegistrationInfoImpl ri) throws Exception {
+    public boolean addComponent(RegistrationInfoImpl ri) throws RuntimeModelException {
         // update registry
         ComponentName name = ri.getName();
         Set<ComponentName> al = ri.getAliases();

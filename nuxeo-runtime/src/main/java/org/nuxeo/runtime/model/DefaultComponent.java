@@ -43,11 +43,17 @@ public class DefaultComponent implements Component, Adaptable {
         if (contribs == null) {
             return;
         }
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         for (Object contrib : contribs) {
-            registerContribution(contrib, extension.getExtensionPoint(),
-                    extension.getComponent());
+            try {
+                registerContribution(contrib, extension.getExtensionPoint(),
+                        extension.getComponent());
+            } catch (Exception e) {
+                errors.add(new RuntimeModelException(this + " : cannot register contribution " + contrib, e));
+            }
         }
         setModifiedNow();
+        errors.throwOnError();
     }
 
     @Override
@@ -56,11 +62,17 @@ public class DefaultComponent implements Component, Adaptable {
         if (contribs == null) {
             return;
         }
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         for (Object contrib : contribs) {
-            unregisterContribution(contrib, extension.getExtensionPoint(),
-                    extension.getComponent());
+            try {
+                unregisterContribution(contrib, extension.getExtensionPoint(),
+                        extension.getComponent());
+            } catch (Exception e) {
+                errors.add(new RuntimeModelException(this + " : cannot unregister contribution " + contrib, e));
+            }
         }
         setModifiedNow();
+        errors.throwOnError();
     }
 
     public void registerContribution(Object contribution,

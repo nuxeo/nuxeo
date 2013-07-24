@@ -24,7 +24,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.osgi.nio.BundleWalker.CompoundExceptionBuilder;
+import org.nuxeo.osgi.nio.CompoundExceptionBuilder;
 import org.nuxeo.osgi.nio.FilterBuilder;
 import org.nuxeo.osgi.nio.RecursiveDirectoryStream;
 import org.osgi.framework.BundleException;

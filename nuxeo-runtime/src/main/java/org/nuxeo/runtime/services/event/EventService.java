@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -58,12 +59,13 @@ public class EventService extends DefaultComponent {
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) throws RuntimeModelException {
         Object[] descriptors = extension.getContributions();
         if (descriptors.length == 0) {
             return;
         }
         String name = extension.getId();
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         synchronized (this) {
             for (Object desc : descriptors) {
                 ListenerDescriptor lDesc = (ListenerDescriptor) desc;
@@ -72,15 +74,16 @@ public class EventService extends DefaultComponent {
                         addListener(topic, lDesc.listener);
                     }
                 } catch (Exception e) {
-                    log.error(e, e);
+                    errors.add(new RuntimeModelException("Cannot register extension " + desc, e));
                 }
             }
             contributions.put(name, descriptors);
         }
+        errors.throwOnError();
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) throws RuntimeModelException {
         String name = extension.getId();
         synchronized (this) {
             Object[] descriptors = contributions.remove(name);

@@ -14,6 +14,7 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -68,8 +69,7 @@ public class ComponentDescriptorReader {
         xmap.register(RegistrationInfoImpl.class);
     }
 
-    public RegistrationInfoImpl[] read(AbstractRuntimeContext ctx, URL url)
-            throws Exception {
+    public RegistrationInfoImpl[] read(AbstractRuntimeContext ctx, URL url) throws IOException {
         InputStream in = url.openStream();
         try {
             String source = org.apache.commons.io.IOUtils.toString(in, "UTF-8");
@@ -89,8 +89,7 @@ public class ComponentDescriptorReader {
         }
     }
 
-    public RegistrationInfoImpl[] read(AbstractRuntimeContext ctx, InputStream in)
-            throws Exception {
+    public RegistrationInfoImpl[] read(AbstractRuntimeContext ctx, InputStream in) throws IOException {
         Object[] result = xmap.loadAll(new XMapContext(ctx), in);
         RegistrationInfoImpl[] impls = new RegistrationInfoImpl[result.length];
         for (int i = 0; i < result.length; ++i) {
@@ -115,7 +114,7 @@ public class ComponentDescriptorReader {
         if (name != null) {
             // this is an external component XML.
             // should use the real owner bundle as the context.
-            info.context = (AbstractRuntimeContext)((OSGiRuntimeService)context.getRuntime()).getContext(name);
+            info.context = ((OSGiRuntimeService)context.getRuntime()).getContext(name);
         }
 
     }

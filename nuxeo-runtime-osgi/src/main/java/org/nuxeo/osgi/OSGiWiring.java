@@ -18,6 +18,11 @@ class OSGiWiring {
         this.loader = loader;
     }
 
+    @Override
+    public String toString() {
+        return "OSGiWiring [loader=" + loader + ", contents=" + contents + "]";
+    }
+
     protected void wire(String path, Set<OSGiLoader> loaders) {
         if (!contents.containsKey(path)) {
             contents.put(path, new HashSet<OSGiLoader>());

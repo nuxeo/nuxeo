@@ -198,6 +198,11 @@ public interface RuntimeService {
     RuntimeContext getContext();
 
     /**
+     * Gets the context by name
+     */
+    RuntimeContext getContext(String name);
+
+    /**
      * Gets the service of type serviceClass if such a service was declared by
      * a resolved runtime component.
      * <p>

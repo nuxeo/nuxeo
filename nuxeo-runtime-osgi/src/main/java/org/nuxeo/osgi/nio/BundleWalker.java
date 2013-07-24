@@ -25,8 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,46 +77,6 @@ public class BundleWalker {
             }
         }
         errorsBuilder.throwOnError();
-    }
-
-    public static abstract class CompoundExceptionBuilder<T extends Throwable> {
-
-        protected final List<T> accumulated = new LinkedList<T>();
-
-        protected abstract T newThrowable(List<T> causes);
-
-        public void add(T error) {
-            accumulated.add(error);
-        }
-
-        public void throwOnError() throws T {
-            if (accumulated.isEmpty()) {
-                return;
-            }
-            throw newThrowable(accumulated);
-        }
-    }
-
-    public static class CompoundIOExceptionBuilder extends
-            CompoundExceptionBuilder<IOException> {
-
-        @Override
-        protected IOException newThrowable(List<IOException> causes) {
-            return new CompoundIOException(
-                    causes.toArray(new IOException[causes.size()]));
-        }
-
-    }
-
-    public static class CompoundIOException extends IOException {
-
-        private static final long serialVersionUID = 1L;
-
-        public final IOException[] causes;
-
-        public CompoundIOException(IOException[] causes) {
-            this.causes = causes;
-        }
     }
 
     public void visit(Collection<File> roots) throws IOException {

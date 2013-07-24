@@ -14,6 +14,7 @@
 
 package org.nuxeo.runtime.osgi;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,9 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.errors.CompoundIOExceptionBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.AbstractRuntimeContext;
 import org.osgi.framework.Bundle;
@@ -55,42 +58,42 @@ public class OSGiRuntimeContext extends AbstractRuntimeContext {
     }
 
     @Override
-    protected void handleRegistering() throws Exception {
+    protected void handleRegistering() throws RuntimeModelException {
         super.handleRegistering();
-        loadComponents();
+        try {
+            loadComponents();
+        } catch (IOException e) {
+            throw new RuntimeModelException(this + " : cannot load components", e);
+        }
     }
 
-    protected void loadComponents() throws Exception {
+    protected void loadComponents() throws IOException {
         Bundle bundle = getBundle();
         String list = OSGiRuntimeService.getComponentsList(bundle);
         LogFactory.getLog(OSGiRuntimeContext.class).debug(
                 "Bundle: " + name + " components: " + list);
-        if (list != null) {
-            StringTokenizer tok = new StringTokenizer(list, ", \t\n\r\f");
-            while (tok.hasMoreTokens()) {
-                String path = tok.nextToken();
-                URL url = bundle.getEntry(path);
-                log.debug("Loading component for: " + name + " path: " + path
-                        + " url: " + url);
-                if (url != null) {
-                    try {
-                        deploy(url);
-                    } catch (Exception e) {
-                        // just log error to know where is the cause of the
-                        // exception
-                        log.error("Error deploying resource: " + url);
-                        Framework.handleDevError(e);
-                        throw e;
-                    }
-                } else {
-                    String message = "Unknown component '" + path
-                            + "' referenced by bundle '" + name + "'";
-                    log.error(message + ". Check the MANIFEST.MF");
-                    Framework.handleDevError(null);
-                    ((OSGiRuntimeService) runtime).addWarning(message);
+        if (list == null) {
+            return;
+        }
+        StringTokenizer tok = new StringTokenizer(list, ", \t\n\r\f");
+        CompoundIOExceptionBuilder errors = new CompoundIOExceptionBuilder();
+        while (tok.hasMoreTokens()) {
+            String path = tok.nextToken();
+            URL url = bundle.getEntry(path);
+            log.debug("Loading component for: " + name + " path: " + path
+                    + " url: " + url);
+            if (url != null) {
+                try {
+                    deploy(url);
+                } catch (RuntimeModelException e) {
+                    errors.add(new IOException("Error deploying resource: " + url, e));
                 }
+            } else {
+                errors.add(new IOException("Unknown component '" + path
+                        + "' referenced by bundle '" + name + "'" + ". Check the MANIFEST.MF"));
             }
         }
+        errors.throwOnError();
     }
 
     protected Bundle[] requiredBundles = new Bundle[0];

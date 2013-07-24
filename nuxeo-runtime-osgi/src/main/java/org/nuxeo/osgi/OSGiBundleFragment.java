@@ -9,8 +9,14 @@ import org.osgi.framework.BundleException;
 
 public class OSGiBundleFragment extends OSGiBundle {
 
+    protected OSGiBundle host;
+
     protected OSGiBundleFragment(OSGiBundleFile file) throws BundleException {
         super(file);
+    }
+
+    public OSGiBundle getHost() {
+        return host;
     }
 
     @Override
@@ -56,6 +62,11 @@ public class OSGiBundleFragment extends OSGiBundle {
     @Override
     public BundleContext getBundleContext() {
         return null;
+    }
+
+    @Override
+    protected String internalToString() {
+        return super.internalToString() + ",host="+host;
     }
 
 }

@@ -44,7 +44,7 @@ public class OSGiComponentLoader implements BundleTrackerCustomizer {
     }
 
     public void start() {
-        tracker = new BundleTracker(runtime.getBundleContext(), Bundle.RESOLVED
+        tracker = new BundleTracker(runtime.getBundleContext(),  Bundle.RESOLVED
                 | Bundle.STARTING | Bundle.ACTIVE, this);
         tracker.open();
     }
@@ -144,7 +144,7 @@ public class OSGiComponentLoader implements BundleTrackerCustomizer {
     public Object addingBundle(Bundle bundle, BundleEvent event) {
         try {
             log.info("building runtime context " + bundle);
-            runtime.createContext(bundle);
+            runtime.installBundle(bundle);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Failed to resolve components for bundle: " + bundle, e);

@@ -15,6 +15,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
@@ -95,24 +98,30 @@ public class ComponentPersistence {
         return root;
     }
 
-    public final RuntimeContext getContext(String symbolicName) throws Exception {
+    public final RuntimeContext getContext(String symbolicName) throws RuntimeModelException {
         if (symbolicName == null) {
             return sysrc;
         }
         Bundle bundle = runtime.getBundle(symbolicName);
         if (bundle == null) {
-            return null;
+            throw new RuntimeModelException(this + " : cannot find " + symbolicName);
         }
         return runtime.createContext(bundle);
     }
 
-    protected void deploy(RuntimeContext rc, File file) throws Exception {
-        for (RegistrationInfo ri:rc.deploy(file.toURI().toURL())) {
+    protected void deploy(RuntimeContext rc, File file) throws RuntimeModelException {
+        URL url;
+        try {
+            url = file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeModelException(this + " : cannot locate " + file);
+        }
+        for (RegistrationInfo ri:rc.deploy(url)) {
             ((RegistrationInfoImpl)ri).isPersistent = true;
         }
     }
 
-    public void loadPersistedComponents() throws Exception {
+    public void loadPersistedComponents() throws RuntimeModelException {
         File[] files = root.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -128,7 +137,7 @@ public class ComponentPersistence {
         }
     }
 
-    public void loadPersistedComponents(RuntimeContext rc, File root) throws Exception {
+    public void loadPersistedComponents(RuntimeContext rc, File root) throws RuntimeModelException {
         File[] files = root.listFiles();
         if (files != null) {
             for (File file : files) {

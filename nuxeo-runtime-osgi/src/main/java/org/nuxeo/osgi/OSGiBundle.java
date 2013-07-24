@@ -58,6 +58,8 @@ public abstract class OSGiBundle implements Bundle {
 
     protected final OSGiBundleFile file;
 
+    protected OSGiLoader loader;
+
     protected int state;
 
     protected long lastModified;
@@ -216,10 +218,14 @@ public abstract class OSGiBundle implements Bundle {
         return false;
     }
 
+    protected String internalToString() {
+        return "id="+ id + ", symbolicName=" + symbolicName
+                + ", state=" + state;
+    }
+
     @Override
     public String toString() {
-        return "OSGiBundle [id=" + id + ", symbolicName=" + symbolicName
-                + ", state=" + state + "]";
+        return getClass().getSimpleName() + " [" + internalToString() + "]";
     }
 
     @Override

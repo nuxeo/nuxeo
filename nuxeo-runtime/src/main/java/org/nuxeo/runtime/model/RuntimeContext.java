@@ -105,7 +105,7 @@ public interface RuntimeContext {
      *         for some reason
      * @throws Exception if any error occurs
      */
-    RegistrationInfo[] deploy(URL url) throws Exception;
+    RegistrationInfo[] deploy(URL url) throws RuntimeModelException;
 
     /**
      * Same as {@link #deploy(URL)} but using a {@link StreamRef} as argument.
@@ -114,7 +114,7 @@ public interface RuntimeContext {
      * @return
      * @throws Exception
      */
-    RegistrationInfo[] deploy(StreamRef ref) throws Exception;
+    RegistrationInfo[] deploy(StreamRef ref) throws RuntimeModelException;
 
     /**
      * Undeploys a component XML descriptor given its URL.
@@ -124,7 +124,7 @@ public interface RuntimeContext {
      * @param url the URL of the XML descriptor
      * @throws Exception if any error occurs
      */
-    void undeploy(URL url) throws Exception;
+    void undeploy(URL url) throws RuntimeModelException;
 
     /**
      * Same as {@link #undeploy(URL)} but using a {@link StreamRef} as stream
@@ -133,7 +133,7 @@ public interface RuntimeContext {
      * @param ref
      * @throws Exception
      */
-    void undeploy(StreamRef ref) throws Exception;
+    void undeploy(StreamRef ref) throws RuntimeModelException;
 
     /**
      * Checks whether the component XML file at given URL was deployed.
@@ -169,7 +169,7 @@ public interface RuntimeContext {
      *         for some reason
      * @throws Exception
      */
-    RegistrationInfo[] deploy(String location) throws Exception;
+    RegistrationInfo[] deploy(String location) throws RuntimeModelException;
 
     /**
      * Undeploys the component at the given location if any was deployed.
@@ -179,7 +179,7 @@ public interface RuntimeContext {
      * @param location the location of the component to undeploy
      * @throws Exception if any error occurs
      */
-    void undeploy(String location) throws Exception;
+    void undeploy(String location) throws RuntimeModelException;
 
     /**
      * Checks if the component at the given location is deployed.

@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.runners.model.InitializationError;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.OSGiBundleFile;
+import org.nuxeo.osgi.OSGiBundleFragment;
 import org.nuxeo.osgi.OSGiDefaultFactory;
 import org.nuxeo.osgi.OSGiSystemContext;
 import org.osgi.framework.Bundle;
@@ -186,10 +187,15 @@ public class OSGiBootloader {
         if (bundle == null) {
             return null;
         }
+        if (bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null) {
+            bundle = ((OSGiBundleFragment)bundle).getHost();
+        }
         if (!activatedBundles.contains(bundle)) {
             activatedBundles.add(bundle);
             try {
-                bundle.start();
+                if ((bundle.getState() & (Bundle.STARTING|Bundle.ACTIVE)) == 0) {
+                    bundle.start();
+                }
             } catch (BundleException e) {
                 throw new InitializationError(e);
             }

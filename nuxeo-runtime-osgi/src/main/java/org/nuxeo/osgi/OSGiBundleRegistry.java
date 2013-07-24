@@ -219,6 +219,7 @@ public class OSGiBundleRegistry implements BundleListener {
             String hostBundleId = getFragmentHost(reg);
             OSGiBundleRegistration host = bundlesByName.get(hostBundleId);
             host.addFragment(reg.bundle.symbolicName);
+            ((OSGiBundleFragment)reg.bundle).host = host.bundle;
         } else if (OSGiBundleHost.class.isAssignableFrom(bundleType)) {
             ((OSGiBundleHost) reg.bundle).setResolved();
         }

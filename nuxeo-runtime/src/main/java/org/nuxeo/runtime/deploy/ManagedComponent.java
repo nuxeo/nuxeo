@@ -20,6 +20,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
@@ -44,11 +45,12 @@ public class ManagedComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
+    public void registerExtension(Extension extension) throws RuntimeModelException {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
             return;
         }
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         for (Object contrib : contribs) {
             if (contrib instanceof Contribution) {
                 Contribution c = (Contribution)contrib;
@@ -57,23 +59,31 @@ public class ManagedComponent extends DefaultComponent {
                 if (mgr != null) {
                     mgr.registerContribution(c);
                 } else {
-                    log.warn("Unable to register contribution: "
+                    errors.add(new RuntimeModelException("Unable to register contribution: "
                             + c.getContributionId() + " for extension point "
                             + c.getExtensionPoint()
-                            + ". No manager registered.");
+                            + ". No manager registered."));
                 }
             } else {
-                registerContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
+                try {
+                    registerContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
+                } catch (Exception e) {
+                    errors.add(new RuntimeModelException("Unable to register contribution: "
+                            + contrib + " for extension point "
+                            + extension.getExtensionPoint(), e));
+                }
             }
         }
+        errors.throwOnError();
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
+    public void unregisterExtension(Extension extension) throws RuntimeModelException {
         Object[] contribs = extension.getContributions();
         if (contribs == null) {
             return;
         }
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         for (Object contrib : contribs) {
             if (contrib instanceof Contribution) {
                 Contribution c = (Contribution)contrib;
@@ -82,13 +92,19 @@ public class ManagedComponent extends DefaultComponent {
                 if (mgr != null) {
                     mgr.unregisterContribution(c);
                 } else {
-                    log.warn("Unable to unregister contribution: "
+                    errors.add(new RuntimeModelException("Unable to unregister contribution: "
                             + c.getContributionId() + " for extension point "
                             + c.getExtensionPoint()
-                            + ". No manager registered.");
+                            + ". No manager registered."));
                 }
             } else {
-                unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
+                try {
+                    unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
+                } catch (Exception e) {
+                    errors.add(new RuntimeModelException("Unable to unregister contribution: "
+                            + contrib + " for extension point "
+                            + extension.getExtensionPoint(), e));
+                }
             }
         }
     }
