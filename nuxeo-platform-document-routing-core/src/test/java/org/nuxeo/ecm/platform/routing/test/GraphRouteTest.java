@@ -1515,8 +1515,8 @@ public class GraphRouteTest {
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2");
-        node2.setPropertyValue(GraphNode.PROP_SUB_ROUTE_MODEL_ID,
-                subRouteModelId);
+        node2.setPropertyValue(GraphNode.PROP_SUB_ROUTE_MODEL_EXPR,
+                String.format("'%s'", subRouteModelId));
         setTransitions(node2, transition("trans23", "node3"));
         node2 = session.saveDocument(node2);
 

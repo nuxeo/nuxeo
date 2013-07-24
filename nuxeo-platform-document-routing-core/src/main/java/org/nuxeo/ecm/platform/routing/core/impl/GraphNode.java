@@ -120,10 +120,10 @@ public interface GraphNode {
     String PROP_EXECUTE_ONLY_FIRST_TRANSITION = "rnode:executeOnlyFirstTransition";
 
     /**
-     * The sub-route model id to run, if present.
+     * The sub-route model id (expression) to run, if present.
      * @since 5.7.2
      */
-    String PROP_SUB_ROUTE_MODEL_ID = "rnode:subRouteModelId";
+    String PROP_SUB_ROUTE_MODEL_EXPR = "rnode:subRouteModelExpr";
 
     /**
      * The sub-route instance id being run while this node is suspended.
@@ -544,7 +544,7 @@ public interface GraphNode {
      *
      * @since 5.7.2
      */
-    boolean hasSubRoute();
+    boolean hasSubRoute() throws DocumentRouteException;
 
     /**
      * Gets the sub-route model id.
@@ -556,7 +556,7 @@ public interface GraphNode {
      *
      * @since 5.7.2
      */
-    String getSubRouteModelId();
+    String getSubRouteModelId() throws DocumentRouteException;
 
     /**
      * Starts the sub-route on this node.

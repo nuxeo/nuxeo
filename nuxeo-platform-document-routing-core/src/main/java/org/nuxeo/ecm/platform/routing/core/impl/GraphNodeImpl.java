@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mvel2.CompileException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -765,15 +766,43 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public boolean hasSubRoute() {
-        String subRouteModelId = (String) getProperty(PROP_SUB_ROUTE_MODEL_ID);
-        return !StringUtils.isBlank(subRouteModelId);
+    public boolean hasSubRoute() throws DocumentRouteException {
+        return getSubRouteModelId() != null;
     }
 
     @Override
-    public String getSubRouteModelId() {
-        String subRouteModelId = (String) getProperty(PROP_SUB_ROUTE_MODEL_ID);
-        return StringUtils.defaultIfBlank(subRouteModelId, null);
+    public String getSubRouteModelId() throws DocumentRouteException {
+        String subRouteModelExpr = (String) getProperty(PROP_SUB_ROUTE_MODEL_EXPR);
+        if (StringUtils.isBlank(subRouteModelExpr)) {
+            return null;
+        }
+        OperationContext context = getContext();
+        Expression expr = Scripting.newExpression(subRouteModelExpr);
+        Object res = null;
+        try {
+            res = expr.eval(context);
+            // stupid eval() method throws generic Exception
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restore interrupted state
+            throw new RuntimeException(e);
+        } catch (CompileException e) {
+            throw new DocumentRouteException("Error evaluating expression: "
+                    + subRouteModelExpr, e);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DocumentRouteException("Error evaluating expression: "
+                    + subRouteModelExpr, e);
+        }
+        if (!(res instanceof String)) {
+            throw new DocumentRouteException(
+                    "Sub-workflow expression of node '" + getId()
+                            + "' of graph '" + graph.getName()
+                            + "' does not evaluate to String but "
+                            + res.getClass().getName() + ": "
+                            + subRouteModelExpr);
+        }
+        return StringUtils.defaultIfBlank((String) res, null);
     }
 
     @Override
