@@ -185,6 +185,12 @@
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
+    <action id="damSingleAssetBackToDam" order="50" type="bare_link"
+      link="#{damSearchActions.getSearchPermanentLinkUrl()}"
+      icon="/icons/unlike.png" label="label.dam.backToDam">
+      <category>DAM_SINGLE_ASSET_ACTIONS</category>
+    </action>
+
     <action id="damEditCurrentDocument" link="#{damActions.updateCurrentDocument}"
       order="0" label="command.save">
       <category>DAM_EDIT_DOCUMENT_FORM</category>

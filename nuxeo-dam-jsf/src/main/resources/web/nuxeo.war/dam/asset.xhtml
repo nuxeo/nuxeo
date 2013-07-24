@@ -14,16 +14,7 @@
 
     <ui:include src="/incl/message_banner.xhtml"/>
 
-    <h:form>
-      <p class="action_bar directoryBack">
-        <h:outputLink value="#{damSearchActions.searchPermanentLinkUrl}">
-          <h:graphicImage value="/icons/arrow_left.gif" />
-          <h:outputText value="#{messages['label.dam.backToDam']}" />
-        </h:outputLink>
-      </p>
-    </h:form>
-
-    <nxl:layout value="#{currentDocument}" name="gridDamAssetLayout" mode="view" />
+    <nxl:layout value="#{currentDocument}" name="gridDamSingleAssetLayout" mode="view" />
 
   </ui:define>
 
