@@ -16,9 +16,6 @@
  */
 package org.nuxeo.runtime.metrics;
 
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -26,11 +23,8 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
 
 public class MetricsServiceImpl extends DefaultComponent implements
         MetricsService {
@@ -51,11 +45,6 @@ public class MetricsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public MetricRegistry getRegistry() {
-        return registry;
-    }
-
-    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
@@ -66,36 +55,6 @@ public class MetricsServiceImpl extends DefaultComponent implements
         } else {
             log.warn("Unknown EP " + extensionPoint);
         }
-    }
-
-    @Override
-    public Gauge<?> newGauge(String mbean, String attribute, Class<?> clazz,
-            String... names) {
-        try {
-            JmxAttributeGauge gauge = new JmxAttributeGauge(new ObjectName(
-                    mbean), attribute);
-            return newGauge(gauge, clazz, names);
-        } catch (MalformedObjectNameException | IllegalArgumentException e) {
-            throw new UnsupportedOperationException(
-                    "Cannot compute object name of " + mbean);
-        }
-    }
-
-    @Override
-    public <T> Gauge<T> newGauge(Gauge<T> gauge, Class<?> clazz, String... names) {
-        registry.register(MetricRegistry.name(clazz, names), gauge);
-        return gauge;
-    }
-
-    @Override
-    public Counter newCounter(Class<?> clazz, String... names) {
-        return registry.counter(MetricRegistry.name(clazz, names));
-    }
-
-
-    @Override
-    public Timer newTimer(Class<?> clazz, String... names) {
-        return registry.timer(MetricRegistry.name(clazz, names));
     }
 
     @Override

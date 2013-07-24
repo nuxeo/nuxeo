@@ -58,6 +58,8 @@ import org.nuxeo.runtime.api.InitialContextAccessor;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
@@ -95,20 +97,20 @@ public class NuxeoContainer {
 
     protected static Context rootContext;
 
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
-
     // @since 5.7
-    protected final Counter rollbackCount = metrics.newCounter(
-            NuxeoContainer.class, "rollback");
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter concurrentCount = metrics.newCounter(
-            NuxeoContainer.class, "tx-concurrent");
+    protected final Counter rollbackCount = registry.counter(MetricRegistry.name(
+            NuxeoContainer.class, "rollback"));
 
-    protected final Counter concurrentMaxCount = metrics.newCounter(
-            NuxeoContainer.class, "tx-concurrent-max");
+    protected final Counter concurrentCount = registry.counter(MetricRegistry.name(
+            NuxeoContainer.class, "tx-concurrent"));
 
-    protected  final Timer transactionTimer = metrics.newTimer(
-            NuxeoContainer.class, "transaction");
+    protected final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
+            NuxeoContainer.class, "tx-concurrent-max"));
+
+    protected final Timer transactionTimer  = registry.timer(MetricRegistry.name(
+            NuxeoContainer.class, "transaction"));
 
     protected final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<Transaction, Timer.Context>();
 

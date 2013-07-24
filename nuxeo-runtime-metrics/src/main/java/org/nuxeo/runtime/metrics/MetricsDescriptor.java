@@ -118,7 +118,9 @@ public class MetricsDescriptor implements Serializable {
             }
             InetSocketAddress address = new InetSocketAddress(host, port);
             Graphite graphite = new Graphite(address);
-            reporter = GraphiteReporter.forRegistry(registry).build(graphite);
+            reporter = GraphiteReporter.forRegistry(registry).convertRatesTo(
+                    TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).build(
+                    graphite);
             reporter.start(period, TimeUnit.SECONDS);
         }
 
