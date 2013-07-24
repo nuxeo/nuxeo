@@ -10,7 +10,7 @@
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-tomcat-adapter</artifactId>
   <name>Nuxeo Runtime Tomcat Adapter</name>
-  <description>Embeds Nuxeo as a Web Application in Tomcat v6</description>
+  <description>Embeds Nuxeo as a Web Application in Tomcat</description>
 
   <dependencies>
 
@@ -22,6 +22,7 @@
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-catalina</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
