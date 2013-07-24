@@ -4,16 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
@@ -21,8 +22,8 @@ import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
-import org.nuxeo.ecm.automation.client.model.StringBlob;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
+import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -63,8 +64,7 @@ public class RemoteAutomationClientTCK {
     }
 
     public void testBlobSuite() throws Exception {
-        //testCreateFile();
-        //testCreateBlobText();
+        testCreateBlobText();
         testAttachBlob();
         testGetBlob();
     }
@@ -178,24 +178,39 @@ public class RemoteAutomationClientTCK {
      * Managing Blobs
      */
 
-    public void testCreateFile() throws Exception {
-        Document file = (Document) session.newRequest("Document.Create").setInput(
-                "/").set("type", "File").set("name", "FileBlob").execute();
-        assertNotNull(file);
+    protected File newFile(String content) throws IOException {
+        File file = File.createTempFile("automation-test-", ".xml");
+        file.deleteOnExit();
+        FileUtils.writeFile(file, content);
+        return file;
     }
 
     // Create documents from Blob using muti-part encoding
     public void testCreateBlobText() throws Exception {
-        Document file = (Document) session.newRequest("Document.Fetch").set(
-                "value", "/FileBlob").execute();
-        assertNotNull(file);
-        assertEquals("/FileBlob", file.getPath());
-        StringBlob blob = new StringBlob("some fake bin content");
-        file = (Document) session.newRequest("FileManager.Import").setInput(
-                blob).setContextProperty("currentDocument", file.getPath()).execute();
-        Blob sameBlob = file.getProperties().getBlob("file:content");
-        assertNotNull(sameBlob);
-        assertEquals("some fake bin content", sameBlob.toString());
+        Document folder = (Document) session.newRequest("Document.Create").setInput(
+                "/").set("type", "Folder").set("name", "FolderBlob").execute();
+        assertNotNull(folder);
+        assertEquals("/FolderBlob", folder.getPath());
+        File file = newFile("<doc>mydoc</doc>");
+        FileBlob blob = new FileBlob(file);
+        blob.setMimeType("text/xml");
+        session.newRequest("FileManager.Import").setInput(blob).setContextProperty(
+                "currentDocument", folder.getPath()).execute();
+        Documents docs = (Documents) session.newRequest(Query.ID).setHeader(
+                Constants.HEADER_NX_SCHEMAS, "*").set("query",
+                "SELECT * from Document WHERE ecm:path STARTSWITH '/FolderBlob/'").execute();
+        assertEquals(1, docs.size());
+        Document document = docs.get(0);
+        // get the file content property
+        PropertyMap map = document.getProperties().getMap("file:content");
+        // get the data URL
+        String path = map.getString("data");
+        // download the file from its remote location
+        blob = (FileBlob) session.getFile(path);
+        assertNotNull(blob);
+        assertEquals("text/xml", blob.getMimeType());
+        assertEquals("<doc>mydoc</doc>",
+                IOUtils.toString(blob.getStream(), "utf-8"));
     }
 
     // Test attaching blob
@@ -298,8 +313,7 @@ public class RemoteAutomationClientTCK {
         // Test for pojo <-> adapter automation update
         note.setTitle("Update");
         note = (BusinessBean) session.newRequest(
-                "Business.BusinessUpdateOperation").setInput(note).set("id",
-                note.getId()).execute();
+                "Business.BusinessUpdateOperation").setInput(note).execute();
         assertEquals("Update", note.getTitle());
     }
 }
