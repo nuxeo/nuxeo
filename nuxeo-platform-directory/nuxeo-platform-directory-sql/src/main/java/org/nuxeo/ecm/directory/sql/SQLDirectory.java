@@ -58,6 +58,8 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 public class SQLDirectory extends AbstractDirectory {
 
@@ -146,13 +148,13 @@ public class SQLDirectory extends AbstractDirectory {
     private final Dialect dialect;
 
     // @since 5.7
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter sessionCount = metrics.newCounter(
-            SQLDirectory.class, "session");
+    protected final Counter sessionCount = registry.counter(MetricRegistry.name(
+            SQLDirectory.class, "session"));
 
-    protected final Counter sessionMaxCount = metrics.newCounter(
-            SQLDirectory.class, "session-max");
+    protected final Counter sessionMaxCount = registry.counter(MetricRegistry.name(
+            SQLDirectory.class, "session-max"));
 
     public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
         this.config = config;

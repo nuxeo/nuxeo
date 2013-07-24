@@ -92,6 +92,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
@@ -148,19 +150,19 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected String securityDomain = LOGIN_DOMAIN;
 
     // @since 5.7
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Timer requestTimer = metrics.newTimer(
-            NuxeoAuthenticationFilter.class, "request");
+    protected final Timer requestTimer = registry.timer(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "request"));
 
-    protected final Counter concurrentCount = metrics.newCounter(
-            NuxeoAuthenticationFilter.class, "request-concurrent");
+    protected final Counter concurrentCount = registry.counter(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "request-concurrent"));
 
-    protected final Counter concurrentMaxCount = metrics.newCounter(
-            NuxeoAuthenticationFilter.class, "request-concurrent-max");
+    protected final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "request-concurrent-max"));
 
-    protected final Counter loginCount = metrics.newCounter(
-            NuxeoAuthenticationFilter.class, "logged-user");
+    protected final Counter loginCount = registry.counter(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "logged-user"));
 
     @Override
     public void destroy() {
