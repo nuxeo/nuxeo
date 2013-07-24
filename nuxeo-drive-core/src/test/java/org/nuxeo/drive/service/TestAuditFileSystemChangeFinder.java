@@ -323,6 +323,23 @@ public class TestAuditFileSystemChangeFinder {
                     change.getFileSystemItemId());
             assertEquals("docToCopy", change.getFileSystemItemName());
 
+            // Remove file from a document, mapped to a fake deletion from the
+            // client's point of view
+            doc1.setPropertyValue("file:content", null);
+            session.saveDocument(doc1);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("deleted", change.getEventId());
+            assertEquals(doc1.getId(), change.getDocUuid());
+
             // Too many changes
             session.followTransition(doc1.getRef(), "delete");
             session.followTransition(doc2.getRef(), "delete");

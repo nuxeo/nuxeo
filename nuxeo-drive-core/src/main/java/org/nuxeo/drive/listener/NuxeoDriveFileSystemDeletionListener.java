@@ -30,6 +30,8 @@ import org.nuxeo.drive.service.NuxeoDriveEvents;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -75,6 +77,28 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             // not interested in lifecycle transitions that are not related to
             // document deletion
             return;
+        }
+        if (DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
+            // interested in update of a BlobHolder whose blob has been removed
+            boolean blobRemoved = false;
+            DocumentModel previousDoc = (DocumentModel) ctx.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
+            if (previousDoc != null) {
+                BlobHolder previousBh = previousDoc.getAdapter(BlobHolder.class);
+                if (previousBh != null) {
+                    BlobHolder bh = doc.getAdapter(BlobHolder.class);
+                    if (bh != null) {
+                        blobRemoved = previousBh.getBlob() != null
+                                && bh.getBlob() == null;
+                    }
+                }
+            }
+            if (blobRemoved) {
+                // Use previous doc holding a Blob for it to be adaptable as a
+                // FileSystemItem
+                doc = previousDoc;
+            } else {
+                return;
+            }
         }
         // Some events will only impact a specific user (e.g. root
         // unregistration)
