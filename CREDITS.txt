@@ -13,13 +13,13 @@ Chinese:
 English: Nuxeo Team
 French: Nuxeo Team
 Galician: Jose Luis de la Rosa
-German: Georges Racinet
+German: Georges Racinet, Edgar Geisler
 Greek: Nina Bagouli
 Italian: Mirto Silvio Busico, Samuele Innocenti, Stefane Fermigier
 Japanese: Damien Dupraz, Hiromi Kimura
 Polish: Adam Lozy
 Portuguese: Jose Luis de la Rosa
-Brazilian: Rogerio J. Gentil
+Brazilian: Rogerio J. Gentil, Klyff Harlley
 Russian: Jane Smorodnik
 Spanish: Daniel Tellez, Jose Luis de la Rosa
 Serbian - Cyrillic: Goran Ljubic
