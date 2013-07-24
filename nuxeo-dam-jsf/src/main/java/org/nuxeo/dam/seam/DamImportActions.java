@@ -42,7 +42,9 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.DamService;
+import org.nuxeo.dam.provider.ImportFolderPageProvider;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -55,9 +57,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -158,7 +163,21 @@ public class DamImportActions implements Serializable {
         return importOptions;
     }
 
-    public String getSelectedImportFolderId() {
+    public String getSelectedImportFolderId() throws ClientException {
+        if (selectedImportFolderId == null) {
+            // try to get the Asset Library
+            DamService damService = Framework.getLocalService(DamService.class);
+            AssetLibrary assetLibrary = damService.getAssetLibrary();
+            if (assetLibrary != null) {
+                PathRef ref = new PathRef(damService.getAssetLibrary().getPath());
+                if (documentManager.exists(ref)) {
+                    DocumentModel doc = documentManager.getDocument(ref);
+                    if (ImportFolderPageProvider.COMPOUND_FILTER.accept(doc)) {
+                        selectedImportFolderId = doc.getId();
+                    }
+                }
+            }
+        }
         return selectedImportFolderId;
     }
 
@@ -213,7 +232,7 @@ public class DamImportActions implements Serializable {
     public boolean hasUploadedFiles() {
         if (currentBatchId != null) {
             BatchManager batchManager = Framework.getLocalService(BatchManager.class);
-            return !batchManager.getBlobs(currentBatchId).isEmpty();
+            return batchManager.hasBatch(currentBatchId);
         }
         return false;
     }

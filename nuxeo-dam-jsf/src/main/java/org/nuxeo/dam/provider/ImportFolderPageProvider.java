@@ -39,15 +39,17 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
 
-    protected static final PermissionFilter WRITE_PERMISSION_FILTER = new PermissionFilter(
+    public static final Filter WRITE_PERMISSION_FILTER = new PermissionFilter(
             WRITE, true);
 
-    protected static final AssetSubTypeFilter ASSET_SUB_TYPE_FILTER = new AssetSubTypeFilter();
+    public static final Filter ASSET_SUB_TYPE_FILTER = new AssetSubTypeFilter();
+
+    public static final Filter COMPOUND_FILTER = new CompoundFilter(
+            WRITE_PERMISSION_FILTER, ASSET_SUB_TYPE_FILTER);
 
     @Override
     protected Filter getFilter() {
-        return new CompoundFilter(WRITE_PERMISSION_FILTER,
-                ASSET_SUB_TYPE_FILTER);
+        return COMPOUND_FILTER;
     }
 
     protected static class WritePermissionFilter implements Filter {
