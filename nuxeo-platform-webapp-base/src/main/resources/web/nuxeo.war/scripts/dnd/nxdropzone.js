@@ -505,11 +505,7 @@ var NXDropZone = {
       // real underlying object will be initialized when needed
       // to avoid any clash with other DnD features ...
 
-      console.log("initDone?" + NXDropZone.initDone)
       if (!NXDropZone.initDone && dropZone.data("loadalreadyuploadedfiles")) {
-        console.log(ids)
-        console.log("forcing INIT for: " + dropId)
-        console.log(new Error('Show me the stack!').stack);
         highlightDropZones(null, ids, options, dropId);
       }
     });
