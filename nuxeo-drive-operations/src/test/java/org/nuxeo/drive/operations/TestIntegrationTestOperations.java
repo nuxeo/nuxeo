@@ -202,8 +202,10 @@ public class TestIntegrationTestOperations {
         // Try to setup the integration tests environment as an unauthorized
         // user => should fail
         // ----------------------------------------------------------------------
+        String sarahCredentials = testUserCrendentialsArray[0];
+        String sarahPassword = sarahCredentials.substring(sarahCredentials.indexOf(':') + 1);
         Session unauthorizedSession = automationClient.getSession(
-                "nuxeoDriveTestUser_sarah", testUserCrendentialsArray[0]);
+                "nuxeoDriveTestUser_sarah", sarahPassword);
         try {
             unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set(
                     "userNames", "john,bob").execute();
