@@ -23,7 +23,7 @@
   </c:if>
   <c:if test="#{hasMainBlob}">
     <div class="dropzone" context="mainBlob" id="mainBlobDropZone">
-    <table class="dataTableNoBorder">
+    <table class="dataTableNoBorder smallTable">
       <tbody>
         <tr>
           <td class="labelColumn">
@@ -37,7 +37,7 @@
               <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
                 rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
               <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
-              <h:outputText value=" (#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)})"/>
+              <h:outputText styleClass="detail" value=" #{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)}"/>
             </div>
           </td>
           <td class="actionsColumn">
@@ -77,7 +77,7 @@
 
   <c:if test="#{hasOtherBlobs}">
   <div class="dropzone" context="otherBlobs" id="otherBlobsDropZone">
-    <table class="dataTableNoBorder">
+    <table class="dataTableNoBorder smallTable">
       <tbody>
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
           <tr>
@@ -90,7 +90,8 @@
                 value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
                 rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
               <h:outputText value="#{currentDocument.files.files[model.rowIndex].filename}"/>
-              <h:outputText value=" (#{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)})"/>
+              <h:outputText styleClass="detail"
+                value=" #{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)}"/>
             </td>
             <td class="actionsColumn">
               <nxu:methodResult name="hasPDFCapabilities"
@@ -109,7 +110,6 @@
               <nxh:outputLink
                 value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
                 <nxh:graphicImage value="/icons/download.png"
-                  style="vertical-align:middle"
                   title="#{messages['label.document.download']}"
                   alt="#{messages['label.document.download']}"/>
               </nxh:outputLink>
