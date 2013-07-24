@@ -10,7 +10,7 @@
     <widgetType name="dam_title">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Title</title>
+        <title>DAM Title</title>
         <description>
           <p>
             This widget type displays the title of a document.

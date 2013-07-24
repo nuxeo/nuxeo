@@ -137,14 +137,14 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
-    <widgetType name="dam_listing_ajax_selection_box_with_title">
+    <widgetType name="dam_listing_selection">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
-        <title>Ajax selection checkbox with title</title>
+        <title>DAM Listing Selection</title>
         <description>
           <p>
             This widget type displays a selection checkbox, that will perform
-            ajax selection of given item, and the document title
+            ajax selection of given item, and the asset title.
           </p>
           <p>
             It requires the following fields configuration:
@@ -416,7 +416,7 @@
       </fields>
     </widget>
 
-    <widget name="dam_listing_ajax_selection_box_with_title" type="dam_listing_ajax_selection_box_with_title">
+    <widget name="dam_listing_selection" type="dam_listing_selection">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -591,7 +591,7 @@
           <properties mode="any">
             <property name="isBoxTitle">true</property>
           </properties>
-          <widget>dam_listing_ajax_selection_box_with_title</widget>
+          <widget>dam_listing_selection</widget>
         </column>
         <column>
           <widget>dam_listing_metadata</widget>
