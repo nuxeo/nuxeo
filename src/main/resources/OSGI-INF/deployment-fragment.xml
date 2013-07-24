@@ -10,7 +10,7 @@
       <supported-locale>ar</supported-locale>
       <supported-locale>ca</supported-locale>
       <supported-locale>cs</supported-locale> 
-      <supported-locale>cn</supported-locale>
+      <supported-locale>zh_CN</supported-locale>
       <supported-locale>de</supported-locale>
       <supported-locale>el_GR</supported-locale>
       <supported-locale>es</supported-locale>
@@ -25,7 +25,7 @@
       <supported-locale>pt_BR</supported-locale>
       <supported-locale>ru</supported-locale>
       <supported-locale>sr</supported-locale>
-      <supported-locale>vn</supported-locale>
+      <supported-locale>vi</supported-locale>
     </locale-config>
   </extension>
 
