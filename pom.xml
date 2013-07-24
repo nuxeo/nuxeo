@@ -1445,12 +1445,12 @@
         <artifactId>jsp-api</artifactId>
         <version>2.2</version>
       </dependency>
-      <!-- redirection for backward compat -->
       <dependency>
         <groupId>javax.servlet</groupId>
-        <artifactId>java.servlet-api</artifactId>
+        <artifactId>javax.servlet-api</artifactId>
         <version>3.0.1</version>
       </dependency>
+      <!-- Deprecated GAV (redirected for backward compat since 5.7.2) -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
