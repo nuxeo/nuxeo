@@ -597,6 +597,13 @@
       </properties>
     </widget>
 
+    <widget name="damSingleAssetVideo" type="video_player">
+      <properties widgetMode="any">
+        <property name="width">723</property>
+        <property name="height">400</property>
+      </properties>
+    </widget>
+
     <widget name="damc_author" type="text">
       <labels>
         <label mode="any">label.dam.damc.author</label>
@@ -705,7 +712,7 @@
 
     <action id="damAssetViewTitle" type="widget" order="200">
       <category>DAM_PANEL_RIGHT</category>
-      <category>DAM_SINGLE_ASSET_PANEL_RIGHT</category>
+      <category>DAM_SINGLE_ASSET_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">damAssetViewTitle</property>
       </properties>
@@ -735,7 +742,6 @@
 
     <action id="damAssetViewVideo" type="widget" order="300">
       <category>DAM_PANEL_RIGHT</category>
-      <category>DAM_SINGLE_ASSET_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">damAssetViewVideo</property>
       </properties>
@@ -905,6 +911,13 @@
       <category>DAM_SINGLE_ASSET_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">damSingleAssetActions</property>
+      </properties>
+    </action>
+
+    <action id="damSingleAssetVideo" type="widget" order="300">
+      <category>DAM_SINGLE_ASSET_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">damSingleAssetVideo</property>
       </properties>
     </action>
   </extension>
