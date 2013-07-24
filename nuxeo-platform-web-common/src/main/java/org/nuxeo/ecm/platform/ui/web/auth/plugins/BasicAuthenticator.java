@@ -34,10 +34,15 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected static final String REALM_NAME_KEY = "RealmName";
+
     protected static final String FORCE_PROMPT_KEY = "ForcePromptURL";
+
     protected static final String AUTO_PROMPT_KEY = "AutoPrompt";
+
     protected static final String PROMPT_URL_KEY = "PromptUrl";
+
     protected static final String DEFAULT_REALMNAME = "Nuxeo 5";
+
     protected static final String BA_HEADER_NAME = "WWW-Authenticate";
 
     protected String realName;
@@ -105,7 +110,8 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         }
 
         if (parameters.containsKey(AUTO_PROMPT_KEY)) {
-            autoPrompt = parameters.get(AUTO_PROMPT_KEY).equalsIgnoreCase("true");
+            autoPrompt = parameters.get(AUTO_PROMPT_KEY).equalsIgnoreCase(
+                    "true");
         }
 
         forcePromptURLs = new ArrayList<String>();
