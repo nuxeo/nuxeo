@@ -48,10 +48,10 @@
                   #{messages['label.files.files']}
                 </td>
                 <td class="fieldColumn">
-                  <p>
+                  <p class="specification">
                     <nxu:set var="types" value="#{damImportActions.allowedImportFolderSubTypes}" cache="true">
                       <c:forEach var="type" items="#{types}">
-                        <span title="#{messages[type.description]}" class="label">#{messages[type.label]}</span>
+                        <span title="#{messages[type.description]}" class="label label-light">#{messages[type.label]}</span>
                       </c:forEach>
                     </nxu:set>
                     #{messages['label.dam.bulk.import.assets.select.location.types.imported']}
