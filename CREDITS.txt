@@ -12,6 +12,7 @@ Catalan: Jose Luis de la Rosa
 Chinese:
 English: Nuxeo Team
 French: Nuxeo Team
+French (Canada) : Patrick Turcotte
 Galician: Jose Luis de la Rosa
 German: Georges Racinet, Edgar Geisler
 Greek: Nina Bagouli
