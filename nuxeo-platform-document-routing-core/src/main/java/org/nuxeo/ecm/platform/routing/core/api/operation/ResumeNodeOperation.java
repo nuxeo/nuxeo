@@ -11,8 +11,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.api.operation;
 
-import java.util.HashMap;
-
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -60,7 +58,7 @@ public class ResumeNodeOperation {
                             + workflowInstanceId
                             + ". No current node in the context");
         }
-        documentRoutingService.resumeInstance(workflowInstanceId, nodeId,
-                new HashMap<String, Object>(), null, session);
+        documentRoutingService.resumeInstance(workflowInstanceId, nodeId, null,
+                null, session);
     }
 }

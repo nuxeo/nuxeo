@@ -166,6 +166,27 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         super.unregisterContribution(contribution, extensionPoint, contributor);
     }
 
+    protected static void fireEvent(String eventName,
+            Map<String, Serializable> eventProperties, DocumentRoute route,
+            CoreSession session) {
+        eventProperties.put(
+                DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
+                route);
+        eventProperties.put(
+                DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                DocumentRoutingConstants.ROUTING_CATEGORY);
+        DocumentEventContext envContext = new DocumentEventContext(
+                session, session.getPrincipal(),
+                route.getDocument());
+        envContext.setProperties(eventProperties);
+        EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+        try {
+            eventProducer.fireEvent(envContext.newEvent(eventName));
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
     @Override
     public String createNewInstance(final String routeModelId,
             final List<String> docIds, final Map<String, Serializable> map,
@@ -212,22 +233,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
                 protected void fireEvent(String eventName,
                         Map<String, Serializable> eventProperties) {
-                    eventProperties.put(
-                            DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
-                            route);
-                    eventProperties.put(
-                            DocumentEventContext.CATEGORY_PROPERTY_KEY,
-                            DocumentRoutingConstants.ROUTING_CATEGORY);
-                    DocumentEventContext envContext = new DocumentEventContext(
-                            session, session.getPrincipal(),
-                            route.getDocument());
-                    envContext.setProperties(eventProperties);
-                    EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
-                    try {
-                        eventProducer.fireEvent(envContext.newEvent(eventName));
-                    } catch (ClientException e) {
-                        throw new ClientRuntimeException(e);
-                    }
+                    DocumentRoutingServiceImpl.fireEvent(eventName,
+                            eventProperties, route, session);
                 }
 
             }.runUnrestricted();
@@ -280,6 +287,34 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return createNewInstance(model, Collections.singletonList(documentId),
                 session, true);
     }
+
+    @Override
+    public void startInstance(final String routeInstanceId,
+            final List<String> docIds, final Map<String, Serializable> map,
+            CoreSession session) {
+        try {
+            new UnrestrictedSessionRunner(session) {
+                @Override
+                public void run() throws ClientException {
+                    DocumentModel instance = session.getDocument(new IdRef(
+                            routeInstanceId));
+                    DocumentRoute route = instance.getAdapter(DocumentRoute.class);
+                    if (docIds != null) {
+                        route.setAttachedDocuments(docIds);
+                        route.save(session);
+                    }
+                    fireEvent(
+                            DocumentRoutingConstants.Events.beforeRouteStart.name(),
+                            new HashMap<String, Serializable>(), route, session);
+                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
+                    routingEngine.start(route, map, session);
+                }
+            }.runUnrestricted();
+        } catch (ClientException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Override
     public void resumeInstance(String routeId, String nodeId,

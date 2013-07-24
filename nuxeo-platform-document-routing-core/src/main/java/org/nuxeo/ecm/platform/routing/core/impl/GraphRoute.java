@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
@@ -34,6 +35,20 @@ public interface GraphRoute {
     String PROP_VARIABLES_FACET = "docri:variablesFacet";
 
     String PROP_AVAILABILITY_FILTER = "docri:availabilityFilter";
+
+    /**
+     * The id of the parent route instance from which this route was started.
+     *
+     * @since 5.7.2
+     */
+    String PROP_PARENT_ROUTE = "docri:parentRouteInstanceId";
+
+    /**
+     * The id of the node in the parent route from which this route was started.
+     *
+     * @since 5.7.2
+     */
+    String PROP_PARENT_NODE = "docri:parentRouteNodeId";
 
     /**
      * Gets the start node for this graph.
@@ -83,5 +98,23 @@ public interface GraphRoute {
      * Returns the availability filter name for this graph.
      */
     String getAvailabilityFilter();
+
+    /**
+     * Checks if this graph instance has been started from another graph.
+     *
+     * @return {@code true} if this is a sub-route instance
+     *
+     * @since 5.7.2
+     */
+    boolean hasParentRoute();
+
+    /**
+     * Resumes execution of the parent route from which this graph was started.
+     *
+     * @param session the session
+     *
+     * @since 5.7.2
+     */
+    void resumeParentRoute(CoreSession session);
 
 }

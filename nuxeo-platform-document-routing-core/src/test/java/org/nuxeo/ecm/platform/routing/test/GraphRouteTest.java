@@ -56,8 +56,11 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
@@ -94,6 +97,7 @@ import com.google.inject.Inject;
 @LocalDeploy({
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml" })
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class GraphRouteTest {
 
     protected static final String TYPE_ROUTE_NODE = "RouteNode";
@@ -230,17 +234,22 @@ public class GraphRouteTest {
     protected DocumentRoute instantiateAndRun(CoreSession session,
             List<String> docIds, Map<String, Serializable> map)
             throws ClientException {
-        // route model
-        DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
-        // draft -> validated
-        if (!route.isValidated()) {
-            route = routing.validateRouteModel(route, session);
-        }
+        DocumentRoute route = validate(routeDoc, session);
         // create instance and start
         String id = routing.createNewInstance(route.getDocument().getName(),
                 docIds, map, session, true);
         return session.getDocument(new IdRef(id)).getAdapter(
                 DocumentRoute.class);
+    }
+
+    protected DocumentRoute validate(DocumentModel routeDoc, CoreSession session)
+            throws DocumentRouteNotLockedException, ClientException {
+        DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
+        // draft -> validated
+        if (!route.isValidated()) {
+            route = routing.validateRouteModel(route, session);
+        }
+        return route;
     }
 
     @Test
@@ -436,8 +445,7 @@ public class GraphRouteTest {
         assertFalse(route.isDone());
 
         // now resume, as if the task was actually executed
-        Map<String, Object> data = new HashMap<String, Object>();
-        routing.resumeInstance(route.getDocument().getId(), "node2", data,
+        routing.resumeInstance(route.getDocument().getId(), "node2", null,
                 null, session);
 
         route.getDocument().refresh();
@@ -1422,8 +1430,8 @@ public class GraphRouteTest {
 
         DocumentRoute route = instantiateAndRun();
         // force resume on normal node, shouldn't change anything
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
+        Map<String, Object> data = Collections.<String, Object> singletonMap(
+                WORKFLOW_FORCE_RESUME, Boolean.TRUE);
         routing.resumeInstance(route.getDocument().getId(), "node2", data,
                 null, session);
         session.save();
@@ -1439,8 +1447,8 @@ public class GraphRouteTest {
         GraphNode nodeMerge = graph.getNode("node5");
         assertTrue(State.WAITING.equals(nodeMerge.getState()));
 
-        data = new HashMap<String, Object>();
-        data.put(WORKFLOW_FORCE_RESUME, Boolean.TRUE);
+        data = Collections.<String, Object> singletonMap(WORKFLOW_FORCE_RESUME,
+                Boolean.TRUE);
         routing.resumeInstance(route.getDocument().getId(), "node5", data,
                 null, session);
         session.save();
@@ -1496,6 +1504,113 @@ public class GraphRouteTest {
         // check that trans12 was executed and not trans13
         DocumentModel docR = session.getDocument(doc.getRef());
         assertEquals("title 1", docR.getTitle());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void createWorkflowWithSubRoute(String subRouteModelId) throws ClientException,
+            PropertyException {
+        DocumentModel node1 = createNode(routeDoc, "node1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans12", "node2"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2");
+        node2.setPropertyValue(GraphNode.PROP_SUB_ROUTE_MODEL_ID,
+                subRouteModelId);
+        setTransitions(node2, transition("trans23", "node3"));
+        node2 = session.saveDocument(node2);
+
+        DocumentModel node3 = createNode(routeDoc, "node3");
+        node3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node3 = session.saveDocument(node3);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSubRouteNotSuspending() throws Exception {
+
+        // create the sub-route
+
+        DocumentModel subRouteDoc = createRoute("subroute");
+
+        DocumentModel subNode1 = createNode(subRouteDoc, "subnode1");
+        subNode1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(subNode1,
+                transition("trans12", "subnode2", "true", "testchain_title1"));
+        subNode1 = session.saveDocument(subNode1);
+
+        DocumentModel subNode2 = createNode(subRouteDoc, "subnode2");
+        subNode2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        subNode2 = session.saveDocument(subNode2);
+
+        validate(subRouteDoc, session);
+
+        // create the base workflow
+
+        createWorkflowWithSubRoute(subRouteDoc.getName());
+
+        // start the main workflow
+        DocumentRoute route = instantiateAndRun();
+
+        // check that it's finished immediately
+        assertTrue(route.isDone());
+        doc.refresh();
+        assertEquals("title 1", doc.getTitle());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSubRouteSuspending() throws Exception {
+
+        // create the sub-route
+
+        DocumentModel subRouteDoc = createRoute("subroute");
+
+        DocumentModel subNode1 = createNode(subRouteDoc, "subnode1");
+        subNode1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(subNode1, transition("trans12", "subnode2"));
+        subNode1 = session.saveDocument(subNode1);
+
+        DocumentModel subNode2 = createNode(subRouteDoc, "subnode2");
+        subNode2.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        setTransitions(subNode2, transition("trans23", "subnode3"));
+        subNode2 = session.saveDocument(subNode2);
+
+        DocumentModel subNode3 = createNode(subRouteDoc, "subnode3");
+        subNode3.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        subNode3 = session.saveDocument(subNode3);
+
+        validate(subRouteDoc, session);
+
+        // create the base workflow
+
+        createWorkflowWithSubRoute(subRouteDoc.getName());
+
+        // start the main workflow
+        DocumentRoute route = instantiateAndRun();
+
+        // check that it's suspended on node 2
+        assertFalse(route.isDone());
+        DocumentModel n2 = session.getChild(route.getDocument().getRef(), "node2");
+        assertNotNull(n2);
+        assertEquals(State.SUSPENDED.getLifeCycleState(),
+                n2.getCurrentLifeCycleState());
+
+        // find the sub-route instance
+        String subid = (String) n2.getPropertyValue(GraphNode.PROP_SUB_ROUTE_INSTANCE_ID);
+        assertNotNull(subid);
+        DocumentModel subrdoc = session.getDocument(new IdRef(subid));
+        DocumentRoute subr = subrdoc.getAdapter(DocumentRoute.class);
+        assertFalse(subr.isDone());
+
+        // resume the sub-route node
+        routing.resumeInstance(subid, "subnode2", null, null, session);
+        // check sub-route done
+        subrdoc.refresh();
+        assertTrue(subr.isDone());
+        // check main workflow also resumed and done
+        route.getDocument().refresh();
+        assertTrue(route.isDone());
     }
 
 }

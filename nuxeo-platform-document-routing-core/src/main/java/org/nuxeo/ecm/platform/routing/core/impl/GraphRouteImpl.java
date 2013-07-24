@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -31,9 +32,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.6
@@ -164,4 +168,26 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         }
     }
 
+    @Override
+    public boolean hasParentRoute() {
+        try {
+            String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
+            return !StringUtils.isEmpty(parentRouteInstanceId);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void resumeParentRoute(CoreSession session) {
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        try {
+            String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
+            String parentRouteNodeId = (String) document.getPropertyValue(PROP_PARENT_NODE);
+            routing.resumeInstance(parentRouteInstanceId, parentRouteNodeId,
+                    null, null, session);
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
 }

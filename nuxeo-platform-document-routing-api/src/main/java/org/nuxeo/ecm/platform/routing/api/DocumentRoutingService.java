@@ -42,6 +42,9 @@ public interface DocumentRoutingService {
 
     /**
      * Creates a new route instance and optionally starts it.
+     * <p>
+     * If {@code startInstance = false}, then the route can be started later by
+     * calling {@link #startInstance}.
      *
      * @param routeModelId the route model id
      * @param docIds the list of document bound to the instance
@@ -56,6 +59,9 @@ public interface DocumentRoutingService {
 
     /**
      * Creates a new route instance and optionally starts it.
+     * <p>
+     * If {@code startInstance = false}, then the route can be started later by
+     * calling {@link #startInstance}.
      *
      * @param routeModelId the route model id
      * @param docIds The list of document bound to the instance.
@@ -99,6 +105,20 @@ public interface DocumentRoutingService {
     @Deprecated
     DocumentRoute createNewInstance(DocumentRoute model, String documentId,
             CoreSession session);
+
+    /**
+     * Starts an instance that was created with {@link #createNewInstance} but
+     * with {@code startInstance = false}.
+     *
+     * @param routeInstanceId the route instance id
+     * @param docIds the list of document bound to the instance
+     * @param map the values to pass as initial workflow variables
+     * @param session the session
+     *
+     * @since 5.7.2
+     */
+    void startInstance(String routeInstanceId, List<String> docIds,
+            Map<String, Serializable> map, CoreSession session);
 
     /**
      * Resumes a route instance on a give node. Any remaining tasks on this node
@@ -504,4 +524,5 @@ public interface DocumentRoutingService {
      */
     void finishTask(CoreSession session, DocumentRoute route, Task task,
             boolean delete) throws DocumentRouteException;
+
 }

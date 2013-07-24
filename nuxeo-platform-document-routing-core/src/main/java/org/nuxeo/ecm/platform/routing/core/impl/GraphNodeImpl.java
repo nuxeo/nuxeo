@@ -42,9 +42,12 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -281,6 +284,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     @SuppressWarnings("unchecked")
     @Override
     public void setAllVariables(Map<String, Object> map) {
+        if (map == null) {
+            return;
+        }
+
         // get variables from node and graph
         Map<String, Serializable> graphVariables = graph.getVariables();
         Map<String, Serializable> nodeVariables = getVariables();
@@ -668,8 +675,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public void setButton(String status) {
         try {
             document.setPropertyValue(PROP_NODE_BUTTON, status);
-            CoreSession session = document.getCoreSession();
-            session.saveDocument(document);
+            saveDocument();
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
         }
@@ -757,4 +763,50 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public boolean executeOnlyFirstTransition() {
         return getBoolean(PROP_EXECUTE_ONLY_FIRST_TRANSITION);
     }
+
+    @Override
+    public boolean hasSubRoute() {
+        String subRouteModelId = (String) getProperty(PROP_SUB_ROUTE_MODEL_ID);
+        return !StringUtils.isBlank(subRouteModelId);
+    }
+
+    @Override
+    public String getSubRouteModelId() {
+        String subRouteModelId = (String) getProperty(PROP_SUB_ROUTE_MODEL_ID);
+        return StringUtils.defaultIfBlank(subRouteModelId, null);
+    }
+
+    @Override
+    public DocumentRoute startSubRoute() throws DocumentRouteException {
+        String subRouteModelId = getSubRouteModelId();
+        // create the instance without starting it
+        DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
+        List<String> docs = graph.getAttachedDocuments();
+        String subRouteInstanceId = service.createNewInstance(subRouteModelId,
+                docs, getSession(), false);
+        try {
+            // set info about parent in subroute
+            DocumentModel subRouteInstance = getSession().getDocument(
+                    new IdRef(subRouteInstanceId));
+            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_ROUTE,
+                    getDocument().getParentRef().toString());
+            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_NODE,
+                    getDocument().getName());
+            subRouteInstance = getSession().saveDocument(subRouteInstance);
+            // set info about subroute in parent
+            document.setPropertyValue(PROP_SUB_ROUTE_INSTANCE_ID,
+                    subRouteInstanceId);
+            saveDocument();
+            // start the sub-route
+            service.startInstance(subRouteInstanceId, docs, null, getSession());
+            // return the sub-route
+            // subRouteInstance.refresh();
+            DocumentRoute subRoute = subRouteInstance.getAdapter(
+                    DocumentRoute.class);
+            return subRoute;
+        } catch (ClientException e) {
+            throw new DocumentRouteException(e);
+        }
+    }
+
 }

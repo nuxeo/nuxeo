@@ -72,11 +72,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (map != null) {
                 graph.setVariables(map);
             }
-            boolean done = runGraph(session, graph, graph.getStartNode());
-            if (done) {
-                element.setDone(session);
-            }
-            session.save();
+            runGraph(session, element, graph.getStartNode());
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -140,11 +136,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 finishTask(session, graph, node, task, false);
                 // don't delete (yet)
             }
-            boolean done = runGraph(session, graph, node);
-            if (done) {
-                element.setDone(session);
-            }
-            session.save();
+            runGraph(session, element, node);
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -188,11 +180,12 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
      *
      * @param graph the graph
      * @param initialNode the initial node to run
-     * @return {@code true} if the graph execution is done, {@code false} if
-     *         there are still suspended nodes
      */
-    protected boolean runGraph(CoreSession session, GraphRoute graph,
-            GraphNode initialNode) throws DocumentRouteException {
+    protected void runGraph(CoreSession session, DocumentRouteElement element,
+            GraphNode initialNode) throws DocumentRouteException,
+            ClientException {
+        GraphRoute graph = (GraphRoute) element;
+        List<GraphNode> pendingSubRoutes = new LinkedList<GraphNode>();
         LinkedList<GraphNode> pendingNodes = new LinkedList<GraphNode>();
         pendingNodes.add(initialNode);
         boolean done = false;
@@ -227,10 +220,18 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 if (node.hasTask()) {
                     createTask(session, graph, node); // may create several
                     node.setState(State.SUSPENDED);
-                    // next node
-                } else {
+                }
+                if (node.hasSubRoute()) {
+                    if (!pendingSubRoutes.contains(node)) {
+                        pendingSubRoutes.add(node);
+                    }
+                    node.setState(State.SUSPENDED);
+                }
+                if (node.getState() != State.SUSPENDED) {
                     jump = State.RUNNING_OUTPUT;
                 }
+                // else this node is suspended,
+                // remove it from queue of nodes to process
                 break;
             case SUSPENDED:
                 if (node != initialNode) {
@@ -283,7 +284,23 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 pendingNodes.addFirst(node);
             }
         }
-        return done;
+        if (done) {
+            element.setDone(session);
+            /*
+             * Resume the parent route if this is a sub-route.
+             */
+            if (graph.hasParentRoute()) {
+                graph.resumeParentRoute(session);
+            }
+        }
+        /*
+         * Now run the sub-routes. If they are done, they'll call back into the
+         * routing service to resume the parent node (above code).
+         */
+        for (GraphNode node : pendingSubRoutes) {
+            DocumentRoute subRoute = node.startSubRoute();
+        }
+        session.save();
     }
 
     protected void recursiveCancelInput(GraphRoute graph,

@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 
 /**
@@ -115,8 +116,21 @@ public interface GraphNode {
 
     String PROP_TASK_DUE_DATE_EXPR = "rnode:taskDueDateExpr";
 
-    // @since 5.7.2
-    String PROP_EXECUTE_ONLY_FIRST_TRANSITION= "rnode:executeOnlyFirstTransition";
+    /** @since 5.7.2 */
+    String PROP_EXECUTE_ONLY_FIRST_TRANSITION = "rnode:executeOnlyFirstTransition";
+
+    /**
+     * The sub-route model id to run, if present.
+     * @since 5.7.2
+     */
+    String PROP_SUB_ROUTE_MODEL_ID = "rnode:subRouteModelId";
+
+    /**
+     * The sub-route instance id being run while this node is suspended.
+     *
+     * @since 5.7.2
+     */
+    String PROP_SUB_ROUTE_INSTANCE_ID = "rnode:subRouteInstanceId";
 
     /**
      * The internal state of a node.
@@ -522,4 +536,35 @@ public interface GraphNode {
      * @since 5.7.2
      */
     boolean executeOnlyFirstTransition();
+
+    /**
+     * Checks if this node has a sub-route model defined.
+     *
+     * @return {@code true} if there is a sub-route
+     *
+     * @since 5.7.2
+     */
+    boolean hasSubRoute();
+
+    /**
+     * Gets the sub-route model id.
+     * <p>
+     * If this is present, then this node will be suspended while the sub-route
+     * is run. When the sub-route ends, this node will resume.
+     *
+     * @return the sub-route id, or {@code null} if none is defined
+     *
+     * @since 5.7.2
+     */
+    String getSubRouteModelId();
+
+    /**
+     * Starts the sub-route on this node.
+     *
+     * @return the sub-route
+     *
+     * @since 5.7.2
+     */
+    DocumentRoute startSubRoute() throws DocumentRouteException;
+
 }

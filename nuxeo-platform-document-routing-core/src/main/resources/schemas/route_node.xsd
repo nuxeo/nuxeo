@@ -14,6 +14,7 @@
   <xs:element name="stop" type="xs:boolean" />
   <xs:element name="merge" type="xs:string" /> <!-- (null)/one/all -->
   <xs:element name="executeOnlyFirstTransition" type="xs:boolean" />
+  <xs:element name="subRouteModelId" type="xs:string" />
 
   <xs:element name="hasTask" type="xs:boolean" />
   <xs:element name="taskDirective" type="xs:string" />
@@ -33,6 +34,7 @@
   <xs:element name="startDate" type="xs:date" /> <!-- audit -->
   <xs:element name="endDate" type="xs:date" /> <!-- audit -->
   <xs:element name="canceled" type="xs:int" /> <!-- audit -->
+  <xs:element name="subRouteInstanceId" type="xs:string" />
   <xs:element name="button" type="xs:string" />
 
  <!-- used to display the graphView -->
