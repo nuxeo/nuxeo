@@ -119,8 +119,8 @@ public class MetricsDescriptor implements Serializable {
             InetSocketAddress address = new InetSocketAddress(host, port);
             Graphite graphite = new Graphite(address);
             reporter = GraphiteReporter.forRegistry(registry).convertRatesTo(
-                    TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).build(
-                    graphite);
+                    TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).prefixedWith(
+                    prefix()).build(graphite);
             reporter.start(period, TimeUnit.SECONDS);
         }
 
@@ -302,7 +302,7 @@ public class MetricsDescriptor implements Serializable {
                     "tomcat-errorCount");
             registerGauge(requestProcessor, "requestCount", registry,
                     "tomcat-requestCount");
-            registerGauge(requestProcessor, "requestCount", registry,
+            registerGauge(requestProcessor, "requestProcessingTime", registry,
                     "tomcat-processingTime");
             registerGauge(manager, "activeSessions", registry,
                     "tomcat-activeSessions");
