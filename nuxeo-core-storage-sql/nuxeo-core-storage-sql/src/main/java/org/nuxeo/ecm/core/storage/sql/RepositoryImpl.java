@@ -96,33 +96,6 @@ public class RepositoryImpl implements Repository {
     protected final Counter sessionCount = registry.counter(MetricRegistry.name(
             getClass(), "session"));
 
-    protected final Gauge<Long> cacheSize = registry.register(
-            MetricRegistry.name(getClass(), "cache-size"), new Gauge<Long>() {
-                @Override
-                public Long getValue() {
-                    return getCacheSize();
-                }
-
-            });
-
-    protected final Gauge<Long> cachePristineSize = registry.register(
-            MetricRegistry.name(PersistenceContext.class, "cache-size"),
-            new Gauge<Long>() {
-                @Override
-                public Long getValue() {
-                    return getCachePristineSize();
-                }
-            });
-
-    protected final Gauge<Long> cacheSelectionSize = registry.register(
-            MetricRegistry.name(SelectionContext.class, "cache-size"),
-            new Gauge<Long>() {
-                @Override
-                public Long getValue() {
-                    return getCacheSelectionSize();
-                }
-            });
-
     private LockManager lockManager;
 
     /** Propagator of invalidations to all local mappers' caches. */
@@ -197,6 +170,36 @@ public class RepositoryImpl implements Repository {
         binaryManager = createBinaryManager();
         backend = createBackend();
         createServer();
+        // make sure gauge are not already defined
+        String gaugeName = MetricRegistry.name(RepositoryImpl.class, getName(),
+                "cache-size");
+        registry.remove(gaugeName);
+        registry.register(gaugeName, new Gauge<Long>() {
+            @Override
+            public Long getValue() {
+                return getCacheSize();
+            }
+
+        });
+        gaugeName = MetricRegistry.name(PersistenceContext.class, getName(),
+                "cache-size");
+        registry.remove(gaugeName);
+        registry.register(gaugeName, new Gauge<Long>() {
+            @Override
+            public Long getValue() {
+                return getCachePristineSize();
+            }
+        });
+        gaugeName = MetricRegistry.name(SelectionContext.class, getName(),
+                "cache-size");
+        registry.remove(gaugeName);
+        registry.register(gaugeName, new Gauge<Long>() {
+            @Override
+            public Long getValue() {
+                return getCacheSelectionSize();
+            }
+        });
+
     }
 
     public HttpClient getHttpClient() {
@@ -532,6 +535,12 @@ public class RepositoryImpl implements Repository {
 
         backend.shutdown();
         connectionManager.shutdown();
+        registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(),
+                "cache-size"));
+        registry.remove(MetricRegistry.name(PersistenceContext.class,
+                getName(), "cache-size"));
+        registry.remove(MetricRegistry.name(SelectionContext.class, getName(),
+                "cache-size"));
     }
 
     protected synchronized void closeAllSessions() throws StorageException {
