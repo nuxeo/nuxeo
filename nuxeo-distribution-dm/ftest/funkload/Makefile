@@ -55,6 +55,7 @@ test-automation:
 drive: start test-drive stop
 
 test-drive:
+	fl-run-test -v --simple-fetch test_drive.py -e testInit $(FLOPS)
 	fl-run-test -v --simple-fetch test_drive.py -e testDrive $(FLOPS)
 
 # test nuxeo ep

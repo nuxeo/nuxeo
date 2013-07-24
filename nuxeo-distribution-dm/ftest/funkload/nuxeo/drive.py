@@ -36,6 +36,14 @@ def extractDownloadUrl(text):
     return extractToken(text, 'downloadURL":"', '"')
 
 
+def extractSyncIds(text):
+    return  extractToken(text, 'activeSynchronizationRootDefinitions":"', '"')
+
+
+def extractSyncDate(text):
+    return extractToken(text, '"syncDate":', ',')
+
+
 class DriveClient:
     """Class to simulate Nuxeo Drive client."""
 
@@ -52,6 +60,7 @@ class DriveClient:
         # populated when starting drive
         self.root_ids = []
         self.sync_ids = ''
+        self.last_sync = None
 
     def bind_server(self, user, password):
         fl = self.fl
@@ -85,6 +94,7 @@ class DriveClient:
                 Data('application/json+nxrequest', '''{"params": {}}'''),
                 description="Get top level folder")
         fl.assert_('canCreateChild' in fl.getBody())
+        return self
 
     def navigate(self, ids):
         if len(ids) == 0:
@@ -122,8 +132,7 @@ class DriveClient:
                 Data('application/json+nxrequest', '''{"params": {}}'''),
                 description="GetChangeSummary")
         fl.assert_('activeSynchronizationRootDefinitions' in fl.getBody())
-        self.sync_ids = extractToken(
-            fl.getBody(), 'activeSynchronizationRootDefinitions":"', '"')
+        self.sync_ids = extractSyncIds(fl.getBody())
         fl.post(server_url + "/site/automation/NuxeoDrive.GetFileSystemItem",
                 Data('application/json+nxrequest',
                      '''{"params": {"id": "org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory#"}}'''),
@@ -139,13 +148,22 @@ class DriveClient:
         self.root_ids = ids
         fl.assert_(len(ids) > 0, "No root to sync on server")
         self.navigate(ids)
+        return self
 
-    def get_update(self):
-        self.fl.post(self.fl.server_url +
-                     "/site/automation/NuxeoDrive.GetChangeSummary",
-                     Data('application/json+nxrequest',
-                          '{"params": {"lastSyncDate": ' +
-                          str(int(time.time() * 1000)) +
-                          ', "lastSyncActiveRootDefinitions": "' +
-                          self.sync_ids + '"}}'),
-                     description="GetChangeSummary")
+    def get_update(self, comment="", since=None):
+        fl = self.fl
+        if since is None:
+            since = self.last_sync
+            if since is None:
+                since = str(int((time.time() - 10) * 1000))
+        fl.post(self.fl.server_url +
+                "/site/automation/NuxeoDrive.GetChangeSummary",
+                Data('application/json+nxrequest',
+                     '{"params": {"lastSyncDate": ' +
+                     since +
+                     ', "lastSyncActiveRootDefinitions": "' +
+                     self.sync_ids + '"}}'),
+                description="GetChangeSummary" + comment)
+        fl.assert_('hasTooManyChanges' in fl.getBody())
+        self.last_sync = extractSyncDate(fl.getBody())
+        return self

@@ -113,7 +113,7 @@ class NuxeoTestCase(FunkLoadTestCase):
         lf = open(logfile, "w")
         lf.write(output)
         lf.close()
-   
+
     def getLastJsfState(self):
         return extractJsfState(self.getBody())
 

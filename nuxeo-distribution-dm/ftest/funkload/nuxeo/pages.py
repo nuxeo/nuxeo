@@ -91,7 +91,7 @@ class BasePage:
         fl.get(fl.server_url + '/logout',
                description="Log out")
         fl.assert_('login' in fl.getLastUrl(),
-                     "Not redirected to login page.")
+                   "Not redirected to login page.")
         fl.current_login = None
         return LoginPage(self.fl)
 
@@ -109,7 +109,7 @@ class BasePage:
         fl.assert_('loginFailed=true' not in fl.getLastUrl(),
                    'Login failed for %s:%s' % (user, password))
         fl.assert_('"userMenuActions"' in fl.getBody(),
-                    "No user menu found in the welcome page")
+                   "No user menu found in the welcome page")
         fl.assert_(user in fl.getBody(),
                    "username not found on the page" + user)
         fl.current_login = user
@@ -140,8 +140,8 @@ class BasePage:
         if not outcome:
             outcome = "view_documents"
         resp = fl.get(fl.server_url + "/nxpath/default/default-domain/" +
-               quote(path) + "@" + outcome + '?conversationId=0NXMAIN1' + getTabParams(tab, subtab),
-               description=description, ok_codes=ok_codes)
+                      quote(path) + "@" + outcome + '?conversationId=0NXMAIN1' + getTabParams(tab, subtab),
+                      description=description, ok_codes=ok_codes)
         if resp.code == 404:
             fl.logi('Document ' + path + ' does not exists.')
             return None
@@ -172,7 +172,8 @@ class BasePage:
         if "@view_admin" in fl.getLastUrl():
             # already in admin center
             return self
-        self.viewDocumentUid(self.getDocUid(), outcome="view_admin", description="Admin center page")
+        self.viewDocumentUid(self.getDocUid(), outcome="view_admin",
+                             description="Admin center page")
         fl.assert_("adminSelectorForm" in fl.getBody(),
                    "Wrong admin center page")
         return self
@@ -182,7 +183,8 @@ class BasePage:
         if not "@view_admin" in fl.getLastUrl():
             # not in admin center
             return self
-        self.viewDocumentUid(self.getDocUid(), outcome="view_document", description="Document Management")
+        self.viewDocumentUid(self.getDocUid(), outcome="view_document",
+                             description="Document Management")
         fl.assert_('id="document_content"' not in fl.getBody(),
                    "Fail to exit admin center")
         return self
@@ -194,7 +196,8 @@ class BasePage:
         fl.post(fl.server_url + "/view_admin.faces", params=[
             ['adminSelectorForm', 'adminSelectorForm'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['adminSelectorForm:adminSelectorList:6:item', 'adminSelectorForm:adminSelectorList:6:item']],
+            ['adminSelectorForm:adminSelectorList:6:item',
+             'adminSelectorForm:adminSelectorList:6:item']],
             description="Users and groups page")
         fl.assert_('usersListingView' in fl.getBody(),
                    "Wrong user page")
@@ -326,11 +329,11 @@ class BasePage:
             i += 1
             # print "iframe: " + iframe
             fl.get(server_url + iframe,
-                     description="dashboard iframe %d" % i)
+                   description="dashboard iframe %d" % i)
             fl.assert_(fl.getBody().startswith('<html>'))
 
         fl.get(server_url + "/opensocial/gadgets/makeRequest?refresh=3600&url=" + quote_plus(server_url) + "%2FrestAPI%2Fdashboard%2FUSER_SITES%3Fformat%3DJSON%26page%3D0%26domain%3Ddefault-domain%26lang%3Den%26ts%3D12766046361930.9475744903817575&httpMethod=GET&headers=Cache-control%3Dno-cache%252C%2520must-revalidate%26X-NUXEO-INTEGRATED-AUTH%3D" + jid + "&postData=&authz=&st=&contentType=JSON&numEntries=3&getSummaries=false&signOwner=true&signViewer=true&gadget=" + quote_plus(server_url) + "%2Fsite%2Fgadgets%2Fuserdocuments%2Fusersites.xml&container=default&bypassSpecCache=1&nocache=0",
-            description="dashboard req1: user sites")
+               description="dashboard req1: user sites")
         fl.assert_('USER_SITES' in fl.getBody())
 
         fl.post(server_url + "/opensocial/gadgets/makeRequest", params=[
@@ -353,7 +356,7 @@ class BasePage:
         fl.assert_('Tasks for' in fl.getBody())
 
         fl.get(server_url + "/opensocial/gadgets/makeRequest?refresh=3600&url=" + quote_plus(server_url) + "%2FrestAPI%2Fdashboard%2FUSER_WORKSPACES%3Fformat%3DJSON%26page%3D0%26domain%3Ddefault-domain%26lang%3Den%26ts%3D12766046364186.08350334148753&httpMethod=GET&headers=Cache-control%3Dno-cache%252C%2520must-revalidate%26X-NUXEO-INTEGRATED-AUTH%3DEB4D8F264629C549917996193637A4F4&postData=&authz=&st=&contentType=JSON&numEntries=3&getSummaries=false&signOwner=true&signViewer=true&gadget=" + quote_plus(server_url) + "%2Fsite%2Fgadgets%2Fuserworkspaces%2Fuserworkspaces.xml&container=default&bypassSpecCache=1&nocache=0",
-            description="dashboard req3: user workspaces")
+               description="dashboard req3: user workspaces")
         fl.assert_('USER_WORKSPACES' in fl.getBody())
 
         fl.post(server_url + "/opensocial/gadgets/makeRequest", params=[
@@ -376,7 +379,7 @@ class BasePage:
         fl.assert_('Tasks for' in fl.getBody())
 
         fl.get(server_url + "/opensocial/gadgets/makeRequest?refresh=3600&url=" + quote_plus(server_url) + "%2FrestAPI%2Fdashboard%2FRELEVANT_DOCUMENTS%3Fformat%3DJSON%26page%3D0%26domain%3Ddefault-domain%26lang%3Den%26ts%3D12766046370131.186666326174645&httpMethod=GET&headers=Cache-control%3Dno-cache%252C%2520must-revalidate%26X-NUXEO-INTEGRATED-AUTH%3DEB4D8F264629C549917996193637A4F4&postData=&authz=&st=&contentType=JSON&numEntries=3&getSummaries=false&signOwner=true&signViewer=true&gadget=" + quote_plus(server_url) + "%2Fsite%2Fgadgets%2Fuserdocuments%2Fuserdocuments.xml&container=default&bypassSpecCache=1&nocache=0",
-            description="dashboard req5: relevant docs")
+               description="dashboard req5: relevant docs")
         fl.assert_('RELEVANT_DOCUMENTS' in fl.getBody())
         return self
 
@@ -386,7 +389,7 @@ class BasePage:
                 ['userServicesForm', 'userServicesForm'],
                 ['javax.faces.ViewState', fl.getLastJsfState()],
                 ['userServicesForm:menuActionCommand_SHOW_PERSONAL_WORKSPACE', 'userServicesForm:menuActionCommand_SHOW_PERSONAL_WORKSPACE']],
-            description="View personal workspace")
+                description="View personal workspace")
         # XXX: not working: post initializes personal workspace if it does
         # not exist...
         #self.viewDocumentPath("UserWorkspaces/" + fl.current_login,
@@ -411,10 +414,10 @@ class BasePage:
             description=description)
         # XXX AT: hack for NXP-9930: ajax response => need to force redirect
         fl.get(fl.server_url + "/facetedsearch/faceted_search_results.faces?conversationId=0NXMAIN",
-            description="Get redirection to faceted search after " + description)
+               description="Get redirection to faceted search after " + description)
 
         fl.assert_('Default search' in fl.getBody(),
-                     'Not a search result page')
+                   'Not a search result page')
         return self
 
     def edit(self):
@@ -509,7 +512,6 @@ class BasePage:
                     '{"params":{"query":"' + nxql + '"},"context":{}}')
         self.fl.post(self.fl.server_url + '/site/automation/Document.Query',
                      data)
-
 
 
 class LoginPage(BasePage):
@@ -635,7 +637,6 @@ class FolderPage(BasePage):
 
     def selectItem(self, title, item_type="Workspace"):
         fl = self.fl
-        folder_uid = self.getDocUid()
         html = fl.getBody()
         if item_type in ['Section', 'SectionRoot']:
             start = html.find('form id="section_content"')
@@ -655,16 +656,14 @@ class FolderPage(BasePage):
             [checkbox_id, 'on'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             [checkbox_ajax_onclick_id, checkbox_ajax_onclick_id],
-            [table_name, table_name]
-            ]
+            [table_name, table_name]]
         fl.post(fl.server_url + "/view_documents.faces", params,
-            description='Select document "%s"' % title)
+                description='Select document "%s"' % title)
 
         return self
 
     def deleteItem(self, title, item_type="Workspace"):
         fl = self.fl
-        folder_uid = self.getDocUid()
         state = fl.getLastJsfState()
         self.selectItem(title, item_type)
 
@@ -681,10 +680,9 @@ class FolderPage(BasePage):
         params = [
             ['javax.faces.ViewState', state],
             [form_name + ':' + button_form + ':' + button_id, 'Delete'],
-            [form_name + ':' + button_form, form_name + ':' + button_form]
-            ]
+            [form_name + ':' + button_form, form_name + ':' + button_form]]
         fl.post(fl.server_url + "/view_documents.faces", params,
-            description='Delete document "%s"' % title)
+                description='Delete document "%s"' % title)
 
         fl.assert_('Document(s) deleted' in fl.getBody())
         return self
@@ -721,7 +719,7 @@ class FolderPage(BasePage):
             ['inputvalue', user],
             ['AJAX:EVENTS_COUNT', '1']]
         fl.post(server_url + "/view_documents.faces", params,
-                  description="Grant perm search user.")
+                description="Grant perm search user.")
         fl.assert_(user in fl.getBody(), "User not found")
 
         state = fl.getLastJsfState()
@@ -737,7 +735,7 @@ class FolderPage(BasePage):
             ['suggestionSelectionListId', 'nxw_selection_list'],
             ['suggestionInputSelectorId', 'nxw_selection_suggest']]
         fl.post(server_url + "/view_documents.faces", params,
-                  description="Grant perm select user " + user)
+                description="Grant perm select user " + user)
 
         params = [
             ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', ''],
@@ -748,7 +746,7 @@ class FolderPage(BasePage):
             ['add_rights_form', 'add_rights_form'],
             ['javax.faces.ViewState', state]]
         fl.post(server_url + "/view_documents.faces", params,
-                  description="Grant perm %s to %s" % (permission, user))
+                description="Grant perm %s to %s" % (permission, user))
         fl.assert_('Save local rights' in fl.getBody())
 
         params = [
@@ -756,7 +754,7 @@ class FolderPage(BasePage):
             ['validate_rights', 'validate_rights'],
             ['javax.faces.ViewState', fl.getLastJsfState()]]
         fl.post(server_url + "/view_documents.faces", params,
-                  description="Grant perm apply")
+                description="Grant perm apply")
         fl.assert_('Rights updated' in fl.getBody())
         return self
 
@@ -787,7 +785,8 @@ class FolderPage(BasePage):
     def viewRandomDocument(self, pattern):
         fl = self.fl
         # hack to parse only the table listing instead of the broken html page
-        table = extractToken(self.fl.getBody(), '<table class="dataOutput">', '</table')
+        table = extractToken(self.fl.getBody(),
+                             '<table class="dataOutput">', '</table')
         self.fl._response.body = table
         hrefs = fl.listHref(content_pattern=pattern,
                             url_pattern='@view_documents')
@@ -795,6 +794,45 @@ class FolderPage(BasePage):
         doc_url = random.choice(hrefs)
         fl.get(doc_url, description="View a random document")
         return DocumentPage(self.fl)
+
+    def driveSynchronizeCurrentDocument(self):
+        fl = self.fl
+        if 'driveUnsynchronizeCurrentDocument' in fl.getBody():
+            # Already sync
+            return
+        fl.assert_('driveSynchronizeCurrentDocument' in fl.getBody(),
+                   "No sync button found")
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form', 'nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form'],
+            ['javax.faces.ViewState', extractJsfState(fl.getBody())],
+            ['nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument', 'nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument']],
+            description="Synchronize the current document with Drive")
+        fl.assert_('driveUnsynchronizeCurrentDocument' in fl.getBody()
+                   or 'currentUserSyncRoots' in fl.getBody(),
+                   "Can not synchronize the folder")
+        return self
+
+    def driveUnsynchronizeCurrentDocument(self):
+        fl = self.fl
+        fl.post(fl.server_url + "/view_documents.faces", params=[
+            ['nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form', 'nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form'],
+            ['javax.faces.ViewState', extractJsfState(fl.getBody())],
+            ['nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument', 'nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument']],
+            description="Unsynchronize the current document with Drive")
+        fl.assert_('driveSynchronizeCurrentDocument' in fl.getBody())
+        return self
+
+    def driveRevokeFirstToken(self):
+        fl = self.fl
+        fl.post(fl.server_url + "/view_home.faces", params=[
+            ['AJAXREQUEST', '_viewRoot'],
+            ['currentUserAuthTokenBindings', 'currentUserAuthTokenBindings'],
+            ['autoScroll', ''],
+            ['javax.faces.ViewState', extractJsfState(fl)],
+            ['currentUserAuthTokenBindings:nxl_authTokenBindings_1:nxl_authTokenBindings_1_deleteButton', 'currentUserAuthTokenBindings:nxl_authTokenBindings_1:nxl_authTokenBindings_1_deleteButton'],
+            ['AJAX:EVENTS_COUNT', '1']],
+            description="Post /nuxeo/view_home.faces")
+        return self
 
 
 class DocumentPage(BasePage):

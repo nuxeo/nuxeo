@@ -19,28 +19,62 @@
 
 This suite is configured using the Rest.conf file.
 """
+import os
+from time import sleep
 import unittest
-from funkload.FunkLoadTestCase import FunkLoadTestCase
-from funkload.utils import xmlrpc_get_credential
+import random
 from nuxeo.drive import DriveClient
+from nuxeo.pages import *
+from nuxeo.testcase import NuxeoTestCase
 
 
-class Drive(FunkLoadTestCase):
+class Drive(NuxeoTestCase):
+    ws_title = "FLNXTEST Drive workspace"
+    dir_title = "FLNXTEST Drive folder"
+    dir_path = "workspaces/FLNXTEST Drive workspace/FLNXTEST Drive folder"
+    tag = "FLNXTEST"
 
     def setUp(self):
-        self.server_url = self.conf_get('main', 'url')
-        self.credential_host = self.conf_get('credential', 'host')
-        self.credential_port = self.conf_getInt('credential', 'port')
-        self.cred_admin = xmlrpc_get_credential(self.credential_host,
-                                                self.credential_port,
-                                                'admin')
+        NuxeoTestCase.setUp(self)
+        self.nb_write = self.conf_getInt('testDrive', 'nb_doc')
+        import_path = self.conf_get('testDrive', 'import_path')
+        self.files = [os.path.join(import_path, item)
+                      for item in os.listdir(import_path)]
+
+    def testInit(self):
+        p = LoginPage(self).login(*self.cred_admin)
+        ret = p.viewDocumentPath(self.dir_path, raiseOn404=False)
+        if ret is None:
+            p = (p.getRootWorkspaces()
+                 .createWorkspace(self.ws_title, 'A description')
+                 .rights().grant('ReadWrite', 'Members group')
+                 .view()
+                 .createFolder(self.dir_title, 'A description'))
+        p.driveSynchronizeCurrentDocument()
+        self.createFile()
+        p.logout()
+
+    def createFile(self):
+        self.setHeader('Accept-Language', 'en-us')
+        p = FolderPage(self).viewDocumentPath(self.dir_path)
+        file_path = random.choice(self.files)
+        title = self._lipsum.getSubject(uniq=True, prefix=self.tag)
+        description = self.tag + ' ' + self._lipsum.getParagraph(1)
+        p.createFile(title, description, file_path)
+        return p.getDocUid()
 
     def testDrive(self):
-        d = DriveClient(self)
-        d.bind_server(self.cred_admin[0], self.cred_admin[1])
-        d.start_drive()
-        for i in range(10):
-            d.get_update()
+        d = (DriveClient(self)
+             .bind_server(*self.cred_admin)
+             .start_drive())
+        for i in range(self.nb_write):
+            # no need to auth using token auth
+            uid = self.createFile()
+            sleep(1)
+            d.get_update(" update " + str(i))
+            self.assert_(uid in self.getBody(),
+                         "expecting to find the new doc uid: " +
+                         uid)   # + " in " + self.getBody())
 
 
 if __name__ in ('main', '__main__'):
