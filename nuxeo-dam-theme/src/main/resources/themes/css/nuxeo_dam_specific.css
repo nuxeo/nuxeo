@@ -8,30 +8,27 @@ author: lkemen@nuxeo.com
 */
 
 /* =Grid */
-.nxDamSearchForm {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
+.gridBox {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 1em .5em;
+  padding: 0 .5em }
+
+.nxDamSearchForm {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   width: 19% }
 
 .nxDamSearchResults {
   background-color: #fff;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0 .5em;
   text-align: center;
   width: 48% }
 
 .nxDamAssetView {
   background-color: "neutral.lighter (__FLAVOR__ background)";
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0 .3em;
   width: 33% }
+
+.nxDamSingleAssetLeft {
+	min-height: 650px }
 
 /* Widgets and Containers specific styles */
 .nxMainContainer .widgetPanel { padding: 0 }
@@ -41,10 +38,10 @@ author: lkemen@nuxeo.com
 .nxDamSearchForm { font-size: .82em }
 
 /* =Assets list */
-.nxDamSearchResults .globalActionBar,
-.nxDamAssetView .globalActionBar {
+.nxMainContainer .globalActionBar {
   border-bottom: 1px solid;
-  border-color: "neutral.light (__FLAVOR__ border)"; }
+  border-color: "neutral.light (__FLAVOR__ border)";
+  padding: .2em }
 
 .nxDamSearchResults .dataOutput {
   font-size: .9em;
@@ -55,16 +52,22 @@ author: lkemen@nuxeo.com
   font-weight: normal;
   text-align: left }
 
-.nxDamAssetView .globalActionBar {
-  padding: .2em }
+.nxDamSearchResults .globalActionBar,
+.nxDamSingleAssetLeft .globalActionBar {
+  text-align: left;
+  padding: 0 }
 
-.nxDamSearchResults .globalActionBar {
-  text-align: left }
-
-.nxDamSearchResults .globalActionBar .button {
+.nxDamSearchResults .globalActionBar .button,
+.nxDamSingleAssetLeft .globalActionBar .button {
   font-size: .9em;
   margin: .5em .5em .5em 0;
   padding: .2em .4em }
+
+.nxDamSingleAssetLeft .globalActionBar .button {
+  line-height: 1.2em }
+
+.nxDamSingleAssetRight .globalActionBar {
+	margin-bottom: 2.4em }
 
 .nxDamSearchResults .listingLayoutSelector {
   font-size: .9em }
@@ -152,23 +155,25 @@ author: lkemen@nuxeo.com
   background-color: #000;
   color: #fff }
 
+.nxMainContainer .bubbleBox .dataInput td {
+	border: none 0 }
+
 /* =Assets View */
-.nxDamAssetView .widgetPanel .description_block {
+.nxMainContainer .widgetPanel .description_block {
   font-size: .9em;
   margin: .7em .2em .5em }
 
-.nxDamAssetView .description_block span {
+.nxMainContainer .description_block span {
   color: "gray.dark (__FLAVOR__ color)";
 	font-weight: normal }
 
 /* Smaller tables display in foldableBox, apply .dataTableLine styles */
-.nxDamAssetView .dataInput,
-.nxDamAssetView .containerField {
+.nxMainContainer .dataInput,
+.nxMainContainer .containerField {
   border-collapse: collapse;
   border-spacing: 0;
-  font-size: .9em;
   margin: 0 }
-.nxDamAssetView .dataInput td {
+.nxMainContainer .dataInput td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-spacing: 0;
   border-style: none none solid;
@@ -176,24 +181,23 @@ author: lkemen@nuxeo.com
   padding: .1em .3em .2em;
   text-align: left;
   vertical-align: top }
-.nxDamAssetView .dataInput td td { border: none }
-.nxDamAssetView .dataInput tr:hover {
+.nxMainContainer .dataInput td td { border: none }
+.nxMainContainer .dataInput tr:hover {
   background-color: "color.major.light (__FLAVOR__ background)" }
-.nxDamAssetView .widgetTable table {
-  width: 100% }
-.nxDamAssetView .widgetPanel .labelColumn {
+
+.nxMainContainer .foldableBox .dataInput {
+	font-size: .9em }
+
+.nxMainContainer .widgetPanel .labelColumn {
   text-align: left;
   width: 28% }
 
-.nxDamAssetView .summaryTitle {
+.nxMainContainer .summaryTitle {
   background-color: "neutral.medium (__FLAVOR__ background)";
   border-bottom: 0 none;
   font-size: 1em;
   padding: .3em;
   text-transform: none }
-
-.nxDamAssetView .containerWidgetPanel {
-  display: block }
 
 /* smaller buttons in Foldable boxes*/
 .foldableBox .buttonsGadget {
@@ -206,7 +210,8 @@ author: lkemen@nuxeo.com
 
 
 /* Picture View -> TODO: move it to imaging styles ? */
-.pictureContainer {
+.pictureContainer,
+.video-js-box {
   background-color: #fff;
   border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
@@ -214,6 +219,9 @@ author: lkemen@nuxeo.com
   height: 250px;
   padding: 3px;
   text-align: center }
+
+.video-js-box .video-js {
+  margin: 0 auto }
 
 .documentTitle {
   -moz-box-sizing: border-box;
@@ -229,8 +237,12 @@ author: lkemen@nuxeo.com
   white-space: nowrap;
   width: 100% }
 
-.nxDamAssetView .documentTitle {
+.nxMainContainer .documentTitle {
   color: "black (__FLAVOR__ color)" }
+
+.nxDamSingleAssetLeft .pictureContainer,
+.nxDamSingleAssetLeft .video-js-box {
+  height: 400px }
 
 /* Test to center img */
 .thumbnailContainer {

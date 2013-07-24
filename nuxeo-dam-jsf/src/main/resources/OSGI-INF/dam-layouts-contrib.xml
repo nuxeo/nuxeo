@@ -1020,8 +1020,8 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle7</property>
-            <property name="nxl_gridStyleClass_1">gridStyle5 compactLayout</property>
+            <property name="nxl_gridStyleClass_0">gridStyle7 nxDamSingleAssetLeft</property>
+            <property name="nxl_gridStyleClass_1">gridStyle5 compactLayout nxDamSingleAssetRight</property>
           </properties>
           <widget>damSingleAssetPanelLeft</widget>
           <widget>damSingleAssetPanelRight</widget>
