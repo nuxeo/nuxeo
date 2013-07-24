@@ -486,7 +486,7 @@
       </properties>
     </widget>
 
-    <widget name="dam_listing_dam_common" type="layout">
+    <widget name="dam_listing_metadata" type="layout">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -650,7 +650,7 @@
           <widget>dam_listing_ajax_selection_box_with_title</widget>
         </column>
         <column>
-          <widget>dam_listing_dam_common</widget>
+          <widget>dam_listing_metadata</widget>
         </column>
         <column>
           <widget>dam_listing_size_and_format</widget>
