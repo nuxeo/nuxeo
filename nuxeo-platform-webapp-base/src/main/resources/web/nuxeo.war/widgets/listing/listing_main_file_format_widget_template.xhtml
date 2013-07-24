@@ -1,0 +1,15 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:set var="mainBlob" value="#{blobHolderGenerator.getBlobHolder(fieldOrValue).blob}" />
+  <c:if test="#{!empty mainBlob}">
+    <c:set var="extension" value="#{nxu:fileExtension(mainBlob.filename)}" />
+    <c:if test="#{not empty extension}">
+      <h:outputText value="#{extension}"
+        styleClass="tag" />
+    </c:if>
+  </c:if>
+
+</c:if>

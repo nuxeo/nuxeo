@@ -887,6 +887,72 @@
       </property>
     </widgetType>
 
+    <widgetType name="listing_main_file_size">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Main File Size</title>
+        <description>
+          <p>
+            This widget type displays the size of the main blob of the
+            document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the size.
+              </li>
+            </ul>
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_main_file_size_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_main_file_format">
+      <configuration>
+        <sinceVersion>5.7.2</sinceVersion>
+        <title>Main File Format</title>
+        <description>
+          <p>
+            This widget type displays the format of the main file of the
+            document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document model, it will be used to
+                display the format.
+              </li>
+            </ul>
+          </p>
+        </description>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_main_file_format_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
