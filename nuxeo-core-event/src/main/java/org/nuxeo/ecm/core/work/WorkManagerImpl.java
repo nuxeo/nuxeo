@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -59,6 +58,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
@@ -268,6 +269,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         protected WorkList suspended;
 
         // @since 5.7
+        protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
         protected final Counter scheduledCount;
 
         protected final Counter scheduledMax;
@@ -283,22 +286,21 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 BlockingQueue<Runnable> queue, ThreadFactory threadFactory) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queue,
                     threadFactory);
-            MetricsService metrics = Framework.getLocalService(MetricsService.class);
             scheduledAfterCommit = new WorkList();
             scheduled = new WorkList();
             running = new WorkList();
             completed = new WorkList();
             suspended = new WorkList();
-            scheduledCount = metrics.newCounter(WorkThreadPoolExecutor.class,
-                    "scheduled", queueId);
-            scheduledMax = metrics.newCounter(WorkThreadPoolExecutor.class,
-                    "scheduled-max", queueId);
-            runningCount = metrics.newCounter(WorkThreadPoolExecutor.class,
-                    "running", queueId);
-            completedCount = metrics.newCounter(WorkThreadPoolExecutor.class,
-                    "completed", queueId);
-            workTimer = metrics.newTimer(WorkThreadPoolExecutor.class, "work",
-                    queueId);
+            scheduledCount = registry.counter(MetricRegistry.name(
+                    WorkThreadPoolExecutor.class, "scheduled", queueId));
+            scheduledMax = registry.counter(MetricRegistry.name(
+                    WorkThreadPoolExecutor.class, "scheduled-max", queueId));
+            runningCount = registry.counter(MetricRegistry.name(
+                    WorkThreadPoolExecutor.class, "running", queueId));
+            completedCount = registry.counter(MetricRegistry.name(
+                    WorkThreadPoolExecutor.class, "completed", queueId));
+            workTimer = registry.timer(MetricRegistry.name(
+                    WorkThreadPoolExecutor.class, "work", queueId));
         }
 
         /**

@@ -52,6 +52,8 @@ import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 /**
  * {@link Repository} implementation, to be extended by backend-specific
@@ -89,39 +91,37 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter sessionCount = metrics.newCounter(getClass(),
-            "session");
+    protected final Counter sessionCount = registry.counter(MetricRegistry.name(
+            getClass(), "session"));
 
-    protected final Gauge<Long> cacheSize = metrics.newGauge(new Gauge<Long>() {
+    protected final Gauge<Long> cacheSize = registry.register(
+            MetricRegistry.name(getClass(), "cache-size"), new Gauge<Long>() {
+                @Override
+                public Long getValue() {
+                    return getCacheSize();
+                }
 
-        @Override
-        public Long getValue() {
-            return getCacheSize();
-        }
+            });
 
-    }, getClass(), "cache-size");
-
-    protected final Gauge<Long> cachePristineSize = metrics.newGauge(
+    protected final Gauge<Long> cachePristineSize = registry.register(
+            MetricRegistry.name(PersistenceContext.class, "cache-size"),
             new Gauge<Long>() {
-
                 @Override
                 public Long getValue() {
                     return getCachePristineSize();
                 }
+            });
 
-            }, PersistenceContext.class, "cache-size");
-
-    protected final Gauge<Long> cacheSelectionSize = metrics.newGauge(
+    protected final Gauge<Long> cacheSelectionSize = registry.register(
+            MetricRegistry.name(SelectionContext.class, "cache-size"),
             new Gauge<Long>() {
-
                 @Override
                 public Long getValue() {
                     return getCacheSelectionSize();
                 }
-
-            }, SelectionContext.class, "cache-size");
+            });
 
     private LockManager lockManager;
 

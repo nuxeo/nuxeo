@@ -11,10 +11,16 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
+import com.codahale.metrics.JmxAttributeGauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+
 public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
+
+    // @since 5.7.2
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     @Override
     public int getCount() {
@@ -53,10 +59,8 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 
     protected void install() {
         self = DefaultMonitorComponent.bind(this);
-        String mbean = self.getObjectName().toString();
-        MetricsService metrics = Framework.getLocalService(MetricsService.class);
-        metrics.newGauge(mbean,
-                "count", AbstractSession.class, "count");
+        registry.register(MetricRegistry.name(DefaultCoreSessionMonitor.class, "coresession-count"),
+                new JmxAttributeGauge(self.getObjectName(), "Count"));
     }
 
     protected void uninstall() {

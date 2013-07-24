@@ -41,10 +41,12 @@ import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.storage.sql.SoftRefCachingMapper;
 import org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionImpl;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.metrics.MetricsService;
-import org.nuxeo.runtime.metrics.MetricsServiceImpl;
+
+import com.codahale.metrics.JmxAttributeGauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 /**
  * @author matic
@@ -53,6 +55,9 @@ import org.nuxeo.runtime.metrics.MetricsServiceImpl;
 public class DefaultConnectionMonitor implements ConnectionMonitor {
 
     private static final Log log = LogFactory.getLog(DefaultConnectionMonitor.class);
+
+    // @since 5.7.2
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     private static final String NUXEO_CONNECTION_MANAGER_PREFIX = "java:comp/env/NuxeoConnectionManager/";
 
@@ -196,12 +201,13 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
         cm = lookup(repositoryName);
         cm = enhanceConnectionManager(cm);
         self = DefaultMonitorComponent.bind(this, repositoryName);
-        String mbean = self.getObjectName().toString();
-        MetricsService metrics = Framework.getLocalService(MetricsService.class);
-        metrics.newGauge(mbean,
-                "ConnectionCount", MetricsServiceImpl.class, "storage-xaConnectionCount");
-        metrics.newGauge(mbean,
-                "IdleConnectionCount", MetricsServiceImpl.class, "storage-xaConnectionIdle");
+        registry.register(MetricRegistry.name(DefaultConnectionMonitor.class,
+                "vcs-xaConnectionCount"),
+                new JmxAttributeGauge(self.getObjectName(), "ConnectionCount"));
+        registry.register(MetricRegistry.name(DefaultConnectionMonitor.class,
+                "vcs-xaConnectionIdle"),
+                new JmxAttributeGauge(self.getObjectName(),
+                        "IdleConnectionCount"));
     }
 
     protected void uninstall() {

@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionMetaData;
 import javax.resource.cci.Interaction;
@@ -66,6 +67,8 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
@@ -115,16 +118,16 @@ public class SessionImpl implements Session, XAResource {
     private String threadName;
 
     // @since 5.7
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private final Counter sessionCount = metrics.newCounter(
-            getClass(), "session");
+    private final Counter sessionCount = registry.counter(MetricRegistry.name(
+            getClass(), "session"));
 
-    private final Timer saveTimer = metrics.newTimer(getClass(), "save");
+    private final Timer saveTimer = registry.timer(MetricRegistry.name(getClass(), "save"));
 
-    private final Timer queryTimer = metrics.newTimer(getClass(), "query");
+    private final Timer queryTimer = registry.timer(MetricRegistry.name(getClass(), "query"));
 
-    private final Timer aclrUpdateTimer = metrics.newTimer(getClass(), "aclr-update");
+    private final Timer aclrUpdateTimer = registry.timer(MetricRegistry.name(getClass(), "aclr-update"));
 
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {

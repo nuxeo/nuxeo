@@ -112,6 +112,8 @@ import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 /**
  * Abstract implementation of the client interface.
@@ -152,20 +154,17 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     private Long maxResults;
 
+    // @since 5.7.2
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    // @since 5.7
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final Counter createDocumentCount = registry.counter(MetricRegistry.name(
+            AbstractSession.class, "create-document"));
 
-    protected final Counter createDocumentCount = metrics.newCounter(
-            AbstractSession.class, "create-document");
+    protected final Counter deleteDocumentCount = registry.counter(MetricRegistry.name(
+            AbstractSession.class, "delete-document"));
 
-    protected final Counter deleteDocumentCount =
-            metrics.newCounter(
-                    AbstractSession.class, "delete-document");
-
-    protected final Counter updateDocumentCount =
-            metrics.newCounter(
-                    AbstractSession.class, "update-document");
+    protected final Counter updateDocumentCount = registry.counter(MetricRegistry.name(
+            AbstractSession.class, "update-document"));
 
     public static class QueryAndFetchExecuteContextException extends
             ClientRuntimeException {

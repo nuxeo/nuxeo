@@ -22,10 +22,11 @@ import java.util.Set;
 import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
@@ -58,14 +59,13 @@ public class SelectionContext {
     private final Set<Serializable> modifiedInTransaction;
 
     // @since 5.7
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final Counter cacheHitCount = registry.counter(MetricRegistry.name(
+            SelectionContext.class, "cache-hit"));
 
-    protected final Counter cacheHitCount = metrics.newCounter(
-            SelectionContext.class, "cache-hit");
-
-    protected final Timer cacheGetTimer = metrics.newTimer(
-            SelectionContext.class, "cache-get");
+    protected final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
+            SelectionContext.class, "cache-get"));
 
     @SuppressWarnings("unchecked")
     public SelectionContext(SelectionType selType, Serializable criterion,

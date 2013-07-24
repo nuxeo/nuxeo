@@ -22,10 +22,11 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 /**
  *
@@ -36,14 +37,18 @@ import com.codahale.metrics.Counter;
  */
 public class EventCounterListener implements PostCommitEventListener {
 
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    // @since 5.7.2
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
     // Counters used
-    public final Counter createCount = metrics.newCounter(
-            EventCounterListener.class, "create");
-    public final Counter updateCount = metrics.newCounter(
-            EventCounterListener.class, "update");
-    public final Counter removeCount = metrics.newCounter(
-            EventCounterListener.class, "remove");
+    public final Counter createCount = registry.counter(MetricRegistry.name(
+            EventCounterListener.class, "create"));
+
+    public final Counter updateCount = registry.counter(MetricRegistry.name(
+            EventCounterListener.class, "update"));
+
+    public final Counter removeCount = registry.counter(MetricRegistry.name(
+            EventCounterListener.class, "remove"));
 
     // Event tracked
     protected static final List<String> createEvents = Arrays.asList(new String[] {
@@ -85,21 +90,21 @@ public class EventCounterListener implements PostCommitEventListener {
 
         for (String eventName : eventNames) {
             if (createEvents.contains(eventName)) {
-                created+=1;
+                created += 1;
             } else if (updateEvents.contains(eventName)) {
-                updated+=1;
+                updated += 1;
             } else if (removeEvents.contains(eventName)) {
-                removed+=1;
+                removed += 1;
             }
         }
 
-        if (created>0) {
+        if (created > 0) {
             createCount.inc(created);
         }
-        if (updated>0) {
+        if (updated > 0) {
             updateCount.inc(updated);
         }
-        if (removed>0) {
+        if (removed > 0) {
             removeCount.inc(removed);
         }
     }

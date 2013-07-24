@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
@@ -29,10 +30,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 
 /**
@@ -110,27 +112,28 @@ public class SoftRefCachingRowMapper implements RowMapper {
      *
      * @since 5.7
      */
-    protected final MetricsService metrics = Framework.getLocalService(MetricsService.class);
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private final Counter cacheHitCount = metrics.newCounter(
-            SoftRefCachingRowMapper.class, "cache-hit");
+    private final Counter cacheHitCount = registry.counter(MetricRegistry.name(
+            SoftRefCachingRowMapper.class, "cache-hit"));
 
-    private final Counter cacheSize = metrics.newCounter(
-            SoftRefCachingRowMapper.class, "cache-size");
+    private final Counter cacheSize = registry.counter(MetricRegistry.name(
+            SoftRefCachingRowMapper.class, "cache-size"));
 
-    private final Timer cacheGetTimer = metrics.newTimer(
-            SoftRefCachingRowMapper.class, "cache-get");
+    private final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
+            SoftRefCachingRowMapper.class, "cache-get"));
 
     // sor means system of record (database access)
-    private final Counter sorRows = metrics.newCounter(
-            SoftRefCachingRowMapper.class, "sor-rows");
+    private final Counter sorRows = registry.counter(MetricRegistry.name(
+            SoftRefCachingRowMapper.class, "sor-rows"));
 
-    private final Timer sorGetTimer = metrics.newTimer(
-            SoftRefCachingRowMapper.class, "sor-get");
+    private final Timer sorGetTimer = registry.timer(MetricRegistry.name(
+            SoftRefCachingRowMapper.class, "sor-get"));
 
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
-        cache = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
+        cache = new ReferenceMap(AbstractReferenceMap.HARD,
+                AbstractReferenceMap.SOFT);
         localInvalidations = new Invalidations();
         cacheQueue = new InvalidationsQueue("mapper-" + this);
         forRemoteClient = false;

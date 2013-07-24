@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
@@ -42,12 +41,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Gauge;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * A {@link RowMapper} that use an unified ehcache.
@@ -112,22 +113,6 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
     private static final String CACHE_NAME = "unifiedVCSCache";
 
-    private static final String CACHE_SIZE_PROP = "maxEntriesLocalHeap";
-
-    private static final String CACHE_DISK_SIZE_PROP = "maxEntriesLocalDisk";
-
-    private static final String CACHE_ETERNAL_PROP = "eternal";
-
-    private static final String CACHE_OVERFLOW_TO_DISK_PROP = "overflowToDisk";
-
-    private static final String CACHE_TIME_TO_LIVE_PROP = "timeToLiveSeconds";
-
-    private static final String CACHE_TIME_TO_IDLE_PROP = "timeToIdleSeconds";
-
-    private static final String CACHE_STATISTICS_PROP = "statistics";
-
-    private static final String CACHE_DISK_PERSISTENT_PROP = "diskPersistent";
-
     private static final String EHCACHE_FILE_PROP = "ehcacheFilePath";
 
     private static AtomicInteger rowMapperCount = new AtomicInteger();
@@ -137,11 +122,24 @@ public class UnifiedCachingRowMapper implements RowMapper {
      *
      * @since 5.7
      */
-    private final Counter cacheHitCount = Metrics.defaultRegistry().newCounter(
-            UnifiedCachingRowMapper.class, "cache-hit");
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private final Gauge<Integer> cacheSize = Metrics.defaultRegistry().newGauge(
-            UnifiedCachingRowMapper.class, "cache-size", new Gauge<Integer>() {
+    private final Counter cacheHitCount = registry.counter(MetricRegistry.name(
+            UnifiedCachingRowMapper.class, "cache-hit"));
+
+    private final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
+            UnifiedCachingRowMapper.class, "cache-get"));
+
+    // sor means system of record (database access)
+    private final Counter sorRows = registry.counter(MetricRegistry.name(
+            UnifiedCachingRowMapper.class, "sor-rows"));
+
+    private final Timer sorGetTimer = registry.timer(MetricRegistry.name(
+            UnifiedCachingRowMapper.class, "sor-get"));
+
+    protected final Gauge<Integer> cacheSize = registry.register(
+            MetricRegistry.name(UnifiedCachingRowMapper.class, "cache-size"),
+            new Gauge<Integer>() {
                 @Override
                 public Integer getValue() {
                     if (cacheManager != null) {
@@ -150,18 +148,6 @@ public class UnifiedCachingRowMapper implements RowMapper {
                     return 0;
                 }
             });
-
-    private final Timer cacheGetTimer = Metrics.defaultRegistry().newTimer(
-            UnifiedCachingRowMapper.class, "cache-get", TimeUnit.MICROSECONDS,
-            TimeUnit.SECONDS);
-
-    // sor means system of record (database access)
-    private final Counter sorRows = Metrics.defaultRegistry().newCounter(
-            UnifiedCachingRowMapper.class, "sor-rows");
-
-    private final Timer sorGetTimer = Metrics.defaultRegistry().newTimer(
-            UnifiedCachingRowMapper.class, "sor-get", TimeUnit.MICROSECONDS,
-            TimeUnit.SECONDS);
 
     public UnifiedCachingRowMapper() {
         localInvalidations = new Invalidations();
@@ -323,7 +309,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     protected Row cacheGet(RowId rowId) {
-        final TimerContext context = cacheGetTimer.time();
+        final Context context = cacheGetTimer.time();
         try {
             Element element = ehCacheGet(rowId);
             Row row = null;
@@ -475,7 +461,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
             }
         }
         if (!todo.isEmpty()) {
-            final TimerContext context = sorGetTimer.time();
+            final Context context = sorGetTimer.time();
             try {
                 // ask missing ones to underlying row mapper
                 List<? extends RowId> fetched = rowMapper.read(todo, cacheOnly);
@@ -624,6 +610,12 @@ public class UnifiedCachingRowMapper implements RowMapper {
         // with lots of absent info. the rest is removed entirely
         cachePutAbsent(new RowId(model.HIER_TABLE_NAME, rootInfo.id));
         return infos;
+    }
+
+    @Override
+    public long getCacheSize() {
+        // The unified cache is reported using its cacheSize gauge
+        return -1;
     }
 
 }
