@@ -221,6 +221,21 @@ public class GraphRouteTest {
                 (Serializable) Arrays.asList(buttons));
     }
 
+    protected Map<String, Serializable> keyvalue(String key, String value) {
+        Map<String, Serializable> m = new HashMap<String, Serializable>();
+        m.put(GraphNode.PROP_KEYVALUE_KEY, key);
+        m.put(GraphNode.PROP_KEYVALUE_VALUE, value);
+        return m;
+    }
+
+    protected void setSubRouteVariables(
+            DocumentModel node,
+            @SuppressWarnings("unchecked") Map<String, Serializable>... keyvalues)
+            throws ClientException {
+        node.setPropertyValue(GraphNode.PROP_SUB_ROUTE_VARS,
+                (Serializable) Arrays.asList(keyvalues));
+    }
+
     protected DocumentRoute instantiateAndRun() throws ClientException {
         return instantiateAndRun(session);
     }
@@ -1516,8 +1531,10 @@ public class GraphRouteTest {
 
         DocumentModel node2 = createNode(routeDoc, "node2");
         node2.setPropertyValue(GraphNode.PROP_SUB_ROUTE_MODEL_EXPR,
-                String.format("'%s'", subRouteModelId));
+                subRouteModelId);
         setTransitions(node2, transition("trans23", "node3"));
+        setSubRouteVariables(node2, keyvalue("stringfield", "foo"),
+                keyvalue("globalVariable", "expr:bar@{4+3}baz"));
         node2 = session.saveDocument(node2);
 
         DocumentModel node3 = createNode(routeDoc, "node3");
@@ -1532,11 +1549,16 @@ public class GraphRouteTest {
         // create the sub-route
 
         DocumentModel subRouteDoc = createRoute("subroute");
+        subRouteDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        subRouteDoc = session.saveDocument(subRouteDoc);
 
         DocumentModel subNode1 = createNode(subRouteDoc, "subnode1");
         subNode1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(subNode1,
-                transition("trans12", "subnode2", "true", "testchain_title1"));
+        setTransitions(
+                subNode1,
+                transition("trans12", "subnode2", "true",
+                        "testchain_title_subroute"));
         subNode1 = session.saveDocument(subNode1);
 
         DocumentModel subNode2 = createNode(subRouteDoc, "subnode2");
@@ -1554,8 +1576,10 @@ public class GraphRouteTest {
 
         // check that it's finished immediately
         assertTrue(route.isDone());
+        // check that transition got the correct variables
         doc.refresh();
-        assertEquals("title 1", doc.getTitle());
+        assertEquals(route.getDocument().getId() + " node2 foo bar7baz",
+                doc.getTitle());
     }
 
     @SuppressWarnings("unchecked")
@@ -1565,10 +1589,16 @@ public class GraphRouteTest {
         // create the sub-route
 
         DocumentModel subRouteDoc = createRoute("subroute");
+        subRouteDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        subRouteDoc = session.saveDocument(subRouteDoc);
 
         DocumentModel subNode1 = createNode(subRouteDoc, "subnode1");
         subNode1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(subNode1, transition("trans12", "subnode2"));
+        setTransitions(
+                subNode1,
+                transition("trans12", "subnode2", "true",
+                        "testchain_title_subroute"));
         subNode1 = session.saveDocument(subNode1);
 
         DocumentModel subNode2 = createNode(subRouteDoc, "subnode2");
@@ -1595,6 +1625,11 @@ public class GraphRouteTest {
         assertNotNull(n2);
         assertEquals(State.SUSPENDED.getLifeCycleState(),
                 n2.getCurrentLifeCycleState());
+
+        // check that transition got the correct variables
+        doc.refresh();
+        assertEquals(route.getDocument().getId() + " node2 foo bar7baz",
+                doc.getTitle());
 
         // find the sub-route instance
         String subid = (String) n2.getPropertyValue(GraphNode.PROP_SUB_ROUTE_INSTANCE_ID);

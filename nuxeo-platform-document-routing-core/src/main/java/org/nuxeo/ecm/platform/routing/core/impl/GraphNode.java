@@ -133,6 +133,19 @@ public interface GraphNode {
     String PROP_SUB_ROUTE_INSTANCE_ID = "rnode:subRouteInstanceId";
 
     /**
+     * The sub-route variables to set (key/value list).
+     *
+     * @since 5.7.2
+     */
+    String PROP_SUB_ROUTE_VARS = "rnode:subRouteVariables";
+
+    /** @since 5.7.2 */
+    String PROP_KEYVALUE_KEY = "key";
+
+    /** @since 5.7.2 */
+    String PROP_KEYVALUE_VALUE = "value";
+
+    /**
      * The internal state of a node.
      */
     enum State {

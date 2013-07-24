@@ -15,6 +15,7 @@
   <xs:element name="merge" type="xs:string" /> <!-- (null)/one/all -->
   <xs:element name="executeOnlyFirstTransition" type="xs:boolean" />
   <xs:element name="subRouteModelExpr" type="xs:string" />
+  <xs:element name="subRouteVariables" type="node:keyvalues" />
 
   <xs:element name="hasTask" type="xs:boolean" />
   <xs:element name="taskDirective" type="xs:string" />
@@ -74,6 +75,20 @@
       <xs:element name="name" type="xs:string" />
       <xs:element name="label" type="xs:string" />
       <xs:element name="filter" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="keyvalues">
+    <xs:sequence>
+      <xs:element name="keyvalue" type="node:keyvalue"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="keyvalue">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" />
+      <xs:element name="value" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
 

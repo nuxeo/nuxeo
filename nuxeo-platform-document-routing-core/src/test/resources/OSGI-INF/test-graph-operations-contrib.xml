@@ -23,6 +23,12 @@
         <param type="string" name="value">title 2</param>
       </operation>
     </chain>
+    <chain id="testchain_title_subroute">
+      <operation id="Document.Routing.Test.SetProperty">
+        <param type="string" name="field">dc:title</param>
+        <param type="string" name="value">expr:workflowParent + ' ' + workflowParentNode + ' ' + WorkflowVariables["stringfield"] + ' ' + WorkflowVariables["globalVariable"]</param>
+      </operation>
+    </chain>
     <chain id="testchain_descr1">
       <operation id="Document.Routing.Test.SetProperty">
         <param type="string" name="field">dc:description</param>
