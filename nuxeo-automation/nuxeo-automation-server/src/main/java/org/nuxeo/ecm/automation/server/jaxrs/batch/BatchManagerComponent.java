@@ -92,6 +92,11 @@ public class BatchManagerComponent extends DefaultComponent implements
         batch.addStream(idx, is, name, mime);
     }
 
+    @Override
+    public boolean hasBatch(String batchId) {
+        return batches.containsKey(batchId);
+    }
+
     public List<Blob> getBlobs(String batchId) {
         return getBlobs(batchId, 0);
     }
