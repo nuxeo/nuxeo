@@ -112,7 +112,8 @@ public class NuxeoDriveSetupIntegrationTests {
             String testUserName = testUserNames[i];
 
             // Generate random password
-            String testUserPassword = UUID.randomUUID().toString();
+            String testUserPassword = UUID.randomUUID().toString().substring(0,
+                    6);
 
             // Create test user
             DocumentModel testUserModel = userManager.getBareUserModel();
