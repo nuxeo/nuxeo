@@ -48,25 +48,16 @@ public class DataSourceHelper {
     public static void autodetectPrefix() {
         Context ctx = InitialContextAccessor.getInitialContext();
         String name = ctx == null ? null : ctx.getClass().getName();
-        if ("org.nuxeo.runtime.jtajca.NamingContext".equals(name)) { // Nuxeo-Embedded
-            prefix = DEFAULT_PREFIX;
-        } else if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
+        if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
             prefix = "java:";
-        } else if ("org.apache.naming.SelectorContext".equals(name)) { // Tomcat
-            prefix = DEFAULT_PREFIX;
         } else if ("org.mortbay.naming.local.localContextRoot".equals(name)) { // Jetty
             prefix = "jdbc";
-        } else if ("com.sun.enterprise.naming.impl.SerialContext".equals(name)) { // GlassFish
-            prefix = DEFAULT_PREFIX;
         } else {
-            // unknown, use Java EE standard
-            log.error("Unknown JNDI Context class: " + name);
+            // Standard JEE containers (Nuxeo-Embedded, Tomcat, GlassFish, ...
             prefix = DEFAULT_PREFIX;
         }
         log.info("Using JDBC JNDI prefix: " + prefix);
     }
-
-
 
     /**
      * Get the JNDI prefix used for DataSource lookups.
