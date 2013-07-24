@@ -69,7 +69,7 @@
 
   <target name="prepare-tomcat">
     <unzip dest="${outdir}">
-      <artifact:resolveFile key="org.apache.tomcat:apache-tomcat:${tomcat.version}:zip" classifier="${tomcat.classifier}" />
+      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip" classifier="${tomcat.classifier}" />
     </unzip>
     <move todir="${tomcat}">
       <fileset dir="${outdir}/apache-tomcat-${tomcat.version}" />

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -14,8 +15,8 @@
   <description>Package Nuxeo with Tomcat</description>
 
   <properties>
-    <tomcat.version>7.0.32</tomcat.version>
-    <tomcat.classifier></tomcat.classifier>
+    <!-- Use a Nuxeo lightened Tomcat -->
+    <tomcat.classifier>light</tomcat.classifier>
   </properties>
 
   <dependencies>
@@ -38,13 +39,6 @@
   </dependencies>
 
   <profiles>
-    <profile>
-       <id>tomcat6</id>
-       <properties>
-         <tomcat.version>6.0.35</tomcat.version>
-         <tomcat.classifier>light</tomcat.classifier>
-       </properties>
-    </profile>
     <profile>
       <id>all-distributions</id>
       <!-- profile for building all classifiers -->
