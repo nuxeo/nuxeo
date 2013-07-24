@@ -72,15 +72,10 @@ select:focus > optgroup > option:checked {
 .dataInput textarea,
 .dataTableNoBorder input[type="text"],
 .dataInput input[type="text"] {
-  max-width: 49em;
-  width: 95% }
+  max-width: 49em }
 
 input.rich-calendar-input[type="text"] {
   max-width: 14em }
-
-.dataTableNoBorder select,
-.dataInput select {
-  min-width: 15em }
 
 .chainSelect input[type="image"] {
   margin: -0.1em .3em 0 -0.2em;
