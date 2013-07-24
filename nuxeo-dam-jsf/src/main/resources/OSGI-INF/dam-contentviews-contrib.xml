@@ -202,62 +202,6 @@
       </property>
     </widgetType>
 
-    <widgetType name="dam_listing_size">
-      <configuration>
-        <sinceVersion>5.7</sinceVersion>
-        <title>Size</title>
-        <description>
-          <p>
-            This widget type displays the size of the main blob of the
-            given document.
-          </p>
-          <p>
-            It requires the following fields configuration:
-            <ul>
-              <li>
-                first field maps the document model, it will be used to
-                display the size
-              </li>
-            </ul>
-          </p>
-        </description>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /dam/widgets/listing/listing_size_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="dam_listing_main_file_format">
-      <configuration>
-        <sinceVersion>5.7</sinceVersion>
-        <title>Main file format</title>
-        <description>
-          <p>
-            This widget type displays the format of the main file of the
-            document
-          </p>
-          <p>
-            It requires the following fields configuration:
-            <ul>
-              <li>
-                first field maps the document model, it will be used to
-                display the format
-              </li>
-            </ul>
-          </p>
-        </description>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /dam/widgets/listing/listing_main_file_format_widget_template.xhtml
-      </property>
-    </widgetType>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -511,7 +455,7 @@
       </subWidgetRefs>
     </widget>
 
-    <widget name="dam_listing_size" type="dam_listing_size">
+    <widget name="dam_listing_size" type="listing_main_file_size">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -521,7 +465,7 @@
       </fields>
     </widget>
 
-    <widget name="dam_listing_main_file_format" type="dam_listing_main_file_format">
+    <widget name="dam_listing_main_file_format" type="listing_main_file_format">
       <labels>
         <label mode="any"></label>
       </labels>
