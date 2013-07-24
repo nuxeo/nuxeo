@@ -6,7 +6,7 @@ function showInfoMessagePopup(messageContentId) {
 // build popup
 var frame = jQuery("<div></div>").css({border:'2px', backgroundColor:'white', borderStyle:'outset', borderColor:'black'}).hide().appendTo('body')
 var border = jQuery("<div style='text-align:right'></div>").css({backgroundColor:'#CCCCCC', cursor:'hand'})
-var close = jQuery("<img src='icons/action_delete_mini_over.png'/>").css({cursor:'hand'})
+var close = jQuery("<img src='icons/delete_red.png'/>").css({cursor:'hand'})
 close.click(function(e) { frame.hide()})
 close.appendTo(border)
 border.appendTo(frame)

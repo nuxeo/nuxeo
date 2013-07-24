@@ -58,7 +58,7 @@ author: lkemen@nuxeo.com
   margin: .1em .5em .3em 0;
   padding: .2em 0 .2em 1.7em }
 .completeSuccess { background-image: url("${basePath}/icons/checked.gif") }
-.completeError { background-image: url("${basePath}/icons/action_delete_mini_over.png") }
+.completeError { background-image: url("${basePath}/icons/delete_red.png") }
 .completeWarning { background-image: url("${basePath}/icons/warning.gif") }
 .running { background-image: url("${basePath}/img/standart_waiter.gif") }
 .scheduled { background-image: url("${basePath}/icons/clock.png") }

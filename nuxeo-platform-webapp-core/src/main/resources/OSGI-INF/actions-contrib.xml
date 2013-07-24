@@ -418,7 +418,7 @@
     </action>
 
     <action id="POPUP_DEL" link="javascript:doDelete" label="command.trashDocs"
-      icon="/icons/action_delete_mini_over.png">
+      icon="/icons/delete_red.png">
       <category>POPUP</category>
       <filter id="canDeletePopup">
         <rule grant="true">
