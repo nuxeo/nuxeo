@@ -48,16 +48,14 @@
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
 
-<#if !isWizard>
+  <#if !isWizard && nuxeo.server.declare_datasources == "true">
     <!-- Common datasource for all basic nuxeo datasources -->
-  <#if "${nuxeo.server.declare_datasources}" == "true">
     <Resource name="${nuxeo.db.commonds}" auth="Container" type="javax.sql.DataSource"
         maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
         url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
         username="${nuxeo.db.user}" password="${nuxeo.db.password}"
         accessToUnderlyingConnectionAllowed="true" />
   </#if>
-</#if>
 
   </GlobalNamingResources>
 
@@ -83,7 +81,7 @@
          Define a non-SSL HTTP/1.1 Connector on port ${nuxeo.server.http.port}
     -->
     <Connector port="${nuxeo.server.http.port}" protocol="HTTP/1.1"
-<#if "${nuxeo.server.https.port}" == "0">
+<#if nuxeo.server.https.port == "0">
                address="${nuxeo.bind.address}"
 <#else>
                address="127.0.0.1"
@@ -99,7 +97,7 @@
                connectionTimeout="20000"
                redirectPort="${nuxeo.server.https.port}" />
     -->
-<#if "${nuxeo.server.https.port}" != "0">
+<#if nuxeo.server.https.port != "0">
     <!-- Define a SSL HTTP/1.1 Connector on port ${nuxeo.server.https.port}
          This connector uses the JSSE configuration, when using APR, the
          connector should be using the OpenSSL style configuration
@@ -157,11 +155,7 @@
        -->
       <Host name="localhost"  appBase="webapps"
             unpackWARs="true"
-<#if isWizard>
-            autoDeploy="true"
-<#else>
-            autoDeploy="false"
-</#if>
+            autoDeploy="${isWizard?string('true', 'false')}"
             xmlValidation="false" xmlNamespaceAware="false">
 
 <#if !isWizard>
