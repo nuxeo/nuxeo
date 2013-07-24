@@ -283,6 +283,7 @@ install nuxeo-dam
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-core-storage-sql-extensions-*" />
         <include name="nuxeo-runtime-tomcat-adapter*" />
+        <include name="nuxeo-runtime-launcher*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/lib" />
