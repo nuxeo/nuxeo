@@ -12,7 +12,7 @@ Needed parameters:
 
   <c:if test="#{contentView.getResultLayouts().size() > 1}">
     <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
-      <span class="contentViewUpperAction #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
+      <span class="resultLayoutSelection #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
         <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
           reRender="#{contentIdToBeReRendered}, #{contentViewRenderId}_contentViewActionsPanel"
           ajaxSingle="true">
