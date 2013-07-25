@@ -42,9 +42,14 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
 
     protected final String defaultTime;
 
+    /**
+     * @since 5.7.2
+     */
+    protected TagAttributes attributes;
+
     public InputDateTimeTagHandler(ComponentConfig config) {
         super(config);
-        TagAttributes attributes = config.getTag().getAttributes();
+        attributes = config.getTag().getAttributes();
         defaultTime = getValue(attributes, "defaultTime", "12:00");
     }
 
@@ -99,10 +104,6 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
                 return;
             }
             HtmlCalendar c = (HtmlCalendar) instance;
-            c.setPopup(true);
-            c.setEnableManualInput(true);
-            c.setShowApplyButton(false);
-            c.setZindex(1500);
             c.setTimeZone(TimeZoneSelector.instance().getTimeZone());
             c.setLocale(LocaleSelector.instance().getLocale());
         }
@@ -112,7 +113,12 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
     protected void setAttributes(FaceletContext ctx, Object instance) {
         super.setAttributes(ctx, instance);
         // set default time in timezone
-        setDefaultTime((HtmlCalendar) instance);
+        HtmlCalendar c = (HtmlCalendar) instance;
+        c.setPopup(Boolean.parseBoolean(getValue(attributes, "popup", "true")));
+        c.setEnableManualInput(Boolean.parseBoolean(getValue(attributes, "enableManualInput", "true")));
+        c.setShowApplyButton(Boolean.parseBoolean(getValue(attributes, "showApplyButton", "false")));
+        c.setZindex(Integer.parseInt(getValue(attributes, "zindex", "1500")));
+        setDefaultTime(c);
     }
 
     protected void setDefaultTime(HtmlCalendar instance) {
