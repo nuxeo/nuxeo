@@ -132,6 +132,10 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testOverride() throws Exception {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertNotNull(contentView);
+        contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
+        assertNotNull(contentView);
+        assertTrue(contentView.getShowFilterForm());
+        assertFalse(contentView.getShowRefreshCommand());
 
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
                 "test-contentview-override-contrib.xml");
@@ -158,6 +162,9 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("CURRENT_SELECTION_LIST_2",
                 contentView.getActionsCategories().get(0));
         assertEquals("simple_2", contentView.getPagination());
+
+        assertTrue(contentView.getShowFilterForm());
+        assertFalse(contentView.getShowRefreshCommand());
 
         List<ContentViewLayout> resultLayouts = contentView.getResultLayouts();
         assertNotNull(resultLayouts);
