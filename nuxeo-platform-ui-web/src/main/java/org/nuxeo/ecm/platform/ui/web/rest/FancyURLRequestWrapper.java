@@ -53,17 +53,19 @@ public class FancyURLRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, String> getParameterMap() {
-        Map<String, String> result = super.getParameterMap();
+    public Map<String, String[]> getParameterMap() {
+        Map<String, String[]> result = super.getParameterMap();
         if (result == null) {
-            result = new HashMap<String, String>();
+            result = new HashMap<String, String[]>();
         } else {
             // copy parameter map from parent class to avoid modifying the
             // original
-            result = new HashMap<String, String>(result);
+            result = new HashMap<String, String[]>(result);
         }
         if (docView != null) {
-            result.putAll(docView.getParameters());
+            for (Map.Entry<String,String> param:docView.getParameters().entrySet()) {
+                result.put(param.getKey(), new String[] { param.getValue() });
+            }
         }
         return result;
     }
