@@ -152,6 +152,8 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         NuxeoContainer.uninstall();
     }
 
+    // disabled for now, see NXP-12086
+    @Ignore
     @Test
     public void testXANoLeak() throws Exception {
         countPhysicalConnectionsSql = COUNT_SQL;
