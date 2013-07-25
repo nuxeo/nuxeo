@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.api;
@@ -49,25 +48,16 @@ public class DataSourceHelper {
     public static void autodetectPrefix() {
         Context ctx = InitialContextAccessor.getInitialContext();
         String name = ctx == null ? null : ctx.getClass().getName();
-        if ("org.nuxeo.runtime.jtajca.NamingContext".equals(name)) { // Nuxeo-Embedded
-            prefix = DEFAULT_PREFIX;
-        } else if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
+        if ("org.jnp.interfaces.NamingContext".equals(name)) { // JBoss
             prefix = "java:";
-        } else if ("org.apache.naming.SelectorContext".equals(name)) { // Tomcat
-            prefix = DEFAULT_PREFIX;
         } else if ("org.mortbay.naming.local.localContextRoot".equals(name)) { // Jetty
             prefix = "jdbc";
-        } else if ("com.sun.enterprise.naming.impl.SerialContext".equals(name)) { // GlassFish
-            prefix = DEFAULT_PREFIX;
         } else {
-            // unknown, use Java EE standard
-            log.error("Unknown JNDI Context class: " + name);
+            // Standard JEE containers (Nuxeo-Embedded, Tomcat, GlassFish, ...
             prefix = DEFAULT_PREFIX;
         }
         log.info("Using JDBC JNDI prefix: " + prefix);
     }
-
-
 
     /**
      * Get the JNDI prefix used for DataSource lookups.
@@ -91,8 +81,8 @@ public class DataSourceHelper {
     /**
      * Look up a datasource JNDI name given a partial name.
      * <p>
-     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code
-     * "foo"} to this method.
+     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass
+     * {@code "foo"} to this method.
      *
      * @param partialName the partial name
      * @return the datasource JNDI name
@@ -111,8 +101,8 @@ public class DataSourceHelper {
     /**
      * Look up a datasource given a partial name.
      * <p>
-     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code
-     * "foo"} to this method.
+     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass
+     * {@code "foo"} to this method.
      *
      * @param partialName the partial name
      * @return the datasource
@@ -128,13 +118,15 @@ public class DataSourceHelper {
         return getDataSource(partialName, XADataSource.class);
     }
 
-    public static <T> T getDataSource(String partialName, Class<T> clazz) throws NamingException {
+    public static <T> T getDataSource(String partialName, Class<T> clazz)
+            throws NamingException {
         String jndiName = getDataSourceJNDIName(partialName);
         InitialContext context = new InitialContext();
         Object resolved = context.lookup(jndiName);
         if (resolved instanceof Reference) {
             try {
-                resolved = NamingManager.getObjectInstance(resolved,  new CompositeName(jndiName), context, null);
+                resolved = NamingManager.getObjectInstance(resolved,
+                        new CompositeName(jndiName), context, null);
             } catch (Exception e) {
                 throw new RuntimeException("Cannot get access to " + jndiName,
                         e);

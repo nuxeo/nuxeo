@@ -35,6 +35,7 @@ public interface LoaderConstants {
     static final String DEVMODE = "org.nuxeo.app.devmode";
     static final String PREPROCESSING = "org.nuxeo.app.preprocessing";
     static final String SCAN_FOR_NESTED_JARS = "org.nuxeo.app.scanForNestedJars";
+    static final String INSTALL_RELOAD_TIMER = "org.nuxeo.app.installReloadTimer";
     static final String FLUSH_CACHE = "org.nuxeo.app.flushCache";
     static final String ARGS = "org.nuxeo.app.args";
 

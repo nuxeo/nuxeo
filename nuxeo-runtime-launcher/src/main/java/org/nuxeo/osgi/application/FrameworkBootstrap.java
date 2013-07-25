@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -160,7 +161,7 @@ public class FrameworkBootstrap implements LoaderConstants {
         uninstall.invoke(null, name);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void initializeEnvironment() throws IOException {
         System.setProperty(HOME_DIR, home.getAbsolutePath());
         env = new HashMap<String, Object>();
