@@ -50,9 +50,9 @@ import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
- * JAX-RS reader for a DocumentModel. If an id is given, it tries
- * to reattach the document to the session. If not, it creates a
- * ready to create DocumentModel filled with the properties found.
+ * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach
+ * the document to the session. If not, it creates a ready to create
+ * DocumentModel filled with the properties found.
  *
  * @since 5.7.2
  */
@@ -105,6 +105,7 @@ public class JSONDocumentModelReader implements
         DocumentModel tmp = new SimpleDocumentModel();
         String id = null;
         String type = null;
+        String name = null;
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
@@ -112,6 +113,8 @@ public class JSONDocumentModelReader implements
                 id = jp.readValueAs(String.class);
             } else if ("properties".equals(key)) {
                 readProperties(jp, tmp);
+            } else if("name".equals(key)) {
+                name = jp.readValueAs(String.class);
             } else if ("type".equals(key)) {
                 type = jp.readValueAs(String.class);
             } else if ("entity-type".equals(key)) {
@@ -134,13 +137,13 @@ public class JSONDocumentModelReader implements
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
         } else {
-            if (StringUtils.isNotBlank(type)) {
+            if (StringUtils.isNotBlank(type) && StringUtils.isNotBlank(name)) {
                 doc = DocumentModelFactory.createDocumentModel(type);
+                doc.setPathInfo(null, name);
             } else {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
         }
-
 
         for (String schema : tmp.getSchemas()) {
             DataModel dataModel = doc.getDataModel(schema);

@@ -70,11 +70,12 @@ public class JSONDocumentObject extends DocumentObject {
 
     @POST
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doPost(DocumentModel doc) throws ClientException {
+    public Response doPost(DocumentModel inputDoc) throws ClientException {
         CoreSession session = ctx.getCoreSession();
-        doc = session.createDocument(doc);
+        inputDoc.setPathInfo(doc.getPathAsString(), inputDoc.getPathAsString());
+        inputDoc = session.createDocument(inputDoc);
         session.save();
-        return Response.ok(doc).status(Status.CREATED).build();
+        return Response.ok(inputDoc).status(Status.CREATED).build();
     }
 
     @DELETE

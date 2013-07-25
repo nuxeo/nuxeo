@@ -128,10 +128,12 @@ public class DocumentBrowsingTest extends BaseTest {
     @Test
     public void iCanCreateADocument() throws Exception {
 
-        // Given a Rest Creation request
-        String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"properties\": {\"dc:title\":\"My title\"}}";
+        // Given a folder and a Rest Creation request
+        DocumentModel folder = RestServerInit.getFolder(0, session);
 
-        ClientResponse response = getResponse(RequestType.POST, "path/", data);
+        String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\"}}";
+
+        ClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString() , data);
 
         assertEquals(Response.Status.CREATED.getStatusCode(),
                 response.getStatus());
@@ -145,6 +147,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then a document is created in the database
         dispose(session);
         DocumentModel doc = session.getDocument(new IdRef(id));
+        assertEquals(folder.getPathAsString() + "/newName", doc.getPathAsString());
         assertEquals("My title", doc.getTitle());
         assertEquals("File", doc.getType());
 
