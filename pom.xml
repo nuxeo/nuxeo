@@ -3586,6 +3586,11 @@
         <version>3.0.0</version>
       </dependency>
       <dependency>
+        <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-jvm</artifactId>
+        <version>3.0.0</version>
+      </dependency>
+      <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
         <version>3.0</version>
