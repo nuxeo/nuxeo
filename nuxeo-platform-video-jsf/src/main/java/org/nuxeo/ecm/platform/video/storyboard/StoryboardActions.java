@@ -42,24 +42,18 @@ import org.nuxeo.ecm.platform.video.VideoConstants;
 @Scope(ScopeType.EVENT)
 public class StoryboardActions {
 
-    private List<StoryboardItem> storyboardItems;
 
     public List<StoryboardItem> getItems(DocumentModel doc)
             throws PropertyException, ClientException {
-        if (storyboardItems != null) {
-            return storyboardItems;
-        }
         if (!doc.hasFacet(VideoConstants.HAS_STORYBOARD_FACET)) {
-            storyboardItems = Collections.emptyList();
-            return storyboardItems;
+            return Collections.emptyList();
         }
         int size = doc.getProperty(STORYBOARD_PROPERTY).getValue(List.class).size();
         List<StoryboardItem> items = new ArrayList<StoryboardItem>(size);
         for (int i = 0; i < size; i++) {
             items.add(new StoryboardItem(doc, STORYBOARD_PROPERTY, i));
         }
-        storyboardItems = items;
-        return storyboardItems;
+        return items;
     }
 
     public String getStoryboardItemsAsJsonSettings(DocumentModel doc)
