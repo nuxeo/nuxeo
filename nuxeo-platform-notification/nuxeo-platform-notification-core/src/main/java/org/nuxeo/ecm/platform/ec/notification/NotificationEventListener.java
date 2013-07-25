@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -216,6 +217,15 @@ public class NotificationEventListener implements
     private void sendNotificationSignalForUser(Notification notification,
             String subscriptor, Event event, DocumentEventContext ctx)
             throws ClientException {
+
+        if (!ctx.getCoreSession().hasPermission(
+                getUserManager().getPrincipal(subscriptor),
+                ctx.getSourceDocument().getRef(), SecurityConstants.READ)) {
+            log.debug("Notification will not be sent: + '" + subscriptor
+                    + "' do not have Read permission on document "
+                    + ctx.getSourceDocument().getId());
+            return;
+        }
 
         log.debug("Producing notification message.");
 
