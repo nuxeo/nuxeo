@@ -56,7 +56,7 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
                 return new GraphRouteImpl(doc);
             }
         } else if (type.equals("RouteNode")) {
-            return new GraphNodeImpl(doc, null);
+            return new GraphNodeImpl(doc);
         } else if (doc.hasFacet(DocumentRoutingConstants.ROUTE_STEP_FACET)) {
             return new DocumentRouteElementImpl(doc, new StepElementRunner());
         } else if (doc.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {

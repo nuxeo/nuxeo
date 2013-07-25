@@ -41,7 +41,7 @@
  <!-- used to display the graphView -->
   <xs:element name="taskX" type="xs:string" />
   <xs:element name="taskY" type="xs:string" />
-
+  <xs:element name="escalationRules" type="node:escalation_rules" />
 
   <xs:complexType name="transitions">
     <xs:sequence>
@@ -61,8 +61,7 @@
       <xs:element name="chain" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-
-
+  
   <xs:complexType name="buttons">
     <xs:sequence>
       <xs:element name="button" type="node:button"
@@ -75,6 +74,24 @@
       <xs:element name="name" type="xs:string" />
       <xs:element name="label" type="xs:string" />
       <xs:element name="filter" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="escalation_rules">
+    <xs:sequence>
+      <xs:element name="escalation_rule" type="node:escalation_rule"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+   
+   <xs:complexType name="escalation_rule">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="label" type="xs:string" />
+      <xs:element name="multipleExecution" type="xs:boolean" default="false"/>
+      <xs:element name="condition" type="xs:string" />
+      <xs:element name="executed" type="xs:boolean" default="false"/> 
+      <xs:element name="chain" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
 

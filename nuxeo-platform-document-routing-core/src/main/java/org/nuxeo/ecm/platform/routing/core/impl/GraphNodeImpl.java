@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -87,9 +86,20 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     /** To be used through getter. */
     protected List<Button> taskButtons;
 
+    protected List<EscalationRule> escalationRules;
+
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
         super(doc, new GraphRunner());
         this.graph = graph;
+        inputTransitions = new ArrayList<Transition>(2);
+    }
+
+    /**
+     * @since 5.7.2
+     */
+    public GraphNodeImpl(DocumentModel doc) {
+        super(doc, new GraphRunner());
+        this.graph = (GraphRouteImpl) getDocumentRoute(doc.getCoreSession());
         inputTransitions = new ArrayList<Transition>(2);
     }
 
@@ -354,7 +364,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    protected OperationContext getContext() {
+    public OperationContext getExecutionContext() {
         OperationContext context = new OperationContext(getSession());
         context.putAll(getWorkflowContextualInfo(false));
         context.setCommit(false); // no session save at end
@@ -484,7 +494,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
 
         // get base context
-        OperationContext context = getContext();
+        OperationContext context = getExecutionContext();
         if (transitionId != null) {
             context.put("transition", transitionId);
         }
@@ -536,7 +546,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public List<Transition> evaluateTransitions() throws DocumentRouteException {
         try {
             List<Transition> trueTrans = new ArrayList<Transition>();
-            OperationContext context = getContext();
+            OperationContext context = getExecutionContext();
             for (Transition t : getOutputTransitions()) {
                 context.put("transition", t.id);
                 Expression expr = Scripting.newExpression(t.condition);
@@ -587,7 +597,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         if (StringUtils.isEmpty(taskAssigneesVar)) {
             return taskAssignees;
         }
-        OperationContext context = getContext();
+        OperationContext context = getExecutionContext();
         Expression expr = Scripting.newExpression(taskAssigneesVar);
         Object res = null;
         try {
@@ -743,7 +753,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         if (StringUtils.isEmpty(taskDueDateExpr)) {
             return new Date();
         }
-        OperationContext context = getContext();
+        OperationContext context = getExecutionContext();
         Expression expr = Scripting.newExpression(taskDueDateExpr);
         Object res = null;
         try {
@@ -801,7 +811,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         if (StringUtils.isBlank(subRouteModelExpr)) {
             return null;
         }
-        OperationContext context = getContext();
+        OperationContext context = getExecutionContext();
         String res = valueOrExpression(String.class, subRouteModelExpr,
                 context, "Sub-workflow id expression");
         return StringUtils.defaultIfBlank((String) res, null);
@@ -833,8 +843,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             service.startInstance(subRouteInstanceId, docs, map, getSession());
             // return the sub-route
             // subRouteInstance.refresh();
-            DocumentRoute subRoute = subRouteInstance.getAdapter(
-                    DocumentRoute.class);
+            DocumentRoute subRoute = subRouteInstance.getAdapter(DocumentRoute.class);
             return subRoute;
         } catch (ClientException e) {
             throw new DocumentRouteException(e);
@@ -851,7 +860,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             String key = (String) prop.get(PROP_KEYVALUE_KEY).getValue();
             String v = (String) prop.get(PROP_KEYVALUE_VALUE).getValue();
             if (context == null) {
-                context = getContext();
+                context = getExecutionContext();
             }
             Serializable value = valueOrExpression(Serializable.class, v,
                     context, "Sub-workflow variable expression");
@@ -864,7 +873,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
      * Code similar to the one in OperationChainContribution.
      */
     protected <T> T valueOrExpression(Class<T> klass, String v,
-            OperationContext context, String kind) throws DocumentRouteException {
+            OperationContext context, String kind)
+            throws DocumentRouteException {
         if (!v.startsWith(EXPR_PREFIX)) {
             return (T) v;
         }
@@ -900,4 +910,61 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         return (T) res;
     }
 
+    protected List<EscalationRule> computeEscalationRules() {
+        try {
+            ListProperty props = (ListProperty) document.getProperty(PROP_ESCALATION_RULES);
+            List<EscalationRule> rules = new ArrayList<EscalationRule>(
+                    props.size());
+            for (Property p : props) {
+                rules.add(new EscalationRule(this, p));
+            }
+            Collections.sort(rules);
+            return rules;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    public List<EscalationRule> getEscalationRules() {
+        if (escalationRules == null) {
+            escalationRules = computeEscalationRules();
+        }
+        return escalationRules;
+    }
+
+    @Override
+    public List<EscalationRule> evaluateEscalationRules() {
+        try {
+            List<EscalationRule> rulesToExecute = new ArrayList<EscalationRule>();
+            OperationContext context = getExecutionContext();
+            for (EscalationRule rule : getEscalationRules()) {
+                Expression expr = Scripting.newExpression(rule.condition);
+                Object res = null;
+                try {
+                    res = expr.eval(context);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new DocumentRouteException(
+                            "Error evaluating condition: " + rule.condition, e);
+                }
+                if (!(res instanceof Boolean)) {
+                    throw new DocumentRouteException("Condition for rule "
+                            + rule + " of node '" + getId() + "' of graph '"
+                            + graph.getName()
+                            + "' does not evaluate to a boolean: "
+                            + rule.condition);
+                }
+                boolean bool = Boolean.TRUE.equals(res);
+                if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
+                    rulesToExecute.add(rule);
+                }
+            }
+            return rulesToExecute;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
 }

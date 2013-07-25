@@ -30,6 +30,11 @@
       priority="250">
       <event>workflowTaskAssigned</event>
     </listener>
+    
+    <listener name="triggerEsclationRules" async="true"
+      class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingEscalationListener">
+      <event>executeEscalationRules</event>
+    </listener>
 
   </extension>
 

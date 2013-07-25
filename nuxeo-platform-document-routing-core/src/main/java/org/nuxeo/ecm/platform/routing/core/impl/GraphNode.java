@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -144,6 +145,27 @@ public interface GraphNode {
 
     /** @since 5.7.2 */
     String PROP_KEYVALUE_VALUE = "value";
+
+    // @since 5.7.2
+    String PROP_ESCALATION_RULES = "rnode:escalationRules";
+
+    // @since 5.7.2
+    String PROP_ESCALATION_RULE_ID = "name";
+
+    // @since 5.7.2
+    String PROP_ESCALATION_RULE_LABEL = "label";
+
+    // @since 5.7.2
+    String PROP_ESCALATION_RULE_MULTIPLE_EXECUTION = "multipleExecution";
+
+    // @since 5.7.2
+    String PROP_ESCALATION_RULE_CONDITION = "condition";
+
+    // @since 5.7.2
+    String PROP_ESCALATION_RULE_CHAIN = "chain";
+
+    // @since 5.7.2
+    String PROP_ESCALATION_RULE_EXECUTED= "executed";
 
     /**
      * The internal state of a node.
@@ -297,6 +319,81 @@ public interface GraphNode {
 
         public String getFilter() {
             return filter;
+        }
+    }
+
+    /**
+     * @since 5.7.2
+     */
+    class EscalationRule implements Comparable<EscalationRule> {
+
+        protected String id;
+
+        protected String label;
+
+        protected boolean multipleExecution;
+
+        protected String condition;
+
+        protected boolean executed;
+
+        protected String chain;
+
+        protected MapProperty prop;
+
+        protected GraphNode node;
+
+        public EscalationRule(GraphNode node, Property p)
+                throws ClientException {
+            this.prop = (MapProperty) p;
+            this.node = node;
+            this.id = (String) p.get(PROP_ESCALATION_RULE_ID).getValue();
+            this.label = (String) p.get(PROP_ESCALATION_RULE_LABEL).getValue();
+            Property multipleEvaluationProp = prop.get(PROP_ESCALATION_RULE_MULTIPLE_EXECUTION);
+            if (multipleEvaluationProp != null) {
+                multipleExecution = BooleanUtils.isTrue(multipleEvaluationProp.getValue(Boolean.class));
+            }
+            this.condition = (String) p.get(PROP_ESCALATION_RULE_CONDITION).getValue();
+            Property evaluatedProp = prop.get(PROP_ESCALATION_RULE_EXECUTED);
+            if (evaluatedProp != null) {
+                executed = BooleanUtils.isTrue(evaluatedProp.getValue(Boolean.class));
+            }
+            this.chain = (String) p.get(PROP_ESCALATION_RULE_CHAIN).getValue();
+        }
+
+        @Override
+        public int compareTo(EscalationRule o) {
+            return id.compareTo(o.id);
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public String getChain() {
+            return chain;
+        }
+
+        public GraphNode getNode() {
+            return node;
+        }
+
+        public void setExecuted(boolean executed) throws ClientException {
+            this.executed = executed;
+            prop.get(PROP_ESCALATION_RULE_EXECUTED).setValue(
+                    Boolean.valueOf(executed));
+        }
+
+        public boolean isExecuted() {
+            return executed;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public boolean isMultipleExecution(){
+            return multipleExecution;
         }
     }
 
@@ -580,4 +677,27 @@ public interface GraphNode {
      */
     DocumentRoute startSubRoute() throws DocumentRouteException;
 
+    /**
+     * Returns the automation execution context for the node
+     *
+     * @return OperationContext
+     * @since 5.7.2
+     */
+    OperationContext getExecutionContext();
+
+    /**
+     * Evaluates the rules for the escalation rules and returns the ones to be
+     * executed. The rules already executed and not having the property
+     * multipleExecution = true are also ignored
+     *
+     * @since 5.7.2
+     */
+    List<EscalationRule> evaluateEscalationRules();
+
+    /**
+     * Gets the list of all escalation rules for the node
+     *
+     * @since 5.7.2
+     */
+    List<EscalationRule> getEscalationRules();
 }
