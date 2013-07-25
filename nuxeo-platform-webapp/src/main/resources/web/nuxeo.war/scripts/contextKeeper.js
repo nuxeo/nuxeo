@@ -1,4 +1,4 @@
-function InputContextKeeper() {
+function InputContextKeeper(containerId) {
     var _this = this;
     var fileInputContextKeeper = null;
 
@@ -113,7 +113,8 @@ function InputContextKeeper() {
     _this.replaceAllInputs = function() {
         var index = 0;
         // Get all inputs
-        var allInputs = document.getElementsByTagName('input');
+        var container = document.getElementById(containerId);
+        var allInputs = container.getElementsByTagName('input');
 
         // Iterate to see if there is any input file
         for ( var i = 0; i < allInputs.length; i++) {
@@ -134,7 +135,8 @@ function InputContextKeeper() {
 
     _this.gather = function() {
         // Get all inputs
-        var allInputs = document.getElementsByTagName('input');
+        var container = document.getElementById(containerId);
+        var allInputs = container.getElementsByTagName('input');
         _this.clearKeeper();
 
         // Iterate to see if there is any input file
