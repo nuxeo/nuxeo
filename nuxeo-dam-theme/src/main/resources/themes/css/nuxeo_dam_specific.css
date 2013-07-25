@@ -125,8 +125,8 @@ author: lkemen@nuxeo.com
 .nxDamSearchResults .selectedItem:hover {
   background-color: "color.major.stronger (__FLAVOR__ background)";
   color: #fff }
-.nxDamSearchResults .selectedItem .fieldColumn,
-.nxDamSearchResults .selectedItem:hover .fieldColumn { color: #fff }
+.nxDamSearchResults .selectedItem .documentTitle,
+.nxDamSearchResults .selectedItem:hover .documentTitle { color: #fff }
 
 /* Pictures and video thumbnails in bubbleBoxes */
 .thumbnailContainer { text-align: center;
@@ -211,7 +211,8 @@ author: lkemen@nuxeo.com
 
 /* Picture View -> TODO: move it to imaging styles ? */
 .pictureContainer,
-.video-js-box {
+.video-js-box,
+.assetViewContainer {
   background-color: #fff;
   border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
@@ -227,6 +228,7 @@ author: lkemen@nuxeo.com
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  color: "black (__FLAVOR__ color)";
   font-size: 1.3em;
   font-weight: bold;
   margin: .1em 0;
@@ -237,24 +239,24 @@ author: lkemen@nuxeo.com
   white-space: nowrap;
   width: 100% }
 
-.nxMainContainer .documentTitle {
-  color: "black (__FLAVOR__ color)" }
-
 .nxDamSingleAssetLeft .pictureContainer,
-.nxDamSingleAssetLeft .video-js-box {
+.nxDamSingleAssetLeft .video-js-box,
+.nxDamSingleAssetLeft .assetViewContainer {
   height: 400px }
 
 /* Test to center img */
 .thumbnailContainer {
   max-width: none }
 .thumbnailContainer:before,
-.pictureContainer:before {
+.pictureContainer:before,
+.assetViewContainer:before {
   content: '';
   display: inline-block;
   height: 100%;
   vertical-align: middle }
 .thumbnailContainer img,
-.pictureContainer img {
+.pictureContainer img,
+.assetViewContainer img {
   display: inline-block;
   max-width: 100%;
   max-height: 100%;
