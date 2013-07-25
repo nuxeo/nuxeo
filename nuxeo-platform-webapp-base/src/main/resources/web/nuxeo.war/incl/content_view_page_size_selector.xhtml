@@ -34,9 +34,9 @@ empty:
       <a4j:form id="contentViewGlobalPageSizeFrom_#{contentViewRenderId}"
         ajaxSubmit="true">
 
-        <p class="contentViewPageSelectorDesc">
+        <span class="contentViewPageSelectorDesc">
           <h:outputText value="#{messages['label.contentview.pageSize']}" />
-        </p>
+        </span>
         <h:selectOneMenu value="#{pageSizeBinding}"
           id="contentViewPageSizeSelector"
           styleClass="langSelect"
@@ -49,10 +49,10 @@ empty:
           <f:selectItem itemValue="40" itemLabel="40" />
           <f:selectItem itemValue="50" itemLabel="50" />
         </h:selectOneMenu>
-        <div style="display: none;">
+        <span style="display: none;">
           <a4j:commandButton value="submit"
             reRender="#{contentIdToBeReRendered}" />
-        </div>
+        </span>
 
       </a4j:form>
     </span>
