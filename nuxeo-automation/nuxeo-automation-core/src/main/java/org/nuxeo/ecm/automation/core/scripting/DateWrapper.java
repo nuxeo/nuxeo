@@ -17,52 +17,61 @@ import java.util.Date;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:tm@nuxeo.com">Thierry Martins</a>
  */
 public class DateWrapper {
+
+    protected final long timestamp;
 
     protected final Calendar date;
 
     public DateWrapper() {
         this.date = Calendar.getInstance();
+        timestamp = date.getTimeInMillis();
     }
 
     public DateWrapper(Calendar date) {
         this.date = date;
+        timestamp = date.getTimeInMillis();
     }
 
     public DateWrapper(Date date) {
-        this.date = Calendar.getInstance();
-        this.date.setTime(date);
+        this(date.getTime());
     }
 
     public DateWrapper(long date) {
+        timestamp = date;
         this.date = Calendar.getInstance();
-        this.date.setTimeInMillis(date);
+        this.date.setTimeInMillis(timestamp);
     }
 
     public DateWrapper months(int months) {
-        date.add(Calendar.MONTH, months);
-        return this;
+        return dateWrapper(Calendar.MONTH, months);
     }
 
     public DateWrapper days(int days) {
-        date.add(Calendar.DAY_OF_MONTH, days);
-        return this;
+        return dateWrapper(Calendar.DAY_OF_MONTH, days);
     }
 
     public DateWrapper years(int years) {
-        date.add(Calendar.YEAR, years);
-        return this;
+        return dateWrapper(Calendar.YEAR, years);
+    }
+
+    /**
+     * @since 5.7
+     */
+    protected DateWrapper dateWrapper(int unit, int value) {
+        Calendar calendar = (Calendar)this.date.clone();
+        calendar.add(unit, value);
+        return new DateWrapper(calendar);
     }
 
     public DateWrapper seconds(int seconds) {
-        date.add(Calendar.SECOND, seconds);
-        return this;
+        return dateWrapper(Calendar.SECOND, seconds);
     }
 
     public DateWrapper weeks(int weeks) {
-        date.add(Calendar.WEEK_OF_MONTH, weeks);
-        return this;
+        return dateWrapper(Calendar.WEEK_OF_MONTH, weeks);
     }
 
     public Calendar getCalendar() {
@@ -70,39 +79,39 @@ public class DateWrapper {
     }
 
     public Date getDate() {
-        return date.getTime();
+        return new Date(timestamp);
     }
 
     public long getTime() {
-        return date.getTimeInMillis();
+        return timestamp;
     }
 
     public int getYear() {
-        return date.get(Calendar.YEAR);
+        return getCalendar().get(Calendar.YEAR);
     }
 
     public int getMonth() {
-        return date.get(Calendar.MONTH);
+        return getCalendar().get(Calendar.MONTH);
     }
 
     public int getDay() {
-        return date.get(Calendar.DAY_OF_MONTH);
+        return getCalendar().get(Calendar.DAY_OF_MONTH);
     }
 
     public int getMinute() {
-        return date.get(Calendar.MINUTE);
+        return getCalendar().get(Calendar.MINUTE);
     }
 
     public int getHour() {
-        return date.get(Calendar.HOUR);
+        return getCalendar().get(Calendar.HOUR);
     }
 
     public int getSecond() {
-        return date.get(Calendar.SECOND);
+        return getCalendar().get(Calendar.SECOND);
     }
 
     public int getWeek() {
-        return date.get(Calendar.WEEK_OF_YEAR);
+        return getCalendar().get(Calendar.WEEK_OF_YEAR);
     }
 
     public String format(String format) {
