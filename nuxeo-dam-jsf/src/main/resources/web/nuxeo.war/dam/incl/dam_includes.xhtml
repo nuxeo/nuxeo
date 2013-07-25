@@ -5,7 +5,7 @@
   xmlns:a4j="http://richfaces.org/a4j">
 
   <a4j:outputPanel id="damPermanentLink_panel" ajaxRendered="true" layout="block">
-    <c:if test="#{useHtml5DragAndDrop}">
+    <c:if test="#{useHtml5DragAndDrop and damActions.isOnAssetsView()}">
       <script type="text/javascript">
         history.pushState(null, '#{currentDocument.title}', '#{damSearchActions.searchPermanentLinkUrl}');
       </script>

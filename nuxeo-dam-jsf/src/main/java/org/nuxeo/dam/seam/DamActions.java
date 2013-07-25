@@ -19,10 +19,14 @@ package org.nuxeo.dam.seam;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.nuxeo.dam.DamConstants.ASSETS_VIEW_ID;
+import static org.nuxeo.dam.DamConstants.ASSET_VIEW_ID;
 import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
@@ -30,7 +34,6 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.dam.AssetLibrary;
-import org.nuxeo.dam.DamConstants;
 import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -41,15 +44,9 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
 
 /**
  * Handles global DAM actions (selected asset, asset creation, ...).
@@ -148,7 +145,23 @@ public class DamActions implements Serializable {
             String viewId = viewRoot.getViewId();
             // FIXME find a better way to update the current document only
             // if we are on DAM
-            if ("/dam/assets.xhtml".equals(viewId) || "/dam/asset.xhtml".equals(viewId)) {
+            if (ASSETS_VIEW_ID.equals(viewId) || ASSET_VIEW_ID.equals(viewId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOnAssetsView() {
+        if (FacesContext.getCurrentInstance() == null) {
+            return false;
+        }
+
+        UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
+        if (viewRoot != null) {
+            String viewId = viewRoot.getViewId();
+            // FIXME find a better way to know if we are on the assets view
+            if (ASSETS_VIEW_ID.equals(viewId)) {
                 return true;
             }
         }

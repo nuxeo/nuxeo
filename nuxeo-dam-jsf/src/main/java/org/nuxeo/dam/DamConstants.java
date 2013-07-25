@@ -38,4 +38,8 @@ public final class DamConstants {
 
     public static final String REFRESH_DAM_SEARCH = "refreshDamSearch";
 
+    public static final String ASSETS_VIEW_ID = "/dam/assets.xhtml";
+
+    public static final String ASSET_VIEW_ID = "/dam/asset.xhtml";
+
 }
