@@ -144,6 +144,8 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
         undeployContrib(TEST_BUNDLE, XADATASOURCE_CONTRIB);
     }
 
+    // disabled for now, see NXP-12086
+    @Ignore
     @Test
     public void testXANoLeak() throws Exception {
         countPhysicalConnectionsSql = COUNT_SQL;
