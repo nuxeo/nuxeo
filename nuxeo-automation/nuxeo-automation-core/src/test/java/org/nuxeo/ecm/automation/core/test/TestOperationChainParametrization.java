@@ -74,22 +74,6 @@ public class TestOperationChainParametrization {
     }
 
     /**
-     * Check if using chain without parameters is working
-     */
-    @Test
-    public void testSimpleChain() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-        OperationChain chain = new OperationChain("notRegisteredChain");
-        chain.add(FetchContextDocument.ID);
-        chain.add("o1").set("message", "Hello 1!");
-        chain.add("o2").set("message", "Hello 2!");
-        chain.add("oChainCtx").set("message", "Hello 3!");
-        DocumentModel doc = (DocumentModel) service.run(ctx, chain);
-        Assert.assertNotNull(doc);
-    }
-
-    /**
      * Check if using chain with parameters is working
      */
     @Test
@@ -101,7 +85,7 @@ public class TestOperationChainParametrization {
         chain.add("o1").set("message", "Hello 1!");
         chain.add("o2").set("message", "Hello 2!");
         chain.add("oChainCtx").set("message",
-                "expr:Message from chain: @{ChainParameters['messageChain']}");
+                "expr:@{ChainParameters['messageChain']}");
         // Setting parameters of the chain
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("messageChain", "Hello i'm a chain!");

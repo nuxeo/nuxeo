@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 
 /**
@@ -32,7 +33,7 @@ public class OperationResource extends ExecutableResource {
 
     @GET
     @Produces("application/json")
-    public Object doGet() {
+    public Object doGet() throws OperationException {
         return type.getDocumentation();
     }
 

@@ -34,7 +34,7 @@ public class OperationCheckChainContext {
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         // Check if message is filled by the chain parameter in contribution
-        if (message.isEmpty()) {
+        if (!message.equals("Hello i'm a chain!")) {
             return null;
         }
         return doc;

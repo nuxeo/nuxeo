@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation;
 
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
@@ -35,7 +36,7 @@ public interface OperationType {
      */
     AutomationService getService();
 
-    OperationDocumentation getDocumentation();
+    OperationDocumentation getDocumentation() throws OperationException;
 
     /**
      * Gets the name of the component that contributed the operation
@@ -44,4 +45,9 @@ public interface OperationType {
      */
     String getContributingComponent();
     InvokableMethod[] getMethodsMatchingInput(Class<?> in);
+
+    /**
+     * @since 5.7.2
+     */
+    public List<InvokableMethod> getMethods();
 }

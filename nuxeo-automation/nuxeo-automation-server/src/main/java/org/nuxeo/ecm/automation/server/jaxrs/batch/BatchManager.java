@@ -53,6 +53,14 @@ public interface BatchManager {
             String mime) throws IOException;
 
     /**
+     * Returns true if there is a batch for the given {@code batchId}, false
+     * otherwise.
+     *
+     * @since 5.7.2
+     */
+    boolean hasBatch(String batchId);
+
+    /**
      * Get Blobs associated to a given batch. Returns null if batch does not
      * exist
      *

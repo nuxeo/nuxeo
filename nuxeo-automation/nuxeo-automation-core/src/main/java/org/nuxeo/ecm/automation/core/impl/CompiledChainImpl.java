@@ -35,16 +35,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 class CompiledChainImpl implements CompiledChain {
 
-    protected OperationContext context;
-
-    protected AutomationService service;
-
     protected final OperationType op;
-
+    protected OperationContext context;
+    protected AutomationService service;
     protected Map<String, Object> compileParameters; // argument references
-
     protected InvokableMethod method;
-
     protected CompiledChainImpl next;
 
     CompiledChainImpl(OperationType op, Map<String, Object> args) {
@@ -83,7 +78,7 @@ class CompiledChainImpl implements CompiledChain {
         }
         for (InvokableMethod m : methods) {
             Class<?> nextIn = m.getOutputType();
-            if (nextIn == Void.TYPE) { // a control operation
+            if (nextIn == Void.TYPE || nextIn.equals(Object.class)) {
                 nextIn = in; // preserve last input
             }
             if (next.initializePath(nextIn)) {

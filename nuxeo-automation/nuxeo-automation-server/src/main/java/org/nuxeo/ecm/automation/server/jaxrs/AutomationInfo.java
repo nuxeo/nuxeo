@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 
 /**
@@ -34,7 +35,7 @@ public class AutomationInfo {
 
     protected final List<OperationDocumentation> chains;
 
-    public AutomationInfo(AutomationService service) {
+    public AutomationInfo(AutomationService service) throws OperationException {
         ops = service.getDocumentation();
         // build a map for easy lookup
         Map<String, OperationDocumentation> map = new HashMap<String, OperationDocumentation>();

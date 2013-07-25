@@ -334,4 +334,10 @@ public class OperationTypeImpl implements OperationType {
                 + params + "]";
     }
 
+    /**
+     * @since 5.7.2
+     */
+    public List<InvokableMethod> getMethods() {
+        return methods;
+    }
 }

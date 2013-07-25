@@ -7,7 +7,7 @@
     <webAnnotation
            name="SeeAlso"
            uri="http://www.w3.org/2000/10/annotationType#SeeAlso"
-           icon="icons/annotation-icon-SeeAlso.png"
+           icon="icons/permalink.png"
            type="local"
            enabled="false">
     </webAnnotation>
@@ -15,7 +15,7 @@
     <webAnnotation
            name="Question"
            uri="http://www.w3.org/2000/10/annotationType#Question"
-           icon="icons/annotation-icon-Question.png"
+           icon="icons/tip.gif"
            type="local"
            enabled="false">
     </webAnnotation>

@@ -99,7 +99,7 @@ public class TagActionsBean implements Serializable {
     private boolean addTag;
 
     @RequestParameter
-    protected Boolean canAddNewTag;
+    protected Boolean canSelectNewTag;
 
     @Factory(value = "tagServiceEnabled", scope = APPLICATION)
     public boolean isTagServiceEnabled() throws ClientException {
@@ -283,7 +283,7 @@ public class TagActionsBean implements Serializable {
 
         // add the typed tag as first suggestion if we can add new tag
         label = cleanLabel(label);
-        if (Boolean.TRUE.equals(canAddNewTag)
+        if (Boolean.TRUE.equals(canSelectNewTag)
                 && !tags.contains(new Tag(label, 0))) {
             tags.add(0, new Tag(label, -1));
         }

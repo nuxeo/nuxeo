@@ -29,8 +29,8 @@
       </c:if>
     </c:if>
 
-    <a4j:outputPanel id="#{outputPanelId}" layout="block">
-      <a4j:outputPanel ajaxRendered="false" id="#{listRegionId}" layout="block">
+    <a4j:outputPanel id="#{outputPanelId}">
+      <a4j:outputPanel ajaxRendered="false" id="#{listRegionId}">
         <nxu:inputList id="#{widget.id}_list" value="#{currentDocumentTags}" model="model"
           required="#{widget.required}">
           <h:panelGroup id="#{widget.id}_listItem">
@@ -62,7 +62,7 @@
         var="sugtag" fetchValue=""
         nothingLabel="#{messages['label.suggestion.noSearchResults']}"
         minChars="1" frequency="0" requestDelay="100">
-        <f:param name="canAddNewTag" value="true" />
+        <f:param name="canSelectNewTag" value="true" />
         <a4j:support event="onselect"
           focus="#{widget.id}_suggest"
           bypassUpdates="true"
@@ -71,7 +71,7 @@
           <f:setPropertyActionListener value="#{sugtag.label}"
             target="#{tagActions.tagLabel}" />
           <nxu:actionListenerMethod value="#{tagActions.addTagging}" />
-          <f:param name="canAddNewTag" value="true" />
+          <f:param name="canSelectNewTag" value="true" />
         </a4j:support>
         <h:column>
           <f:subview rendered="#{sugtag.weight eq -1}">

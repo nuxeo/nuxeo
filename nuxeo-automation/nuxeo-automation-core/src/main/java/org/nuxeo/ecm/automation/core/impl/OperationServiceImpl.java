@@ -343,7 +343,7 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    public List<OperationDocumentation> getDocumentation() {
+    public List<OperationDocumentation> getDocumentation() throws OperationException {
         List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
         Collection<OperationType> ops = operations.lookup().values();
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {

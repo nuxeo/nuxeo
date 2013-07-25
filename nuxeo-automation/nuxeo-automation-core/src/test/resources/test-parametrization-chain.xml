@@ -11,6 +11,7 @@
   <extension point="chains"
              target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <chain id="contributedchain">
+      <operation id="contributedchainLeaf" />
       <param type="string" name="messageChain" />
       <operation id="o1">
         <param type="string" name="message">Hello 1!</param>
@@ -31,6 +32,14 @@
         <param type="string" name="message">Hello 2!</param>
       </operation>
       <operation id="oChainFlowCtx">
+      </operation>
+    </chain>
+    <chain id="contributedchainLeaf">
+      <operation id="o1">
+        <param type="string" name="message">Hello 1!</param>
+      </operation>
+      <operation id="o2">
+        <param type="string" name="message">Hello 2!</param>
       </operation>
     </chain>
   </extension>
