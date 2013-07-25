@@ -180,8 +180,7 @@ public class AjaxProxyServlet extends HttpServlet {
             throw new IllegalStateException("Unknown HTTP method: " + method);
         }
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> params = req.getParameterMap();
+        Map<String, String[]> params = req.getParameterMap();
         for (String paramName : params.keySet()) {
             httpMethod.getParams().setParameter(paramName, params.get(paramName));
         }
