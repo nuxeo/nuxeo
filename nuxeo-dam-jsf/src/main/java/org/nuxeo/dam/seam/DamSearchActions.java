@@ -418,6 +418,11 @@ public class DamSearchActions implements Serializable {
     @SuppressWarnings("unchecked")
     public String getSearchPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
+        // do not try to compute an URL if we don't have any CoreSession
+        if (documentManager == null) {
+            return null;
+        }
+
         String currentContentViewName = getCurrentContentViewName();
         DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
         DocumentView docView = computeDocumentView(damCurrentDocument);
@@ -448,6 +453,11 @@ public class DamSearchActions implements Serializable {
 
     public String getAssetPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
+        // do not try to compute an URL if we don't have any CoreSession
+        if (documentManager == null) {
+            return null;
+        }
+
         DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
         DocumentView docView = computeDocumentView(damCurrentDocument);
         docView.setViewId("asset");
