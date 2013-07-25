@@ -18,16 +18,37 @@ package org.nuxeo.runtime.metrics;
 
 import java.io.File;
 import java.io.Serializable;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.LogManager;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
+
+import com.codahale.metrics.CsvReporter;
+import com.codahale.metrics.JmxAttributeGauge;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
+import com.codahale.metrics.jvm.BufferPoolMetricSet;
+import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
+import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
+import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
+import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.codahale.metrics.log4j.InstrumentedAppender;
 
 @XObject("metrics")
 public class MetricsDescriptor implements Serializable {
@@ -38,8 +59,8 @@ public class MetricsDescriptor implements Serializable {
         super();
         graphiteReporter = new GraphiteDescriptor();
         csvReporter = new CsvDescriptor();
-        tomcatInstrunmentation = new TomcatInstrumentationDescriptor();
-        log4jInstrunmentation = new Log4jInstrumentationDescriptor();
+        tomcatInstrumentation = new TomcatInstrumentationDescriptor();
+        log4jInstrumentation = new Log4jInstrumentationDescriptor();
     }
 
     @XObject(value = "graphiteReporter")
@@ -56,52 +77,24 @@ public class MetricsDescriptor implements Serializable {
         public static final String PREFIX_PROPERTY = "metrics.graphite.prefix";
 
         @XNode("@enabled")
-        protected Boolean enabled;
+        protected Boolean enabled = Boolean.valueOf(Framework.getProperty(
+                ENABLED_PROPERTY, "false"));
 
         @XNode("@host")
-        public String host;
+        public String host = Framework.getProperty(HOST_PROPERTY, "0.0.0.0");
 
         @XNode("@port")
-        public Integer port;
+        public Integer port = Integer.valueOf(Framework.getProperty(
+                PORT_PROPERTY, "2030"));
 
         @XNode("@periodInSecond")
-        public Integer period;
+        public Integer period = Integer.valueOf(Framework.getProperty(
+                PERIOD_PROPERTY, "10"));
 
         @XNode("@prefix")
-        public String prefix;
+        public String prefix = prefix();
 
-        public boolean isEnabled() {
-            if (enabled == null) {
-                enabled = Boolean.valueOf(Framework.getProperty(
-                        ENABLED_PROPERTY, "false"));
-            }
-            return enabled;
-        }
-
-        public String getHost() {
-            if (host == null) {
-                host = Framework.getProperty(HOST_PROPERTY, "0.0.0.0");
-            }
-            return host;
-        }
-
-        public int getPort() {
-            if (port == null) {
-                port = Integer.valueOf(Framework.getProperty(PORT_PROPERTY,
-                        "2030"));
-            }
-            return port;
-        }
-
-        public int getPeriod() {
-            if (period == null) {
-                period = Integer.valueOf(Framework.getProperty(PERIOD_PROPERTY,
-                        "10"));
-            }
-            return period;
-        }
-
-        public String getPrefix() {
+        public String prefix() {
             if (prefix == null) {
                 prefix = Framework.getProperty(PREFIX_PROPERTY,
                         "servers.${hostname}.nuxeo");
@@ -119,10 +112,34 @@ public class MetricsDescriptor implements Serializable {
         public String toString() {
             return String.format(
                     "graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d",
-                    isEnabled() ? "enabled" : "disabled", getPrefix(),
-                    getHost(), getPort(), getPeriod());
+                    enabled ? "enabled" : "disabled", prefix, host, port,
+                    period);
         }
 
+        protected GraphiteReporter reporter;
+
+        public void enable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            InetSocketAddress address = new InetSocketAddress(host, port);
+            Graphite graphite = new Graphite(address);
+            reporter = GraphiteReporter.forRegistry(registry).convertRatesTo(
+                    TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MICROSECONDS).prefixedWith(
+                    prefix()).build(graphite);
+            reporter.start(period, TimeUnit.SECONDS);
+        }
+
+        public void disable(MetricRegistry registry) {
+            if (reporter == null) {
+                return;
+            }
+            try {
+                reporter.stop();
+            } finally {
+                reporter = null;
+            }
+        }
     }
 
     @XObject(value = "csvReporter")
@@ -135,23 +152,14 @@ public class MetricsDescriptor implements Serializable {
         public static final String OUTPUT_PROPERTY = "metrics.csv.output";
 
         @XNode("@output")
-        public String outputPath;
-
-        public File outputDir;
+        public File outputDir = outputDir();
 
         @XNode("@periodInSecond")
         public Integer period = 10;
 
         @XNode("@enabled")
-        public Boolean enabled;
-
-        public boolean isEnabled() {
-            if (enabled == null) {
-                enabled = Boolean.valueOf(Framework.getProperty(
-                        ENABLED_PROPERTY, "false"));
-            }
-            return enabled;
-        }
+        public boolean enabled = Boolean.valueOf(Framework.getProperty(
+                ENABLED_PROPERTY, "false"));
 
         public int getPeriod() {
             if (period == null) {
@@ -161,24 +169,49 @@ public class MetricsDescriptor implements Serializable {
             return period;
         }
 
-        public File getOutput() {
-            if (outputDir == null) {
-                if (outputPath == null) {
-                    outputPath = Framework.getProperty(OUTPUT_PROPERTY,
-                            Framework.getProperty("nuxeo.log.dir"));
-                }
-                DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss");
-                Date today = Calendar.getInstance().getTime();
-                outputDir = new File(outputPath, "metrics-" + df.format(today));
-            }
+        protected File outputDir() {
+            String path = Framework.getProperty(OUTPUT_PROPERTY,
+                    Framework.getProperty("nuxeo.log.dir"));
+            DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmmss");
+            Date today = Calendar.getInstance().getTime();
+            outputDir = new File(path, "metrics-" + df.format(today));
             return outputDir;
         }
 
         @Override
         public String toString() {
             return String.format("csvReporter %s, outputDir: %s, period: %d",
-                    isEnabled() ? "enabled" : "disabled",
-                    getOutput().toString(), getPeriod());
+                    enabled ? "enabled" : "disabled", outputDir().toString(),
+                    getPeriod());
+        }
+
+        protected CsvReporter reporter;
+
+        public void enable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            File parentDir = outputDir.getParentFile();
+            if (parentDir.exists() && parentDir.isDirectory()) {
+                outputDir.mkdir();
+                reporter = CsvReporter.forRegistry(registry).build(outputDir);
+                reporter.start(Long.valueOf(period), TimeUnit.SECONDS);
+            } else {
+                enabled = false;
+                LogFactory.getLog(MetricsServiceImpl.class).error(
+                        "Invalid output directory, disabling: " + this);
+            }
+        }
+
+        public void disable(MetricRegistry registry) {
+            if (reporter == null) {
+                return;
+            }
+            try {
+                reporter.stop();
+            } finally {
+                reporter = null;
+            }
         }
 
     }
@@ -189,20 +222,35 @@ public class MetricsDescriptor implements Serializable {
         public static final String ENABLED_PROPERTY = "metrics.log4j.enabled";
 
         @XNode("@enabled")
-        protected Boolean enabled;
+        protected boolean enabled = Boolean.getBoolean(Framework.getProperty(
+                ENABLED_PROPERTY, "false"));
 
-        public boolean isEnabled() {
-            if (enabled == null) {
-                enabled = Boolean.valueOf(Framework.getProperty(
-                        ENABLED_PROPERTY, "false"));
-            }
-            return enabled;
-        }
+        private InstrumentedAppender appender;
 
         @Override
         public String toString() {
-            return String.format("log4jInstrumentation %s",
-                    isEnabled() ? "enabled" : "disabled");
+            return String.format("log4jInstrumentation %s", enabled ? "enabled"
+                    : "disabled");
+        }
+
+        public void enable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            LogFactory.getLog(MetricsServiceImpl.class).info(this);
+            appender = new InstrumentedAppender(registry);
+            LogManager.getRootLogger().addAppender(appender);
+        }
+
+        public void disable(MetricRegistry registry) {
+            if (appender == null) {
+                return;
+            }
+            try {
+                LogManager.getRootLogger().removeAppender(appender);
+            } finally {
+                appender = null;
+            }
         }
 
     }
@@ -213,15 +261,8 @@ public class MetricsDescriptor implements Serializable {
         public static final String ENABLED_PROPERTY = "metrics.tomcat.enabled";
 
         @XNode("@enabled")
-        protected Boolean enabled;
-
-        public boolean isEnabled() {
-            if (enabled == null) {
-                enabled = Boolean.valueOf(Framework.getProperty(
-                        ENABLED_PROPERTY, "false"));
-            }
-            return enabled;
-        }
+        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(
+                ENABLED_PROPERTY, "false"));
 
         @Override
         public String toString() {
@@ -229,18 +270,132 @@ public class MetricsDescriptor implements Serializable {
                     enabled ? "enabled" : "disabled");
         }
 
+        protected void registerGauge(String mbean, String attribute,
+                MetricRegistry registry, String name) {
+            try {
+                registry.register(
+                        MetricRegistry.name(MetricsServiceImpl.class, name),
+                        new JmxAttributeGauge(new ObjectName(mbean), attribute));
+            } catch (MalformedObjectNameException | IllegalArgumentException e) {
+                throw new UnsupportedOperationException(
+                        "Cannot compute object name of " + mbean, e);
+            }
+        }
+
+        public void enable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            LogFactory.getLog(MetricsServiceImpl.class).info(this);
+            // TODO: do not hard code the common datasource nameenable(registry)
+            String pool = "Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"";
+            String connector = String.format(
+                    "Catalina:type=ThreadPool,name=http-%s-%s",
+                    Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
+                    Framework.getProperty("nuxeo.bind.port", "8080"));
+            String requestProcessor = String.format(
+                    "Catalina:type=GlobalRequestProcessor,name=http-%s-%s",
+                    Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
+                    Framework.getProperty("nuxeo.bind.port", "8080"));
+            String manager = "Catalina:type=Manager,path=/nuxeo,host=localhost";
+            registerGauge(pool, "numActive", registry, "jdbc-numActive");
+            registerGauge(pool, "numIdle", registry, "jdbc-numIdle");
+            registerGauge(connector, "currentThreadCount", registry,
+                    "tomcat-currentThreadCount");
+            registerGauge(connector, "currentThreadsBusy", registry,
+                    "tomcat-currentThreadBusy");
+            registerGauge(requestProcessor, "errorCount", registry,
+                    "tomcat-errorCount");
+            registerGauge(requestProcessor, "requestCount", registry,
+                    "tomcat-requestCount");
+            registerGauge(requestProcessor, "processingTime", registry,
+                    "tomcat-processingTime");
+            registerGauge(manager, "activeSessions", registry,
+                    "tomcat-activeSessions");
+        }
+
+        public void disable(MetricRegistry registry) {
+            registry.remove("jdbc-numActive");
+            registry.remove("jdbc-numIdle");
+            registry.remove("tomcat-currentThreadCount");
+            registry.remove("tomcat-currentThreadBusy");
+            registry.remove("tomcat-tomcat-errorCount");
+            registry.remove("tomcat-tomcat-requestCount");
+            registry.remove("tomcat-tomcat-processingTime");
+            registry.remove("tomcat-tomcat-activeSessions");
+        }
+    }
+
+    @XObject(value = "jvmInstrumentation")
+    public static class JvmInstrumentationDescriptor {
+
+        public static final String ENABLED_PROPERTY = "metrics.jvm.enabled";
+
+        @XNode("@enabled")
+        protected boolean enabled = Boolean.parseBoolean(Framework.getProperty(
+                ENABLED_PROPERTY, "true"));
+
+        public void enable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            registry.register("jvm.memory", new MemoryUsageGaugeSet());
+            registry.register("jvm.garbage", new GarbageCollectorMetricSet());
+            registry.register("jvm.threads", new ThreadStatesGaugeSet());
+            registry.register("jvm.files", new FileDescriptorRatioGauge());
+            registry.register("jvm.buffers", new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+        }
+
+        public void disable(MetricRegistry registry) {
+            if (!enabled) {
+                return;
+            }
+            registry.remove("jvm.memory");
+            registry.remove("jvm.garbage");
+            registry.remove("jvm.threads");
+            registry.remove("jvm.files");
+            registry.remove("jvm.buffers");
+        }
     }
 
     @XNode("graphiteReporter")
-    public GraphiteDescriptor graphiteReporter;
+    public GraphiteDescriptor graphiteReporter = new GraphiteDescriptor();
 
     @XNode("csvReporter")
-    public CsvDescriptor csvReporter;
+    public CsvDescriptor csvReporter = new CsvDescriptor();
 
     @XNode("log4jInstrumentation")
-    public Log4jInstrumentationDescriptor log4jInstrunmentation;
+    public Log4jInstrumentationDescriptor log4jInstrumentation = new Log4jInstrumentationDescriptor();
 
     @XNode("tomcatInstrumentation")
-    public TomcatInstrumentationDescriptor tomcatInstrunmentation;
+    public TomcatInstrumentationDescriptor tomcatInstrumentation = new TomcatInstrumentationDescriptor();
+
+    @XNode(value = "jvmInstrumentation")
+    public JvmInstrumentationDescriptor jvmInstrumentation = new JvmInstrumentationDescriptor();
+
+    protected JmxReporter jmxReporter;
+
+    public void enable(MetricRegistry registry) {
+        jmxReporter = JmxReporter.forRegistry(registry).build();
+        jmxReporter.start();
+        graphiteReporter.enable(registry);
+        csvReporter.enable(registry);
+        log4jInstrumentation.enable(registry);
+        tomcatInstrumentation.enable(registry);
+        jvmInstrumentation.enable(registry);
+    }
+
+    public void disable(MetricRegistry registry) {
+        try {
+            jmxReporter.stop();
+            graphiteReporter.disable(registry);
+            csvReporter.disable(registry);
+            log4jInstrumentation.disable(registry);
+            tomcatInstrumentation.disable(registry);
+            jvmInstrumentation.disable(registry);
+        } finally {
+            jmxReporter = null;
+        }
+    }
 
 }

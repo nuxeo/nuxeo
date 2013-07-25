@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -55,12 +53,14 @@ import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.InitialContextAccessor;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
 
 /**
  * Internal helper for the Nuxeo-defined transaction manager and connection
@@ -81,7 +81,7 @@ public class NuxeoContainer {
 
     private static TransactionManagerWrapper transactionManager;
 
-    private static final UserTransaction userTransaction = new UserTransactionImpl();
+    private final UserTransaction userTransaction = new UserTransactionImpl();
 
     /**
      * Per-repository connection managers.
@@ -98,20 +98,23 @@ public class NuxeoContainer {
     protected static Context rootContext;
 
     // @since 5.7
-    protected final static Counter rollbackCount = Metrics.defaultRegistry().newCounter(
-            NuxeoContainer.class, "rollback");
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final static Counter concurrentCount = Metrics.defaultRegistry().newCounter(
-            NuxeoContainer.class, "tx-concurrent");
+    protected final Counter rollbackCount = registry.counter(MetricRegistry.name(
+            NuxeoContainer.class, "rollback"));
 
-    protected final static Counter concurrentMaxCount = Metrics.defaultRegistry().newCounter(
-            NuxeoContainer.class, "tx-concurrent-max");
+    protected final Counter concurrentCount = registry.counter(MetricRegistry.name(
+            NuxeoContainer.class, "tx-concurrent"));
 
-    protected final static Timer transactionTimer = Metrics.defaultRegistry().newTimer(
-            NuxeoContainer.class, "transaction", TimeUnit.MICROSECONDS,
-            TimeUnit.SECONDS);
+    protected final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
+            NuxeoContainer.class, "tx-concurrent-max"));
 
-    protected static final ConcurrentHashMap<Transaction, TimerContext> timers = new ConcurrentHashMap<Transaction, TimerContext>();
+    protected final Timer transactionTimer  = registry.timer(MetricRegistry.name(
+            NuxeoContainer.class, "transaction"));
+
+    protected final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<Transaction, Timer.Context>();
+
+    protected static NuxeoContainer instance = new NuxeoContainer();
 
     private NuxeoContainer() {
     }
@@ -124,7 +127,7 @@ public class NuxeoContainer {
         InstallContext() {
             super("Container installation context ("
                     + Thread.currentThread().getName() + ")");
-            this.threadName = Thread.currentThread().getName();
+            threadName = Thread.currentThread().getName();
         }
     }
 
@@ -403,6 +406,7 @@ public class NuxeoContainer {
         return new SimpleReference() {
             private static final long serialVersionUID = 1L;
 
+            @Override
             public Object getContent() throws NamingException {
                 return NuxeoContainer.getTransactionManager();
             }
@@ -414,7 +418,7 @@ public class NuxeoContainer {
      *
      * @return the user transaction
      */
-    public static UserTransaction getUserTransaction() throws NamingException {
+    public UserTransaction getUserTransaction() throws NamingException {
         return userTransaction;
     }
 
@@ -424,7 +428,7 @@ public class NuxeoContainer {
 
             @Override
             public Object getContent() throws NamingException {
-                return NuxeoContainer.getUserTransaction();
+                return instance.getUserTransaction();
             }
         };
     }
@@ -526,7 +530,7 @@ public class NuxeoContainer {
      *
      * @since 5.6
      */
-    public static class UserTransactionImpl implements UserTransaction {
+    public class UserTransactionImpl implements UserTransaction {
 
         protected boolean checked;
 
@@ -579,7 +583,7 @@ public class NuxeoContainer {
                 HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
             check();
-            TimerContext timerContext = timers.remove(transactionManager.getTransaction());
+            Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.commit();
             if (timerContext != null) {
                 timerContext.stop();
@@ -591,7 +595,7 @@ public class NuxeoContainer {
         public void rollback() throws IllegalStateException, SecurityException,
                 SystemException {
             check();
-            TimerContext timerContext = timers.remove(transactionManager.getTransaction());
+            Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.rollback();
             concurrentCount.dec();
             if (timerContext != null) {
