@@ -678,6 +678,13 @@ public interface GraphNode {
     DocumentRoute startSubRoute() throws DocumentRouteException;
 
     /**
+     * Cancels the sub-route if there is one.
+     *
+     * @since 5.7.2
+     */
+    void cancelSubRoute() throws DocumentRouteException;
+
+    /**
      * Returns the automation execution context for the node
      *
      * @return OperationContext

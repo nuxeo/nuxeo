@@ -817,6 +817,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         return StringUtils.defaultIfBlank((String) res, null);
     }
 
+    protected String getSubRouteInstanceId() {
+        return (String) getProperty(GraphNode.PROP_SUB_ROUTE_INSTANCE_ID);
+    }
+
     @Override
     public DocumentRoute startSubRoute() throws DocumentRouteException {
         String subRouteModelId = getSubRouteModelId();
@@ -908,6 +912,21 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                     + " but " + res.getClass().getName() + ": " + v);
         }
         return (T) res;
+    }
+
+    @Override
+    public void cancelSubRoute() throws DocumentRouteException {
+        String subRouteInstanceId = getSubRouteInstanceId();
+        if (!StringUtils.isEmpty(subRouteInstanceId)) {
+            try {
+                DocumentModel subRouteDoc = getSession().getDocument(
+                        new IdRef(subRouteInstanceId));
+                DocumentRoute subRoute = subRouteDoc.getAdapter(DocumentRoute.class);
+                subRoute.cancel(getSession());
+            } catch (ClientException e) {
+                throw new DocumentRouteException(e);
+            }
+        }
     }
 
     protected List<EscalationRule> computeEscalationRules() {

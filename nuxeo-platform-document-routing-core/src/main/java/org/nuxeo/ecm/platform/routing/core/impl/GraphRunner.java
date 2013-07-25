@@ -150,8 +150,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         }
         // also cancel tasks
         TaskService taskService = Framework.getLocalService(TaskService.class);
+        GraphRoute graph = (GraphRoute) element;
         try {
-            GraphRoute graph = (GraphRoute) element;
             List<Task> tasks = taskService.getAllTaskInstances(
                     element.getDocument().getId(), session);
             for (Task task : tasks) {
@@ -171,6 +171,14 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             }
             session.save();
         } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        // also cancel sub-workflows
+        try {
+            for (GraphNode node : graph.getNodes()) {
+                node.cancelSubRoute();
+            }
+        } catch (DocumentRouteException e) {
             throw new ClientRuntimeException(e);
         }
     }

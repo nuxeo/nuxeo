@@ -1483,8 +1483,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test
-    public void testSubRouteSuspending() throws Exception {
+    public void createRouteAndSuspendingSubRoute() throws Exception {
 
         // create the sub-route
 
@@ -1515,6 +1514,11 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // create the base workflow
 
         createWorkflowWithSubRoute(subRouteDoc.getName());
+    }
+
+    @Test
+    public void testSubRouteSuspending() throws Exception {
+        createRouteAndSuspendingSubRoute();
 
         // start the main workflow
         DocumentRoute route = instantiateAndRun(session);
@@ -1548,4 +1552,35 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         route.getDocument().refresh();
         assertTrue(route.isDone());
     }
+
+    @Test
+    public void testSubRouteCancel() throws Exception {
+        createRouteAndSuspendingSubRoute();
+
+        // start the main workflow
+        DocumentRoute route = instantiateAndRun(session);
+
+        // check that it's suspended on node 2
+        assertFalse(route.isDone());
+        DocumentModel n2 = session.getChild(route.getDocument().getRef(),
+                "node2");
+        assertNotNull(n2);
+        assertEquals(State.SUSPENDED.getLifeCycleState(),
+                n2.getCurrentLifeCycleState());
+
+        // cancel the main workflow
+        route.cancel(session);
+        route.getDocument().refresh();
+        assertTrue(route.isCanceled());
+
+        // find the sub-route instance
+        String subid = (String) n2.getPropertyValue(GraphNode.PROP_SUB_ROUTE_INSTANCE_ID);
+        assertNotNull(subid);
+        DocumentModel subrdoc = session.getDocument(new IdRef(subid));
+        DocumentRoute subr = subrdoc.getAdapter(DocumentRoute.class);
+
+        // check hat it's canceled as well
+        assertTrue(subr.isCanceled());
+    }
+
 }
