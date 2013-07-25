@@ -91,8 +91,12 @@
       <artifactId>commons-httpclient</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.yammer.metrics</groupId>
+      <groupId>com.codahale.metrics</groupId>
       <artifactId>metrics-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-metrics</artifactId>
     </dependency>
     <dependency>
       <groupId>com.thetransactioncompany</groupId>

@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -90,11 +89,12 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
-import com.yammer.metrics.core.Timer;
-import com.yammer.metrics.core.TimerContext;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
 
 /**
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
@@ -150,19 +150,21 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected String securityDomain = LOGIN_DOMAIN;
 
     // @since 5.7
-    protected final Timer requestTimer = Metrics.defaultRegistry().newTimer(
-            NuxeoAuthenticationFilter.class, "request", TimeUnit.MICROSECONDS,
-            TimeUnit.SECONDS);
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final static Counter concurrentCount = Metrics.defaultRegistry().newCounter(
-            NuxeoAuthenticationFilter.class, "request-concurrent");
+    protected final Timer requestTimer = registry.timer(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "request"));
 
-    protected final static Counter concurrentMaxCount = Metrics.defaultRegistry().newCounter(
-            NuxeoAuthenticationFilter.class, "request-concurrent-max");
+    protected final Counter concurrentCount = registry.counter(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "request-concurrent"));
 
-    protected final static Counter loginCount = Metrics.defaultRegistry().newCounter(
-            NuxeoAuthenticationFilter.class, "logged-user");
+    protected final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "request-concurrent-max"));
 
+    protected final Counter loginCount = registry.counter(MetricRegistry.name(
+            NuxeoAuthenticationFilter.class, "logged-user"));
+
+    @Override
     public void destroy() {
     }
 
@@ -371,9 +373,10 @@ public class NuxeoAuthenticationFilter implements Filter {
         return true;
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        final TimerContext contextTimer = requestTimer.time();
+        final Timer.Context contextTimer = requestTimer.time();
         concurrentCount.inc();
         if (concurrentCount.getCount() > concurrentMaxCount.getCount()) {
             concurrentMaxCount.inc();
@@ -671,6 +674,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
     }
 
+    @Override
     public void init(FilterConfig config) throws ServletException {
         String val = config.getInitParameter("byPassAuthenticationLog");
         if (val != null && Boolean.parseBoolean(val)) {

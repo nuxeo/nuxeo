@@ -54,10 +54,12 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Counter;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 public class SQLDirectory extends AbstractDirectory {
 
@@ -146,11 +148,13 @@ public class SQLDirectory extends AbstractDirectory {
     private final Dialect dialect;
 
     // @since 5.7
-    protected final static Counter sessionCount = Metrics.defaultRegistry().newCounter(
-            SQLDirectory.class, "session");
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final static Counter sessionMaxCount = Metrics.defaultRegistry().newCounter(
-            SQLDirectory.class, "session-max");
+    protected final Counter sessionCount = registry.counter(MetricRegistry.name(
+            SQLDirectory.class, "session"));
+
+    protected final Counter sessionMaxCount = registry.counter(MetricRegistry.name(
+            SQLDirectory.class, "session-max"));
 
     public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
         this.config = config;
