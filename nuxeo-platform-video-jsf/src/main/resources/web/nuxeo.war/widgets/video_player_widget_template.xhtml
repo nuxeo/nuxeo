@@ -23,6 +23,10 @@
   <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(value)}">
   <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(value, 'MP4 480p')}">
   <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(value, 'WebM 480p')}">
+  <nxu:set var="safariHTML5" value="#{videoActions.safariHTML5}">
+  <nxu:set var="chromeHTML5" value="#{videoActions.chromeHTML5}">
+  <nxu:set var="firefoxHTML5" value="#{videoActions.firefoxHTML5}">
+  <nxu:set var="HTML5Available" value="#{safariHTML5 or chromeHTML5 or firefoxHTML5}"> 
 
   <c:if test="#{empty mp4URL}">
     <nxu:set var="conversionStatus"
@@ -35,22 +39,41 @@
     </nxu:set>
   </c:if>
 
-  <div class="video-js-box">
-    <!-- Unless using the CDN hosted version, update the URL to the Flash SWF -->
-    <script>
-      videojs.options.flash.swf = "#{baseURL}swf/video-js.swf";
-    </script>
-    <video id="videoJs" width="#{width}" height="#{height}" class="video-js vjs-default-skin" controls="controls" preload="auto"
-      poster="#{staticPreview}" data-setup="{}">
-      <c:if test="#{not empty mp4URL}">
-        <source src="#{mp4URL}" type='video/mp4' />
-      </c:if>
-      <c:if test="#{not empty webmURL}">
-        <source src="#{webmURL}" type='video/webm' />
-      </c:if>
-    </video>
-  </div>
+  <c:if test="#{(not empty mp4URL) or (not empty webmURL and (chromeHTML5 or firefoxHTML5))}">
+      <div class="video-js-box">
+      <!-- Unless using the CDN hosted version, update the URL to the Flash SWF -->
+      <script>
+        videojs.options.flash.swf = "#{baseURL}swf/video-js.swf";
+      </script>
+      <video id="videoJs" width="#{width}" height="#{height}" class="video-js vjs-default-skin" controls="controls" preload="auto"
+        poster="#{staticPreview}">
+        <c:if test="#{not empty mp4URL}">
+          <source src="#{mp4URL}" type='video/mp4' />
+        </c:if>
+        <c:if test="#{not empty webmURL}">
+          <source src="#{webmURL}" type='video/webm' />
+        </c:if>
+      </video>
+    </div>
 
+    <script>
+      if (_V_.players.videoJs){
+        player = _V_.players.videoJs;
+        if (player.isReady) {
+          player.destroy();
+        } else {
+          delete _V_.players['videoJs'];
+        }   
+      }
+      _V_('videoJs');
+    </script>
+
+  </c:if>
+
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
+  </nxu:set>
   </nxu:set>
   </nxu:set>
   </nxu:set>
