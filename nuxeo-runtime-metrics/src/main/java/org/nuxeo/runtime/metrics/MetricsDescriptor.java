@@ -308,7 +308,7 @@ public class MetricsDescriptor implements Serializable {
                     "tomcat-errorCount");
             registerGauge(requestProcessor, "requestCount", registry,
                     "tomcat-requestCount");
-            registerGauge(requestProcessor, "requestProcessingTime", registry,
+            registerGauge(requestProcessor, "processingTime", registry,
                     "tomcat-processingTime");
             registerGauge(manager, "activeSessions", registry,
                     "tomcat-activeSessions");
