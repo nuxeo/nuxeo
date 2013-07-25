@@ -498,13 +498,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             statesString.deleteCharAt(statesString.length() - 1);
             statesString.append(") AND");
         }
-        final String RELATED_TOUTES_QUERY = String.format(
-                " SELECT * FROM DocumentRoute WHERE " + statesString.toString()
-                        + " docri:participatingDocuments IN ('%s') ",
-                attachedDocId);
+        String query = String.format("SELECT * FROM DocumentRoute WHERE "
+                + statesString.toString()
+                + " docri:participatingDocuments = '%s'"
+                // ordering by dc:created makes sure that
+                // a sub-workflow is listed under its parent
+                + " ORDER BY dc:created", attachedDocId);
         try {
             UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(
-                    session, RELATED_TOUTES_QUERY);
+                    session, query);
             list = queryRunner.runQuery();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

@@ -18,10 +18,6 @@
       <nxu:set var="isEditableRouteElement" value="#{routingActions.isEditableRouteElement(currentDocument)}">
       <nxu:set var="isEmptyFork" value="#{routingActions.isEmptyFork(currentDocument)}">
       <nxu:set var="isEditableStep" value="#{routingActions.isEditableStep(currentDocument)}">
-      
-    <c:if test="#{routingActions.isCurrentRouteGraph()}">
-     <ui:include src="/incl/route_graph_view.xhtml" />
-    </c:if>  
 
       <c:if test="#{currentRouteLockedByCurrentUser and (isEditableRouteElement || isEmptyFork || isEditableStep)}">
         <c:if test="#{documents.rowCount == 0}">
@@ -49,11 +45,11 @@
     </ui:decorate>
    </nxu:set>
   </c:if>
-  
+
   <c:if test="#{currentDocument.currentLifeCycleState == 'deleted'}">
 
     <ui:include src="/incl/tabs/document_trash_content.xhtml" />
 
   </c:if>
-  
+
 </div>

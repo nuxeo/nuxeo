@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -186,6 +187,18 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
+    /**
+     * Gets the first related route.
+     * <p>
+     * When called on an actual route or route element, the route is returned.
+     * <p>
+     * When called on a regular document, the routing service is queried to get
+     * the routes which have the current document attached.
+     * <p>
+     * When dealing with a regular document, this is DEPRECATED as several graph
+     * routes may be related to the current document (for instance in the case
+     * of sub-workflows). Use {@link #getRelatedRoutes} instead.
+     */
     public DocumentRoute getRelatedRoute() {
         // try to see if actually the current document is a route
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -201,16 +214,38 @@ public class DocumentRoutingActionsBean implements Serializable {
             return relatedRouteElement.getDocumentRoute(documentManager);
         }
         // else we must be in a document attached to a route
-        try {
-            relatedRoutes = relatedRouteAction.findRelatedRoute();
-            if (relatedRoutes.size() <= 0) {
-                return null;
-            }
-            docWithAttachedRouteId = currentDocument.getId();
-            DocumentModel docRoute = relatedRoutes.get(0);
-            return docRoute.getAdapter(DocumentRoute.class);
-        } catch (ClientException e) {
+        List<DocumentRoute> routes = getRelatedRoutes();
+        if (routes.isEmpty()) {
             return null;
+        }
+        docWithAttachedRouteId = currentDocument.getId();
+        return routes.get(0);
+    }
+
+    /**
+     * Gets the list of routes related to the current document, by querying the
+     * routing service.
+     *
+     * @return the list of routes (may be empty)
+     * @since 5.7.2
+     */
+    public List<DocumentRoute> getRelatedRoutes() {
+        queryForRelatedRoutes();
+        List<DocumentRoute> routes = new ArrayList<DocumentRoute>(relatedRoutes.size());
+        for (DocumentModel doc : relatedRoutes) {
+            routes.add(doc.getAdapter(DocumentRoute.class));
+        }
+        return routes;
+    }
+
+    protected void queryForRelatedRoutes() {
+        if (relatedRoutes == null) {
+            try {
+                relatedRoutes = relatedRouteAction.findRelatedRoute();
+            } catch (ClientException e) {
+                log.error("Cannot get related routes", e);
+                relatedRoutes = Collections.emptyList();
+            }
         }
     }
 
@@ -337,10 +372,8 @@ public class DocumentRoutingActionsBean implements Serializable {
      * Check if the related route to this case is started (ready or running) or
      * no
      */
-    public boolean hasRelatedRoute() throws ClientException {
-        if (relatedRoutes == null) {
-            relatedRoutes = relatedRouteAction.findRelatedRoute();
-        }
+    public boolean hasRelatedRoute() {
+        queryForRelatedRoutes();
         return !relatedRoutes.isEmpty();
     }
 
@@ -953,17 +986,24 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
         return "";
     }
-    
+
     /**
      * since 5.7
      */
     public boolean isCurrentRouteGraph() throws ClientException {
-        DocumentRoute currentRoute = getRelatedRoute();
-        if (currentRoute != null) {
-            return ExecutionTypeValues.graph.toString().equals(
-                    (String) currentRoute.getDocument().getPropertyValue(
-                            DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
-        }
-        return false;
+        return isRouteGraph(getRelatedRoute());
     }
+
+    /**
+     * Checks if a given route is a Graph.
+     *
+     * @since 5.7.2
+     */
+    public boolean isRouteGraph(DocumentRoute route) throws ClientException {
+        return route != null
+                && ExecutionTypeValues.graph.toString().equals(
+                        (String) route.getDocument().getPropertyValue(
+                                DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
+    }
+
 }

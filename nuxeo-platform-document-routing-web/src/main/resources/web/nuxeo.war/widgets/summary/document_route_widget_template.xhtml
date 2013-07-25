@@ -26,16 +26,16 @@
 
   <c:choose>
     <c:when test="#{routingActions.hasRelatedRoute()}">
-      <nxu:set var="relatedRoute" value="#{routingActions.getRelatedRoute()}">
-        <h:outputText value="#{messages[relatedRoute.name]} " />
-        <h:outputText value="#{messages['label.route.started']} " />
-        <h:outputText value="#{nxu:userFullName(relatedRoute.document.docri.initiator)}"/>
-      </nxu:set>
-
-     <c:if test="#{routingActions.isCurrentRouteGraph()}">
-      <ui:include src="/incl/route_graph_view.xhtml" />
-     </c:if>
-
+      <c:forEach var="relatedRoute" items="#{routingActions.getRelatedRoutes()}">
+        <div>
+          <h:outputText value="#{messages[relatedRoute.name]} " />
+          <h:outputText value="#{messages['label.route.started']} " />
+          <h:outputText value="#{nxu:userFullName(relatedRoute.document.docri.initiator)}" />
+        </div>
+        <c:if test="#{routingActions.isRouteGraph(relatedRoute)}">
+          <nxl:layout name="graphViewLayout" mode="view" value="#{relatedRoute}"/>
+        </c:if>
+      </c:forEach>
     </c:when>
     <c:otherwise>
       <nxl:widget name="start_route_widget" mode="edit" value="#{routingActions}" />
