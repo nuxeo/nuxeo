@@ -339,22 +339,22 @@ public class MetricsDescriptor implements Serializable {
             if (!enabled) {
                 return;
             }
-            registry.register("jvm-memory", new MemoryUsageGaugeSet());
-            registry.register("jvm-garbage", new GarbageCollectorMetricSet());
-            registry.register("jvm-threads", new ThreadStatesGaugeSet());
-            registry.register("jvm-files", new FileDescriptorRatioGauge());
-            registry.register("jvm-buffers", new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+            registry.register("jvm.memory", new MemoryUsageGaugeSet());
+            registry.register("jvm.garbage", new GarbageCollectorMetricSet());
+            registry.register("jvm.threads", new ThreadStatesGaugeSet());
+            registry.register("jvm.files", new FileDescriptorRatioGauge());
+            registry.register("jvm.buffers", new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
         }
 
         public void disable(MetricRegistry registry) {
             if (!enabled) {
                 return;
             }
-            registry.remove("jvm-memory");
-            registry.remove("jvm-garbage");
-            registry.remove("jvm-threads");
-            registry.remove("jvm-files");
-            registry.remove("jvm-buffers");
+            registry.remove("jvm.memory");
+            registry.remove("jvm.garbage");
+            registry.remove("jvm.threads");
+            registry.remove("jvm.files");
+            registry.remove("jvm.buffers");
         }
     }
 
