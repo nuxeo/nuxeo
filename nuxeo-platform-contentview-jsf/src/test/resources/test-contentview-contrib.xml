@@ -38,6 +38,9 @@
         <event>documentChildrenChanged</event>
       </refresh>
 
+      <showFilterForm>true</showFilterForm>
+      <showRefreshCommand>false</showRefreshCommand>
+
       <flags>
         <flag>foo</flag>
         <flag>bar</flag>

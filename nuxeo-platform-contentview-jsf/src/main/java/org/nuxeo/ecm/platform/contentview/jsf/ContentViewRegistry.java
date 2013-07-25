@@ -242,12 +242,14 @@ public class ContentViewRegistry extends
             oldDesc.showTitle = showTitle;
         }
 
-        Boolean showPageSizeSelector = newDesc.getShowPageSizeSelector();
+        // avoid override when setting the default value => use the field, not
+        // the API, for merge
+        Boolean showPageSizeSelector = newDesc.showPageSizeSelector;
         if (showPageSizeSelector != null) {
             oldDesc.showPageSizeSelector = showPageSizeSelector;
         }
 
-        Boolean showRefreshCommand = newDesc.getShowRefreshCommand();
+        Boolean showRefreshCommand = newDesc.showRefreshCommand;
         if (showRefreshCommand != null) {
             oldDesc.showRefreshCommand = showRefreshCommand;
         }
