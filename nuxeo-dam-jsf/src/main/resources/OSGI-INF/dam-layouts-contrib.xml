@@ -337,13 +337,62 @@
       </fields>
     </widget>
 
-    <widget name="damAssetViewPicture" type="picture_view" />
-
-    <widget name="damAssetViewVideo" type="video_player">
-      <properties widgetMode="any">
-        <property name="width">425</property>
-        <property name="height">235</property>
+    <widget name="damAssetViewPicture" type="container">
+      <properties widgetMode="view">
+        <property name="styleClass">assetViewContainer</property>
+        <property name="hideSubLabels">true</property>
       </properties>
+      <subWidgets>
+        <widget name="pictureView" type="picture_view" />
+      </subWidgets>
+    </widget>
+
+    <widget name="damAssetViewVideo" type="container">
+      <properties widgetMode="view">
+        <property name="styleClass">assetViewContainer</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="videoPlayer" type="video_player">
+          <properties widgetMode="any">
+            <property name="width">425</property>
+            <property name="height">235</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="damAssetViewAudio" type="container">
+      <properties widgetMode="view">
+        <property name="styleClass">assetViewContainer</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="audioThumbnail" type="listing_thumbnail">
+          <fields>
+            <field></field>
+          </fields>
+        </widget>
+        <widget name="audioPlayer" type="audio_player">
+          <fields>
+            <field>file:content</field>
+          </fields>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="damAssetViewThumbnail" type="container">
+      <properties widgetMode="view">
+        <property name="styleClass">assetViewContainer</property>
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="thumbnail" type="listing_thumbnail">
+          <fields>
+            <field></field>
+          </fields>
+        </widget>
+      </subWidgets>
     </widget>
 
     <widget name="damAssetViewDescription" type="summary_current_document_description" />
@@ -411,18 +460,6 @@
         <property name="foldable">true</property>
         <property name="hideSubLabels">true</property>
       </properties>
-    </widget>
-
-    <widget name="damAssetViewAudio" type="audio_player">
-      <fields>
-        <field>file:content</field>
-      </fields>
-    </widget>
-
-    <widget name="damAssetViewThumbnail" type="listing_thumbnail">
-      <fields>
-        <field></field>
-      </fields>
     </widget>
 
     <widget name="damAssetViewDamCommon" type="toggleableLayoutWithForms">
@@ -597,11 +634,19 @@
       </properties>
     </widget>
 
-    <widget name="damSingleAssetVideo" type="video_player">
-      <properties widgetMode="any">
-        <property name="width">723</property>
-        <property name="height">400</property>
+    <widget name="damSingleAssetVideo" type="container">
+      <properties widgetMode="view">
+        <property name="styleClass">assetViewContainer</property>
+        <property name="hideSubLabels">true</property>
       </properties>
+      <subWidgets>
+        <widget name="videoPlayer" type="video_player">
+          <properties widgetMode="any">
+            <property name="width">723</property>
+            <property name="height">400</property>
+          </properties>
+        </widget>
+      </subWidgets>
     </widget>
 
     <widget name="damc_author" type="text">
@@ -727,6 +772,7 @@
       </properties>
       <filter-id>hasNotVideoFacet</filter-id>
       <filter-id>hasNotPictureFacet</filter-id>
+      <filter-id>hasNotAudioFacet</filter-id>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
@@ -982,6 +1028,12 @@
 
     <filter id="hasAudioFacet">
       <rule grant="true">
+        <facet>Audio</facet>
+      </rule>
+    </filter>
+
+    <filter id="hasNotAudioFacet">
+      <rule grant="false">
         <facet>Audio</facet>
       </rule>
     </filter>
