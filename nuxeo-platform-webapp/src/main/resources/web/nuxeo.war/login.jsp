@@ -4,9 +4,15 @@
 <%@ page language="java"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink"%>
+<%@ page import="java.util.List"%>
 <%@ page import="java.util.Locale"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
 String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
@@ -32,6 +38,25 @@ if (localeCookie != null) {
 
 boolean maintenanceMode = AdminStatusHelper.isInstanceInMaintenanceMode();
 String maintenanceMessage = AdminStatusHelper.getMaintenanceMessage();
+
+LoginScreenConfig screenConfig = LoginScreenHelper.getConfig();
+List<LoginProviderLink> providers = screenConfig.getProviders();
+boolean useExternalProviders = providers!=null && providers.size()>0;
+
+// fetch Login Screen config and manage default
+boolean showNews = screenConfig.getDisplayNews();
+String iframeUrl = screenConfig.getNewsIframeUrl();
+
+String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') repeat scroll bottom left #cadfc0");
+String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
+String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0 #fff");
+String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
+
+String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "92");
+String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "36");
+String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
+String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), "/img/nuxeo_logo.png");
+
 %>
 
 <html>
@@ -54,7 +79,7 @@ if (selectedLanguage != null) { %>
 <!--
 body {
   font: normal 12px/18pt "Lucida Grande", Arial, sans-serif;
-  background: url("<%=context%>/img/login_bg.jpg") repeat scroll bottom left #cadfc0;
+  background: <%=bodyBackgroundStyle%>;
   color: #343434;
   margin: 0;
   text-align: center
@@ -69,7 +94,8 @@ body {
   background: #000 none;
   width: 100%;
   height: 36px;
-  border: 0
+  border: 0;
+  <%=headerStyle%>;
 }
 
 .topBar img {
@@ -107,7 +133,7 @@ body {
 
 /* Login block */
 .login {
-  background: none repeat scroll 0 0 #fff;
+  background: <%=loginBoxBackgroundStyle%>;
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
   margin-left: 10em;
@@ -151,6 +177,43 @@ body {
 .login_button:hover {
   border: 1px solid #92999e;
   color: #000
+}
+
+/* Other ids */
+.loginOptions {
+  border-top: 1px solid #ccc;
+  color: #999;
+  font-size: .85em;
+}
+
+.loginOptions p {
+  margin: 1em .5em .7em;
+  font-size: .95em;
+}
+
+.idList {
+  padding: 0 1em;
+}
+
+.idItem {
+  display: inline;
+}
+
+.idItem a, .idItem a:visited {
+  background: url(<%=context%>/icons/default.png) no-repeat 5px center #eee;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  color: #666;
+  display: inline-block;
+  font-weight: bold;
+  margin: .3em 0;
+  padding: 0.1em 0.2em 0.1em 2em;
+  text-decoration: none;
+}
+
+.idItem a:hover {
+  background-color: #fff;
+  color: #333;
 }
 
 /* Messages */
@@ -197,7 +260,8 @@ body {
 /* Footer */
 .footer {
   color: #d6d6d6;
-  font-size: .65em
+  font-size: .65em;
+  <%=footerStyle%>
 }
 
 .loginLegal {
@@ -234,7 +298,7 @@ body {
   <tbody>
     <tr class="topBar">
       <td>
-        <img width="92" height="36" alt="Nuxeo" src="<%=context%>/img/nuxeo_logo.png"/>
+        <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=context%><%=logoUrl%>"/>
       </td>
       <td align="right" class="leftColumn">
         <div class="labelCorp">
@@ -352,14 +416,30 @@ body {
                 </td>
               </tr>
             </table>
+
+            <% if (useExternalProviders) {%>
+            <div class="loginOptions">
+              <p><fmt:message bundle="${messages}" key="label.login.loginWithAnotherId" /></p>
+              <div class="idList">
+                <% for (LoginProviderLink provider : providers) { %>
+                <div class="idItem">
+                  <a href="<%= provider.getLink(request, request.getContextPath() + request.getParameter("requestedUrl")) %>"
+                    style="background-image:url('<%=(context + provider.getIconPath())%>')" title="<%=provider.getDescription()%>"><%=provider.getLabel()%>
+                  </a>
+                </div>
+                <%}%>
+              </div>
+            </div>
+            <%}%>
+
           </div>
         </form>
       </td>
       <td class="news_container" align="right" valign="middle">
-        <% if (!"Nuxeo-Selenium-Tester".equals(testerName)) { %>
+        <% if (showNews && !"Nuxeo-Selenium-Tester".equals(testerName)) { %>
           <iframe class="block_container" style="visibility:hidden"
             onload="javascript:this.style.visibility='visible';"
-            src="https://www.nuxeo.com/embedded/dm-login"></iframe>
+            src="<%=iframeUrl%>"></iframe>
         <% } %>
       </td>
     </tr>
@@ -390,4 +470,3 @@ body {
 
 </body>
 </html>
-
