@@ -142,13 +142,18 @@ public class SimpleBackend extends AbstractCoreBackend {
     @Override
     public DocumentModel updateDocument(DocumentModel doc, String name,
             Blob content) throws ClientException {
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh != null) {
-            bh.setBlob(content);
+        FileManager fileManager = Framework.getLocalService(FileManager.class);
+        String parentPath = new Path(doc.getPathAsString()).removeLastSegments(1).toString();
+        try {
+            // this cannot be done before the update anymore
+            // doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
+            doc = fileManager.createDocumentFromBlob(getSession(), content,
+                    parentPath, true, name); // overwrite=true
+        } catch (ClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ClientException("Error while updating document", e);
         }
-        doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
-        getSession().saveDocument(doc);
-        saveChanges();
         return doc;
     }
 

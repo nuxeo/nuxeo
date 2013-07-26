@@ -32,6 +32,13 @@ import com.sun.jersey.api.client.WebResource;
  */
 public class JerseyClientTest extends AbstractServerTest {
 
+    /*
+     * With extension, because once created the resource is identified according
+     * to the blob filename, which gets a .txt extension due to the blobholder
+     * adapter.
+     */
+    private static final String FILENAME = "file.txt";
+
     @Test
     public void simpleTest() {
         Client client = Client.create();
@@ -42,17 +49,17 @@ public class JerseyClientTest extends AbstractServerTest {
 
         // Create / remove file
 
-        r.path("file").put("some content");
-        String e2 = r.path("file").get(String.class);
+        r.path(FILENAME).put("some content");
+        String e2 = r.path(FILENAME).get(String.class);
         assertEquals("some content", e2);
 
-        r.path("file").put("different content");
-        String e3 = r.path("file").get(String.class);
+        r.path(FILENAME).put("different content");
+        String e3 = r.path(FILENAME).get(String.class);
         assertEquals("different content", e3);
 
-        r.path("file").delete();
+        r.path(FILENAME).delete();
         try {
-            r.path("file").get(String.class);
+            r.path(FILENAME).get(String.class);
             fail("Should have raise a 'doc not found' exception");
         } catch (RuntimeException e) {
             // OK.
