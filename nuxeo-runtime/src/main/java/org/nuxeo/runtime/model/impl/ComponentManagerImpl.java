@@ -46,7 +46,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     // must use an ordered Set to avoid loosing the order of the pending
     // extensions
-    protected final Map<ComponentName, Set<Extension>> pendingExtensions;
+    protected final Map<ComponentName, Set<Extension>> extensionPendingsByComponent;
 
     private ListenerList listeners;
 
@@ -58,7 +58,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     public ComponentManagerImpl(RuntimeService runtime) {
         reg = new ComponentRegistry(this);
-        pendingExtensions = new HashMap<ComponentName, Set<Extension>>();
+        extensionPendingsByComponent = new HashMap<ComponentName, Set<Extension>>();
         listeners = new ListenerList();
         services = new ConcurrentHashMap<String, RegistrationInfoImpl>();
         blacklist = new HashSet<String>();
@@ -74,14 +74,7 @@ public class ComponentManagerImpl implements ComponentManager {
         return reg.requiredPendings.map;
     }
 
-    public synchronized Collection<ComponentName> getNeededRegistrations() {
-        return pendingExtensions.keySet();
-    }
 
-    public synchronized Collection<Extension> getPendingExtensions(
-            ComponentName name) {
-        return pendingExtensions.get(name);
-    }
 
     @Override
     public synchronized RegistrationInfoImpl getRegistrationInfo(
@@ -256,13 +249,13 @@ public class ComponentManagerImpl implements ComponentManager {
                 log.debug("Enqueue contributed extension to pending queue: "
                         + extension);
             }
-            Set<Extension> extensions = pendingExtensions.get(name);
+            Set<Extension> extensions = extensionPendingsByComponent.get(name);
             if (extensions == null) {
                 extensions = new LinkedHashSet<Extension>(); // must keep order
                                                              // in which
                                                              // extensions are
                                                              // contributed
-                pendingExtensions.put(name, extensions);
+                extensionPendingsByComponent.put(name, extensions);
             }
             extensions.add(extension);
             sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_PENDING,
@@ -289,12 +282,12 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
             }
         } else { // maybe it's pending
-            Set<Extension> extensions = pendingExtensions.get(name);
+            Set<Extension> extensions = extensionPendingsByComponent.get(name);
             if (extensions != null) {
                 // FIXME: extensions is a set of Extensions, not ComponentNames.
                 extensions.remove(name);
                 if (extensions.isEmpty()) {
-                    pendingExtensions.remove(name);
+                    extensionPendingsByComponent.remove(name);
                 }
             }
         }

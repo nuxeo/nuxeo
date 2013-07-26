@@ -178,13 +178,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             RegistrationInfoImpl other = manager.getRegistrationInfo(otherName);
             if (other != null) {
                 if (other.isResolved()) {
-                    if (other.isActivated()) {
-                        try {
-                            other.deactivate();
-                        } catch (RuntimeModelException e) {
-                            errors.add(e);
-                        }
-                    }
                     requiredResolved.add(other);
                 } else {
                     requiredRegistered.add(other);
@@ -458,47 +451,44 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         component.activate();
         log.info("Component activated: " + name);
 
+        RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         // register contributed extensions if any
         if (extensions != null) {
-            checkExtensions();
             for (Extension xt : extensions) {
+                if (xt.getTargetComponent() == null) {
+                    errors.add(new RuntimeModelException(
+                            "Bad extension declaration (no target attribute specified). Component: "
+                                    + getName()));
+                    continue;
+                }
                 xt.setComponent(component);
                 try {
                     manager.registerExtension(xt);
-                } catch (Exception e) {
-                    String msg = "Failed to register extension to: "
-                            + xt.getTargetComponent() + ", xpoint: "
-                            + xt.getExtensionPoint() + " in component: "
-                            + xt.getComponent().getName();
-                    log.error(msg, e);
-                    msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getWarnings().add(msg);
-                    Framework.handleDevError(e);
+                } catch (RuntimeModelException e) {
+                    errors.add(e);
                 }
             }
         }
 
         // register pending extensions if any
         ComponentManagerImpl mgr = manager;
-        Set<Extension> pendingExt = mgr.pendingExtensions.remove(name);
-        if (pendingExt != null) {
-            for (Extension xt : pendingExt) {
-                ComponentManagerImpl.loadContributions(this, xt);
-                try {
-                    component.registerExtension(xt);
-                } catch (Exception e) {
-                    String msg = "Failed to register extension to: "
-                            + xt.getTargetComponent() + ", xpoint: "
-                            + xt.getExtensionPoint() + " in component: "
-                            + xt.getComponent().getName();
-                    log.error(msg, e);
-                    msg += " (" + e.toString() + ')';
-                    Framework.getRuntime().getWarnings().add(msg);
-                    Framework.handleDevError(e);
-                }
-            }
+        Set<Extension> contributedExtensions = mgr.extensionPendingsByComponent.remove(name);
+        if (contributedExtensions == null) {
+            return;
         }
 
+        for (Extension xt : contributedExtensions) {
+            ComponentManagerImpl.loadContributions(this, xt);
+            try {
+                component.registerExtension(xt);
+            } catch (Exception e) {
+                errors.add(new RuntimeModelException("Failed to register extension to: "
+                        + xt.getTargetComponent() + ", xpoint: "
+                        + xt.getExtensionPoint() + " in component: "
+                        + xt.getComponent().getName(), e));
+            }
+        }
+        errors.throwOnError();
     }
 
     protected void handleActivated() {
@@ -535,48 +525,42 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         errors.throwOnError();
     }
 
-    protected void handleDeactivating() {
-        // deactivate depends
-        Iterator<RegistrationInfoImpl> it = dependsOnMe.iterator();
-        while (it.hasNext()) {
-            RegistrationInfoImpl other = it.next();
-            it.remove();
-            try {
-                other.deactivate();
-            } catch (Exception e) {
-                log.error("Failed to de-activate dependent component (" + this
-                        + "->" + other + ")");
-            }
-        }
-
+    protected void handleDeactivating() throws RuntimeModelException {
         // unregister contributed extensions if any
+        RuntimeModelException.CompoundBuilder errors = RuntimeModelException.newErrors();
         if (extensions != null) {
             for (Extension xt : extensions) {
                 try {
                     manager.unregisterExtension(xt);
-                } catch (Exception e) {
-                    log.error(
-                            "Failed to unregister extension. Contributor: "
-                                    + xt.getComponent() + " to "
-                                    + xt.getTargetComponent() + "; xpoint: "
-                                    + xt.getExtensionPoint(), e);
-                    Framework.handleDevError(e);
+                } catch (RuntimeModelException e) {
+                    errors.add(e);
                 }
+            }
+        }
+
+        // deactivate depends
+        Iterator<RegistrationInfoImpl> it = dependsOnMe.iterator();
+        for (RegistrationInfoImpl other:dependsOnMe) {
+            try {
+                other.deactivate();
+            } catch (RuntimeModelException e) {
+                errors.add(e);
             }
         }
 
         // deactivate component
         try {
             component.deactivate();
-        } catch (Exception e) {
+        } catch (RuntimeModelException e) {
             log.error("Failed to de-activate " + this, e);
             Framework.handleDevError(e);
         }
         component = null;
+        errors.throwOnError();
     }
 
     protected void handleDeactivated() {
-
+        log.info("Component deactivated: " + name);
     }
 
     public synchronized void resolve() throws RuntimeModelException {
@@ -584,11 +568,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             return;
         }
 
-        handleResolving();
-
         state = RESOLVED;
 
-        handlePreResolved();
+        handleResolving();
 
         manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_RESOLVED,
                 this));
@@ -597,11 +579,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     }
 
-    protected void handleResolving() {
+    protected void handleResolving() throws RuntimeModelException {
         manager.registerServices(this);
-    }
-
-    protected void handlePreResolved() throws RuntimeModelException {
+        RuntimeModelException.CompoundBuilder errors = RuntimeModelException.newErrors();
         for (RegistrationInfoImpl other : dependsOnMe) {
             if (other.context != context) {
                 continue;
@@ -610,9 +590,14 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             other.requiredResolved.add(this);
             if (other.requiredPendings.isEmpty()
                     && other.requiredRegistered.isEmpty()) {
-                other.resolve();
+                try {
+                    other.resolve();
+                } catch (RuntimeModelException e) {
+                    errors.add(e);
+                }
             }
         }
+        errors.throwOnError();
     }
 
     protected void handleResolved() throws RuntimeModelException {
@@ -670,35 +655,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @Override
     public String getImplementation() {
         return implementation;
-    }
-
-    public void checkExtensions() {
-        if (extensions == null) {
-            return;
-        }
-        // HashSet<String> targets = new HashSet<String>();
-        for (ExtensionImpl xt : extensions) {
-            if (xt.target == null) {
-                Framework.getRuntime().getWarnings().add(
-                        "Bad extension declaration (no target attribute specified). Component: "
-                                + getName());
-                continue;
-            }
-            // TODO do nothing for now -> fix the faulty components and then
-            // activate these warnings
-            // String key = xt.target.getName()+"#"+xt.getExtensionPoint();
-            // if (targets.contains(key)) { // multiple extensions to same
-            // target point declared in same component
-            // String message =
-            // "Component "+getName()+" contains multiple extensions to "+key;
-            // Framework.getRuntime().getWarnings().add(message);
-            // //TODO: un-comment the following line if you want to treat this
-            // as a dev. error
-            // //Framework.handleDevError(new Error(message));
-            // } else {
-            // targets.add(key);
-            // }
-        }
     }
 
     @Override

@@ -359,7 +359,11 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
             }
             other.context.dependsOnMeContexts.add(this);
             if (!other.isActivated()) {
-                requiredContextsPendings.add(other.context);
+                if (other.getContext().isActivated()) {
+                    other.activate();
+                } else {
+                    requiredContextsPendings.add(other.context);
+                }
             } else {
                 requiredContexts.add(other.context);
             }
