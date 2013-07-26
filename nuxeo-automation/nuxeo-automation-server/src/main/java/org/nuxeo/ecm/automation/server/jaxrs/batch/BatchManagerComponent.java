@@ -29,9 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
@@ -180,16 +178,8 @@ public class BatchManagerComponent extends DefaultComponent implements
         try {
             Object result = null;
             AutomationService as = Framework.getLocalService(AutomationService.class);
-            if (chainOrOperationId.startsWith("Chain.")) {
-                ctx.putAll(operationParams);
-                result = as.run(ctx, chainOrOperationId.substring(6));
-            } else {
-                OperationChain chain = new OperationChain("operation");
-                OperationParameters params = new OperationParameters(
-                        chainOrOperationId, operationParams);
-                chain.add(params);
-                result = as.run(ctx, chain);
-            }
+            // Drag and Drop action category is accessible from the chain sub context as chain parameters
+            result = as.run(ctx, chainOrOperationId, operationParams);
             return result;
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
