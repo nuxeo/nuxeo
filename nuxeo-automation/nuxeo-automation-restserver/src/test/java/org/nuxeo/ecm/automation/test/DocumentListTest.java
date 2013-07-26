@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.rest.jaxrs.adapters.ChildrenAdapter;
@@ -68,6 +69,7 @@ public class DocumentListTest extends BaseTest {
     }
 
     @Test
+    @Ignore
     public void iCanSearchInFullTextForDocuments() throws Exception {
         // Given a note with "nuxeo" in its description
         DocumentModel note = RestServerInit.getNote(0, session);
