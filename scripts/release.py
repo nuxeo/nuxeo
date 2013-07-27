@@ -114,12 +114,17 @@ class Release(object):
 
     See 'self.perpare()', 'self.perform()'."""
     def __init__(self, repo, branch, tag, next_snapshot, maintenance="auto",
-                 is_final=False, skipTests=False, other_versions=None):
+                 is_final=False, skipTests=False, other_versions=None,
+                 profiles=''):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
         self.maintenance = maintenance
         self.skipTests = skipTests
+        if profiles:
+            self.profiles = ',' + profiles
+        else:
+            self.profiles = profiles
         # Evaluate default values, if not provided
         self.set_other_versions_and_patterns(other_versions)
         self.set_snapshot()
@@ -246,11 +251,11 @@ class Release(object):
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
                         "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
-                        "OTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
+                        "PROFILES=%s\nOTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
                         "PROPS_PATTERN=%s" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance, self.is_final,
-                         self.skipTests,
+                         self.skipTests, self.profiles,
                          (','.join('/'.join(other_version)
                                    for other_version in self.other_versions)),
                          self.custom_patterns.files,
@@ -449,10 +454,10 @@ class Release(object):
             return
         if dodeploy:
             self.repo.mvn("clean deploy", skip_tests=self.skipTests,
-                        profiles="release,-qa,nightly")
+                        profiles="release,-qa,nightly" + self.profiles)
         else:
             self.repo.mvn("clean install", skip_tests=self.skipTests,
-                        profiles="release,-qa")
+                        profiles="release,-qa" + self.profiles)
         self.package_all()
         # TODO NXP-8571 package sources
         os.chdir(cwd)
@@ -471,7 +476,7 @@ class Release(object):
         self.repo.system_recurse("git push --tags")
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
-                        profiles="release,-qa")
+                        profiles="release,-qa" + self.profiles)
         os.chdir(cwd)
 
     def check(self):
@@ -491,9 +496,9 @@ def main():
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
         usage = ("""usage: %prog <command> [options]
-       %prog prepare [-r alias] [-f] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [-d] [--skipTests] [--arv versions_replacements]
-       %prog perform [-r alias] [-f] [-b branch] [-t tag] [-m maintenance]
-       %prog package [--skipTests]
+       %prog prepare [-r alias] [-f] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [-d] [--skipTests] [-p profiles] [--arv versions_replacements]
+       %prog perform [-r alias] [-f] [-b branch] [-t tag] [-m maintenance] [-p profiles]
+       %prog package [--skipTests] [-p profiles]
 \nCommands:
   prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
   perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release.log file.
@@ -510,49 +515,60 @@ maintenance branch is kept, else it is deleted after release."""
                           dest='remote_alias',
                           default='origin',
                           help="""The Git alias of remote URL.
-Default: %default""")
+Default: '%default'""")
         parser.add_option('-i', '--interactive', action="store_true",
                           dest='interactive', default=False,
                           help="""Not implemented (TODO NXP-8573). Interactive
-mode. Default: %default""")
+mode. Default: '%default'""")
         parser.add_option('-d', '--deploy', action="store_true",
                           dest='deploy', default=False,
                           help="""Deploy artifacts to nightly/staging repository
-by activating the 'nightly' Maven profile. Default: %default""")
+by activating the 'nightly' Maven profile. Default: '%default'""")
         parser.add_option('--skipTests', action="store_true",
                           dest='skipTests', default=False,
                           help="""Skip tests execution (but compile them).
-Default: %default""")
+Default: '%default'""")
+        parser.add_option('-p', '--profiles', action="store", type="string",
+                          dest='profiles',
+                          default='',
+                          help="""Additional Maven profiles.
+Default: '%default'.
+Those profiles are also always activated (unless deactivated by that parameter):\n
+ - 'addons,distrib,all-distributions' for all commands\n
+ - 'release,-qa' for prepare command (plus 'nightly' if deploy option passed),\n
+ - 'release,-qa' for perform command,\n
+ - 'qa' for package command.
+""")
         versioning_options = optparse.OptionGroup(parser, 'Version policy')
         versioning_options.add_option('-f', '--final', action="store_true",
                           dest='is_final', default=False,
-                          help='Is it a final release? Default: %default')
+                          help="Is it a final release? Default: '%default'")
         versioning_options.add_option("-b", "--branch", action="store",
                           type="string",
-                          help="""Branch to release. Default: %default = the
+                          help="""Branch to release. Default: '%default' = the
 current branch""",
                           dest="branch", default="auto")
         versioning_options.add_option("-t", "--tag", action="store",
                           type="string", dest="tag", default="auto",
                           help="""Released version. SCM tag is 'release-$TAG'.
-Default: %default\n
+Default: '%default'\n
 In mode 'auto', if final option is True, then the default value is the current
 version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is replaced with a date
 (aka 'date-based release').""")
         versioning_options.add_option("-n", "--next", action="store", type="string",
                           dest="next_snapshot", default="auto",
-                          help="""Version post-release. Default: %default\n
+                          help="""Version post-release. Default: '%default'\n
 In mode 'auto', if final option is True, then the next snapshot is the current
 one increased, else it is equal to the current.""")
         versioning_options.add_option('-m', '--maintenance', action="store",
                           dest='maintenance', default="auto",
-                          help="""Maintenance version. Default: %default\n
+                          help="""Maintenance version. Default: '%default'\n
 The maintenance branch is always named like the tag without the 'release-'
 prefix. If set, the version will be used on the maintenance branch, else, in
 mode 'auto', the maintenance branch is deleted after release.""")
         versioning_options.add_option('--arv', '--also-replace-version',
                           action="store", dest='other_versions', default=None,
-                          help="""Other version(s) to replace. Default: %default\n
+                          help="""Other version(s) to replace. Default: '%default'\n
 Use a slash ('/') as a separator between old and new version: '1.0-SNAPSHOT/1.0'.\n
 A version post-release can also be specified: '1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT'.\n
 Multiple versions can be replaced using a coma (',') separator:
@@ -590,6 +606,7 @@ Default files and properties patterns are respectively:
                 options.maintenance = f.readline().split("=")[1].strip()
                 options.is_final = f.readline().split("=")[1].strip() == "True"
                 options.skipTests = f.readline().split("=")[1].strip() == "True"
+                options.profiles = f.readline().split("=")[1].strip()
                 other_versions = f.readline().split("=")[1].strip()
                 files_pattern = f.readline().split("=")[1].strip()
                 props_pattern = f.readline().split("=")[1].strip()
@@ -606,7 +623,7 @@ Default files and properties patterns are respectively:
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance,
                           options.is_final, options.skipTests,
-                          options.other_versions)
+                          options.other_versions, options.profiles)
         release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
@@ -617,8 +634,12 @@ Default files and properties patterns are respectively:
         elif command == "package":
             repo.clone()
             # workaround for NXBT-121: use install instead of package
-            repo.mvn("clean install", skip_tests=options.skipTests,
-                     profiles="qa")
+            if options.profiles:
+                repo.mvn("clean install", skip_tests=options.skipTests,
+                         profiles="qa," + options.profiles)
+            else:
+                repo.mvn("clean install", skip_tests=options.skipTests,
+                         profiles="qa")
             release.package_all(release.snapshot)
         elif command == "test":
             release.test()
