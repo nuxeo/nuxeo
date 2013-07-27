@@ -6,7 +6,6 @@ import java.util.Comparator;
 
 import javax.management.ObjectInstance;
 
-import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
@@ -57,14 +56,17 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 
     protected ObjectInstance self;
 
-    protected void install() {
-        self = DefaultMonitorComponent.bind(this);
+    @Override
+    public void install() {
+        self = DefaultMonitorComponent.bind(CoreSessionMonitor.class, this);
         registry.register(MetricRegistry.name(DefaultCoreSessionMonitor.class, "coresession-count"),
                 new JmxAttributeGauge(self.getObjectName(), "Count"));
     }
 
-    protected void uninstall() {
+    @Override
+    public void uninstall() {
         DefaultMonitorComponent.unbind(self);
+        registry.remove(MetricRegistry.name(DefaultCoreSessionMonitor.class, "coresession-count"));
         self = null;
     }
 

@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.management.jtajca.ConnectionMonitor;
+import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -51,14 +51,14 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.ecm.core.management.jtajca")
 public class CanMonitorConnections {
 
-    protected ConnectionMonitor monitor;
+    protected StorageConnectionMonitor monitor;
 
     @Before
     public void lookupMonitor() throws JMException {
         MBeanServer srv = ManagementFactory.getPlatformMBeanServer();
         String repositoryName = DatabaseHelper.DATABASE.repositoryName;
-        String name = String.format(ConnectionMonitor.NAME, repositoryName);
-        monitor = JMX.newMXBeanProxy(srv, new ObjectName(name), ConnectionMonitor.class);
+        String name = String.format(StorageConnectionMonitor.NAME, repositoryName);
+        monitor = JMX.newMXBeanProxy(srv, new ObjectName(name), StorageConnectionMonitor.class);
     }
 
     @Inject

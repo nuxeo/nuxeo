@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
 import javax.management.ObjectInstance;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -58,14 +56,15 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
 
     protected TransactionManagerImpl tm;
 
+    @Override
     public void install() {
         tm = lookup();
         tm.addTransactionAssociationListener(this);
         bindManagementInterface();
     }
 
-    public void uninstall() throws MBeanRegistrationException,
-            InstanceNotFoundException {
+    @Override
+    public void uninstall()  {
         unbindManagementInterface();
         tm.removeTransactionAssociationListener(this);
     }

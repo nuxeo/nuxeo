@@ -22,10 +22,10 @@ import javax.management.MXBean;
 
 /**
  * @author matic
- * 
+ *
  */
 @MXBean
-public interface TransactionMonitor {
+public interface TransactionMonitor extends Monitor {
 
     public static String NAME = Defaults.instance.name(TransactionMonitor.class);
 

@@ -22,12 +22,12 @@ import org.apache.geronimo.connector.outbound.PoolingAttributes;
 
 /**
  * @author matic
- * 
+ *
  */
 @MXBean
-public interface ConnectionMonitor extends PoolingAttributes {
+public interface StorageConnectionMonitor extends PoolingAttributes, Monitor {
 
-    public static String NAME = Defaults.instance.name(ConnectionMonitor.class,
+    public static String NAME = Defaults.instance.name(StorageConnectionMonitor.class,
             "%s");
 
 }

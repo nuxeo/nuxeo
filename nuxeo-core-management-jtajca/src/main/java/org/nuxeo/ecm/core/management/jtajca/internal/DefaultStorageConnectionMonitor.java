@@ -34,7 +34,7 @@ import org.apache.geronimo.connector.outbound.AbstractConnectionManager.Intercep
 import org.apache.geronimo.connector.outbound.ConnectionInfo;
 import org.apache.geronimo.connector.outbound.ConnectionInterceptor;
 import org.apache.log4j.MDC;
-import org.nuxeo.ecm.core.management.jtajca.ConnectionMonitor;
+import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
@@ -52,9 +52,9 @@ import com.codahale.metrics.SharedMetricRegistries;
  * @author matic
  *
  */
-public class DefaultConnectionMonitor implements ConnectionMonitor {
+public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor {
 
-    private static final Log log = LogFactory.getLog(DefaultConnectionMonitor.class);
+    private static final Log log = LogFactory.getLog(DefaultStorageConnectionMonitor.class);
 
     // @since 5.7.2
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
@@ -65,7 +65,7 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
 
     protected AbstractConnectionManager cm;
 
-    protected DefaultConnectionMonitor(String repositoryName) {
+    protected DefaultStorageConnectionMonitor(String repositoryName) {
         this.repositoryName = repositoryName;
     }
 
@@ -197,20 +197,22 @@ public class DefaultConnectionMonitor implements ConnectionMonitor {
 
     protected ObjectInstance self;
 
-    protected void install() {
+    @Override
+    public void install() {
         cm = lookup(repositoryName);
         cm = enhanceConnectionManager(cm);
         self = DefaultMonitorComponent.bind(this, repositoryName);
-        registry.register(MetricRegistry.name(DefaultConnectionMonitor.class,
+        registry.register(MetricRegistry.name(DefaultStorageConnectionMonitor.class,
                 "vcs-xaConnectionCount"),
                 new JmxAttributeGauge(self.getObjectName(), "ConnectionCount"));
-        registry.register(MetricRegistry.name(DefaultConnectionMonitor.class,
+        registry.register(MetricRegistry.name(DefaultStorageConnectionMonitor.class,
                 "vcs-xaConnectionIdle"),
                 new JmxAttributeGauge(self.getObjectName(),
                         "IdleConnectionCount"));
     }
 
-    protected void uninstall() {
+    @Override
+    public void uninstall() {
         DefaultMonitorComponent.unbind(self);
         self = null;
         cm = null;

@@ -30,15 +30,22 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
+import org.nuxeo.ecm.core.management.jtajca.DatabaseConnectionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
+import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
+import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
 import org.nuxeo.ecm.core.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.metrics.MetricsServiceImpl;
@@ -53,11 +60,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class DefaultMonitorComponent extends DefaultComponent {
 
-    protected DefaultCoreSessionMonitor smon;
+    protected CoreSessionMonitor coreSessionMonitor;
 
-    protected DefaultTransactionMonitor tmon;
+    protected TransactionMonitor transactionMonitor;
 
-    protected Map<String, DefaultConnectionMonitor> cmons = new HashMap<String, DefaultConnectionMonitor>();
+    protected Map<String, StorageConnectionMonitor> storageConnectionMonitors = new HashMap<String, StorageConnectionMonitor>();
+
+    protected Map<String, DatabaseConnectionMonitor> databaseConnectionMonitors = new HashMap<String, DatabaseConnectionMonitor>();
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -88,18 +97,30 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     protected void install() throws Exception {
         installed = true;
-        smon = new DefaultCoreSessionMonitor();
-        smon.install();
-        tmon = new DefaultTransactionMonitor();
-        tmon.install();
+        coreSessionMonitor = new DefaultCoreSessionMonitor();
+        coreSessionMonitor.install();
+        transactionMonitor = new DefaultTransactionMonitor();
+        transactionMonitor.install();
+
+        Map<String,DataSource> dsByName =  DataSourceHelper.getDatasources();
+        for (Map.Entry<String, DataSource> dsEntry:dsByName.entrySet()) {
+            String name = dsEntry.getKey();
+            DataSource ds = dsEntry.getValue();
+            if (ds instanceof BasicDataSource) {
+                DatabaseConnectionMonitor monitor = new DefaultDatabaseConnectionMonitor(name, (BasicDataSource)ds);
+                monitor.install();
+                databaseConnectionMonitors.put(name, monitor);
+            }
+        }
+
         RepositoryService repositoryService = NXCore.getRepositoryService();
         RepositoryManager repositoryManager = repositoryService.getRepositoryManager();
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             activateRepository(repositoryName);
-            DefaultConnectionMonitor cmon = new DefaultConnectionMonitor(
+            DefaultStorageConnectionMonitor cmon = new DefaultStorageConnectionMonitor(
                     repositoryName);
             cmon.install();
-            cmons.put(repositoryName, cmon);
+            storageConnectionMonitors.put(repositoryName, cmon);
         }
     }
 
@@ -120,14 +141,17 @@ public class DefaultMonitorComponent extends DefaultComponent {
             return;
         }
         installed = false;
-        for (DefaultConnectionMonitor cmon : cmons.values()) {
-            cmon.uninstall();
+        for (StorageConnectionMonitor storage : storageConnectionMonitors.values()) {
+            storage.uninstall();
         }
-        smon.uninstall();
-        tmon.uninstall();
-        cmons.clear();
-        smon = null;
-        tmon = null;
+        for (DatabaseConnectionMonitor ds : databaseConnectionMonitors.values()) {
+            ds.uninstall();
+        }
+        coreSessionMonitor.uninstall();
+        transactionMonitor.uninstall();
+        storageConnectionMonitors.clear();
+        coreSessionMonitor = null;
+        transactionMonitor = null;
     }
 
     protected static ObjectInstance bind(Object managed) {
