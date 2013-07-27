@@ -115,7 +115,7 @@ class Release(object):
     See 'self.perpare()', 'self.perform()'."""
     def __init__(self, repo, branch, tag, next_snapshot, maintenance="auto",
                  is_final=False, skipTests=False, other_versions=None,
-                 profiles=''):
+                 profiles='', msg_commit='', msg_tag=''):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
@@ -125,6 +125,8 @@ class Release(object):
             self.profiles = ',' + profiles
         else:
             self.profiles = profiles
+        self.msg_commit = msg_commit
+        self.msg_tag = msg_tag
         # Evaluate default values, if not provided
         self.set_other_versions_and_patterns(other_versions)
         self.set_snapshot()
@@ -252,14 +254,15 @@ class Release(object):
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
                         "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
                         "PROFILES=%s\nOTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
-                        "PROPS_PATTERN=%s" %
+                        "PROPS_PATTERN=%s\nMSG_COMMIT=%s\nMSG_TAG=%s\n" %
                         (self.repo.alias, self.branch, self.tag,
                          self.next_snapshot, self.maintenance, self.is_final,
                          self.skipTests, self.profiles,
                          (','.join('/'.join(other_version)
                                    for other_version in self.other_versions)),
                          self.custom_patterns.files,
-                         self.custom_patterns.props[35:]))
+                         self.custom_patterns.props[35:],
+                         self.msg_commit, self.msg_tag))
             log("Parameters stored in %s" % release_log)
         log("")
 
@@ -413,36 +416,46 @@ class Release(object):
 
         log("\n[INFO] Releasing branch {0}, create branch {1}, update versions, "
             "commit and tag as release-{1}...".format(self.branch, self.tag))
+        msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot,
+                                                      self.tag)
         self.repo.system_recurse("git checkout -b %s" % self.tag)
         self.update_versions(self.snapshot, self.tag)
         for other_version in self.other_versions:
             if len(other_version) > 0:
                 self.update_versions(other_version[0], other_version[1])
-        self.repo.system_recurse("git commit -m'Release %s' -a" % self.tag)
-        self.repo.system_recurse("git tag release-%s" % self.tag)
+                msg_commit += ", update %s to %s" % (other_version[0],
+                                                     other_version[1])
+        self.repo.system_recurse("git commit -m'%s %s' -a" % (self.msg_commit,
+                                                              msg_commit))
+        msg_tag = "Release release-%s from %s on %s" % (self.tag, self.snapshot,
+                                                        self.branch)
+        self.repo.system_recurse("git tag -a release-%s -m'%s %s'" % (self.tag,
+                                                        self.msg_tag, msg_tag))
 
         # TODO NXP-8569 Optionally merge maintenance branch on source
         if self.maintenance != "auto":
             # Maintenance branches are kept, so update their versions
             log("\n[INFO] Maintenance branch (update version and commit)...")
+            msg_commit = "Update %s to %s" % (self.tag, self.maintenance)
             self.update_versions(self.tag, self.maintenance)
-            self.repo.system_recurse("git commit -m'Post release %s' -a" %
-                                     self.tag)
+            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
 
         log("\n[INFO] Released branch %s (update version and commit)..." %
             self.branch)
         self.repo.system_recurse("git checkout %s" % self.branch)
         # Update released branches with next versions
-        post_release_change = self.update_versions(self.snapshot,
-                                                   self.next_snapshot)
-        for other_version in self.other_versions:
-            if len(other_version) == 3:
-                post_release_change = (
-                    self.update_versions(other_version[0], other_version[2]) or
-                    post_release_change)
+        post_release_change = self.update_versions(self.snapshot, self.next_snapshot)
+        msg_commit = "Post release %s." % self.branch
         if post_release_change:
-            self.repo.system_recurse("git commit -m'Post release %s' -a" %
-                                     self.tag)
+            msg_commit = " Update %s to %s" % (self.snapshot, self.next_snapshot)
+        for other_version in self.other_versions:
+            if (len(other_version) == 3 and
+                self.update_versions(other_version[0], other_version[2])):
+                post_release_change = True
+                msg_commit += ", update %s to %s" % (other_version[0],
+                                                     other_version[2])
+        if post_release_change:
+            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
 
         if self.maintenance == "auto":
             log("\n[INFO] Delete maintenance branch %s..." % self.tag)
@@ -496,8 +509,10 @@ def main():
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
         usage = ("""usage: %prog <command> [options]
-       %prog prepare [-r alias] [-f] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [-d] [--skipTests] [-p profiles] [--arv versions_replacements]
-       %prog perform [-r alias] [-f] [-b branch] [-t tag] [-m maintenance] [-p profiles]
+       %prog prepare [-r alias] [-f] [-d] [--skipTests] [-p profiles] \
+[-b branch] [-t tag] [-n next_snapshot] [-m maintenance] \
+[--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
+       %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] [-m maintenance]
        %prog package [--skipTests] [-p profiles]
 \nCommands:
   prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
@@ -541,34 +556,32 @@ Those profiles are also always activated (unless deactivated by that parameter):
 """)
         versioning_options = optparse.OptionGroup(parser, 'Version policy')
         versioning_options.add_option('-f', '--final', action="store_true",
-                          dest='is_final', default=False,
-                          help="Is it a final release? Default: '%default'")
+            dest='is_final', default=False,
+            help="Is it a final release? Default: '%default'")
         versioning_options.add_option("-b", "--branch", action="store",
-                          type="string",
-                          help="""Branch to release. Default: '%default' = the
-current branch""",
-                          dest="branch", default="auto")
+            type="string", dest="branch", default="auto",
+            help="""Branch to release. Default: '%default' = the current branch""")
         versioning_options.add_option("-t", "--tag", action="store",
-                          type="string", dest="tag", default="auto",
-                          help="""Released version. SCM tag is 'release-$TAG'.
+            type="string", dest="tag", default="auto",
+            help="""Released version. SCM tag is 'release-$TAG'.
 Default: '%default'\n
 In mode 'auto', if final option is True, then the default value is the current
 version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is replaced with a date
 (aka 'date-based release').""")
-        versioning_options.add_option("-n", "--next", action="store", type="string",
-                          dest="next_snapshot", default="auto",
-                          help="""Version post-release. Default: '%default'\n
+        versioning_options.add_option("-n", "--next", action="store",
+            type="string", dest="next_snapshot", default="auto",
+            help="""Version post-release. Default: '%default'\n
 In mode 'auto', if final option is True, then the next snapshot is the current
 one increased, else it is equal to the current.""")
         versioning_options.add_option('-m', '--maintenance', action="store",
-                          dest='maintenance', default="auto",
-                          help="""Maintenance version. Default: '%default'\n
+            dest='maintenance', default="auto",
+            help="""Maintenance version. Default: '%default'\n
 The maintenance branch is always named like the tag without the 'release-'
 prefix. If set, the version will be used on the maintenance branch, else, in
 mode 'auto', the maintenance branch is deleted after release.""")
         versioning_options.add_option('--arv', '--also-replace-version',
-                          action="store", dest='other_versions', default=None,
-                          help="""Other version(s) to replace. Default: '%default'\n
+            action="store", dest='other_versions', default=None,
+            help="""Other version(s) to replace. Default: '%default'\n
 Use a slash ('/') as a separator between old and new version: '1.0-SNAPSHOT/1.0'.\n
 A version post-release can also be specified: '1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT'.\n
 Multiple versions can be replaced using a coma (',') separator:
@@ -584,6 +597,17 @@ Those patterns are common to all replacements, including the released version.\n
 Default files and properties patterns are respectively:
 '^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$' and
 '(nuxeo|marketplace)\..*version'. They can't be removed.""")
+        versioning_options.add_option('--mc', '--msg-commit', action="store",
+            type="string", dest='msg_commit', default='',
+            help="""Additional release commit message.
+Default: 'Release $BRANCH, update $SNAPSHOT to $TAG, update ...'.\n
+Post-release commits' messages are not customizable.
+""")
+        versioning_options.add_option('--mt', '--msg-tag', action="store",
+            type="string", dest='msg_tag', default='',
+            help="""Additional tag message.
+Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
+""")
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
         if len(args) == 1:
@@ -612,6 +636,8 @@ Default files and properties patterns are respectively:
                 props_pattern = f.readline().split("=")[1].strip()
                 options.other_versions = ':'.join((files_pattern, props_pattern,
                                                    other_versions))
+                options.msg_commit = f.readline().split("=")[1].strip()
+                options.msg_tag = f.readline().split("=")[1].strip()
             if options.other_versions == "::":
                 options.other_versions = None
 
@@ -623,7 +649,8 @@ Default files and properties patterns are respectively:
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance,
                           options.is_final, options.skipTests,
-                          options.other_versions, options.profiles)
+                          options.other_versions, options.profiles,
+                          options.msg_commit, options.msg_tag)
         release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
