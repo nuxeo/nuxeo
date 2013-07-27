@@ -28,6 +28,8 @@ import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
 import javax.naming.NotContextException;
+import javax.naming.Reference;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -140,7 +142,12 @@ public class DataSourceComponent extends DefaultComponent {
                     ctx = ctx.createSubcontext(name.get(i));
                 }
             }
-            ctx.bind(name.get(name.size() - 1), descr.getReference());
+            Reference reference = descr.getReference();
+            String localname = name.get(name.size() - 1);
+            ctx.bind(localname, reference);
+            // don't need a reference, local access only, ensure not leaking ds
+            DataSource ds = (DataSource) ctx.lookup(localname);
+            ctx.rebind(localname, ds);
         } catch (NamingException e) {
             log.error("Cannot bind datasource '" + descr.name + "' in JNDI", e);
         }

@@ -13,9 +13,14 @@
 
 package org.nuxeo.runtime.api;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.spi.NamingManager;
@@ -135,4 +140,21 @@ public class DataSourceHelper {
         return clazz.cast(resolved);
     }
 
+    public static Map<String,DataSource> getDatasources() throws NamingException {
+        String prefix = getDataSourceJNDIPrefix();
+        Context naming = new InitialContext();
+        Context jdbc = (Context)naming.lookup(prefix);
+        Enumeration<NameClassPair> namesPair = jdbc.list("");
+        Map<String,DataSource> datasourcesByName = new HashMap<String,DataSource>();
+        while (namesPair.hasMoreElements()) {
+            NameClassPair pair = namesPair.nextElement();
+            String name = pair.getName();
+            if (pair.isRelative()) {
+                name = prefix + "/" + name;
+            }
+            Object ds = naming.lookup(name);
+            datasourcesByName.put(name, (DataSource)ds);
+        }
+        return datasourcesByName;
+    }
 }

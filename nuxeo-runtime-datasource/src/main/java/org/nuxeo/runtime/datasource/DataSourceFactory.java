@@ -68,9 +68,15 @@ public class DataSourceFactory implements ObjectFactory {
         SYSTEM_PROPERTIES = Collections.unmodifiableSet(props);
     }
 
+    protected final Map<Name, DataSource> datasourcesByName =
+            new HashMap<Name, DataSource>();
+
     @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx,
             Hashtable<?, ?> env) throws Exception {
+        if (datasourcesByName.containsKey(name)) {
+            return datasourcesByName.get(name);
+        }
         Reference ref = (Reference) obj;
         if (!DataSource.class.getName().equals(ref.getClassName())) {
             return null;
