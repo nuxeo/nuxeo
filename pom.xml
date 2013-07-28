@@ -108,7 +108,7 @@
     <nuxeo.webengine.version>5.6.0-HF21-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>5.6.0-HF21-SNAPSHOT</nuxeo.features.version>
 
-    <nuxeo.connect.client.version>1.4.4</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.4.4.1</nuxeo.connect.client.version>
     <nuxeo.distribution.tools.version>1.13</nuxeo.distribution.tools.version>
     <nuxeo.ftest.version>1.7.1</nuxeo.ftest.version>
 
@@ -4860,3 +4860,4 @@
   </distributionManagement>
 
 </project>
+
