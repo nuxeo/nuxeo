@@ -43,8 +43,9 @@
     </chain>
 
     <chain id="Dam.ImportWithMetaDataInSeam">
-      <operation id="FileManager.Import">
-        <param type="boolean" name="overwite">true</param>
+      <operation id="Dam.Import">
+        <param type="boolean" name="overwrite">true</param>
+        <param type="boolean" name="importInCurrentDocument">true</param>
       </operation>
       <operation id="Document.Update">
         <param type="properties" name="properties">expr:Context.get("docMetaData")

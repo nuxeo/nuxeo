@@ -35,11 +35,12 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 
 /**
- * Operation creating asset(s) from file(s) inside the configured Asset Library.
+ * Operation creating asset(s) from file(s) inside the
+ * configured Asset Library or the current document.
  *
  * @since 5.7
  */
-@Operation(id = DamImport.ID, category = "Dam", label = "Create Asset(s) from file(s)", description = "Create Asset(s) from Blob(s) using the FileManagerService.")
+@Operation(id = DamImport.ID, category = "Dam", label = "Create Asset(s) from file(s)", description = "Create Asset(s) from Blob(s) using the FileManagerService inside the configured Asset Library or the current document.")
 public class DamImport {
 
     public static final String ID = "Dam.Import";
@@ -56,15 +57,36 @@ public class DamImport {
     @Context
     protected DamService damService;
 
+    @Context
+    protected OperationContext context;
+
+    @Context
+    protected AutomationService as;
+
     @Param(name = "overwrite", required = false)
     protected Boolean overwrite = false;
+
+    @Param(name = "importInCurrentDocument", required = false)
+    protected Boolean importInCurrentDocument = false;
+
+    protected DocumentModel getCurrentDocument() throws Exception {
+        String cdRef = (String) context.get("currentDocument");
+        return as.getAdaptedValue(context, cdRef, DocumentModel.class);
+    }
 
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
         AssetLibrary assetLibrary = damService.getAssetLibrary();
+        String path = assetLibrary.getPath();
+        if (importInCurrentDocument) {
+            DocumentModel doc = getCurrentDocument();
+            if (doc != null) {
+                path = doc.getPathAsString();
+            }
+        }
         ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
-        return fileManager.createDocumentFromBlob(session, blob,
-                assetLibrary.getPath(), overwrite, blob.getFilename());
+        return fileManager.createDocumentFromBlob(session, blob, path,
+                overwrite, blob.getFilename());
     }
 
     @OperationMethod
