@@ -46,7 +46,7 @@ public class DocumentRoutingEscalationServiceImpl implements
     private static Log log = LogFactory.getLog(DocumentRoutingEscalationServiceImpl.class);
 
     public static final String queryForSuspendedNodesWithEscalation = "Select DISTINCT ecm:uuid from RouteNode WHERE ecm:currentLifeCycleState = 'suspended' "
-            + "AND rnode:escalationRules/*/executed = 0 OR (rnode:escalationRules/*/executed = 1 AND rnode:escalationRules/*/multipleExecution = 1) ";
+            + "AND (rnode:escalationRules/*/executed = 0 OR (rnode:escalationRules/*/executed = 1 AND rnode:escalationRules/*/multipleExecution = 1) )";
 
     @Override
     public List<String> queryForSuspendedNodesWithEscalation(CoreSession session)
