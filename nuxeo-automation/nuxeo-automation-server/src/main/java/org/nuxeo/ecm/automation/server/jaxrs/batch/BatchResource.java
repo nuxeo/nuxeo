@@ -46,6 +46,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -75,12 +76,27 @@ public class BatchResource {
                 "Content-Length", message.length()).build();
     }
 
+    protected Response buildHtmlFromString(String message) {
+        message = "<html>" + message + "</html>";
+        return Response.ok(message, MediaType.TEXT_HTML_TYPE).header(
+                "Content-Length", message.length()).build();
+    }
+
     protected Response buildFromMap(Map<String, String> map) throws Exception {
+        return buildFromMap(map, false);
+    }
+
+    protected Response buildFromMap(Map<String, String> map, boolean html) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         ByteArrayOutputStream out = new ByteArrayOutputStream(128);
         mapper.writeValue(out, map);
         String result = out.toString("UTF-8");
-        return buildFromString(result);
+        if (html) {
+            // for msie with iframe transport : we need to return html !
+            return buildHtmlFromString(result);
+        } else {
+            return buildFromString(result);
+        }
     }
 
     /**
@@ -99,23 +115,47 @@ public class BatchResource {
     @Path("upload")
     public Object doPost(@Context
     HttpServletRequest request) throws Exception {
+
+        boolean useIFrame = false;
+
+        // Parameters are passed as request header
+        // the request body is the stream
         String fileName = request.getHeader("X-File-Name");
         String fileSize = request.getHeader("X-File-Size");
         String batchId = request.getHeader("X-Batch-Id");
         String mimeType = request.getHeader("X-File-Type");
         String idx = request.getHeader("X-File-Idx");
+        InputStream is = null;
 
-        fileName = URLDecoder.decode(fileName, "UTF-8");
-        InputStream is = request.getInputStream();
+        // fall back to multipart
+        if (fileName==null && request.getHeader("Content-Type").contains("multipart")) {
+            useIFrame = true;
+            FormData formData = new FormData(request);
+            batchId = formData.getString("batchId");
+            idx = formData.getString("fileIdx");
+            if (idx==null || "".equals(idx.trim())) {
+                idx = "0";
+            }
+            Blob blob = formData.getFirstBlob();
+            if (blob!=null) {
+                is = blob.getStream();
+                fileName = blob.getFilename();
+                mimeType = blob.getMimeType();
+            }
+        }
+        else {
+            fileName = URLDecoder.decode(fileName, "UTF-8");
+            is = request.getInputStream();
+        }
+
         log.debug("uploaded " + fileName + " (" + fileSize + "b)");
-
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         bm.addStream(batchId, idx, is, fileName, mimeType);
 
         Map<String, String> result = new HashMap<String, String>();
         result.put("batchId", batchId);
         result.put("uploaded", "true");
-        return buildFromMap(result);
+        return buildFromMap(result, useIFrame);
     }
 
     @POST
