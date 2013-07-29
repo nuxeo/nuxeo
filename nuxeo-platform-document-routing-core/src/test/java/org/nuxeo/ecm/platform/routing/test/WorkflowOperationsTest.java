@@ -143,13 +143,22 @@ public class WorkflowOperationsTest {
         GraphRoute graph = routeInstance.getAdapter(GraphRoute.class);
         assertEquals(graph.getVariables().get("stringfield"), "test");
 
-        // test SetWorkflowVar
+        //test SetWorkflowVar on the same context with StartWorkflow
+        OperationChain setWorkflowVar = new OperationChain("setVar");
+        setWorkflowVar.add(SetWorkflowVar.ID).set("name", "stringfield").set("value",
+                "test1");
+        automationService.run(ctx, setWorkflowVar);
+        session.save();
+        routeInstance = session.getDocument(routeInstance.getRef());
+        graph = routeInstance.getAdapter(GraphRoute.class);
+        assertEquals(graph.getVariables().get("stringfield"), "test1");
+
+        // test SetWorkflowVar in new context
 
         ctx = new OperationContext();
         ctx.setCoreSession(session);
         ctx.setInput(doc);
-        // test start workflow
-        OperationChain setWorkflowVar = new OperationChain("startWorkflow");
+        setWorkflowVar = new OperationChain("setWVar");
         setWorkflowVar.add(SetWorkflowVar.ID).set("workflowInstanceId",
                 routeInstance.getId()).set("name", "stringfield").set("value",
                 "test2");
@@ -158,6 +167,8 @@ public class WorkflowOperationsTest {
         routeInstance = session.getDocument(routeInstance.getRef());
         graph = routeInstance.getAdapter(GraphRoute.class);
         assertEquals(graph.getVariables().get("stringfield"), "test2");
+
+
     }
 
 }

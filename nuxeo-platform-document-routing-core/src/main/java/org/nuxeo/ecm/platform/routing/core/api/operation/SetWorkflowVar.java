@@ -63,6 +63,11 @@ public class SetWorkflowVar {
                 ((Map<String, Serializable>) ctx.get(Constants.VAR_WORKFLOW)).put(
                         name, (Serializable) value);
             }
+            if (ctx.get("workflowInstanceId") != null) {
+                workflowInstanceId = (String) ctx.get("workflowInstanceId");
+            }
+        }
+        if (workflowInstanceId == null) {
             return;
         }
         DocumentModel workflowInstance = session.getDocument(new IdRef(

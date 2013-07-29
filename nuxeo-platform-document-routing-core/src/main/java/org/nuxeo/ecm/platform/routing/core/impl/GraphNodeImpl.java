@@ -384,6 +384,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         context.put("workflowStartTime", getWorkflowStartTime());
         context.put("workflowParent", getWorkflowParentRouteId());
         context.put("workflowParentNode", getWorkflowParentNodeId());
+        context.put("workflowInstanceId", graph.getDocument().getId());
 
         DocumentModelList documents = graph.getAttachedDocuments(session);
         if (detached) {

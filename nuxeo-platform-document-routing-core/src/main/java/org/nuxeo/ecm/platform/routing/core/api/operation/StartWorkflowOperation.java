@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
  *
  */
 @Operation(id = StartWorkflowOperation.ID, category = Constants.CAT_WORKFLOW, label = "Start workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Starts the workflow with the given model id on the input documents. Returns back the input documents."
-        + "The id of the created workflow instance is available under the \"WorkflowId\" context variable."
+        + "The id of the created workflow instance is available under the \"workflowInstanceId\" context variable."
         + "@Since 5.7.2 you can set multiple variables on the workflow. The variables are specified as <i>key=value</i> pairs separated by a new line."
         + "To specify multi-line values you can use a \\ character followed by a new line. <p>Example:<pre>description=foo bar</pre>For updating a date, you will need to expose the value as ISO 8601 format, "
         + "for instance : <p>Example:<pre>title=The Document Title<br>issued=@{org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)}</pre><p>")
@@ -98,6 +98,8 @@ public class StartWorkflowOperation {
         String workflowId = documentRoutingService.createNewInstance(id, ids,
                 vars, session, Boolean.TRUE.equals(start));
         ctx.put("WorkflowId", workflowId);
-
+        //to be consistent with all the other workflow variablesin the context
+        //@since 5.7.2
+        ctx.put("workflowInstanceId", workflowId);
     }
 }
