@@ -48,14 +48,19 @@ boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
 
 String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') repeat scroll bottom left #cadfc0");
+bodyBackgroundStyle = bodyBackgroundStyle.replaceAll("\\<\\%=context\\%\\>", context);
 String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
+headerStyle = headerStyle.replaceAll("\\<\\%=context\\%\\>", context);
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0 #fff");
+loginBoxBackgroundStyle = loginBoxBackgroundStyle.replaceAll("\\<\\%=context\\%\\>", context);
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
+footerStyle = footerStyle.replaceAll("\\<\\%=context\\%\\>", context);
 
 String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "92");
 String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "36");
 String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
-String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), "/img/nuxeo_logo.png");
+String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/nuxeo_logo.png");
+logoUrl = logoUrl.replaceAll("\\<\\%=context\\%\\>", context);
 
 %>
 
@@ -298,7 +303,7 @@ body {
   <tbody>
     <tr class="topBar">
       <td>
-        <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=context%><%=logoUrl%>"/>
+        <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
       </td>
       <td align="right" class="leftColumn">
         <div class="labelCorp">
