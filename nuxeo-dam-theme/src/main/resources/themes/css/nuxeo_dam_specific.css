@@ -57,6 +57,16 @@ author: lkemen@nuxeo.com
   text-align: left;
   padding: 0 }
 
+.nxDamSingleAssetLeft .globalActionBar,
+.nxDamSingleAssetRight .globalActionBar {
+  background-color: "neutral.medium (__FLAVOR__ background)";
+  border: none;
+  margin: 0 -0.5em;
+  padding: .2em .5em }
+
+.nxDamSingleAssetRight .globalActionBar {
+  margin: 0 -0.5em 2.4em }
+
 .nxDamSearchResults .globalActionBar .button,
 .nxDamSingleAssetLeft .globalActionBar .button {
   font-size: .9em;
@@ -64,10 +74,8 @@ author: lkemen@nuxeo.com
   padding: .2em .4em }
 
 .nxDamSingleAssetLeft .globalActionBar .button {
-  line-height: 1.2em }
-
-.nxDamSingleAssetRight .globalActionBar {
-	margin-bottom: 2.4em }
+  line-height: 1.2em;
+  margin: .3em .5em .3em 0; }
 
 .nxDamSearchResults .listingLayoutSelector {
   font-size: .9em }
@@ -117,8 +125,10 @@ author: lkemen@nuxeo.com
   .nxDamSearchResults .bubbleBox .widgetPanel {
     margin: 0 0 0 .4em }
 
-.nxDamSearchResults .bubbleBox .thumbViewPicture { display: block;
-    margin: 0 auto }
+.nxDamSearchResults .bubbleBox .thumbViewPicture,
+.video-js-box .video-js {
+  display: block;
+  margin: 0 auto }
 
 /* Styles when an asset is selected */
 .nxDamSearchResults .selectedItem,
@@ -127,6 +137,9 @@ author: lkemen@nuxeo.com
   color: #fff }
 .nxDamSearchResults .selectedItem .documentTitle,
 .nxDamSearchResults .selectedItem:hover .documentTitle { color: #fff }
+
+.nxDamSearchResults .selectedItem .fieldColumn {
+  color: "black (__FLAVOR__ color)" }
 
 /* Pictures and video thumbnails in bubbleBoxes */
 .thumbnailContainer { text-align: center;
@@ -208,10 +221,7 @@ author: lkemen@nuxeo.com
   margin: .2em 0 0 .3em;
   padding: .1em .4em }
 
-
 /* Picture View -> TODO: move it to imaging styles ? */
-.pictureContainer,
-.video-js-box,
 .assetViewContainer {
   background-color: #fff;
   border: 1px solid;
@@ -220,9 +230,6 @@ author: lkemen@nuxeo.com
   height: 250px;
   padding: 3px;
   text-align: center }
-
-.video-js-box .video-js {
-  margin: 0 auto }
 
 .documentTitle {
   -moz-box-sizing: border-box;
@@ -239,28 +246,39 @@ author: lkemen@nuxeo.com
   white-space: nowrap;
   width: 100% }
 
-.nxDamSingleAssetLeft .pictureContainer,
-.nxDamSingleAssetLeft .video-js-box,
 .nxDamSingleAssetLeft .assetViewContainer {
-  height: 400px }
+  height: 430px }
 
-/* Test to center img */
+.nxDamSingleAssetLeft .assetViewContainer .thumbnailContainer {
+  height: 340px }
+
+.assetViewContainer .thumbnailContainer {
+  height: 200px }
+
 .thumbnailContainer {
   max-width: none }
 .thumbnailContainer:before,
-.pictureContainer:before,
-.assetViewContainer:before {
+.pictureContainer:before {
   content: '';
   display: inline-block;
   height: 100%;
   vertical-align: middle }
 .thumbnailContainer img,
-.pictureContainer img,
-.assetViewContainer img {
-  display: inline-block;
+.assetViewContainer img,
+.assetViewContainer table {
   max-width: 100%;
   max-height: 100%;
+  padding: 0;
   vertical-align: middle }
+
+.assetViewContainer .pictureContainer {
+  height: 245px;
+  margin: 0 auto;
+  width: 400px; }
+
+.nxDamSingleAssetLeft .assetViewContainer .pictureContainer {
+  height: 420px;
+  width: 550px }
 
 /* TODO: move to box styles */
 .bubbleBox .bubbleHeader .documentTitle {
