@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -110,26 +109,6 @@ public class DocumentRoutingEscalationServiceImpl implements
         }
 
         @Override
-        public void afterRun(boolean ok) {
-            super.afterRun(ok);
-            // if ok, mark rule as resolved
-            if (ok) {
-                try {
-                    new UnrestrictedSessionRunner(repositoryName) {
-                        @Override
-                        public void run() throws ClientException {
-                            rule.setExecuted(true);
-                            session.saveDocument(rule.getNode().getDocument());
-                        }
-                    }.runUnrestricted();
-
-                } catch (ClientException e) {
-                    throw new ClientRuntimeException(e);
-                }
-            }
-        }
-
-        @Override
         public void work() throws Exception {
             CoreSession session = initSession(repositoryName);
             GraphNode node = rule.getNode();
@@ -146,6 +125,9 @@ public class DocumentRoutingEscalationServiceImpl implements
                 }
                 Framework.getLocalService(AutomationService.class).run(context,
                         rule.getChain());
+                //mark the rule as resolved
+                rule.setExecuted(true);
+                session.saveDocument(rule.getNode().getDocument());
             } catch (InterruptedException e) {
                 // restore interrupted state
                 Thread.currentThread().interrupt();
