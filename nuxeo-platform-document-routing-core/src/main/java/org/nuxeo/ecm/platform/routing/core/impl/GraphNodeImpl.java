@@ -364,8 +364,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    @Override
-    public OperationContext getExecutionContext(CoreSession session) {
+    protected OperationContext getExecutionContext(CoreSession session) {
         OperationContext context = new OperationContext(session);
         context.putAll(getWorkflowContextualInfo(session, true));
         context.setCommit(false); // no session save at end
@@ -376,7 +375,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, boolean detached) {
+    public Map<String, Serializable> getWorkflowContextualInfo(
+            CoreSession session, boolean detached) {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         // workflow context
         context.put("WorkflowVariables", (Serializable) graph.getVariables());

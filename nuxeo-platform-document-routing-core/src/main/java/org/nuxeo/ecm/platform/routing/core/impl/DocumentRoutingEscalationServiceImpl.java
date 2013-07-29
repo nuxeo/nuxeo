@@ -133,7 +133,9 @@ public class DocumentRoutingEscalationServiceImpl implements
         public void work() throws Exception {
             CoreSession session = initSession(repositoryName);
             GraphNode node = rule.getNode();
-            OperationContext context = node.getExecutionContext(session);
+            OperationContext context = new OperationContext(session);
+            context.putAll(node.getWorkflowContextualInfo(session, true));
+            context.setInput(context.get("documents"));
             try {
                 // check to see if the rule wasn't executed meanwhile
                 boolean alreadyExecuted = getExecutionStatus(session);

@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -123,6 +122,7 @@ public interface GraphNode {
 
     /**
      * The sub-route model id (expression) to run, if present.
+     *
      * @since 5.7.2
      */
     String PROP_SUB_ROUTE_MODEL_EXPR = "rnode:subRouteModelExpr";
@@ -166,7 +166,7 @@ public interface GraphNode {
     String PROP_ESCALATION_RULE_CHAIN = "chain";
 
     // @since 5.7.2
-    String PROP_ESCALATION_RULE_EXECUTED= "executed";
+    String PROP_ESCALATION_RULE_EXECUTED = "executed";
 
     /**
      * The internal state of a node.
@@ -393,7 +393,7 @@ public interface GraphNode {
             return id;
         }
 
-        public boolean isMultipleExecution(){
+        public boolean isMultipleExecution() {
             return multipleExecution;
         }
     }
@@ -638,7 +638,8 @@ public interface GraphNode {
      *
      * @param detached The documents added into this map can be detached or not
      */
-    Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, boolean detached);
+    Map<String, Serializable> getWorkflowContextualInfo(CoreSession session,
+            boolean detached);
 
     /**
      * When workflow engine runs an exclusive node, it evaluates the transition
@@ -684,14 +685,6 @@ public interface GraphNode {
      * @since 5.7.2
      */
     void cancelSubRoute() throws DocumentRouteException;
-
-    /**
-     * Returns the automation execution context for the node
-     *
-     * @return OperationContext
-     * @since 5.7.2
-     */
-    OperationContext getExecutionContext(CoreSession session);
 
     /**
      * Evaluates the rules for the escalation rules and returns the ones to be
