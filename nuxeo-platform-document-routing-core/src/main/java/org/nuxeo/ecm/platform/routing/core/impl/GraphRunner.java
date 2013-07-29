@@ -385,7 +385,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     node.getId(), routeInstance.getDocument().getId(),
                     new ArrayList<String>(actors), false,
                     node.getTaskDirective(), null, dueDate, taskVariables,
-                    null, node.getWorkflowContextualInfo(true));
+                    null, node.getWorkflowContextualInfo(session, true));
 
             routing.makeRoutingTasks(session, tasks);
             String taskAssigneesPermission = node.getTaskAssigneesPermission();

@@ -78,13 +78,14 @@ public class DocumentRoutingEscalationServiceImpl implements
     @Override
     public void scheduleExecution(EscalationRule rule, CoreSession session) {
         WorkManager manager = Framework.getLocalService(WorkManager.class);
-        manager.schedule(new EscalationRuleWork(rule, session),
+        manager.schedule(
+                new EscalationRuleWork(rule, session.getRepositoryName()),
                 WorkManager.Scheduling.IF_NOT_SCHEDULED);
     }
 
     class EscalationRuleWork extends AbstractWork {
 
-        protected CoreSession session;
+        protected String repositoryName;
 
         protected String workerId;
 
@@ -92,10 +93,10 @@ public class DocumentRoutingEscalationServiceImpl implements
 
         public static final String CATEGORY = "routingEscalation";
 
-        public EscalationRuleWork(EscalationRule rule, CoreSession session) {
+        public EscalationRuleWork(EscalationRule rule, String repositoryName) {
             this.rule = rule;
             workerId = rule.getNode().getId() + "_" + rule.getId();
-            this.session = session;
+            this.repositoryName = repositoryName;
         }
 
         @Override
@@ -114,8 +115,14 @@ public class DocumentRoutingEscalationServiceImpl implements
             // if ok, mark rule as resolved
             if (ok) {
                 try {
-                    rule.setExecuted(true);
-                    session.saveDocument(rule.getNode().getDocument());
+                    new UnrestrictedSessionRunner(repositoryName) {
+                        @Override
+                        public void run() throws ClientException {
+                            rule.setExecuted(true);
+                            session.saveDocument(rule.getNode().getDocument());
+                        }
+                    }.runUnrestricted();
+
                 } catch (ClientException e) {
                     throw new ClientRuntimeException(e);
                 }
@@ -124,35 +131,28 @@ public class DocumentRoutingEscalationServiceImpl implements
 
         @Override
         public void work() throws Exception {
-            new UnrestrictedSessionRunner(session) {
-
-                @Override
-                public void run() throws ClientException {
-                    GraphNode node = rule.getNode();
-                    OperationContext context = node.getExecutionContext();
-                    try {
-                        // check to see if the rule wasn't executed meanwhile
-                        boolean alreadyExecuted = getExecutionStatus(session);
-                        if (alreadyExecuted && !rule.isMultipleExecution()) {
-                            log.trace("Rule " + rule.getId() + "on node "
-                                    + node.getId() + " already executed");
-                            return;
-                        }
-                        Framework.getLocalService(AutomationService.class).run(
-                                context, rule.getChain());
-
-                    } catch (InterruptedException e) {
-                        // restore interrupted state
-                        Thread.currentThread().interrupt();
-                    } catch (RuntimeException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        throw new ClientException(
-                                "Error when executing worker: " + getTitle(), e);
-                    }
-
+            CoreSession session = initSession(repositoryName);
+            GraphNode node = rule.getNode();
+            OperationContext context = node.getExecutionContext(session);
+            try {
+                // check to see if the rule wasn't executed meanwhile
+                boolean alreadyExecuted = getExecutionStatus(session);
+                if (alreadyExecuted && !rule.isMultipleExecution()) {
+                    log.trace("Rule " + rule.getId() + "on node "
+                            + node.getId() + " already executed");
+                    return;
                 }
-            }.runUnrestricted();
+                Framework.getLocalService(AutomationService.class).run(context,
+                        rule.getChain());
+            } catch (InterruptedException e) {
+                // restore interrupted state
+                Thread.currentThread().interrupt();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new ClientException("Error when executing worker: "
+                        + getTitle(), e);
+            }
         }
 
         /**

@@ -25,6 +25,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
@@ -637,7 +638,7 @@ public interface GraphNode {
      *
      * @param detached The documents added into this map can be detached or not
      */
-    Map<String, Serializable> getWorkflowContextualInfo(boolean detached);
+    Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, boolean detached);
 
     /**
      * When workflow engine runs an exclusive node, it evaluates the transition
@@ -690,7 +691,7 @@ public interface GraphNode {
      * @return OperationContext
      * @since 5.7.2
      */
-    OperationContext getExecutionContext();
+    OperationContext getExecutionContext(CoreSession session);
 
     /**
      * Evaluates the rules for the escalation rules and returns the ones to be

@@ -364,18 +364,19 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
     }
 
-    public OperationContext getExecutionContext() {
-        OperationContext context = new OperationContext(getSession());
-        context.putAll(getWorkflowContextualInfo(false));
+    @Override
+    public OperationContext getExecutionContext(CoreSession session) {
+        OperationContext context = new OperationContext(session);
+        context.putAll(getWorkflowContextualInfo(session, true));
         context.setCommit(false); // no session save at end
-        DocumentModelList documents = graph.getAttachedDocumentModels();
+        DocumentModelList documents = graph.getAttachedDocuments(session);
         // associated docs
         context.setInput(documents);
         return context;
     }
 
     @Override
-    public Map<String, Serializable> getWorkflowContextualInfo(boolean detached) {
+    public Map<String, Serializable> getWorkflowContextualInfo(CoreSession session, boolean detached) {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         // workflow context
         context.put("WorkflowVariables", (Serializable) graph.getVariables());
@@ -384,7 +385,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         context.put("workflowParent", getWorkflowParentRouteId());
         context.put("workflowParentNode", getWorkflowParentNodeId());
 
-        DocumentModelList documents = graph.getAttachedDocumentModels();
+        DocumentModelList documents = graph.getAttachedDocuments(session);
         if (detached) {
             for (DocumentModel documentModel : documents) {
                 try {
@@ -494,7 +495,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         }
 
         // get base context
-        OperationContext context = getExecutionContext();
+        OperationContext context = getExecutionContext(getSession());
         if (transitionId != null) {
             context.put("transition", transitionId);
         }
@@ -546,7 +547,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public List<Transition> evaluateTransitions() throws DocumentRouteException {
         try {
             List<Transition> trueTrans = new ArrayList<Transition>();
-            OperationContext context = getExecutionContext();
+            OperationContext context = getExecutionContext(getSession());
             for (Transition t : getOutputTransitions()) {
                 context.put("transition", t.id);
                 Expression expr = Scripting.newExpression(t.condition);
@@ -597,7 +598,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         if (StringUtils.isEmpty(taskAssigneesVar)) {
             return taskAssignees;
         }
-        OperationContext context = getExecutionContext();
+        OperationContext context = getExecutionContext(getSession());
         Expression expr = Scripting.newExpression(taskAssigneesVar);
         Object res = null;
         try {
@@ -753,7 +754,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         if (StringUtils.isEmpty(taskDueDateExpr)) {
             return new Date();
         }
-        OperationContext context = getExecutionContext();
+        OperationContext context = getExecutionContext(getSession());
         Expression expr = Scripting.newExpression(taskDueDateExpr);
         Object res = null;
         try {
@@ -811,7 +812,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         if (StringUtils.isBlank(subRouteModelExpr)) {
             return null;
         }
-        OperationContext context = getExecutionContext();
+        OperationContext context = getExecutionContext(getSession());
         String res = valueOrExpression(String.class, subRouteModelExpr,
                 context, "Sub-workflow id expression");
         return StringUtils.defaultIfBlank((String) res, null);
@@ -864,7 +865,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             String key = (String) prop.get(PROP_KEYVALUE_KEY).getValue();
             String v = (String) prop.get(PROP_KEYVALUE_VALUE).getValue();
             if (context == null) {
-                context = getExecutionContext();
+                context = getExecutionContext(getSession());
             }
             Serializable value = valueOrExpression(Serializable.class, v,
                     context, "Sub-workflow variable expression");
@@ -955,7 +956,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public List<EscalationRule> evaluateEscalationRules() {
         try {
             List<EscalationRule> rulesToExecute = new ArrayList<EscalationRule>();
-            OperationContext context = getExecutionContext();
+            OperationContext context = getExecutionContext(getSession());
             for (EscalationRule rule : getEscalationRules()) {
                 Expression expr = Scripting.newExpression(rule.condition);
                 Object res = null;

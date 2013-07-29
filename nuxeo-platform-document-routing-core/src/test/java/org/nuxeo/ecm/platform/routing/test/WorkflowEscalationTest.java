@@ -207,6 +207,8 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
         assertEquals(0, workManager.getNonCompletedWorkSize("escalation"));
         // check that the rule was executed
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
         doc = session.getDocument(doc.getRef());
         assertEquals("title 1", doc.getTitle());
 
@@ -224,6 +226,8 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
         assertEquals(0, workManager.getNonCompletedWorkSize("escalation"));
         // check that the rule was executed
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
         doc = session.getDocument(doc.getRef());
         assertEquals("title 2", doc.getTitle());
 
