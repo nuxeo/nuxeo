@@ -970,6 +970,8 @@
       <properties>
         <property name="widgetName">damSingleAssetVideo</property>
       </properties>
+      <filter-id>hasVideoFacet</filter-id>
+      <filter-id>hasAssetFacet</filter-id>
     </action>
   </extension>
 
