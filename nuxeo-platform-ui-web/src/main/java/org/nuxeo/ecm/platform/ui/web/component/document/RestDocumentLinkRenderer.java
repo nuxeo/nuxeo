@@ -33,7 +33,7 @@ import com.sun.faces.renderkit.html_basic.OutputLinkRenderer;
  * Overrides default output link renderer so that URL parameters passed through
  * f:param tags are not added twice, since the component already takes them into
  * account when building the URL.
- * 
+ *
  * @see RestDocumentLink
  * @since 5.4.2
  */
@@ -111,10 +111,14 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 
         writer.writeURIAttribute("href", urlNewConversation, "href");
 
-        String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
-                + urlCurrentConversation + "'}";
 
-        writer.writeAttribute("onclick", onclickJS, "onclick");
+        Boolean isNewConversation = ((RestDocumentLink) component).getNewConversation();
+        if (!isNewConversation) {
+            String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
+                    + urlCurrentConversation + "'}";
+            writer.writeAttribute("onclick", onclickJS, "onclick");
+        }
+
 
         RenderKitUtils.renderPassThruAttributes(writer, component,
                 PASSTHROUGHATTRIBUTES);
