@@ -129,15 +129,18 @@
 
 
   <extension-point name="loginScreen">
-  <documentation>
-    Configure the Login Screen : header, footer, styles, openid providers ...
 
-    @author Thierry Delprat (td@nuxeo.com)
-  </documentation>
-    <object
-      class="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig" />
+    <documentation>
+      Configure the Login Screen : header, footer, styles, openid providers ...
+      <p>
+        The variable ${org.nuxeo.ecm.contextPath} can be used to avoid
+        hardcoding the default application path (/nuxeo)
+      </p>
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig" />
+
   </extension-point>
-
-
 
 </component>
