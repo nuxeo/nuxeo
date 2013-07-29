@@ -339,6 +339,7 @@
 
     <widget name="damAssetViewPicture" type="container">
       <properties widgetMode="view">
+        <property name="display">block_top</property>
         <property name="styleClass">assetViewContainer</property>
         <property name="hideSubLabels">true</property>
       </properties>
@@ -349,6 +350,7 @@
 
     <widget name="damAssetViewVideo" type="container">
       <properties widgetMode="view">
+        <property name="display">block_top</property>
         <property name="styleClass">assetViewContainer</property>
         <property name="hideSubLabels">true</property>
       </properties>
@@ -364,6 +366,7 @@
 
     <widget name="damAssetViewAudio" type="container">
       <properties widgetMode="view">
+        <property name="display">block_top</property>
         <property name="styleClass">assetViewContainer</property>
         <property name="hideSubLabels">true</property>
       </properties>
@@ -383,6 +386,7 @@
 
     <widget name="damAssetViewThumbnail" type="container">
       <properties widgetMode="view">
+        <property name="display">block_top</property>
         <property name="styleClass">assetViewContainer</property>
         <property name="hideSubLabels">true</property>
       </properties>
@@ -636,6 +640,7 @@
 
     <widget name="damSingleAssetVideo" type="container">
       <properties widgetMode="view">
+        <property name="display">block_top</property>
         <property name="styleClass">assetViewContainer</property>
         <property name="hideSubLabels">true</property>
       </properties>

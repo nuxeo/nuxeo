@@ -273,12 +273,10 @@ author: lkemen@nuxeo.com
 
 .assetViewContainer .pictureContainer {
   height: 245px;
-  margin: 0 auto;
-  width: 400px; }
+  margin: 0 auto }
 
 .nxDamSingleAssetLeft .assetViewContainer .pictureContainer {
-  height: 420px;
-  width: 550px }
+  height: 420px }
 
 /* TODO: move to box styles */
 .bubbleBox .bubbleHeader .documentTitle {
