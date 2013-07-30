@@ -2,18 +2,25 @@ package org.nuxeo.ecm.core.management.jtajca.internal;
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Collection;
 
 import javax.management.ObjectInstance;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.nuxeo.ecm.core.management.jtajca.DatabaseConnectionMonitor;
+import org.nuxeo.runtime.metrics.MetricsService;
 
-public class DefaultDatabaseConnectionMonitor implements DatabaseConnectionMonitor {
+import com.codahale.metrics.JmxAttributeGauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+
+public class DefaultDatabaseConnectionMonitor implements
+        DatabaseConnectionMonitor {
 
     protected final String name;
 
     protected final BasicDataSource ds;
+
+    protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     protected ObjectInstance self;
 
@@ -24,7 +31,7 @@ public class DefaultDatabaseConnectionMonitor implements DatabaseConnectionMonit
 
     protected String parseName(String jdbcName) {
         int index = jdbcName.lastIndexOf('/');
-        return jdbcName.substring(index+1);
+        return jdbcName.substring(index + 1);
     }
 
     @Override
@@ -307,12 +314,25 @@ public class DefaultDatabaseConnectionMonitor implements DatabaseConnectionMonit
 
     @Override
     public void install() {
-        self = DefaultMonitorComponent.bind(DatabaseConnectionMonitor.class, this, name);
+        self = DefaultMonitorComponent.bind(DatabaseConnectionMonitor.class,
+                this, name);
+        metrics.register(
+                MetricRegistry.name(DatabaseConnectionMonitor.class, name
+                        + "-idleCount"),
+                new JmxAttributeGauge(self.getObjectName(), "NumIdle"));
+        metrics.register(
+                MetricRegistry.name(DatabaseConnectionMonitor.class, name
+                        + "-activeCount"),
+                new JmxAttributeGauge(self.getObjectName(), "NumActive"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
+        metrics.remove(MetricRegistry.name(DatabaseConnectionMonitor.class,
+                name + "-idleCount"));
+        metrics.remove(MetricRegistry.name(DatabaseConnectionMonitor.class,
+                name + "-activeCount"));
         self = null;
     }
 
