@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.operation.CompleteTaskOperation;
-import org.nuxeo.ecm.platform.routing.core.api.operation.GetOpenedTasksOnDocumentOperation;
+import org.nuxeo.ecm.platform.routing.core.api.operation.GetOpenedTasksOperation;
 import org.nuxeo.ecm.platform.routing.core.api.operation.SetWorkflowVar;
 import org.nuxeo.ecm.platform.routing.core.api.operation.StartWorkflowOperation;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
@@ -171,7 +171,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         ctx.setCoreSession(session);
         ctx.setInput(doc);
         List<DocumentModel> tasks = (List<DocumentModel>) automationService.run(
-                ctx, GetOpenedTasksOnDocumentOperation.ID,
+                ctx, GetOpenedTasksOperation.ID,
                 new HashMap<String, Object>());
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
@@ -185,7 +185,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         params.put("nodeId", "node1");
         params.put("processId", instance.getDocument().getId());
         tasks = (List<DocumentModel>) automationService.run(ctx,
-                GetOpenedTasksOnDocumentOperation.ID, params);
+                GetOpenedTasksOperation.ID, params);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -203,7 +203,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         ctx.setCoreSession(session);
         ctx.setInput(doc);
         tasks = (List<DocumentModel>) automationService.run(ctx,
-                GetOpenedTasksOnDocumentOperation.ID,
+                GetOpenedTasksOperation.ID,
                 new HashMap<String, Object>());
         assertNotNull(tasks);
         assertEquals(0, tasks.size());

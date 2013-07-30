@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Returns all open tasks on the given document. If the operation is invoked
+ * Returns all open tasks on the input document. If the operation is invoked
  * with parameters, all tasks instances for the given 'processId' originating
  * from the given 'nodeId' are returned. The 'processId' is the id of the
  * document representing the workflow instance. The parameter 'username' is used
@@ -44,12 +44,12 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * 
  * @since 5.7.2
  */
-@Operation(id = GetOpenedTasksOnDocumentOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get opened tasks", requires = Constants.WORKFLOW_CONTEXT, description = "Returns all opened tasks for the given document. "
+@Operation(id = GetOpenedTasksOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get opened tasks", requires = Constants.WORKFLOW_CONTEXT, description = "Returns all opened tasks for the input document. "
         + "If the operation is invoked with parameters, all tasks instances for the given 'processId' "
-        + "originating from the given 'nodeId' are returned. The 'processId' is the id of the document representing the workflow instance. The parameter 'username' is used to fetch only tasks assigned to the given user."
+        + "originating from the given 'nodeId' are returned. The 'processId' is the id of the document representing the workflow instance. The parameter 'username' is used to fetch only tasks assigned to the given user. "
         + "Tasks are queried using an unrestricted session.")
-public class GetOpenedTasksOnDocumentOperation {
-    public static final String ID = "Context.GetOpenedTasksForDocument";
+public class GetOpenedTasksOperation {
+    public static final String ID = "Context.GetOpenedTasks";
 
     @Context
     protected CoreSession session;

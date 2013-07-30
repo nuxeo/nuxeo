@@ -31,7 +31,7 @@
     <operation
       class="org.nuxeo.ecm.platform.routing.core.api.operation.CompleteTaskOperation" /> 
     <operation
-      class="org.nuxeo.ecm.platform.routing.core.api.operation.GetOpenedTasksOnDocumentOperation" />   
+      class="org.nuxeo.ecm.platform.routing.core.api.operation.GetOpenedTasksOperation" />   
        
   </extension>
 
