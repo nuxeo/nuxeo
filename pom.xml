@@ -3980,7 +3980,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx512M ${it.failsafe.argLine}</argLine>
+          <argLine>-Xmx512M -Dfile.encoding=UTF-8 ${it.failsafe.argLine}</argLine>
           <systemPropertyVariables>
             <net.sourceforge.cobertura.datafile>
               ${project.build.directory}/cobertura/cobertura.ser
@@ -3988,20 +3988,12 @@
             <!-- Used by org.nuxeo.ecm.core.storage.sql.DatabaseHelper -->
             <nuxeo.test.vcs.db>${nuxeo.test.vcs.db}</nuxeo.test.vcs.db>
             <nuxeo.test.vcs.url>${nuxeo.test.vcs.url}</nuxeo.test.vcs.url>
-            <nuxeo.test.vcs.server>
-              ${nuxeo.test.vcs.server}
-            </nuxeo.test.vcs.server>
+            <nuxeo.test.vcs.server>${nuxeo.test.vcs.server}</nuxeo.test.vcs.server>
             <nuxeo.test.vcs.port>${nuxeo.test.vcs.port}</nuxeo.test.vcs.port>
-            <nuxeo.test.vcs.database>
-              ${nuxeo.test.vcs.database}
-            </nuxeo.test.vcs.database>
+            <nuxeo.test.vcs.database>${nuxeo.test.vcs.database}</nuxeo.test.vcs.database>
             <nuxeo.test.vcs.user>${nuxeo.test.vcs.user}</nuxeo.test.vcs.user>
-            <nuxeo.test.vcs.password>
-              ${nuxeo.test.vcs.password}
-            </nuxeo.test.vcs.password>
-            <nuxeo.test.vcs.singleds>
-              ${nuxeo.test.vcs.singleds}
-            </nuxeo.test.vcs.singleds>
+            <nuxeo.test.vcs.password>${nuxeo.test.vcs.password}</nuxeo.test.vcs.password>
+            <nuxeo.test.vcs.singleds>${nuxeo.test.vcs.singleds}</nuxeo.test.vcs.singleds>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
