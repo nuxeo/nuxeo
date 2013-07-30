@@ -49,8 +49,8 @@
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>dam_common</layout>
         <layout>file</layout>
+        <layout>dam_common</layout>
         <layout>dublincore</layout>
       </layouts>
     </type>
@@ -69,6 +69,7 @@
       </layouts>
       <layouts mode="view">
         <layout>heading</layout>
+        <layout>file</layout>
         <layout>dam_common</layout>
       </layouts>
     </type>
@@ -81,6 +82,7 @@
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
+        <layout>video_file</layout>
         <layout>dam_common</layout>
         <layout>dublincore</layout>
       </layouts>
@@ -99,6 +101,7 @@
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
+        <layout>audio_file</layout>
         <layout>dam_common</layout>
         <layout>dublincore</layout>
       </layouts>
