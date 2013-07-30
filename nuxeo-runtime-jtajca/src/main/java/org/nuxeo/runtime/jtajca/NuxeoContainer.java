@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -53,7 +54,6 @@ import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.InitialContextAccessor;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -286,6 +286,7 @@ public class NuxeoContainer {
             }
             rootContext = new NamingContextFacade(parentContext);
             log.warn("Chaining naming spaces, can break your application server");
+            return;
         }
         rootContext = new NamingContext();
     }
