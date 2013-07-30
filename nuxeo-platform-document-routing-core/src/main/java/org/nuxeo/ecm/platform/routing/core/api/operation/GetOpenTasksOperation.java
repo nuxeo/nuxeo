@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
- * Returns all open tasks on the input document. If the operation is invoked
+ * Returns all open tasks on the input document(s). If the operation is invoked
  * with parameters, all tasks instances for the given 'processId' originating
  * from the given 'nodeId' are returned. The 'processId' is the id of the
  * document representing the workflow instance. The parameter 'username' is used
@@ -44,7 +44,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  *
  * @since 5.7.2
  */
-@Operation(id = GetOpenTasksOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get open tasks", requires = Constants.WORKFLOW_CONTEXT, description = "Returns all open tasks for the input document. "
+@Operation(id = GetOpenTasksOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get open tasks", requires = Constants.WORKFLOW_CONTEXT, description = "Returns all open tasks for the input document(s). "
         + "If the operation is invoked with parameters, all tasks instances for the given 'processId' "
         + "originating from the given 'nodeId' are returned. The 'processId' is the id of the document representing the workflow instance. The parameter 'username' is used to fetch only tasks assigned to the given user. "
         + "Tasks are queried using an unrestricted session.")
@@ -98,6 +98,16 @@ public class GetOpenTasksOperation {
                     }
                 }
             }
+        }
+        return taskDocs;
+    }
+
+    @OperationMethod
+    public DocumentModelList getAllTasks(DocumentModelList docs)
+            throws ClientException {
+        DocumentModelList taskDocs = new DocumentModelListImpl();
+        for (DocumentModel doc : docs) {
+            taskDocs.addAll(getAllTasks(doc));
         }
         return taskDocs;
     }

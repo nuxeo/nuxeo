@@ -27,8 +27,10 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -179,7 +181,10 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         // invoke GetOpenedTasks operation with parameters
         ctx = new OperationContext();
         ctx.setCoreSession(session);
-        ctx.setInput(doc);
+        DocumentModelList docs = new DocumentModelListImpl();
+        docs.add(doc);
+
+        ctx.setInput(docs);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("username", users[0]);
         params.put("nodeId", "node1");
