@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FrameworkBootstrap implements LoaderConstants {
 
-    protected static final String DEFAULT_BUNDLES_CP = "bundles/*";
+    protected static final String DEFAULT_BUNDLES_CP = "bundles/*:plugins/*";
 
     protected static final String DEFAULT_LIBS_CP = "lib/*:.:config";
 
@@ -206,7 +206,7 @@ public class FrameworkBootstrap implements LoaderConstants {
 
     /**
      * Fills the classloader with all jars found in the defined classpath.
-     * 
+     *
      * @return the list of bundle files.
      */
     protected List<File> buildClassPath() throws IOException {
