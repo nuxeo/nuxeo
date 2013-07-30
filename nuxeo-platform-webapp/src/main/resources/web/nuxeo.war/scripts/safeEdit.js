@@ -64,6 +64,11 @@
         "input,select,textarea,td.mceIframeContainer>iframe");
   }
 
+  function getFormItemsForSecondPass(formSelector) {
+    return jQuery(formSelector).find(
+        "textarea.mceEditor,td.mceIframeContainer>iframe");
+  }
+
   function collectFormData(formSelector) {
     var data = {};
     getFormItems(formSelector).each(function() {
@@ -134,6 +139,17 @@
               setInputValue(this, data[k]);
             }
           });
+          // We may have to restore again some components (i.e. tiny mce editor)
+          // after a first pass
+          getFormItemsForSecondPass(formSelector).each(function() {
+            if (!mustSkipField(this)) {
+              var k = this.id;
+              if (!k) {
+                k = this.name;
+              }
+              setInputValue(this, data[k]);
+            }
+          });
         } else {
           // drop saved data !
           cleanupSavedData(key);
@@ -163,11 +179,12 @@
       var targetDomItem = jQuery(this);
       if (this.tagName == "IFRAME") {
         targetDomItem = jQuery(this).contents().find("body");
+        targetDomItem.bind("DOMSubtreeModified", cb);
+      } else {
+        targetDomItem.change(cb);
       }
-      targetDomItem.change(cb);
     });
   }
-
 
   function detectDirtyPage(formSelector, message) {
     bindOnChange(formSelector, function(event) {
@@ -196,8 +213,9 @@
           // return message
           return message;
         });
-        // if the user really wanna leave the page, then we clear the localstorage
-        jQuery(window).bind('unload', function(){
+        // if the user really wanna leave the page, then we clear the
+        // localstorage
+        jQuery(window).bind('unload', function() {
           cleanupSavedData(key);
         });
       }
@@ -211,7 +229,6 @@
     })
   }
 
-  window.initSafeEdit=initSafeEdit;
+  window.initSafeEdit = initSafeEdit;
 
 })();
-
