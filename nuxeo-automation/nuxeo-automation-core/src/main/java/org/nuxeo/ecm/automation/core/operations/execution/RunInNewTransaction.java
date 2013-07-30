@@ -14,23 +14,19 @@ package org.nuxeo.ecm.automation.core.operations.execution;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * Operation to run an operation chain in a separate transaction. The
@@ -65,6 +61,9 @@ public class RunInNewTransaction {
     @Param(name = "parameters", required = false)
     protected Properties chainParameters;
 
+    @Param(name = "timeout", required = false)
+    protected Integer timeout = 60;
+
     @OperationMethod
     public void run() throws Exception {
         // if the transaction was already marked for rollback, do nothing
@@ -74,40 +73,67 @@ public class RunInNewTransaction {
 
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
-        subctx.setInput(ctx.getInput());
-        final TransactionManager transactionManager = TransactionHelper.lookupTransactionManager();
-        final Transaction globalTx = transactionManager.suspend();
+
+        RunnableOperation runOp = new RunnableOperation(ctx.getCoreSession().getRepositoryName(),chainId,vars);
+        boolean failed = false;
         try {
-            TransactionHelper.startTransaction();
-            try {
-                service.run(subctx, chainId, (Map) chainParameters);
-            } catch (Exception e) {
-                handleRollbackOnlyOnGlobal(globalTx, e);
-            } finally {
-                try {
-                    TransactionHelper.commitOrRollbackTransaction();
-                } catch (TransactionRuntimeException e) {
-                    handleRollbackOnlyOnGlobal(globalTx, e);
-                }
+            runOp.start();
+            runOp.join((timeout+1)*1000);
+            if (runOp.isAlive()) {
+                failed=true;
             }
         } finally {
-            transactionManager.resume(globalTx);
+            if ((failed || runOp.isFailed()) && rollbackGlobalOnError) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
         }
+        // flush invalidations
+        ctx.getCoreSession().save();
     }
 
-    private void handleRollbackOnlyOnGlobal(Transaction mainTx, Throwable e)
-            throws SystemException, OperationException {
-        TransactionHelper.setTransactionRollbackOnly();
-        if (rollbackGlobalOnError == true) {
-            mainTx.setRollbackOnly();
-            throw new OperationException(
-                    "Catching error on new transaction, rollbacking global tx",
-                    e);
-        } else {
-            log.error("Caught error on new transaction, continuing global tx",
-                    e);
+    protected class RunnableOperation extends Thread {
+
+        protected final Map<String, Object> vars;
+        protected final String repo;
+        protected final String opName;
+        protected boolean failed = false;
+
+        public RunnableOperation(String repo, String opName, Map<String, Object> vars) {
+            super("Runner-for-" + opName);
+            this.vars = vars;
+            this.repo=repo;
+            this.opName=opName;
         }
+
+        @Override
+        public void run() {
+            TransactionHelper.startTransaction(timeout);
+            try {
+                new UnrestrictedSessionRunner(repo) {
+                    @Override
+                    public void run() throws ClientException {
+                        OperationContext subctx = new OperationContext(session,
+                                vars);
+                        subctx.setInput(ctx.getInput());
+                        try {
+                            service.run(subctx, opName, (Map) chainParameters);
+                        } catch (Exception e) {
+                            throw ClientException.wrap(e);
+                        }
+                    }
+                }.runUnrestricted();
+            } catch (Exception e) {
+                TransactionHelper.setTransactionRollbackOnly();
+                failed=true;
+                log.error("Error while executing operation " + opName, e);
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
+
+        public boolean isFailed() {
+            return failed;
+        }
+
     }
 }
