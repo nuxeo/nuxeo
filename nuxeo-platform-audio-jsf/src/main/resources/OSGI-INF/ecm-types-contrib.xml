@@ -14,12 +14,16 @@
       <description>Audio.description</description>
       <layouts mode="any">
         <layout>heading</layout>
-        <layout>file</layout>
+        <layout>audio_file</layout>
       </layouts>
       <layouts mode="edit">
         <layout>heading</layout>
-        <layout>file</layout>
+        <layout>audio_file</layout>
         <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="view">
+        <layout>heading</layout>
+        <layout>file</layout>
       </layouts>
     </type>
 
