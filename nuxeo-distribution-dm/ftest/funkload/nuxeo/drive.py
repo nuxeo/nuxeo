@@ -18,8 +18,10 @@
 """
 Simulate a Nuxeo Drive client
 """
+import os
 import time
 import uuid
+from mimetypes import guess_type
 from funkload.utils import Data
 from utils import extractToken
 
@@ -167,3 +169,31 @@ class DriveClient:
         fl.assert_('hasTooManyChanges' in fl.getBody())
         self.last_sync = extractSyncDate(fl.getBody())
         return self
+
+    def upload_file(self, parent_id, path, filename=None):
+        fl = self.fl
+        batch_id = uuid.uuid1().hex
+        name = filename is None and os.path.basename(path) or filename
+        data = open(os.path.join(path), "rb").read()
+        fl.addHeader('X-Batch-Id', batch_id)
+        fl.addHeader('X-File-Type', guess_type(name)[0])
+        fl.addHeader('X-File-Size', len(data))
+        fl.addHeader('X-File-Idx', '0')
+        fl.addHeader('X-File-Name', name)
+        fl.post(fl.server_url + "/site/automation/batch/upload",
+                Data('binary/octet-stream', data),
+                description="Upload file")
+        data = None
+        fl.delHeader('X-Batch-Id')
+        fl.delHeader('X-File-Type')
+        fl.delHeader('X-File-Size')
+        fl.delHeader('X-File-Idx')
+        fl.delHeader('X-File-Name')
+
+        fl.post(fl.server_url + "/site/automation/batch/execute",
+                Data('application/json+nxrequest',
+                     '{"params": {"batchId": "' + batch_id + '", "parentId": "'
+                     + parent_id + '", "fileIdx": "0", "name": "' + name +
+                     '", "operationId": "NuxeoDrive.CreateFile"}}'),
+                description="Create file")
+        fl.assert_("downloadURL" in fl.getBody())

@@ -51,10 +51,10 @@ class Drive(NuxeoTestCase):
                  .view()
                  .createFolder(self.dir_title, 'A description'))
         p.driveSynchronizeCurrentDocument()
-        self.createFile()
+        self.createServerFile()
         p.logout()
 
-    def createFile(self):
+    def createServerFile(self):
         self.setHeader('Accept-Language', 'en-us')
         p = FolderPage(self).viewDocumentPath(self.dir_path)
         file_path = random.choice(self.files)
@@ -67,9 +67,14 @@ class Drive(NuxeoTestCase):
         d = (DriveClient(self)
              .bind_server(*self.cred_admin)
              .start_drive())
+        parent_id = d.root_ids[0]
         for i in range(self.nb_write):
             # no need to auth using token auth
-            uid = self.createFile()
+            path = random.choice(self.files)
+            name = self._lipsum.getUniqWord() + '-' + os.path.basename(path)
+            d.upload_file(parent_id, path, name)
+
+            uid = self.createServerFile()
             sleep(1)
             d.get_update(" update " + str(i))
             self.assert_(uid in self.getBody(),
