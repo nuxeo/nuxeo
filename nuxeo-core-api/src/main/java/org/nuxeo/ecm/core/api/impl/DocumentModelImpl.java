@@ -1345,9 +1345,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String toString() {
-        String title;
+        String title = id;
         try {
-            title = getTitle();
+            if (getDataModels().containsKey("dublincore")) {
+                title = getTitle();
+            }
         } catch (ClientException e) {
             title = "(ERROR: " + e + ')';
         }
