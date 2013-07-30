@@ -89,6 +89,8 @@ public class TestAuditFileSystemChangeFinder {
 
     protected DocumentModel folder2;
 
+    protected DocumentModel folder3;
+
     @Before
     public void init() throws Exception {
         // Enable deletion listener because the tear down disables it
@@ -107,8 +109,8 @@ public class TestAuditFileSystemChangeFinder {
                     "folder1", "Folder"));
             folder2 = session.createDocument(session.createDocumentModel("/",
                     "folder2", "Folder"));
-            session.createDocument(session.createDocumentModel("/", "folder3",
-                    "Folder"));
+            folder3 = session.createDocument(session.createDocumentModel("/",
+                    "folder3", "Folder"));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -339,6 +341,21 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("test", change.getRepositoryId());
             assertEquals("deleted", change.getEventId());
             assertEquals(doc1.getId(), change.getDocUuid());
+
+            // Move a doc from a sync root to a non synchronized folder
+            session.move(copiedDoc.getRef(), folder3.getRef(), null);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("test", change.getRepositoryId());
+            assertEquals("deleted", change.getEventId());
+            assertEquals(copiedDoc.getId(), change.getDocUuid());
 
             // Too many changes
             session.followTransition(doc1.getRef(), "delete");
