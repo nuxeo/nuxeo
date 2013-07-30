@@ -20,6 +20,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,7 +32,7 @@ import org.nuxeo.ecm.platform.task.Task;
  *
  * @since 5.7.2
  */
-@Operation(id = CompleteTaskOperation.ID, category = Constants.CAT_WORKFLOW, label = "Complete task", requires = Constants.WORKFLOW_CONTEXT, description = "Completes the input task. If this is the last task the workflow will continue."
+@Operation(id = CompleteTaskOperation.ID, category = Constants.CAT_WORKFLOW, label = "Complete task", requires = Constants.WORKFLOW_CONTEXT, description = "Completes the input task. If this is the last task the workflow will continue. "
         + "Returns back the task document. \"Status\" is the id of the button the user would have clicked to submit the task form (if the outgoing transitions of the workflow node that created the task have conditions depending on it).")
 public class CompleteTaskOperation {
     public static final String ID = "Workflow.CompleteTaskOperation";
@@ -51,7 +52,7 @@ public class CompleteTaskOperation {
     @Context
     protected DocumentRoutingService documentRoutingService;
 
-    @OperationMethod
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel completeTask(DocumentModel task)
             throws ClientException {
         Map<String, Object> data = new HashMap<String, Object>();
