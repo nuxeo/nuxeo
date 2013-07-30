@@ -12,7 +12,8 @@
   <service>
     <provide interface="org.nuxeo.ecm.automation.AutomationService" />
     <provide
-      interface="org.nuxeo.ecm.automation.core.events.EventHandlerRegistry" />
+            interface="org.nuxeo.ecm.automation.core.events.EventHandlerRegistry" />
+    <provide interface="org.nuxeo.ecm.automation.core.trace.TracerFactory" />
   </service>
 
   <extension-point name="operations">

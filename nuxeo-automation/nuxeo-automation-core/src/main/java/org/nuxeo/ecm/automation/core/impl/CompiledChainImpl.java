@@ -17,6 +17,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.ExitException;
 import org.nuxeo.ecm.automation.InvalidChainException;
+import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
@@ -114,6 +115,8 @@ class CompiledChainImpl implements CompiledChain {
     protected Object doInvoke(OperationContext ctx) throws OperationException {
         // add debug info
         ctx.addTrace(method.op.getId() + ":" + method.method.getName());
+        final OperationCallback callback = ctx.getChainCallback();
+        callback.onOperation(ctx, op, method, compileParameters);
         // invoke method
         Object out = method.invoke(ctx, compileParameters);
         ctx.setInput(out);

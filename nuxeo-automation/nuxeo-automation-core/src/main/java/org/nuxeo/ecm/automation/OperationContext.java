@@ -1,26 +1,36 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier <vpasquier@nuxeo.com>
+ *     slacoin <slacoin@nuxeo.com>
  */
 package org.nuxeo.ecm.automation;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -86,9 +96,15 @@ public class OperationContext implements Map<String, Object> {
     protected Object input;
 
     /**
-     * A list of trace messages useful to use in exception details.
+     * A list of trace. Since 5.7.3 messages is no longer useful for tracing.
+     * Use chain call backs to do it.
      */
     protected List<String> trace;
+
+    /**
+     * @since 5.7.3 Collect operation invokes.
+     */
+    protected ChainCallback chainCallback;
 
     public OperationContext() {
         this(null, null);
@@ -103,6 +119,7 @@ public class OperationContext implements Map<String, Object> {
         cleanupHandlers = new ArrayList<CleanupHandler>();
         loginStack = new LoginStack(session);
         trace = new ArrayList<String>();
+        chainCallback = new ChainCallback();
         this.vars = vars != null ? vars : new HashMap<String, Object>();
     }
 
@@ -190,17 +207,33 @@ public class OperationContext implements Map<String, Object> {
         }
     }
 
+    /**
+     * since 5.7.3 #addTrace is no longer useful for tracing. Use chain call
+     * backs to do it.
+     */
+    @Deprecated
     public void addTrace(String trace) {
         this.trace.add(trace);
     }
 
+    /**
+     * since 5.7.3 #getTrace is no longer useful for tracing. Use chain call
+     * backs to do it.
+     */
+    @Deprecated
     public List<String> getTrace() {
         return trace;
     }
+
+    /**
+     * since 5.7.3 #getFormattedTrace is no longer useful for tracing. Use chain
+     * call backs to do it.
+     */
+    @Deprecated
     public String getFormattedTrace() {
         String crlf = System.getProperty("line.separator");
-        StringBuilder buf =new StringBuilder();
-        for (String t: trace) {
+        StringBuilder buf = new StringBuilder();
+        for (String t : trace) {
             buf.append("> ").append(t).append(crlf);
         }
         return buf.toString();
@@ -301,4 +334,56 @@ public class OperationContext implements Map<String, Object> {
         return vars.entrySet();
     }
 
+    /**
+     * @since 5.7.3
+     */
+    protected static class ChainCallback implements OperationCallback {
+
+        protected final Set<OperationCallback> operationCallbacks = new HashSet<OperationCallback>();
+
+        protected ChainCallback(OperationCallback... operationCallbacks) {
+            this.operationCallbacks.addAll(Arrays.asList(operationCallbacks));
+        }
+
+        protected void add(OperationCallback callback) {
+            operationCallbacks.add(callback);
+        }
+
+        @Override
+        public void onChain(OperationContext context, OperationType chain) {
+            for (OperationCallback cb : operationCallbacks) {
+                cb.onChain(context, chain);
+            }
+        }
+
+        @Override
+        public void onOperation(OperationContext context, OperationType type,
+                InvokableMethod method, Map<String, Object> parms) {
+            for (OperationCallback cb : operationCallbacks) {
+                cb.onOperation(context, type, method, parms);
+            }
+        }
+
+        @Override
+        public void onError(OperationException error) {
+            for (OperationCallback cb : operationCallbacks) {
+                cb.onError(error);
+            }
+        }
+
+        @Override
+        public void onOutput(Object output) {
+            for (OperationCallback cb : operationCallbacks) {
+                cb.onOutput(output);
+            }
+        }
+    }
+
+    public ChainCallback getChainCallback() {
+        return chainCallback;
+    }
+
+    public void addChainCallback(OperationCallback chainCallback) {
+        this.chainCallback.add(chainCallback);
+    }
 }
