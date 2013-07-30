@@ -7,8 +7,8 @@ nuxeo.server.ajp.port=8009
 nuxeo.server.https.port=0
 nuxeo.server.tomcat_admin.port=8005
 nuxeo.server.jvmRoute=nuxeo
-nuxeo.server.declare_datasources=false
-NuxeoContainer.autoactivation=true
+nuxeo.server.declare_datasources=true
+NuxeoContainer.autoactivation=false
 
 # GlobalNamingResources datasource (not visible from webapp)
 nuxeo.db.commonds=jdbc/nuxeo
