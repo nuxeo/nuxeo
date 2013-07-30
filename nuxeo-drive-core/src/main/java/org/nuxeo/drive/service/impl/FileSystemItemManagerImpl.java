@@ -26,9 +26,12 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
@@ -45,6 +48,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author Antoine Taillefer
  */
 public class FileSystemItemManagerImpl implements FileSystemItemManager {
+
+    private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
 
     /*------------- Opened sessions against each repository ----------------*/
     protected final ThreadLocal<Map<String, CoreSession>> openedSessions = new ThreadLocal<Map<String, CoreSession>>() {
@@ -134,14 +139,27 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     @Override
     public FileSystemItem getFileSystemItemById(String id, Principal principal)
             throws ClientException {
-        return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
-                id).getFileSystemItemById(id, principal);
+        try {
+            return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
+                    id).getFileSystemItemById(id, principal);
+        } catch (RootlessItemException e) {
+            log.debug(String.format(
+                    "RootlessItemException thrown while trying to get file system item with id %s, returning null.",
+                    id));
+            return null;
+        }
     }
 
     @Override
     public List<FileSystemItem> getChildren(String id, Principal principal)
             throws ClientException {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
+        if (fileSystemItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot get the children of file system item with id %s because it doesn't exist.",
+                            id));
+        }
         if (!(fileSystemItem instanceof FolderItem)) {
             throw new ClientException(
                     String.format(
@@ -156,6 +174,9 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public boolean canMove(String srcId, String destId, Principal principal)
             throws ClientException {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
+        if (srcFsItem == null) {
+            return false;
+        }
         FileSystemItem destFsItem = getFileSystemItemById(destId, principal);
         if (!(destFsItem instanceof FolderItem)) {
             return false;
@@ -168,6 +189,12 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FolderItem createFolder(String parentId, String name,
             Principal principal) throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
+        if (parentFsItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot create a folder in file system item with id %s because it doesn't exist.",
+                            parentId));
+        }
         if (!(parentFsItem instanceof FolderItem)) {
             throw new ClientException(
                     String.format(
@@ -182,6 +209,12 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileItem createFile(String parentId, Blob blob, Principal principal)
             throws ClientException {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
+        if (parentFsItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot create a file in file system item with id %s because it doen't exist.",
+                            parentId));
+        }
         if (!(parentFsItem instanceof FolderItem)) {
             throw new ClientException(
                     String.format(
@@ -196,6 +229,12 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileItem updateFile(String id, Blob blob, Principal principal)
             throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
+        if (fsItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot update the content of file system item with id %s because it doesn't exist.",
+                            id));
+        }
         if (!(fsItem instanceof FileItem)) {
             throw new ClientException(
                     String.format(
@@ -210,6 +249,12 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     @Override
     public void delete(String id, Principal principal) throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
+        if (fsItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot delete file system item with id %s because it doesn't exist.",
+                            id));
+        }
         fsItem.delete();
     }
 
@@ -217,6 +262,12 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileSystemItem rename(String id, String name, Principal principal)
             throws ClientException {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
+        if (fsItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot renamefile system item with id %s because it doesn't exist.",
+                            id));
+        }
         fsItem.rename(name);
         return fsItem;
     }
@@ -225,7 +276,19 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileSystemItem move(String srcId, String destId, Principal principal)
             throws ClientException {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
+        if (srcFsItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot move file system item with id %s because it doesn't exist.",
+                            srcId));
+        }
         FileSystemItem destFsItem = getFileSystemItemById(destId, principal);
+        if (destFsItem == null) {
+            throw new ClientException(
+                    String.format(
+                            "Cannot move a file system item to file system item with id %s because it doesn't exist.",
+                            destId));
+        }
         if (!(destFsItem instanceof FolderItem)) {
             throw new ClientException(
                     String.format(
