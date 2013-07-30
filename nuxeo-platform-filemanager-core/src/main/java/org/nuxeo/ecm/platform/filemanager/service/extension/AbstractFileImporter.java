@@ -164,6 +164,10 @@ public abstract class AbstractFileImporter implements FileImporter {
         doc.getAdapter(BlobHolder.class).setBlob(content);
     }
 
+    public Blob getBlob(DocumentModel doc) throws ClientException {
+        return doc.getAdapter(BlobHolder.class).getBlob();
+    }
+
     @Override
     public DocumentModel create(CoreSession session, Blob content, String path,
             boolean overwrite, String fullname, TypeManager typeService)
@@ -186,9 +190,12 @@ public abstract class AbstractFileImporter implements FileImporter {
             doc = FileManagerUtils.getExistingDocByFileName(session, path,
                     filename);
         }
+        boolean skipCheckInAfterAdd = false;
         if (overwrite && doc != null) {
             // make sure we save any existing data
-            checkIn(doc);
+            if (!skipCheckInForBlob(getBlob(doc))) {
+                checkIn(doc);
+            }
             // update data
             updateDocument(doc, content);
             if (Framework.getProperty(SKIP_UPDATE_AUDIT_LOGGING, "false").equalsIgnoreCase("true")) {
@@ -206,13 +213,25 @@ public abstract class AbstractFileImporter implements FileImporter {
             doc.setPathInfo(path, pss.generatePathSegment(doc));
             // update data
             updateDocument(doc, content);
+            skipCheckInAfterAdd = skipCheckInForBlob(content);
             // create
             doc = session.createDocument(doc);
         }
         // check in if requested
-        checkInAfterAdd(doc);
+        if (!skipCheckInAfterAdd) {
+            checkInAfterAdd(doc);
+        }
         session.save();
         return doc;
+    }
+
+    /**
+     * Avoid checkin for a 0-length blob. Microsoft-WebDAV-MiniRedir first
+     * creates a 0-length file and then locks it before putting the real file.
+     * But we don't want this first placeholder to cause a versioning event.
+     */
+    protected boolean skipCheckInForBlob(Blob blob) {
+        return blob == null || blob.getLength() == 0;
     }
 
     public FileManagerService getFileManagerService() {
