@@ -21,6 +21,10 @@
       <h:outputText value="#{messages['title.create.document']} #{messages[nxd:typeInfo(changeableDocument).label]}" />
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
+    <ui:include src="/incl/safeEdit.xhtml">
+     <ui:param name="safeEdit_form" value="document_create" />
+     <ui:param name="safeEdit_mode" value="create" />
+    </ui:include>
     <h:form enctype="multipart/form-data" id="document_create">
       <script>
         jQuery(document).ready(function() {
