@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * document representing the workflow instance. The parameter 'username' is used
  * to fetch only tasks assigned to the given user. Tasks are queried using an
  * unrestricted session.
- * 
+ *
  * @since 5.7.2
  */
 @Operation(id = GetOpenTasksOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get open tasks", requires = Constants.WORKFLOW_CONTEXT, description = "Returns all open tasks for the input document. "

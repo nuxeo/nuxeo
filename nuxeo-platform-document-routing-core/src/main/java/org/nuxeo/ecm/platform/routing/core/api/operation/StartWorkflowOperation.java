@@ -90,10 +90,12 @@ public class StartWorkflowOperation {
 
     protected void startNewInstance(List<String> ids) throws ClientException {
         Map<String, Serializable> vars = new HashMap<String, Serializable>();
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            vars.put(key, value);
+        if (variables != null) {
+            for (Map.Entry<String, String> entry : variables.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                vars.put(key, value);
+            }
         }
         String workflowId = documentRoutingService.createNewInstance(id, ids,
                 vars, session, Boolean.TRUE.equals(start));
