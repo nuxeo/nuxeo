@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.virusscan.service.ScanComponent" version="1.0">
+
+  <implementation class="org.nuxeo.ecm.core.event.test.virusscan.service.ScanComponent" />
+
+  <service>
+      <provide interface="org.nuxeo.ecm.core.event.test.virusscan.service.ScanService" />
+  </service>
+
+</component>
