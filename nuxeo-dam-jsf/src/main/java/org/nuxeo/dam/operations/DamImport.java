@@ -17,10 +17,14 @@
 
 package org.nuxeo.dam.operations;
 
+import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -31,6 +35,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 
@@ -77,16 +82,25 @@ public class DamImport {
     @OperationMethod
     public DocumentModel run(Blob blob) throws Exception {
         AssetLibrary assetLibrary = damService.getAssetLibrary();
+        String title = assetLibrary.getTitle();
         String path = assetLibrary.getPath();
         if (importInCurrentDocument) {
             DocumentModel doc = getCurrentDocument();
             if (doc != null) {
+                title = doc.getTitle();
                 path = doc.getPathAsString();
             }
         }
-        ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
-        return fileManager.createDocumentFromBlob(session, blob, path,
+
+        try {
+            DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, path,
                 overwrite, blob.getFilename());
+            ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
+            return doc;
+        } catch(Exception e) {
+            String[] params = { blob.getFilename(), title };
+            throw new RecoverableClientException("Cannot import asset", "label.dam.import.asset.error", params);
+        }
     }
 
     @OperationMethod
