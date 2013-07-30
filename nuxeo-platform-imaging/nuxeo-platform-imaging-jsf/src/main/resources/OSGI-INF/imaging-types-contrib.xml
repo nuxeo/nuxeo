@@ -35,6 +35,7 @@
       </layouts>
       <layouts mode="view">
         <layout>heading</layout>
+        <layout>file</layout>
       </layouts>
     </type>
 
