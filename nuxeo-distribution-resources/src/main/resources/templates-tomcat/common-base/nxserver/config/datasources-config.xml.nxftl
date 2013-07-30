@@ -4,7 +4,7 @@
 
 <#if "${nuxeo.server.declare_datasources}" == "false">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
-<#if nuxeo.db.singleDataSource??>
+<#if "${nuxeo.db.singleDataSource}"!="">
     <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
       maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="5" maxWait="10000"
       url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"

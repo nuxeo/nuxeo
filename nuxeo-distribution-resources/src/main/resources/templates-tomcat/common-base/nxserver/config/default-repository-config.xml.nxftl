@@ -107,7 +107,7 @@
 <#if "${nuxeo.db.type}" != "mysql">
         <usersSeparator key="${nuxeo.db.user_separator_key}" />
 </#if>
-<#if !nuxeo.db.singleDataSource??>
+<#if "${nuxeo.db.singleDataSource}"=="">
         <xa-datasource>${nuxeo.db.xadatasource}</xa-datasource>
 <#include "xadatasource-params.ftl" parse=true />
 </#if>

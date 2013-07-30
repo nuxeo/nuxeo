@@ -266,19 +266,27 @@ install nuxeo-dam
         <include name="jsp-*" />
         <include name="juel-api-*" />
       </fileset>
+      <!-- replaced by sl4j bridge -->
+      <fileset dir="${distribution.dir}/nxserver/lib"> 
+        <include name="commons-logging*" />
+      </fileset>
     </delete>
 
     <!-- Move some libraries from nxserver to Tomcat default lib directory -->
     <move todir="${distribution.dir}/lib">
       <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="log4j-*" />
         <include name="lucene-*" />
-        <include name="commons-logging-*" />
         <include name="commons-lang-*" />
         <include name="freemarker-*" />
         <include name="mail-*" />
         <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
         <include name="nuxeo-generic-wss-front*" />
+      </fileset>
+      <!-- install sl4j bridge in container classpath -->
+      <fileset dir="${distribution.dir}/nxserver/lib">
+        <include name="slf4j*" />
+        <include name="jcl-over-slf4j*" />
+        <include name="log4j-*" />
       </fileset>
       <fileset dir="${distribution.dir}/nxserver/bundles">
         <include name="nuxeo-core-storage-sql-extensions-*" />
