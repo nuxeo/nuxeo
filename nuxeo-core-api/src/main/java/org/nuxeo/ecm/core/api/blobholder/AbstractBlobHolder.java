@@ -13,10 +13,14 @@
 
 package org.nuxeo.ecm.core.api.blobholder;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
@@ -66,13 +70,26 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         Blob blob = getBlob();
         if (blob != null) {
             String h = blob.getDigest();
-            if (h != null) {
-                return h;
-            } else {
-                return Integer.toString(blob.hashCode());
+            if (h == null) {
+                h = getMD5Digest();
+                blob.setDigest(h);
             }
+            return h;
         }
         return "NullBlob";
+    }
+
+    protected String getMD5Digest() throws ClientException {
+        InputStream in = null;
+        try {
+            Blob blob = getBlob().persist();
+            in = blob.getStream();
+            return DigestUtils.md5Hex(in);
+        } catch (IOException e) {
+            throw new ClientException(e);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
     }
 
     @Override
