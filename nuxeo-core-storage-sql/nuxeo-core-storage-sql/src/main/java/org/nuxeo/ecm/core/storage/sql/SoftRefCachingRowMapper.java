@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
@@ -114,20 +115,25 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private final Counter cacheHitCount = registry.counter(MetricRegistry.name(
+    protected final Counter cacheHitCount = registry.counter(MetricRegistry.name(
             SoftRefCachingRowMapper.class, "cache-hit"));
 
-    private final Counter cacheSize = registry.counter(MetricRegistry.name(
-            SoftRefCachingRowMapper.class, "cache-size"));
+    protected final Gauge<Integer> cacheSize = registry.register(MetricRegistry.name(
+            SoftRefCachingRowMapper.class, "cache-size"), new Gauge<Integer>() {
+                @Override
+                public Integer getValue() {
+                    return cache.size();
+                }
+    });
 
-    private final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
+    protected final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
             SoftRefCachingRowMapper.class, "cache-get"));
 
     // sor means system of record (database access)
-    private final Counter sorRows = registry.counter(MetricRegistry.name(
+    protected final Counter sorRows = registry.counter(MetricRegistry.name(
             SoftRefCachingRowMapper.class, "sor-rows"));
 
-    private final Timer sorGetTimer = registry.timer(MetricRegistry.name(
+    protected final Timer sorGetTimer = registry.timer(MetricRegistry.name(
             SoftRefCachingRowMapper.class, "sor-get"));
 
     @SuppressWarnings("unchecked")
@@ -154,6 +160,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     public void close() throws StorageException {
+        clearCache();
         cachePropagator.removeQueue(cacheQueue);
         eventPropagator.removeQueue(eventQueue); // TODO can be overriden
     }
@@ -180,9 +187,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
                 && row.values[0] instanceof ACLRow) {
             row.values = sortACLRows((ACLRow[]) row.values);
         }
-        if (cache.put(new RowId(row), row) == null) {
-            cacheSize.inc();
-        }
+        cache.put(new RowId(row), row);
     }
 
     protected ACLRow[] sortACLRows(ACLRow[] acls) {
@@ -193,9 +198,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected void cachePutAbsent(RowId rowId) {
-        if (cache.put(new RowId(rowId), new Row(ABSENT, (Serializable) null)) == null) {
-            cacheSize.inc();
-        }
+        cache.put(new RowId(rowId), new Row(ABSENT, (Serializable) null));
     }
 
     protected void cachePutAbsentIfNull(RowId rowId, Row row) {
@@ -231,9 +234,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected void cacheRemove(RowId rowId) {
-        if (cache.remove(rowId) != null) {
-            cacheSize.dec();
-        }
+        cache.remove(rowId);
     }
 
     /*
@@ -330,15 +331,15 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     @Override
     public void clearCache() {
-        cacheSize.dec(cache.size());
         cache.clear();
+        sorRows.dec(sorRows.getCount());
         localInvalidations.clear();
         rowMapper.clearCache();
     }
 
     @Override
     public long getCacheSize() {
-        return cacheSize.getCount();
+        return cache.size();
     }
 
     @Override
