@@ -401,6 +401,9 @@ public class TestAuditFileSystemChangeFinder {
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
             doc1 = session.createDocument(doc1);
+            // Wait 100 ms to avoid random assertion failure due to audit log
+            // entries probably having the same event date to the millisecond.
+            Thread.sleep(100);
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2."));
