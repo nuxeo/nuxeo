@@ -9,6 +9,13 @@
       <event>beforeDocumentModification</event>
     </listener>
 
+    <listener name="pictureViewListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.picture.listener.PictureViewListener"
+      priority="20">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+    </listener>
+
   </extension>
 
 </component>

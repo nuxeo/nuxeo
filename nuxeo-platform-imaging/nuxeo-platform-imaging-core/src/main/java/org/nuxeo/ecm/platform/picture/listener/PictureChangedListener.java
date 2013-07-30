@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.picture.listener;
 
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_CHANGED_PROPERTY;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
 import java.net.URL;
@@ -40,9 +41,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.picture.PictureViewsGenerationWork;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
@@ -50,7 +49,8 @@ import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener updating the views of a Picture if the main Blob has changed.
+ * Listener updating pre-filling the views of a Picture if the main Blob has
+ * changed.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
@@ -78,13 +78,8 @@ public class PictureChangedListener implements EventListener {
                 // if the views are dirty, assume they're up to date
                 if (viewsProp == null || !viewsProp.isDirty()) {
                     preFillPictureViews(docCtx.getCoreSession(), doc);
-                    // launch work doing the actual views generation
-                    PictureViewsGenerationWork work = new PictureViewsGenerationWork(
-                            doc.getRepositoryName(), doc.getRef(),
-                            "file:content");
-                    WorkManager workManager = Framework.getLocalService(WorkManager.class);
-                    workManager.schedule(work,
-                            WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+                    // mark the document as needing picture views generation
+                    ctx.setProperty(PICTURE_CHANGED_PROPERTY, true);
                 }
             }
         }
