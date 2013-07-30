@@ -73,11 +73,11 @@ public class NuxeoLauncher implements LifecycleListener {
     }
 
     public void setAutomaticReload(boolean value) {
-        this.automaticReload = value;
+        automaticReload = value;
     }
 
     public boolean getAutomaticReload() {
-        return this.automaticReload;
+        return automaticReload;
     }
 
     @Override
@@ -96,11 +96,7 @@ public class NuxeoLauncher implements LifecycleListener {
         try {
             MutableClassLoader cl = (MutableClassLoader)loader.getClassLoader();
             boolean devMode = cl instanceof NuxeoDevWebappClassLoader;
-            if (type == Lifecycle.START_EVENT || // Tomcat 6
-                    type.equals("configure_start")) { // Tomcat 7
-                if (bootstrap != null) {
-                    return; // Tomcat 7 has configure_start then start
-                }
+            if (type == Lifecycle.CONFIGURE_START_EVENT) {
                 File homeDir = resolveHomeDirectory(loader);
                 if (devMode) {
                     bootstrap = new DevFrameworkBootstrap(
@@ -115,20 +111,11 @@ public class NuxeoLauncher implements LifecycleListener {
                             cl,
                             homeDir);
                 }
-                String info = ServerInfo.getServerInfo();
-                int i = info.indexOf('/'); // Apache Tomcat/6.0.35
-                String version;
-                if (i > 0) {
-                    version = info.substring(i + 1);
-                } else {
-                    version = ServerInfo.getServerNumber(); // 6.0.35.0
-                }
                 bootstrap.setHostName("Tomcat");
-                bootstrap.setHostVersion(version);
+                bootstrap.setHostVersion(ServerInfo.getServerNumber());
                 bootstrap.initialize();
-            } else if (type == Lifecycle.AFTER_START_EVENT) {
                 bootstrap.start();
-            } else if (type == Lifecycle.STOP_EVENT) {
+            } else if (type == Lifecycle.CONFIGURE_STOP_EVENT) {
                 bootstrap.stop();
                 bootstrap = null;
                 if (devMode) {

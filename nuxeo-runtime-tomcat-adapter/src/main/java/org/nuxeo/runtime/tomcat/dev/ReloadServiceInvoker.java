@@ -81,47 +81,61 @@ public class ReloadServiceInvoker {
                 "reloadSeamComponents", new Class<?>[0]);
     }
 
-    protected void hotDeployBundles(DevBundle[] bundles) throws Exception {
-        flush();
-        boolean hasSeam = false;
-        // rebuild existing war, this will remove previously copied web
-        // resources
-        // commented out for now, see NXP-9642
-        // runDeploymentPreprocessor();
-        for (DevBundle bundle : bundles) {
-            if (bundle.devBundleType == DevBundleType.Bundle) {
-                bundle.name = (String) deployBundle.invoke(reloadService,
-                        new Object[] { bundle.file() });
-                // install its web resources
-                installWebResources.invoke(reloadService,
-                        new Object[] { bundle.file() });
-            } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
-                hasSeam = true;
+    public void hotDeployBundles(DevBundle[] bundles) throws Exception {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(
+                    reloadService.getClass().getClassLoader());
+            flush();
+            boolean hasSeam = false;
+            // rebuild existing war, this will remove previously copied web
+            // resources
+            // commented out for now, see NXP-9642
+            // runDeploymentPreprocessor();
+            for (DevBundle bundle : bundles) {
+                if (bundle.devBundleType == DevBundleType.Bundle) {
+                    bundle.name = (String) deployBundle.invoke(reloadService,
+                            new Object[] { bundle.file() });
+                    // install its web resources
+                    installWebResources.invoke(reloadService,
+                            new Object[] { bundle.file() });
+                } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
+                    hasSeam = true;
+                }
             }
+            if (hasSeam) {
+                reloadSeam();
+            }
+            reload();
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
         }
-        if (hasSeam) {
-            reloadSeam.invoke(reloadService);
-        }
-        reload();
     }
 
-    protected void hotUndeployBundles(DevBundle[] bundles) throws Exception {
-        boolean hasSeam = false;
-        for (DevBundle bundle : bundles) {
-            if (bundle.devBundleType.equals(DevBundleType.Bundle)
-                    && bundle.name != null) {
-                undeployBundle.invoke(reloadService,
-                        new Object[] { bundle.name });
-            } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
-                hasSeam = true;
+    public void hotUndeployBundles(DevBundle[] bundles) throws Exception {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(
+                    reloadService.getClass().getClassLoader());
+            boolean hasSeam = false;
+            for (DevBundle bundle : bundles) {
+                if (bundle.devBundleType.equals(DevBundleType.Bundle)
+                        && bundle.name != null) {
+                    undeployBundle.invoke(reloadService,
+                            new Object[] { bundle.name });
+                } else if (bundle.devBundleType.equals(DevBundleType.Seam)) {
+                    hasSeam = true;
+                }
             }
-        }
-        // run deployment preprocessor again: this will remove potential
-        // resources that were copied in the war at deploy
-        // commented out for now, see NXP-9642
-        // runDeploymentPreprocessor();
-        if (hasSeam) {
-            flushSeam.invoke(reloadService);
+            // run deployment preprocessor again: this will remove potential
+            // resources that were copied in the war at deploy
+            // commented out for now, see NXP-9642
+            // runDeploymentPreprocessor();
+            if (hasSeam) {
+                flushSeam.invoke(reloadService);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
         }
     }
 
