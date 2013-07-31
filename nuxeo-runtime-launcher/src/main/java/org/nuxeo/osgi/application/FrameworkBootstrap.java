@@ -216,7 +216,7 @@ public class FrameworkBootstrap implements LoaderConstants {
             buildLibsClassPath(libsCp);
         }
         String bundlesCp = (String) env.get(BUNDLES);
-        if (libsCp != null) {
+        if (bundlesCp != null) {
             buildBundlesClassPath(bundlesCp, bundleFiles);
         }
         extractNestedJars(bundleFiles, new File(home, "tmp/nested-jars"));
