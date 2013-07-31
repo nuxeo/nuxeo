@@ -45,6 +45,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -112,6 +113,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
                 "variables", "stringfield=test");
         automationService.run(ctx, startWorkflowChain);
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+
         DocumentModel routeInstance = session.getDocument(new IdRef(
                 (String) ctx.get("WorkflowId")));
         GraphRoute graph = routeInstance.getAdapter(GraphRoute.class);
@@ -123,6 +126,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
                 "value", "test1");
         automationService.run(ctx, setWorkflowVar);
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+
         routeInstance = session.getDocument(routeInstance.getRef());
         graph = routeInstance.getAdapter(GraphRoute.class);
         assertEquals(graph.getVariables().get("stringfield"), "test1");
@@ -138,6 +143,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
                 "test2");
         automationService.run(ctx, setWorkflowVar);
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+
         routeInstance = session.getDocument(routeInstance.getRef());
         graph = routeInstance.getAdapter(GraphRoute.class);
         assertEquals(graph.getVariables().get("stringfield"), "test2");
