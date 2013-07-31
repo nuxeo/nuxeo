@@ -59,14 +59,14 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
     @Override
     public void install() {
         self = DefaultMonitorComponent.bind(CoreSessionMonitor.class, this);
-        registry.register(MetricRegistry.name(DefaultCoreSessionMonitor.class, "coresession-count"),
+        registry.register(MetricRegistry.name("nuxeo.repositories", "sessions"),
                 new JmxAttributeGauge(self.getObjectName(), "Count"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        registry.remove(MetricRegistry.name(DefaultCoreSessionMonitor.class, "coresession-count"));
+        registry.remove(MetricRegistry.name("nuxeo.repositories", "sessions"));
         self = null;
     }
 

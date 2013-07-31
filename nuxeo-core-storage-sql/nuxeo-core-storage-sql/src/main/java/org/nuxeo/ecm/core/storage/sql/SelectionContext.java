@@ -61,11 +61,11 @@ public class SelectionContext {
     // @since 5.7
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter cacheHitCount = registry.counter(MetricRegistry.name(
-            SelectionContext.class, "cache-hit"));
+    protected final Counter modifiedInTransactionCount;
 
-    protected final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
-            SelectionContext.class, "cache-get"));
+    protected final Counter cacheHitCount ;
+
+    protected final Timer cacheGetTimer;
 
     @SuppressWarnings("unchecked")
     public SelectionContext(SelectionType selType, Serializable criterion,
@@ -78,12 +78,19 @@ public class SelectionContext {
                 AbstractReferenceMap.SOFT);
         hardMap = new HashMap<Serializable, Selection>();
         modifiedInTransaction = new HashSet<Serializable>();
+        modifiedInTransactionCount = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", context.session.repository.getName(), "caches", "selections", "modified"));
+        cacheHitCount = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", context.session.repository.getName(), "caches", "selections", "hit"));
+        cacheGetTimer = registry.timer(MetricRegistry.name(
+                "nuxeo", "repositories", context.session.repository.getName(), "caches", "selections", "get"));
     }
 
     public int clearCaches() {
         // only the soft selections are caches, the others hold info
         int n = softMap.size();
         softMap.clear();
+        modifiedInTransactionCount.dec(modifiedInTransaction.size());
         modifiedInTransaction.clear();
         return n;
     }
@@ -139,6 +146,7 @@ public class SelectionContext {
         if (selId != null) {
             getSelection(selId).addCreated(id);
             modifiedInTransaction.add(selId);
+            modifiedInTransactionCount.inc();
         }
     }
 
@@ -162,6 +170,7 @@ public class SelectionContext {
             getSelection(selId).addExisting(fragment.getId());
             if (invalidate) {
                 modifiedInTransaction.add(selId);
+                modifiedInTransactionCount.inc();
             }
         }
     }
@@ -177,6 +186,7 @@ public class SelectionContext {
         if (selId != null) {
             getSelection(selId).remove(id);
             modifiedInTransaction.add(selId);
+            modifiedInTransactionCount.inc();
         }
     }
 
@@ -186,6 +196,7 @@ public class SelectionContext {
         softMap.remove(selId);
         hardMap.remove(selId);
         modifiedInTransaction.add(selId);
+        modifiedInTransactionCount.inc();
     }
 
     /**
@@ -271,6 +282,7 @@ public class SelectionContext {
                     selection.setIncomplete();
                 }
                 modifiedInTransaction.add(id);
+                modifiedInTransactionCount.inc();
             }
         }
     }
@@ -285,6 +297,7 @@ public class SelectionContext {
             invalidations.addModified(new RowId(selType.invalidationTableName,
                     id));
         }
+        modifiedInTransactionCount.dec(modifiedInTransaction.size());
         modifiedInTransaction.clear();
     }
 

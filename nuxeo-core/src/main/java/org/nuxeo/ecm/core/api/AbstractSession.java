@@ -157,14 +157,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     // @since 5.7.2
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter createDocumentCount = registry.counter(MetricRegistry.name(
-            AbstractSession.class, "create-document"));
+    protected Counter createDocumentCount;
 
-    protected final Counter deleteDocumentCount = registry.counter(MetricRegistry.name(
-            AbstractSession.class, "delete-document"));
+    protected Counter deleteDocumentCount;
 
-    protected final Counter updateDocumentCount = registry.counter(MetricRegistry.name(
-            AbstractSession.class, "update-document"));
+    protected Counter updateDocumentCount;
 
     public static class QueryAndFetchExecuteContextException extends
             ClientRuntimeException {
@@ -182,6 +179,14 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     protected final Set<QueryAndFetchExecuteContextException> queryResults = new HashSet<QueryAndFetchExecuteContextException>();
 
+    protected void  createMetrics() {
+        createDocumentCount = registry.counter(MetricRegistry.name(
+                "nuxeo.repositories", repositoryName, "documents", "create"));
+        deleteDocumentCount = registry.counter(MetricRegistry.name(
+                "nuxeo.repositories", repositoryName, "documents", "delete"));
+        updateDocumentCount = registry.counter(MetricRegistry.name(
+                "nuxeo.repositories", repositoryName, "documents", "update"));
+    }
     /**
      * Private access to protected it again direct access since this field is
      * lazy loaded. You must use {@link #getEventService()} to get the service
@@ -242,6 +247,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         // this session is valid until the disconnect method is called
         sessionId = createSessionId();
         sessionContext.put("SESSION_ID", sessionId);
+
+        createMetrics();
 
         getSession();
 

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -141,11 +142,9 @@ public class PersistenceContext {
      */
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter cacheHitCount =  registry.counter(MetricRegistry.name(
-            PersistenceContext.class, "cache-hit"));
+    protected final Counter cacheHitCount;
 
-    protected final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
-            PersistenceContext.class, "cache-get"));
+    protected final Timer cacheGetTimer;
 
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
@@ -176,11 +175,15 @@ public class PersistenceContext {
         // use a weak reference for the values, we don't hold them longer than
         // they need to be referenced, as the underlying mapper also has its own
         // cache
-        pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK);
+        pristine = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
         modified = new HashMap<RowId, Fragment>();
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
+        cacheHitCount = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", session.getRepositoryName(), "caches", "hit"));
+        cacheGetTimer = registry.timer(MetricRegistry.name(
+                "nuxeo", "repositories", session.getRepositoryName(), "caches", "get"));
     }
 
     protected int clearCaches() {
@@ -249,7 +252,7 @@ public class PersistenceContext {
         // created main rows are saved first in the batch (in their order of
         // creation), because they are used as foreign keys in all other tables
         for (Serializable id : createdIds) {
-            RowId rowId = new RowId(model.HIER_TABLE_NAME, id);
+            RowId rowId = new RowId(Model.HIER_TABLE_NAME, id);
             Fragment fragment = modified.remove(rowId);
             if (fragment == null) {
                 // was created and deleted before save
@@ -323,7 +326,7 @@ public class PersistenceContext {
 
     private boolean complexProp(SimpleFragment fragment)
             throws StorageException {
-        return complexProp((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY));
+        return complexProp((Boolean) fragment.get(Model.HIER_CHILD_ISPROPERTY_KEY));
     }
 
     private boolean complexProp(Boolean isProperty) throws StorageException {
@@ -894,13 +897,13 @@ public class PersistenceContext {
         // get root info before deletion. may be a version or proxy
         SimpleFragment versionFragment;
         SimpleFragment proxyFragment;
-        if (model.PROXY_TYPE.equals(hierFragment.getString(model.MAIN_PRIMARY_TYPE_KEY))) {
+        if (Model.PROXY_TYPE.equals(hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY))) {
             versionFragment = null;
             proxyFragment = (SimpleFragment) get(new RowId(
-                    model.PROXY_TABLE_NAME, rootId), true);
-        } else if (Boolean.TRUE.equals(hierFragment.get(model.MAIN_IS_VERSION_KEY))) {
+                    Model.PROXY_TABLE_NAME, rootId), true);
+        } else if (Boolean.TRUE.equals(hierFragment.get(Model.MAIN_IS_VERSION_KEY))) {
             versionFragment = (SimpleFragment) get(new RowId(
-                    model.VERSION_TABLE_NAME, rootId), true);
+                    Model.VERSION_TABLE_NAME, rootId), true);
             proxyFragment = null;
         } else {
             versionFragment = null;
@@ -926,7 +929,7 @@ public class PersistenceContext {
         // recompute version series if needed
         // only done for root of deletion as versions are not fileable
         Serializable versionSeriesId = versionFragment == null ? null
-                : versionFragment.get(model.VERSION_VERSIONABLE_KEY);
+                : versionFragment.get(Model.VERSION_VERSIONABLE_KEY);
         if (versionSeriesId != null) {
             recomputeVersionSeries(versionSeriesId);
         }
@@ -937,7 +940,7 @@ public class PersistenceContext {
      */
     private void removeFromSelections(NodeInfo info) throws StorageException {
         Serializable id = info.id;
-        if (model.PROXY_TYPE.equals(info.primaryType)) {
+        if (Model.PROXY_TYPE.equals(info.primaryType)) {
             seriesProxies.recordRemoved(id, info.versionSeriesId);
             targetProxies.recordRemoved(id, info.targetId);
         }
@@ -1047,14 +1050,14 @@ public class PersistenceContext {
         for (SimpleFragment vsf : versFrags) {
 
             // isLatestVersion
-            vsf.put(model.VERSION_IS_LATEST_KEY, Boolean.valueOf(isLatest));
+            vsf.put(Model.VERSION_IS_LATEST_KEY, Boolean.valueOf(isLatest));
             isLatest = false;
 
             // isLatestMajorVersion
             SimpleFragment vh = getHier(vsf.getId(), true);
             boolean isMajor = Long.valueOf(0).equals(
-                    vh.get(model.MAIN_MINOR_VERSION_KEY));
-            vsf.put(model.VERSION_IS_LATEST_MAJOR_KEY,
+                    vh.get(Model.MAIN_MINOR_VERSION_KEY));
+            vsf.put(Model.VERSION_IS_LATEST_MAJOR_KEY,
                     Boolean.valueOf(isMajor && isLatestMajor));
             if (isMajor) {
                 isLatestMajor = false;
@@ -1137,19 +1140,19 @@ public class PersistenceContext {
         LinkedList<String> list = new LinkedList<String>();
         Serializable parentId = null;
         while (true) {
-            String name = hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+            String name = hierFragment.getString(Model.HIER_CHILD_NAME_KEY);
             if (name == null) {
                 // (empty string for normal databases, null for Oracle)
                 name = "";
             }
             list.addFirst(name);
-            parentId = hierFragment.get(model.HIER_PARENT_KEY);
+            parentId = hierFragment.get(Model.HIER_PARENT_KEY);
             if (parentId == null) {
                 // root
                 break;
             }
             // recurse in the parent
-            RowId rowId = new RowId(model.HIER_TABLE_NAME, parentId);
+            RowId rowId = new RowId(Model.HIER_TABLE_NAME, parentId);
             hierFragment = (SimpleFragment) getIfPresent(rowId);
             if (hierFragment == null) {
                 // try in mapper cache
@@ -1203,14 +1206,14 @@ public class PersistenceContext {
             if (!complexProp(p)) {
                 return pid;
             }
-            pid = p.get(model.HIER_PARENT_KEY);
+            pid = p.get(Model.HIER_PARENT_KEY);
         }
     }
 
     // also called by Selection
     protected SimpleFragment getHier(Serializable id, boolean allowAbsent)
             throws StorageException {
-        RowId rowId = new RowId(model.HIER_TABLE_NAME, id);
+        RowId rowId = new RowId(Model.HIER_TABLE_NAME, id);
         return (SimpleFragment) get(rowId, allowAbsent);
     }
 
@@ -1220,7 +1223,7 @@ public class PersistenceContext {
             return true;
         }
         SimpleFragment parent = getHier(parentId, true);
-        String typeName = parent.getString(model.MAIN_PRIMARY_TYPE_KEY);
+        String typeName = parent.getString(Model.MAIN_PRIMARY_TYPE_KEY);
         return model.getDocumentTypeFacets(typeName).contains(
                 FacetNames.ORDERABLE);
     }
@@ -1238,7 +1241,7 @@ public class PersistenceContext {
                     || state == State.INVALIDATED_DELETED) {
                 return true;
             }
-            id = fragment.get(model.HIER_PARENT_KEY);
+            id = fragment.get(Model.HIER_PARENT_KEY);
         }
         return false;
     }
@@ -1258,7 +1261,7 @@ public class PersistenceContext {
         }
         long max = -1;
         for (SimpleFragment fragment : getChildren(nodeId, null, complexProp)) {
-            Long pos = (Long) fragment.get(model.HIER_CHILD_POS_KEY);
+            Long pos = (Long) fragment.get(Model.HIER_CHILD_POS_KEY);
             if (pos != null && pos.longValue() > max) {
                 max = pos.longValue();
             }
@@ -1299,7 +1302,7 @@ public class PersistenceContext {
                 destPos = Long.valueOf(i);
                 i++;
                 if (source != null) {
-                    source.put(model.HIER_CHILD_POS_KEY, destPos);
+                    source.put(Model.HIER_CHILD_POS_KEY, destPos);
                 }
             }
             Long setPos;
@@ -1311,16 +1314,16 @@ public class PersistenceContext {
                 setPos = Long.valueOf(i);
             }
             if (setPos != null) {
-                if (!setPos.equals(fragment.get(model.HIER_CHILD_POS_KEY))) {
-                    fragment.put(model.HIER_CHILD_POS_KEY, setPos);
+                if (!setPos.equals(fragment.get(Model.HIER_CHILD_POS_KEY))) {
+                    fragment.put(Model.HIER_CHILD_POS_KEY, setPos);
                 }
             }
             i++;
         }
         if (destId == null) {
             Long setPos = Long.valueOf(i);
-            if (!setPos.equals(source.get(model.HIER_CHILD_POS_KEY))) {
-                source.put(model.HIER_CHILD_POS_KEY, setPos);
+            if (!setPos.equals(source.get(Model.HIER_CHILD_POS_KEY))) {
+                source.put(Model.HIER_CHILD_POS_KEY, setPos);
             }
         }
     }
@@ -1360,7 +1363,7 @@ public class PersistenceContext {
                 // cannot happen
                 throw new StorageException("No parent: " + pid);
             }
-            pid = p.get(model.HIER_PARENT_KEY);
+            pid = p.get(Model.HIER_PARENT_KEY);
         } while (pid != null);
     }
 
@@ -1388,8 +1391,8 @@ public class PersistenceContext {
         // an actual move (different parents)
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
-        Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);
-        String oldName = hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+        Serializable oldParentId = hierFragment.get(Model.HIER_PARENT_KEY);
+        String oldName = hierFragment.getString(Model.HIER_CHILD_NAME_KEY);
         if (!oldParentId.equals(parentId)) {
             checkNotUnder(parentId, id, "move");
         } else if (oldName.equals(name)) {
@@ -1402,11 +1405,11 @@ public class PersistenceContext {
          * Do the move.
          */
         if (!oldName.equals(name)) {
-            hierFragment.put(model.HIER_CHILD_NAME_KEY, name);
+            hierFragment.put(Model.HIER_CHILD_NAME_KEY, name);
         }
         // cache management
         getHierSelectionContext(complexProp).recordRemoved(hierFragment);
-        hierFragment.put(model.HIER_PARENT_KEY, parentId);
+        hierFragment.put(Model.HIER_PARENT_KEY, parentId);
         getHierSelectionContext(complexProp).recordExisting(hierFragment, true);
         // path invalidated
         source.path = null;
@@ -1424,7 +1427,7 @@ public class PersistenceContext {
             throws StorageException {
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
-        Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);
+        Serializable oldParentId = hierFragment.get(Model.HIER_PARENT_KEY);
         if (oldParentId != null && !oldParentId.equals(parentId)) {
             checkNotUnder(parentId, id, "copy");
         }
@@ -1440,7 +1443,7 @@ public class PersistenceContext {
         // read new proxies in this session (updates Selections)
         List<RowId> rowIds = new ArrayList<RowId>();
         for (Serializable proxyId : copyResult.proxyIds) {
-            rowIds.add(new RowId(model.PROXY_TABLE_NAME, proxyId));
+            rowIds.add(new RowId(Model.PROXY_TABLE_NAME, proxyId));
         }
         // multi-fetch will register the new fragments with the Selections
         List<Fragment> fragments = getMulti(rowIds, true);
@@ -1451,7 +1454,7 @@ public class PersistenceContext {
         }
         // version copy fixup
         if (source.isVersion()) {
-            copy.put(model.MAIN_IS_VERSION_KEY, null);
+            copy.put(Model.MAIN_IS_VERSION_KEY, null);
         }
         return newId;
     }
@@ -1466,7 +1469,7 @@ public class PersistenceContext {
      */
     public Serializable checkIn(Node node, String label, String checkinComment)
             throws StorageException {
-        Boolean checkedIn = (Boolean) node.hierFragment.get(model.MAIN_CHECKED_IN_KEY);
+        Boolean checkedIn = (Boolean) node.hierFragment.get(Model.MAIN_CHECKED_IN_KEY);
         if (Boolean.TRUE.equals(checkedIn)) {
             throw new StorageException("Already checked in");
         }
@@ -1474,9 +1477,9 @@ public class PersistenceContext {
             // use version major + minor as label
             try {
                 Serializable major = node.getSimpleProperty(
-                        model.MAIN_MAJOR_VERSION_PROP).getValue();
+                        Model.MAIN_MAJOR_VERSION_PROP).getValue();
                 Serializable minor = node.getSimpleProperty(
-                        model.MAIN_MINOR_VERSION_PROP).getValue();
+                        Model.MAIN_MINOR_VERSION_PROP).getValue();
                 if (major == null || minor == null) {
                     label = "";
                 } else {
@@ -1497,23 +1500,23 @@ public class PersistenceContext {
         markInvalidated(res.invalidations);
         // add version as a new child of its parent
         SimpleFragment verHier = getHier(newId, false);
-        verHier.put(model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
+        verHier.put(Model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
         boolean isMajor = Long.valueOf(0).equals(
-                verHier.get(model.MAIN_MINOR_VERSION_KEY));
+                verHier.get(Model.MAIN_MINOR_VERSION_KEY));
 
         // create a "version" row for our new version
-        Row row = new Row(model.VERSION_TABLE_NAME, newId);
-        row.putNew(model.VERSION_VERSIONABLE_KEY, id);
-        row.putNew(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
-        row.putNew(model.VERSION_LABEL_KEY, label);
-        row.putNew(model.VERSION_DESCRIPTION_KEY, checkinComment);
-        row.putNew(model.VERSION_IS_LATEST_KEY, Boolean.TRUE);
-        row.putNew(model.VERSION_IS_LATEST_MAJOR_KEY, Boolean.valueOf(isMajor));
+        Row row = new Row(Model.VERSION_TABLE_NAME, newId);
+        row.putNew(Model.VERSION_VERSIONABLE_KEY, id);
+        row.putNew(Model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
+        row.putNew(Model.VERSION_LABEL_KEY, label);
+        row.putNew(Model.VERSION_DESCRIPTION_KEY, checkinComment);
+        row.putNew(Model.VERSION_IS_LATEST_KEY, Boolean.TRUE);
+        row.putNew(Model.VERSION_IS_LATEST_MAJOR_KEY, Boolean.valueOf(isMajor));
         createVersionFragment(row);
 
         // update the original node to reflect that it's checked in
-        node.hierFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
-        node.hierFragment.put(model.MAIN_BASE_VERSION_KEY, newId);
+        node.hierFragment.put(Model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        node.hierFragment.put(Model.MAIN_BASE_VERSION_KEY, newId);
 
         recomputeVersionSeries(id);
 
@@ -1526,12 +1529,12 @@ public class PersistenceContext {
      * @param node the node to check out
      */
     public void checkOut(Node node) throws StorageException {
-        Boolean checkedIn = (Boolean) node.hierFragment.get(model.MAIN_CHECKED_IN_KEY);
+        Boolean checkedIn = (Boolean) node.hierFragment.get(Model.MAIN_CHECKED_IN_KEY);
         if (!Boolean.TRUE.equals(checkedIn)) {
             throw new StorageException("Already checked out");
         }
         // update the node to reflect that it's checked out
-        node.hierFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
+        node.hierFragment.put(Model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
     }
 
     /**
@@ -1555,25 +1558,25 @@ public class PersistenceContext {
         session.flush(); // flush deletes
 
         // copy the version values
-        Row overwriteRow = new Row(model.HIER_TABLE_NAME, versionableId);
+        Row overwriteRow = new Row(Model.HIER_TABLE_NAME, versionableId);
         SimpleFragment versionHier = version.getHierFragment();
-        for (String key : model.getFragmentKeysType(model.HIER_TABLE_NAME).keySet()) {
+        for (String key : model.getFragmentKeysType(Model.HIER_TABLE_NAME).keySet()) {
             // keys we don't copy from version when restoring
-            if (key.equals(model.HIER_PARENT_KEY)
-                    || key.equals(model.HIER_CHILD_NAME_KEY)
-                    || key.equals(model.HIER_CHILD_POS_KEY)
-                    || key.equals(model.HIER_CHILD_ISPROPERTY_KEY)
-                    || key.equals(model.MAIN_PRIMARY_TYPE_KEY)
-                    || key.equals(model.MAIN_CHECKED_IN_KEY)
-                    || key.equals(model.MAIN_BASE_VERSION_KEY)
-                    || key.equals(model.MAIN_IS_VERSION_KEY)) {
+            if (key.equals(Model.HIER_PARENT_KEY)
+                    || key.equals(Model.HIER_CHILD_NAME_KEY)
+                    || key.equals(Model.HIER_CHILD_POS_KEY)
+                    || key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)
+                    || key.equals(Model.MAIN_PRIMARY_TYPE_KEY)
+                    || key.equals(Model.MAIN_CHECKED_IN_KEY)
+                    || key.equals(Model.MAIN_BASE_VERSION_KEY)
+                    || key.equals(Model.MAIN_IS_VERSION_KEY)) {
                 continue;
             }
             overwriteRow.putNew(key, versionHier.get(key));
         }
-        overwriteRow.putNew(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
-        overwriteRow.putNew(model.MAIN_BASE_VERSION_KEY, versionId);
-        overwriteRow.putNew(model.MAIN_IS_VERSION_KEY, null);
+        overwriteRow.putNew(Model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        overwriteRow.putNew(Model.MAIN_BASE_VERSION_KEY, versionId);
+        overwriteRow.putNew(Model.MAIN_IS_VERSION_KEY, null);
         CopyResult res = mapper.copy(new IdWithTypes(version),
                 node.getParentId(), null, overwriteRow);
         markInvalidated(res.invalidations);

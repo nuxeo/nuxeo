@@ -317,22 +317,18 @@ public class DefaultDatabaseConnectionMonitor implements
         self = DefaultMonitorComponent.bind(DatabaseConnectionMonitor.class,
                 this, name);
         metrics.register(
-                MetricRegistry.name(DatabaseConnectionMonitor.class, name
-                        + "-idleCount"),
+                MetricRegistry.name("nuxeo.datasources", name, "idle"),
                 new JmxAttributeGauge(self.getObjectName(), "NumIdle"));
         metrics.register(
-                MetricRegistry.name(DatabaseConnectionMonitor.class, name
-                        + "-activeCount"),
+                MetricRegistry.name("nuxeo.datasources", name, "active"),
                 new JmxAttributeGauge(self.getObjectName(), "NumActive"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        metrics.remove(MetricRegistry.name(DatabaseConnectionMonitor.class,
-                name + "-idleCount"));
-        metrics.remove(MetricRegistry.name(DatabaseConnectionMonitor.class,
-                name + "-activeCount"));
+        metrics.remove(MetricRegistry.name("nuxeo.datasources", name, "idle"));
+        metrics.remove(MetricRegistry.name("nuxeo.datasources", name, "active"));
         self = null;
     }
 

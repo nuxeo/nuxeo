@@ -42,13 +42,13 @@ public class EventCounterListener implements PostCommitEventListener {
 
     // Counters used
     public final Counter createCount = registry.counter(MetricRegistry.name(
-            EventCounterListener.class, "create"));
+            "nuxeo.events", "create"));
 
     public final Counter updateCount = registry.counter(MetricRegistry.name(
-            EventCounterListener.class, "update"));
+            "nuxeo.events", "update"));
 
     public final Counter removeCount = registry.counter(MetricRegistry.name(
-            EventCounterListener.class, "remove"));
+            "nuxeo.events", "remove"));
 
     // Event tracked
     protected static final List<String> createEvents = Arrays.asList(new String[] {

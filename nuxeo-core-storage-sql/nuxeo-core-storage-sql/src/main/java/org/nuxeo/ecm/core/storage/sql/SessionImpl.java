@@ -66,7 +66,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
@@ -120,14 +119,11 @@ public class SessionImpl implements Session, XAResource {
     // @since 5.7
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private final Counter sessionCount = registry.counter(MetricRegistry.name(
-            getClass(), "session"));
+    private final Timer saveTimer;
 
-    private final Timer saveTimer = registry.timer(MetricRegistry.name(getClass(), "save"));
+    private final Timer queryTimer;
 
-    private final Timer queryTimer = registry.timer(MetricRegistry.name(getClass(), "query"));
-
-    private final Timer aclrUpdateTimer = registry.timer(MetricRegistry.name(getClass(), "aclr-update"));
+    private final Timer aclrUpdateTimer;
 
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
@@ -147,7 +143,10 @@ public class SessionImpl implements Session, XAResource {
         } catch (Exception e) {
             throw new StorageException(e);
         }
-        sessionCount.inc();
+        saveTimer =  registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
+        queryTimer =  registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
+        aclrUpdateTimer =  registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "aclr-updates"));
+
         computeRootNode();
     }
 
@@ -248,7 +247,6 @@ public class SessionImpl implements Session, XAResource {
         // close the mapper and therefore the connection
         mapper.close();
         // don't clean the caches, we keep the pristine cache around
-        sessionCount.dec();
     }
 
     @Override

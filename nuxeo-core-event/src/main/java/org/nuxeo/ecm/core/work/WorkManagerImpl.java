@@ -292,15 +292,15 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             completed = new WorkList();
             suspended = new WorkList();
             scheduledCount = registry.counter(MetricRegistry.name(
-                    WorkThreadPoolExecutor.class, "scheduled", queueId));
+                    "nuxeo", "works", queueId, "scheduled", "count"));
             scheduledMax = registry.counter(MetricRegistry.name(
-                    WorkThreadPoolExecutor.class, "scheduled-max", queueId));
+                            "nuxeo", "works", queueId, "scheduled", "max"));;
             runningCount = registry.counter(MetricRegistry.name(
-                    WorkThreadPoolExecutor.class, "running", queueId));
+                    "nuxeo", "works", queueId, "running"));
             completedCount = registry.counter(MetricRegistry.name(
-                    WorkThreadPoolExecutor.class, "completed", queueId));
+                    "nuxeo", "works", queueId, "completed"));
             workTimer = registry.timer(MetricRegistry.name(
-                    WorkThreadPoolExecutor.class, "work", queueId));
+                    "nuxeo", "works", queueId, "total"));
         }
 
         /**

@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
@@ -115,26 +114,14 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter cacheHitCount = registry.counter(MetricRegistry.name(
-            SoftRefCachingRowMapper.class, "cache-hit"));
+    protected Counter cacheHitCount;
 
-    protected final Gauge<Integer> cacheSize = registry.register(MetricRegistry.name(
-            SoftRefCachingRowMapper.class, "cache-size"), new Gauge<Integer>() {
-                @Override
-                public Integer getValue() {
-                    return cache.size();
-                }
-    });
-
-    protected final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
-            SoftRefCachingRowMapper.class, "cache-get"));
+    protected Timer cacheGetTimer;
 
     // sor means system of record (database access)
-    protected final Counter sorRows = registry.counter(MetricRegistry.name(
-            SoftRefCachingRowMapper.class, "sor-rows"));
+    protected Counter sorRows;
 
-    protected final Timer sorGetTimer = registry.timer(MetricRegistry.name(
-            SoftRefCachingRowMapper.class, "sor-get"));
+    protected Timer sorGetTimer;
 
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
@@ -327,6 +314,14 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
     public void setSession(SessionImpl session) {
         this.session = session;
+        cacheHitCount = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "hits"));
+        cacheGetTimer = registry.timer(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "get"));
+        sorRows = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "sor", "rows"));
+        sorGetTimer = registry.timer(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "soft-ref", "sor", "get"));
     }
 
     @Override

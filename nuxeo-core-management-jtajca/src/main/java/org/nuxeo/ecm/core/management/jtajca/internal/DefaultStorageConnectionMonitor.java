@@ -202,13 +202,12 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
         cm = lookup(repositoryName);
         cm = enhanceConnectionManager(cm);
         self = DefaultMonitorComponent.bind(this, repositoryName);
-        registry.register(MetricRegistry.name(DefaultStorageConnectionMonitor.class,
-                "vcs-xaConnectionCount"),
-                new JmxAttributeGauge(self.getObjectName(), "ConnectionCount"));
-        registry.register(MetricRegistry.name(DefaultStorageConnectionMonitor.class,
-                "vcs-xaConnectionIdle"),
-                new JmxAttributeGauge(self.getObjectName(),
-                        "IdleConnectionCount"));
+        registry.register(MetricRegistry.name("nuxeo", "repositories",
+                repositoryName, "connections", "count"), new JmxAttributeGauge(
+                self.getObjectName(), "ConnectionCount"));
+        registry.register(MetricRegistry.name("nuxeo", "repositories",
+                repositoryName, "connections", "idle"), new JmxAttributeGauge(
+                self.getObjectName(), "IdleConnectionCount"));
     }
 
     @Override
