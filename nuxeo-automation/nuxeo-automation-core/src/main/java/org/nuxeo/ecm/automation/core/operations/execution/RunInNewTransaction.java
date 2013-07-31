@@ -74,13 +74,14 @@ public class RunInNewTransaction {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
 
-        RunnableOperation runOp = new RunnableOperation(ctx.getCoreSession().getRepositoryName(),chainId,vars);
+        RunnableOperation runOp = new RunnableOperation(
+                ctx.getCoreSession().getRepositoryName(), chainId, vars);
         boolean failed = false;
         try {
             runOp.start();
-            runOp.join((timeout+1)*1000);
+            runOp.join((timeout + 1) * 1000);
             if (runOp.isAlive()) {
-                failed=true;
+                failed = true;
             }
         } finally {
             if ((failed || runOp.isFailed()) && rollbackGlobalOnError) {
@@ -94,15 +95,19 @@ public class RunInNewTransaction {
     protected class RunnableOperation extends Thread {
 
         protected final Map<String, Object> vars;
+
         protected final String repo;
+
         protected final String opName;
+
         protected boolean failed = false;
 
-        public RunnableOperation(String repo, String opName, Map<String, Object> vars) {
+        public RunnableOperation(String repo, String opName,
+                Map<String, Object> vars) {
             super("Runner-for-" + opName);
             this.vars = vars;
-            this.repo=repo;
-            this.opName=opName;
+            this.repo = repo;
+            this.opName = opName;
         }
 
         @Override
@@ -122,9 +127,9 @@ public class RunInNewTransaction {
                         }
                     }
                 }.runUnrestricted();
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 TransactionHelper.setTransactionRollbackOnly();
-                failed=true;
+                failed = true;
                 log.error("Error while executing operation " + opName, e);
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
