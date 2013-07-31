@@ -33,8 +33,7 @@ public class MetricsServiceImpl extends DefaultComponent implements
 
     protected MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private final Counter instanceUp = registry.counter(MetricRegistry.name(
-            MetricsServiceImpl.class, "instance-up"));
+    private final Counter instanceUp = registry.counter(MetricRegistry.name("nuxeo", "instance-up"));
 
     protected static final String CONFIGURATION_EP = "configuration";
 

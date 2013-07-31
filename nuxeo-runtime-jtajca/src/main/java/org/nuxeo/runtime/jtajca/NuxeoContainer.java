@@ -101,16 +101,16 @@ public class NuxeoContainer {
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     protected final Counter rollbackCount = registry.counter(MetricRegistry.name(
-            NuxeoContainer.class, "rollback"));
+            "nuxeo", "transactions", "rollbacks"));
 
     protected final Counter concurrentCount = registry.counter(MetricRegistry.name(
-            NuxeoContainer.class, "tx-concurrent"));
+            "nuxeo", "transactions", "concurrents", "count"));
 
     protected final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
-            NuxeoContainer.class, "tx-concurrent-max"));
+            "nuxeo", "transactions", "concurrents", "max"));
 
     protected final Timer transactionTimer  = registry.timer(MetricRegistry.name(
-            NuxeoContainer.class, "transaction"));
+            "nuxeo", "transactions", "duration"));
 
     protected final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<Transaction, Timer.Context>();
 
