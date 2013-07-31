@@ -3,6 +3,11 @@
   position: absolute;
 }
 
+.video-js .vjs-thumbnail-holder img.vjs-thumbnail {
+  max-height: none;
+  max-width: none;
+}
+
 /* the thumbnail image itself */
 .vjs-thumbnail {
   position: absolute;
