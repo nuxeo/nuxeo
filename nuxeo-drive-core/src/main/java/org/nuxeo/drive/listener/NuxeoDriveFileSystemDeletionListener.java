@@ -65,69 +65,99 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         if (event.getContext() instanceof DocumentEventContext) {
             ctx = (DocumentEventContext) event.getContext();
         } else {
-            // not interested in event that are not related to documents
+            // Not interested in events that are not related to documents
             return;
         }
         DocumentModel doc = ctx.getSourceDocument();
-        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())
-                && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-            // Document deletion of document that are already in deleted state
-            // should not be marked as FS deletion to avoid duplicates
-            return;
-        }
-        String transition = (String) ctx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
-        if (transition != null
-                && !LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
-            // not interested in lifecycle transitions that are not related to
-            // document deletion
-            return;
-        }
+        DocumentModel docForLogEntry = doc;
         if (DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
-            // interested in update of a BlobHolder whose blob has been removed
-            boolean blobRemoved = false;
-            DocumentModel previousDoc = (DocumentModel) ctx.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
-            if (previousDoc != null) {
-                BlobHolder previousBh = previousDoc.getAdapter(BlobHolder.class);
-                if (previousBh != null) {
-                    BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                    if (bh != null) {
-                        blobRemoved = previousBh.getBlob() != null
-                                && bh.getBlob() == null;
-                    }
-                }
-            }
-            if (blobRemoved) {
-                // Use previous doc holding a Blob for it to be adaptable as a
-                // FileSystemItem
-                doc = previousDoc;
-            } else {
+            docForLogEntry = handleBeforeDocUpdate(ctx, doc);
+            if (docForLogEntry == null) {
                 return;
             }
         }
         if (DocumentEventTypes.ABOUT_TO_MOVE.equals(event.getName())) {
-            // interested in a move from a synchronization root to a non
-            // synchronized container
-            DocumentRef dstRef = (DocumentRef) ctx.getProperty(CoreEventConstants.DESTINATION_REF);
-            if (dstRef == null) {
+            if (!handleAboutToMove(ctx, doc)) {
                 return;
             }
-            CoreSession session = doc.getCoreSession();
-            IdRef dstIdRef;
-            if (dstRef instanceof IdRef) {
-                dstIdRef = (IdRef) dstRef;
-            } else {
-                DocumentModel dstDoc = session.getDocument(dstRef);
-                dstIdRef = new IdRef(dstDoc.getId());
+        }
+        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
+            if (!handleLifeCycleTransition(ctx)) {
+                return;
             }
-            if (Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRootReferences(
-                    session).contains(dstIdRef)) {
+        }
+        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
+            if (!handleAboutToRemove(doc)) {
                 return;
             }
         }
         // Some events will only impact a specific user (e.g. root
         // unregistration)
         String impactedUserName = (String) ctx.getProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY);
-        logDeletionEvent(doc, ctx.getPrincipal(), impactedUserName);
+        logDeletionEvent(docForLogEntry, ctx.getPrincipal(), impactedUserName);
+    }
+
+    protected DocumentModel handleBeforeDocUpdate(DocumentEventContext ctx,
+            DocumentModel doc) throws ClientException {
+        // Interested in update of a BlobHolder whose blob has been removed
+        boolean blobRemoved = false;
+        DocumentModel previousDoc = (DocumentModel) ctx.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
+        if (previousDoc != null) {
+            BlobHolder previousBh = previousDoc.getAdapter(BlobHolder.class);
+            if (previousBh != null) {
+                BlobHolder bh = doc.getAdapter(BlobHolder.class);
+                if (bh != null) {
+                    blobRemoved = previousBh.getBlob() != null
+                            && bh.getBlob() == null;
+                }
+            }
+        }
+        if (blobRemoved) {
+            // Use previous doc holding a Blob for it to be adaptable as a
+            // FileSystemItem
+            return previousDoc;
+        } else {
+            return null;
+        }
+    }
+
+    protected boolean handleAboutToMove(DocumentEventContext ctx,
+            DocumentModel doc) throws ClientException {
+        // Interested in a move from a synchronization root to a non
+        // synchronized container
+        DocumentRef dstRef = (DocumentRef) ctx.getProperty(CoreEventConstants.DESTINATION_REF);
+        if (dstRef == null) {
+            return false;
+        }
+        CoreSession session = doc.getCoreSession();
+        IdRef dstIdRef;
+        if (dstRef instanceof IdRef) {
+            dstIdRef = (IdRef) dstRef;
+        } else {
+            DocumentModel dstDoc = session.getDocument(dstRef);
+            dstIdRef = new IdRef(dstDoc.getId());
+        }
+        if (Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRootReferences(
+                session).contains(dstIdRef)) {
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean handleLifeCycleTransition(DocumentEventContext ctx)
+            throws ClientException {
+        String transition = (String) ctx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
+        // Interested in 'deleted' life cycle transition only
+        return transition != null
+                && LifeCycleConstants.DELETE_TRANSITION.equals(transition);
+
+    }
+
+    protected boolean handleAboutToRemove(DocumentModel doc)
+            throws ClientException {
+        // Document deletion of document that are already in deleted
+        // state should not be marked as FS deletion to avoid duplicates
+        return !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState());
     }
 
     protected void logDeletionEvent(DocumentModel doc, Principal principal,
