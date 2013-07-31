@@ -56,17 +56,20 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
 
     protected TransactionManagerImpl tm;
 
+    protected boolean enabled;
+
     @Override
     public void install() {
         tm = lookup();
-        tm.addTransactionAssociationListener(this);
         bindManagementInterface();
     }
 
     @Override
     public void uninstall()  {
         unbindManagementInterface();
-        tm.removeTransactionAssociationListener(this);
+        if (enabled) {
+            toggle();
+        }
     }
 
     protected ObjectInstance self;
@@ -253,6 +256,24 @@ public class DefaultTransactionMonitor implements TransactionManagerMonitor,
             stats.endCapturedContext = new Throwable("** rollback context **");
             break;
         }
+    }
+
+    @Override
+    public boolean toggle() {
+        if (enabled) {
+            tm.removeTransactionAssociationListener(this);
+            activeStatistics.clear();
+            enabled = false;
+        } else {
+            tm.addTransactionAssociationListener(this);
+            enabled = true;
+        }
+        return enabled;
+    }
+
+    @Override
+    public boolean getEnabled() {
+        return enabled;
     }
 
 }

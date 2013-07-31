@@ -41,4 +41,8 @@ public interface TransactionMonitor extends Monitor {
 
     TransactionStatistics getLastRollbackedStatistics();
 
+    boolean getEnabled();
+
+    boolean toggle();
+
 }
