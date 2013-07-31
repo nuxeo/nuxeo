@@ -238,7 +238,6 @@ install nuxeo-dam
         <include name="jta-*" />
         <include name="log4j-*" />
         <include name="persistence-*" />
-        <include name="*servlet-api*" />
         <include name="script-api-*" />
         <include name="jca-api-*" />
         <include name="connector-api-*" />

@@ -261,7 +261,6 @@ install nuxeo-dam
         <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
         <!-- jetty-naming has jndi properties conflicting with Tomcat -->
         <include name="jetty-naming*" />
-        <include name="*servlet-api*" />
         <include name="el-api*" />
         <include name="jsp-*" />
         <include name="juel-api-*" />
