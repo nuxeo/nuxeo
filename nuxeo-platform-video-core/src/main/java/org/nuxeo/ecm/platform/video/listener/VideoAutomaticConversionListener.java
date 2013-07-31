@@ -17,17 +17,14 @@
 
 package org.nuxeo.ecm.platform.video.listener;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_PROPERTY;
-import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_FACET;
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_EVENT;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
@@ -41,18 +38,12 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.5
  */
 public class VideoAutomaticConversionListener implements
-        PostCommitEventListener {
+        PostCommitFilteringEventListener {
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        if (!events.containsEventName(DOCUMENT_CREATED)
-                && !events.containsEventName(DOCUMENT_UPDATED)) {
-            return;
-        }
-
         for (Event event : events) {
-            if (DOCUMENT_CREATED.equals(event.getName())
-                    || DOCUMENT_UPDATED.equals(event.getName())) {
+            if (VIDEO_CHANGED_EVENT.equals(event.getName())) {
                 handleEvent(event);
             }
         }
@@ -66,13 +57,14 @@ public class VideoAutomaticConversionListener implements
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc == null || !doc.hasFacet(VIDEO_FACET)
-                || !ctx.hasProperty(VIDEO_CHANGED_PROPERTY)) {
-            return;
-        }
 
         VideoService videoService = Framework.getLocalService(VideoService.class);
         videoService.launchAutomaticConversions(doc);
+    }
+
+    @Override
+    public boolean acceptEvent(Event event) {
+        return VIDEO_CHANGED_EVENT.equals(event.getName());
     }
 
 }

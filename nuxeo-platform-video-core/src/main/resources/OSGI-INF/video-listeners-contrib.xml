@@ -7,22 +7,20 @@
 
     <listener name="videoChangedListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.video.listener.VideoChangedListener" priority="20">
-      <event>aboutToCreate</event>
+      <event>documentCreated</event>
       <event>beforeDocumentModification</event>
     </listener>
 
     <listener name="videoStoryboardListener" async="true" postCommit="true"
       class="org.nuxeo.ecm.platform.video.listener.VideoStoryboardListener"
       priority="10">
-      <event>documentCreated</event>
-      <event>documentModified</event>
+      <event>videoChanged</event>
     </listener>
 
     <listener name="videoAutomaticConversions" async="true" postCommit="true"
       class="org.nuxeo.ecm.platform.video.listener.VideoAutomaticConversionListener"
       priority="20">
-      <event>documentCreated</event>
-      <event>documentModified</event>
+      <event>videoChanged</event>
     </listener>
 
   </extension>

@@ -17,8 +17,9 @@
 
 package org.nuxeo.ecm.platform.video.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
-import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_EVENT;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -26,11 +27,13 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Core event listener to set the context property
- * {@link VIDEO_CHANGED_PROPERTY} to {@code true} if the main video has changed.
+ * Core event listener to trigger the {@link VIDEO_CHANGED_EVENT} event if the
+ * main video has changed.
  *
  * This is useful to update the video information, thumbnails and story board in
  * a dedicated async event listener.
@@ -50,8 +53,11 @@ public class VideoChangedListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET)) {
             Property origVideoProperty = doc.getProperty("file:content");
-            if (origVideoProperty.isDirty()) {
-                ctx.setProperty(VIDEO_CHANGED_PROPERTY, true);
+            if (DOCUMENT_CREATED.equals(event.getName())
+                    || origVideoProperty.isDirty()) {
+                Event trigger = docCtx.newEvent(VIDEO_CHANGED_EVENT);
+                EventService eventService = Framework.getLocalService(EventService.class);
+                eventService.fireEvent(trigger);
             }
         }
     }

@@ -33,7 +33,13 @@ public class VideoConstants {
 
     public static final String HAS_VIDEO_PREVIEW_FACET = "HasVideoPreview";
 
+    @Deprecated
+    /**
+     * @deprecated since 5.7.2
+     */
     public static final String VIDEO_CHANGED_PROPERTY = "videoChanged";
+
+    public static final String VIDEO_CHANGED_EVENT= "videoChanged";
 
     // Constant utility class.
     private VideoConstants() {
