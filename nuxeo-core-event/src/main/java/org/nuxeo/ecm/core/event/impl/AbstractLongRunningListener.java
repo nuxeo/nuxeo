@@ -26,17 +26,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
-import org.nuxeo.ecm.core.event.impl.ReconnectedEventBundleImpl;
-import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Abstract class that helps building an Asynchronous listeners that will handle
  * a long running process.
  * <p/>
- * By default, {@link PostCommitEventListener} are executed in a {@link Work}
+ * By default, {@link org.nuxeo.ecm.core.event.PostCommitEventListener} are executed in a {@link org.nuxeo.ecm.core.work.api.Work}
  * that will take care of starting/comitting the transaction.
  * <p/>
  * If the listener requires a long processing this will create long transactions
