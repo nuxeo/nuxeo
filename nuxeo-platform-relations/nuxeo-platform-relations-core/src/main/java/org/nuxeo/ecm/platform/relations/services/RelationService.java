@@ -46,6 +46,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Relation service.
@@ -520,14 +521,38 @@ public class RelationService extends DefaultComponent implements
                 Thread.currentThread().setContextClassLoader(RelationService.class.getClassLoader());
                 log.info("Relation Service initialization");
 
+                // init jena Graph outside of Tx
                 for (String graphName : graphDescriptions.keySet()) {
-                    log.info("create RDF Graph " + graphName);
-                    try {
-                        Graph graph = getGraphByName(graphName);
-                        graph.size();
-                    } catch (Exception e) {
-                        log.error("Error while initializing graph " + graphName, e);
+                    GraphDescription desc = graphDescriptions.get(graphName);
+                    if (desc.getGraphType().equalsIgnoreCase("jena")) {
+                        log.info("create RDF Graph " + graphName);
+                        try {
+                            Graph graph = getGraphByName(graphName);
+                            graph.size();
+                        } catch (ClientException e) {
+                            log.error("Error while initializing graph " + graphName, e);
+                        }
                     }
+                }
+
+                // init non jena Graph inside a Tx
+                TransactionHelper.startTransaction();
+                try {
+                    for (String graphName : graphDescriptions.keySet()) {
+                        GraphDescription desc = graphDescriptions.get(graphName);
+                        if (!desc.getGraphType().equalsIgnoreCase("jena")) {
+                            log.info("create RDF Graph " + graphName);
+                            try {
+                                Graph graph = getGraphByName(graphName);
+                                graph.size();
+                            } catch (ClientException e) {
+                                log.error("Error while initializing graph " + graphName, e);
+                                TransactionHelper.setTransactionRollbackOnly();
+                            }
+                        }
+                    }
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         };
