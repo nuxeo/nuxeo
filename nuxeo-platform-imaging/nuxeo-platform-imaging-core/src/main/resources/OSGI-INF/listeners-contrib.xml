@@ -5,15 +5,14 @@
 
     <listener name="pictureChangedListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.picture.listener.PictureChangedListener" priority="20">
-      <event>aboutToCreate</event>
+      <event>documentCreated</event>
       <event>beforeDocumentModification</event>
     </listener>
 
     <listener name="pictureViewListener" async="true" postCommit="true"
       class="org.nuxeo.ecm.platform.picture.listener.PictureViewListener"
       priority="20">
-      <event>documentCreated</event>
-      <event>documentModified</event>
+      <event>updatePictureView</event>
     </listener>
 
   </extension>

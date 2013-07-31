@@ -17,9 +17,10 @@
 
 package org.nuxeo.ecm.platform.picture.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
-import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_CHANGED_PROPERTY;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.UPDATE_PICTURE_VIEW_EVENT;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -73,13 +75,15 @@ public class PictureChangedListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(PICTURE_FACET) && !(doc.isProxy() || doc.isVersion())) {
             Property fileProp = doc.getProperty("file:content");
-            if (fileProp.isDirty()) {
+            if (DOCUMENT_CREATED.equals(event.getName()) || fileProp.isDirty()) {
                 Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
                 // if the views are dirty, assume they're up to date
                 if (viewsProp == null || !viewsProp.isDirty()) {
                     preFillPictureViews(docCtx.getCoreSession(), doc);
                     // mark the document as needing picture views generation
-                    ctx.setProperty(PICTURE_CHANGED_PROPERTY, true);
+                    Event trigger = docCtx.newEvent(UPDATE_PICTURE_VIEW_EVENT);
+                    EventService eventService = Framework.getLocalService(EventService.class);
+                    eventService.fireEvent(trigger);
                 }
             }
         }

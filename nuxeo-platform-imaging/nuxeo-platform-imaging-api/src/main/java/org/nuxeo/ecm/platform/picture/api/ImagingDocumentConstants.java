@@ -36,7 +36,7 @@ public class ImagingDocumentConstants {
 
     public static final String PICTURETEMPLATES_PROPERTY_NAME = "picturebook:picturetemplates";
 
-    public static final String PICTURE_CHANGED_PROPERTY = "pictureChanged";
+    public static final String UPDATE_PICTURE_VIEW_EVENT = "updatePictureView";
 
     private ImagingDocumentConstants() {
         // Constants class
