@@ -22,22 +22,53 @@ package org.nuxeo.ecm.directory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
+import org.nuxeo.runtime.metrics.MetricsService;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 public abstract class AbstractDirectory implements Directory {
+
+    protected final Log log = LogFactory.getLog(AbstractDirectory.class);
+
+    public final String name;
 
     protected DirectoryFieldMapper fieldMapper;
 
     protected final Map<String, Reference> references = new HashMap<String, Reference>();
 
     // simple cache system for entry lookups, disabled by default
-    protected final DirectoryCache cache = new DirectoryCache();
+    protected final DirectoryCache cache;
 
+    // @since 5.7
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
+    protected Set<Session> sessions = new HashSet<Session>();
+
+    protected final Counter sessionCount;
+
+    protected final Counter sessionMaxCount;
+
+    protected AbstractDirectory(String name) {
+        this.name = name;
+        cache = new DirectoryCache(name);
+        sessionCount = registry.counter(MetricRegistry.name(
+                "nuxeo", "directories", name,  "sessions", "active"));
+
+        sessionMaxCount =  registry.counter(MetricRegistry.name(
+                "nuxeo", "directories", name,  "sessions", "max"));
+    }
     /**
      * Invalidate my cache and the caches of linked directories by references.
      */
@@ -58,6 +89,7 @@ public abstract class AbstractDirectory implements Directory {
         return fieldMapper;
     }
 
+    @Override
     public Reference getReference(String referenceFieldName) {
         return references.get(referenceFieldName);
     }
@@ -77,6 +109,7 @@ public abstract class AbstractDirectory implements Directory {
         }
     }
 
+    @Override
     public Collection<Reference> getReferences() {
         return references.values();
     }
@@ -93,10 +126,28 @@ public abstract class AbstractDirectory implements Directory {
                 orderBy));
     }
 
+    @Override
     public DirectoryCache getCache() {
         return cache;
     }
 
+    public synchronized void removeSession(Session session) {
+        if (sessions.remove(session)) {
+            sessionCount.dec();
+        }
+    }
+
+    public synchronized void addSession(Session session) {
+        sessions.add(session);
+        sessionCount.inc();
+        if (sessionCount.getCount() > sessionMaxCount.getCount()) {
+            sessionMaxCount.inc();
+        }
+    }
+
+
+
+    @Override
     public void invalidateDirectoryCache() throws DirectoryException{
         getCache().invalidateAll();
     }
@@ -105,4 +156,21 @@ public abstract class AbstractDirectory implements Directory {
     public boolean isMultiTenant() {
         return false;
     }
+    @Override
+    public synchronized void shutdown() {
+        Set<Session> lastSessions = sessions;
+        sessions = new HashSet<Session>();
+        sessionCount.dec(sessionCount.getCount());
+        sessionMaxCount.dec(sessionMaxCount.getCount());
+        for (Session session : lastSessions) {
+            try {
+                session.close();
+            } catch (DirectoryException e) {
+                log.error("Error during shutdown of directory '" + name
+                        + "'", e);
+            }
+        }
+    }
+
+
 }

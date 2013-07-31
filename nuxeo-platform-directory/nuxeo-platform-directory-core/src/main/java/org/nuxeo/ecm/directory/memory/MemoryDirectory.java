@@ -38,8 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MemoryDirectory extends AbstractDirectory {
 
-    public final String name;
-
     public final String schemaName;
 
     public final Set<String> schemaSet;
@@ -84,41 +82,50 @@ public class MemoryDirectory extends AbstractDirectory {
 
     public MemoryDirectory(String name, String schemaName, Set<String> schemaSet,
             String idField, String passwordField) {
-        this.name = name;
+        super(name);
         this.schemaName = schemaName;
         this.schemaSet = schemaSet;
         this.idField = idField;
         this.passwordField = passwordField;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getSchema() {
         return schemaName;
     }
 
+    @Override
     public String getParentDirectory() {
         return null;
     }
 
+    @Override
     public String getIdField() {
         return idField;
     }
 
+    @Override
     public String getPasswordField() {
         return passwordField;
     }
 
+    @Override
     public Session getSession() {
         if (session == null) {
             session = new MemoryDirectorySession(this);
         }
+        addSession(session);
         return session;
     }
 
+    @Override
     public void shutdown() {
+        super.shutdown();
         session = null;
     }
 

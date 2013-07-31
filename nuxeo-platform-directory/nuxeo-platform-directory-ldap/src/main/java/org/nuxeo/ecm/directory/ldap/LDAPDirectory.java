@@ -28,11 +28,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -87,14 +84,13 @@ public class LDAPDirectory extends AbstractDirectory {
 
     protected final LDAPDirectoryFactory factory;
 
-    protected final List<Session> sessions = new LinkedList<Session>();
-
     protected final String baseFilter;
 
     // the following attribute is only used for testing purpose
     protected ContextProvider testServer;
 
     public LDAPDirectory(LDAPDirectoryDescriptor config) throws ClientException {
+        super(config.name);
         this.config = config;
         factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(
                 LDAPDirectoryFactory.NAME);
@@ -314,22 +310,27 @@ public class LDAPDirectory extends AbstractDirectory {
         }
     }
 
+    @Override
     public String getName() {
         return config.getName();
     }
 
+    @Override
     public String getSchema() {
         return config.getSchemaName();
     }
 
+    @Override
     public String getParentDirectory() {
         return null; // no parent directories are specified for LDAP
     }
 
+    @Override
     public String getIdField() {
         return config.getIdField();
     }
 
+    @Override
     public String getPasswordField() {
         return config.getPasswordField();
     }
@@ -342,6 +343,7 @@ public class LDAPDirectory extends AbstractDirectory {
         return factory.getServer(config.getServerName());
     }
 
+    @Override
     public Session getSession() throws DirectoryException {
         DirContext context;
         if (testServer != null) {
@@ -354,35 +356,6 @@ public class LDAPDirectory extends AbstractDirectory {
         return session;
     }
 
-    public synchronized void removeSession(Session session) {
-        sessions.remove(session);
-    }
-
-    public synchronized void addSession(Session session) {
-        sessions.add(session);
-    }
-
-    protected synchronized void clearSessions() {
-        sessions.clear();
-    }
-
-    public void shutdown() {
-        try {
-            // temporary list of open sessions to iterate over because
-            // session.close() will remove the sessions and affect the
-            // iterator if we had iterated directly on "sessions"
-            List<Session> sessionsToClose = new ArrayList<Session>();
-            sessionsToClose.addAll(sessions);
-            for (Session session : sessionsToClose) {
-                // Closes the DirContext and release the connection
-                // back to the pool
-                session.close();
-            }
-            clearSessions();
-        } catch (ClientException e) {
-            log.error("exception during shutdown", e);
-        }
-    }
 
     public String getBaseFilter() {
         // NXP-2461: always add control on id field in base filter

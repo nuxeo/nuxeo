@@ -19,7 +19,6 @@ package org.nuxeo.ecm.directory.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,12 +53,7 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
 
 public class SQLDirectory extends AbstractDirectory {
 
@@ -117,7 +111,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     }
 
-    private static final Log log = LogFactory.getLog(SQLDirectory.class);
+    public static final Log log = LogFactory.getLog(SQLDirectory.class);
 
     public static final String TENANT_ID_FIELD = "tenantId";
 
@@ -135,8 +129,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     private DataSource dataSource;
 
-    private List<Session> sessions = new ArrayList<Session>();
-
     private final Table table;
 
     private final Schema schema;
@@ -147,16 +139,8 @@ public class SQLDirectory extends AbstractDirectory {
 
     private final Dialect dialect;
 
-    // @since 5.7
-    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-
-    protected final Counter sessionCount = registry.counter(MetricRegistry.name(
-            SQLDirectory.class, "session"));
-
-    protected final Counter sessionMaxCount = registry.counter(MetricRegistry.name(
-            SQLDirectory.class, "session-max"));
-
     public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
+        super(config.name);
         this.config = config;
         nativeCase = Boolean.TRUE.equals(config.nativeCase);
 
@@ -380,11 +364,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     protected synchronized void addSession(final SQLSession session)
             throws DirectoryException {
-        sessions.add(session);
-        sessionCount.inc();
-        if (sessionCount.getCount() > sessionMaxCount.getCount()) {
-            sessionMaxCount.inc();
-        }
+        super.addSession(session);
         registerInTx(session);
     }
 
@@ -403,30 +383,6 @@ public class SQLDirectory extends AbstractDirectory {
             throw new DirectoryException(
                     "Cannot register in tx for session cleanup handling "
                             + this, e);
-        }
-    }
-
-    protected synchronized void removeSession(Session session) {
-        if (sessions.remove(session)) {
-            // called from session.close()
-            sessionCount.dec();
-        }
-    }
-
-    @Override
-    public synchronized void shutdown() {
-        if (sessions.isEmpty()) {
-            return;
-        }
-        List<Session> lastSessions = sessions;
-        sessions = new ArrayList<Session>();
-        for (Session session : lastSessions) {
-            try {
-                session.close();
-            } catch (DirectoryException e) {
-                log.error("Error during shutdown of directory '" + getName()
-                        + "'", e);
-            }
         }
     }
 

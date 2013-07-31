@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryCache;
 
 public class TestCachedSQLDirectory extends TestSQLDirectory {
@@ -26,7 +27,7 @@ public class TestCachedSQLDirectory extends TestSQLDirectory {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        SQLDirectory dir = getSQLDirectory();
+        AbstractDirectory dir = getSQLDirectory();
         DirectoryCache cache = dir.getCache();
         cache.setMaxSize(2);
         cache.setTimeout(10);

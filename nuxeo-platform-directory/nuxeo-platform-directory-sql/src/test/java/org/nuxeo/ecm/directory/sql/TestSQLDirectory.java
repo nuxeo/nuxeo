@@ -30,11 +30,13 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.junit.Ignore;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -686,11 +688,11 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
                 "test-sql-directories-alteration-config.xml");
 
-        SQLDirectory dirtmp1 = null;
-        SQLDirectory dirtmp2 = null;
+        AbstractDirectory dirtmp1 = null;
+        AbstractDirectory dirtmp2 = null;
 
         try {
-            dirtmp1 = (SQLDirectory) getDirectory("tmpdirectory1");
+            dirtmp1 = (AbstractDirectory) getDirectory("tmpdirectory1");
             assertNotNull(dirtmp1);
 
             Session session = dirtmp1.getSession();
@@ -709,7 +711,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // Open a new directory that uses the same table with a different
             // schema.
             // And test if the table has not been re-created, and data are there
-            dirtmp2 = (SQLDirectory) getDirectory("tmpdirectory2");
+            dirtmp2 = (AbstractDirectory) getDirectory("tmpdirectory2");
             assertNotNull(dirtmp2);
 
             session = dirtmp2.getSession();

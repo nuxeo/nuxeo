@@ -153,16 +153,16 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     protected final Timer requestTimer = registry.timer(MetricRegistry.name(
-            NuxeoAuthenticationFilter.class, "request"));
+            "nuxeo", "web", "authentication", "requests", "count"));
 
     protected final Counter concurrentCount = registry.counter(MetricRegistry.name(
-            NuxeoAuthenticationFilter.class, "request-concurrent"));
+            "nuxeo", "web", "authentication", "requests", "concurrent", "count"));
 
     protected final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
-            NuxeoAuthenticationFilter.class, "request-concurrent-max"));
+            "nuxeo", "web", "authentication", "requests", "concurrent", "max"));
 
     protected final Counter loginCount = registry.counter(MetricRegistry.name(
-            NuxeoAuthenticationFilter.class, "logged-user"));
+            "nuxeo", "web", "authentication", "logged-users"));
 
     @Override
     public void destroy() {

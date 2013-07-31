@@ -22,6 +22,7 @@ package org.nuxeo.ecm.directory.sql;
 import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryCache;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -36,13 +37,13 @@ import org.nuxeo.ecm.directory.Session;
 public class SQLDirectoryProxy implements Directory {
 
     private final SQLDirectoryDescriptor descriptor;
-    private SQLDirectory directory;
+    private AbstractDirectory directory;
 
     public SQLDirectoryProxy(SQLDirectoryDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
-    public SQLDirectory getDirectory() throws DirectoryException {
+    public AbstractDirectory getDirectory() throws DirectoryException {
         // this method is public to make it easier to test
         if (directory == null) {
             try {

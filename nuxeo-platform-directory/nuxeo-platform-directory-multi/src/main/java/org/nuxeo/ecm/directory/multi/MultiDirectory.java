@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.directory.multi;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -37,37 +33,41 @@ public class MultiDirectory extends AbstractDirectory {
 
     private final MultiDirectoryDescriptor descriptor;
 
-    private Set<MultiDirectorySession> sessions;
-
     public MultiDirectory(MultiDirectoryDescriptor descriptor) {
+        super(descriptor.name);
         this.descriptor = descriptor;
-        sessions = new HashSet<MultiDirectorySession>();
     }
 
     protected MultiDirectoryDescriptor getDescriptor() {
         return descriptor;
     }
 
+    @Override
     public String getName() {
         return descriptor.name;
     }
 
+    @Override
     public String getSchema() {
         return descriptor.schemaName;
     }
 
+    @Override
     public String getParentDirectory() {
         return null; // no parent directories are specified for multi
     }
 
+    @Override
     public String getIdField() {
         return descriptor.idField;
     }
 
+    @Override
     public String getPasswordField() {
         return descriptor.passwordField;
     }
 
+    @Override
     public Session getSession() throws DirectoryException {
         MultiDirectorySession session = new MultiDirectorySession(this);
         addSession(session);
@@ -76,25 +76,6 @@ public class MultiDirectory extends AbstractDirectory {
 
     protected void addSession(MultiDirectorySession session) {
         sessions.add(session);
-    }
-
-    /**
-     * Called from a session's close()
-     */
-    protected void removeSession(Session session) {
-        sessions.remove(session);
-    }
-
-    public void shutdown() throws DirectoryException {
-        try {
-            // use toArray to avoid concurrent modification of list
-            for (Object session : sessions.toArray()) {
-                ((Session) session).close();
-            }
-            sessions = null;
-        } catch (ClientException e) {
-            throw new DirectoryException(e);
-        }
     }
 
     @Override
