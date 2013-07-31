@@ -42,6 +42,7 @@ class Drive(NuxeoTestCase):
                       for item in os.listdir(import_path)]
 
     def testInit(self):
+        """Create a folder for drive document."""
         p = LoginPage(self).login(*self.cred_admin)
         ret = p.viewDocumentPath(self.dir_path, raiseOn404=False)
         if ret is None:
@@ -50,7 +51,6 @@ class Drive(NuxeoTestCase):
                  .rights().grant('ReadWrite', 'Members group')
                  .view()
                  .createFolder(self.dir_title, 'A description'))
-        p.driveSynchronizeCurrentDocument()
         self.createServerFile()
         p.logout()
 
@@ -65,11 +65,14 @@ class Drive(NuxeoTestCase):
 
     def testDrive(self):
         d = (DriveClient(self)
-             .bind_server(*self.cred_admin)
-             .start_drive())
+             .bind_server(*self.cred_member))
+        # Use the token auth
+        (FolderPage(self)
+         .viewDocumentPath(self.dir_path)
+         .driveSynchronizeCurrentDocument())
+        d.start_drive()
         parent_id = d.root_ids[0]
         for i in range(self.nb_write):
-            # no need to auth using token auth
             path = random.choice(self.files)
             name = self._lipsum.getUniqWord() + '-' + os.path.basename(path)
             d.upload_file(parent_id, path, name)
