@@ -47,7 +47,7 @@ public class DmkComponent extends DefaultComponent {
         HtmlAdaptorServer adaptor = new HtmlAdaptorServer();
         adaptor.addUserAuthenticationInfo(new AuthInfo(config.user, config.password));
         adaptor.setPort(config.port);
-        ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,name=html");
+        ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,format=html");
         mbs.registerMBean(adaptor, name);
         return adaptor;
     }
@@ -55,7 +55,7 @@ public class DmkComponent extends DefaultComponent {
     protected void destroyAdaptor(HtmlAdaptorServer adaptor)
             throws MalformedObjectNameException, MBeanRegistrationException,
             InstanceNotFoundException {
-        ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,name=html");
+        ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,format=html");
         mbs.unregisterMBean(name);
         if (!adaptor.isActive()) {
             return;
