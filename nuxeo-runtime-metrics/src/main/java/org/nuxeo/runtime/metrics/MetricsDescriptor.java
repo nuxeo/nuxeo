@@ -270,11 +270,11 @@ public class MetricsDescriptor implements Serializable {
                     enabled ? "enabled" : "disabled");
         }
 
-        protected void registerGauge(String mbean, String attribute,
+        protected void registerTomcatGauge(String mbean, String attribute,
                 MetricRegistry registry, String name) {
             try {
                 registry.register(
-                        MetricRegistry.name(MetricsServiceImpl.class, name),
+                        MetricRegistry.name("tomcat", name),
                         new JmxAttributeGauge(new ObjectName(mbean), attribute));
             } catch (MalformedObjectNameException | IllegalArgumentException e) {
                 throw new UnsupportedOperationException(
@@ -290,39 +290,39 @@ public class MetricsDescriptor implements Serializable {
             // TODO: do not hard code the common datasource nameenable(registry)
             String pool = "Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"";
             String connector = String.format(
-                    "Catalina:type=ThreadPool,name=http-%s-%s",
+                    "Catalina:type=ThreadPool,name=\"http-bio-%s-%s\"",
                     Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
                     Framework.getProperty("nuxeo.bind.port", "8080"));
             String requestProcessor = String.format(
-                    "Catalina:type=GlobalRequestProcessor,name=http-%s-%s",
+                    "Catalina:type=GlobalRequestProcessor,name=\"http-bio-%s-%s\"",
                     Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
                     Framework.getProperty("nuxeo.bind.port", "8080"));
-            String manager = "Catalina:type=Manager,path=/nuxeo,host=localhost";
-            registerGauge(pool, "numActive", registry, "jdbc-numActive");
-            registerGauge(pool, "numIdle", registry, "jdbc-numIdle");
-            registerGauge(connector, "currentThreadCount", registry,
-                    "tomcat-currentThreadCount");
-            registerGauge(connector, "currentThreadsBusy", registry,
-                    "tomcat-currentThreadBusy");
-            registerGauge(requestProcessor, "errorCount", registry,
-                    "tomcat-errorCount");
-            registerGauge(requestProcessor, "requestCount", registry,
-                    "tomcat-requestCount");
-            registerGauge(requestProcessor, "processingTime", registry,
-                    "tomcat-processingTime");
-            registerGauge(manager, "activeSessions", registry,
-                    "tomcat-activeSessions");
+            String manager = "Catalina:type=Manager,context=/nuxeo,host=localhost";
+            registerTomcatGauge(pool, "numActive", registry, "jdbc-numActive");
+            registerTomcatGauge(pool, "numIdle", registry, "jdbc-numIdle");
+            registerTomcatGauge(connector, "currentThreadCount", registry,
+                    "currentThreadCount");
+            registerTomcatGauge(connector, "currentThreadsBusy", registry,
+                    "currentThreadBusy");
+            registerTomcatGauge(requestProcessor, "errorCount", registry,
+                    "errorCount");
+            registerTomcatGauge(requestProcessor, "requestCount", registry,
+                    "requestCount");
+            registerTomcatGauge(requestProcessor, "processingTime", registry,
+                    "processingTime");
+            registerTomcatGauge(manager, "activeSessions", registry,
+                    "activeSessions");
         }
 
         public void disable(MetricRegistry registry) {
-            registry.remove("jdbc-numActive");
-            registry.remove("jdbc-numIdle");
-            registry.remove("tomcat-currentThreadCount");
-            registry.remove("tomcat-currentThreadBusy");
-            registry.remove("tomcat-tomcat-errorCount");
-            registry.remove("tomcat-tomcat-requestCount");
-            registry.remove("tomcat-tomcat-processingTime");
-            registry.remove("tomcat-tomcat-activeSessions");
+            registry.remove("tomcat.jdbc-numActive");
+            registry.remove("tomcat.jdbc-numIdle");
+            registry.remove("tomcat.currentThreadCount");
+            registry.remove("tomcat.currentThreadBusy");
+            registry.remove("tomcat.errorCount");
+            registry.remove("tomcat.requestCount");
+            registry.remove("tomcat.processingTime");
+            registry.remove("tomcat.activeSessions");
         }
     }
 
