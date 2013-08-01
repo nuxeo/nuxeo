@@ -63,6 +63,7 @@
     <nuxeo.drive.version>5.7.2-SNAPSHOT</nuxeo.drive.version>
     <nuxeo.dam.pdf.export.version>5.7.2-SNAPSHOT</nuxeo.dam.pdf.export.version>
     <nuxeo.resources.compat.version>5.7.2-SNAPSHOT</nuxeo.resources.compat.version>
+    <nuxeo.dmk.version>5.7.2-SNAPSHOT</nuxeo.dmk.version>
   </properties>
 
   <modules>
@@ -124,6 +125,7 @@
     <module>nuxeo-drive</module>
     <module>nuxeo-dam-pdf-export</module>
     <module>nuxeo-resources-compat</module>
+    <module>nuxeo-dmk-adaptor</module>
   </modules>
 
   <dependencyManagement>
@@ -1109,6 +1111,14 @@
         <artifactId>nuxeo-resources-compat</artifactId>
         <version>${nuxeo.resources.compat.version}</version>
       </dependency>
+
+      <!-- DMK -->
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-dmk-adaptor</artifactId>
+        <version>${nuxeo.dmk.version}</version>
+      </dependency>
+
 
     </dependencies>
   </dependencyManagement>
