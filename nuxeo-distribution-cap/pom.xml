@@ -409,7 +409,7 @@
             <groupId>org.jboss.tattletale</groupId>
             <artifactId>tattletale-maven</artifactId>
             <configuration>
-              <source>${project.build.directory}/nuxeo.ear/lib</source>
+              <source>${project.build.directory}/nuxeo.ear/lib:${project.build.directory}/nuxeo.ear/bundles</source>
             </configuration>
           </plugin>
         </plugins>

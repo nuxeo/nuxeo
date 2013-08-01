@@ -45,7 +45,7 @@
             <groupId>org.jboss.tattletale</groupId>
             <artifactId>tattletale-maven</artifactId>
             <configuration>
-              <source>${project.build.directory}/nuxeo-cap-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-cap-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib</source>
+              <source>${project.build.directory}/nuxeo-cap-${project.version}-jboss/server/default/lib:${project.build.directory}/nuxeo-cap-${project.version}-jboss/server/default/deploy/nuxeo.ear/lib:${project.build.directory}/nuxeo-cap-${project.version}-jboss/server/default/deploy/nuxeo.ear/bundles</source>
             </configuration>
           </plugin>
         </plugins>
