@@ -1,13 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
     <version>5.7.2-SNAPSHOT</version>
   </parent>
+
   <artifactId>nuxeo-automation-server</artifactId>
   <name>Nuxeo Automation Server</name>
   <description>Automation Server provides end points for jax-rs and web service access to automation framework.</description>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
@@ -24,7 +27,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>

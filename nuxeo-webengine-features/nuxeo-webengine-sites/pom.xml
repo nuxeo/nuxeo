@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
@@ -29,8 +30,8 @@
   <dependencies>
 
     <dependency>
-    <groupId>org.nuxeo.ecm.webengine</groupId>
-    <artifactId>nuxeo-webengine-sites-api</artifactId>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-sites-api</artifactId>
     </dependency>
 
     <dependency>
@@ -74,7 +75,7 @@
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -86,7 +87,7 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
@@ -118,20 +119,20 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-comment</artifactId>
+      <artifactId>nuxeo-platform-comment</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-comment-core</artifactId>
+      <artifactId>nuxeo-platform-comment-core</artifactId>
       <scope>test</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-io-core</artifactId>
       <scope>test</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-core</artifactId>
       <scope>test</scope>
@@ -151,8 +152,6 @@
       <artifactId>jta</artifactId>
       <scope>test</scope>
     </dependency>
-
-
   </dependencies>
 
 </project>

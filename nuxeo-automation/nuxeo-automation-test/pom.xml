@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.automation</groupId>
@@ -35,7 +35,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
@@ -180,7 +179,6 @@
       <artifactId>nuxeo-platform-types-core</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -221,12 +219,13 @@
     <profile>
       <id>withIT</id>
       <!-- Comment activation when tests are not skipped NXBT-586
-      <activation>
+        <activation>
         <property>
-          &lt;!&ndash; Skip exec if skipTests is defined. Using NXBT-568 would be better. &ndash;&gt;
-          <name>!skipTests</name>
+        &lt;!&ndash; Skip exec if skipTests is defined. Using NXBT-568 would be better. 
+        &ndash;&gt;
+        <name>!skipTests</name>
         </property>
-      </activation>-->
+        </activation> -->
       <build>
         <plugins>
           <plugin>
@@ -301,4 +300,5 @@
       </build>
     </profile>
   </profiles>
+
 </project>

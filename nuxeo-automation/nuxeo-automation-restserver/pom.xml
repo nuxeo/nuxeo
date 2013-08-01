@@ -7,9 +7,11 @@
     <artifactId>nuxeo-automation-parent</artifactId>
     <version>5.7.2-SNAPSHOT</version>
   </parent>
+  
   <artifactId>nuxeo-automation-restserver</artifactId>
   <name>nuxeo-automation-restserver</name>
   <description />
+  
   <dependencies>
     <dependency>
       <groupId>javax.ws.rs</groupId>
@@ -57,6 +59,11 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
