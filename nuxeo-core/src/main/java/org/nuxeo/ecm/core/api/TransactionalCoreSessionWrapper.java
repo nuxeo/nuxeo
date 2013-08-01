@@ -25,6 +25,7 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.J2EEContainerDescriptor;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -117,7 +118,9 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
 
                 if (main != null) {
                     if (main.getStatus() == Status.STATUS_ACTIVE) {
-                        main.registerSynchronization(this);
+                        // register last, we want post-commit stuff to be
+                        // executed after everything else is committed
+                        ConnectionHelper.registerSynchronizationLast(this);
                         session.afterBegin();
                         threadBound.set(main);
                     }
