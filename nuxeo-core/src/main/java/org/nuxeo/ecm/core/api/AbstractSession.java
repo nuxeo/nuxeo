@@ -370,6 +370,14 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
         } catch (Exception e) {
             log.error("Error while notifying transaction completion", e);
+        } finally {
+            if (isSessionAlive()) {
+                try {
+                    getSession().dispose();
+                } catch (ClientException e) {
+                    log.error("Cannot dispose session", e);
+                }
+            }
         }
     }
 
