@@ -3,6 +3,11 @@ Video.js Default Styles (http://videojs.com)
 Version 4.1.0
 */
 
+/* Changes done by Nuxeo:
+   - removed @font-face definition as it's not correctly merged by some browsers.
+   The @font-facet definition is in the "video-js.nx.css" file.
+*/
+
 /*
 REQUIRED STYLES (be careful overriding)
 ================================================================================ */
@@ -158,16 +163,6 @@ so you can upgrade to newer versions easier. You can remove all these styles by 
 
 /* Base UI Component Classes
 -------------------------------------------------------------------------------- */
-@font-face{
-  font-family: 'VideoJS';
-  src: url('font/vjs.eot');
-  src: url('font/vjs.eot?#iefix') format('embedded-opentype'),
-  url('font/vjs.woff') format('woff'),
-  url('font/vjs.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 .vjs-default-skin {
   color: #ccc;
 }

@@ -4,7 +4,7 @@ Version 4.1.0
 */
 
 
-/* DEFAULT SKIN Overrided by Nuxeo to fix font urls.
+/* DEFAULT SKIN Overridden by Nuxeo to fix font urls.
 ==============================================================
 */
 @font-face{
@@ -16,4 +16,3 @@ Version 4.1.0
   font-weight: normal;
   font-style: normal;
 }
-
