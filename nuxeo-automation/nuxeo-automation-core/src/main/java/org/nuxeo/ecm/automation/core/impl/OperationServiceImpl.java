@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.automation.AdapterNotFoundException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.InvalidChainException;

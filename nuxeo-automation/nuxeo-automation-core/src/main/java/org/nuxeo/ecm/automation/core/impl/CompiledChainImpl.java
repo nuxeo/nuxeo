@@ -1,13 +1,20 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier <vpasquier@nuxeo.com>
+ *     slacoin <slacoin@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.impl;
 
@@ -23,6 +30,8 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.trace.Tracer;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -104,17 +113,11 @@ class CompiledChainImpl implements CompiledChain {
                 ctx.setRollback();
             }
             return ctx.getInput();
-        } catch (OperationException e) {
-            if (e.isRollback()) {
-                ctx.setRollback();
-            }
-            throw e;
         }
     }
 
     protected Object doInvoke(OperationContext ctx) throws OperationException {
         // add debug info
-        ctx.addTrace(method.op.getId() + ":" + method.method.getName());
         final OperationCallback callback = ctx.getChainCallback();
         callback.onOperation(ctx, op, method, compileParameters);
         // invoke method
