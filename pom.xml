@@ -1373,6 +1373,13 @@
         <artifactId>nuxeo-connect-client</artifactId>
         <version>${nuxeo.connect.client.version}</version>
         <classifier>with-equinox</classifier>
+        <!-- Exclude shaded dependencies -->
+        <exclusions>
+          <exclusion>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.p2.cudf</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.connect</groupId>
