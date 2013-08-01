@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
@@ -479,10 +477,9 @@ public class DamSearchActions implements Serializable {
             throws ClientException {
         String currentContentViewName = getCurrentContentViewName();
         if (currentContentViewName != null
-                && currentContentViewName.equals(contentViewName)) {
-            if (damActions.isOnDamView()) {
-                updateCurrentDocument();
-            }
+                && currentContentViewName.equals(contentViewName)
+                && damActions.isOnDamView()) {
+            updateCurrentDocument();
         }
     }
 

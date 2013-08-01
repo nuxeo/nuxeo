@@ -57,12 +57,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -169,7 +167,8 @@ public class DamImportActions implements Serializable {
             DamService damService = Framework.getLocalService(DamService.class);
             AssetLibrary assetLibrary = damService.getAssetLibrary();
             if (assetLibrary != null) {
-                PathRef ref = new PathRef(damService.getAssetLibrary().getPath());
+                PathRef ref = new PathRef(
+                        damService.getAssetLibrary().getPath());
                 if (documentManager.exists(ref)) {
                     DocumentModel doc = documentManager.getDocument(ref);
                     if (ImportFolderPageProvider.COMPOUND_FILTER.accept(doc)) {
@@ -208,7 +207,6 @@ public class DamImportActions implements Serializable {
         Collection<Type> allowedSubTypes = typeManager.getAllowedSubTypes(
                 doc.getType(), doc);
         List<Type> types = new ArrayList<>();
-        TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
         for (Type type : allowedAssetTypes) {
             if (allowedSubTypes.contains(type)) {
                 types.add(type);

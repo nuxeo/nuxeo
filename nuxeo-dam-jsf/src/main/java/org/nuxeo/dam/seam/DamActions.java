@@ -133,7 +133,7 @@ public class DamActions implements Serializable {
     }
 
     /**
-     * Returns true if the user is viewing DAM
+     * Returns true if the user is viewing DAM.
      */
     public boolean isOnDamView() {
         if (FacesContext.getCurrentInstance() == null) {

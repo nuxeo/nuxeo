@@ -58,8 +58,9 @@ public class DamBulkEditActions implements Serializable {
             TagService tagService = Framework.getLocalService(TagService.class);
             String username = documentManager.getPrincipal().getName();
             for (DocumentModel doc : selectedDocuments) {
-                for (String tag : tags)
+                for (String tag : tags) {
                     tagService.tag(documentManager, doc.getId(), tag, username);
+                }
             }
         }
     }

@@ -17,14 +17,10 @@
 
 package org.nuxeo.dam.operations;
 
-import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.dam.AssetLibrary;
 import org.nuxeo.dam.DamService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -32,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.jsf.operations.AddMessage;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -40,8 +37,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 
 /**
- * Operation creating asset(s) from file(s) inside the
- * configured Asset Library or the current document.
+ * Operation creating asset(s) from file(s) inside the configured Asset Library
+ * or the current document.
  *
  * @since 5.7
  */
@@ -93,13 +90,14 @@ public class DamImport {
         }
 
         try {
-            DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, path,
-                overwrite, blob.getFilename());
+            DocumentModel doc = fileManager.createDocumentFromBlob(session,
+                    blob, path, overwrite, blob.getFilename());
             ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
             return doc;
-        } catch(Exception e) {
+        } catch (ClientException e) {
             String[] params = { blob.getFilename(), title };
-            throw new RecoverableClientException("Cannot import asset", "label.dam.import.asset.error", params);
+            throw new RecoverableClientException("Cannot import asset",
+                    "label.dam.import.asset.error", params, e);
         }
     }
 

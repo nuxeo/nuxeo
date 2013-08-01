@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.dam.DamService;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
@@ -35,6 +33,9 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Custom page provider configuring a post filter to have only folders with
+ * WRITE permission and where assets can be created.
+ *
  * @since 5.7.2
  */
 public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
@@ -52,22 +53,9 @@ public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
         return COMPOUND_FILTER;
     }
 
-    protected static class WritePermissionFilter implements Filter {
-
-        @Override
-        public boolean accept(DocumentModel doc) {
-            CoreSession session = doc.getCoreSession();
-            if (session == null) {
-                return false;
-            }
-            try {
-                return session.hasPermission(doc.getRef(), WRITE);
-            } catch (ClientException e) {
-                return false;
-            }
-        }
-    }
-
+    /**
+     * Filter checking if assets can be created in the given document.
+     */
     protected static class AssetSubTypeFilter implements Filter {
 
         @Override
