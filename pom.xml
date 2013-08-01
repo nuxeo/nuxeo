@@ -3951,6 +3951,13 @@
         <artifactId>cors-filter</artifactId>
         <version>1.7.1</version>
       </dependency>
+      
+      <!-- dmk adaptor -->
+      <dependency>
+        <groupId>com.sun.jdmk</groupId>
+        <artifactId>core</artifactId>
+        <version>1.0-b02-SNAPSHOT</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
