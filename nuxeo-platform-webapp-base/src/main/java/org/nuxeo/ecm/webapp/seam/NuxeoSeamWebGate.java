@@ -16,8 +16,22 @@
 
 package org.nuxeo.ecm.webapp.seam;
 
+import java.lang.management.ManagementFactory;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.MXBean;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Listener for Seam cache flush requests
@@ -27,6 +41,8 @@ import javax.servlet.ServletContextListener;
 public class NuxeoSeamWebGate implements ServletContextListener {
 
     protected static NuxeoSeamWebGate instance;
+
+    protected static Log log = LogFactory.getLog(NuxeoSeamWebGate.class);
 
     protected boolean initialized;
 
@@ -44,8 +60,52 @@ public class NuxeoSeamWebGate implements ServletContextListener {
         initialized = true;
     }
 
+    @MXBean
+    interface WebConnector {
+        String getStateName();
+    }
+
+    protected final Set<WebConnector> waitingConnectors = fetchConnectors();
+
+    protected Set<WebConnector> fetchConnectors() {
+        Set<WebConnector> connectors = new HashSet<WebConnector>();
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        ObjectName names;
+        try {
+            names = new ObjectName(
+                    "Catalina:type=Connector,port=*,address=*");
+        } catch (MalformedObjectNameException e) {
+            log.error("Cannot query for tomcat connectors", e);
+            return connectors;
+        }
+        Set<ObjectInstance> ois = mbs.queryMBeans(names, null);
+        for (ObjectInstance oi : ois) {
+            WebConnector connector = JMX.newMBeanProxy(mbs, oi.getObjectName(),
+                    WebConnector.class);
+            connectors.add(connector);
+        }
+        return connectors;
+    }
+
+    protected synchronized boolean checkConnectorsUp() {
+        Iterator<WebConnector> it = waitingConnectors.iterator();
+        while (it.hasNext()) {
+            WebConnector connector = it.next();
+            if ("STARTED".equals(connector.getStateName())) {
+                it.remove();
+            }
+        }
+        return waitingConnectors.isEmpty();
+    }
+
     public static boolean isInitialized() {
-        return instance != null && instance.initialized;
+        if (instance == null) {
+            return false;
+        }
+        if (instance.initialized == false) {
+            return false;
+        }
+        return instance.checkConnectorsUp();
     }
 
 }

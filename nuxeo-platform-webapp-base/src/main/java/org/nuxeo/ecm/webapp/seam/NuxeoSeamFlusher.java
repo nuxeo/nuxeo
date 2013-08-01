@@ -95,7 +95,7 @@ public class NuxeoSeamFlusher implements EventListener {
             MalformedObjectNameException {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         for (ObjectInstance oi : mbs.queryMBeans(new ObjectName(
-                "Catalina:type=Manager,path=/nuxeo,host=*"), null)) {
+                "Catalina:type=Manager,context=/nuxeo,host=*"), null)) {
             WebSessionFlusher flusher = JMX.newMBeanProxy(mbs,
                     oi.getObjectName(), WebSessionFlusher.class);
             StringTokenizer tokenizer = new StringTokenizer(
