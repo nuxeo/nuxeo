@@ -104,6 +104,9 @@ public class TestIntegrationTestOperations {
         Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(
                 NuxeoDriveSetupIntegrationTests.ID).set("userNames", "joe,jack").execute();
         assertNotNull(testUserCredentialsBlob);
+        // Need to invalidate injected session for it to be aware of changes
+        // made by the operation?
+        session.save();
 
         // Check test users
         String testUserCredentials = IOUtils.toString(
