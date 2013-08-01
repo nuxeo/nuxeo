@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -55,7 +56,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.csv" })
+@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics",  "org.nuxeo.ecm.core.management.jtajca"})
+@RepositoryConfig(repositoryFactoryClass=PoolingRepositoryFactory.class)
 public class TestCSVImport {
 
     @Inject
