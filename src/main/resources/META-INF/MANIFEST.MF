@@ -7,4 +7,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 5.7.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.dmk-adaptor
-Bundle-Activator: org.nuxeo.dmk.DmkActivator
+Nuxeo-Component: OSGI-INF/dmk-adaptor.xml
