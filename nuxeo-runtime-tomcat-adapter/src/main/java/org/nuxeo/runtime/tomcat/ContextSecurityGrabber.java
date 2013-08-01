@@ -23,12 +23,12 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.naming.ContextAccessController;
 
 /**
- * 
+ *
  * Grab security token and source context for setting write access onto naming
  * context during container startup.
- * 
+ *
  * @author matic
- * 
+ *
  * @since 5.5
  */
 public class ContextSecurityGrabber implements LifecycleListener {
@@ -36,7 +36,7 @@ public class ContextSecurityGrabber implements LifecycleListener {
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
         final String type = event.getType();
-        if (!Lifecycle.AFTER_START_EVENT.equals(type)) {
+        if (!Lifecycle.START_EVENT.equals(type)) {
             return;
         }
         final Object token = event.getLifecycle();
