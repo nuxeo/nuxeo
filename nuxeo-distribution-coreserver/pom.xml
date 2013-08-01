@@ -50,6 +50,10 @@
       <artifactId>nuxeo-core-management</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo</groupId>
+      <artifactId>nuxeo-dmk-adaptor</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql</artifactId>
     </dependency>
