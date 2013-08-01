@@ -5,7 +5,7 @@
     <groupId>org.nuxeo.ecm.automation</groupId>
     <artifactId>nuxeo-automation-parent</artifactId>
     <version>5.7.2-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <artifactId>marketplace-qa</artifactId>

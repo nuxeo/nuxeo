@@ -5,7 +5,7 @@
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-features-parent</artifactId>
     <version>5.7.2-SNAPSHOT</version>
-    <relativePath>../..</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.webengine</groupId>
