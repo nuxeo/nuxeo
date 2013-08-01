@@ -40,13 +40,12 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -56,7 +55,6 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.csv" })
 public class TestCSVImport {
 
@@ -138,6 +136,7 @@ public class TestCSVImport {
         doc.setPropertyValue("dc:title", "Existing Note");
         session.createDocument(doc);
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
 
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
                 false).build();
@@ -147,6 +146,8 @@ public class TestCSVImport {
         workManager.awaitCompletion(10,
                 TimeUnit.SECONDS);
         session.save();
+
+        TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(2, importLogs.size());
