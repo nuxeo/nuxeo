@@ -437,16 +437,7 @@ public class ConnectionHelper {
                             "Race condition in single transaction!");
                 }
                 // register a synchronizer to clear the map
-                try {
-                    SharedConnectionSynchronization scs = new SharedConnectionSynchronization(
-                            transactionForShare);
-                    sharedSynchronizations.put(transactionForShare, scs);
-                    transactionForShare.registerSynchronization(scs);
-                } catch (IllegalStateException | RollbackException
-                        | SystemException e) {
-                    throw new RuntimeException(
-                            "Cannot register synchronization", e);
-                }
+                SharedConnectionSynchronization.getInstance(transactionForShare);
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Reusing shared connection " + sharedConnection
@@ -646,30 +637,61 @@ public class ConnectionHelper {
 
         private final List<Synchronization> syncsFirst;
 
+        private final List<Synchronization> syncsLast;
+
+        /**
+         * Gets the instance or creates it. If creating, registers with the
+         * actual transaction.
+         */
+        // not synchronized as the transaction is already thread-local
+        // and we use a ConcurrentHashMap
+        public static SharedConnectionSynchronization getInstance(
+                Transaction transaction) {
+            SharedConnectionSynchronization scs = sharedSynchronizations.get(transaction);
+            if (scs == null) {
+                scs = new SharedConnectionSynchronization(transaction);
+                try {
+                    transaction.registerSynchronization(scs);
+                } catch (IllegalStateException | RollbackException
+                        | SystemException e) {
+                    throw new RuntimeException(
+                            "Cannot register synchronization", e);
+                }
+                sharedSynchronizations.put(transaction, scs);
+            }
+            return scs;
+        }
+
         public SharedConnectionSynchronization(Transaction transaction) {
             this.transaction = transaction;
             syncsFirst = new ArrayList<Synchronization>(5);
+            syncsLast = new ArrayList<Synchronization>(5);
         }
 
         /**
-         * Registers a synchronization that must run before us.
+         * Registers a synchronization that must run before or after us.
          */
-        public void registerSynchronization(Synchronization sync) {
-            syncsFirst.add(sync);
+        public void registerSynchronization(Synchronization sync, boolean first) {
+            if (first) {
+                syncsFirst.add(sync);
+            } else {
+                syncsLast.add(sync);
+            }
         }
 
         @Override
         public void beforeCompletion() {
-            beforeCompletionFirst();
+            beforeCompletion(syncsFirst);
+            beforeCompletion(syncsLast);
         }
 
-        private void beforeCompletionFirst() {
+        private void beforeCompletion(List<Synchronization> syncs) {
             // beforeCompletion hooks may add other syncs,
             // so we must be careful when iterating on the list
             RuntimeException exc = null;
-            for (int i = 0; i < syncsFirst.size(); i++) {
+            for (int i = 0; i < syncs.size(); i++) {
                 try {
-                    syncsFirst.get(i).beforeCompletion();
+                    syncs.get(i).beforeCompletion();
                 } catch (RuntimeException e) {
                     log.error("Exception during beforeCompletion hook", e);
                     if (exc == null) {
@@ -694,15 +716,20 @@ public class ConnectionHelper {
         @Override
         public void afterCompletion(int status) {
             sharedSynchronizations.remove(transaction);
-            afterCompletionFirst(status);
+            afterCompletion(syncsFirst, status);
+            closeSharedAfterCompletion();
+            afterCompletion(syncsLast, status);
+        }
+
+        private void closeSharedAfterCompletion() {
             SharedConnection sharedConnection = sharedConnections.remove(transaction);
             if (sharedConnection != null) {
                 sharedConnection.closeAfterTransaction();
             }
         }
 
-        private void afterCompletionFirst(int status) {
-            for (Synchronization sync : syncsFirst) {
+        private void afterCompletion(List<Synchronization> syncs, int status) {
+            for (Synchronization sync : syncs) {
                 try {
                     sync.afterCompletion(status);
                 } catch (RuntimeException e) {
@@ -959,23 +986,37 @@ public class ConnectionHelper {
      * transaction, making sure it runs before the
      * {@link SharedConnectionSynchronization}.
      *
-     * @return {@code true} if registration was done, {@code false} if caller
-     *         must do registration itself (no sharing)
+     * @return {@code true}
      */
     public static boolean registerSynchronization(Synchronization sync)
             throws SystemException {
+        return registerSynchronization(sync, true);
+    }
+
+    /**
+     * If sharing is in effect, registers a synchronization with the current
+     * transaction, making sure the {@link Synchronization#afterCompletion}
+     * method runs after the {@link SharedConnectionSynchronization}.
+     *
+     * @return {@code true}
+     */
+    public static boolean registerSynchronizationLast(Synchronization sync)
+            throws SystemException {
+        return registerSynchronization(sync, false);
+    }
+
+    private static boolean registerSynchronization(Synchronization sync,
+            boolean first) throws SystemException {
         Transaction transaction = getTransaction();
         if (transaction == null) {
             throw new SystemException(
                     "Cannot register synchronization: no transaction");
         }
-        SharedConnectionSynchronization scs = sharedSynchronizations.get(transaction);
-        if (scs != null) {
-            scs.registerSynchronization(sync);
-            return true;
-        } else {
-            return false;
-        }
+        // We always do the lookup and registration to the actual transaction
+        // even if there is no shared connection yet.
+        SharedConnectionSynchronization scs = SharedConnectionSynchronization.getInstance(transaction);
+        scs.registerSynchronization(sync, first);
+        return true;
     }
 
 }
