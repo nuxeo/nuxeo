@@ -69,11 +69,19 @@
 
   <target name="prepare-tomcat">
     <unzip dest="${outdir}">
-      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip" classifier="${tomcat.classifier}" />
+      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip"
+                            classifier="${tomcat.classifier}" />
     </unzip>
     <move todir="${tomcat}">
       <fileset dir="${outdir}/apache-tomcat-${tomcat.version}" />
     </move>
+    <copy tofile="${tomcat}/bin/tomcat-juli.jar">
+      <artifact:resolveFile key="org.apache.tomcat.extras:tomcat-extras-juli" />
+    </copy>
+    <copy tofile="${tomcat}/lib/tomcat-juli-adapters.jar">
+      <artifact:resolveFile key="org.apache.tomcat.extras:tomcat-extras-juli-adapters" />
+    </copy>
+
     <unzip dest="${tomcat}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
                             classifier="doc" />
@@ -97,7 +105,9 @@
                             classifier="templates-tomcat" />
     </unzip>
 
-    <echo message="tomcat.version=${tomcat.version}" append="true" file="${tomcat}/templates/nuxeo.defaults"/>
+    <echo message="tomcat.version=${tomcat.version}"
+          append="true"
+          file="${tomcat}/templates/nuxeo.defaults" />
 
     <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard::war" />
@@ -266,7 +276,7 @@ install nuxeo-dam
         <include name="juel-api-*" />
       </fileset>
       <!-- replaced by sl4j bridge -->
-      <fileset dir="${distribution.dir}/nxserver/lib"> 
+      <fileset dir="${distribution.dir}/nxserver/lib">
         <include name="commons-logging*" />
       </fileset>
     </delete>
