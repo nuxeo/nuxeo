@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,9 +33,14 @@ import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * Safe Edit feature tests.
@@ -262,15 +268,25 @@ public class ITSafeEditTest extends AbstractTest {
 
         // We must find the status message asking if we want to restore previous
         // unchanged data and make sure it is visible
-        WebElement confirmRestore = findElementWithTimeout(By.id(CONFIRM_RESTORE_SPAN_ELT_ID));
-        final String confirmRestoreCssDisplayValue = confirmRestore.getCssValue("display");
-        assertTrue(!confirmRestoreCssDisplayValue.equals("none"));
+        boolean isRestoreVisible = false;
+
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(3,
+                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
+        isRestoreVisible = wait.until((new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return !driver.findElement(By.id(CONFIRM_RESTORE_SPAN_ELT_ID)).getCssValue(
+                        "display").equals("none");
+            }
+        }));
+        assertTrue(isRestoreVisible);
 
         // Let's restore
         WebElement confirmRestoreYes = driver.findElement(By.id(CONFIRM_RESTORE_YES_ELT_ID));
         // The following call randomly times out.
         // confirmRestoreYes.click();
-        // We just want to trigger the js event handler attached to confirmRestoreYes element. This is the workaround.
+        // We just want to trigger the js event handler attached to
+        // confirmRestoreYes element. This is the workaround.
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
                 confirmRestoreYes);
 
