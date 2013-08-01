@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -57,7 +58,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics",  "org.nuxeo.ecm.core.management.jtajca"})
-@RepositoryConfig(repositoryFactoryClass=PoolingRepositoryFactory.class)
+@RepositoryConfig(repositoryFactoryClass=PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 public class TestCSVImport {
 
     @Inject
@@ -85,12 +86,14 @@ public class TestCSVImport {
     public void shouldCreateAllDocuments() throws InterruptedException,
             ClientException {
         CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        TransactionHelper.commitOrRollbackTransaction();
+
         CSVImportId importId = csvImporter.launchImport(session, "/",
                 getCSVFile("docs_ok.csv"), options);
 
         workManager.awaitCompletion(10,
                 TimeUnit.SECONDS);
-        session.save();
+        TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(2, importLogs.size());
@@ -137,7 +140,6 @@ public class TestCSVImport {
         DocumentModel doc = session.createDocumentModel("/", "mynote", "Note");
         doc.setPropertyValue("dc:title", "Existing Note");
         session.createDocument(doc);
-        session.save();
         TransactionHelper.commitOrRollbackTransaction();
 
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
@@ -147,8 +149,6 @@ public class TestCSVImport {
 
         workManager.awaitCompletion(10,
                 TimeUnit.SECONDS);
-        session.save();
-
         TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
@@ -178,12 +178,12 @@ public class TestCSVImport {
             ClientException {
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
                 false).build();
+        TransactionHelper.commitOrRollbackTransaction();
         CSVImportId importId = csvImporter.launchImport(session, "/",
                 getCSVFile("docs_not_ok.csv"), options);
-
         workManager.awaitCompletion(10,
                 TimeUnit.SECONDS);
-        session.save();
+        TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
         assertEquals(4, importLogs.size());
