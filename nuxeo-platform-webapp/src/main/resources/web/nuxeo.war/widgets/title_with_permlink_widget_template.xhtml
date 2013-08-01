@@ -27,6 +27,15 @@
        </c:if>
     </c:if>
 
+    <span title="uid: #{field.id}">
+      <nxd:restDocumentLink document="#{field}" pattern="id" target="_blank">
+        <nxu:graphicImage value="/icons/permalink.png"
+          style="vertical-align:middle"
+          alt="#{messages['label.permalink']}"
+          title="#{messages['label.permalink']}"/>
+      </nxd:restDocumentLink>
+    </span>
+
     <nxu:set var="actions"
       value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST')}"
       cache="true">
