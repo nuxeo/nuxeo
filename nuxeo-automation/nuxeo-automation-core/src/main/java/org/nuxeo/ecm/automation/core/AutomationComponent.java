@@ -84,6 +84,7 @@ import org.nuxeo.ecm.automation.core.operations.execution.RunFileChain;
 import org.nuxeo.ecm.automation.core.operations.execution.RunInNewTransaction;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperation;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
+import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnListInNewTransaction;
 import org.nuxeo.ecm.automation.core.operations.execution.SaveSession;
 import org.nuxeo.ecm.automation.core.operations.login.LoginAs;
 import org.nuxeo.ecm.automation.core.operations.login.Logout;
@@ -222,6 +223,8 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(BusinessCreateOperation.class);
         service.putOperation(BusinessUpdateOperation.class);
         service.putOperation(BusinessFetchOperation.class);
+
+        service.putOperation(RunOperationOnListInNewTransaction.class);
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);
