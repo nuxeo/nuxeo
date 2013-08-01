@@ -173,6 +173,21 @@
     </appender>
   -->
 
+  <appender name="CLASSLOADER" class="org.apache.log4j.RollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="${nuxeo.log.dir}/classloader.log" />
+    <param name="Append" value="false" />
+    <param name="MaxFileSize" value="500KB" />
+    <param name="MaxBackupIndex" value="1" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+    </layout>
+  </appender>
+
+  <category name="org.apache.catalina.loader.WebappClassLoader" additivity="false">
+    <appender-ref ref="CLASSLOADER"/>
+  </category>
+
   <!-- ================ -->
   <!-- Limit categories -->
   <!-- ================ -->
