@@ -28,6 +28,8 @@
    */
   videojs.plugin('thumbnails', function(options) {
     var div, settings, img, player, progressControl, duration;
+    // init defaults to an empty array because of ajax reload
+    defaults = {};
     settings = extend(defaults, options);
     player = this;
 
