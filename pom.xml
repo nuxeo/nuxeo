@@ -1,14 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.7.2-SNAPSHOT</version>
   </parent>
+
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-groups-rights-audit</artifactId>
   <name>Groups rights audit</name>
   <description>Audit information extraction from the group management</description>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -171,6 +174,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>
@@ -207,6 +211,7 @@
       </plugin>
     </plugins>
   </build>
+  
   <repositories>
     <repository>
       <id>public</id>
@@ -229,9 +234,11 @@
       </snapshots>
     </repository>
   </repositories>
+
   <scm>
     <connection>scm:git:git://github.com/nuxeo/nuxeo-groups-rights-audit.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-groups-rights-audit.git</developerConnection>
     <url>https://github.com/nuxeo/nuxeo-groups-rights-audit</url>
   </scm>
+
 </project>
