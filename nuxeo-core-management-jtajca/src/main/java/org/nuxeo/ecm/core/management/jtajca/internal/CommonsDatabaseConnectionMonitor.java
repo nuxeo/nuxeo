@@ -13,7 +13,7 @@ import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
-public class DefaultDatabaseConnectionMonitor implements
+public class CommonsDatabaseConnectionMonitor implements
         DatabaseConnectionMonitor {
 
     protected final String name;
@@ -24,7 +24,7 @@ public class DefaultDatabaseConnectionMonitor implements
 
     protected ObjectInstance self;
 
-    public DefaultDatabaseConnectionMonitor(String name, BasicDataSource ds) {
+    public CommonsDatabaseConnectionMonitor(String name, BasicDataSource ds) {
         this.name = parseName(name);
         this.ds = ds;
     }
@@ -317,18 +317,18 @@ public class DefaultDatabaseConnectionMonitor implements
         self = DefaultMonitorComponent.bind(DatabaseConnectionMonitor.class,
                 this, name);
         metrics.register(
-                MetricRegistry.name("nuxeo.datasources", name, "idle"),
+                MetricRegistry.name("nuxeo", "datasources", name, "idle"),
                 new JmxAttributeGauge(self.getObjectName(), "NumIdle"));
         metrics.register(
-                MetricRegistry.name("nuxeo.datasources", name, "active"),
+                MetricRegistry.name("nuxeo", "datasources", name, "active"),
                 new JmxAttributeGauge(self.getObjectName(), "NumActive"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        metrics.remove(MetricRegistry.name("nuxeo.datasources", name, "idle"));
-        metrics.remove(MetricRegistry.name("nuxeo.datasources", name, "active"));
+        metrics.remove(MetricRegistry.name("nuxeo", "datasources", name, "idle"));
+        metrics.remove(MetricRegistry.name("nuxeo", "datasources", name, "active"));
         self = null;
     }
 

@@ -24,6 +24,10 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-dbcp</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>

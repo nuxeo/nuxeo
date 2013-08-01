@@ -32,7 +32,6 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -106,11 +105,16 @@ public class DefaultMonitorComponent extends DefaultComponent {
         for (Map.Entry<String, DataSource> dsEntry:dsByName.entrySet()) {
             String name = dsEntry.getKey();
             DataSource ds = dsEntry.getValue();
-            if (ds instanceof BasicDataSource) {
-                DatabaseConnectionMonitor monitor = new DefaultDatabaseConnectionMonitor(name, (BasicDataSource)ds);
-                monitor.install();
-                databaseConnectionMonitors.put(name, monitor);
+            DatabaseConnectionMonitor monitor = null;
+            if (ds instanceof org.apache.commons.dbcp.BasicDataSource) {
+                monitor = new CommonsDatabaseConnectionMonitor(name, (org.apache.commons.dbcp.BasicDataSource)ds);
+            } else if (ds instanceof org.apache.tomcat.dbcp.dbcp.BasicDataSource) {
+                monitor = new TomcatDatabaseConnectionMonitor(name, (org.apache.tomcat.dbcp.dbcp.BasicDataSource)ds);
+            } else {
+                continue;
             }
+            monitor.install();
+            databaseConnectionMonitors.put(name, monitor);
         }
 
         RepositoryService repositoryService = NXCore.getRepositoryService();
