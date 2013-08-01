@@ -109,6 +109,7 @@ public class OperationServiceImpl implements AutomationService {
      */
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws Exception {
+        final OperationCallback callback = ctx.getChainCallback();
         CompiledChainImpl chain;
         if (params == null) {
             params = new HashMap<String, Object>();
@@ -118,10 +119,13 @@ public class OperationServiceImpl implements AutomationService {
         if (params != null && !params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
+        Tracer tracer = Framework.getLocalService(TracerFactory.class).newTracer();
+        ctx.addChainCallback(tracer);
         try {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
             if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
+                callback.onChain(ctx,operationType);
                 chain = compiledChains.get(operationType.getId());
                 if (chain == null) {
                     chain = (CompiledChainImpl) operationType.newInstance(ctx,
