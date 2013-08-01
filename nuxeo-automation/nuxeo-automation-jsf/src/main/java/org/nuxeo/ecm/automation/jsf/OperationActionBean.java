@@ -91,7 +91,7 @@ public class OperationActionBean implements Serializable {
                         "Unknown chain: " + chain);
                 return null;
             } catch (Throwable t) {
-                log.error(t, t);
+                log.error(t);
                 Throwable cause = ExceptionHelper.unwrapException(t);
                 showError(ctx, (String) chain, cause);
                 return null;
