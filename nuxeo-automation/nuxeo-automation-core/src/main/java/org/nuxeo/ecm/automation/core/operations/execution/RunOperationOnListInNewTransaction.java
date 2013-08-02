@@ -72,7 +72,8 @@ public class RunOperationOnListInNewTransaction {
     @OperationMethod
     public void run() throws Exception {
 
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
+                ctx.getVars()) : ctx.getVars();
 
         final CoreSession session = ctx.getCoreSession();
 
