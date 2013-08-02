@@ -184,13 +184,28 @@
     </layout>
   </appender>
 
-  <category name="org.apache.catalina.loader.WebappClassLoader" additivity="false">
-    <appender-ref ref="CLASSLOADER"/>
-  </category>
+  <appender name="TOMCAT" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${nuxeo.log.dir}/tomcat.log" />
+    <param name="Append" value="false" />
+    <param name="MaxFileSize" value="500KB" />
+    <param name="MaxBackupIndex" value="1" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+    </layout>
+  </appender>
 
   <!-- ================ -->
   <!-- Limit categories -->
   <!-- ================ -->
+
+  <category name="org.apache.catalina.loader" additivity="false">
+    <appender-ref ref="CLASSLOADER"/>
+  </category>
+
+  <category name="org.apache.catalina.core.AprLifecycleListener" additivity="true">
+    <priority value="INFO" />
+    <appender-ref ref="TOMCAT"/>
+  </category>
 
   <category name="org.jboss.seam">
     <priority value="INFO" />
