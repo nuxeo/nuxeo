@@ -45,6 +45,8 @@ public class OSGiRuntimeActivator implements BundleActivator {
 
     protected BundleContext context;
 
+    protected ServiceLoader<PackageAdmin> adminLoader;
+
     public static OSGiRuntimeActivator getInstance() {
         return instance;
     }
@@ -81,6 +83,8 @@ public class OSGiRuntimeActivator implements BundleActivator {
                     configLocation.toExternalForm());
         }
 
+        adminLoader = new ServiceLoader<>(PackageAdmin.class);
+
         runtime = createRuntime(context, config);
 
         initialize(runtime);
@@ -107,8 +111,10 @@ public class OSGiRuntimeActivator implements BundleActivator {
         log.info("Stopping Runtime Activator");
         instance = null;
         // unregister
-        Framework.shutdown();
         uninitialize(runtime);
+        Framework.shutdown();
+        adminLoader.unload();
+        adminLoader = null;
         runtime = null;
         context = null;
     }
@@ -131,13 +137,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
     }
 
     protected Bundle getBundle(String name) {
-        ServiceReference<PackageAdmin> ref = context.getServiceReference(PackageAdmin.class);
-        PackageAdmin srv = context.getService(ref);
-        try {
-            return srv.getBundles(name, null)[0];
-        } finally {
-            context.ungetService(ref);
-        }
+        return adminLoader.instance.getBundles(name, null)[0];
     }
 
     public Class<?> loadClass(String bundleName, String className)

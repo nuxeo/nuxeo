@@ -80,10 +80,6 @@ public class RuntimeFeature extends SimpleFeature {
         return harness;
     }
 
-    public DeploymentSet deployments() {
-        return deploy;
-    }
-
     private void scanDeployments(FeaturesRunner runner) {
         List<RunnerFeature> features = runner.getFeatures();
         if (features == null) {

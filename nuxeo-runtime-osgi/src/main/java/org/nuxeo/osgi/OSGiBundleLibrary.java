@@ -33,7 +33,7 @@ public class OSGiBundleLibrary extends OSGiBundleHost {
             } catch (IOException e) {
                 ;
             }
-            name = properties.get("groupId")
+            name = properties.get("groupId") + "."
                     + properties.getProperty("artifactId");
         } else {
             name = file.getFileName();

@@ -34,41 +34,21 @@ public class OSGiBundleRegistration {
 
     protected final OSGiBundle bundle;
 
-    // XXX: explain why these three variables are lazily instantiated.
-    protected final Set<String> dependsOn = new HashSet<String>();
-    protected final Set<String> dependsOnMe = new HashSet<String>();
+    protected final Set<String> pendings = new HashSet<String>();
     protected final Set<String> waitingFor = new HashSet<String>();
-    protected final Set<String> extendsMe = new HashSet<String>();
 
-    protected final Set<Bundle> resolvedDependencies = new HashSet<Bundle>();
+    protected final Set<OSGiBundleRegistration> resolvedDependencies = new HashSet<OSGiBundleRegistration>();
+    protected final Set<OSGiBundleRegistration> dependsOnMe = new HashSet<OSGiBundleRegistration>();
+
     protected final Set<Bundle> nested = new HashSet<Bundle>();
 
-    public OSGiBundleRegistration(OSGiBundle bundle) {
+    protected OSGiBundleRegistration(OSGiBundle bundle) {
         this.bundle = bundle;
     }
 
-    public void addFragment(String name) {
-        extendsMe.add(name);
-    }
-
-    public void addDependency(String name) {
-        dependsOn.add(name);
-    }
-
-    public void addDependent(String name) {
-        dependsOnMe.add(name);
-    }
-
-    public void addUnresolvedDependency(String name) {
-        waitingFor.add(name);
-    }
-
-    public void removeUnresolvedDependency(String name) {
-        waitingFor.remove(name);
-    }
-
-    public boolean hasUnresolvedDependencies() {
-        return !waitingFor.isEmpty();
+    @Override
+    public String toString() {
+        return "OSGiBundleRegistration ["+ bundle + "]";
     }
 
 }

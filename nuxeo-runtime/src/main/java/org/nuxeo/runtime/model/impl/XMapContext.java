@@ -20,7 +20,7 @@ import org.nuxeo.common.xmap.Context;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class XMapContext extends Context {
@@ -28,14 +28,14 @@ public class XMapContext extends Context {
     private static final long serialVersionUID = -7194560385886298218L;
 
     final RuntimeContext ctx;
-    
+
     public XMapContext(RuntimeContext ctx) {
         this.ctx = ctx;
     }
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-    	return Class.forName(className, true, ctx.getClassLoader());
+        return Class.forName(className, true, ctx.getClassLoader());
     }
 
     @Override

@@ -39,11 +39,12 @@ public class Main {
             files = NuxeoApp.getBundleFiles(new File("."), bundles, ":");
         }
         NuxeoApp app = new NuxeoApp();
-        app.start();
+        app.init();
         System.out.println("Deploying bundles: "+files);
         if (files != null) {
             app.deployBundles(files);
         }
+        app.start();
         if (args.length > 0) {
             Class<?> klass = Class.forName(args[0]);
             Method main = klass.getMethod("main", String[].class);

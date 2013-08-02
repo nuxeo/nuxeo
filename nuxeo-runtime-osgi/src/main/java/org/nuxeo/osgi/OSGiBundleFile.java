@@ -126,15 +126,17 @@ public class OSGiBundleFile {
                 "The operation BundleFile.geEntryPaths() is not yet implemented");
     }
 
-    public Enumeration<URL> findEntries(String name, final String pattern,
+    public Enumeration<URL> findEntries(final String name, final String pattern,
             boolean recurse) {
+
+        final Path path = "/".equals(name) ? rootPath : rootPath.resolve(name);
 
         return new Enumeration<URL>() {
             final DirectoryStream.Filter<Path> filter = new FilterBuilder<Path>(
                     rootPath.getFileSystem()).newFilter(pattern);
 
             final RecursiveDirectoryStream<Path> dirStream = new RecursiveDirectoryStream<Path>(
-                    rootPath, filter);
+                    path, filter);
 
             final Iterator<Path> it = dirStream.iterator();
 

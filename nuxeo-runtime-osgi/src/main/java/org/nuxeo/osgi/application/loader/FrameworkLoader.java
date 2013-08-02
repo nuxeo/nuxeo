@@ -33,7 +33,6 @@ import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -170,7 +169,6 @@ public class FrameworkLoader {
     }
 
     protected void doStart() throws BundleException, IOException {
-        loader.adapter.start();
         for (File f : libraryFiles) {
             installLibrary(f);
         }
@@ -192,9 +190,8 @@ public class FrameworkLoader {
                 // continue
             }
         }
+        adapter.start();
         adapter.getBundle("org.nuxeo.runtime").start(); // auto start runtime
-        adapter.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                adapter.getSystemBundle(), null));
     }
 
     protected void doStop() throws BundleException {

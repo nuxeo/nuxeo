@@ -24,6 +24,8 @@ public class OSGiLoader extends ClassLoader {
 
     protected final OSGiBundleContext context;
 
+    protected final String[] roots;
+
     protected static String path(String name) {
         return name.replace(".", "/").concat(".class");
     }
@@ -32,17 +34,28 @@ public class OSGiLoader extends ClassLoader {
         super(parent);
         this.context = context;
         osgi = context.bundle.osgi;
+        roots = computeRoots();
         wiring = new OSGiWiring(this);
+    }
+
+    protected String[] computeRoots() {
+        String[] roots = new String[1 + context.fragments.length];
+        roots[0] = context.bundle.file.path.toString();
+        for (int i = 0; i < context.fragments.length; ++i) {
+            roots[1 + i] = context.fragments[i].file.path.toString();
+        }
+        return roots;
     }
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve)
             throws ClassNotFoundException {
-        if ((context.bundle.state&(Bundle.ACTIVE|Bundle.STOPPING))== 0) {
+        if ((context.bundle.state & (Bundle.ACTIVE | Bundle.STOPPING)) == 0) {
             try {
                 context.bundle.activate();
             } catch (BundleException e) {
-                throw new ClassNotFoundException("Cannot activate " + context, e);
+                throw new ClassNotFoundException("Cannot activate " + context,
+                        e);
             }
         }
         synchronized (getClassLoadingLock(name)) {
@@ -59,7 +72,8 @@ public class OSGiLoader extends ClassLoader {
         }
     }
 
-    protected Class<?> findParentClass(String name) throws ClassNotFoundException {
+    protected Class<?> findParentClass(String name)
+            throws ClassNotFoundException {
         ClassLoader parent = getParent();
         Class<?> clazz = parent.loadClass(name);
         if (parent instanceof OSGiLoader) {
@@ -100,8 +114,8 @@ public class OSGiLoader extends ClassLoader {
             }
         }
 
-        throw new ClassNotFoundException("No " + name + " available in "
-                + this + " scope");
+        throw new ClassNotFoundException("No " + name + " available in " + this
+                + " scope");
     }
 
     protected Class<?> findLocalClass(String name, String path) {
@@ -113,7 +127,7 @@ public class OSGiLoader extends ClassLoader {
         if (!loaders.contains(this)) {
             return null; // in other loaders
         }
-        URL location = getLocalFile(path);
+        URL location = getBundleFile(path);
         if (location == null) {
             return null;
         }
@@ -134,7 +148,7 @@ public class OSGiLoader extends ClassLoader {
 
     @Override
     protected URL findResource(String path) {
-        URL location = findLocalResource(path);
+        URL location = findBundleResource(path);
         if (location != null) {
             return location;
         }
@@ -144,26 +158,28 @@ public class OSGiLoader extends ClassLoader {
             if (loader == this) {
                 continue;
             }
-            location = loader.findLocalResource(path);
+            location = loader.findBundleResource(path);
             if (location != null) {
-                log.warn("requirement dep missing in " + this + " for " + loader
-                        + "(" + path + ")");
+                log.warn("requirement dep missing in " + this + " for "
+                        + loader + "(" + path + ")");
                 return location;
             }
         }
         return null;
     }
 
-    protected URL findLocalResource(String path) {
+    protected URL findBundleResource(String path) {
         if (wiring.mayContains(path).contains(this)) {
             return null;
         }
-        return getLocalFile(path);
+        return getBundleFile(path);
     }
 
     @Override
-    protected Enumeration<URL> findResources(final String path) throws IOException {
-        final Iterator<OSGiLoader> loaders = new ArrayList<OSGiLoader>(wiring.mayContains(path)).iterator();
+    protected Enumeration<URL> findResources(final String path)
+            throws IOException {
+        final Iterator<OSGiLoader> loaders = new ArrayList<OSGiLoader>(
+                wiring.mayContains(path)).iterator();
         return new Enumeration<URL>() {
 
             @Override
@@ -173,7 +189,7 @@ public class OSGiLoader extends ClassLoader {
 
             @Override
             public URL nextElement() {
-                return loaders.next().findLocalResource(path);
+                return loaders.next().findBundleResource(path);
             }
 
         };
@@ -188,28 +204,27 @@ public class OSGiLoader extends ClassLoader {
         return context.bundle.findEntries("/", "*", true);
     }
 
-    protected URL getLocalFile(String path) {
-        return context.bundle.getEntry(path);
+    protected URL getBundleFile(String path) {
+        Enumeration<URL> urls = context.bundle.findEntries(path, "*", false);
+        if (!urls.hasMoreElements()) {
+            return null;
+        }
+        return urls.nextElement();
     }
 
     protected String getName() {
         return context.bundle.getSymbolicName();
     }
 
-    protected String getPath() {
-        return context.bundle.file.path.toString();
-    }
-
-
     protected Class<?> handleForeignLoadedClass(Class<?> clazz) {
         ClassLoader other = clazz.getClassLoader();
-        if (other != null && OSGiLoader.class.isAssignableFrom(other.getClass())) {
-            log.warn("requirement missing in " + context.bundle + " for " + other
-                    + " (" + clazz.getName() + ")");
-            wiring.merge(((OSGiLoader)other).wiring);
+        if (other != null
+                && OSGiLoader.class.isAssignableFrom(other.getClass())) {
+            log.warn("requirement missing in " + context.bundle + " for "
+                    + other + " (" + clazz.getName() + ")");
+            wiring.merge(((OSGiLoader) other).wiring);
         }
         return clazz;
     }
-
 
 }

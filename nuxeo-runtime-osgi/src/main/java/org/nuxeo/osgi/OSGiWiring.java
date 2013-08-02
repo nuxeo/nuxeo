@@ -48,13 +48,21 @@ class OSGiWiring {
 
     protected String bundlePath(URL location) {
         String protocol = location.getProtocol();
-        String bundlePath = loader.getPath();
-        if ("jar".equals(protocol)) {
-            return jarPath(bundlePath, location.getPath());
-        } else if ("file".equals(protocol)) {
-            return filePath(bundlePath, location.getPath());
+        String path = location.getPath();
+        for (String root : loader.roots) {
+            if (!path.startsWith(root)) {
+                continue;
+            }
+            if ("jar".equals(protocol)) {
+                return jarPath(root, path);
+            } else if ("file".equals(protocol)) {
+                return filePath(root, path);
+            } else {
+                throw new UnsupportedOperationException("unsupported protocol "
+                        + location);
+            }
         }
-        return null;
+        return null; // tycho+maven hack
     }
 
     protected String jarPath(String jarPath, String filePath) {
@@ -62,9 +70,6 @@ class OSGiWiring {
     }
 
     protected String filePath(String rootPath, String filePath) {
-        if (!filePath.startsWith(rootPath)) {
-            return null; // tycho+maven hack
-        }
         return filePath.substring(rootPath.length() + 1);
     }
 

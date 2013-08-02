@@ -23,10 +23,10 @@ package org.nuxeo.osgi;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,7 +69,7 @@ public class OSGiBundleRegistry implements BundleListener {
     }
 
     public OSGiBundle getBundle(long id) {
-        OSGiBundleRegistration reg = bundlesById.get(id);
+        OSGiBundleRegistration reg = bundlesById.get(Long.valueOf(id));
         return reg == null ? null : reg.bundle;
     }
 
@@ -91,11 +91,7 @@ public class OSGiBundleRegistry implements BundleListener {
      */
     public synchronized OSGiBundle[] getFragments(String symbolicName) {
         OSGiBundleRegistration reg = bundlesByName.get(symbolicName);
-
-        ArrayList<OSGiBundle> fragments = new ArrayList<OSGiBundle>();
-        for (String id : reg.extendsMe) {
-            fragments.add(bundlesByName.get(id).bundle);
-        }
+        List<OSGiBundleFragment> fragments = ((OSGiBundleHost)reg.bundle).fragments;
         return fragments.toArray(new OSGiBundle[fragments.size()]);
     }
 
@@ -108,7 +104,7 @@ public class OSGiBundleRegistry implements BundleListener {
         return bundles;
     }
 
-    public synchronized void register(OSGiBundle bundle) throws BundleException {
+    public void register(OSGiBundle bundle) throws BundleException {
         OSGiBundleRegistration reg = bundlesByName.get(bundle.getSymbolicName());
         if (reg != null) {
             throw new BundleException(bundle + " is already registered");
@@ -116,8 +112,9 @@ public class OSGiBundleRegistry implements BundleListener {
         register(new OSGiBundleRegistration(bundle));
     }
 
+
+
     protected void register(OSGiBundleRegistration reg) throws BundleException {
-        log.info("Installing bundle: " + reg.bundle.symbolicName);
         bundlesByName.put(reg.bundle.symbolicName, reg);
         bundlesById.put(
                 reg.bundle.id = bundleIds.addBundle(reg.bundle.symbolicName),
@@ -130,14 +127,18 @@ public class OSGiBundleRegistry implements BundleListener {
             String hostBundleId = getFragmentHost(reg);
             OSGiBundleRegistration host = bundlesByName.get(hostBundleId);
             if (host == null) {
-                reg.addUnresolvedDependency(hostBundleId);
+                reg.pendings.add(hostBundleId);
+                for (String dep : reg.waitingFor) {
+                    Set<OSGiBundleRegistration> regs = pendings.get(dep);
+                    if (regs == null) {
+                        regs = new HashSet<OSGiBundleRegistration>();
+                        pendings.put(dep, regs);
+                    }
+                    regs.add(reg);
+                }
             }
         }
-        if (reg.hasUnresolvedDependencies()) {
-            doPostpone(reg);
-        } else {
-            resolve(reg);
-        }
+
     }
 
     public synchronized void unregister(OSGiBundle bundle)
@@ -159,15 +160,21 @@ public class OSGiBundleRegistry implements BundleListener {
         bundlesById.remove(reg.bundle.getBundleId());
         bundlesByPath.remove(reg.bundle.file.path);
         reg.bundle.setUninstalled();
-        for (String depOnMe : reg.dependsOnMe) {
-            OSGiBundleRegistration dep = bundlesByName.get(depOnMe);
-            if (dep != null) { // set to unresolved
-                if (OSGiBundleHost.class.isAssignableFrom(dep.bundle.getClass())) {
-                    ((OSGiBundleHost) dep.bundle).setUnResolved();
-                }
+        for (OSGiBundleRegistration depOnMe : reg.dependsOnMe) {
+            if (OSGiBundleHost.class.isAssignableFrom(depOnMe.bundle.getClass())) {
+                ((OSGiBundleHost) depOnMe.bundle).setUnResolved();
             }
         }
         uninstallNestedBundles(reg);
+    }
+
+    public void resolve() throws BundleException {
+        for (long i = 1; i < bundleIds.count; ++i) {
+            OSGiBundleRegistration reg = bundlesById.get(Long.valueOf(i));
+            if (!pendings.containsKey(reg.bundle.symbolicName)) {
+                resolve(reg);
+            }
+        }
     }
 
     protected void installNested(OSGiBundleRegistration reg)
@@ -197,29 +204,16 @@ public class OSGiBundleRegistry implements BundleListener {
         errors.throwOnError();
     }
 
-    protected void doPostpone(OSGiBundleRegistration reg) {
-        log.info("Postponing unresolved bundle: " + reg.bundle.symbolicName);
-
-        for (String dep : reg.waitingFor) {
-            Set<OSGiBundleRegistration> regs = pendings.get(dep);
-            if (regs == null) {
-                regs = new HashSet<OSGiBundleRegistration>();
-                pendings.put(dep, regs);
-            }
-            regs.add(reg);
-        }
-    }
-
     protected void resolve(OSGiBundleRegistration reg) throws BundleException {
         String name = reg.bundle.getSymbolicName();
-        log.info("Resolving bundle: " + name);
+
+        log.info("Resolved bundle: " + reg.bundle);
 
         Class<? extends OSGiBundle> bundleType = reg.bundle.getClass();
         if (OSGiBundleFragment.class.isAssignableFrom(bundleType)) {
             String hostBundleId = getFragmentHost(reg);
             OSGiBundleRegistration host = bundlesByName.get(hostBundleId);
-            host.addFragment(reg.bundle.symbolicName);
-            ((OSGiBundleFragment)reg.bundle).host = host.bundle;
+            ((OSGiBundleHost)host.bundle).fragments.add((OSGiBundleFragment)reg.bundle);
         } else if (OSGiBundleHost.class.isAssignableFrom(bundleType)) {
             ((OSGiBundleHost) reg.bundle).setResolved();
         }
@@ -228,8 +222,8 @@ public class OSGiBundleRegistry implements BundleListener {
         Set<OSGiBundleRegistration> regs = pendings.remove(name);
         if (regs != null) {
             for (OSGiBundleRegistration pendingReg : regs) {
-                pendingReg.removeUnresolvedDependency(name);
-                if (!pendingReg.hasUnresolvedDependencies()) {
+                pendingReg.pendings.remove(name);
+                if (!pendingReg.pendings.isEmpty()) {
                     resolve(pendingReg);
                 }
             }
@@ -274,8 +268,8 @@ public class OSGiBundleRegistry implements BundleListener {
         OSGiBundle bundle = (OSGiBundle) event.getBundle();
         OSGiBundleRegistration reg = bundlesById.get(bundle.id);
         if ((bundle.getState() & Bundle.RESOLVED) != 0) {
-            for (String depName : reg.dependsOn) {
-                reg.resolvedDependencies.add(bundle.osgi.registry.bundlesByName.get(depName).bundle);
+            for (String depName : reg.pendings) {
+                reg.resolvedDependencies.add(bundle.osgi.registry.bundlesByName.get(depName));
             }
         } else if ((bundle.getState() & Bundle.INSTALLED) != 0) {
             reg.resolvedDependencies.clear();

@@ -9,7 +9,7 @@ import org.osgi.framework.BundleException;
 
 public class OSGiBundleFragment extends OSGiBundle {
 
-    protected OSGiBundle host;
+    protected OSGiBundleHost host;
 
     protected OSGiBundleFragment(OSGiBundleFile file) throws BundleException {
         super(file);

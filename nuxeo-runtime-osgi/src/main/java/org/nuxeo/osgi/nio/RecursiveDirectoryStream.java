@@ -22,6 +22,63 @@ import org.nuxeo.osgi.concurrent.NamedThreadFactory;
 public class RecursiveDirectoryStream<T extends Path> implements
         DirectoryStream<T> {
 
+    protected class Walker implements Callable<Void> {
+
+        protected final T root;
+
+        protected final Filter<T> filter;
+
+        protected Walker(T root, Filter<T> filter) {
+            this.root = root;
+            this.filter = filter;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Void call() throws Exception {
+            try {
+                Files.walkFileTree(root,
+                        (FileVisitor<? super Path>) new FileVisitor<T>() {
+
+                            @Override
+                            public FileVisitResult preVisitDirectory(T dir,
+                                    BasicFileAttributes attrs)
+                                    throws IOException {
+                                return FileVisitResult.CONTINUE;
+                            }
+
+                            @Override
+                            public FileVisitResult visitFile(T file,
+                                    BasicFileAttributes attrs)
+                                    throws IOException {
+                                if (filter.accept(file)) {
+                                    pathsBlockingQueue.offer(file);
+                                }
+                                return FileVisitResult.CONTINUE;
+                            }
+
+                            @Override
+                            public FileVisitResult visitFileFailed(T file,
+                                    IOException exc) throws IOException {
+                                return FileVisitResult.CONTINUE;
+                            }
+
+                            @Override
+                            public FileVisitResult postVisitDirectory(T dir,
+                                    IOException exc) throws IOException {
+                                return FileVisitResult.CONTINUE;
+                            }
+
+                        });
+                return null;
+            } catch (Exception e) {
+                LogFactory.getLog(RecursiveDirectoryStream.class).error(
+                        "Cannot walk tree " + root, e);
+                throw e;
+            }
+        }
+    }
+
     protected final LinkedBlockingQueue<T> pathsBlockingQueue = new LinkedBlockingQueue<>();
 
     protected final T startPath;
@@ -71,53 +128,7 @@ public class RecursiveDirectoryStream<T extends Path> implements
     }
 
     protected void findFiles(final T root, final Filter<T> filter) {
-        walkTask = new FutureTask<>(new Callable<Void>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Void call() throws Exception {
-                try {
-                    Files.walkFileTree(root,
-                            (FileVisitor<? super Path>) new FileVisitor<T>() {
-
-                                @Override
-                                public FileVisitResult preVisitDirectory(T dir,
-                                        BasicFileAttributes attrs)
-                                        throws IOException {
-                                    return FileVisitResult.CONTINUE;
-                                }
-
-                                @Override
-                                public FileVisitResult visitFile(T file,
-                                        BasicFileAttributes attrs)
-                                        throws IOException {
-                                    if (filter.accept(file)) {
-                                        pathsBlockingQueue.offer(file);
-                                    }
-                                    return FileVisitResult.CONTINUE;
-                                }
-
-                                @Override
-                                public FileVisitResult visitFileFailed(T file,
-                                        IOException exc) throws IOException {
-                                    return FileVisitResult.CONTINUE;
-                                }
-
-                                @Override
-                                public FileVisitResult postVisitDirectory(
-                                        T dir, IOException exc)
-                                        throws IOException {
-                                    return FileVisitResult.CONTINUE;
-                                }
-
-                            });
-                    return null;
-                } catch (Exception e) {
-                    LogFactory.getLog(RecursiveDirectoryStream.class).error(
-                            "Cannot walk tree " + root, e);
-                    throw e;
-                }
-            }
-        });
+        walkTask = new FutureTask<>(new Walker(root, filter));
         launchWalkTask();
     }
 

@@ -35,7 +35,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.FrameworkEvent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -85,9 +84,9 @@ public class StandaloneApplication {
                     "OSGi Application is already started");
         }
         osgi = new OSGiAdapter(properties);
-        osgi.start();
         List<File> preBundles = loadUserBundles("pre-bundles");
         List<File> postBundles = loadUserBundles("post-bundles");
+        osgi.start();
         // start level 1
         // start bundles that are specified in the osgi.bundles property
         if (preBundles != null) {
@@ -101,8 +100,6 @@ public class StandaloneApplication {
         if (postBundles != null) {
             startBundles(postBundles);
         }
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                osgi.getSystemBundle(), null));
         isStarted = true;
     }
 

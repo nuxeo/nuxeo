@@ -12,6 +12,7 @@ public class OSGiSystemActivator implements BundleActivator {
         osgi.setThreadContextClassLoader();
         osgi.registerService(PackageAdmin.class, new OSGiPackageAdmin(osgi),
                 null);
+        osgi.registry.resolve();
     }
 
 

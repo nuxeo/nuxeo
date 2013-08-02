@@ -110,7 +110,7 @@ public class NuxeoLauncher implements LifecycleListener {
                 bootstrap.initialize();
             } else if (type == Lifecycle.START_EVENT) {
                 bootstrap.start();
-            } else if (type == Lifecycle.STOP_EVENT) {
+            } else if (type == Lifecycle.CONFIGURE_STOP_EVENT) {
                 bootstrap.stop();
                 bootstrap = null;
                 if (devMode) {

@@ -49,6 +49,7 @@ import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.impl.AbstractRuntimeContext;
 import org.nuxeo.runtime.model.impl.AbstractRuntimeService;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
@@ -131,8 +132,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             BundleContext context, Map<String, String> props) {
         super(runtimeContext, props);
         bundleContext = context;
-        Bundle bundle = context.getBundle();
-        contextsByName.put(bundle.getSymbolicName(), runtimeContext);
+        bundles = new ConcurrentHashMap<String, Bundle>();
+        contexts = new ConcurrentHashMap<String, OSGiRuntimeContext>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
@@ -188,10 +189,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             ctx = (OSGiRuntimeContext) runtimeContext;
         } else {
             ctx = new OSGiRuntimeContext(bundle);
-            contextsByName.put(bundle.getSymbolicName(), ctx);
-            ctx.setRegistered(this);
         }
-        if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0) {
+        bundles.put(bundle.getSymbolicName(), bundle);
+        contexts.put(bundle.getSymbolicName(), ctx);
+        ctx.setRegistered(this);
+        if (ctx.isResolved() && (bundle.getState() & Bundle.ACTIVE) != 0) {
             try {
                 ctx.setActivated();
             } catch (Exception e) {
@@ -209,9 +211,20 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                             + symbolicName + ")");
         }
         OSGiRuntimeContext context = getContext(bundle);
-        if (context.getState() == RuntimeContext.RESOLVED) {
-            context.setActivated();
+        if (!context.isResolved()) {
+            for (AbstractRuntimeContext req:context.getRequiredPendingContexts()) {
+                if (!req.isResolved()) {
+                    continue;
+                }
+                if ((req.getBundle().getState() & (Bundle.STARTING|Bundle.ACTIVE)) == 0) {
+                    req.getBundle().start();
+                }
+                if (!req.isActivated()) {
+                    req.setActivated();
+                }
+            }
         }
+        context.setActivated();
     }
 
     public synchronized void destroyContext(Bundle bundle) {

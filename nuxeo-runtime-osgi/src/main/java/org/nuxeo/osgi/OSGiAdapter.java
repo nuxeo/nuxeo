@@ -111,6 +111,7 @@ public class OSGiAdapter {
                 workingDirPath.concat("/data"));
         dataDir = new File(dataDirPath);
         dataDir.mkdirs();
+        init();
     }
 
     public OSGiAdapter(File workingDir, File dataDir) {
@@ -124,11 +125,10 @@ public class OSGiAdapter {
         properties.put(DATA_DIR, dataDir);
     }
 
-    public void start() throws IOException, BundleException {
+    protected void init() throws IOException {
         try {
             system = newSystemBundle();
             system.init();
-            system.start();
             osgi = system.osgi;
             OSGiBundle workingBundle = newConfigBundle();
             osgi.registry.register(workingBundle);
@@ -136,6 +136,11 @@ public class OSGiAdapter {
             throw new IllegalArgumentException(
                     "Cannot create system bundle for " + workingDir, e);
         }
+    }
+
+    public void start() throws BundleException {
+        system.setResolved();
+        system.start();
     }
 
     protected OSGiSystemBundle newSystemBundle() throws IOException,

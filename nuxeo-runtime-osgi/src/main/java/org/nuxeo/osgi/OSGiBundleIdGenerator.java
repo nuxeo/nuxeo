@@ -45,7 +45,7 @@ public class OSGiBundleIdGenerator {
 
     private final Map<String, Long> ids = new HashMap<String, Long>();
 
-    private long count = 0;
+    protected long count = 0;
 
     public synchronized void load(File file) {
         DataInputStream in = null;

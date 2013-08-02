@@ -48,6 +48,8 @@ public class OSGiBundleContext implements BundleContext {
 
     protected final OSGiBundleHost bundle;
 
+    protected final OSGiBundle fragments[];
+
     protected OSGiLoader loader;
 
     protected BundleActivator activator;
@@ -55,12 +57,14 @@ public class OSGiBundleContext implements BundleContext {
     protected OSGiBundleContext(OSGiSystemBundle system) {
         osgi = (OSGiSystemContext) this;
         bundle = system;
+        fragments = new OSGiBundle[0]; // ToDo add system fragment
     }
 
     public OSGiBundleContext(OSGiSystemContext osgi, OSGiBundleHost bundle)
             throws BundleException {
         this.osgi = osgi;
         this.bundle = bundle;
+        fragments = osgi.registry.getFragments(bundle.symbolicName);
     }
 
     @Override

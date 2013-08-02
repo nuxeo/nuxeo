@@ -54,7 +54,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
 
     protected final Set<RegistrationInfoImpl> resolvedInfos = new HashSet<RegistrationInfoImpl>();
 
-    protected final Set<AbstractRuntimeContext> requiredContextsPendings = new HashSet<AbstractRuntimeContext>();
+    protected final Set<AbstractRuntimeContext> requiredPendingContexts = new HashSet<AbstractRuntimeContext>();
 
     protected final Set<AbstractRuntimeContext> requiredContexts = new HashSet<AbstractRuntimeContext>();
 
@@ -79,8 +79,8 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
 
     }
 
-    protected void handleRegistered() throws RuntimeModelException {
-        if (pendingInfos.isEmpty() && requiredContextsPendings.isEmpty()) {
+    protected void handleRegistered() throws Exception {
+        if (pendingInfos.isEmpty() && requiredPendingContexts.isEmpty()) {
             setResolved();
         }
     }
@@ -143,20 +143,16 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     protected void handleActivated() throws RuntimeModelException {
         RuntimeModelException.CompoundBuilder errors = new RuntimeModelException.CompoundBuilder();
         for (AbstractRuntimeContext other : dependsOnMeContexts) {
-            other.requiredContextsPendings.remove(this);
+            other.requiredPendingContexts.remove(this);
             other.requiredContexts.add(this);
             if (other.isRegistered()) {
                 if (other.pendingInfos.isEmpty()
-                        && other.requiredContextsPendings.isEmpty()) {
-                    try {
-                        other.setResolved();
-                    } catch (RuntimeModelException e) {
-                       errors.add(e);
-                    }
+                        && other.requiredPendingContexts.isEmpty()) {
+                    other.setResolved();
                 }
             } else if (other.isActivated()) {
                 for (RegistrationInfoImpl info : other.resolvedInfos) {
-                    if (info.context.requiredContextsPendings.isEmpty()) {
+                    if (info.context.requiredPendingContexts.isEmpty()) {
                         info.lazyActivate();
                     }
                 }
@@ -302,9 +298,13 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
     }
 
 
-    public Set<AbstractRuntimeContext> getRequiredContexts() {
-        return requiredContexts;
+    public AbstractRuntimeContext[] getRequiredContexts() {
+        return requiredContexts.toArray(new AbstractRuntimeContext[requiredContexts.size()]);
     }
+
+    public AbstractRuntimeContext[] getRequiredPendingContexts() {
+        return requiredPendingContexts.toArray(new AbstractRuntimeContext[requiredPendingContexts.size()]);
+   }
 
     @Override
     public ClassLoader getClassLoader() {
@@ -359,11 +359,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
             }
             other.context.dependsOnMeContexts.add(this);
             if (!other.isActivated()) {
-                if (other.getContext().isActivated()) {
-                    other.activate();
-                } else {
-                    requiredContextsPendings.add(other.context);
-                }
+                requiredPendingContexts.add(other.context);
             } else {
                 requiredContexts.add(other.context);
             }
@@ -372,7 +368,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
             }
         }
         if (isRegistered()) {
-            if (pendingInfos.isEmpty() && requiredContextsPendings.isEmpty()) {
+            if (pendingInfos.isEmpty() && requiredPendingContexts.isEmpty()) {
                 setResolved();
             }
         } else if (isActivated()) {

@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.OSGiBundleFile;
+import org.nuxeo.osgi.OSGiBundleHost;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -281,7 +282,7 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
         if (bundle == null) {
             throw new Exception(name + " is not installed, check class path");
         }
-        if (bundle.getBundleContext() != null) { // not a fragment
+        if (bundle instanceof OSGiBundleHost) { // not a fragment
             bundle.start();
         }
     }

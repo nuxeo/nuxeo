@@ -149,7 +149,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             // NXRuntime.setInstance(this);
             manager = createComponentManager();
             manager.addComponentListener(stateHandler);
-            runtimeContext.setRegistered(this);
             Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
             doStart();

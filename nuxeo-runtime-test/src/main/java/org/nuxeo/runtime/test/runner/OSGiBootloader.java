@@ -38,7 +38,7 @@ public class OSGiBootloader {
 
     public final OSGiAdapter adapter = newAdapter();
 
-    public final OSGiSystemContext osgi = adapter.getSytemContext();
+    public final OSGiSystemContext osgi;
 
     public static OSGiBootloader bootstrap = new OSGiBootloader();
 
@@ -48,6 +48,7 @@ public class OSGiBootloader {
         } catch (URISyntaxException | IOException | BundleException e) {
             throw new Error("Cannot load osgi", e);
         }
+        osgi = adapter.getSytemContext();
     }
 
     protected OSGiAdapter newAdapter() {
@@ -58,10 +59,8 @@ public class OSGiBootloader {
         env.put(OSGiAdapter.BOOT_DELEGATION,
                 "java,javax,org.osgi,org.nuxeo.osgi,org.nuxeo.runtime.test.runner,com.google.inject,org.junit");
         try {
-            OSGiAdapter adapter = new OSGiAdapter(env);
-            adapter.start();
-            return adapter;
-        } catch (IOException | BundleException e) {
+            return new OSGiAdapter(env);
+        } catch (IOException e) {
             throw new Error("Cannot load osgi", e);
         }
     }
@@ -187,10 +186,7 @@ public class OSGiBootloader {
         if (bundle == null) {
             return null;
         }
-        if (bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null) {
-            bundle = ((OSGiBundleFragment)bundle).getHost();
-        }
-        if (!activatedBundles.contains(bundle)) {
+        if (bundle.getHeaders().get(Constants.FRAGMENT_HOST) == null && (bundle.getState() & (Bundle.ACTIVE)) == 0) {
             activatedBundles.add(bundle);
             try {
                 if ((bundle.getState() & (Bundle.STARTING|Bundle.ACTIVE)) == 0) {
@@ -254,13 +250,9 @@ public class OSGiBootloader {
             URISyntaxException {
         Set<URI> classpath = scanClasspath();
         for (URI file : classpath) {
-            Bundle bundle = adapter.install(file);
-            String symbolicName = bundle.getSymbolicName();
-            if (symbolicName != null) {
-                log.info(String.format("Bundle '%s' has URL %s", symbolicName,
-                        file.toASCIIString()));
-            }
+             adapter.install(file);
         }
+        adapter.start();
     }
 
     protected void scanSurefireClasspath(Set<URI> files) throws IOException {

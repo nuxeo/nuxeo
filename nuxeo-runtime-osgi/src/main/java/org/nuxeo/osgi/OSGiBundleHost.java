@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.util.CompoundEnumeration;
@@ -21,6 +22,8 @@ public class OSGiBundleHost extends OSGiBundle {
     protected double startupTime;
 
     protected File dataDir;
+
+    protected final List<OSGiBundleFragment> fragments = new ArrayList<OSGiBundleFragment>();
 
     protected OSGiBundleHost(OSGiBundleFile file) throws BundleException {
         super(file);
@@ -80,11 +83,12 @@ public class OSGiBundleHost extends OSGiBundle {
         if ((state & (Bundle.STARTING | Bundle.ACTIVE)) != 0) {
             return;
         }
-        LogFactory.getLog(OSGiBundle.class).info(
-                "bundle " + this + " is starting");
         setStarting();
         if (!isLazy()) {
             activate();
+        } else {
+            LogFactory.getLog(OSGiBundle.class).info(
+                    "bundle " + this + " is starting");
         }
     }
 
@@ -101,6 +105,8 @@ public class OSGiBundleHost extends OSGiBundle {
         try {
             context.activate();
             setStarted();
+            LogFactory.getLog(OSGiBundle.class).info(
+                    "bundle " + this + " is started");
         } finally {
             isActivating = false;
         }
@@ -120,7 +126,6 @@ public class OSGiBundleHost extends OSGiBundle {
                     + ")");
         }
         state = RESOLVED;
-        context = osgi.factory.newContext(this);
         BundleEvent event = new BundleEvent(BundleEvent.RESOLVED, this);
         osgi.fireBundleEvent(event);
     }
@@ -142,6 +147,7 @@ public class OSGiBundleHost extends OSGiBundle {
                     + ")");
         }
         state = STARTING;
+        context = osgi.factory.newContext(this);
         context.start();
         BundleEvent event = new BundleEvent(BundleEvent.STARTING, this);
         osgi.fireBundleEvent(event);

@@ -90,11 +90,17 @@ public class NuxeoApp {
         osgi.install(file.toURI());
     }
 
-    public synchronized void start() throws IOException, BundleException {
+    public synchronized void init() throws IOException, BundleException {
         if (osgi != null) {
             throw new IllegalStateException("Nuxeo Runtime already started");
         }
         osgi = new OSGiAdapter(env);
+    }
+
+    public synchronized void start() throws IOException, BundleException {
+        if (osgi != null) {
+            throw new IllegalStateException("Nuxeo Runtime already started");
+        }
         osgi.start();
     }
 
