@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.nuxeo.ecm.automation.OperationCallback;
-import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
@@ -53,12 +52,14 @@ public class Tracer implements OperationCallback {
     }
 
     protected void pushContext(OperationType newChain) {
-        if (chain != null) {
-            callingStacks.push(new Trace(parent, chain, calls));
-            parent = calls.getLast();
-            calls.clear();
+        if (factory.getRecordingState()) {
+            if (chain != null) {
+                callingStacks.push(new Trace(parent, chain, calls));
+                parent = calls.getLast();
+                calls.clear();
+            }
+            chain = newChain;
         }
-        chain = newChain;
     }
 
     protected void popContext() {

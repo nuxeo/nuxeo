@@ -26,7 +26,7 @@ import org.nuxeo.ecm.automation.OperationType;
 /**
  * @since 5.7.3 The Automation tracer factory service
  */
-public class TracerFactory {
+public class TracerFactory implements MXTracerFactory {
 
     protected Map<String, ChainTraces> traces = new HashMap<String, ChainTraces>();
 
@@ -114,9 +114,13 @@ public class TracerFactory {
         recording = false;
     }
 
+    @Override
     public boolean toggleRecording() {
-        boolean last = recording;
-        recording = !recording;
-        return last;
+        return recording = !recording;
+    }
+
+    @Override
+    public boolean getRecordingState() {
+        return recording;
     }
 }
