@@ -150,21 +150,24 @@ The following translations are contributions from the community:
 
 Arabic: Taieb Felfel
 Basque: Jose Luis de la Rosa
-Catalan: Jose Luis de la Rosa
+Catalan: Jose Luis de la Rosa, Jordi Mallach 
 Chinese: Line Lu
 English: Nuxeo Team
 French: Nuxeo Team
+French (Canada) : Patrick Turcotte
 Galician: Jose Luis de la Rosa
-German: Georges Racinet
+German: Georges Racinet, Edgar Geisler
 Greek: Nina Bagouli
 Italian: Mirto Silvio Busico, Samuele Innocenti, Stefane Fermigier
-Japanese: Damien Dupraz
+Japanese: Damien Dupraz, Hiromi Kimura
 Polish: Adam Lozy
 Portuguese: Jose Luis de la Rosa
-Brazilian: Rogerio J. Gentil
+Brazilian: Rogerio J. Gentil, Klyff Harlley
 Russian: Jane Smorodnik
 Spanish: Daniel Tellez, Jose Luis de la Rosa
-Vietnamese: Le Tuan Dat and Daniel Tellez
+Serbian - Cyrillic: Goran Ljubic
+Vietnamese: Le Tuan Dat, Daniel Tellez
+Czech: Miroslav Lednicky
 
 This release contains open source libraries developed by the JBoss
 Group, the Apache Foundation, Sun Microsystems, HP, the OSGi Alliance,
