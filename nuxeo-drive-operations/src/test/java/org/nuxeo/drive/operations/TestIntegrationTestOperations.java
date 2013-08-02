@@ -67,7 +67,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.drive.operations" })
-@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Jetty(port = 18080)
 public class TestIntegrationTestOperations {
 
@@ -96,7 +96,6 @@ public class TestIntegrationTestOperations {
         mapper = new ObjectMapper();
     }
 
-    // Ignoring waiting for a fix, see https://jira.nuxeo.com/browse/NXP-12179
     @Test
     public void testIntegrationTestsSetupAndTearDown() throws Exception {
 
@@ -106,8 +105,8 @@ public class TestIntegrationTestOperations {
         Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(
                 NuxeoDriveSetupIntegrationTests.ID).set("userNames", "joe,jack").execute();
         assertNotNull(testUserCredentialsBlob);
-
-        session.save(); // process invalidations
+        // Invalidate VCS cache
+        session.save();
 
         // Check test users
         String testUserCredentials = IOUtils.toString(
@@ -159,7 +158,7 @@ public class TestIntegrationTestOperations {
         // Check cleanup
         assertNull(userManager.getPrincipal("nuxeoDriveTestUser_joe"));
         assertNull(userManager.getPrincipal("nuxeoDriveTestUser_jack"));
-        // Invalid VCS cache
+        // Invalidate VCS cache
         session.save();
         try {
             session.getDocument(new PathRef(USER_WORKSPACE_PARENT_PATH
@@ -235,7 +234,7 @@ public class TestIntegrationTestOperations {
         // ----------------------------------------------------------------------
         clientSession.newRequest(NuxeoDriveTearDownIntegrationTests.ID).execute();
         assertTrue(userManager.searchUsers("nuxeoDriveTestUser_").isEmpty());
-        // Invalid VCS cache
+        // Invalidate VCS cache
         session.save();
         try {
             session.getDocument(new PathRef(USER_WORKSPACE_PARENT_PATH
