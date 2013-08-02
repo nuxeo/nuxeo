@@ -202,7 +202,7 @@
     <appender-ref ref="CLASSLOADER"/>
   </category>
 
-  <category name="org.apache.catalina.core.AprLifecycleListener" additivity="true">
+  <category name="org.apache.catalina.core.AprLifecycleListener" additivity="false">
     <priority value="INFO" />
     <appender-ref ref="TOMCAT"/>
   </category>
