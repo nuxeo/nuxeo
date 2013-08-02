@@ -24,13 +24,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.transaction.RollbackException;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -373,13 +369,9 @@ public class SQLDirectory extends AbstractDirectory {
         if (!TransactionHelper.isTransactionActive()) {
             return;
         }
-        TransactionManager tm;
         try {
-            tm = TransactionHelper.lookupTransactionManager();
-            Transaction tx = tm.getTransaction();
-            tx.registerSynchronization(new TxSessionCleaner(session));
-        } catch (NamingException | SystemException | IllegalStateException
-                | RollbackException e) {
+             ConnectionHelper.registerSynchronization(new TxSessionCleaner(session));
+        } catch (SystemException e) {
             throw new DirectoryException(
                     "Cannot register in tx for session cleanup handling "
                             + this, e);
