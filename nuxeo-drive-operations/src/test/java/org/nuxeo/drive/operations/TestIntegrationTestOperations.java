@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests;
@@ -95,6 +96,8 @@ public class TestIntegrationTestOperations {
         mapper = new ObjectMapper();
     }
 
+    // Ignoring waiting for a fix, see https://jira.nuxeo.com/browse/NXP-12179
+    @Ignore
     @Test
     public void testIntegrationTestsSetupAndTearDown() throws Exception {
 
