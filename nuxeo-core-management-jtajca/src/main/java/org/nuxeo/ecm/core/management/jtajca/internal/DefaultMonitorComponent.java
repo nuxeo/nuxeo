@@ -30,8 +30,11 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -58,6 +61,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 5.6
  */
 public class DefaultMonitorComponent extends DefaultComponent {
+
+    protected final Log log = LogFactory.getLog(DefaultMonitorComponent.class);
 
     protected CoreSessionMonitor coreSessionMonitor;
 
@@ -96,27 +101,34 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     protected void install() throws Exception {
         installed = true;
-        coreSessionMonitor = new DefaultCoreSessionMonitor();
-        coreSessionMonitor.install();
-        transactionMonitor = new DefaultTransactionMonitor();
-        transactionMonitor.install();
 
-        Map<String,DataSource> dsByName =  DataSourceHelper.getDatasources();
-        for (Map.Entry<String, DataSource> dsEntry:dsByName.entrySet()) {
-            String name = dsEntry.getKey();
-            DataSource ds = dsEntry.getValue();
-            DatabaseConnectionMonitor monitor = null;
-            if (ds instanceof org.apache.commons.dbcp.BasicDataSource) {
-                monitor = new CommonsDatabaseConnectionMonitor(name, (org.apache.commons.dbcp.BasicDataSource)ds);
-            } else if (ds instanceof org.apache.tomcat.dbcp.dbcp.BasicDataSource) {
-                monitor = new TomcatDatabaseConnectionMonitor(name, (org.apache.tomcat.dbcp.dbcp.BasicDataSource)ds);
-            } else {
-                continue;
-            }
-            monitor.install();
-            databaseConnectionMonitors.put(name, monitor);
+        try {
+            coreSessionMonitor = new DefaultCoreSessionMonitor();
+            coreSessionMonitor.install();
+        } catch (Exception e) {
+            log.error("Cannot install transaction monitors", e);
         }
 
+        try {
+            transactionMonitor = new DefaultTransactionMonitor();
+            transactionMonitor.install();
+        } catch (Exception e) {
+            log.error("Cannot install transaction monitors", e);
+        }
+
+        try {
+            installDatabaseStorageMonitors();
+        } catch (Exception e) {
+            log.error("Cannot install database storage monitors", e);
+        }
+        try {
+        installRepositoryStorageMonitors();
+        } catch (Exception e) {
+            log.error("Cannot install repository storage monitors", e);
+        }
+    }
+
+    protected void installRepositoryStorageMonitors() throws ClientException {
         RepositoryService repositoryService = NXCore.getRepositoryService();
         RepositoryManager repositoryManager = repositoryService.getRepositoryManager();
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
@@ -125,6 +137,26 @@ public class DefaultMonitorComponent extends DefaultComponent {
                     repositoryName);
             cmon.install();
             storageConnectionMonitors.put(repositoryName, cmon);
+        }
+    }
+
+    protected void installDatabaseStorageMonitors() throws NamingException {
+        Map<String, DataSource> dsByName = DataSourceHelper.getDatasources();
+        for (Map.Entry<String, DataSource> dsEntry : dsByName.entrySet()) {
+            String name = dsEntry.getKey();
+            DataSource ds = dsEntry.getValue();
+            DatabaseConnectionMonitor monitor = null;
+            if (ds instanceof org.apache.commons.dbcp.BasicDataSource) {
+                monitor = new CommonsDatabaseConnectionMonitor(name,
+                        (org.apache.commons.dbcp.BasicDataSource) ds);
+            } else if (ds instanceof org.apache.tomcat.dbcp.dbcp.BasicDataSource) {
+                monitor = new TomcatDatabaseConnectionMonitor(name,
+                        (org.apache.tomcat.dbcp.dbcp.BasicDataSource) ds);
+            } else {
+                continue;
+            }
+            monitor.install();
+            databaseConnectionMonitors.put(name, monitor);
         }
     }
 
