@@ -8,7 +8,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="layoutDemo"
-      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <repository sendInvalidationEvents="true">
         <schema>
           <field type="largetext">note</field>
