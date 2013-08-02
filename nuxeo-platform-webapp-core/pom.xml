@@ -145,10 +145,6 @@
       <artifactId>richfaces-ui</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.jws</groupId>
-      <artifactId>jsr181</artifactId>
-    </dependency>
-    <dependency>
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
     </dependency>
