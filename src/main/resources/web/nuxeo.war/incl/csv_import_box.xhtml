@@ -147,11 +147,9 @@
         </nxu:set>
 
         <script type="text/javascript">
-          var ele = jQuery('.jsCsvImportResultDiv')
-          if (ele.length > 0) {
-            ele = ele.get(0)
-            ele.scrollTop = ele.scrollHeight
-          }
+          jQuery('.jsCsvImportResultDiv').each(function() {
+            this.scrollTop = this.scrollHeight
+          })
         </script>
 
       </a4j:outputPanel>
