@@ -219,7 +219,7 @@ public class SQLDirectory extends AbstractDirectory {
             helper.setupTable();
 
             try {
-                if (config.dataSourceName == null) {
+                if (!managedSQLSession) {
                     sqlConnection.commit();
                 }
             } catch (SQLException e) {
