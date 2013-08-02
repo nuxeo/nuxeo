@@ -29,7 +29,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -67,7 +67,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.drive.operations" })
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class)
 @Jetty(port = 18080)
 public class TestIntegrationTestOperations {
 
@@ -97,7 +97,6 @@ public class TestIntegrationTestOperations {
     }
 
     // Ignoring waiting for a fix, see https://jira.nuxeo.com/browse/NXP-12179
-    @Ignore
     @Test
     public void testIntegrationTestsSetupAndTearDown() throws Exception {
 
@@ -107,9 +106,6 @@ public class TestIntegrationTestOperations {
         Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(
                 NuxeoDriveSetupIntegrationTests.ID).set("userNames", "joe,jack").execute();
         assertNotNull(testUserCredentialsBlob);
-        // Need to invalidate injected session for it to be aware of changes
-        // made by the operation?
-        session.save();
 
         // Check test users
         String testUserCredentials = IOUtils.toString(
