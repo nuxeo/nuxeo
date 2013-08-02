@@ -87,8 +87,7 @@
                address="127.0.0.1"
                redirectPort="${nuxeo.server.https.port}"
 </#if>
-               connectionTimeout="20000"
-               emptySessionPath="${nuxeo.server.emptySessionPath}" />
+               connectionTimeout="20000" />
     <!-- A "Connector" using the shared thread pool-->
     <!--
     <Connector executor="tomcatThreadPool"
@@ -107,15 +106,13 @@
                maxThreads="150" scheme="https" secure="true"
                keystoreFile="${nuxeo.server.https.keystoreFile}"
                keystorePass="${nuxeo.server.https.keystorePass}"
-               clientAuth="false" sslProtocol="TLS"
-               emptySessionPath="${nuxeo.server.emptySessionPath}" />
+               clientAuth="false" sslProtocol="TLS" />
 </#if>
 
     <!-- Define an AJP 1.3 Connector on port ${nuxeo.server.ajp.port} -->
     <Connector port="${nuxeo.server.ajp.port}" protocol="AJP/1.3"
                address="${nuxeo.bind.address}"
-               redirectPort="${nuxeo.server.https.port}"
-               emptySessionPath="${nuxeo.server.emptySessionPath}" />
+               redirectPort="${nuxeo.server.https.port}" />
 
 
     <!-- An Engine represents the entry point (within Catalina) that processes
@@ -155,8 +152,7 @@
        -->
       <Host name="localhost"  appBase="webapps"
             unpackWARs="true"
-            autoDeploy="${isWizard?string('true', 'false')}"
-            xmlValidation="false" xmlNamespaceAware="false">
+            autoDeploy="${isWizard?string('true', 'false')}" >
 
 <#if !isWizard>
             <!-- Comment to avoid nuxeo deployment preprocessing at each startup -->

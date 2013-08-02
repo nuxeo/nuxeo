@@ -38,7 +38,5 @@ mail.user=nobody
 mail.debug=false
 mail.from=noreply@nuxeo.com
 
-nuxeo.server.emptySessionPath=false
-
 nuxeo.core.binarymanager=
 nuxeo.quartz.enable=false
