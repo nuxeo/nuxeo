@@ -57,8 +57,9 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource", "org.nuxeo.runtime.metrics",  "org.nuxeo.ecm.core.management.jtajca"})
-@RepositoryConfig(repositoryFactoryClass=PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource",
+        "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.core.management.jtajca" })
+@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 public class TestCSVImport {
 
     @Inject
@@ -91,8 +92,7 @@ public class TestCSVImport {
         CSVImportId importId = csvImporter.launchImport(session, "/",
                 getCSVFile("docs_ok.csv"), options);
 
-        workManager.awaitCompletion(10,
-                TimeUnit.SECONDS);
+        workManager.awaitCompletion(10, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
@@ -147,8 +147,7 @@ public class TestCSVImport {
         CSVImportId importId = csvImporter.launchImport(session, "/",
                 getCSVFile("docs_ok.csv"), options);
 
-        workManager.awaitCompletion(10,
-                TimeUnit.SECONDS);
+        workManager.awaitCompletion(10, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
@@ -181,8 +180,7 @@ public class TestCSVImport {
         TransactionHelper.commitOrRollbackTransaction();
         CSVImportId importId = csvImporter.launchImport(session, "/",
                 getCSVFile("docs_not_ok.csv"), options);
-        workManager.awaitCompletion(10,
-                TimeUnit.SECONDS);
+        workManager.awaitCompletion(10, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
