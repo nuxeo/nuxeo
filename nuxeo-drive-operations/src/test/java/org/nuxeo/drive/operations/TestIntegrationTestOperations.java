@@ -107,6 +107,8 @@ public class TestIntegrationTestOperations {
                 NuxeoDriveSetupIntegrationTests.ID).set("userNames", "joe,jack").execute();
         assertNotNull(testUserCredentialsBlob);
 
+        session.save(); // process invalidations
+
         // Check test users
         String testUserCredentials = IOUtils.toString(
                 testUserCredentialsBlob.getStream(), "UTF-8");
