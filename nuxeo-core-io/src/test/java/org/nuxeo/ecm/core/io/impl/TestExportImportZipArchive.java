@@ -128,6 +128,7 @@ public class TestExportImportZipArchive extends SQLRepositoryTestCase {
         assertEquals(1, nbBlobs);
 
         // now wipe DB
+        waitForAsyncCompletion();
         session.removeDocument(workspace.getRef());
         session.save();
         assertEquals(0,
