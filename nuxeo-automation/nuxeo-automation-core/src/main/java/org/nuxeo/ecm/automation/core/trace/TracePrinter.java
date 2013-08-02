@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.OperationException;
 
 /**
  * @since 5.7.3
@@ -52,7 +51,8 @@ public class TracePrinter {
     }
 
     protected void printHeading(String heading) throws IOException {
-        printLine(System.getProperty("line.separator") + "****** " + heading
+        printLine(System.getProperty("line.separator")
+                + System.getProperty("line.separator") + "****** " + heading
                 + " ******");
     }
 
@@ -64,8 +64,6 @@ public class TracePrinter {
             sb.append("Name: ");
             sb.append(trace.getChain().getId());
             sb.append(System.getProperty("line.separator"));
-            print(trace.operations);
-            sb.append(System.getProperty("line.separator"));
             sb.append("Exception: ");
             sb.append(trace.error.getClass().getSimpleName());
             sb.append(System.getProperty("line.separator"));
@@ -74,24 +72,21 @@ public class TracePrinter {
             sb.append(System.getProperty("line.separator"));
             sb.append("Caused by: ");
             sb.append(trace.error.getCause());
-            sb.append(System.getProperty("line.separator"));
-            if (trace.error.getStackTrace().length != 0) {
-                sb.append("StackTrace: ");
-                sb.append(trace.error.getCause());
-                sb.append(System.getProperty("line.separator"));
-            }
             printLine(sb.toString());
-            printError(trace.error);
         } else {
             printLine("produced output of type "
                     + trace.output.getClass().getSimpleName());
             // printObject((OperationType) trace.output);
         }
+        print(trace.operations);
+        StringBuilder sbStack = new StringBuilder();
+        sbStack.append(System.getProperty("line.separator"));
+        if (trace.error.getStackTrace().length != 0) {
+            log.error("StackTrace: ", trace.error);
+            sbStack.append(System.getProperty("line.separator"));
+        }
+        printLine(sbStack.toString());
         writer.flush();
-    }
-
-    public void printError(OperationException error) throws IOException {
-
     }
 
     public void print(List<Call> calls) throws IOException {
@@ -101,7 +96,6 @@ public class TracePrinter {
     }
 
     public void print(Call call) throws IOException {
-        printHeading("operation");
         printCall(call);
     }
 
@@ -109,35 +103,44 @@ public class TracePrinter {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append(System.getProperty("line.separator"));
+            sb.append(System.getProperty("line.separator"));
             sb.append("****** " + call.getType().getId() + " ******");
             sb.append(System.getProperty("line.separator"));
             sb.append("Class: ");
-            sb.append(call.getClass().getSimpleName());
+            sb.append(call.getType().getType().getSimpleName());
             sb.append(System.getProperty("line.separator"));
-            sb.append("Method: ");
-            sb.append(call.getMethod().getClass().getSimpleName());
+            sb.append("Method: '");
+            sb.append(call.getMethod().getMethod().getName());
+            sb.append("' | Input Type: ");
+            sb.append(call.getMethod().getConsume());
+            sb.append(" | Output Type: ");
+            sb.append(call.getMethod().getProduce());
             sb.append(System.getProperty("line.separator"));
             sb.append("Input: ");
             sb.append(call.getInput());
             if (!call.getParmeters().isEmpty()) {
                 sb.append(System.getProperty("line.separator"));
-                sb.append("Parameters: ");
-                for (Object parameter : call.getParmeters().values()) {
-                    sb.append(parameter.toString());
+                sb.append("Parameters ");
+                for (String parameter : call.getParmeters().keySet()) {
+                    sb.append(" | ");
+                    sb.append("Name: ");
+                    sb.append(parameter);
+                    sb.append(", Value: ");
+                    sb.append(call.getParmeters().get(parameter));
                 }
             }
             if (!call.getVariables().isEmpty()) {
                 sb.append(System.getProperty("line.separator"));
-                sb.append("Runtime Variables");
+                sb.append("Context Variables");
                 for (String keyVariable : call.getVariables().keySet()) {
+                    sb.append(" | ");
                     sb.append("Key: ");
                     sb.append(keyVariable);
-                    sb.append(System.getProperty("line.separator"));
-                    sb.append("Value: ");
+                    sb.append(", Value: ");
                     sb.append(call.getVariables().get(keyVariable));
-                    sb.append(System.getProperty("line.separator"));
                 }
             }
+            sb.append(System.getProperty("line.separator"));
             printLine(sb.toString());
         } catch (IOException e) {
             log.error(e);
