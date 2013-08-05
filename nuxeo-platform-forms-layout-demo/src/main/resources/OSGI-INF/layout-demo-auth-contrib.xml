@@ -2,7 +2,8 @@
 <component name="org.nuxeo.ecm.platform.forms.layoutDemo.auth.contrib">
 
   <documentation>
-    Make sure the demo page is available to all users, without needing any
+    Make sure the demo page is available to all users, without
+    needing any
     authentication.
   </documentation>
 
@@ -19,20 +20,16 @@
 
   </extension>
 
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="specificChains">
-
-    <specificAuthenticationChain name="layoutDemo">
-
-      <urlPatterns>
-        <url>(.*)/layoutDemo/.*</url>
-      </urlPatterns>
-      <!-- no authentication needed for this pattern -->
-      <replacementChain></replacementChain>
-
-    </specificAuthenticationChain>
-
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager>
+      <users>
+        <anonymousUser id="Guest">
+          <property name="firstName">Guest</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+      </users>
+    </userManager>
   </extension>
 
 </component>
