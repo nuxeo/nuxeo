@@ -252,7 +252,7 @@ public class AutomationComponent extends DefaultComponent {
             MBeanRegistrationException {
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         mBeanServer.registerMBean(tracerFactory, new ObjectName(
-                "org.nuxeo:name=tracerfactory"));
+                "org.nuxeo.automation:name=tracerfactory"));
     }
 
     protected void unBindManagement() throws MalformedObjectNameException,
@@ -260,7 +260,7 @@ public class AutomationComponent extends DefaultComponent {
             MBeanRegistrationException, InstanceNotFoundException {
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
         mBeanServer.unregisterMBean(new ObjectName(
-                "org.nuxeo:name=tracerfactory"));
+                "org.nuxeo.automation:name=tracerfactory"));
     }
 
     @Override
