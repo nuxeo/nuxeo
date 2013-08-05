@@ -16,8 +16,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.server.AutomationServer;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -41,7 +44,7 @@ public abstract class ExecutableResource {
 
     @POST
     public Object doPost(@Context
-    HttpServletRequest request, ExecutionRequest xreq) {
+    HttpServletRequest request, ExecutionRequest xreq) throws Exception {
         this.request = request;
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
@@ -50,7 +53,8 @@ public abstract class ExecutableResource {
             }
             Object result = execute(xreq);
             return ResponseHelper.getResponse(result, request);
-        } catch (Throwable e) {
+        } catch (OperationException | ClientException | SecurityException
+                | DocumentException e) {
             throw ExceptionHandler.newException("Failed to execute operation: "
                     + getId(), e);
         }

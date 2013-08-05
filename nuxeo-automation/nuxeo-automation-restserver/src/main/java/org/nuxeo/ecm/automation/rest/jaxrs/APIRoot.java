@@ -26,14 +26,13 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
-
 /**
  * The root entry for the WebEngine module.
  *
  */
 @Path("/api")
 @Produces("text/html;charset=UTF-8")
-@WebObject(type="APIRoot")
+@WebObject(type = "APIRoot")
 public class APIRoot extends ModuleRoot {
 
     @GET
@@ -41,16 +40,15 @@ public class APIRoot extends ModuleRoot {
         return getView("index");
     }
 
-
     @Path("path")
     public Object getDocsByPath() {
         return new JSONDocumentRoot(ctx, "/");
     }
 
     @Path("id/{id}")
-    public Object getDocsById(@PathParam("id") String id) {
+    public Object getDocsById(@PathParam("id")
+    String id) {
         return new JSONDocumentRoot(ctx, new IdRef(id));
     }
-
 
 }
