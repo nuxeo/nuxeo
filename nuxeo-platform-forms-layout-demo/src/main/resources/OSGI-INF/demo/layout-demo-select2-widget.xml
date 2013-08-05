@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.select2Widget.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layoutDemo.contrib</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="select2WidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>select2Widget</widget>
+        </row>
+      </rows>
+
+      <widget name="select2Widget" type="select2Widget">
+        <labels>
+          <label mode="any">Select2 widget</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>lds:textField</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">default</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="select2WidgetMultipleLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>select2WidgetMultiple</widget>
+        </row>
+      </rows>
+
+      <widget name="select2WidgetMultiple" type="select2WidgetMultiple">
+        <labels>
+          <label mode="any">Select2Multiple widget</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">default</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="select2DirectoryWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>l10ncoverage</widget>
+        </row>
+      </rows>
+
+      <widget name="l10ncoverage" type="select2Directory">
+        <labels>
+          <label mode="any">l10ncoverage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>lds:textField</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">l10ncoverage</property>
+          <property name="customFormater">dirformater</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose a country</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="repository">default</property>
+        </properties>
+      </widget>
+    </layout>
+
+  </extension>
+
+</component>
