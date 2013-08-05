@@ -90,7 +90,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>lds:textField</field>
+          <field>lds:selectSelect2DirectoryField</field>
         </fields>
         <properties mode="any">
           <property name="width">300</property>
@@ -129,7 +129,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>lds:stringList</field>
+          <field>lds:selectSelect2DirectoryMultiField</field>
         </fields>
         <properties mode="any">
           <property name="width">300</property>

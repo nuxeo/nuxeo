@@ -405,7 +405,7 @@
       <category>standard</category>
       <preview enabled="true">
         <fields>
-          <field>lds:textField</field>
+          <field>lds:selectSelect2DirectoryField</field>
         </fields>
         <defaultProperties>
           <property name="width">300</property>
@@ -463,7 +463,7 @@
       <category>standard</category>
       <preview enabled="true">
         <fields>
-          <field>lds:stringList</field>
+          <field>lds:selectSelect2DirectoryMultiField</field>
         </fields>
         <defaultProperties>
           <property name="width">300</property>
@@ -471,10 +471,10 @@
           <property name="dbl10n">true</property>
           <property name="minimumInputLength">0</property>
           <property name="hideInstructionLabel">true</property>
-          <property name="directoryName">l10nsubject</property>
+          <property name="directoryName">l10nsubjects</property>
           <property name="customFormater">dirformater</property>
           <property name="keySeparator">/</property>
-          <property name="placeholder">Choose a topic</property>
+          <property name="placeholder">Choose one or more topics</property>
           <property name="inlinejs"> <![CDATA[
   function dirformater(entry) {
    return entry.label;

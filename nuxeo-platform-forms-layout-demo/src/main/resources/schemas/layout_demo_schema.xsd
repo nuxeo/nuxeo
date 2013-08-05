@@ -16,6 +16,8 @@
 
   <xs:element name="selectVocabularyField" type="xs:string" />
 
+  <xs:element name="selectSelect2DirectoryField" type="xs:string" />
+
   <xs:element name="dateField" type="xs:date" />
 
   <xs:element name="intField" type="xs:int" />
@@ -26,6 +28,7 @@
 
   <xs:element name="stringArrayField" type="nxs:stringArrayType" />
   <xs:element name="selectMultiVocabularyField" type="nxs:stringArrayType" />
+  <xs:element name="selectSelect2DirectoryMultiField" type="nxs:stringArrayType" />
   <xs:simpleType name="stringArrayType">
     <xs:list itemType="xs:string" />
   </xs:simpleType>

@@ -236,7 +236,7 @@
       to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
     <delete path="${bundle.fileName}.tmp" />
 
-    <!-- make some extension sources available for demo -->
+    <!-- make some extension source s available for demo -->
     <unzip from="${bundle.fileName}" to="/nuxeo.war/layoutDemo/sources/">
       <include>OSGI-INF/demo/**</include>
       <include>schemas/**</include>
