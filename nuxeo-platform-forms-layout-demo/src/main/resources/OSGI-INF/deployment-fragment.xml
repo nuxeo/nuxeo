@@ -197,6 +197,13 @@
       </to-view-id>
       <redirect />
     </navigation-case>
+    <navigation-case>
+      <from-outcome>select2_directory_multiple_widget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/select2DirectoryMultipleWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
 
   </extension>
 

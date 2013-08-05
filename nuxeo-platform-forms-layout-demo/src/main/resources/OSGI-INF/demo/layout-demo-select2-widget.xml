@@ -112,6 +112,45 @@
       </widget>
     </layout>
 
+    <layout name="select2DirectoryMultipleWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>l10nsubjects</widget>
+        </row>
+      </rows>
+
+      <widget name="l10nsubjects" type="select2DirectoryMultiple">
+        <labels>
+          <label mode="any">l10ncoverage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">l10nsubjects</property>
+          <property name="customFormater">dirformater</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose a topic</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="repository">default</property>
+        </properties>
+      </widget>
+    </layout>
+
   </extension>
 
 </component>
