@@ -38,9 +38,9 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.TraceException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.core.trace.Tracer;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -109,7 +109,6 @@ public class OperationServiceImpl implements AutomationService {
      */
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws Exception {
-        final OperationCallback callback = ctx.getChainCallback();
         CompiledChainImpl chain;
         if (params == null) {
             params = new HashMap<String, Object>();
@@ -119,13 +118,14 @@ public class OperationServiceImpl implements AutomationService {
         if (params != null && !params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
-        Tracer tracer = Framework.getLocalService(TracerFactory.class).newTracer();
+        OperationCallback tracer = Framework.getLocalService(
+                TracerFactory.class).newTracer();
         ctx.addChainCallback(tracer);
         try {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
             if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
-                callback.onChain(ctx,operationType);
+                tracer.onChain(ctx, operationType);
                 chain = compiledChains.get(operationType.getId());
                 if (chain == null) {
                     chain = (CompiledChainImpl) operationType.newInstance(ctx,
@@ -141,7 +141,7 @@ public class OperationServiceImpl implements AutomationService {
                         toParams(operationType.getId()));
             }
             Object ret = chain.invoke(ctx);
-            callback.onOutput(ret);
+            tracer.onOutput(ret);
             if (ctx.getCoreSession() != null && ctx.isCommit()) {
                 // auto save session if any
                 ctx.getCoreSession().save();
@@ -151,10 +151,8 @@ public class OperationServiceImpl implements AutomationService {
             if (oe.isRollback()) {
                 ctx.setRollback();
             }
-            callback.onError(oe);
-            TracerFactory traceFactory = Framework.getLocalService(TracerFactory.class);
-            throw new OperationException(traceFactory.getTrace(
-                    operationType.getId()).getFormattedText(),oe);
+            tracer.onError(oe);
+            throw new TraceException(tracer, oe);
         } finally {
             ctx.dispose();
         }
@@ -362,9 +360,8 @@ public class OperationServiceImpl implements AutomationService {
                 ObjectMapper mapper = new ObjectMapper();
                 return (T) mapper.convertValue(toAdapt, targetType);
             }
-            throw new OperationException(
-                    "No type adapter found for input: " + toAdapt.getClass()
-                            + " and output " + targetType);
+            throw new OperationException("No type adapter found for input: "
+                    + toAdapt.getClass() + " and output " + targetType);
         }
         return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }
