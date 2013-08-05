@@ -24,7 +24,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>lds:textField</field>
+          <field>lds:anotherTextField</field>
         </fields>
         <properties mode="any">
           <property name="width">200</property>

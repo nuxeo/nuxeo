@@ -379,7 +379,7 @@
       <category>standard</category>
       <preview enabled="true">
         <fields>
-          <field>lds:textField</field>
+          <field>lds:anotherTextField</field>
         </fields>
         <defaultProperties>
           <property name="width">200</property>
@@ -390,13 +390,13 @@
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="documentSchemas">dublincore,layout_demo_schema,common</property>
           <property name="customFormater">myformater</property>
           <property name="inlinejs"> <![CDATA[
   function myformater(doc) {
    var markup = "<table><tr>";
-   markup += "<td><img src='/nuxeo/icons/arrow_folded.gif' /></td>";
-   markup += "<td>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
+   markup += "<td style='padding:2px'><img src='/nuxeo" + doc.properties['common:icon'] + "'/></td>";
+   markup += "<td style='padding:2px'>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
    markup += "</tr></table>";
    return markup;
   }]]></property>

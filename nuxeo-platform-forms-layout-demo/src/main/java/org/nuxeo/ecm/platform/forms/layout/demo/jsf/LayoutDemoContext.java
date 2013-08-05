@@ -176,6 +176,7 @@ public class LayoutDemoContext implements Serializable {
         // fill all fields used in preview
         if (index <= 1) {
             doc.setPropertyValue("lds:textField", "Some sample text");
+            doc.setPropertyValue("lds:anotherTextField", "");
             doc.setPropertyValue("lds:textareaField",
                     "Some sample text with\nseveral lines.");
             doc.setPropertyValue("lds:htmlField",
@@ -219,6 +220,7 @@ public class LayoutDemoContext implements Serializable {
 
         } else {
             doc.setPropertyValue("lds:textField", "Some other sample text");
+            doc.setPropertyValue("lds:anotherTextField", "");
             doc.setPropertyValue("lds:textareaField",
                     "Some other sample text with\nseveral lines.");
             doc.setPropertyValue("lds:htmlField",

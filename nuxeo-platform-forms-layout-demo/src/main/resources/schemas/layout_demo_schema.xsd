@@ -8,6 +8,8 @@
 
   <xs:element name="textField" type="xs:string" />
 
+   <xs:element name="anotherTextField" type="xs:string" />
+
   <xs:element name="textareaField" type="xs:string" />
 
   <xs:element name="htmlField" type="xs:string" />
