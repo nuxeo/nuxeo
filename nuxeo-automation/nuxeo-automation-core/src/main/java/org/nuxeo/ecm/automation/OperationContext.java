@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -376,6 +377,15 @@ public class OperationContext implements Map<String, Object> {
             for (OperationCallback cb : operationCallbacks) {
                 cb.onOutput(output);
             }
+        }
+
+        @Override
+        public Trace getTrace() {
+            Trace lastTrace = null;
+            for (OperationCallback cb : operationCallbacks) {
+                lastTrace = cb.getTrace();
+            }
+            return lastTrace;
         }
     }
 

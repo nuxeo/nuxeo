@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.core.trace.Trace;
 
 /**
  * @since 5.7.3
@@ -36,4 +37,5 @@ public interface OperationCallback {
 
     void onOutput(Object output);
 
+    Trace getTrace();
 }

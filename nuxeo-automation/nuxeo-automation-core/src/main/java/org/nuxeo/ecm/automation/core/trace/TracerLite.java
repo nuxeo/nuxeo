@@ -29,12 +29,12 @@ import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
- * Automation tracer recording all automation execution traces when mode
- * activated
+ * Automation tracer recording lightweight automation execution traces when mode
+ * deactivated
  *
  * @since 5.7.3
  */
-public class Tracer implements OperationCallback {
+public class TracerLite implements OperationCallback {
 
     protected final TracerFactory factory;
 
@@ -50,19 +50,17 @@ public class Tracer implements OperationCallback {
 
     protected String factoryIndex;
 
-    protected Tracer(TracerFactory factory) {
+    protected TracerLite(TracerFactory factory) {
         this.factory = factory;
     }
 
     protected void pushContext(OperationType newChain) {
-        if (factory.getRecordingState()) {
-            if (chain != null) {
-                callingStacks.push(new Trace(parent, chain, calls));
-                parent = calls.getLast();
-                calls.clear();
-            }
-            chain = newChain;
+        if (chain != null) {
+            callingStacks.push(new Trace(parent, chain, calls));
+            parent = calls.getLast();
+            calls.clear();
         }
+        chain = newChain;
     }
 
     protected void popContext() {
@@ -121,4 +119,5 @@ public class Tracer implements OperationCallback {
     public Trace getTrace() {
         return trace;
     }
+
 }

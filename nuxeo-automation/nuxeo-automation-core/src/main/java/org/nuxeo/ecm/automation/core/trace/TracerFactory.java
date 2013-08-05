@@ -20,17 +20,26 @@ package org.nuxeo.ecm.automation.core.trace;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3 The Automation tracer factory service
  */
 public class TracerFactory implements TracerFactoryMBean {
 
+    public static final String AUTOMATION_TRACE_PROPERTY = "org.nuxeo.automation.trace";
+
     protected Map<String, ChainTraces> traces = new HashMap<String, ChainTraces>();
 
-    protected boolean recording = true;
+    protected boolean recording;
+
+    public TracerFactory() {
+        this.recording = Boolean.parseBoolean(Framework.getProperty(
+                AUTOMATION_TRACE_PROPERTY, "false"));
+    }
 
     protected static class ChainTraces {
 
@@ -62,8 +71,15 @@ public class TracerFactory implements TracerFactoryMBean {
 
     }
 
-    public Tracer newTracer() {
-        return new Tracer(this);
+    /**
+     * If trace mode is enabled, instantiate {@link Tracer}. If not, instantiate
+     * {@link TracerLite}.
+     */
+    public OperationCallback newTracer() {
+        if (recording) {
+            return new Tracer(this);
+        }
+        return new TracerLite(this);
     }
 
     public String recordTrace(Trace trace) {
@@ -87,7 +103,7 @@ public class TracerFactory implements TracerFactoryMBean {
         traces.get(chain).removeTrace(Integer.valueOf(index));
     }
 
-    public void clearTraces(OperationChain chain) {
+    public void clearTrace(OperationChain chain) {
         traces.remove(chain);
     }
 
@@ -100,18 +116,7 @@ public class TracerFactory implements TracerFactoryMBean {
     }
 
     public void onTrace(Trace popped) {
-        if (!recording) {
-            return;
-        }
         recordTrace(popped);
-    }
-
-    public void setRecording() {
-        recording = true;
-    }
-
-    public void unsetRecording() {
-        recording = false;
     }
 
     @Override
