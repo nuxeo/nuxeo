@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.core.operations" version="1.0">
+
+  <documentation>
+  @author Tiry (tdelprat@nuxeo.com)</documentation>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+<!--  -->
+    <operation
+      class="org.nuxeo.template.automation.RenderWithTemplateOperation" />
+       -->
+  </extension>
+
+</component>
