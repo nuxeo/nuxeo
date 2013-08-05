@@ -187,7 +187,7 @@
                 </fields>
               </widget>
 
-              <widget name="inlinejs" type="text">
+              <widget name="inlinejs" type="textarea">
                 <labels>
                   <label mode="any">inline js</label>
                 </labels>
@@ -494,7 +494,7 @@
                 </fields>
               </widget>
 
-              <widget name="inlinejs" type="text">
+              <widget name="inlinejs" type="textarea">
                 <labels>
                   <label mode="any">inline js</label>
                 </labels>
@@ -769,7 +769,7 @@
                 </fields>
               </widget>
 
-              <widget name="inlinejs" type="text">
+              <widget name="inlinejs" type="textarea">
                 <labels>
                   <label mode="any">inline js</label>
                 </labels>
@@ -940,7 +940,16 @@
                   <widget>instructionLabel</widget>
                 </row>
                 <row>
+                  <widget>dbl10n</widget>
+                </row>
+                <row>
                   <widget>placeholder</widget>
+                </row>
+                <row>
+                  <widget>canSelectParent</widget>
+                </row>
+                <row>
+                  <widget>filterParent</widget>
                 </row>
               </rows>
 
@@ -1031,7 +1040,7 @@
                 </fields>
               </widget>
 
-              <widget name="inlinejs" type="text">
+              <widget name="inlinejs" type="textarea">
                 <labels>
                   <label mode="any">inline js</label>
                 </labels>
@@ -1075,6 +1084,23 @@
                 </fields>
               </widget>
 
+              <widget name="dbl10n" type="checkbox">
+                <labels>
+                  <label mode="any">Activate dbl10n</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Check this option means that the labels are
+                    localized with translations provided in the directory itself
+                    (i.e. in fields). Otherwise labels are translated as usual
+                    picking values in messages*.properties files.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>dbl10n</field>
+                </fields>
+              </widget>
+
               <widget name="placeholder" type="text">
                 <labels>
                   <label mode="any">Placeholder</label>
@@ -1088,6 +1114,36 @@
                 </helpLabels>
                 <fields>
                   <field>placeholder</field>
+                </fields>
+              </widget>
+
+              <widget name="canSelectParent" type="checkbox">
+                <labels>
+                  <label mode="any">Can select parent</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Check this option to allow selection of
+                    intermediate groups.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>canSelectParent</field>
+                </fields>
+              </widget>
+
+              <widget name="filterParent" type="checkbox">
+                <labels>
+                  <label mode="any">Filter parent</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Check this option to apply filter on
+                    intermediate groups.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>filterParent</field>
                 </fields>
               </widget>
 
