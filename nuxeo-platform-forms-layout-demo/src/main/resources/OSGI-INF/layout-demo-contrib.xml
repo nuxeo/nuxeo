@@ -391,6 +391,15 @@
             select * from Document where dc:title LIKE ?
           </property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="customFormater">myformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function myformater(doc) {
+   var markup = "<table><tr>";
+   markup += "<td><img src='/nuxeo/icons/arrow_folded.gif' /></td>";
+   markup += "<td>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
         </defaultProperties>
       </preview>
       <layouts>
