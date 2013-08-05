@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.forms.layout.demo.demoContentContrib">
+
+  <extension
+    target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="factory">
+
+    <contentFactory name="DemoFolderTemplateFactory"
+      class="org.nuxeo.ecm.platform.forms.layout.demo.factories.DemoFolderTemplateFactory" />
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="factoryBinding">
+
+    <factoryBinding name="DemoFactory" factoryName="DemoFolderTemplateFactory"
+      targetType="WorkspaceRoot">
+      <acl>
+        <ace principal="Guest" permission="Read" granted="true" />
+      </acl>
+      <template>
+        <templateItem typeName="Folder" id="demoFolder"
+          title="DemoFolder" />
+      </template>
+    </factoryBinding>
+
+  </extension>
+
+</component>
