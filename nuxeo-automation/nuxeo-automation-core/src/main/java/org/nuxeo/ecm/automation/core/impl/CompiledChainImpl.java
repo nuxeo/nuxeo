@@ -30,8 +30,6 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.automation.core.trace.Tracer;
-import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**

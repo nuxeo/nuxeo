@@ -25,7 +25,7 @@ import javax.management.MXBean;
  * @since 5.7.3
  */
 @MXBean
-public interface MXTracerFactory {
+public interface TracerFactoryMBean {
 
     boolean toggleRecording();
 

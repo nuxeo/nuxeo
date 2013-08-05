@@ -26,7 +26,7 @@ import org.nuxeo.ecm.automation.OperationType;
 /**
  * @since 5.7.3 The Automation tracer factory service
  */
-public class TracerFactory implements MXTracerFactory {
+public class TracerFactory implements TracerFactoryMBean {
 
     protected Map<String, ChainTraces> traces = new HashMap<String, ChainTraces>();
 
