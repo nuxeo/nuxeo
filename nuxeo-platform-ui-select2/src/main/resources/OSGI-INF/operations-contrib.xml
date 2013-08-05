@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.select2.operations.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+    <operation
+      class="org.nuxeo.ui.select2.automation.SuggestDirectoryEntries" />
+  </extension>
+
+</component>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.select2.layouts.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="testSelect2">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>select2A</widget>
+        </row>
+        <row>
+          <widget>select2B</widget>
+        </row>
+        <row>
+          <widget>select2C</widget>
+        </row>
+        <!--
+        <row>
+          <widget>select2D</widget>
+        </row>
+        <row>
+          <widget>select2E</widget>
+        </row>
+        <row>
+          <widget>relou</widget>
+        </row> -->
+        <row>
+          <widget>nature</widget>
+        </row>
+        <row>
+          <widget>l10ncoverage</widget>
+        </row>
+        <row>
+          <widget>l10nsubjects</widget>
+        </row>
+      </rows>
+
+      <widget name="select2A" type="select2Widget">
+        <labels>
+          <label mode="any">Simple (source)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:source</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">200</property>
+          <property name="minimumInputLength">3</property>
+          <property name="query">
+            select * from Document where ecm:fulltext LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore</property>
+        </properties>
+      </widget>
+
+      <widget name="select2B" type="select2Widget">
+        <labels>
+          <label mode="any">With format (format)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:format</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">200</property>
+          <property name="minimumInputLength">3</property>
+          <property name="query">
+            select * from Document where ecm:fulltext LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,common</property>
+          <property name="customFormater">myformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function myformater(doc) {
+   var markup = "<table><tr>";
+   markup += "<td><img src='/nuxeo" + doc.properties['common:icon'] + "'/></td>";
+   markup += "<td>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </properties>
+      </widget>
+
+      <widget name="select2C" type="select2Widget">
+        <labels>
+          <label mode="any">Custom format + custom id (rights)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:rights</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">200</property>
+          <property name="minimumInputLength">3</property>
+          <property name="query">
+            select * from Document where ecm:fulltext LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,common</property>
+          <property name="customFormater">myformater</property>
+          <property name="idProperty">dc:creator</property>
+        </properties>
+      </widget>
+
+      <!-- <widget name="select2D" type="select2WidgetMultiple">
+        <labels>
+          <label mode="any">Multiple (subjects)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:subjects</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">400</property>
+          <property name="minimumInputLength">3</property>
+          <property name="query">
+            select * from Document where ecm:fulltext LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore</property>
+          <property name="maximumSelectionSize">3</property>
+        </properties>
+      </widget> -->
+
+      <!-- <widget name="select2E" type="list">
+        <labels>
+          <label mode="any">List (buggy because bound to dc:contributors)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:contributors</field>
+        </fields>
+        <subWidgets>
+          <widget name="select2F" type="select2Widget">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <translated>true</translated>
+            <fields>
+              <field></field>
+            </fields>
+            <properties mode="any">
+              <property name="width">400</property>
+              <property name="minimumInputLength">3</property>
+              <property name="query">
+                select * from Document where ecm:fulltext LIKE ?
+              </property>
+              <property name="documentSchemas">dublincore</property>
+            </properties>
+          </widget>
+        </subWidgets>
+        <properties mode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+      </widget> -->
+
+      <!-- <widget name="relou" type="text">
+        <labels>
+          <label mode="any">required</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:nature</field>
+        </fields>
+        <properties mode="any">
+          <property name="required">true</property>
+        </properties>
+      </widget> -->
+
+      <widget name="nature" type="select2Directory">
+        <labels>
+          <label mode="any">Nature</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:nature</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">300</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">nature</property>
+          <property name="customFormater">dirformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+        </properties>
+      </widget>
+
+    <widget name="l10ncoverage" type="select2Directory">
+        <labels>
+          <label mode="any">l10ncoverage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:coverage</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">l10ncoverage</property>
+          <property name="customFormater">dirformater</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose a country</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+        </properties>
+      </widget>
+
+      <widget name="l10nsubjects" type="select2DirectoryMultiple">
+        <labels>
+          <label mode="any">l10nsubjects</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:subjects</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">l10nsubjects</property>
+          <property name="customFormater">dirformater</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose subjects</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+        </properties>
+      </widget>
+
+    </layout>
+
+  </extension>
+
+</component>

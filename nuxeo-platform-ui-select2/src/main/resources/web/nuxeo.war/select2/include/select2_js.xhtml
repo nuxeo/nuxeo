@@ -1,0 +1,25 @@
+<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+ <c:if test="#{select2Actions.mustIncludeResources()}">
+     <script>
+     var currentUserLang = "#{localeSelector.language}";
+     </script>
+     <script src="/nuxeo/scripts/select2/select2.js"/>
+     <script src="/nuxeo/scripts/select2/nuxeo-select2.js"/>
+ </c:if>
+
+ <c:if test="#{request.getParameter('AJAXREQUEST') != null}">
+     <script>initSelect2AjaxWidget("#{widget.id}", "#{model.rowIndex}");</script>
+ </c:if>
+
+ <c:if test="#{widgetProperty_inlinejs != null }">
+     <script><h:outputText value="#{widgetProperty_inlinejs}" escape="false"/></script>
+ </c:if>
+</c:if>

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Version: 5.7-I20130430_0116
+Bundle-Name: nuxeo-platform-ui-select2
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/widgettypes-contrib.xml,OSGI-INF/layouts-con
+ trib.xml,OSGI-INF/operations-contrib.xml
+Bundle-SymbolicName: nuxeo-platform-ui-select2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+
