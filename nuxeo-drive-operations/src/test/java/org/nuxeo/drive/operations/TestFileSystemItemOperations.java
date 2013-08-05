@@ -438,8 +438,8 @@ public class TestFileSystemItemOperations {
         blob.setFileName("New file.odt");
         Blob newFileJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveCreateFile.ID).set("parentId",
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId()).set(
-                "name", blob.getFileName()).setInput(blob).execute();
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId()).setInput(
+                blob).execute();
         assertNotNull(newFileJSON);
 
         DocumentBackedFileItem newFile = mapper.readValue(
