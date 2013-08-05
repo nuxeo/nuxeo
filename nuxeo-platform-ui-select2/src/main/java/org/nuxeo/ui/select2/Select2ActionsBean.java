@@ -245,6 +245,7 @@ public class Select2ActionsBean implements Serializable {
             if (result == null) {
                 log.warn("Unable to resolve entry " + storedReference
                         + " of directory " + directory.getName());
+                return null;
             }
 
             JSONObject obj = new JSONObject();
@@ -299,6 +300,10 @@ public class Select2ActionsBean implements Serializable {
 
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         Directory directory = directoryService.getDirectory(directoryName);
+        if (directory == null) {
+            log.error("Could not find directory with name " + directoryName);
+            return "";
+        }
         String schemaName = directory.getSchema();
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         Schema schema = schemaManager.getSchema(schemaName);
@@ -525,6 +530,10 @@ public class Select2ActionsBean implements Serializable {
 
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         Directory directory = directoryService.getDirectory(directoryName);
+        if (directory == null) {
+            log.error("Could not find directory with name " + directoryName);
+            return "";
+        }
         String schemaName = directory.getSchema();
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         Schema schema = schemaManager.getSchema(schemaName);
@@ -553,6 +562,10 @@ public class Select2ActionsBean implements Serializable {
         }
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         Directory directory = directoryService.getDirectory(directoryName);
+        if (directory == null) {
+            log.error("Could not find directory with name " + directoryName);
+            return "";
+        }
         String schemaName = directory.getSchema();
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         Schema schema = schemaManager.getSchema(schemaName);

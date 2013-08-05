@@ -309,6 +309,10 @@ public class SuggestDirectoryEntries {
     @OperationMethod
     public Blob run() throws Exception {
         Directory directory = directoryService.getDirectory(directoryName);
+        if (directory == null) {
+            log.error("Could not find directory with name " + directoryName);
+            return null;
+        }
         Session session = null;
         try {
             session = directory.getSession();
