@@ -68,7 +68,11 @@
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
@@ -220,7 +224,7 @@
       <!-- Comment activation when tests are not skipped NXBT-586
         <activation>
         <property>
-        &lt;!&ndash; Skip exec if skipTests is defined. Using NXBT-568 would be better. 
+        &lt;!&ndash; Skip exec if skipTests is defined. Using NXBT-568 would be better.
         &ndash;&gt;
         <name>!skipTests</name>
         </property>
