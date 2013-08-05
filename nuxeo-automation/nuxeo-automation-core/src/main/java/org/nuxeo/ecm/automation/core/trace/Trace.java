@@ -98,4 +98,16 @@ public class Trace {
         return out.toString();
     }
 
+    public String getLiteFormattedText() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            new TracePrinter(out).litePrint(this);
+        } catch (IOException e) {
+            LogFactory.getLog(Trace.class).error(
+                    "Cannot print trace of " + chain.getId(), e);
+            return chain.getId();
+        }
+        return out.toString();
+    }
+
 }

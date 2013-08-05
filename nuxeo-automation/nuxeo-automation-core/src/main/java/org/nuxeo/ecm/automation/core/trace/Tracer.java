@@ -55,14 +55,12 @@ public class Tracer implements OperationCallback {
     }
 
     protected void pushContext(OperationType newChain) {
-        if (factory.getRecordingState()) {
-            if (chain != null) {
-                callingStacks.push(new Trace(parent, chain, calls));
-                parent = calls.getLast();
-                calls.clear();
-            }
-            chain = newChain;
+        if (chain != null) {
+            callingStacks.push(new Trace(parent, chain, calls));
+            parent = calls.getLast();
+            calls.clear();
         }
+        chain = newChain;
     }
 
     protected void popContext() {
@@ -120,5 +118,10 @@ public class Tracer implements OperationCallback {
     @Override
     public Trace getTrace() {
         return trace;
+    }
+
+    @Override
+    public String getFormattedText() {
+        return trace.getFormattedText();
     }
 }

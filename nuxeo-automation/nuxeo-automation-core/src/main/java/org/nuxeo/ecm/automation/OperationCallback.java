@@ -38,4 +38,5 @@ public interface OperationCallback {
     void onOutput(Object output);
 
     Trace getTrace();
+    String getFormattedText();
 }

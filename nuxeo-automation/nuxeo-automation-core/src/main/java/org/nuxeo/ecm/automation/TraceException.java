@@ -29,7 +29,7 @@ public class TraceException extends OperationException {
     TracerFactory traceFactory = Framework.getLocalService(TracerFactory.class);
 
     public TraceException(OperationCallback tracer, Throwable cause) {
-        super(tracer.getTrace().getFormattedText(), cause);
+        super(tracer.getFormattedText(), cause);
         traceFactory.clearTraces();
     }
 

@@ -387,6 +387,12 @@ public class OperationContext implements Map<String, Object> {
             }
             return lastTrace;
         }
+
+        @Override
+        public String getFormattedText() {
+            throw new UnsupportedOperationException(
+                    "#getFormattedText is not available for: " + this);
+        }
     }
 
     public ChainCallback getChainCallback() {

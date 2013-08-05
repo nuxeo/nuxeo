@@ -139,4 +139,46 @@ public class TracePrinter {
             log.error(e);
         }
     }
+
+    public void litePrint(Trace trace) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        printHeading("chain");
+        if (trace.error != null) {
+            sb.append(System.getProperty("line.separator"));
+            sb.append("Name: ");
+            sb.append(trace.getChain().getId());
+            sb.append(System.getProperty("line.separator"));
+            sb.append("Exception: ");
+            sb.append(trace.error.getClass().getSimpleName());
+            sb.append(System.getProperty("line.separator"));
+            sb.append("Caught error: ");
+            sb.append(trace.error.getMessage());
+            sb.append(System.getProperty("line.separator"));
+            sb.append("Caused by: ");
+            sb.append(trace.error.getCause());
+        }
+        sb.append(System.getProperty("line.separator"));
+        sb.append("****** Hierarchy calls ******");
+        printLine(sb.toString());
+        litePrint(trace.operations);
+        writer.flush();
+    }
+
+    public void litePrint(List<Call> calls) throws IOException {
+        String tabs = "\t";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(System.getProperty("line.separator"));
+        try {
+            for (Call call : calls) {
+                stringBuilder.append(tabs);
+                stringBuilder.append(call.getType().getType().getName());
+                stringBuilder.append(System.getProperty("line.separator"));
+                tabs += "\t";
+            }
+            printLine(stringBuilder.toString());
+        } catch (IOException e) {
+            log.error(e);
+        }
+    }
+
 }

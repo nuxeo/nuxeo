@@ -13,7 +13,6 @@
  *
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
- *     slacoin <slacoin@nuxeo.com>
  */
 
 package org.nuxeo.ecm.automation.core.trace;
@@ -101,13 +100,14 @@ public class TracerLite implements OperationCallback {
     @Override
     public void onOperation(OperationContext context, OperationType type,
             InvokableMethod method, Map<String, Object> parms) {
-        Call call = new Call(context, type, method, parms);
+        Call call = new Call(null, type, null, null);
         calls.add(call);
     }
 
     @Override
     public void onOutput(Object output) {
-        saveTrace(new Trace(parent, chain, calls, output));
+        // In case of lightweight tracer, doesn't record anything onOutput
+        return;
     }
 
     @Override
@@ -120,4 +120,8 @@ public class TracerLite implements OperationCallback {
         return trace;
     }
 
+    @Override
+    public String getFormattedText(){
+        return trace.getLiteFormattedText();
+    }
 }
