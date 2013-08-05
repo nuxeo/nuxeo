@@ -98,11 +98,6 @@
       <artifactId>nuxeo-core-management-jtajca</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-metrics</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
