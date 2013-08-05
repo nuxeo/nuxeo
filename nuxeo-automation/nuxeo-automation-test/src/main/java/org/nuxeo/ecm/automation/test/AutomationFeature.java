@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.trace.Tracer;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -56,7 +56,7 @@ public class AutomationFeature extends SimpleFeature {
 
     protected TracerFactory tracerFactory;
 
-    protected Tracer tracer;
+    protected OperationCallback tracer;
 
     protected RepositorySettings repository;
 
@@ -69,10 +69,10 @@ public class AutomationFeature extends SimpleFeature {
 
     }
 
-    class TracerProvider implements Provider<Tracer> {
+    class TracerProvider implements Provider<OperationCallback> {
 
         @Override
-        public Tracer get() {
+        public OperationCallback get() {
             return AutomationFeature.this.getTracer();
         }
 
@@ -89,7 +89,7 @@ public class AutomationFeature extends SimpleFeature {
         return context;
     }
 
-    protected Tracer getTracer() {
+    protected OperationCallback getTracer() {
         if (tracer == null) {
             tracer = tracerFactory.newTracer();
             if (context != null) {
@@ -103,7 +103,7 @@ public class AutomationFeature extends SimpleFeature {
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(OperationContext.class).toProvider(contextProvider).in(
                 AutomationScope.INSTANCE);
-        binder.bind(Tracer.class).toProvider(tracerProvider).in(
+        binder.bind(OperationCallback.class).toProvider(tracerProvider).in(
                 AutomationScope.INSTANCE);
         repository = runner.getFeature(CoreFeature.class).getRepository();
         tracerFactory = Framework.getLocalService(TracerFactory.class);

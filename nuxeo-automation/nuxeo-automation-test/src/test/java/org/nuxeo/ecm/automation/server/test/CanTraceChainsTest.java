@@ -13,6 +13,9 @@
  *******************************************************************************/
 package org.nuxeo.ecm.automation.server.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
+import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -31,7 +34,6 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.trace.Call;
 import org.nuxeo.ecm.automation.core.trace.Trace;
-import org.nuxeo.ecm.automation.core.trace.Tracer;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -39,9 +41,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * @since 5.7.3
@@ -60,7 +59,7 @@ public class CanTraceChainsTest {
     CoreSession session;
 
     @Inject
-    Tracer tracer;
+    OperationCallback tracer;
 
     @Inject
     TracerFactory factory;
@@ -76,8 +75,7 @@ public class CanTraceChainsTest {
     }
 
     @Test
-    public void testSimpleChainTrace() throws InvalidChainException,
-            OperationException, Exception {
+    public void testSimpleChainTrace() throws Exception {
         OperationChain chain = new OperationChain("testChain");
         chain.add(DummyOperation.ID).set(DummyOperation.ID, DummyOperation.ID);
         chain.add(DummyOperation.ID);
@@ -131,19 +129,16 @@ public class CanTraceChainsTest {
         assertEquals(
                 nested.get(1).getCalls().get(0).getVariables().get("item"),
                 "two");
-
     }
 
     @Test
-    public void testChainInvokeWithDistinctInput()
-            throws InvalidChainException, OperationException, Exception {
+    public void testChainInvokeWithDistinctInput() throws Exception {
         OperationChain chain = new OperationChain(DummyOperation.ID);
         chain.add(DummyOperation.ID);
         context.setInput("dummy");
-        service.run(context, DummyOperation.ID);
+        service.run(context, chain);
         context.setInput(Arrays.asList(new String[] { "dummy" }));
-        service.run(context, DummyOperation.ID);
-
+        service.run(context, chain);
     }
 
 }
