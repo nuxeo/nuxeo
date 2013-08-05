@@ -176,7 +176,38 @@
       </to-view-id>
       <redirect />
     </navigation-case>
+    <navigation-case>
+      <from-outcome>select2_widget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/select2Widget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>select2_widget_multiple</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/select2MultipleWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>select2_directory_widget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/select2DirectoryWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
 
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/layoutDemo/*</url-pattern>
+      <url-pattern>/layoutDemoPreview/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
   </extension>
 
   <install>
@@ -198,7 +229,7 @@
       to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
     <delete path="${bundle.fileName}.tmp" />
 
-    <!--  make some extension sources available for demo -->
+    <!-- make some extension sources available for demo -->
     <unzip from="${bundle.fileName}" to="/nuxeo.war/layoutDemo/sources/">
       <include>OSGI-INF/demo/**</include>
       <include>schemas/**</include>

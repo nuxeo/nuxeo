@@ -213,10 +213,8 @@
         <layout name="complexListWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-complex-list-widget.xml" />
         <!-- disabled: need to handle file size restriction -->
-        <!--
-          <layout name="fileListWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml" />
-        -->
+        <!-- <layout name="fileListWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-file-list-widget.xml"
+          /> -->
         <layout name="listOfListsWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-listOfLists-widget.xml" />
       </layouts>
@@ -228,10 +226,8 @@
       <category>custom</category>
       <layouts>
         <!-- TODO? -->
-        <!--
-          <layout name="templateWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-template-widget.xml" />
-        -->
+        <!-- <layout name="templateWidgetLayout" src="sources/OSGI-INF/demo/layout-demo-template-widget.xml"
+          /> -->
       </layouts>
     </widgetType>
 
@@ -374,6 +370,90 @@
       <layouts>
         <layout name="listing_versionWidgetLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-listing-version-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2Widget">
+      <label>Select2</label>
+      <viewId>select2_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:textField</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">default</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2WidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2Directory">
+      <label>Select2Directory</label>
+      <viewId>select2_directory_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:textField</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">l10ncoverage</property>
+          <property name="customFormater">dirformater</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose a country</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="repository">default</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2DirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2WidgetMultiple">
+      <label>Select2Multiple</label>
+      <viewId>select2_widget_multiple</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">default</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2WidgetMultipleLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
       </layouts>
     </widgetType>
 
