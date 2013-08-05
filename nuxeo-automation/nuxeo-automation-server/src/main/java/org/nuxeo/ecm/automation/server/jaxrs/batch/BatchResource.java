@@ -127,12 +127,16 @@ public class BatchResource {
         String idx = request.getHeader("X-File-Idx");
         InputStream is = null;
 
-        // fall back to multipart
-        if (fileName==null && request.getHeader("Content-Type").contains("multipart")) {
+        // handle multipart case : mainly MSIE with jQueryFileupload
+        if (request.getHeader("Content-Type").contains("multipart")) {
             useIFrame = true;
             FormData formData = new FormData(request);
-            batchId = formData.getString("batchId");
-            idx = formData.getString("fileIdx");
+            if (formData.getString("batchId")!=null) {
+                batchId = formData.getString("batchId");
+            }
+            if (formData.getString("fileIdx")!=null) {
+                idx = formData.getString("fileIdx");
+            }
             if (idx==null || "".equals(idx.trim())) {
                 idx = "0";
             }
