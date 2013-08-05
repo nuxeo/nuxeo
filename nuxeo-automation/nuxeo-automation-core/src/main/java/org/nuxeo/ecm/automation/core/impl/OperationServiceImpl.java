@@ -154,7 +154,7 @@ public class OperationServiceImpl implements AutomationService {
             callback.onError(oe);
             TracerFactory traceFactory = Framework.getLocalService(TracerFactory.class);
             throw new OperationException(traceFactory.getTrace(
-                    operationType.getId()).getFormattedText());
+                    operationType.getId()).getFormattedText(),oe);
         } finally {
             ctx.dispose();
         }

@@ -79,13 +79,6 @@ public class TracePrinter {
             // printObject((OperationType) trace.output);
         }
         print(trace.operations);
-        StringBuilder sbStack = new StringBuilder();
-        sbStack.append(System.getProperty("line.separator"));
-        if (trace.error.getStackTrace().length != 0) {
-            log.error("StackTrace: ", trace.error);
-            sbStack.append(System.getProperty("line.separator"));
-        }
-        printLine(sbStack.toString());
         writer.flush();
     }
 
