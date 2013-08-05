@@ -144,6 +144,7 @@ public class PictureBookManagerBean extends InputController implements
     }
 
     @Destroy
+    @BypassInterceptors
     public void destroy() {
         title = null;
         viewtitle = null;
