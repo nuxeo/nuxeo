@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.runtime.api.ConnectionHelper;
 
 /**
  * Holds a connection to a JDBC database.
@@ -65,7 +66,7 @@ public class JDBCConnection {
 
     /**
      * Creates a new Mapper.
-     * 
+     *
      * @param model the model
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
@@ -92,11 +93,26 @@ public class JDBCConnection {
 
     private void openConnections() throws StorageException {
         try {
+            openBaseConnection();
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    protected void openBaseConnection() throws SQLException {
+        // try single-datasource non-XA mode
+        String repositoryName = model.getRepositoryDescriptor().name;
+        String dataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName);
+        connection = ConnectionHelper.getConnection(dataSourceName);
+        if (connection == null) {
+            // standard XA mode
             xaconnection = xadatasource.getXAConnection();
             connection = xaconnection.getConnection();
             xaresource = xaconnection.getXAResource();
-        } catch (SQLException e) {
-            throw new StorageException(e);
+        } else {
+            // single-datasource non-XA mode
+            xaconnection = null;
+            xaresource = new XAResourceConnectionAdapter(connection);
         }
     }
 
