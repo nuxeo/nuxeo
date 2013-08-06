@@ -74,9 +74,13 @@ public class TracePrinter {
             sb.append(trace.error.getCause());
             printLine(sb.toString());
         } else {
-            printLine("produced output of type "
-                    + trace.output.getClass().getSimpleName());
-            // printObject((OperationType) trace.output);
+            sb.append(System.getProperty("line.separator"));
+            sb.append("Name: ");
+            sb.append(trace.getChain().getId());
+            sb.append(System.getProperty("line.separator"));
+            sb.append("Produced output type: ");
+            sb.append(trace.output.getClass().getSimpleName());
+            printLine(sb.toString());
         }
         print(trace.operations);
         writer.flush();

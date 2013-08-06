@@ -121,7 +121,7 @@ public class TracerLite implements OperationCallback {
     }
 
     @Override
-    public String getFormattedText(){
-        return trace.getLiteFormattedText();
+    public String getFormattedText() {
+        return trace != null ? trace.getLiteFormattedText() : "";
     }
 }

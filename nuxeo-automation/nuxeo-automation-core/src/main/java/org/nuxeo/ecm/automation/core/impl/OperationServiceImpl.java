@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -51,6 +53,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationServiceImpl implements AutomationService {
+
+    private static final Log log = LogFactory.getLog(OperationServiceImpl.class);
 
     protected final OperationTypeRegistry operations;
 
@@ -146,6 +150,7 @@ public class OperationServiceImpl implements AutomationService {
                 // auto save session if any
                 ctx.getCoreSession().save();
             }
+            log.info(tracer.getFormattedText());
             return ret;
         } catch (OperationException oe) {
             if (oe.isRollback()) {
