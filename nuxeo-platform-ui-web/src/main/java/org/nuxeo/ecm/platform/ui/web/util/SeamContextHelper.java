@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.ui.web.util;
 
 
 import org.jboss.seam.Component;
+import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple wrapper around Seam static method.
@@ -31,6 +33,11 @@ import org.jboss.seam.Component;
 public class SeamContextHelper {
 
     public Object get(String varName) {
+        // XXX temporary hack
+        // until we fix the evaluation context
+        if ("typeManager".equals(varName)) {
+            return Framework.getLocalService(TypeManager.class);
+        }
         //return Contexts.lookupInStatefulContexts(varName);
         // use Component static method to be sure to create components if needed
         return Component.getInstance(varName,true);
