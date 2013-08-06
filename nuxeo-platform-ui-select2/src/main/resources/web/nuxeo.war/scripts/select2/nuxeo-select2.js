@@ -191,11 +191,6 @@ function initSelect2Widgets() {
   });
 };
 
-jQuery(document)
-    .ready(
-        function() {
-          jQuery('head')
-              .append(
-                  '<link rel="stylesheet" href="/nuxeo/css/select2.css" type="text/css" />');
-          initSelect2Widgets();
-        });
+jQuery(document).ready(function() {
+  initSelect2Widgets();
+});

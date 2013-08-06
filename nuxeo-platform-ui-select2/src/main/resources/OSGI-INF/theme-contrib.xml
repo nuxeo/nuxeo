@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.select2">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
+      <format-type>widget</format-type>
+      <resource>select2.css</resource>
+      <!-- TODO Later, we can include nuxeo-select2.js here but for know we import
+        it inline because it'll be easier to debug oif needed <resource>nuxeo-select2.js</resource> -->
+    </view>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <resource name="select2.css">
+      <path>css/select2.css</path>
+    </resource>
+    <resource name="select2.js">
+      <path>scripts/select2/select2.js</path>
+      <require>jquery.js</require>
+    </resource>
+    <resource name="nuxeo-select2.js">
+      <path>scripts/select2/select2.js</path>
+      <require>select2.js</require>
+    </resource>
+  </extension>
+
+</component>
