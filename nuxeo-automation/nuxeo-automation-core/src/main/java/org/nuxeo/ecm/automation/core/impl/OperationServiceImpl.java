@@ -59,9 +59,15 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    public Object run(OperationContext ctx, String chainId) throws Exception {
-        ChainTypeImpl chain = (ChainTypeImpl) getOperation(chainId);
-        return run(ctx, chain, chain.getChainParameters());
+    public Object run(OperationContext ctx, String operationId)
+            throws Exception {
+        OperationType operationType = getOperation(operationId);
+        if (operationType instanceof ChainTypeImpl) {
+            return run(ctx, operationType,
+                    ((ChainTypeImpl) operationType).getChainParameters());
+        } else {
+            return run(ctx, operationType, null);
+        }
     }
 
     @Override
@@ -343,7 +349,8 @@ public class OperationServiceImpl implements AutomationService {
     }
 
     @Override
-    public List<OperationDocumentation> getDocumentation() throws OperationException {
+    public List<OperationDocumentation> getDocumentation()
+            throws OperationException {
         List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
         Collection<OperationType> ops = operations.lookup().values();
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
