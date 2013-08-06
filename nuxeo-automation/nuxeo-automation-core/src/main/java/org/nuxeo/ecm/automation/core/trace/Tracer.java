@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
@@ -101,6 +102,10 @@ public class Tracer implements OperationCallback {
     @Override
     public void onOperation(OperationContext context, OperationType type,
             InvokableMethod method, Map<String, Object> parms) {
+        if (type instanceof ChainTypeImpl) {
+            pushContext(type);
+            return;
+        }
         Call call = new Call(context, type, method, parms);
         calls.add(call);
     }
