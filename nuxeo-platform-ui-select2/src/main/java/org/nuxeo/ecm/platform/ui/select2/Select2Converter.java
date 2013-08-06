@@ -14,7 +14,7 @@
  * Contributors:
  *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-package org.nuxeo.ui.select2;
+package org.nuxeo.ecm.platform.ui.select2;
 
 import java.io.Serializable;
 import java.util.Arrays;

@@ -14,7 +14,7 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.ui.common;
+package org.nuxeo.ecm.platform.ui.select2.common;
 
 import org.nuxeo.ecm.core.schema.types.Schema;
 

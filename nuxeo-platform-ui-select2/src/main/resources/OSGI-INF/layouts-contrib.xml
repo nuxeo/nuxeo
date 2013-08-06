@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<component name="org.nuxeo.select2.layouts.contrib">
+<component name="org.nuxeo.ecm.platform.ui.select2.layouts.contrib">
 
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
 

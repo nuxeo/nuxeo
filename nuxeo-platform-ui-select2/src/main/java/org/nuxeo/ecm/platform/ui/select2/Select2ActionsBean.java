@@ -16,7 +16,7 @@
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
 
-package org.nuxeo.ui.select2;
+package org.nuxeo.ecm.platform.ui.select2;
 
 import java.io.BufferedOutputStream;
 import java.io.Serializable;
@@ -68,8 +68,8 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
+import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ui.common.Select2Common;
 
 /**
  *

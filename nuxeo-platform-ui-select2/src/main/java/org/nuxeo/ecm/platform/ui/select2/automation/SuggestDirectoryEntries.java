@@ -15,7 +15,7 @@
  *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.ui.select2.automation;
+package org.nuxeo.ecm.platform.ui.select2.automation;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ui.common.Select2Common;
+import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 
 /**
  * SuggestDirectoryEntries Operation
