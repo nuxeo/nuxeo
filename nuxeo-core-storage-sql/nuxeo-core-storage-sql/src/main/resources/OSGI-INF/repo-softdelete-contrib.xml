@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.storage.sql.softdelete">
 
-  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+  <extension target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
     point="schedule">
     <schedule id="softDeleteCleanup">
       <event>softDeleteCleanup</event>
