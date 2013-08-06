@@ -42,7 +42,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -60,6 +62,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -71,7 +74,7 @@ import org.nuxeo.ui.common.Select2Common;
 /**
  *
  *
- * @since 5.7.2
+ * @since 5.7.3
  */
 @Name("select2Actions")
 @Scope(ScopeType.EVENT)
@@ -107,7 +110,7 @@ public class Select2ActionsBean implements Serializable {
      * @return encoded
      * @throws Exception
      *
-     * @since TODO
+     * @since 5.7.3
      */
     public String encodeParameters(final Widget widget) throws Exception {
 
@@ -146,7 +149,7 @@ public class Select2ActionsBean implements Serializable {
         }
 
         if (!hasPlaceholder) {
-            // NO placeholder provider and Select2 requires one to enable the
+            // No placeholder provider and Select2 requires one to enable the
             // reset button.
             jg.writeStringField(Select2Common.PLACEHOLDER,
                     messages.get("label.vocabulary.selectValue"));
@@ -158,7 +161,7 @@ public class Select2ActionsBean implements Serializable {
         return new String(baos.toByteArray(), "UTF-8");
     }
 
-    public String getKeySeparator(final Widget widget) {
+    /*public String getKeySeparator(final Widget widget) {
         String keySeparator = (String) widget.getProperties().get(
                 "keySeparator");
         if (keySeparator == null || keySeparator.isEmpty()) {
@@ -166,7 +169,7 @@ public class Select2ActionsBean implements Serializable {
         } else {
             return keySeparator;
         }
-    }
+    }*/
 
     protected LayoutStore getLayoutStore() {
         LayoutStore layoutStore = null;
@@ -182,7 +185,7 @@ public class Select2ActionsBean implements Serializable {
     }
 
     protected CoreSession getRepositorySession(final String repoName)
-            throws Exception {
+            throws ClientException {
 
         RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
         Repository repository = null;
@@ -190,6 +193,10 @@ public class Select2ActionsBean implements Serializable {
             repository = rm.getDefaultRepository();
         } else {
             repository = rm.getRepository(repoName);
+            if (repository == null) {
+                log.error("Unable to resolve repository " + repoName);
+                return null;
+            }
         }
 
         if (documentManager != null
@@ -198,8 +205,12 @@ public class Select2ActionsBean implements Serializable {
             return documentManager;
         }
 
-        dedicatedSession = repository.open();
-        return dedicatedSession;
+        try {
+            dedicatedSession = repository.open();
+            return dedicatedSession;
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
     }
 
     public boolean isMultiSelection(final Widget widget) {
@@ -224,7 +235,9 @@ public class Select2ActionsBean implements Serializable {
     }
 
     protected JSONObject resolveDirectoryEntry(final String storedReference,
-            String keySeparator, Directory directory, Schema schema, String label, boolean translateLabels, boolean dbl10n) throws Exception {
+            String keySeparator, final Session session,
+            final Schema schema, final String label,
+            final boolean translateLabels, final boolean dbl10n) {
         if (storedReference == null || storedReference.isEmpty()) {
             log.trace("No reference provided ");
             return null;
@@ -238,13 +251,10 @@ public class Select2ActionsBean implements Serializable {
                 storedReference.lastIndexOf(keySeparator) + 1,
                 storedReference.length());
 
-        Session session = null;
         try {
-            session = directory.getSession();
             DocumentModel result = session.getEntry(entryId);
             if (result == null) {
-                log.warn("Unable to resolve entry " + storedReference
-                        + " of directory " + directory.getName());
+                log.warn("Unable to resolve entry " + storedReference);
                 return null;
             }
 
@@ -264,79 +274,29 @@ public class Select2ActionsBean implements Serializable {
             }
             obj.element(Select2Common.COMPUTED_ID, storedReference);
             return obj;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             log.error("An error occured while resolving directoryEntry", e);
             return null;
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
         }
     }
 
     public String resolveMultipleDirectoryEntries(final Object value,
             final String directoryName, final boolean translateLabels,
             String keySeparator, final boolean dbl10n,
-            final String labelFieldName) throws Exception {
-
-        if (value == null) {
+            final String labelFieldName) {
+        JSONArray result = getMultipleDirectoryEntries(value, directoryName, translateLabels, keySeparator, dbl10n, labelFieldName);
+        if (result != null) {
+            return result.toString();
+        } else {
             return "[]";
         }
-
-        List<String> storedRefs = new ArrayList<>();
-        if (value instanceof List) {
-            for (Object v : (List) value) {
-                storedRefs.add(v.toString());
-            }
-        } else if (value instanceof Object[]) {
-            for (Object v : (Object[]) value) {
-                storedRefs.add(v.toString());
-            }
-        }
-
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Directory directory = directoryService.getDirectory(directoryName);
-        if (directory == null) {
-            log.error("Could not find directory with name " + directoryName);
-            return "";
-        }
-        String schemaName = directory.getSchema();
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        Schema schema = schemaManager.getSchema(schemaName);
-
-        final Locale locale = org.jboss.seam.core.Locale.instance();
-        final String label = Select2Common.getLabelFieldName(schema, dbl10n,
-                labelFieldName, locale.getLanguage());
-
-        JSONArray result = new JSONArray();
-        for (String ref : storedRefs) {
-            try {
-                JSONObject obj = resolveDirectoryEntry(ref, keySeparator,
-                        directory, schema, label, translateLabels, dbl10n);
-                if (obj != null)
-                    result.add(obj);
-            } catch (Exception e) {
-                log.error("An error occured while resolving reference", e);
-                return "";
-            }
-        }
-
-        return result.toString();
-
     }
 
-    @SuppressWarnings("rawtypes")
-    public List<String> resolveMultipleDirectoryEntryLabels(final Object value,
+    public JSONArray getMultipleDirectoryEntries(final Object value,
             final String directoryName, final boolean translateLabels,
             String keySeparator, final boolean dbl10n,
-            final String labelFieldName) throws Exception {
-
-        List<String> result = new ArrayList<>();
-
+            final String labelFieldName) {
+        JSONArray result = new JSONArray();
         if (value == null) {
             return result;
         }
@@ -352,10 +312,57 @@ public class Select2ActionsBean implements Serializable {
             }
         }
 
-        for (String ref : storedRefs) {
-            String label = resolveSingleDirectoryEntryLabel(ref, directoryName,
-                    translateLabels, keySeparator, dbl10n, labelFieldName);
-            result.add(label != null ? label : "");
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        Directory directory = null;
+        Session session = null;
+        try {
+            directory = directoryService.getDirectory(directoryName);
+            if (directory == null) {
+                log.error("Could not find directory with name " + directoryName);
+                return result;
+            }
+            session = directory.getSession();
+            String schemaName = directory.getSchema();
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            Schema schema = schemaManager.getSchema(schemaName);
+            final Locale locale = org.jboss.seam.core.Locale.instance();
+            final String label = Select2Common.getLabelFieldName(schema,
+                    dbl10n, labelFieldName, locale.getLanguage());
+
+            for (String ref : storedRefs) {
+                JSONObject obj = resolveDirectoryEntry(ref, keySeparator,
+                        session, schema, label, translateLabels, dbl10n);
+                if (obj != null)
+                    result.add(obj);
+            }
+            return result;
+        } catch (DirectoryException de) {
+            log.error("An error occured while obtaining directory "
+                    + directoryName, de);
+            return result;
+        } finally {
+            try {
+                if (session != null) {
+                    session.close();
+                }
+            } catch (ClientException ce) {
+                log.error("Could not close directory session", ce);
+            }
+        }
+
+    }
+
+    @SuppressWarnings("rawtypes")
+    public List<String> resolveMultipleDirectoryEntryLabels(final Object value,
+            final String directoryName, final boolean translateLabels,
+            final String keySeparator, final boolean dbl10n,
+            final String labelFieldName) {
+        List<String> result = new ArrayList<String>();
+        JSONArray array = getMultipleDirectoryEntries(value, directoryName, translateLabels, keySeparator, dbl10n, labelFieldName);
+        if (array != null) {
+            for (int i = 0; i < array.size();  i++) {
+                result.add(array.getJSONObject(i).getString(Select2Common.LABEL));
+            }
         }
         return result;
     }
@@ -460,139 +467,154 @@ public class Select2ActionsBean implements Serializable {
             return null;
         }
         DocumentModel doc = null;
-        CoreSession session = getRepositorySession(repo);
-        if (session == null) {
-            log.error("Unable to get CoreSession for repo " + repo);
-            return null;
-        }
-        if (operationName == null || operationName.isEmpty()) {
-            DocumentRef ref = null;
+        CoreSession session;
+        try {
+            session = getRepositorySession(repo);
+            if (session == null) {
+                log.error("Unable to get CoreSession for repo " + repo);
+                return null;
+            }
+            if (operationName == null || operationName.isEmpty()) {
+                DocumentRef ref = null;
 
-            if (idProperty != null && !idProperty.isEmpty()) {
-                String query = " select * from Document where " + idProperty
-                        + "='" + storedReference + "'";
-                DocumentModelList docs = session.query(query);
-                if (docs.size() > 0) {
-                    return docs.get(0);
+                if (idProperty != null && !idProperty.isEmpty()) {
+                    String query = " select * from Document where "
+                            + idProperty + "='" + storedReference + "'";
+                    DocumentModelList docs = session.query(query);
+                    if (docs.size() > 0) {
+                        return docs.get(0);
+                    } else {
+                        log.warn("Unable to resolve doc using property "
+                                + idProperty + " and value " + storedReference);
+                        return null;
+                    }
                 } else {
-                    log.warn("Unable to resolve doc using property "
-                            + idProperty + " and value " + storedReference);
-                    return null;
+                    if (storedReference.startsWith("/")) {
+                        ref = new PathRef(storedReference);
+                    } else {
+                        ref = new IdRef(storedReference);
+                    }
+                    if (session.exists(ref)) {
+                        doc = session.getDocument(ref);
+                    } else {
+                        log.warn("Unable to resolve reference on " + ref);
+                    }
                 }
             } else {
-                if (storedReference.startsWith("/")) {
-                    ref = new PathRef(storedReference);
-                } else {
-                    ref = new IdRef(storedReference);
-                }
-                if (session.exists(ref)) {
-                    doc = session.getDocument(ref);
-                } else {
-                    log.warn("Unable to resolve reference on " + ref);
-                }
-            }
-        } else {
-            AutomationService as = Framework.getLocalService(AutomationService.class);
-            OperationContext ctx = new OperationContext(session);
+                AutomationService as = Framework.getLocalService(AutomationService.class);
+                OperationContext ctx = new OperationContext(session);
 
-            ctx.put("value", storedReference);
-            ctx.put("xpath", idProperty);
+                ctx.put("value", storedReference);
+                ctx.put("xpath", idProperty);
 
-            Object result = as.run(ctx, operationName, null);
+                Object result = as.run(ctx, operationName, null);
 
-            if (result == null) {
-                log.warn("Unable to resolve reference " + storedReference
-                        + " using property " + idProperty + " and operation"
-                        + operationName);
-                doc = null;
-            } else if (result instanceof DocumentModel) {
-                doc = (DocumentModel) result;
-            } else if (result instanceof DocumentModelList) {
-                DocumentModelList docs = (DocumentModelList) result;
-                if (docs.size() > 0) {
-                    doc = docs.get(0);
-                } else {
-                    log.warn("No document found");
+                if (result == null) {
+                    log.warn("Unable to resolve reference " + storedReference
+                            + " using property " + idProperty
+                            + " and operation" + operationName);
+                    doc = null;
+                } else if (result instanceof DocumentModel) {
+                    doc = (DocumentModel) result;
+                } else if (result instanceof DocumentModelList) {
+                    DocumentModelList docs = (DocumentModelList) result;
+                    if (docs.size() > 0) {
+                        doc = docs.get(0);
+                    } else {
+                        log.warn("No document found");
+                    }
                 }
             }
+            return doc;
+        } catch (ClientException e) {
+            log.error("Unable to resolve reference", e);
+        } catch (InvalidChainException e) {
+            log.error("Unable to resolve reference", e);
+        } catch (OperationException e) {
+            log.error("Unable to resolve reference", e);
         }
         return doc;
+
     }
+
 
     public String resolveSingleDirectoryEntry(final String storedReference,
             final String directoryName, final boolean translateLabels,
             String keySeparator, final boolean dbl10n,
-            final String labelFieldName) throws Exception {
+            final String labelFieldName) {
+        JSONObject result = getSingleDirectoryEntry(storedReference, directoryName, translateLabels, keySeparator, dbl10n, labelFieldName);
+        if (result != null) {
+            return result.toString();
+        } else {
+            return "";
+        }
+    }
+
+    public JSONObject getSingleDirectoryEntry(final String storedReference,
+            final String directoryName, final boolean translateLabels,
+            String keySeparator, final boolean dbl10n,
+            final String labelFieldName) {
 
         if (storedReference == null || storedReference.isEmpty()) {
-            return "";
+            return null;
         }
 
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Directory directory = directoryService.getDirectory(directoryName);
-        if (directory == null) {
-            log.error("Could not find directory with name " + directoryName);
-            return "";
-        }
-        String schemaName = directory.getSchema();
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        Schema schema = schemaManager.getSchema(schemaName);
-
+        Directory directory = null;
+        Session session = null;
         try {
+            directory = directoryService.getDirectory(directoryName);
+            if (directory == null) {
+                log.error("Could not find directory with name " + directoryName);
+                return null;
+            }
+            session = directory.getSession();
+            String schemaName = directory.getSchema();
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            Schema schema = schemaManager.getSchema(schemaName);
+
             final Locale locale = org.jboss.seam.core.Locale.instance();
             final String label = Select2Common.getLabelFieldName(schema,
                     dbl10n, labelFieldName, locale.getLanguage());
 
-            JSONObject obj = resolveDirectoryEntry(storedReference, keySeparator,
-                    directory, schema, label, translateLabels, dbl10n);
+            JSONObject obj = resolveDirectoryEntry(storedReference,
+                    keySeparator, session, schema, label, translateLabels,
+                    dbl10n);
 
-            return obj != null ? obj.toString() : "";
-        } catch (Exception e) {
-            log.error("An error occured while resolving reference", e);
-            return "";
+            return obj;
+        } catch (DirectoryException de) {
+            log.error("An error occured while obtaining directory "
+                    + directoryName, de);
+            return null;
+        } finally {
+            try {
+                if (session != null) {
+                    session.close();
+                }
+            } catch (ClientException ce) {
+                log.error("Could not close directory session", ce);
+            }
         }
+
     }
 
     public String resolveSingleDirectoryEntryLabel(
             final String storedReference, final String directoryName,
             final boolean translateLabels, String keySeparator,
-            final boolean dbl10n, final String labelFieldName) throws Exception {
-        if (storedReference == null || storedReference.isEmpty()) {
-            return "";
-        }
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Directory directory = directoryService.getDirectory(directoryName);
-        if (directory == null) {
-            log.error("Could not find directory with name " + directoryName);
-            return "";
-        }
-        String schemaName = directory.getSchema();
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        Schema schema = schemaManager.getSchema(schemaName);
-        final Locale locale = org.jboss.seam.core.Locale.instance();
-        final String label = Select2Common.getLabelFieldName(schema, dbl10n,
-                labelFieldName, locale.getLanguage());
-        JSONObject obj = resolveDirectoryEntry(storedReference, keySeparator,
-                directory, schema, label, translateLabels, dbl10n);
-
+            final boolean dbl10n, final String labelFieldName) {
+        JSONObject obj = getSingleDirectoryEntry(storedReference, directoryName, translateLabels, keySeparator, dbl10n, labelFieldName);
         if (obj == null) {
             return "";
         }
-
-
-        String value = null;
-
-        value =  (String) obj.get(Select2Common.LABEL);
-
-        return value;
+        return obj.getString(Select2Common.LABEL);
     }
 
     public String resolveSingleReference(final String storedReference,
             final String repo, final String operationName,
             final String idProperty, final String schemaNames) throws Exception {
 
-        DocumentModel doc = resolveReference(repo, storedReference,
-                operationName, idProperty);
+        DocumentModel doc;
+        doc = resolveReference(repo, storedReference, operationName, idProperty);
         if (doc == null) {
             return "";
         }
@@ -606,6 +628,7 @@ public class Select2ActionsBean implements Serializable {
         JsonDocumentWriter.writeDocument(out, doc, schemas);
         out.flush();
         return new String(baos.toByteArray(), "UTF-8");
+
     }
 
     public String resolveSingleReferenceLabel(final String storedReference,
