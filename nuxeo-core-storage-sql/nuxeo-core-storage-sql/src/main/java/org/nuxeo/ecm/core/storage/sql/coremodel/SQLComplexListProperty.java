@@ -97,7 +97,7 @@ public class SQLComplexListProperty extends SQLBaseProperty {
         // remove previous nodes
         List<Node> nodes = session.getComplexList(node, name);
         for (Node n : nodes) {
-            session.remove(n);
+            session.removeProperty(n);
         }
         // add new nodes
         List<Property> properties = session.makeProperties(node, name, type,

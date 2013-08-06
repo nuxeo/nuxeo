@@ -418,11 +418,11 @@ public class DialectPostgreSQL extends Dialect {
         String typeName;
         switch (type) {
         case Types.VARCHAR:
+        case Types.OTHER: // id
             typeName = "varchar";
             break;
         default:
-            // TODO others not used yet
-            throw new RuntimeException("" + type);
+            throw new AssertionError("Unknown type: " + type);
         }
         return new PostgreSQLArray(type, typeName, elements);
     }
@@ -566,6 +566,7 @@ public class DialectPostgreSQL extends Dialect {
                 Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
@@ -772,6 +773,16 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getAncestorsIdsSql() {
         return "SELECT NX_ANCESTORS(?)";
+    }
+
+    @Override
+    public String getSoftDeleteSql() {
+        return "SELECT NX_DELETE(?, ?)";
+    }
+
+    @Override
+    public String getSoftDeleteCleanupSql() {
+        return "SELECT NX_DELETE_PURGE(?, ?)";
     }
 
 }

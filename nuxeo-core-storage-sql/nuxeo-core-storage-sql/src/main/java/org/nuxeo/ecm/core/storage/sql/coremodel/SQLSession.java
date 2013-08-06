@@ -795,6 +795,14 @@ public class SQLSession implements Session {
         }
     }
 
+    protected void removeProperty(Node node) throws DocumentException {
+        try {
+            session.removePropertyNode(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     protected Document checkIn(Node node, String label, String checkinComment)
             throws DocumentException {
         try {

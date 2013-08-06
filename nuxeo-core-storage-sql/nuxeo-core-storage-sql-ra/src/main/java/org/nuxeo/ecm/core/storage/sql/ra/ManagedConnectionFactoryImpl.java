@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.FileInputStream;
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -242,6 +243,14 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
         if (repository != null) {
             repository.processClusterInvalidationsNext();
         }
+    }
+
+    @Override
+    public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
+        if (repository == null) {
+            return 0;
+        }
+        return repository.cleanupDeletedDocuments(max, beforeTime);
     }
 
     /*

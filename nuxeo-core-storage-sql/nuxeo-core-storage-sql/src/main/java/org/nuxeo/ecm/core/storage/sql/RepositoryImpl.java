@@ -13,12 +13,14 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
+import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
@@ -354,8 +356,8 @@ public class RepositoryImpl implements Repository {
 
     protected SessionImpl newSession(Mapper mapper, Credentials credentials)
             throws StorageException {
-        mapper = new CachingMapper(mapper, cachePropagator, eventPropagator,
-                repositoryEventQueue);
+        mapper = new CachingMapper(model, mapper, cachePropagator,
+                eventPropagator, repositoryEventQueue);
         return new SessionImpl(this, model, mapper, credentials);
     }
 
@@ -463,6 +465,23 @@ public class RepositoryImpl implements Repository {
     @Override
     public void processClusterInvalidationsNext() {
         // TODO pass through or something
+    }
+
+    @Override
+    public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
+        if (!repositoryDescriptor.softDeleteEnabled) {
+            return 0;
+        }
+        try {
+            SessionImpl conn = getConnection();
+            try {
+                return conn.cleanupDeletedDocuments(max, beforeTime);
+            } finally {
+                conn.close();
+            }
+        } catch (ResourceException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*

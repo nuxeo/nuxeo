@@ -12,11 +12,15 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.Serializable;
+import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,11 +51,14 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 
 /**
  * A {@link JDBCRowMapper} maps {@link Row}s to and from a JDBC database.
  */
 public class JDBCRowMapper extends JDBCConnection implements RowMapper {
+
+    public static final int DEBUG_MAX_TREE = 50;
 
     /**
      * Cluster node handler, or {@code null} if this {@link Mapper} is not the
@@ -427,6 +434,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (!batch.deletes.isEmpty()) {
             writeDeletes(batch.deletes);
         }
+        // batch.deletesDependent not executed
     }
 
     protected void writeCreates(List<Row> creates) throws StorageException {
@@ -611,7 +619,152 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         insertCollectionRows(row);
     }
 
+    protected void deleteRowsSoft(List<NodeInfo> nodeInfos)
+            throws StorageException {
+        try {
+            int size = nodeInfos.size();
+            List<Serializable> ids = new ArrayList<Serializable>(size);
+            for (NodeInfo info : nodeInfos) {
+                ids.add(info.id);
+            }
+            int chunkSize = 100; // max size of ids array
+            if (size <= chunkSize) {
+                doSoftDeleteRows(ids);
+            } else {
+                for (int start = 0; start < size;) {
+                    int end = start + chunkSize;
+                    if (end > size) {
+                        end = size;
+                    }
+                    doSoftDeleteRows(ids.subList(start, end));
+                    start = end;
+                }
+            }
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Could not soft delete", e);
+        }
+    }
+
+    // not chunked
+    protected void doSoftDeleteRows(List<Serializable> ids) throws SQLException {
+        Serializable whereIds = newIdArray(ids);
+        Calendar now = Calendar.getInstance();
+        String sql = sqlInfo.getSoftDeleteSql();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Arrays.asList(whereIds, now));
+        }
+        PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            setToPreparedStatementIdArray(ps, 1, whereIds);
+            sqlInfo.dialect.setToPreparedStatementTimestamp(ps, 2, now, null);
+            ps.execute();
+            return;
+        } finally {
+            closeStatement(ps);
+        }
+    }
+
+    protected Serializable newIdArray(Collection<Serializable> ids) {
+        if (sqlInfo.dialect.supportsArrays()) {
+            return ids.toArray(); // Object[]
+        } else {
+            // join with '|'
+            StringBuilder b = new StringBuilder();
+            for (Serializable id : ids) {
+                b.append(id);
+                b.append('|');
+            }
+            b.setLength(b.length() - 1);
+            return b.toString();
+        }
+    }
+
+    protected void setToPreparedStatementIdArray(PreparedStatement ps,
+            int index, Serializable idArray) throws SQLException {
+        if (idArray instanceof String) {
+            ps.setString(index, (String) idArray);
+        } else {
+            Array array = sqlInfo.dialect.createArrayOf(Types.OTHER,
+                    (Object[]) idArray, connection);
+            ps.setArray(index, array);
+        }
+    }
+
+    /**
+     * Clean up soft-deleted rows.
+     * <p>
+     * Rows deleted more recently than the beforeTime are left alone. Only a
+     * limited number of rows may be deleted, to prevent transaction during too
+     * long.
+     * @param max the maximum number of rows to delete at a time
+     * @param beforeTime the maximum deletion time of the rows to delete
+     *
+     * @return the number of rows deleted
+     * @throws StorageException
+     */
+    public int cleanupDeletedRows(int max, Calendar beforeTime)
+            throws StorageException {
+        if (max < 0) {
+            max = 0;
+        }
+        String sql = sqlInfo.getSoftDeleteCleanupSql();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(
+                    sql,
+                    Arrays.<Serializable> asList(beforeTime,
+                            Long.valueOf(max)));
+        }
+        try {
+            if (sql.startsWith("{")) {
+                // callable statement
+                boolean outFirst = sql.startsWith("{?=");
+                int outIndex = outFirst ? 1 : 3;
+                int inIndex = outFirst ? 2 : 1;
+                CallableStatement cs = connection.prepareCall(sql);
+                try {
+                    cs.setInt(inIndex, max);
+                    sqlInfo.dialect.setToPreparedStatementTimestamp(cs,
+                            inIndex + 1, beforeTime, null);
+                    cs.registerOutParameter(outIndex, Types.INTEGER);
+                    cs.execute();
+                    int count = cs.getInt(outIndex);
+                    logger.logCount(count);
+                    return count;
+                } finally {
+                    cs.close();
+                }
+            } else {
+                // standard prepared statement with result set
+                PreparedStatement ps = connection.prepareStatement(sql);
+                try {
+                    ps.setInt(1, max);
+                    sqlInfo.dialect.setToPreparedStatementTimestamp(ps, 2,
+                            beforeTime, null);
+                    ResultSet rs = ps.executeQuery();
+                    if (!rs.next()) {
+                        throw new StorageException("Cannot get result");
+                    }
+                    int count = rs.getInt(1);
+                    logger.logCount(count);
+                    return count;
+                } finally {
+                    closeStatement(ps);
+                }
+            }
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Could not purge soft delete", e);
+        }
+    }
+
+    // in Nuxeo 5.7 this does additional batching
     protected void deleteRows(String tableName, Serializable id)
+            throws StorageException {
+        deleteRowsDirect(tableName, id);
+    }
+
+    protected void deleteRowsDirect(String tableName, Serializable id)
             throws StorageException {
         try {
             String sql = sqlInfo.getDeleteSql(tableName);
@@ -855,6 +1008,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
                     idToTypes).entrySet()) {
                 String tableName = entry.getKey();
+                if (tableName.equals(model.HIER_TABLE_NAME)) {
+                    // already done
+                    continue;
+                }
+                if (tableName.equals(model.VERSION_TABLE_NAME)) {
+                    // versions not fileable
+                    // restore must not copy versions either
+                    continue;
+                }
                 // TODO move ACL skip logic higher
                 if (tableName.equals(model.ACL_TABLE_NAME)) {
                     continue;
@@ -1140,5 +1302,92 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             closeStatement(deletePs);
         }
     }
+
+    @Override
+    public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
+        Serializable rootId = rootInfo.id;
+        List<NodeInfo> info = getDescendantsInfo(rootId);
+        info.add(rootInfo);
+        if (sqlInfo.softDeleteEnabled) {
+            deleteRowsSoft(info);
+        } else {
+            deleteRowsDirect(model.HIER_TABLE_NAME, rootId);
+        }
+        return info;
+    }
+
+    protected List<NodeInfo> getDescendantsInfo(Serializable rootId)
+            throws StorageException {
+        List<NodeInfo> descendants = new LinkedList<NodeInfo>();
+        String sql = sqlInfo.getSelectDescendantsInfoSql();
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(rootId));
+        }
+        List<Column> columns = sqlInfo.getSelectDescendantsInfoWhatColumns();
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(sql);
+            List<String> debugValues = null;
+            if (logger.isLogEnabled()) {
+                debugValues = new LinkedList<String>();
+            }
+            ps.setObject(1, rootId); // parent id
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Serializable id = null;
+                Serializable parentId = null;
+                String primaryType = null;
+                Boolean isProperty = null;
+                Serializable targetId = null;
+                Serializable versionableId = null;
+                int i = 1;
+                for (Column column : columns) {
+                    String key = column.getKey();
+                    Serializable value = column.getFromResultSet(rs, i++);
+                    if (key.equals(model.MAIN_KEY)) {
+                        id = value;
+                    } else if (key.equals(model.HIER_PARENT_KEY)) {
+                        parentId = value;
+                    } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
+                        primaryType = (String) value;
+                    } else if (key.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
+                        isProperty = (Boolean) value;
+                    } else if (key.equals(model.PROXY_TARGET_KEY)) {
+                        targetId = value;
+                    } else if (key.equals(model.PROXY_VERSIONABLE_KEY)) {
+                        versionableId = value;
+                    }
+                    // no mixins (not useful to caller)
+                    // no versions (not fileable)
+                }
+                descendants.add(new NodeInfo(id, parentId, primaryType,
+                        isProperty, versionableId, targetId));
+                if (debugValues != null) {
+                    if (debugValues.size() < DEBUG_MAX_TREE) {
+                        debugValues.add(id + "/" + primaryType);
+                    }
+                }
+            }
+            if (debugValues != null) {
+                if (debugValues.size() >= DEBUG_MAX_TREE) {
+                    debugValues.add("... (" + descendants.size() + ") results");
+                }
+                logger.log("  -> " + debugValues);
+            }
+            return descendants;
+        } catch (Exception e) {
+            checkConnectionReset(e);
+            throw new StorageException("Failed to get descendants", e);
+        } finally {
+            if (ps != null) {
+                try {
+                    closeStatement(ps);
+                } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+        }
+    }
+
 
 }

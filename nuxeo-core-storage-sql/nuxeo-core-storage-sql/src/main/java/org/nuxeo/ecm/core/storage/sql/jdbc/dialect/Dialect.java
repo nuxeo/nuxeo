@@ -83,6 +83,11 @@ public abstract class Dialect {
 
     protected final boolean aclOptimizationsEnabled;
 
+    /**
+     * @since 5.7
+     */
+    protected boolean softDeleteEnabled;
+
     protected final int readAclMaxSize;
 
     /**
@@ -144,10 +149,12 @@ public abstract class Dialect {
             fulltextDisabled = true;
             aclOptimizationsEnabled = false;
             readAclMaxSize = 0;
+            softDeleteEnabled = false;
         } else {
             fulltextDisabled = repositoryDescriptor.fulltextDisabled;
             aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
             readAclMaxSize = repositoryDescriptor.readAclMaxSize;
+            softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
         }
     }
 
@@ -208,10 +215,11 @@ public abstract class Dialect {
         ps.setString(index, v);
     }
 
-    protected void setToPreparedStatementTimestamp(PreparedStatement ps,
+    public void setToPreparedStatementTimestamp(PreparedStatement ps,
             int index, Serializable value, Column column) throws SQLException {
         Calendar cal = (Calendar) value;
-        Timestamp ts = new Timestamp(cal.getTimeInMillis());
+        Timestamp ts = cal == null ? null
+                : new Timestamp(cal.getTimeInMillis());
         ps.setTimestamp(index, ts, cal); // cal passed for timezone
     }
 
@@ -1121,6 +1129,22 @@ public abstract class Dialect {
      */
     public String getAncestorsIdsSql() {
         return null;
+    }
+
+    /**
+     * SQL to soft delete documents. SQL returned has free parameters for the
+     * array of ids and time.
+     */
+    public String getSoftDeleteSql() {
+        throw new UnsupportedOperationException("Soft deletes not supported");
+    }
+
+    /**
+     * SQL to clean soft-delete documents. SQL returned has free parameters
+     * max and beforeTime.
+     */
+    public String getSoftDeleteCleanupSql() {
+        throw new UnsupportedOperationException("Soft deletes not supported");
     }
 
 }

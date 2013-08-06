@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
@@ -307,6 +308,11 @@ public class ConnectionFactoryImpl implements Repository,
     @Override
     public void processClusterInvalidationsNext() {
         managedConnectionFactory.processClusterInvalidationsNext();
+    }
+
+    @Override
+    public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
+        return managedConnectionFactory.cleanupDeletedDocuments(max, beforeTime);
     }
 
     @Override

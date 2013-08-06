@@ -127,6 +127,9 @@ public class RepositoryDescriptor {
     @XNode("noDDL")
     public boolean noDDL = false;
 
+    @XNode("softDelete@enabled")
+    public boolean softDeleteEnabled;
+
     @XNode("clustering@enabled")
     public boolean clusteringEnabled;
 
@@ -192,6 +195,7 @@ public class RepositoryDescriptor {
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         noDDL = other.noDDL;
+        softDeleteEnabled = other.softDeleteEnabled;
         schemaFields = other.schemaFields;
         fulltextDisabled = other.fulltextDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;

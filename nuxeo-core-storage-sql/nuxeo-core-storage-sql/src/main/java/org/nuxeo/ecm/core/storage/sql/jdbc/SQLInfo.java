@@ -58,6 +58,8 @@ public class SQLInfo {
 
     public final Dialect dialect;
 
+    public final boolean softDeleteEnabled;
+
     private final Model model;
 
     private String selectRootIdSql;
@@ -93,6 +95,10 @@ public class SQLInfo {
     private String selectComplexChildrenIdsAndTypesSql;
 
     private List<Column> selectChildrenIdsAndTypesWhatColumns;
+
+    private String selectDescendantsInfoSql;
+
+    private List<Column> selectDescendantsInfoWhatColumns;
 
     private String copyHierSqlExplicitName;
 
@@ -152,6 +158,7 @@ public class SQLInfo {
     public SQLInfo(Model model, Dialect dialect) throws StorageException {
         this.model = model;
         this.dialect = dialect;
+        softDeleteEnabled = model.getRepositoryDescriptor().softDeleteEnabled;
 
         database = new Database(dialect);
 
@@ -263,6 +270,14 @@ public class SQLInfo {
         return selectChildrenIdsAndTypesWhatColumns;
     }
 
+    public String getSelectDescendantsInfoSql() {
+        return selectDescendantsInfoSql;
+    }
+
+    public List<Column> getSelectDescendantsInfoWhatColumns() {
+        return selectDescendantsInfoWhatColumns;
+    }
+
     // ----- cluster -----
 
     public List<Column> getClusterInvalidationsColumns() {
@@ -293,34 +308,78 @@ public class SQLInfo {
         return insertColumnsMap.get(tableName);
     }
 
+    // -----
+
+    /**
+     * Returns the clause used to match a given row by id in the given table.
+     * <p>
+     * Takes into account soft deletes.
+     *
+     * @param tableName the table name
+     * @return the clause, like {@code table.id = ?}
+     */
+    public String getIdEqualsClause(String tableName) {
+        return database.getTable(tableName).getColumn(model.MAIN_KEY).getQuotedName()
+                + " = ?" + getSoftDeleteClause(tableName);
+    }
+
+    /**
+     * Returns {@code AND isdeleted IS NULL} if this is the hierarchy table and
+     * soft delete is activated.
+     *
+     * @param tableName the table name
+     * @return the clause
+     */
+    public String getSoftDeleteClause(String tableName) {
+        if (model.HIER_TABLE_NAME.equals(tableName) && softDeleteEnabled) {
+            return " AND " + getSoftDeleteClause();
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * Returns null or {@code AND isdeleted IS NULL} if soft delete is
+     * activated.
+     *
+     * @return the clause, or null
+     */
+    public String getSoftDeleteClause() {
+        if (softDeleteEnabled) {
+            return database.getTable(model.HIER_TABLE_NAME).getColumn(
+                    model.MAIN_IS_DELETED_KEY).getFullQuotedName()
+                    + " IS NULL";
+        } else {
+            return null;
+        }
+    }
+
     // ----- update -----
 
     // TODO these two methods are redundant with one another
 
     public SQLInfoSelect getUpdateById(String tableName, Collection<String> keys) {
         Table table = database.getTable(tableName);
-        Column mainColumn = table.getColumn(model.MAIN_KEY);
         List<Column> columns = new LinkedList<Column>();
         for (String key : keys) {
             columns.add(table.getColumn(key));
         }
         Update update = new Update(table);
         update.setUpdatedColumns(columns);
-        update.setWhere(mainColumn.getQuotedName() + " = ?");
-        columns.add(mainColumn);
+        update.setWhere(getIdEqualsClause(tableName));
+        columns.add(table.getColumn(model.MAIN_KEY));
         return new SQLInfoSelect(update.getStatement(), columns, null, null);
     }
 
     public Update getUpdateByIdForKeys(String tableName, List<String> keys) {
         Table table = database.getTable(tableName);
-        Column mainColumn = table.getColumn(model.MAIN_KEY);
         List<Column> columns = new LinkedList<Column>();
         for (String key : keys) {
             columns.add(table.getColumn(key));
         }
         Update update = new Update(table);
         update.setUpdatedColumns(columns);
-        update.setWhere(mainColumn.getQuotedName() + " = ?");
+        update.setWhere(getIdEqualsClause(tableName));
         return update;
     }
 
@@ -360,6 +419,7 @@ public class SQLInfo {
             wherebuf.append('?');
         }
         wherebuf.append(')');
+        wherebuf.append(getSoftDeleteClause(tableName));
         Select select = new Select(table);
         select.setWhat(StringUtils.join(whats, ", "));
         select.setFrom(table.getQuotedName());
@@ -379,8 +439,7 @@ public class SQLInfo {
     /**
      * Select all ancestors ids for several fragments.
      * <p>
-     * Fast alternative to the slowest iterative
-     * {@link #getSelectParentIds}.
+     * Fast alternative to the slowest iterative {@link #getSelectParentIds}.
      *
      * @return null if it's not possible in one call in this dialect
      */
@@ -391,6 +450,8 @@ public class SQLInfo {
         }
         Table table = database.getTable(model.HIER_TABLE_NAME);
         Column mainColumn = table.getColumn(model.MAIN_KEY);
+        // no soft-delete check needed, as ancestors of a non-deleted doc
+        // aren't deleted either
         return new SQLInfoSelect(sql, Collections.singletonList(mainColumn),
                 null, null);
     }
@@ -411,6 +472,7 @@ public class SQLInfo {
             wherebuf.append('?');
         }
         wherebuf.append(')');
+        wherebuf.append(getSoftDeleteClause(model.HIER_TABLE_NAME));
         Select select = new Select(table);
         select.setWhat("DISTINCT " + whatColumn.getQuotedName());
         select.setFrom(table.getQuotedName());
@@ -431,6 +493,26 @@ public class SQLInfo {
      */
     public String getDeleteSql(String tableName) {
         return deleteSqlMap.get(tableName);
+    }
+
+    /**
+     * Returns the SQL to soft-delete several rows. The array of ids and the
+     * time are free parameters.
+     *
+     * @return the SQL statement
+     */
+    public String getSoftDeleteSql() {
+        return dialect.getSoftDeleteSql();
+    }
+
+    /**
+     * Returns the SQL to clean (hard-delete) soft-deleted rows. The max and
+     * beforeTime are free parameters.
+     *
+     * @return the SQL statement
+     */
+    public String getSoftDeleteCleanupSql() {
+        return dialect.getSoftDeleteCleanupSql();
     }
 
     // ----- copy -----
@@ -547,6 +629,8 @@ public class SQLInfo {
                 new String[] { model.PROXY_TARGET_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
 
+        initSelectDescendantsSQL();
+
         /*
          * fulltext
          */
@@ -625,6 +709,47 @@ public class SQLInfo {
         maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
         // don't index parent+name+isprop, a simple isprop scan will suffice
         maker.table.addIndex(model.MAIN_PRIMARY_TYPE_KEY);
+
+        if (model.getRepositoryDescriptor().softDeleteEnabled) {
+            maker.table.addIndex(model.MAIN_IS_DELETED_KEY);
+        }
+    }
+
+    protected void initSelectDescendantsSQL() {
+        boolean proxiesEnabled = true;
+        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
+        Table proxyTable = null;
+        if (proxiesEnabled) {
+            proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+        }
+        Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
+        List<Column> whatCols = new ArrayList<Column>(Arrays.asList(mainColumn,
+                hierTable.getColumn(model.HIER_PARENT_KEY),
+                hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY),
+                hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY)));
+        if (proxiesEnabled) {
+            whatCols.add(proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY));
+            whatCols.add(proxyTable.getColumn(model.PROXY_TARGET_KEY));
+        }
+        // no mixins, not used to decide if we have a version or proxy
+        List<String> whats = new ArrayList<String>(6);
+        for (Column col : whatCols) {
+            whats.add(col.getFullQuotedName());
+        }
+        Select select = new Select(null);
+        select.setWhat(StringUtils.join(whats, ", "));
+        String from = hierTable.getQuotedName();
+        if (proxiesEnabled) {
+            from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON "
+                    + mainColumn.getFullQuotedName() + " = "
+                    + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+        }
+        select.setFrom(from);
+        String where = dialect.getInTreeSql(mainColumn.getFullQuotedName());
+        where += getSoftDeleteClause(model.HIER_TABLE_NAME);
+        select.setWhere(where);
+        selectDescendantsInfoSql = select.getStatement();
+        selectDescendantsInfoWhatColumns = whatCols;
     }
 
     /**
@@ -796,7 +921,8 @@ public class SQLInfo {
             Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
-            select.setWhere(StringUtils.join(wheres, " AND "));
+            select.setWhere(StringUtils.join(wheres, " AND ")
+                    + getSoftDeleteClause(tableName));
             selectByChildNameAllSql = select.getStatement();
             selectByChildNameAllWhatColumns = whatColumns;
             selectByChildNameAllWhereColumns = whereColumns;
@@ -830,7 +956,8 @@ public class SQLInfo {
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
             // regular children
-            select.setWhere(StringUtils.join(wheresRegular, " AND "));
+            select.setWhere(StringUtils.join(wheresRegular, " AND ")
+                    + getSoftDeleteClause(tableName));
             selectByChildNameRegularSql = select.getStatement();
             selectByChildNameRegularWhatColumns = whatColumns;
             selectByChildNameRegularWhereColumns = whereColumns;
@@ -841,7 +968,6 @@ public class SQLInfo {
             selectByChildNamePropertiesWhereColumns = whereColumns;
         }
 
-        // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
             List<Column> whatColumns = new ArrayList<Column>(2);
             List<String> whats = new ArrayList<String>(2);
@@ -855,7 +981,7 @@ public class SQLInfo {
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName());
             String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName()
-                    + " = ?";
+                    + " = ?" + getSoftDeleteClause(tableName);
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
@@ -1094,6 +1220,15 @@ public class SQLInfo {
      */
     public SQLInfoSelect makeSelect(Table table, String[] orderBys,
             String... freeColumns) {
+        return makeSelect(table, null, null, orderBys, freeColumns);
+    }
+
+    /**
+     * Same as above but the FROM can be passed in, to allow JOINs.
+     */
+    public SQLInfoSelect makeSelect(Table table, String from,
+            List<String> clauses, String[] orderBys, String... freeColumns) {
+        boolean fullQuotedName = from != null;
         List<String> freeColumnsList = Arrays.asList(freeColumns);
         List<Column> whatColumns = new LinkedList<Column>();
         List<Column> whereColumns = new LinkedList<Column>();
@@ -1101,7 +1236,8 @@ public class SQLInfo {
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         for (Column column : table.getColumns()) {
-            String qname = column.getQuotedName();
+            String qname = fullQuotedName ? column.getFullQuotedName()
+                    : column.getQuotedName();
             if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
@@ -1116,16 +1252,27 @@ public class SQLInfo {
             // only opaque columns, don't generate an illegal SELECT
             whats.add(table.getColumn(model.MAIN_KEY).getQuotedName());
         }
+        if (clauses != null) {
+            wheres.addAll(clauses);
+        }
         Select select = new Select(table);
         select.setWhat(StringUtils.join(whats, ", "));
-        select.setFrom(table.getQuotedName());
-        select.setWhere(StringUtils.join(wheres, " AND "));
+        if (from == null) {
+            from = table.getQuotedName();
+        }
+        select.setFrom(from);
+        String where = StringUtils.join(wheres, " AND ")
+                + getSoftDeleteClause(table.getKey());
+        select.setWhere(where);
         List<String> orders = new LinkedList<String>();
         for (int i = 0; i < orderBys.length; i++) {
             String name = orderBys[i++];
             String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC
                     : "";
-            orders.add(table.getColumn(name).getQuotedName() + ascdesc);
+            Column col = table.getColumn(name);
+            String qcol = fullQuotedName ? col.getFullQuotedName()
+                    : col.getQuotedName();
+            orders.add(qcol + ascdesc);
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,

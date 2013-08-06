@@ -116,6 +116,18 @@ public class Model {
 
     public static final String MAIN_IS_VERSION_KEY = "isversion";
 
+    // for soft-delete
+    public static final String MAIN_IS_DELETED_PROP = "ecm:isDeleted";
+
+    // for soft-delete
+    public static final String MAIN_IS_DELETED_KEY = "isdeleted";
+
+    // for soft-delete
+    public static final String MAIN_DELETED_TIME_PROP = "ecm:deletedTime";
+
+    // for soft-delete
+    public static final String MAIN_DELETED_TIME_KEY = "deletedtime";
+
     public static final String UID_SCHEMA_NAME = "uid";
 
     public static final String UID_MAJOR_VERSION_KEY = "major_version";
@@ -247,7 +259,8 @@ public class Model {
      * Special (non-schema-based) simple fragments present in all types.
      * {@link #FULLTEXT_TABLE_NAME} is added to it if not disabled.
      */
-    public static final List<String> COMMON_SIMPLE_FRAGMENTS = Collections.singletonList(MISC_TABLE_NAME);
+    public static final List<String> COMMON_SIMPLE_FRAGMENTS = Arrays.asList(
+            VERSION_TABLE_NAME, MISC_TABLE_NAME);
 
     /** Special (non-schema-based) collection fragments present in all types. */
     public static final String[] COMMON_COLLECTION_FRAGMENTS = { ACL_TABLE_NAME };
@@ -257,6 +270,8 @@ public class Model {
             ACL_TABLE_NAME, VERSION_TABLE_NAME, MISC_TABLE_NAME };
 
     protected final RepositoryDescriptor repositoryDescriptor;
+
+    protected final boolean softDeleteEnabled;
 
     // private final AtomicLong temporaryIdCounter;
 
@@ -311,9 +326,6 @@ public class Model {
      */
     private final Map<String, String> schemaFragment;
 
-    /** Maps document type or schema to simple fragments. */
-    protected final Map<String, Set<String>> typeSimpleFragments;
-
     /** Maps schema to collection fragments. */
     protected final Map<String, Set<String>> typeCollectionFragments;
 
@@ -346,6 +358,7 @@ public class Model {
         repositoryDescriptor = modelSetup.repositoryDescriptor;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
         // temporaryIdCounter = new AtomicLong(0);
+        softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
 
         documentTypesSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
@@ -368,7 +381,6 @@ public class Model {
         schemaFragment = new HashMap<String, String>();
         typeFragments = new HashMap<String, Set<String>>();
         mixinFragments = new HashMap<String, Set<String>>();
-        typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
         typePrefetchedFragments = new HashMap<String, Set<String>>();
         fieldFragments = new HashMap<String, Set<String>>();
@@ -870,19 +882,6 @@ public class Model {
         return fragmentsKeys.get(fragmentName);
     }
 
-    protected void addTypeSimpleFragment(String typeName, String fragmentName) {
-        Set<String> fragments = typeSimpleFragments.get(typeName);
-        if (fragments == null) {
-            fragments = new HashSet<String>();
-            typeSimpleFragments.put(typeName, fragments);
-        }
-        // fragmentName may be null, to just create the entry
-        if (fragmentName != null) {
-            fragments.add(fragmentName);
-        }
-        addTypeFragment(typeName, fragmentName);
-    }
-
     protected void addTypeCollectionFragment(String typeName,
             String fragmentName) {
         Set<String> fragments = typeCollectionFragments.get(typeName);
@@ -930,10 +929,6 @@ public class Model {
                     fragments = new HashSet<String>());
         }
         fragments.add(fragmentName);
-    }
-
-    public Set<String> getTypeSimpleFragments(String typeName) {
-        return typeSimpleFragments.get(typeName);
     }
 
     public Set<String> getTypeFragments(String typeName) {
@@ -991,22 +986,7 @@ public class Model {
         for (Entry<Serializable, IdWithTypes> e : idToTypes.entrySet()) {
             Serializable id = e.getKey();
             IdWithTypes typeInfo = e.getValue();
-            Set<String> fragmentNames = new HashSet<String>();
-            Set<String> tf = getTypeFragments(typeInfo.primaryType);
-            if (tf != null) {
-                // null if unknown type left in the database
-                fragmentNames.addAll(tf);
-            }
-            String[] mixins = typeInfo.mixinTypes;
-            if (mixins != null) {
-                for (String mixin : mixins) {
-                    Set<String> mf = getMixinFragments(mixin);
-                    if (mf != null) {
-                        fragmentNames.addAll(mf);
-                    }
-                }
-            }
-            for (String fragmentName : fragmentNames) {
+            for (String fragmentName : getTypeFragments(typeInfo)) {
                 Set<Serializable> fragmentIds = allFragmentIds.get(fragmentName);
                 if (fragmentIds == null) {
                     allFragmentIds.put(fragmentName,
@@ -1016,6 +996,30 @@ public class Model {
             }
         }
         return allFragmentIds;
+    }
+
+    /**
+     * Gets the type fragments for a primary type and mixin types. Hierarchy is
+     * included.
+     */
+    public Set<String> getTypeFragments(IdWithTypes typeInfo) {
+        Set<String> fragmentNames = new HashSet<String>();
+        fragmentNames.add(HIER_TABLE_NAME);
+        Set<String> tf = getTypeFragments(typeInfo.primaryType);
+        if (tf != null) {
+            // null if unknown type left in the database
+            fragmentNames.addAll(tf);
+        }
+        String[] mixins = typeInfo.mixinTypes;
+        if (mixins != null) {
+            for (String mixin : mixins) {
+                Set<String> mf = getMixinFragments(mixin);
+                if (mf != null) {
+                    fragmentNames.addAll(mf);
+                }
+            }
+        }
+        return fragmentNames;
     }
 
     private PropertyType mainIdType() {
@@ -1032,7 +1036,7 @@ public class Model {
                 + repositoryDescriptor.schemaFields);
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             String typeName = documentType.getName();
-            addTypeSimpleFragment(typeName, null); // create entry
+            addTypeFragment(typeName, null); // create entry
 
             Set<String> docTypeSchemas = new HashSet<String>();
             for (Schema schema : documentType.getSchemas()) {
@@ -1043,7 +1047,7 @@ public class Model {
                 }
                 docTypeSchemas.add(schema.getName());
                 String fragmentName = initTypeModel(schema);
-                addTypeSimpleFragment(typeName, fragmentName); // may be null
+                addTypeFragment(typeName, fragmentName); // may be null
                 // collection fragments too for this schema
                 Set<String> cols = typeCollectionFragments.get(schema.getName());
                 if (cols != null) {
@@ -1057,7 +1061,7 @@ public class Model {
             inferTypePropertyPaths(documentType);
 
             for (String fragmentName : getCommonSimpleFragments(typeName)) {
-                addTypeSimpleFragment(typeName, fragmentName);
+                addTypeFragment(typeName, fragmentName);
             }
             for (String fragmentName : COMMON_COLLECTION_FRAGMENTS) {
                 addTypeCollectionFragment(typeName, fragmentName);
@@ -1201,6 +1205,15 @@ public class Model {
         addPropertyInfo(null, MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN,
                 HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        if (softDeleteEnabled) {
+            addPropertyInfo(null, MAIN_IS_DELETED_PROP, PropertyType.BOOLEAN,
+                    HIER_TABLE_NAME, MAIN_IS_DELETED_KEY, true,
+                    BooleanType.INSTANCE, ColumnType.BOOLEAN);
+            addPropertyInfo(null, MAIN_DELETED_TIME_PROP,
+                    PropertyType.DATETIME, HIER_TABLE_NAME,
+                    MAIN_DELETED_TIME_KEY, true, DateType.INSTANCE,
+                    ColumnType.TIMESTAMP);
+        }
     }
 
     /**
@@ -1250,7 +1263,7 @@ public class Model {
         addPropertyInfo(PROXY_TYPE, PROXY_VERSIONABLE_PROP, mainIdType(),
                 PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false,
                 StringType.INSTANCE, ColumnType.NODEVAL);
-        addTypeSimpleFragment(PROXY_TYPE, PROXY_TABLE_NAME);
+        addTypeFragment(PROXY_TYPE, PROXY_TABLE_NAME);
     }
 
     /**
@@ -1340,7 +1353,7 @@ public class Model {
                 ComplexType fieldComplexType = (ComplexType) fieldType;
                 String subTypeName = fieldComplexType.getName();
                 String subFragmentName = initTypeModel(fieldComplexType);
-                addTypeSimpleFragment(subTypeName, subFragmentName);
+                addTypeFragment(subTypeName, subFragmentName);
             } else {
                 String propertyName = field.getName().getPrefixedName();
                 if (fieldType.isListType()) {
@@ -1380,7 +1393,7 @@ public class Model {
                          * Complex list.
                          */
                         String subFragmentName = initTypeModel((ComplexType) listFieldType);
-                        addTypeSimpleFragment(listFieldType.getName(),
+                        addTypeFragment(listFieldType.getName(),
                                 subFragmentName);
                     }
                 } else {

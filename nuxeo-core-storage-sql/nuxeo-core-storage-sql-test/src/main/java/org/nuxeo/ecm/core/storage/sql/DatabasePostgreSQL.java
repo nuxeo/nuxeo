@@ -98,4 +98,9 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         return true;
     }
 
+    @Override
+    public boolean supportsSoftDelete() {
+        return true;
+    }
+
 }

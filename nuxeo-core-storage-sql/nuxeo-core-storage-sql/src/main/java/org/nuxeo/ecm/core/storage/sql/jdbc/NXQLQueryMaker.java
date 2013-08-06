@@ -413,6 +413,15 @@ public class NXQLQueryMaker implements QueryMaker {
             }
 
             /*
+             * Soft delete.
+             */
+
+            if (model.getRepositoryDescriptor().softDeleteEnabled) {
+                whereClauses.add(hierTable.getColumn(model.MAIN_IS_DELETED_KEY).getFullQuotedName()
+                        + " IS NULL");
+            }
+
+            /*
              * Security check.
              */
 

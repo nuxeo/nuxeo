@@ -53,6 +53,8 @@ public class CachingRowMapper implements RowMapper {
     // references to it which would prevent its GCing
     private final Map<RowId, Row> cache;
 
+    private Model model;
+
     /**
      * The {@link RowMapper} to which operations that cannot be processed from
      * the cache are delegated.
@@ -95,10 +97,11 @@ public class CachingRowMapper implements RowMapper {
     protected boolean forRemoteClient;
 
     @SuppressWarnings("unchecked")
-    public CachingRowMapper(RowMapper rowMapper,
+    public CachingRowMapper(Model model, RowMapper rowMapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
             InvalidationsQueue repositoryEventQueue) {
+        this.model = model;
         this.rowMapper = rowMapper;
         cache = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
         localInvalidations = new Invalidations();
@@ -343,6 +346,13 @@ public class CachingRowMapper implements RowMapper {
                 localInvalidations.addDeleted(rowId);
             }
         }
+        for (RowId rowId : batch.deletesDependent) {
+            if (rowId instanceof Row) {
+                throw new AssertionError();
+            }
+            cachePutAbsent(rowId);
+            localInvalidations.addDeleted(rowId);
+        }
 
         // propagate to underlying mapper
         rowMapper.write(batch);
@@ -451,6 +461,23 @@ public class CachingRowMapper implements RowMapper {
             }
         }
         return result;
+    }
+
+    @Override
+    public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
+        List<NodeInfo> infos = rowMapper.remove(rootInfo);
+        for (NodeInfo info : infos) {
+            for (String fragmentName : model.getTypeFragments(new IdWithTypes(
+                    info.id, info.primaryType, null))) {
+                RowId rowId = new RowId(fragmentName, info.id);
+                cacheRemove(rowId);
+                localInvalidations.addDeleted(rowId);
+            }
+        }
+        // we only put as absent the root fragment, to avoid polluting the cache
+        // with lots of absent info. the rest is removed entirely
+        cachePutAbsent(new RowId(Model.HIER_TABLE_NAME, rootInfo.id));
+        return infos;
     }
 
 }

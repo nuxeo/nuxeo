@@ -183,4 +183,8 @@ public abstract class DatabaseHelper {
         throw new UnsupportedOperationException();
     }
 
+    public boolean supportsSoftDelete() {
+        return false;
+    }
+
 }

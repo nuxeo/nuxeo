@@ -130,9 +130,16 @@ public class JDBCLogger {
         logSQL(sql, values);
     }
 
+    // callable statement with one return value
+    private static final String CALLABLE_START = "{?=";
+
     public void logSQL(String sql, Collection<Serializable> values) {
         StringBuilder buf = new StringBuilder();
         int start = 0;
+        if (sql.startsWith(CALLABLE_START)) {
+            buf.append(CALLABLE_START);
+            start = CALLABLE_START.length();
+        }
         for (Serializable v : values) {
             int index = sql.indexOf('?', start);
             if (index == -1) {
@@ -151,7 +158,7 @@ public class JDBCLogger {
      * Returns a loggable value using pseudo-SQL syntax.
      */
     @SuppressWarnings("boxing")
-    public static String loggedValue(Serializable value) {
+    public static String loggedValue(Object value) {
         if (value == null) {
             return "NULL";
         }
@@ -187,8 +194,8 @@ public class JDBCLogger {
         if (value instanceof Binary) {
             return "'" + ((Binary) value).getDigest() + "'";
         }
-        if (value.getClass().isArray()) {
-            Serializable[] v = (Serializable[]) value;
+        if (value instanceof Object[]) {
+            Object[] v = (Object[]) value;
             StringBuilder b = new StringBuilder();
             b.append('[');
             for (int i = 0; i < v.length; i++) {

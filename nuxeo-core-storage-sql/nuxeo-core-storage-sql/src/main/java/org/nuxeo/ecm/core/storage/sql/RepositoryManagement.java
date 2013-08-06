@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.Calendar;
 import java.util.Collection;
 
 import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
@@ -69,5 +70,15 @@ public interface RepositoryManagement {
      * Get info about current VCS server clients
      */
     Collection<MapperClientInfo> getClientInfos();
+
+    /**
+     * Cleans up (hard-deletes) any documents that have been soft-deleted in the
+     * database.
+     *
+     * @param max the maximum number of documents to delete at a time
+     * @param beforeTime the maximum deletion time of the documents to delete
+     * @return the number of documents deleted
+     */
+    int cleanupDeletedDocuments(int max, Calendar beforeTime);
 
 }

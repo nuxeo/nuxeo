@@ -515,6 +515,7 @@ public class DialectOracle extends Dialect {
         properties.put("pathOptimizationsEnabled",
                 Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
@@ -592,6 +593,16 @@ public class DialectOracle extends Dialect {
     @Override
     public String getAncestorsIdsSql() {
         return "SELECT NX_ANCESTORS(?) FROM DUAL";
+    }
+
+    @Override
+    public String getSoftDeleteSql() {
+        return "{CALL NX_DELETE(?, ?)}";
+    }
+
+    @Override
+    public String getSoftDeleteCleanupSql() {
+        return "{CALL NX_DELETE_PURGE(?, ?, ?)}";
     }
 
 }

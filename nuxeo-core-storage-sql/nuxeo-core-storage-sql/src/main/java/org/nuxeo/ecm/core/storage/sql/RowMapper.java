@@ -114,20 +114,29 @@ public interface RowMapper {
          */
         public final Set<RowId> deletes;
 
+        /**
+         * Dependent deletes aren't executed in the database but still trigger
+         * invalidations.
+         */
+        public final Set<RowId> deletesDependent;
+
         public RowBatch() {
             creates = new LinkedList<Row>();
             updates = new HashSet<RowUpdate>();
             deletes = new HashSet<RowId>();
+            deletesDependent = new HashSet<RowId>();
         }
 
         public boolean isEmpty() {
-            return creates.isEmpty() && updates.isEmpty() && deletes.isEmpty();
+            return creates.isEmpty() && updates.isEmpty() && deletes.isEmpty()
+                    && deletesDependent.isEmpty();
         }
 
         @Override
         public String toString() {
             return getClass().getSimpleName() + "(creates=" + creates
-                    + ", updates=" + updates + ", deletes=" + deletes + ')';
+                    + ", updates=" + updates + ", deletes=" + deletes
+                    + ", deletesDependent=" + deletesDependent + ')';
         }
     }
 
@@ -216,6 +225,9 @@ public interface RowMapper {
      * ----- Copy -----
      */
 
+    /**
+     * A document id and its primary type and mixin types.
+     */
     public static final class IdWithTypes implements Serializable {
         private static final long serialVersionUID = 1L;
 
@@ -236,6 +248,12 @@ public interface RowMapper {
             this.id = node.getId();
             this.primaryType = node.getPrimaryType();
             this.mixinTypes = node.getMixinTypes();
+        }
+
+        public IdWithTypes(SimpleFragment hierFragment) throws StorageException {
+            this.id = hierFragment.getId();
+            this.primaryType = hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY);
+            this.mixinTypes = (String[]) hierFragment.get(Model.MAIN_MIXIN_TYPES_KEY);
         }
     }
 
@@ -277,6 +295,75 @@ public interface RowMapper {
     CopyHierarchyResult copyHierarchy(IdWithTypes source,
             Serializable destParentId, String destName, Row overwriteRow)
             throws StorageException;
+
+    /**
+     * A document id, parent id and primary type, along with the version and
+     * proxy information (the potentially impacted selections).
+     * <p>
+     * Used to return info about a descendants tree for removal.
+     */
+    public static final class NodeInfo implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public final Serializable id;
+
+        public final Serializable parentId;
+
+        public final String primaryType;
+
+        public final Boolean isProperty;
+
+        public final Serializable versionSeriesId;
+
+        public final Serializable targetId;
+
+        /**
+         * Creates node info for a node that may also be a proxy.
+         */
+        public NodeInfo(Serializable id, Serializable parentId,
+                String primaryType, Boolean isProperty,
+                Serializable versionSeriesId, Serializable targetId) {
+            this.id = id;
+            this.parentId = parentId;
+            this.primaryType = primaryType;
+            this.isProperty = isProperty;
+            this.versionSeriesId = versionSeriesId;
+            this.targetId = targetId;
+        }
+
+        /**
+         * Creates node info for a node that may also be a proxy or a version.
+         */
+        public NodeInfo(SimpleFragment hierFragment,
+                SimpleFragment versionFragment, SimpleFragment proxyFragment)
+                throws StorageException {
+            id = hierFragment.getId();
+            parentId = hierFragment.get(Model.HIER_PARENT_KEY);
+            primaryType = hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY);
+            isProperty = (Boolean) hierFragment.get(Model.HIER_CHILD_ISPROPERTY_KEY);
+            Serializable ps = proxyFragment == null ? null
+                    : proxyFragment.get(Model.PROXY_VERSIONABLE_KEY);
+            if (ps == null) {
+                versionSeriesId = versionFragment == null ? null
+                        : versionFragment.get(Model.VERSION_VERSIONABLE_KEY);
+                // may still be null
+                targetId = null; // marks it as a version if versionableId not
+                                 // null
+            } else {
+                versionSeriesId = ps;
+                targetId = proxyFragment.get(Model.PROXY_TARGET_KEY);
+            }
+        }
+    }
+
+    /**
+     * Deletes a hierarchy and returns information to generate invalidations.
+     *
+     * @param rootInfo info about the root to be deleted with its children (root
+     *            id, and the rest is for invalidations)
+     * @return info about the descendants removed (including the root)
+     */
+    List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException;
 
     /**
      * Processes and returns the invalidations queued for processing by the

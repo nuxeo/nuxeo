@@ -27,6 +27,7 @@
 # fulltextEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
+# softDeleteEnabled
 
 ############################################################
 
@@ -820,6 +821,83 @@ LOG.INFO Vacuuming tables used by optimized acls
 # Vacuum the read acls tables
 #IF: aclOptimizationsEnabled
 SELECT nx_vacuum_read_acls();
+
+
+# ##### soft delete #####
+
+
+#IF: softDeleteEnabled
+LOG.INFO Soft delete enabled
+
+
+#IF: softDeleteEnabled
+CREATE OR REPLACE FUNCTION NX_DELETE(ids ${idType}[], nowTime TIMESTAMP)
+RETURNS void
+AS $$
+-- Marks the given ids as deleted at the given time (null means now)
+-- Simulates foreign keys except for the parent-child one which is done in Java
+BEGIN
+  IF nowTime IS NULL THEN
+    nowTime := CURRENT_TIMESTAMP;
+  END IF;
+  UPDATE hierarchy
+    SET isdeleted = true, deletedtime = nowTime
+    WHERE id = ANY(ids);
+  -- do hard delete for foreign key proxies.targetid
+  DELETE FROM proxies WHERE proxies.targetid = ANY(ids);
+END $$
+LANGUAGE plpgsql
+VOLATILE;
+
+
+#IF: softDeleteEnabled
+CREATE OR REPLACE FUNCTION NX_DELETE_PURGE(max INTEGER, beforeTime TIMESTAMP)
+RETURNS INT
+AS $$
+-- Does hard delete on soft-deleted rows earlier than beforeTime (null means all).
+-- A maximum number of rows to delete can be provided (null means no limit).
+-- Returns the number of rows actually deleted.
+-- Rows are deleted leaves first.
+DECLARE
+  ndel INTEGER;
+  total INTEGER := 0;
+BEGIN
+  IF beforeTime IS NULL THEN
+    beforeTime := CURRENT_TIMESTAMP + '1d';
+  END IF;
+  IF max = 0 THEN
+    max := NULL;
+  END IF;
+  LOOP
+    -- delete some leaves in the tree of soft-deleted documents
+    IF max IS NULL THEN
+      DELETE FROM hierarchy
+        WHERE isdeleted AND deletedtime < beforeTime
+        AND id NOT IN (
+          -- not leaves: deleted nodes that have deleted children
+          SELECT DISTINCT hpar.id FROM hierarchy hpar
+            JOIN hierarchy h ON h.parentid = hpar.id
+            WHERE hpar.isdeleted AND h.isdeleted);
+    ELSE
+      DELETE FROM hierarchy WHERE id IN (
+        SELECT id FROM hierarchy
+        WHERE isdeleted AND deletedtime < beforeTime
+        AND id NOT IN (
+          -- not leaves: deleted nodes that have deleted children
+          SELECT DISTINCT hpar.id FROM hierarchy hpar
+            JOIN hierarchy h ON h.parentid = hpar.id
+            WHERE hpar.isdeleted AND h.isdeleted)
+        LIMIT max);
+    END IF;
+    GET DIAGNOSTICS ndel = ROW_COUNT;
+    EXIT WHEN ndel = 0;
+    total := total + ndel;
+    EXIT WHEN total >= max;     -- no exit when max = NULL
+  END LOOP;
+  RETURN total;
+END $$
+LANGUAGE plpgsql
+VOLATILE;
 
 
 # ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####

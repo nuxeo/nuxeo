@@ -516,6 +516,7 @@ public class HierarchyContext {
             if (fragment == null
                     || (state = fragment.getState()) == State.ABSENT
                     || state == State.DELETED
+                    || state == State.DELETED_DEPENDENT
                     || state == State.INVALIDATED_DELETED) {
                 return true;
             }
@@ -628,52 +629,6 @@ public class HierarchyContext {
         }
         // update the node to reflect that it's checked out
         node.hierFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
-    }
-
-    /**
-     * Restores a node to a given version.
-     * <p>
-     * The restored node is checked in.
-     *
-     * @param node the node
-     * @param version the version to restore on this node
-     */
-    public void restoreVersion(Node node, Node version) throws StorageException {
-        Serializable versionableId = node.getId();
-        Serializable versionId = version.getId();
-
-        // clear complex properties
-        List<SimpleFragment> children = getChildren(versionableId, null, true);
-        // copy to avoid concurrent modifications
-        for (Fragment child : children.toArray(new Fragment[children.size()])) {
-            context.removeFragment(child); // will cascade deletes
-        }
-        session.flush(); // flush deletes
-
-        // copy the version values
-        Row overwriteRow = new Row(model.HIER_TABLE_NAME, versionableId);
-        SimpleFragment versionHier = version.getHierFragment();
-        for (String key : model.getFragmentKeysType(model.HIER_TABLE_NAME).keySet()) {
-            // keys we don't copy from version when restoring
-            if (key.equals(model.HIER_PARENT_KEY)
-                    || key.equals(model.HIER_CHILD_NAME_KEY)
-                    || key.equals(model.HIER_CHILD_POS_KEY)
-                    || key.equals(model.HIER_CHILD_ISPROPERTY_KEY)
-                    || key.equals(model.MAIN_PRIMARY_TYPE_KEY)
-                    || key.equals(model.MAIN_CHECKED_IN_KEY)
-                    || key.equals(model.MAIN_BASE_VERSION_KEY)
-                    || key.equals(model.MAIN_IS_VERSION_KEY)) {
-                continue;
-            }
-            overwriteRow.putNew(key, versionHier.get(key));
-        }
-        overwriteRow.putNew(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
-        overwriteRow.putNew(model.MAIN_BASE_VERSION_KEY, versionId);
-        overwriteRow.putNew(model.MAIN_IS_VERSION_KEY, null);
-        CopyHierarchyResult res = mapper.copyHierarchy(
-                new IdWithTypes(version), node.getParentId(), null,
-                overwriteRow);
-        context.markInvalidated(res.invalidations);
     }
 
     /**

@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -30,6 +31,9 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.CopyHierarchyResult;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 
@@ -208,6 +212,10 @@ public class PersistenceContext {
                 fragment.setDetached();
                 // modified map cleared at end of loop
                 break;
+            case DELETED_DEPENDENT:
+                batch.deletesDependent.add(new RowId(rowId));
+                fragment.setDetached();
+                break;
             case PRISTINE:
                 // cannot happen, but has been observed :(
                 log.error("Found PRISTINE fragment in modified map: "
@@ -272,6 +280,7 @@ public class PersistenceContext {
                 }
                 break;
             case DELETED:
+            case DELETED_DEPENDENT:
                 docId = getContainingDocument(fragment.getId());
                 if (!isDeleted(docId)) {
                     // this is a deleted fragment of a complex property from a
@@ -355,7 +364,7 @@ public class PersistenceContext {
         session.sendInvalidationEvent(invals);
     }
 
-    protected void processCacheInvalidations(Invalidations invalidations)
+    private void processCacheInvalidations(Invalidations invalidations)
             throws StorageException {
         if (invalidations == null) {
             return;
@@ -521,7 +530,8 @@ public class PersistenceContext {
             if (fragment == null) {
                 todo.add(rowId);
             } else {
-                if (fragment.getState() != State.DELETED) {
+                State state = fragment.getState();
+                if (state != State.DELETED && state != State.DELETED_DEPENDENT) {
                     res.add(fragment);
                 }
             }
@@ -595,7 +605,7 @@ public class PersistenceContext {
         if (fragment != null) {
             // row is already known in the context, use it
             State state = fragment.getState();
-            if (state == State.DELETED) {
+            if (state == State.DELETED || state == State.DELETED_DEPENDENT) {
                 // row has been deleted in the context, ignore it
                 return null;
             } else if (state == State.ABSENT
@@ -724,38 +734,105 @@ public class PersistenceContext {
         return fragment;
     }
 
-    protected void removeNode(Fragment hierFragment) throws StorageException {
-        hierContext.removeNode(hierFragment);
-
-        Serializable id = hierFragment.getId();
-
-        // remove the lock using the lock manager
-        session.removeLock(id, null, false);
-
-        // find all the fragments with this id in the maps
-        List<Fragment> fragments = new LinkedList<Fragment>();
-        for (Fragment fragment : pristine.values()) {
-            if (id.equals(fragment.getId())) {
-                fragments.add(fragment);
-            }
+    /**
+     * Removes a property node and its children.
+     * <p>
+     * There's less work to do than when we have to remove a generic document
+     * node (less selections, and we can assume the depth is small so recurse).
+     */
+    public void removePropertyNode(SimpleFragment hierFragment)
+            throws StorageException {
+        // collect children
+        Deque<SimpleFragment> todo = new LinkedList<SimpleFragment>();
+        List<SimpleFragment> children = new LinkedList<SimpleFragment>();
+        todo.add(hierFragment);
+        while (!todo.isEmpty()) {
+            SimpleFragment fragment = todo.removeFirst();
+            todo.addAll(getChildren(fragment.getId(), null, true)); // complex
+            children.add(fragment);
         }
-        for (Fragment fragment : modified.values()) {
-            if (id.equals(fragment.getId())) {
-                if (fragment.getState() != State.DELETED) {
-                    fragments.add(fragment);
-                }
-            }
-        }
-        // remove the fragments
-        for (Fragment fragment : fragments) {
-            removeFragment(fragment);
+        Collections.reverse(children);
+        // iterate on children depth first
+        for (SimpleFragment fragment : children) {
+            // remove from context
+            boolean primary = fragment == hierFragment;
+            removeFragmentAndDependents(fragment, primary);
         }
     }
 
-    /** Deletes a fragment from the context. */
-    protected void removeFragment(Fragment fragment) throws StorageException {
-        hierContext.removeFragment(fragment);
+    private void removeFragmentAndDependents(SimpleFragment hierFragment,
+            boolean primary) throws StorageException {
+        Serializable id = hierFragment.getId();
+        for (String fragmentName : model.getTypeFragments(new IdWithTypes(
+                hierFragment))) {
+            RowId rowId = new RowId(fragmentName, id);
+            Fragment fragment = get(rowId, true); // may read it
+            State state = fragment.getState();
+            if (state != State.DELETED && state != State.DELETED_DEPENDENT) {
+                removeFragment(fragment, primary && hierFragment == fragment);
+            }
+        }
+    }
 
+    /**
+     * Removes a document node and its children.
+     * <p>
+     * Assumes a full flush was done.
+     */
+    public void removeNode(SimpleFragment hierFragment) throws StorageException {
+        // remove the lock using the lock manager
+        // TODO children locks?
+        Serializable rootId = hierFragment.getId();
+        session.removeLock(rootId, null, true);
+
+        // get root info before deletion. may be a version or proxy
+        SimpleFragment versionFragment;
+        SimpleFragment proxyFragment;
+        if (Model.PROXY_TYPE.equals(hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY))) {
+            versionFragment = null;
+            proxyFragment = (SimpleFragment) get(new RowId(
+                    Model.PROXY_TABLE_NAME, rootId), true);
+        } else if (Boolean.TRUE.equals(hierFragment.get(Model.MAIN_IS_VERSION_KEY))) {
+            versionFragment = (SimpleFragment) get(new RowId(
+                    Model.VERSION_TABLE_NAME, rootId), true);
+            proxyFragment = null;
+        } else {
+            versionFragment = null;
+            proxyFragment = null;
+        }
+        NodeInfo rootInfo = new NodeInfo(hierFragment, versionFragment,
+                proxyFragment);
+
+        // remove with descendants, and generate cache invalidations
+        List<NodeInfo> infos = mapper.remove(rootInfo);
+
+        // remove from context and hierarchy context
+        for (NodeInfo info : infos) {
+            Serializable id = info.id;
+            for (String fragmentName : model.getTypeFragments(new IdWithTypes(
+                    id, info.primaryType, null))) {
+                RowId rowId = new RowId(fragmentName, id);
+                removedFragment(rowId); // remove from context
+            }
+        }
+        hierContext.removeFragment(hierFragment);
+
+        // recompute version series if needed
+        // only done for root of deletion as versions are not fileable
+        Serializable versionSeriesId = versionFragment == null ? null
+                : versionFragment.get(Model.VERSION_VERSIONABLE_KEY);
+        if (versionSeriesId != null) {
+            recomputeVersionSeries(versionSeriesId);
+        }
+    }
+
+    /**
+     * Deletes a fragment from the context. May generate a database DELETE if
+     * primary is {@code true}, otherwise consider that database removal will be
+     * a cascade-induced consequence of another DELETE.
+     */
+    public void removeFragment(Fragment fragment, boolean primary)
+            throws StorageException {
         RowId rowId = fragment.row;
         switch (fragment.getState()) {
         case ABSENT:
@@ -775,9 +852,41 @@ public class PersistenceContext {
             break;
         case DETACHED:
         case DELETED:
+        case DELETED_DEPENDENT:
             break;
         }
-        fragment.setDeleted();
+        fragment.setDeleted(primary);
+    }
+
+    /**
+     * Cleans up after a fragment has been removed in the database.
+     *
+     * @param rowId the row id
+     */
+    private void removedFragment(RowId rowId) throws StorageException {
+        Fragment fragment = getIfPresent(rowId);
+        if (fragment == null) {
+            return;
+        }
+        switch (fragment.getState()) {
+        case ABSENT:
+        case PRISTINE:
+        case INVALIDATED_MODIFIED:
+        case INVALIDATED_DELETED:
+            pristine.remove(rowId);
+            break;
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
+        case DELETED_DEPENDENT:
+            // should not happen
+            log.error("Removed fragment is in invalid state: " + fragment);
+            modified.remove(rowId);
+            break;
+        case DETACHED:
+            break;
+        }
+        fragment.setDetached();
     }
 
     public void recomputeVersionSeries(Serializable versionSeriesId)
@@ -836,6 +945,9 @@ public class PersistenceContext {
         return hierContext.getChildHierByName(parentId, name, complexProp);
     }
 
+    /**
+     * Gets hier fragments for children.
+     */
     protected List<SimpleFragment> getChildren(Serializable parentId,
             String name, boolean complexProp) throws StorageException {
         return hierContext.getChildren(parentId, name, complexProp);
@@ -860,9 +972,50 @@ public class PersistenceContext {
         hierContext.checkOut(node);
     }
 
-    protected void restoreVersion(Node node, Node version)
-            throws StorageException {
-        hierContext.restoreVersion(node, version);
+    /**
+     * Restores a node to a given version.
+     * <p>
+     * The restored node is checked in.
+     *
+     * @param node the node
+     * @param version the version to restore on this node
+     */
+    public void restoreVersion(Node node, Node version) throws StorageException {
+        Serializable versionableId = node.getId();
+        Serializable versionId = version.getId();
+
+        // clear complex properties
+        List<SimpleFragment> children = getChildren(versionableId, null, true);
+        // copy to avoid concurrent modifications
+        for (SimpleFragment child : children.toArray(new SimpleFragment[children.size()])) {
+            removePropertyNode(child);
+        }
+        session.flush(); // flush deletes
+
+        // copy the version values
+        Row overwriteRow = new Row(Model.HIER_TABLE_NAME, versionableId);
+        SimpleFragment versionHier = version.getHierFragment();
+        for (String key : model.getFragmentKeysType(Model.HIER_TABLE_NAME).keySet()) {
+            // keys we don't copy from version when restoring
+            if (key.equals(Model.HIER_PARENT_KEY)
+                    || key.equals(Model.HIER_CHILD_NAME_KEY)
+                    || key.equals(Model.HIER_CHILD_POS_KEY)
+                    || key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)
+                    || key.equals(Model.MAIN_PRIMARY_TYPE_KEY)
+                    || key.equals(Model.MAIN_CHECKED_IN_KEY)
+                    || key.equals(Model.MAIN_BASE_VERSION_KEY)
+                    || key.equals(Model.MAIN_IS_VERSION_KEY)) {
+                continue;
+            }
+            overwriteRow.putNew(key, versionHier.get(key));
+        }
+        overwriteRow.putNew(Model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        overwriteRow.putNew(Model.MAIN_BASE_VERSION_KEY, versionId);
+        overwriteRow.putNew(Model.MAIN_IS_VERSION_KEY, null);
+        CopyHierarchyResult res = mapper.copyHierarchy(
+                new IdWithTypes(version), node.getParentId(), null,
+                overwriteRow);
+        markInvalidated(res.invalidations);
     }
 
 }

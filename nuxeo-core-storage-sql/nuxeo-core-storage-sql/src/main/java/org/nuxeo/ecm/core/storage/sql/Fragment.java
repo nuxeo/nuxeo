@@ -74,7 +74,7 @@ public abstract class Fragment implements Serializable {
         /**
          * The fragment has been modified. It lives in the context's modified
          * map. Upon save the database will be updated and the state will change
-         * to {@link #CREATED}.
+         * to {@link #PRISTINE}.
          */
         MODIFIED,
 
@@ -84,6 +84,15 @@ public abstract class Fragment implements Serializable {
          * will change to {@link #DETACHED}.
          */
         DELETED,
+
+        /**
+         * The fragment has been deleted as a consequence of another fragment
+         * being deleted (cascade). It lives in the context's modified map. Upon
+         * save it will be implicitly deleted from the database by the deletion
+         * of a {@link #DELETED} fragment, and the state will change to
+         * {@link #DETACHED}.
+         */
+        DELETED_DEPENDENT,
 
         /**
          * The fragment has been invalidated by a modification or creation. Any
@@ -133,6 +142,7 @@ public abstract class Fragment implements Serializable {
             break;
         case CREATED:
         case DELETED:
+        case DELETED_DEPENDENT:
             context.setFragmentModified(this); // not in pristine
             break;
         case ABSENT:
@@ -213,6 +223,7 @@ public abstract class Fragment implements Serializable {
         case CREATED:
         case MODIFIED:
         case DELETED:
+        case DELETED_DEPENDENT:
             break;
         case INVALIDATED_MODIFIED:
             state = refetch();
@@ -242,6 +253,7 @@ public abstract class Fragment implements Serializable {
         case CREATED:
         case MODIFIED:
         case DELETED:
+        case DELETED_DEPENDENT:
             break;
         case INVALIDATED_DELETED:
             throw new ConcurrentModificationException(
@@ -252,7 +264,7 @@ public abstract class Fragment implements Serializable {
     /**
      * Marks the fragment deleted. Called after a remove.
      */
-    protected void setDeleted() {
+    protected void setDeleted(boolean primary) {
         switch (state) {
         case DETACHED:
             break;
@@ -267,12 +279,13 @@ public abstract class Fragment implements Serializable {
             break;
         case PRISTINE:
         case INVALIDATED_MODIFIED:
-            state = State.DELETED;
+            state = primary ? State.DELETED : State.DELETED_DEPENDENT;
             break;
         case MODIFIED:
-            state = State.DELETED;
+            state = primary ? State.DELETED : State.DELETED_DEPENDENT;
             break;
         case DELETED:
+        case DELETED_DEPENDENT:
             throw new RuntimeException(this.toString());
         }
     }
@@ -299,6 +312,7 @@ public abstract class Fragment implements Serializable {
         case ABSENT:
         case PRISTINE:
         case DELETED:
+        case DELETED_DEPENDENT:
         case DETACHED:
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
@@ -323,6 +337,7 @@ public abstract class Fragment implements Serializable {
         case CREATED:
         case MODIFIED:
         case DELETED:
+        case DELETED_DEPENDENT:
             state = State.INVALIDATED_MODIFIED;
             break;
         case INVALIDATED_MODIFIED:
@@ -348,6 +363,7 @@ public abstract class Fragment implements Serializable {
         case CREATED:
         case MODIFIED:
         case DELETED:
+        case DELETED_DEPENDENT:
         case INVALIDATED_MODIFIED:
             state = State.INVALIDATED_DELETED;
             break;

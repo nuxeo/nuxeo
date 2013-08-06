@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
 
@@ -36,11 +37,12 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
      */
     private final Mapper mapper;
 
-    public CachingMapper(Mapper mapper,
+    public CachingMapper(Model model, Mapper mapper,
             InvalidationsPropagator cachePropagator,
             InvalidationsPropagator eventPropagator,
             InvalidationsQueue repositoryEventQueue) {
-        super(mapper, cachePropagator, eventPropagator, repositoryEventQueue);
+        super(model, mapper, cachePropagator, eventPropagator,
+                repositoryEventQueue);
         this.mapper = mapper;
     }
 
@@ -152,6 +154,12 @@ public class CachingMapper extends CachingRowMapper implements Mapper {
     public Lock removeLock(Serializable id, String owner, boolean force)
             throws StorageException {
         return mapper.removeLock(id, owner, force);
+    }
+
+    @Override
+    public int cleanupDeletedRows(int max, Calendar beforeTime)
+            throws StorageException {
+        return mapper.cleanupDeletedRows(max, beforeTime);
     }
 
     @Override

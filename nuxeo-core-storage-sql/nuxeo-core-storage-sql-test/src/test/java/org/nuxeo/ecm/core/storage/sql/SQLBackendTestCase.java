@@ -91,4 +91,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         }
     }
 
+    public boolean isSoftDeleteEnabled() {
+        return ((RepositoryImpl) repository).getRepositoryDescriptor().softDeleteEnabled;
+    }
+
 }

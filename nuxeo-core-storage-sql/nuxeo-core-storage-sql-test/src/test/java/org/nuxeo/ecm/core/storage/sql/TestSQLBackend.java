@@ -582,6 +582,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session2.save(); // process invalidations (non-transactional)
         children2 = session2.getChildren(folder2, null, false);
         assertEquals(0, children2.size());
+        // and doc1 seen as removed
+        assertNull(session2.getNodeById(doc1.getId()));
     }
 
     public void testCrossSessionChildrenInvalidationMove() throws Exception {
@@ -1204,6 +1206,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         SimpleProperty sp = nodeac3.getSimpleProperty("tst:title");
         assertNotNull(sp);
         assertNull(sp.getString());
+
+        /*
+         * Test checkout + checkin after restore.
+         */
+        session.checkOut(nodea);
+        session.checkIn(nodea, "hop", null);
     }
 
     public void testProxies() throws Exception {
@@ -1269,10 +1277,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        Serializable ida = nodea.getId();
         nodea.setSimpleProperty("tst:title", "foo");
         Node nodeb = session.addChildNode(nodea, "bar", null, "TestDoc", false);
+        Serializable idb = nodeb.getId();
         nodeb.setSimpleProperty("tst:title", "bar");
         Node nodec = session.addChildNode(nodeb, "gee", null, "TestDoc", false);
+        Serializable idc = nodec.getId();
         nodec.setSimpleProperty("tst:title", "gee");
         session.save();
         // delete foo after having modified some of the deleted children
@@ -1281,6 +1292,29 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodec.setSimpleProperty("tst:title", "gee2");
         session.removeNode(nodea);
         session.save();
+
+        // now from another session
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+
+        // no more docs
+        nodea = session.getChildNode(root, "foo", false);
+        assertNull(nodea);
+        nodea = session.getNodeById(ida);
+        assertNull(nodea);
+        nodeb = session.getNodeById(idb);
+        assertNull(nodeb);
+        nodec = session.getNodeById(idc);
+        assertNull(nodec);
+
+        // and with a query
+        PartialList<Serializable> res;
+        res = session.query("SELECT * FROM TestDoc WHERE ecm:isProxy = 0",
+                QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+        res = session.query("SELECT * FROM TestDoc", QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
     }
 
     public void testBulkFetch() throws Exception {

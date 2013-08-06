@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -954,20 +955,15 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public void removeNode(Node node) throws StorageException {
         checkLive();
-        boolean isVersion = Boolean.TRUE.equals(node.getSimpleProperty(
-                model.MAIN_IS_VERSION_PROP).getValue());
-        Serializable versionSeriesId = null;
-        if (isVersion) {
-            versionSeriesId = node.getSimpleProperty(
-                    model.VERSION_VERSIONABLE_PROP).getValue();
-        }
-
+        flush();
         context.removeNode(node.getHierFragment());
+    }
 
-        // for versions there's stuff we have to recompute
-        if (isVersion) {
-            context.recomputeVersionSeries(versionSeriesId);
-        }
+    @Override
+    public void removePropertyNode(Node node) throws StorageException {
+        checkLive();
+        // no flush needed
+        context.removePropertyNode(node.getHierFragment());
     }
 
     @Override
@@ -1175,6 +1171,18 @@ public class SessionImpl implements Session, XAResource {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");
+    }
+
+    public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
+        checkLive();
+        if (!repository.getRepositoryDescriptor().softDeleteEnabled) {
+            return 0;
+        }
+        try {
+            return mapper.cleanupDeletedRows(max, beforeTime);
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*
