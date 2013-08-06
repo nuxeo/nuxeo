@@ -127,8 +127,8 @@ function initSelect2Widget(el) {
   if (customFormaterFunction != null) {
     select2_params.formatResult = customFormaterFunction;
     select2_params.formatSelection = function(doc) {
-      if (select2_params.labelProperty != null) {
-        return doc.properties[select2_params.labelProperty];
+      if (select2_params.labelFieldName != null) {
+        return doc.properties[select2_params.labelFieldName];
       } else {
         return getDefaultLabel(doc)
       }
@@ -136,8 +136,8 @@ function initSelect2Widget(el) {
   } else {
     select2_params.formatResult = getDefaultLabel;
     select2_params.formatSelection = function(doc) {
-      if (select2_params.labelProperty != null) {
-        return doc.properties[select2_params.labelProperty];
+      if (select2_params.labelFieldName != null) {
+        return doc.properties[select2_params.labelFieldName];
       } else {
         return getDefaultLabel(doc)
       }
