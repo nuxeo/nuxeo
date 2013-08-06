@@ -1,0 +1,6 @@
+<install>
+  @BUNDLES@
+  @LIBS@
+  @PROPERTIES@
+  @TEMPLATES@
+</install>

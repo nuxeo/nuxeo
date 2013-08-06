@@ -261,6 +261,13 @@
       <dependency>
         <groupId>org.nuxeo.marketplace.dam</groupId>
         <artifactId>marketplace-dam</artifactId>
+        <classifier>nxr</classifier>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.marketplace.dam</groupId>
+        <artifactId>marketplace-dam</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
