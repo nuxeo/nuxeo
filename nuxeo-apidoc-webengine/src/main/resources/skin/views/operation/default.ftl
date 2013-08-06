@@ -29,6 +29,7 @@ ${nxItem.description}
 <table class="topheaderTable">
   <tr>
     <th>Name</th>
+    <th>Description</th>
     <th>Type</th>
     <th>Required</th>
     <th>Default value</th>
@@ -36,6 +37,7 @@ ${nxItem.description}
 <#list nxItem.params as para>
   <tr>
     <td><#if para.isRequired()><b></#if>${para.name}<#if para.isRequired()><b></#if></td>
+    <td>${para.description}</td>
     <td>${para.type}</td>
     <td>${para.isRequired()?string("yes","no")}</td>
     <td>${This.getParamDefaultValue(para)}&nbsp;</td>
@@ -60,9 +62,9 @@ ${nxItem.description}
       ${nxItem.contributingComponent?html}
    <#else>
      <A href="${Root.path}/${distId}/viewContribution/${nxItem.contributingComponent}--operations">${nxItem.contributingComponent}</A>
-   </#if>    
+   </#if>
    </td></tr>
-</table>  
+</table>
 
 <h2>JSON definition</h2>
 <p><a href="${Root.path}/../automation/${nxItem.name}" target="_new">JSON definition</a></p>
