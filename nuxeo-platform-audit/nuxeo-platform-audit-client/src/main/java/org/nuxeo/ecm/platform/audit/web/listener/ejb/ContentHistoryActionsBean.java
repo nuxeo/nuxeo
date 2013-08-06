@@ -156,7 +156,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             return null;
         } else {
             try {
-                Logs service = Framework.getService(Logs.class);
+                Logs service = Framework.getLocalService(Logs.class);
                 Logs logsBean = service;
                 /*
                  * In case the document is a proxy,meaning is the result of a
