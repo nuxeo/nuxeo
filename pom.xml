@@ -683,6 +683,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-actions-jsf</artifactId>
+        <version>${nuxeo.jsf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-forms-layout-client</artifactId>
         <version>${nuxeo.jsf.version}</version>
       </dependency>
