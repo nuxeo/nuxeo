@@ -14,10 +14,13 @@
 
 package org.nuxeo.ecm.core.api.impl;
 
+import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +43,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
-import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
+import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -59,6 +62,8 @@ public class SimpleDocumentModel implements DocumentModel {
 
     protected final DataModelMap dataModels = new DataModelMapImpl();
 
+    protected Set<String> schemas;
+
     protected final ScopedMap contextData = new ScopedMap();
 
     protected Path path;
@@ -66,10 +71,15 @@ public class SimpleDocumentModel implements DocumentModel {
     protected String type;
 
     public SimpleDocumentModel(List<String> schemas) {
-        for (String schema : schemas) {
-            dataModels.put(schema, new SimpleDataModel(schema));
-        }
+        this.schemas = new HashSet<String>();
         anySchema = false;
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        for (String schema : schemas) {
+            Schema s = schemaManager.getSchema(schema);
+            DocumentPart part = new DocumentPartImpl(s);
+            dataModels.put(schema, new DataModelImpl(schema));
+            schemas.add(schema);
+        }
     }
 
     public SimpleDocumentModel(String... schemas) {
@@ -77,13 +87,17 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     public SimpleDocumentModel() {
+        schemas = new HashSet<String>();
         anySchema = true;
     }
 
     /**
      * A data model that is not tied to a particular schema, neither has
      * anything to do with a session (CoreSession).
+     *
+     * @deprecated since 5.7.3. Use standard {@link DataModelImpl} instead.
      */
+    @Deprecated
     public static class SimpleDataModel implements DataModel {
 
         private static final long serialVersionUID = 1L;
@@ -155,8 +169,12 @@ public class SimpleDocumentModel implements DocumentModel {
     protected DataModel getDataModelInternal(String schema) {
         DataModel dm = dataModels.get(schema);
         if (dm == null && anySchema) {
-            dm = new SimpleDataModel(schema);
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            Schema s = schemaManager.getSchema(schema);
+            DocumentPart part = new DocumentPartImpl(s);
+            dm = new DataModelImpl(part);
             dataModels.put(schema, dm);
+            schemas.add(schema);
         }
         return dm;
     }
@@ -236,43 +254,34 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public Property getProperty(String xpath) throws PropertyException,
             ClientException {
-        Path propertyPath = new Path(xpath);
-        if (propertyPath.segmentCount() == 0) {
+        if (xpath == null) {
+            throw new PropertyNotFoundException("null", "Invalid null xpath");
+        }
+        String cxpath = canonicalXPath(xpath);
+        if (cxpath.isEmpty()) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String segment = propertyPath.segment(0);
-        int p = segment.indexOf(':');
-        if (p == -1) { // support also other schema paths? like schema.property
-            // allow also unprefixed schemas -> make a search for the first
-            // matching schema having a property with same name as path segment
-            // 0
-            DocumentPart[] parts = getParts();
-            for (DocumentPart part : parts) {
-                if (part.getSchema().hasField(segment)) {
-                    return part.resolvePath(propertyPath.toString());
-                }
+        String schemaName = DocumentModelImpl.getXPathSchemaName(cxpath,
+                schemas, null);
+        if (schemaName == null) {
+            if (cxpath.indexOf(':') != -1) {
+                throw new PropertyNotFoundException(xpath, "No such schema");
+            } else {
+                throw new PropertyNotFoundException(xpath);
             }
-            // could not find any matching schema
-            throw new PropertyNotFoundException(xpath, "Schema not specified");
-        }
-        String prefix = segment.substring(0, p);
-        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
-        Schema schema = mgr.getSchemaFromPrefix(prefix);
-        if (schema == null) {
-            schema = mgr.getSchema(prefix);
-            if (schema == null) {
-                throw new PropertyNotFoundException(xpath,
-                        "Could not find registered schema with prefix: "
-                                + prefix);
-            }
-        }
-        String[] segments = propertyPath.segments();
-        segments[0] = segments[0].substring(p + 1);
-        propertyPath = Path.createFromSegments(segments);
 
-        DocumentPart part = DefaultPropertyFactory.newDocumentPart(schema);
-        part.init((Serializable) getDataModelInternal(schema.getName()).getMap());
-        return part.resolvePath(propertyPath.toString());
+        }
+        DocumentPart part = getPart(schemaName);
+        if (part == null) {
+            throw new PropertyNotFoundException(xpath);
+        }
+        // cut prefix
+        String partPath = cxpath.substring(cxpath.indexOf(':') + 1);
+        try {
+            return part.resolvePath(partPath);
+        } catch (PropertyNotFoundException e) {
+            throw new PropertyNotFoundException(xpath, e.getDetail());
+        }
     }
 
     @Override
@@ -284,23 +293,7 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public void setPropertyValue(String xpath, Serializable value)
             throws ClientException {
-        Path propertyPath = new Path(xpath);
-        String segment = propertyPath.segment(0);
-        String prefix = segment.substring(0, segment.indexOf(':'));
-
-        SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
-        Schema schema = mgr.getSchemaFromPrefix(prefix);
-        if (schema == null) {
-            schema = mgr.getSchema(prefix);
-            if (schema == null) {
-                throw new PropertyNotFoundException(xpath,
-                        "Could not find registered schema with prefix: "
-                                + prefix);
-            }
-        }
-
-        String propertyName = segment.substring(segment.indexOf(':') + 1, segment.length());
-        getDataModelInternal(schema.getName()).setData(propertyName, value);
+        getProperty(xpath).setValue(value);
     }
 
     @Override
@@ -606,7 +599,11 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public DocumentPart getPart(String schema) throws ClientException {
-        throw new UnsupportedOperationException();
+        DataModel dm = getDataModel(schema);
+        if (dm != null) {
+            return ((DataModelImpl) dm).getDocumentPart();
+        }
+        return null;
     }
 
     @Override
