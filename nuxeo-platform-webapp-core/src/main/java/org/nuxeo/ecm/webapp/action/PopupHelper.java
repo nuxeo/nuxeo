@@ -160,7 +160,7 @@ public class PopupHelper implements Serializable {
         try {
             DocumentModel popupDoc = documentManager.getDocument(popupDocRef);
             ctx.setCurrentDocument(popupDoc);
-            ctx.put("container", currentDocument);
+            ctx.putLocalVariable("container", currentDocument);
             currentPopupDocument = popupDoc;
             currentContainer = currentDocument;
         } catch (ClientException e) {
