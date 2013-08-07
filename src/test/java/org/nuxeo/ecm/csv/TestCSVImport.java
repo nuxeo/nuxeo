@@ -57,8 +57,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource",
-        "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.core.management.jtajca" })
+@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource" })
 @RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 public class TestCSVImport {
 
