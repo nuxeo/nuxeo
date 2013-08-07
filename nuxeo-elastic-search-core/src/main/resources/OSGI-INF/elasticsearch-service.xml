@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.elasticsearch.ElasticSearchComponent" version="1.0">
+
+  <implementation class="org.nuxeo.elasticsearch.ElasticSearchComponent" />
+
+  <service>
+      <provide interface="org.nuxeo.elasticsearch.ElasticSearchService" />
+  </service>
+
+</component>

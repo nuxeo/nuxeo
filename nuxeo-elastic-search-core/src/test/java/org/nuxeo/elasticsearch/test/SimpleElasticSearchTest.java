@@ -1,6 +1,14 @@
 package org.nuxeo.elasticsearch.test;
 
+import java.util.Date;
+
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,6 +18,8 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
+import static org.elasticsearch.common.xcontent.XContentFactory.*;
+
 
 @RunWith(FeaturesRunner.class)
 @Features(BareElasticSearchFeature.class)
@@ -27,6 +37,33 @@ public class SimpleElasticSearchTest {
         Assert.assertNotNull(elasticSearchNode);
         Assert.assertNotNull(elasticSearchClient);
         Assert.assertFalse(elasticSearchNode.isClosed());
+
+        XContentBuilder builder = jsonBuilder()
+                .startObject()
+                    .field("name", "test1")
+                    .field("type", "File")
+                    .field("dc:created", new Date())
+                .endObject();
+
+        IndexResponse response = elasticSearchClient.prepareIndex("nxmain", "doc", "1")
+        .setSource(builder).execute()
+        .actionGet();
+
+        Assert.assertNotNull(response.getId());
+
+        // do the refresh
+        elasticSearchClient.admin().indices().prepareRefresh().execute().actionGet();
+
+        SearchResponse searchResponse = elasticSearchClient.prepareSearch("nxmain")
+                .setTypes("doc")
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(QueryBuilders.termQuery("name", "test1"))             // Query
+                .setFrom(0).setSize(60)
+                .execute()
+                .actionGet();
+
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
     }
 
 }
