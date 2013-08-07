@@ -13,7 +13,7 @@
     <code>
       <endpoint name="myEndpoint" address="/foo" class="org.nuxeo.webservice.foo.bar" />
     </code>
-    @since 5.7.2
+    @since 5.7.3
   </documentation>
 
   <implementation class="org.nuxeo.ecm.platform.ws.WSEndpointManagerImpl"/>
