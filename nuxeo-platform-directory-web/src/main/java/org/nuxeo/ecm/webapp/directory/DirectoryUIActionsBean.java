@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.context.FacesContext;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Create;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.directory.api.ui.DirectoryUIDeleteConstraint;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUIManager;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -55,7 +58,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Manages directories editable by administrators.
- * 
+ *
  * @author Anahide Tchertchian
  */
 @Name("directoryUIActions")
@@ -369,9 +372,14 @@ public class DirectoryUIActionsBean implements Serializable {
     }
 
     protected ActionContext createDirectoryActionContext() {
-        ActionContext ctx = new ActionContext();
-        ctx.put("SeamContext", new SeamContextHelper());
-        ctx.put("directoryName", selectedDirectoryName);
+        FacesContext faces = FacesContext.getCurrentInstance();
+        if (faces == null) {
+            throw new IllegalArgumentException("Faces context is null");
+        }
+        ActionContext ctx = new JSFActionContext(faces.getELContext(),
+                faces.getApplication().getExpressionFactory());
+        ctx.putLocalVariable("SeamContext", new SeamContextHelper());
+        ctx.putLocalVariable("directoryName", selectedDirectoryName);
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
         return ctx;
     }

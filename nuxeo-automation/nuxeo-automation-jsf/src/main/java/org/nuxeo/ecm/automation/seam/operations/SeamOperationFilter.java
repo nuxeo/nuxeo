@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 
@@ -40,7 +41,6 @@ import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
  * Utility class used to manage Seam init and cleanup
  *
  * @author Tiry (tdelprat@nuxeo.com)
- *
  */
 public class SeamOperationFilter {
 
@@ -146,12 +146,19 @@ public class SeamOperationFilter {
 
     protected static void setSeamActionContext(OperationContext context,
             CoreSession session) {
-        ActionContext seamActionContext = new ActionContext();
+        FacesContext faces = FacesContext.getCurrentInstance();
+        if (faces == null) {
+            throw new IllegalArgumentException("FacesContext is null");
+        }
+        ActionContext seamActionContext = new JSFActionContext(
+                faces.getELContext(),
+                faces.getApplication().getExpressionFactory());
         NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
                 "navigationContext");
         seamActionContext.setCurrentDocument(navigationContext.getCurrentDocument());
         seamActionContext.setDocumentManager(session);
-        seamActionContext.put("SeamContext", new SeamContextHelper());
+        seamActionContext.putLocalVariable("SeamContext",
+                new SeamContextHelper());
         seamActionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
 
         context.put("seamActionContext", seamActionContext);

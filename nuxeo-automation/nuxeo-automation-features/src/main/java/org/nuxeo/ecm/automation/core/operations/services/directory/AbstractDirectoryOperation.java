@@ -17,11 +17,14 @@
 
 package org.nuxeo.ecm.automation.core.operations.services.directory;
 
+import javax.faces.context.FacesContext;
+
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,7 +53,13 @@ public class AbstractDirectoryOperation {
     }
 
     protected ActionContext createActionContext(OperationContext ctx) {
-        ActionContext actionContext = new ActionContext();
+        FacesContext faces = FacesContext.getCurrentInstance();
+        if (faces == null) {
+            throw new IllegalArgumentException("FacesContext is null");
+        }
+        ActionContext actionContext = new JSFActionContext(
+                faces.getELContext(),
+                faces.getApplication().getExpressionFactory());
         actionContext.setDocumentManager(ctx.getCoreSession());
         actionContext.setCurrentPrincipal((NuxeoPrincipal) ctx.getPrincipal());
         return actionContext;
