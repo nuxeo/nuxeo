@@ -165,6 +165,7 @@
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>5.7.3-SNAPSHOT</nuxeo.platform.version>
     <seam.version>2.1.0.SP1</seam.version>
+    <nxseam.version>2.1.0.SP1-NX1-SNAPSHOT</nxseam.version>
 
     <org.ops4j.pax.version>3.0.0</org.ops4j.pax.version>
     <org.slf4j.version>1.7.5</org.slf4j.version>
@@ -1888,7 +1889,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>${seam.version}</version>
+        <version>${nxseam.version}</version>
         <exclusions>
           <exclusion>
             <groupId>javax.el</groupId>
