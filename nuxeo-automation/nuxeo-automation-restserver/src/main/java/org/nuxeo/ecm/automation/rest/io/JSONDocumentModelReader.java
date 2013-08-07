@@ -38,16 +38,29 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.server.AutomationServerComponent;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach
@@ -60,6 +73,10 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 @Consumes({ "application/json+nxentity", "application/json" })
 public class JSONDocumentModelReader implements
         MessageBodyReader<DocumentModel> {
+
+    private static final String REQUEST_BATCH_ID = "batchId";
+
+    protected static final Log log = LogFactory.getLog(JSONDocumentModelReader.class);
 
     @Context
     HttpServletRequest request;
@@ -113,7 +130,7 @@ public class JSONDocumentModelReader implements
                 id = jp.readValueAs(String.class);
             } else if ("properties".equals(key)) {
                 readProperties(jp, tmp);
-            } else if("name".equals(key)) {
+            } else if ("name".equals(key)) {
                 name = jp.readValueAs(String.class);
             } else if ("type".equals(key)) {
                 type = jp.readValueAs(String.class);
@@ -146,18 +163,91 @@ public class JSONDocumentModelReader implements
         }
 
         for (String schema : tmp.getSchemas()) {
-            DataModel dataModel = doc.getDataModel(schema);
+            DataModelImpl dataModel = (DataModelImpl) doc.getDataModel(schema);
             DataModel fromDataModel = tmp.getDataModel(schema);
 
             for (String field : fromDataModel.getDirtyFields()) {
                 Serializable data = (Serializable) fromDataModel.getData(field);
-                if (data != null && !"null".equals(data)) {
-                    dataModel.setData(field, data);
+                try {
+
+                    if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
+                        if (data != null && !"null".equals(data)) {
+                            dataModel.setData(field, data);
+                        }
+                    }
+                } catch (PropertyNotFoundException e) {
+                    log.warn(String.format("Trying to deserialize unexistent field : {%s}",field));
                 }
             }
         }
 
+        // Get blob from batchId if X-Batch-Id in headers
+        Blob blob = getRequestBlob(request);
+        if (blob != null) {
+            setBlobToDoc(doc, request, blob);
+        }
+
         return doc;
+
+    }
+
+    private void setBlobToDoc(DocumentModel doc, HttpServletRequest request,
+            Blob blob) throws PropertyException, ClientException,
+            PropertyNotFoundException {
+        String xpath = request.getHeader("X-Blob-Property");
+        if (xpath == null) {
+            if (doc.hasSchema("file")) {
+                xpath = "file:content";
+            } else if (doc.hasSchema("files")) {
+                xpath = "files:files";
+            } else {
+                throw new IllegalArgumentException(
+                        "Missing request parameter named 'property' that specifies "
+                                + "the blob property xpath to fetch");
+            }
+        }
+
+        Property p = doc.getProperty(xpath);
+        if (p.isList()) { // add the file to the list
+            if ("files".equals(p.getSchema().getName())) { // treat the
+                // files schema
+                // separately
+                Map<String, Serializable> map = new HashMap<String, Serializable>();
+                map.put("filename", blob.getFilename());
+                map.put("file", (Serializable) blob);
+                p.addValue(map);
+            } else {
+                p.addValue(blob);
+            }
+        } else {
+            if ("file".equals(p.getSchema().getName())) { // for
+                // compatibility
+                // with deprecated
+                // filename
+                p.getParent().get("filename").setValue(blob.getFilename());
+            }
+            p.setValue(blob);
+        }
+    }
+
+    private Blob getRequestBlob(HttpServletRequest request) {
+        String batchId = request.getHeader("X-Batch-Id");
+        if (StringUtils.isNotBlank(batchId)) {
+            final BatchManager bm = Framework.getLocalService(BatchManager.class);
+
+            request.setAttribute(REQUEST_BATCH_ID, batchId);
+            RequestContext.getActiveContext(request).addRequestCleanupHandler(
+                    new RequestCleanupHandler() {
+                        @Override
+                        public void cleanup(HttpServletRequest req) {
+                            String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
+                            bm.clean(bid);
+                        }
+
+                    });
+            return bm.getBlob(batchId, "0");
+        }
+        return null;
 
     }
 

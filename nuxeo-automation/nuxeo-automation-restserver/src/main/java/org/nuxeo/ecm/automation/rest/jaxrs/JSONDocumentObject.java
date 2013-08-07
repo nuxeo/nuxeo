@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -23,6 +24,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -37,14 +39,14 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
- * This object basically overrides the default DocumentObject that
- * doesn't know how to produce/consume JSON
+ * This object basically overrides the default DocumentObject that doesn't know
+ * how to produce/consume JSON
  *
  * @since 5.7.2
  */
 
 @WebObject(type = "Document")
-@Produces({"application/json+nxentity", MediaType.APPLICATION_JSON})
+@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class JSONDocumentObject extends DocumentObject {
 
     /**
@@ -58,7 +60,6 @@ public class JSONDocumentObject extends DocumentObject {
         return doc;
     }
 
-
     @PUT
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
     public DocumentModel doPut(DocumentModel doc) throws ClientException {
@@ -70,8 +71,10 @@ public class JSONDocumentObject extends DocumentObject {
 
     @POST
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doPost(DocumentModel inputDoc) throws ClientException {
+    public Response doPost(DocumentModel inputDoc, @Context
+    HttpServletRequest request) throws ClientException {
         CoreSession session = ctx.getCoreSession();
+
         inputDoc.setPathInfo(doc.getPathAsString(), inputDoc.getPathAsString());
         inputDoc = session.createDocument(inputDoc);
         session.save();
@@ -90,7 +93,6 @@ public class JSONDocumentObject extends DocumentObject {
     public Object search() {
         return ctx.newAdapter(this, "search");
     }
-
 
     @Override
     public DocumentObject newDocument(String path) {
