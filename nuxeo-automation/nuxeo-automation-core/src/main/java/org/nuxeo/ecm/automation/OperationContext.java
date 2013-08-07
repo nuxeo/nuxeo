@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -336,56 +337,42 @@ public class OperationContext implements Map<String, Object> {
     }
 
     /**
+     * ChainCallback store all automation traces for execution
+     *
      * @since 5.7.3
      */
     protected static class ChainCallback implements OperationCallback {
 
-        protected final Set<OperationCallback> operationCallbacks = new HashSet<OperationCallback>();
+        public OperationCallback operationCallback;
 
-        protected ChainCallback(OperationCallback... operationCallbacks) {
-            this.operationCallbacks.addAll(Arrays.asList(operationCallbacks));
-        }
-
-        protected void add(OperationCallback callback) {
-            operationCallbacks.add(callback);
+        protected void set(OperationCallback callback) {
+            operationCallback = callback;
         }
 
         @Override
-        public void onChain(OperationContext context, OperationType chain) {
-            for (OperationCallback cb : operationCallbacks) {
-                cb.onChain(context, chain);
-            }
+        public void onChain(OperationType chain) {
+            operationCallback.onChain(chain);
         }
 
         @Override
         public void onOperation(OperationContext context, OperationType type,
                 InvokableMethod method, Map<String, Object> parms) {
-            for (OperationCallback cb : operationCallbacks) {
-                cb.onOperation(context, type, method, parms);
-            }
+            operationCallback.onOperation(context, type, method, parms);
         }
 
         @Override
         public void onError(OperationException error) {
-            for (OperationCallback cb : operationCallbacks) {
-                cb.onError(error);
-            }
+            operationCallback.onError(error);
         }
 
         @Override
         public void onOutput(Object output) {
-            for (OperationCallback cb : operationCallbacks) {
-                cb.onOutput(output);
-            }
+            operationCallback.onOutput(output);
         }
 
         @Override
         public Trace getTrace() {
-            Trace lastTrace = null;
-            for (OperationCallback cb : operationCallbacks) {
-                lastTrace = cb.getTrace();
-            }
-            return lastTrace;
+            return operationCallback.getTrace();
         }
 
         @Override
@@ -393,13 +380,35 @@ public class OperationContext implements Map<String, Object> {
             throw new UnsupportedOperationException(
                     "#getFormattedText is not available for: " + this);
         }
+
     }
 
-    public ChainCallback getChainCallback() {
-        return chainCallback;
+    /**
+     * @since 5.7.3
+     */
+    public OperationCallback getChainCallback() {
+        return this.chainCallback.operationCallback;
     }
 
+    /**
+     * @since 5.7.3
+     */
     public void addChainCallback(OperationCallback chainCallback) {
-        this.chainCallback.add(chainCallback);
+        this.chainCallback.set(chainCallback);
+    }
+
+    /**
+     * @since 5.7.3
+     * @param isolate define if keeps context variables for the subcontext
+     * @return a subcontext
+     */
+    public OperationContext getSubContext(Boolean isolate, Object input) {
+        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
+                this.getVars()) : this.getVars();
+        OperationContext subctx = new OperationContext(this.getCoreSession(),
+                vars);
+        subctx.setInput(input);
+        subctx.addChainCallback(this.getChainCallback());
+        return subctx;
     }
 }
