@@ -15,14 +15,17 @@
       <nxl:layoutRow>
         <tr>
           <nxl:layoutRowWidget>
-            <td class="iconColumn" data-bulkCheckBox="#{bulkEditCheckBoxId}">
-              <c:set var="bulkEditCheckBoxId"
-                value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
-              <c:set var="contextDataKey"
-                value="bulkEdit/#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
+            <c:set var="bulkEditCheckBoxId"
+              value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
+            <c:set var="bulkEditCheckBoxStyleClass"
+              value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
+            <c:set var="contextDataKey"
+              value="bulkEdit/#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
+            <td class="iconColumn">
               <h:selectBooleanCheckbox
                 id="#{bulkEditCheckBoxId}"
-                value="#{value.contextData[contextDataKey]}" />
+                value="#{value.contextData[contextDataKey]}"
+                styleClass="#{bulkEditCheckBoxStyleClass}"/>
             </td>
             <td class="labelColumn">
               <c:choose>
@@ -60,8 +63,8 @@
             </td>
             <td class="fieldColumn" colspan="#{nxu:test(layoutRow.size==1, 3*layout.columns-2, 1)}">
               <nxl:widget widget="#{widget}" value="#{value}"
-                onclick="jQuery(this).parents('td').siblings(':first').find('input').attr('checked', 'checked')"
-                onchange="jQuery(this).parents('td').siblings(':first').find('input').attr('checked', 'checked')" />
+                onclick="jQuery('.#{bulkEditCheckBoxStyleClass}').attr('checked', 'checked')"
+                onchange="jQuery('.#{bulkEditCheckBoxStyleClass}').attr('checked', 'checked')" />
             </td>
           </nxl:layoutRowWidget>
         </tr>

@@ -41,7 +41,8 @@
           <tr>
             <nxl:subWidget>
               <td class="fieldColumn">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
+                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
               </td>
             </nxl:subWidget>
           </tr>
@@ -60,7 +61,8 @@
                 </c:if>
               </td>
               <td class="fieldColumn">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
+                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
               </td>
             </nxl:subWidget>
           </tr>
@@ -81,7 +83,8 @@
             </c:if>
             <tr>
               <td class="fieldColumn">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
+                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
               </td>
             </tr>
           </nxl:subWidget>
@@ -100,7 +103,8 @@
                 </td>
               </c:if>
               <td class="fieldColumn">
-                <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+                <nxl:widget widget="#{widget}" value="#{fieldOrValue}"
+                  onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}" />
               </td>
             </tr>
           </nxl:subWidget>
