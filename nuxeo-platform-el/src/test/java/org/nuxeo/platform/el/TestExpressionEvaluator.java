@@ -19,16 +19,18 @@
 
 package org.nuxeo.platform.el;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.el.ExpressionFactory;
 
+import org.junit.Test;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
-
-import javax.el.ExpressionFactory;
 
 public class TestExpressionEvaluator {
 
@@ -50,8 +52,8 @@ public class TestExpressionEvaluator {
         return new SampleBean[] { createSampleBean() };
     }
 
-    private final ExpressionEvaluator evaluatorUnderTest = 
-	new ExpressionEvaluator(ExpressionFactory.newInstance());
+    private final ExpressionEvaluator evaluatorUnderTest = new ExpressionEvaluator(
+            ExpressionFactory.newInstance());
 
     private final ExpressionContext context = new ExpressionContext();
 
@@ -75,7 +77,7 @@ public class TestExpressionEvaluator {
 
     @Test
     public void testMap() {
-        Map<String,SampleBean> sampleMap = createSampleMap();
+        Map<String, SampleBean> sampleMap = createSampleMap();
         evaluatorUnderTest.bindValue(context, "map", sampleMap);
         Object value = evaluatorUnderTest.evaluateExpression(context,
                 "${map.key.sampleValue}", String.class);

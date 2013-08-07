@@ -46,8 +46,14 @@ public class ExpressionEvaluator {
     public void bindValue(ELContext context, String name, Object value) {
         if (value == null) {
             throw new IllegalArgumentException(
-                    "No value provided, cannot bind " + name + " in context " + context);
+                    "No value provided, cannot bind " + name + " in context "
+                            + context);
         }
+        // the jsf/facelets way of binding additional values in the context
+        // is to contribute a variable mapper wrapping the existing one, so
+        // that contexts are not merged and variables are not overridden,
+        // especially when the variable mapper is used in a shared context =>
+        // maybe change this behaviour if needed
         context.getVariableMapper().setVariable(
                 name,
                 expressionFactory.createValueExpression(value, value.getClass()));

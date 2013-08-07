@@ -13,59 +13,95 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *     <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
+ *     Anahide Tchertchian
  *
  * $Id: ActionContext.java 20218 2007-06-07 19:19:46Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.actions;
 
-import java.util.HashMap;
+import java.io.Serializable;
+import java.util.Map;
+
+import javax.el.ELException;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
+ * Interface for action context evaluation
  *
+ * @since 5.7.3
  */
-// TODO: this is
-//         imposing limitation on action service to run on same machine as the
-//         web client because it is using the documentmanager instance from the
-//         web client
-public class ActionContext extends HashMap<String, Object> {
+public interface ActionContext extends Serializable {
 
-    private static final long serialVersionUID = -8286890979128279598L;
+    /**
+     * Sets the current document to use for filter evaluation
+     */
+    void setCurrentDocument(DocumentModel doc);
 
-    private DocumentModel currentDocument;
+    /**
+     * Returns the current document to use for filter evaluation
+     */
+    DocumentModel getCurrentDocument();
 
-    private CoreSession docMgr;
+    /**
+     * Sets the core session to use for filter evaluation
+     */
+    void setDocumentManager(CoreSession docMgr);
 
-    private NuxeoPrincipal currentPrincipal;
+    /**
+     * Returns the core session to use for filter evaluation
+     */
+    CoreSession getDocumentManager();
 
-    public final void setCurrentDocument(DocumentModel doc) {
-        currentDocument = doc;
-    }
+    /**
+     * Sets the current principal to use for filter evaluation
+     */
+    void setCurrentPrincipal(NuxeoPrincipal currentPrincipal);
 
-    public final DocumentModel getCurrentDocument() {
-        return currentDocument;
-    }
+    /**
+     * Returns the current principal to use for filter evaluation
+     */
+    NuxeoPrincipal getCurrentPrincipal();
 
-    public final CoreSession getDocumentManager() {
-        return docMgr;
-    }
+    /**
+     * Sets a local variable, to put in the context so that expressions can
+     * reference it.
+     */
+    Object putLocalVariable(String key, Object value);
 
-    public final void setDocumentManager(CoreSession docMgr) {
-        this.docMgr = docMgr;
-    }
+    /**
+     * Sets local variables, to put in the context so that expressions can
+     * reference them.
+     */
+    void putAllLocalVariables(Map<String, Object> vars);
 
-    public final NuxeoPrincipal getCurrentPrincipal() {
-        return currentPrincipal;
-    }
+    /**
+     * Returns a local variable put in the context
+     */
+    Object getLocalVariable(String key);
 
-    public final void setCurrentPrincipal(NuxeoPrincipal currentPrincipal) {
-        this.currentPrincipal = currentPrincipal;
-    }
+    /**
+     * Returns the number of local variables
+     */
+    int size();
+
+    /**
+     * Returns true if given expression resolves to true in this context.
+     * <p>
+     * Returns false if expression is blank (null or empty).
+     *
+     * @throws ELException
+     */
+    boolean checkCondition(String expression) throws ELException;
+
+    /**
+     * Returns true if expressions evaluation should not be cached globally
+     */
+    boolean disableGlobalCaching();
 
 }

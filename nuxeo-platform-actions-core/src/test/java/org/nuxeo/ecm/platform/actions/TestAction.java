@@ -36,6 +36,11 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionFilter;
+import org.nuxeo.ecm.platform.actions.ActionService;
+import org.nuxeo.ecm.platform.actions.DefaultActionFilter;
+import org.nuxeo.ecm.platform.actions.FilterRule;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -363,39 +368,6 @@ public class TestAction extends NXRuntimeTestCase {
         assertFalse(opreviewRules[1].grant);
         assertEquals("local override of global filter",
                 opreviewRules[1].types[0]);
-    }
-
-    @Test
-    public void testRetrieveActionsByCategory() throws Exception {
-        List<Action> viewActions = as.getActions("VIEW_ACTION_LIST",
-                new ActionContext());
-        assertNotNull(viewActions);
-        assertEquals(1, viewActions.size());
-        assertEquals("TAB_WITH_GLOBAL_FILTER", viewActions.get(0).getId());
-
-        // deploy override
-        deployContrib("org.nuxeo.ecm.actions.tests",
-                "test-actions-override-contrib.xml");
-
-        // check there are no duplicates
-        viewActions = as.getActions("VIEW_ACTION_LIST", new ActionContext());
-        assertNotNull(viewActions);
-        assertEquals(1, viewActions.size());
-        assertEquals("TAB_WITH_GLOBAL_FILTER", viewActions.get(0).getId());
-    }
-
-    @Test
-    public void testFilter() {
-        List<Action> actions = as.getActions("view", new ActionContext());
-        assertEquals(1, actions.size());
-        Action[] actAr = actions.toArray(new Action[actions.size()]);
-        assertEquals("TAB_VIEW", actAr[0].getId());
-    }
-
-    @Test
-    public void testDefaultFilter() {
-        List<Action> actions = as.getActions("global", new ActionContext());
-        assertEquals(1, actions.size());
     }
 
     // test sort of actions with same order value

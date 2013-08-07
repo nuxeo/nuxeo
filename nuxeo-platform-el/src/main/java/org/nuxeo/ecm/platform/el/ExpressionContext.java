@@ -42,7 +42,8 @@ public class ExpressionContext extends ELContext {
         }
 
         @Override
-        public ValueExpression setVariable(String variable, ValueExpression expression) {
+        public ValueExpression setVariable(String variable,
+                ValueExpression expression) {
             return map.put(variable, expression);
         }
     }
@@ -51,6 +52,7 @@ public class ExpressionContext extends ELContext {
 
         private final Map<String, Method> map = new HashMap<String, Method>();
 
+        @SuppressWarnings("unused")
         public void setFunction(String prefix, String localName, Method method) {
             map.put(prefix + ":" + localName, method);
         }
@@ -72,10 +74,11 @@ public class ExpressionContext extends ELContext {
 
     }
 
-    private final ELResolver resolver = new MyResolver();
+    protected final ELResolver resolver = new MyResolver();
 
-    private final FunctionMapper functionMapper = new MyFunctionMapper();
-    private final VariableMapper variableMapper = new MyVariableMapper();
+    protected final FunctionMapper functionMapper = new MyFunctionMapper();
+
+    protected final VariableMapper variableMapper = new MyVariableMapper();
 
     @Override
     public ELResolver getELResolver() {

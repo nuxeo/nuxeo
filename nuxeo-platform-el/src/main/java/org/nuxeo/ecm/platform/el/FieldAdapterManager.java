@@ -43,9 +43,9 @@ import org.apache.commons.logging.LogFactory;
  * right type ie: The JSF generate a Date whereas the Core expect a Calendar
  * type.
  * <p>
- * 3 - Structure Mismatch: The JSF bean must be split in several fields ie:
- * The uploaded file is one object, but the core expect at least 2 separate
- * fields (filename and content)
+ * 3 - Structure Mismatch: The JSF bean must be split in several fields ie: The
+ * uploaded file is one object, but the core expect at least 2 separate fields
+ * (filename and content)
  *
  * @author Thierry Delprat
  */
@@ -61,7 +61,7 @@ public final class FieldAdapterManager {
     /**
      * Sets value adapting it for storage.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getValueForStorage(Object value) {
         // FIXME: Temp hack : While we still have no EP management
         if (value instanceof Date) {
@@ -108,7 +108,7 @@ public final class FieldAdapterManager {
     /**
      * Gets value adapting it for display.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Object getValueForDisplay(Object value) {
         if (value instanceof Calendar) {
             value = getCalendarAsDate((Calendar) value);

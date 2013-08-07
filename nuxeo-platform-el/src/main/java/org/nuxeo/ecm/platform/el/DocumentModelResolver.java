@@ -171,6 +171,7 @@ public class DocumentModelResolver extends BeanELResolver {
         return ctx.doc.getProperty(getDocumentPropertyName(ctx, propertyValue));
     }
 
+    @SuppressWarnings("boxing")
     private static Property getDocumentProperty(Property docProperty,
             Object propertyValue) throws PropertyException {
         Property subProperty = null;

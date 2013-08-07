@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.actions;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.el.ELException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -30,9 +32,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.actions.elcache.CachedJEXLManager;
-import org.nuxeo.ecm.platform.actions.elcache.Context;
-import org.nuxeo.ecm.platform.actions.elcache.JexlExpression;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -117,20 +116,25 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
         return true;
     }
 
-    protected static final String PRECOMPUTED_KEY = "PrecomputedFilters";
+    public static final String PRECOMPUTED_KEY = "PrecomputedFilters";
 
     /**
      * Returns true if all conditions defined in the rule are true.
+     * <p>
+     * Since 5.7.3, does not put computed value in context in a cache if the
+     * action context does not allow it.
+     *
+     * @see ActionContext#disableGlobalCaching()
      */
     @SuppressWarnings("unchecked")
     protected final boolean checkRule(FilterRule rule, ActionContext context) {
-        // check cache
-        Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.get(PRECOMPUTED_KEY);
-        if (precomputed == null) {
-            precomputed = new HashMap<FilterRule, Boolean>();
-            context.put(PRECOMPUTED_KEY, precomputed);
-        } else if (precomputed.containsKey(rule)) {
-            return precomputed.get(rule);
+        boolean disableCache = context.disableGlobalCaching();
+        if (!disableCache) {
+            // check cache
+            Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.getLocalVariable(PRECOMPUTED_KEY);
+            if (precomputed != null && precomputed.containsKey(rule)) {
+                return Boolean.TRUE.equals(precomputed.get(rule));
+            }
         }
         // compute filter result
         boolean result = (rule.facets == null || rule.facets.length == 0 || checkFacets(
@@ -145,8 +149,15 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
                         context, rule.groups))
                 && (rule.conditions == null || rule.conditions.length == 0 || checkConditions(
                         context, rule.conditions));
-        // put in cache
-        precomputed.put(rule, Boolean.valueOf(result));
+        if (!disableCache) {
+            // put in cache
+            Map<FilterRule, Boolean> precomputed = (Map<FilterRule, Boolean>) context.getLocalVariable(PRECOMPUTED_KEY);
+            if (precomputed == null) {
+                precomputed = new HashMap<FilterRule, Boolean>();
+                context.putLocalVariable(PRECOMPUTED_KEY, precomputed);
+            }
+            precomputed.put(rule, Boolean.valueOf(result));
+        }
         return result;
     }
 
@@ -228,33 +239,12 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
      */
     protected final boolean checkConditions(ActionContext context,
             String[] conditions) {
-        DocumentModel doc = context.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
-
         for (String condition : conditions) {
             try {
-                JexlExpression exp = CachedJEXLManager.getExpression(condition);
-                Context ctx = new Context();
-                ctx.put("document", doc);
-                ctx.put("principal", currentPrincipal);
-                // aliases for consistency with seam variables, available since
-                // 5.5
-                ctx.put("currentDocument", doc);
-                ctx.put("currentUser", currentPrincipal);
-                // get custom context from ActionContext
-                for (String key : context.keySet()) {
-                    ctx.put(key, context.get(key));
-                }
-                ctx.put("SeamContext", context.get("SeamContext"));
-
-                Object eval = exp.eval(ctx);
-                if (eval == null) {
-                    log.error("evaluation of condition " + condition
-                            + " failed: returning false");
-                } else if (Boolean.TRUE.equals(eval)) {
+                if (context.checkCondition(condition)) {
                     return true;
                 }
-            } catch (Exception e) {
+            } catch (ELException e) {
                 log.error("evaluation of condition " + condition
                         + " failed: returning false", e);
                 return false;
