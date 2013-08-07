@@ -61,6 +61,11 @@ public class TracePrinter {
         printHeading("chain");
         if (trace.error != null) {
             sb.append(System.getProperty("line.separator"));
+            if (trace.getParent() != null) {
+                sb.append("Parent Chain ID: ");
+                sb.append(trace.getParent().getChainId());
+                sb.append(System.getProperty("line.separator"));
+            }
             sb.append("Name: ");
             sb.append(trace.getChain().getId());
             sb.append(System.getProperty("line.separator"));
@@ -75,6 +80,11 @@ public class TracePrinter {
             printLine(sb.toString());
         } else {
             sb.append(System.getProperty("line.separator"));
+            if (trace.getParent() != null) {
+                sb.append("Parent Chain ID: ");
+                sb.append(trace.getParent().getChainId());
+                sb.append(System.getProperty("line.separator"));
+            }
             sb.append("Name: ");
             sb.append(trace.getChain().getId());
             sb.append(System.getProperty("line.separator"));
@@ -102,6 +112,9 @@ public class TracePrinter {
             sb.append(System.getProperty("line.separator"));
             sb.append(System.getProperty("line.separator"));
             sb.append("****** " + call.getType().getId() + " ******");
+            sb.append(System.getProperty("line.separator"));
+            sb.append("Chain ID: ");
+            sb.append(call.getChainId());
             sb.append(System.getProperty("line.separator"));
             sb.append("Class: ");
             sb.append(call.getType().getType().getSimpleName());
@@ -137,7 +150,17 @@ public class TracePrinter {
                     sb.append(call.getVariables().get(keyVariable));
                 }
             }
-            sb.append(System.getProperty("line.separator"));
+            printLine(sb.toString());
+            sb = new StringBuilder();
+            if(!call.getNested().isEmpty()){
+                sb.append(System.getProperty("line.separator"));
+                printHeading("start sub chain");
+                for(Trace trace:call.getNested()){
+                    print(trace);
+                }
+                sb.append(System.getProperty("line.separator"));
+                printHeading("end sub chain");
+            }
             printLine(sb.toString());
         } catch (IOException e) {
             log.error(e);
@@ -149,6 +172,11 @@ public class TracePrinter {
         printHeading("chain");
         if (trace.error != null) {
             sb.append(System.getProperty("line.separator"));
+            if (trace.getParent() != null) {
+                sb.append("Parent Chain ID: ");
+                sb.append(trace.getParent().getChainId());
+                sb.append(System.getProperty("line.separator"));
+            }
             sb.append("Name: ");
             sb.append(trace.getChain().getId());
             sb.append(System.getProperty("line.separator"));
@@ -164,11 +192,11 @@ public class TracePrinter {
         sb.append(System.getProperty("line.separator"));
         sb.append("****** Hierarchy calls ******");
         printLine(sb.toString());
-        litePrint(trace.operations);
+        litePrintCall(trace.operations);
         writer.flush();
     }
 
-    public void litePrint(List<Call> calls) throws IOException {
+    public void litePrintCall(List<Call> calls) throws IOException {
         String tabs = "\t";
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(System.getProperty("line.separator"));
@@ -178,6 +206,15 @@ public class TracePrinter {
                 stringBuilder.append(call.getType().getType().getName());
                 stringBuilder.append(System.getProperty("line.separator"));
                 tabs += "\t";
+                if(!call.getNested().isEmpty()){
+                    stringBuilder.append(System.getProperty("line.separator"));
+                    printHeading("start sub chain");
+                    for(Trace trace:call.getNested()){
+                        litePrint(trace);
+                    }
+                    stringBuilder.append(System.getProperty("line.separator"));
+                    printHeading("end sub chain");
+                }
             }
             printLine(stringBuilder.toString());
         } catch (IOException e) {
