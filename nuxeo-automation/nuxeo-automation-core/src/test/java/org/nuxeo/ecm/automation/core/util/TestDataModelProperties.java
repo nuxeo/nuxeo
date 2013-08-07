@@ -93,9 +93,9 @@ public class TestDataModelProperties {
         assertFalse(map.isEmpty());
 
         // the underlying map should contains String => Serializable
-        assertEquals("Doc2", map.get("dublincore:title"));
-        assertEquals("desc2", map.get("dublincore:description"));
-        String[] subjects = (String[]) map.get("dublincore:subjects");
+        assertEquals("Doc2", map.get("dc:title"));
+        assertEquals("desc2", map.get("dc:description"));
+        String[] subjects = (String[]) map.get("dc:subjects");
         assertEquals(2, subjects.length);
         assertEquals("subject1", subjects[0]);
         assertEquals("subject2", subjects[1]);
