@@ -26,6 +26,8 @@ public class DummyEventListener implements EventListener {
 
     protected static AtomicLong count = new AtomicLong(0);
 
+    protected static AtomicLong newCount = new AtomicLong(0);
+
     @Override
     public void handleEvent(Event event) throws ClientException {
         if (event.getName().equals("testEvent")) {
@@ -35,6 +37,9 @@ public class DummyEventListener implements EventListener {
             } else {
                 count.incrementAndGet();
             }
+        }
+        if ("testNewEvent".equals(event.getName())) {
+            newCount.incrementAndGet();
         }
     }
 
@@ -46,4 +51,7 @@ public class DummyEventListener implements EventListener {
         return count.get();
     }
 
+    protected static long getNewCount() {
+        return newCount.get();
+    }
 }

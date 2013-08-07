@@ -60,4 +60,13 @@ public interface Schedule {
      */
     String getUsername();
 
+    /**
+     * Returns true if the scheduler is enabled and the job scheduled for
+     * execution
+     *
+     * @since 5.7.3
+     * @return
+     */
+    boolean isEnabled();
+
 }

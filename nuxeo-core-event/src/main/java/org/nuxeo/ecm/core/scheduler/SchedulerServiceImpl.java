@@ -125,7 +125,11 @@ public class SchedulerServiceImpl extends DefaultComponent implements
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             Schedule schedule = (Schedule) contrib;
-            registerSchedule(schedule);
+            if (schedule.isEnabled()) {
+                registerSchedule(schedule);
+            } else {
+                unregisterSchedule(schedule);
+            }
         }
     }
 
@@ -175,8 +179,21 @@ public class SchedulerServiceImpl extends DefaultComponent implements
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (ObjectAlreadyExistsException e) {
+            log.trace("Overriding scheduler with id: " + schedule.getId());
             // when jobs are persisted in a database, the job should already
             // be there
+            // remove existing job and re-schedule
+            boolean unregistred = unregisterSchedule(schedule.getId());
+            if (unregistred) {
+                try {
+                    scheduler.scheduleJob(job, trigger);
+                } catch (SchedulerException e1) {
+                    log.error(String.format(
+                            "failed to schedule job with id '%s': %s",
+                            schedule.getId(), e.getMessage()), e);
+                }
+            }
+
         } catch (SchedulerException e) {
             log.error(String.format("failed to schedule job with id '%s': %s",
                     schedule.getId(), e.getMessage()), e);

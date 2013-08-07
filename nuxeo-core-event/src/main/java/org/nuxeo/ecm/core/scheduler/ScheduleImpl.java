@@ -47,6 +47,12 @@ public class ScheduleImpl implements Schedule {
     @XNode("username")
     public String username;
 
+    /**
+     * @since 5.7.3
+     */
+    @XNode("@enabled")
+    public boolean enabled = true;
+
     @Override
     public String getId() {
         return id;
@@ -77,4 +83,8 @@ public class ScheduleImpl implements Schedule {
         return "Schedule " + id + " (cron=" + cronExpression + ')';
     }
 
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
 }

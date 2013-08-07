@@ -102,4 +102,33 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         assertFalse(unregistered);
     }
 
+    @Test
+    public void testDisableSchedule() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.event.test",
+                "OSGI-INF/test-scheduler-config.xml");
+        Thread.sleep(5000); // so that job is called at least once
+        long count = DummyEventListener.getCount();
+        assertTrue(count >= 1);
+        deployContrib("org.nuxeo.ecm.core.event.test",
+                "OSGI-INF/test-scheduler-disabled-config.xml");
+        count = DummyEventListener.getCount();
+        Thread.sleep(5000);
+        long newCount = DummyEventListener.getCount();
+        assertTrue(count == newCount);
+    }
+
+    @Test
+    public void testOverrideSchedule() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.event.test",
+                "OSGI-INF/test-scheduler-config.xml");
+        Thread.sleep(5000); // so that job is called at least once
+        long count = DummyEventListener.getCount();
+        assertTrue(count >= 1);
+        deployContrib("org.nuxeo.ecm.core.event.test",
+                "OSGI-INF/test-scheduler-override-config.xml");
+        Thread.sleep(5000);
+        long newCount = DummyEventListener.getNewCount();
+        assertTrue(newCount >= 1);
+    }
+
 }
