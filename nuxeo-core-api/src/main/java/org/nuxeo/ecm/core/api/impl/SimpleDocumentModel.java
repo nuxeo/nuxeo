@@ -78,7 +78,7 @@ public class SimpleDocumentModel implements DocumentModel {
             Schema s = schemaManager.getSchema(schema);
             DocumentPart part = new DocumentPartImpl(s);
             dataModels.put(schema, new DataModelImpl(schema));
-            schemas.add(schema);
+            this.schemas.add(schema);
         }
     }
 
