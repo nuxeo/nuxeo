@@ -54,11 +54,7 @@ public class RunFileChain {
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
-        subctx.setInput(blob);
+        OperationContext subctx = ctx.getSubContext(isolate, blob);
         return (Blob) service.run(subctx, chainId, (Map) chainParameters);
     }
 

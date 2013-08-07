@@ -55,11 +55,7 @@ public class RunDocumentChain {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
-        subctx.setInput(doc);
+        OperationContext subctx = ctx.getSubContext(isolate, doc);
         return (DocumentModel) service.run(subctx, chainId,
                 (Map) chainParameters);
     }
