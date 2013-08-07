@@ -146,7 +146,7 @@
     <itext.version>2.1.7</itext.version>
     <jclouds.version>1.5.3</jclouds.version>
     <google.client.version>1.12.0-beta</google.client.version>
-    <selenium.version>2.31.0</selenium.version>
+    <selenium.version>2.34.0</selenium.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
