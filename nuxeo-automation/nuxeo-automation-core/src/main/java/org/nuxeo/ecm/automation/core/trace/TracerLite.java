@@ -94,7 +94,7 @@ public class TracerLite implements OperationCallback {
     }
 
     @Override
-    public void onChain(OperationContext context, OperationType chain) {
+    public void onChain(OperationType chain) {
         pushContext(chain);
     }
 
@@ -105,7 +105,7 @@ public class TracerLite implements OperationCallback {
             pushContext(type);
             return;
         }
-        Call call = new Call(null, type, null, null);
+        Call call = new Call(chain, null, type, null, null);
         calls.add(call);
     }
 

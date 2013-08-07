@@ -31,6 +31,8 @@ import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
  */
 public class Call {
 
+    protected final String chainId;
+
     protected final OperationType type;
 
     protected final InvokableMethod method;
@@ -43,14 +45,16 @@ public class Call {
 
     protected final Object input;
 
-    public Call(OperationContext context, OperationType type,
-            InvokableMethod method, Map<String, Object> parms) {
+    public Call(OperationType chain, OperationContext context,
+            OperationType type, InvokableMethod method,
+            Map<String, Object> parms) {
         this.type = type;
         this.variables = (context != null) ? new HashMap<String, Object>(
                 context) : null;
         this.method = method;
         this.input = (context != null) ? context.getInput() : null;
         this.parameters = parms;
+        this.chainId = (chain != null) ? chain.getId() : "No bound to a chain";
     }
 
     public OperationType getType() {
@@ -75,5 +79,9 @@ public class Call {
 
     public List<Trace> getNested() {
         return nested;
+    }
+
+    public String getChainId() {
+        return chainId;
     }
 }

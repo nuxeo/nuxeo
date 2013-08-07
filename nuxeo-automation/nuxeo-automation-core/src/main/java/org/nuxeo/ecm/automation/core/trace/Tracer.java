@@ -71,11 +71,10 @@ public class Tracer implements OperationCallback {
             chain = null;
             return;
         }
-        Trace stack = callingStacks.pop();
-        parent = stack.parent;
-        chain = stack.chain;
-        calls.addAll(stack.operations);
-
+        Trace trace = callingStacks.pop();
+        parent = trace.parent;
+        chain = trace.chain;
+        calls.addAll(trace.operations);
     }
 
     protected void saveTrace(Trace popped) {
@@ -95,7 +94,7 @@ public class Tracer implements OperationCallback {
     }
 
     @Override
-    public void onChain(OperationContext context, OperationType chain) {
+    public void onChain(OperationType chain) {
         pushContext(chain);
     }
 
@@ -106,7 +105,7 @@ public class Tracer implements OperationCallback {
             pushContext(type);
             return;
         }
-        Call call = new Call(context, type, method, parms);
+        Call call = new Call(chain, context, type, method, parms);
         calls.add(call);
     }
 

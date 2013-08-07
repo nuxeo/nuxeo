@@ -28,7 +28,7 @@ import org.nuxeo.ecm.automation.core.trace.Trace;
  */
 public interface OperationCallback {
 
-    void onChain(OperationContext context, OperationType chain);
+    void onChain(OperationType chain);
 
     void onOperation(OperationContext context, OperationType type,
             InvokableMethod method, Map<String, Object> parms);
@@ -38,5 +38,6 @@ public interface OperationCallback {
     void onOutput(Object output);
 
     Trace getTrace();
+
     String getFormattedText();
 }
