@@ -24,6 +24,8 @@ import static org.jboss.seam.ScopeType.STATELESS;
 
 import java.io.Serializable;
 
+import javax.faces.context.FacesContext;
+
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -31,6 +33,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 
@@ -54,11 +57,16 @@ public class ActionContextProvider implements Serializable {
     // WebActionsBean#setCurrentTabAndNavigate hack for instance.
     @Factory(value = "currentActionContext", scope = EVENT)
     public ActionContext createActionContext() {
-        ActionContext ctx = new ActionContext();
+        FacesContext faces = FacesContext.getCurrentInstance();
+        if (faces == null) {
+            throw new IllegalArgumentException("Faces context is null");
+        }
+        ActionContext ctx = new JSFActionContext(faces.getELContext(),
+                faces.getApplication().getExpressionFactory());
         ctx.setCurrentDocument(navigationContext.getCurrentDocument());
         ctx.setDocumentManager(documentManager);
-        ctx.put("SeamContext", new SeamContextHelper());
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
+        ctx.putLocalVariable("SeamContext", new SeamContextHelper());
         return ctx;
     }
 

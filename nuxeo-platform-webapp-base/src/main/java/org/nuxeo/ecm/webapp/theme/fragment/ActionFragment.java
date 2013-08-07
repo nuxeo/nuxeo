@@ -16,12 +16,15 @@ package org.nuxeo.ecm.webapp.theme.fragment;
 
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
+
 import org.jboss.seam.Component;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ActionService;
+import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -50,20 +53,24 @@ public final class ActionFragment extends AbstractFragment {
 
     @Override
     public Model getModel() throws ModelException {
+        // Set up the action context
+        FacesContext faces = FacesContext.getCurrentInstance();
+        if (faces == null) {
+            throw new ModelException("Cannot acces JSF context");
+        }
+        ActionContext ctx = new JSFActionContext(faces.getELContext(),
+                faces.getApplication().getExpressionFactory());
+        ctx.putLocalVariable("SeamContext", new SeamContextHelper());
+
         ResourcesAccessor resourcesAccessor = (ResourcesAccessor) Component.getInstance("resourcesAccessor");
         Map<String, String> messages = resourcesAccessor.getMessages();
-
-        // Set up the action context
-        ActionContext ctx = new ActionContext();
-        ctx.put("SeamContext", new SeamContextHelper());
 
         CoreSession documentManager = (CoreSession) Component.getInstance("documentManager");
         ctx.setDocumentManager(documentManager);
         if (documentManager != null) {
             ctx.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
         }
-        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
-                "navigationContext");
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext");
         if (navigationContext != null) {
             ctx.setCurrentDocument(navigationContext.getCurrentDocument());
         }

@@ -17,17 +17,26 @@
 package org.nuxeo.ecm.platform.ui.web.jsf;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
+import javax.el.ELContext;
 import javax.el.ELException;
+import javax.el.ELResolver;
+import javax.el.ExpressionFactory;
+import javax.el.FunctionMapper;
+import javax.el.MethodExpression;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.application.NavigationHandler;
 import javax.faces.application.StateManager;
 import javax.faces.application.ViewHandler;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
@@ -43,6 +52,9 @@ import javax.faces.el.VariableResolver;
 import javax.faces.event.ActionListener;
 import javax.faces.render.RenderKit;
 import javax.faces.validator.Validator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Mock faces context that can be used to resolve expressions in tests.
@@ -68,6 +80,18 @@ import javax.faces.validator.Validator;
 @SuppressWarnings("deprecation")
 public abstract class MockFacesContext extends FacesContext {
 
+    private static final Log log = LogFactory.getLog(MockFacesContext.class);
+
+    protected Map<String, Object> expressions = new HashMap<String, Object>();
+
+    public void mapExpression(String expr, Object res) {
+        expressions.put(expr, res);
+    }
+
+    public void resetExpressions() {
+        expressions.clear();
+    }
+
     public void setCurrent() {
         setCurrentInstance(this);
     }
@@ -79,6 +103,15 @@ public abstract class MockFacesContext extends FacesContext {
     @Override
     public Application getApplication() {
         return new MockApplication();
+    }
+
+    protected Object evaluateExpression(FacesContext context, String expression) {
+        if (expressions.containsKey(expression)) {
+            return expressions.get(expression);
+        } else {
+            log.error("Cannot evaluate expression: " + expression);
+            return null;
+        }
     }
 
     public abstract Object evaluateExpressionGet(FacesContext context,
@@ -260,7 +293,97 @@ public abstract class MockFacesContext extends FacesContext {
         public void setViewHandler(ViewHandler handler) {
         }
 
+        @Override
+        public ExpressionFactory getExpressionFactory() {
+            return new ExpressionFactory() {
+
+                @Override
+                public ValueExpression createValueExpression(ELContext arg0,
+                        String arg1, Class arg2) {
+                    return new MockValueExpression(arg1);
+                }
+
+                @Override
+                public ValueExpression createValueExpression(Object arg0,
+                        Class arg1) {
+                    if (arg0 == null) {
+                        return new MockValueExpression(null);
+                    } else {
+                        return new MockValueExpression(arg0.toString());
+                    }
+                }
+
+                @Override
+                public MethodExpression createMethodExpression(ELContext arg0,
+                        String arg1, Class arg2, Class[] arg3) {
+                    return null;
+                }
+
+                @Override
+                public Object coerceToType(Object arg0, Class arg1) {
+                    return arg0;
+                }
+            };
+        }
+
     }
+
+    public class MockValueExpression extends ValueExpression {
+
+        private static final long serialVersionUID = 1L;
+
+        protected final String expr;
+
+        private MockValueExpression(String expr) {
+            super();
+            this.expr = expr;
+        }
+
+        @Override
+        public boolean isLiteralText() {
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public String getExpressionString() {
+            return expr;
+        }
+
+        @Override
+        public boolean equals(Object arg0) {
+            return false;
+        }
+
+        @Override
+        public void setValue(ELContext arg0, Object arg1) {
+            // do nothing
+        }
+
+        @Override
+        public boolean isReadOnly(ELContext arg0) {
+            return false;
+        }
+
+        @Override
+        public Object getValue(ELContext arg0) {
+            return evaluateExpressionGet(null, expr, null);
+        }
+
+        @Override
+        public Class<?> getType(ELContext arg0) {
+            return null;
+        }
+
+        @Override
+        public Class<?> getExpectedType() {
+            return null;
+        }
+    };
 
     @Override
     public void addMessage(String clientId, FacesMessage message) {
@@ -343,6 +466,27 @@ public abstract class MockFacesContext extends FacesContext {
 
     @Override
     public void setViewRoot(UIViewRoot root) {
+    }
+
+    @Override
+    public ELContext getELContext() {
+        return new ELContext() {
+
+            @Override
+            public VariableMapper getVariableMapper() {
+                return null;
+            }
+
+            @Override
+            public FunctionMapper getFunctionMapper() {
+                return null;
+            }
+
+            @Override
+            public ELResolver getELResolver() {
+                return null;
+            }
+        };
     }
 
 }

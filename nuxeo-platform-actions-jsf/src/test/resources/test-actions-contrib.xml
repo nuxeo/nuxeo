@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.test">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+    <action id="newDocument" link="select_document_type" enabled="true"
+      label="action.new.document" icon="/icons/action_add.gif">
+      <category>folder</category>
+      <filter id="createChild">
+        <rule grant="true">
+          <permission>Write</permission>
+          <type>Workspace</type>
+          <type>Section</type>
+          <schema>Folder</schema>
+          <facet>Versionable</facet>
+          <condition>principal.getName()=='gandalf'</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="logout" link="logout" label="Logout" icon="/icons/logout.gif">
+      <category>global</category>
+    </action>
+
+    <action id="viewHiddenInfo" link="view_hidden_info" enabled="false">
+      <category>global</category>
+    </action>
+
+    <action id="TAB_VIEW" link="view" enabled="true" label="View"
+      icon="/icons/view.gif">
+      <filter-id>MyCustomFilter</filter-id>
+      <category>tabs</category>
+      <category>view</category>
+    </action>
+
+    <!-- NXP-7287: test merge with global filter -->
+    <!-- + NXP-9677: test merge with inner filter -->
+    <action id="TAB_WITH_LOCAL_FILTER">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="local_filter">
+        <rule grant="true">
+          <type>filter defined in action</type>
+        </rule>
+      </filter>
+    </action>
+
+    <!-- NXP-7287: test merge with local filter -->
+    <action id="TAB_WITH_GLOBAL_FILTER">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>filter_defined_globally</filter-id>
+    </action>
+
+    <action id="actionTestProperties">
+      <properties>
+        <property name="property">
+          property
+        </property>
+        <propertyList name="list">
+          <value>listItemA</value>
+          <value>listItemB</value>
+        </propertyList>
+        <propertyMap name="map">
+          <property name="mapProperty">
+            mapProperty
+          </property>
+          <propertyList name="mapList">
+            <value>mapListItemA</value>
+            <value>mapListItemB</value>
+          </propertyList>
+          <propertyMap name="subMap">
+            <property name="subMapProperty">
+              subMapProperty
+            </property>
+          </propertyMap>
+        </propertyMap>
+      </properties>
+    </action>
+
+    <action id="singleActionRetrievedWithFilter">
+      <filter-id>WorkspaceOrSection</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+    <custom-filter id="MyCustomFilter" class="org.nuxeo.ecm.platform.actions.DummyFilter">
+      <rule grant="true" />
+    </custom-filter>
+
+    <filter id="theFilter">
+      <rule grant="true">
+        <permission>admin</permission>
+        <permission>editor</permission>
+        <facet>Viewable</facet>
+        <facet>Writable</facet>
+        <condition>EL condition</condition>
+      </rule>
+      <rule grant="true">
+        <condition>EL condition 1</condition>
+        <condition>EL condition 2</condition>
+      </rule>
+    </filter>
+
+    <filter id="filter_defined_globally">
+      <rule grant="false">
+        <type>filter defined in its extension point</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

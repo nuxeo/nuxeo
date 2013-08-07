@@ -21,6 +21,7 @@
     <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-forms-layout-client</module>
     <module>nuxeo-platform-forms-layout-io</module>
+    <module>nuxeo-platform-actions-jsf</module>
     <module>nuxeo-platform-webapp-base</module>
     <module>nuxeo-theme-jsf</module>
     <module>nuxeo-platform-contentview-jsf</module>
