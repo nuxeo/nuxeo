@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -289,7 +291,12 @@ public class LayoutDemoContext implements Serializable {
         if (layoutDemoCustomActions == null) {
             try {
                 layoutDemoCustomActions = new ArrayList<Action>();
-                ActionContext ctx = new ActionContext();
+                FacesContext faces = FacesContext.getCurrentInstance();
+                if (faces == null) {
+                    throw new IllegalArgumentException("Faces context is null");
+                }
+                ActionContext ctx = new JSFActionContext(faces.getELContext(),
+                        faces.getApplication().getExpressionFactory());
                 List<Action> actions = actionManager.getActions(
                         "LAYOUT_DEMO_ACTIONS", ctx);
                 if (actions != null) {
