@@ -76,20 +76,17 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
                 return;
             }
         }
-        if (DocumentEventTypes.ABOUT_TO_MOVE.equals(event.getName())) {
-            if (!handleAboutToMove(ctx, doc)) {
-                return;
-            }
+        if (DocumentEventTypes.ABOUT_TO_MOVE.equals(event.getName())
+                && !handleAboutToMove(ctx, doc)) {
+            return;
         }
-        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
-            if (!handleLifeCycleTransition(ctx)) {
-                return;
-            }
+        if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())
+                && !handleLifeCycleTransition(ctx)) {
+            return;
         }
-        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
-            if (!handleAboutToRemove(doc)) {
-                return;
-            }
+        if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())
+                && !handleAboutToRemove(doc)) {
+            return;
         }
         // Some events will only impact a specific user (e.g. root
         // unregistration)
