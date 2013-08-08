@@ -1539,14 +1539,15 @@
         <version>1.8.1</version>
       </dependency>
       <!-- used in jboss patch -->
-      <!-- NXP-10566: comment out dupplicate EL implementations -->
       <!--
-        <dependency>
+        NXP-10566: would comment out this dupplicate EL implementation,
+        but it's needed by some tomahack tag kept for compat...
+      -->
+      <dependency>
         <groupId>commons-el</groupId>
         <artifactId>commons-el</artifactId>
         <version>1.0</version>
-        </dependency>
-      -->
+      </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
