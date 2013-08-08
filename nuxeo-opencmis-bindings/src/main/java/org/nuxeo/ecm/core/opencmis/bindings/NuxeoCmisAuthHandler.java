@@ -17,10 +17,12 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.impl.webservices.AbstractService;
 import org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler;
+import org.apache.chemistry.opencmis.server.impl.webservices.WebSphereAuthHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -32,7 +34,7 @@ import com.sun.xml.ws.api.handler.MessageHandlerContext;
  * SOAP handler that extracts authentication information from the SOAP headers
  * and propagates it to Nuxeo for login.
  */
-public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
+public class NuxeoCmisAuthHandler extends CXFAuthHandler implements LoginProvider {
 
     public static final String NUXEO_LOGIN_CONTEXT = "nuxeo.opencmis.LoginContext";
 
@@ -41,7 +43,7 @@ public class NuxeoCmisAuthHandler extends AuthHandler implements LoginProvider {
     protected LoginProvider loginProvider;
 
     @Override
-    public boolean handleMessage(MessageHandlerContext context) {
+    public boolean handleMessage(SOAPMessageContext context) {
         boolean res = super.handleMessage(context);
         @SuppressWarnings("unchecked")
         Map<String, String> callContextMap = (Map<String, String>) context.get(AbstractService.CALL_CONTEXT_MAP);
