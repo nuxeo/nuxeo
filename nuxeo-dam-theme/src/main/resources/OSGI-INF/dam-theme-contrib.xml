@@ -52,10 +52,6 @@
 
     <themePage name="dam/default">
       <defaultFlavor>default</defaultFlavor>
-      <flavors>
-        <flavor>default</flavor>
-        <flavor>rainbow</flavor>
-      </flavors>
       <styles>
         <style>basics</style>
         <style>buttons_and_actions</style>
