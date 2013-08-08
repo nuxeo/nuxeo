@@ -125,11 +125,6 @@
       <artifactId>json</artifactId>
     </dependency>
     <dependency>
-      <groupId>de.odysseus.juel</groupId>
-      <artifactId>juel-impl</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>aopalliance</groupId>
       <artifactId>aopalliance</artifactId>
       <scope>runtime</scope>
