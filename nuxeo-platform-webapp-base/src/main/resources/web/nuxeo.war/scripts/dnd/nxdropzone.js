@@ -162,7 +162,7 @@ DropZoneUIHandler.prototype.fetchOptions = function () {
       for (var i = 0; i < handler.operationsDef.length; i++) {
         var chainOrOperationId = null;
         if (handler.operationsDef[i].properties.chainId !== undefined) {
-          chainOrOperationId = "Chain." + handler.operationsDef[i].properties.chainId;
+          chainOrOperationId = handler.operationsDef[i].properties.chainId;
         } else if (handler.operationsDef[i].properties.operationId !== undefined) {
           chainOrOperationId = handler.operationsDef[i].properties.operationId;
         } else {
