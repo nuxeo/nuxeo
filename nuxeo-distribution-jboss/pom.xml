@@ -27,6 +27,10 @@
       <artifactId>derby</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.el</groupId>
       <artifactId>jboss-el</artifactId>
     </dependency>

@@ -13,6 +13,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>
