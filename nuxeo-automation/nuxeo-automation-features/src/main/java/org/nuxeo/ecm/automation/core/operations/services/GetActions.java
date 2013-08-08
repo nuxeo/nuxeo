@@ -23,11 +23,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -43,8 +42,9 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
+import org.nuxeo.ecm.platform.el.ExpressionContext;
 
 /**
  * Queries {@link ActionManager} for available actions in the given context
@@ -87,13 +87,8 @@ public class GetActions {
             // if Seam Context has been initialized, use it
             return (ActionContext) ctx.get(SEAM_ACTION_CONTEXT);
         }
-        FacesContext faces = FacesContext.getCurrentInstance();
-        if (faces == null) {
-            throw new IllegalArgumentException("FacesContext is null");
-        }
-        ActionContext actionContext = new JSFActionContext(
-                faces.getELContext(),
-                faces.getApplication().getExpressionFactory());
+        ActionContext actionContext = new ELActionContext(
+                new ExpressionContext(), new ExpressionFactoryImpl());
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
         if (currentDocument != null) {
