@@ -30,7 +30,9 @@ import java.util.Set;
 import javax.faces.context.ExternalContext;
 
 /**
- * @since TODO
+ * Mock external context
+ *
+ * @since 5.7.3
  */
 public class MockExternalContext extends ExternalContext {
 

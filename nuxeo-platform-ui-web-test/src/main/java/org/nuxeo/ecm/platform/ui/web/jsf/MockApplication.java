@@ -28,6 +28,7 @@ import javax.faces.application.NavigationHandler;
 import javax.faces.application.StateManager;
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.el.MethodBinding;
@@ -41,6 +42,10 @@ import javax.faces.validator.Validator;
 import org.jboss.el.ExpressionFactoryImpl;
 
 /**
+ * Mock application, providing expressions resolutions using the
+ * {@link MockFacesContext}, and providing an {@link ExternalContext}
+ * implemented by {@link MockExternalContext}
+ *
  * @since 5.7.3
  */
 public class MockApplication extends Application {
