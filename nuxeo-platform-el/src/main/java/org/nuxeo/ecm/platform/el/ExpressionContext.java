@@ -26,6 +26,7 @@ import javax.el.CompositeELResolver;
 import javax.el.ELContext;
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
+import javax.el.ListELResolver;
 import javax.el.MapELResolver;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
@@ -68,6 +69,7 @@ public class ExpressionContext extends ELContext {
         private MyResolver() {
             add(new DocumentModelResolver());
             add(new MapELResolver());
+            add(new ListELResolver());
             add(new ArrayELResolver());
             add(new BeanELResolver());
         }

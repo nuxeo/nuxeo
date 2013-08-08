@@ -23,7 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.el.ExpressionFactoryImpl;
@@ -49,6 +51,10 @@ public class TestExpressionEvaluator {
 
     private static SampleBean[] createSampleArray() {
         return new SampleBean[] { createSampleBean() };
+    }
+
+    private static List<SampleBean> createSampleList() {
+        return Arrays.asList(createSampleBean());
     }
 
     private final ExpressionEvaluator evaluatorUnderTest = new ExpressionEvaluator(
@@ -89,6 +95,18 @@ public class TestExpressionEvaluator {
         evaluatorUnderTest.bindValue(context, "array", sampleArray);
         Object value = evaluatorUnderTest.evaluateExpression(context,
                 "${array[0].sampleValue}", String.class);
+        assertNotNull(value);
+    }
+
+    @Test
+    public void testList() {
+        List<SampleBean> sampleList = createSampleList();
+        evaluatorUnderTest.bindValue(context, "list", sampleList);
+        Object value = evaluatorUnderTest.evaluateExpression(context,
+                "${list[0].sampleValue}", String.class);
+        assertNotNull(value);
+        value = evaluatorUnderTest.evaluateExpression(context,
+                "${list.get(0).sampleValue}", String.class);
         assertNotNull(value);
     }
 
