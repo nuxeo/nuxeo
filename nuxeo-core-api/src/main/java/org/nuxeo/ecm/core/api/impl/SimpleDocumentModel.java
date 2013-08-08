@@ -71,13 +71,13 @@ public class SimpleDocumentModel implements DocumentModel {
     protected String type;
 
     public SimpleDocumentModel(List<String> schemas) {
-        this.schemas = new HashSet<String>();
+        this.schemas = new HashSet<>();
         anySchema = false;
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         for (String schema : schemas) {
             Schema s = schemaManager.getSchema(schema);
             DocumentPart part = new DocumentPartImpl(s);
-            dataModels.put(schema, new DataModelImpl(schema));
+            dataModels.put(schema, new DataModelImpl(part));
             this.schemas.add(schema);
         }
     }
@@ -87,7 +87,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     public SimpleDocumentModel() {
-        schemas = new HashSet<String>();
+        schemas = new HashSet<>();
         anySchema = true;
     }
 
