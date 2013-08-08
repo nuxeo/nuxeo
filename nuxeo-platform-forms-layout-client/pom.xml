@@ -53,10 +53,6 @@
 
     <!-- EL + JSF + facelets deps -->
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-ri</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
