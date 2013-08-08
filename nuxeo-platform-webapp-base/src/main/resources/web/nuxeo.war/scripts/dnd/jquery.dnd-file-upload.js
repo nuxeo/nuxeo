@@ -404,7 +404,6 @@ if (!log) {
       xhr.setRequestHeader("X-File-Idx", uploadIdx);
 
       xhr.setRequestHeader('Nuxeo-Transaction-Timeout', uploadTimeoutS);
-      xhr.setRequestHeader("Content-Type", "multipart/form-data");
       nbUploadInprogress++;
 
       opts.handler.uploadStarted(uploadIdx, file);
