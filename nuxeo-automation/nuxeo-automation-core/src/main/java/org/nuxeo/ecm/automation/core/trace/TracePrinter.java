@@ -206,6 +206,10 @@ public class TracePrinter {
                 stringBuilder.append(call.getType().getType().getName());
                 stringBuilder.append(System.getProperty("line.separator"));
                 tabs += "\t";
+            }
+            printLine(stringBuilder.toString());
+            stringBuilder = new StringBuilder();
+            for(Call call: calls){
                 if(!call.getNested().isEmpty()){
                     stringBuilder.append(System.getProperty("line.separator"));
                     printHeading("start sub chain");
