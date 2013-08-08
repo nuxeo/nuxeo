@@ -129,17 +129,16 @@ public class CanTraceChainsTest {
         context.setInput(src);
         context.put("list", Arrays.asList(new String[] { "one", "two" }));
         service.run(context, chain);
-        Trace trace = factory.getTrace("traceSubchains");
+        Trace trace = factory.getTrace("parentChain");
         List<Call> calls = trace.getCalls();
         assertEquals(1, calls.size());
-        // TODO Try to resolve the failure of running a new chain with a sub
-        // TODO context to keep the trace of the parent
-        /*
-         * List<Trace> nested = calls.get(0).getNested(); assertEquals(2,
-         * nested.size()); assertEquals(
-         * nested.get(0).getCalls().get(0).getVariables().get("item"), "one");
-         * assertEquals(
-         * nested.get(1).getCalls().get(0).getVariables().get("item"), "two");
-         */
+        List<Trace> nested = calls.get(0).getNested();
+        assertEquals(2, nested.size());
+        assertEquals(
+                nested.get(0).getCalls().get(0).getVariables().get("item"),
+                "one");
+        assertEquals(
+                nested.get(1).getCalls().get(0).getVariables().get("item"),
+                "two");
     }
 }
