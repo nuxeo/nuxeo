@@ -144,6 +144,12 @@ public interface Session {
     boolean isLive();
 
     /**
+     * Returns {@code true} if all sessions in the current thread share the same
+     * state.
+     */
+    boolean isStateSharedByAllThreadSessions();
+
+    /**
      * Closes this session and saves changes on the workspace, if any.
      *
      * @throws DocumentException if any error occurs

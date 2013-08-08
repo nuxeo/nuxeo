@@ -164,6 +164,11 @@ public class SQLSession implements Session {
     }
 
     @Override
+    public boolean isStateSharedByAllThreadSessions() {
+        return session.isStateSharedByAllThreadSessions();
+    }
+
+    @Override
     public void dispose() {
         try {
             session.close();
