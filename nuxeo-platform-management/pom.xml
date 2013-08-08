@@ -77,16 +77,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>de.odysseus.juel</groupId>
-      <artifactId>juel-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>de.odysseus.juel</groupId>
-      <artifactId>juel-impl</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence-api</artifactId>
       <scope>test</scope>

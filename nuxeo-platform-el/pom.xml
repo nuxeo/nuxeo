@@ -19,12 +19,12 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>de.odysseus.juel</groupId>
-      <artifactId>juel-api</artifactId>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>de.odysseus.juel</groupId>
-      <artifactId>juel-impl</artifactId>
+      <groupId>org.jboss.el</groupId>
+      <artifactId>jboss-el</artifactId>
     </dependency>
   </dependencies>
 

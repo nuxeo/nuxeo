@@ -26,8 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.el.ExpressionFactory;
-
+import org.jboss.el.ExpressionFactoryImpl;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
@@ -53,7 +52,7 @@ public class TestExpressionEvaluator {
     }
 
     private final ExpressionEvaluator evaluatorUnderTest = new ExpressionEvaluator(
-            ExpressionFactory.newInstance());
+            new ExpressionFactoryImpl());
 
     private final ExpressionContext context = new ExpressionContext();
 
