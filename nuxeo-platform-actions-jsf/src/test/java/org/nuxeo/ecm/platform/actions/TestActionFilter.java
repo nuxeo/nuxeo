@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.el.ELException;
 import javax.faces.context.FacesContext;
 
 import org.junit.Before;
@@ -57,17 +56,9 @@ public class TestActionFilter extends NXRuntimeTestCase {
                 "test-filters-override-contrib.xml");
         as = (ActionService) runtime.getComponent(ActionService.ID);
 
-        facesContext = new MockFacesContext() {
-            @Override
-            @SuppressWarnings("rawtypes")
-            public Object evaluateExpressionGet(FacesContext context,
-                    String expression, Class expectedType) throws ELException {
-                return evaluateExpression(context, expression);
-            }
-        };
+        facesContext = new MockFacesContext();
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
-
     }
 
     protected ActionContext getActionContext(DocumentModel doc) {
@@ -173,8 +164,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
         ActionFilter filter = getFilter("CheckId");
         doc = new MockDocumentModel("Workspace", new String[0]);
         assertEquals("My Document ID", doc.getId());
-        facesContext.mapExpression("#{document.getId()=='My Document ID'}",
-                Boolean.TRUE);
+        facesContext.mapVariable("document", doc);
         try {
             assertTrue(filterAccept(doc, filter));
         } finally {

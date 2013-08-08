@@ -26,10 +26,6 @@
       <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-ri</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.sun.facelets</groupId>
       <artifactId>jsf-facelets</artifactId>
     </dependency>
