@@ -736,13 +736,15 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         }
                     }
                 }
-                if (sizeConstraint != null
-                        || (!hidden && (!authorizedExtensions.isEmpty() || !unauthorizedExtensions.isEmpty()))) {
-                    List<String> constraints = new ArrayList<String>();
-                    if (sizeConstraint != null) {
-                        constraints.add(ComponentUtils.translate(context,
-                                "label.inputFile.maxSize", sizeConstraint));
-                    }
+                List<String> constraints = new ArrayList<String>();
+
+                if (sizeConstraint != null) {
+                    constraints.add(ComponentUtils.translate(context,
+                            "label.inputFile.maxSize", sizeConstraint));
+                }
+
+                if (!hidden
+                        && (!authorizedExtensions.isEmpty() || !unauthorizedExtensions.isEmpty())) {
                     if (!authorizedExtensions.isEmpty()) {
                         constraints.add(ComponentUtils.translate(context,
                                 "label.inputFile.authorizedExtensions",
@@ -756,6 +758,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
                                 StringUtils.join(
                                         unauthorizedExtensions.toArray(), ", ")));
                     }
+
+                }
+                if (constraints.size() > 0) {
                     writer.write("(");
                     writer.write(StringUtils.join(constraints.toArray(), ", "));
                     writer.write(")");
