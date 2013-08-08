@@ -20,9 +20,7 @@ package org.nuxeo.ecm.automation.core.trace;
 import javax.management.MXBean;
 
 /**
- * MX bean interface to access by JMX to enable trace mode or not
- *
- * @since 5.7.3
+ * @since 5.7.3 MX bean interface to access by JMX to enable trace mode or not
  */
 @MXBean
 public interface TracerFactoryMBean {
@@ -30,4 +28,6 @@ public interface TracerFactoryMBean {
     boolean toggleRecording();
 
     boolean getRecordingState();
+
+    void clearTraces();
 }

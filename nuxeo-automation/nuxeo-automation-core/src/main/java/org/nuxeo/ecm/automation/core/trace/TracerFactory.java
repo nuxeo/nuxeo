@@ -107,6 +107,7 @@ public class TracerFactory implements TracerFactoryMBean {
         traces.remove(chain);
     }
 
+    @Override
     public void clearTraces() {
         traces.clear();
     }
