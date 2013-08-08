@@ -27,11 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.el.ELException;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,8 +51,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.4.2
  */
 public class TestContentViewState extends SQLRepositoryTestCase {
-
-    private static final Log log = LogFactory.getLog(TestContentViewState.class);
 
     ContentViewService service;
 
@@ -86,27 +81,10 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         currentDocument = session.getRootDocument();
 
         // set mock faces context for needed properties resolution
-        facesContext = new MockFacesContext() {
-            @Override
-            @SuppressWarnings("rawtypes")
-            public Object evaluateExpressionGet(FacesContext context,
-                    String expression, Class expectedType) throws ELException {
-                if ("#{documentManager}".equals(expression)) {
-                    return session;
-                }
-                if ("#{searchDocument}".equals(expression)) {
-                    return searchDocument;
-                }
-                if ("#{currentDocument.id}".equals(expression)) {
-                    return currentDocument.getId();
-                } else if ("#{currentDocument.path}".equals(expression)) {
-                    return currentDocument.getPath();
-                } else {
-                    log.error("Cannot evaluate expression: " + expression);
-                }
-                return null;
-            }
-        };
+        facesContext = new MockFacesContext();
+        facesContext.mapVariable("documentManager", session);
+        facesContext.mapVariable("searchDocument", searchDocument);
+        facesContext.mapVariable("currentDocument", currentDocument);
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
     }
@@ -114,7 +92,9 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     @After
     public void tearDown() throws Exception {
         closeSession();
-        facesContext.relieveCurrent();
+        if (facesContext != null) {
+            facesContext.relieveCurrent();
+        }
         super.tearDown();
     }
 

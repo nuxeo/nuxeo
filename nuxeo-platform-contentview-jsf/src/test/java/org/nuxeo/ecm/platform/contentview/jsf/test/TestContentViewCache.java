@@ -16,18 +16,20 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.UUID;
 
-import javax.el.ELException;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -69,25 +71,9 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
                 "test-contentview-contrib.xml");
 
         // set mock faces context for needed properties resolution
-        facesContext = new MockFacesContext() {
-            @Override
-            public Object evaluateExpressionGet(FacesContext context,
-                    String expression, Class expectedType) throws ELException {
-                if ("#{documentManager}".equals(expression)) {
-                    return session;
-                }
-                if ("#{dummy.param}".equals(expression)) {
-                    // must be non-empty for Oracle
-                    return UUID.randomUUID().toString();
-                }
-                if ("#{currentDocument.id}".equals(expression)) {
-                    return currentDocument.getId();
-                } else {
-                    log.error("Cannot evaluate expression: " + expression);
-                }
-                return null;
-            }
-        };
+        facesContext = new MockFacesContext();
+        facesContext.mapExpression("#{dummy.param}",
+                UUID.randomUUID().toString());
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
 
@@ -95,6 +81,7 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertNotNull(service);
 
         openSession();
+        facesContext.mapVariable("documentManager", session);
 
         DocumentModel root = session.getRootDocument();
         container1 = session.createDocumentModel("Folder");
@@ -113,7 +100,9 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     @After
     public void tearDown() throws Exception {
         closeSession();
-        facesContext.relieveCurrent();
+        if (facesContext != null) {
+            facesContext.relieveCurrent();
+        }
         super.tearDown();
     }
 
@@ -131,12 +120,13 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         session.save();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void testContentViewCache() throws Exception {
         ContentViewCache cache = new ContentViewCache();
 
         this.currentDocument = container1;
+        facesContext.mapVariable("currentDocument", currentDocument);
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
 
@@ -173,10 +163,12 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
                 contentView.getCurrentResultLayout().getName());
 
         this.currentDocument = container2;
+        facesContext.mapVariable("currentDocument", currentDocument);
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
         assertNull(contentView);
 
         this.currentDocument = container1;
+        facesContext.mapVariable("currentDocument", currentDocument);
         contentView = cache.get("CURRENT_DOCUMENT_CHILDREN");
         assertNotNull(contentView);
         pp = (PageProvider<DocumentModel>) contentView.getCurrentPageProvider();

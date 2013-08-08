@@ -16,22 +16,23 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.el.ELException;
 import javax.faces.context.FacesContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
@@ -51,8 +52,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Anahide Tchertchian
  */
 public class TestDefaultPageProviders extends SQLRepositoryTestCase {
-
-    private static final Log log = LogFactory.getLog(TestDefaultPageProviders.class);
 
     ContentViewService service;
 
@@ -80,29 +79,11 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         final DocumentModel rootDoc = session.getRootDocument();
 
         // set mock faces context for needed properties resolution
-        facesContext = new MockFacesContext() {
-            @Override
-            @SuppressWarnings("rawtypes")
-            public Object evaluateExpressionGet(FacesContext context,
-                    String expression, Class expectedType) throws ELException {
-                if ("#{documentManager}".equals(expression)) {
-                    return session;
-                }
-                if ("#{searchDocument}".equals(expression)) {
-                    return searchDocument;
-                }
-                if ("#{dummy.param}".equals(expression)) {
-                    dummyParam = UUID.randomUUID().toString();
-                    return dummyParam;
-                }
-                if ("#{currentDocument.id}".equals(expression)) {
-                    return rootDoc.getId();
-                } else {
-                    log.error("Cannot evaluate expression: " + expression);
-                }
-                return null;
-            }
-        };
+        facesContext = new MockFacesContext();
+        facesContext.mapExpression("#{dummy.param}", dummyParam);
+        facesContext.mapVariable("documentManager", session);
+        facesContext.mapVariable("searchDocument", searchDocument);
+        facesContext.mapVariable("currentDocument", rootDoc);
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
 
@@ -125,7 +106,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         // title by default
         for (int i = 4; i >= 0; i--) {
             DocumentModel doc = session.createDocumentModel("Folder");
-            doc.setPropertyValue("dc:title", "Document number" + i); // no space
+            doc.setPropertyValue("dc:title", "Document number" + i); // no
+                                                                     // space
             doc.setPathInfo(root.getPathAsString(), "doc_" + i);
             session.createDocument(doc);
         }
@@ -144,7 +126,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         String parentIdParam = session.getRootDocument().getId();
         assertEquals(parentIdParam, contentView.getCacheKey());
 
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam, dummyParam);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(
+                parentIdParam, dummyParam);
         checkCoreQuery(parentIdParam, pp);
     }
 
@@ -157,7 +140,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         String parentIdParam = session.getRootDocument().getId();
         assertEquals(parentIdParam, contentView.getCacheKey());
 
-        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(parentIdParam, dummyParam);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(
+                parentIdParam, dummyParam);
         checkCoreQuery(parentIdParam, pp);
     }
 
@@ -174,15 +158,13 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
-        assertEquals(
-                String.format(
-                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                                + " AND ecm:isCheckedInVersion = 0"
-                                + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted'"
-                                + " AND ecm:parentId != '%s'"
-                                + " ORDER BY dc:title",
-                        parentIdParam, dummyParam),
+        assertEquals(String.format(
+                "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                        + " AND ecm:isCheckedInVersion = 0"
+                        + " AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:currentLifeCycleState != 'deleted'"
+                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title",
+                parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -192,23 +174,21 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number0", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number1", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number0",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number1",
+                docs.get(1).getPropertyValue("dc:title"));
 
         pp.nextPage();
         docs = pp.getCurrentPage();
 
-        assertEquals(
-                String.format(
-                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                                + " AND ecm:isCheckedInVersion = 0"
-                                + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted'"
-                                + " AND ecm:parentId != '%s'"
-                                + " ORDER BY dc:title",
-                        parentIdParam, dummyParam),
+        assertEquals(String.format(
+                "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                        + " AND ecm:isCheckedInVersion = 0"
+                        + " AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:currentLifeCycleState != 'deleted'"
+                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title",
+                parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -218,10 +198,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number2", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number3", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number2",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number3",
+                docs.get(1).getPropertyValue("dc:title"));
 
         // test selection
         pp.setSelectedEntries(Arrays.asList(new DocumentModel[] { docs.get(1) }));
@@ -229,11 +209,13 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(selections);
         assertEquals(2, selections.getSize());
         assertFalse(selections.isSelected());
-        assertEquals("Document number2",
+        assertEquals(
+                "Document number2",
                 selections.getEntries().get(0).getData().getPropertyValue(
                         "dc:title"));
         assertFalse(selections.getEntries().get(0).isSelected());
-        assertEquals("Document number3",
+        assertEquals(
+                "Document number3",
                 selections.getEntries().get(1).getData().getPropertyValue(
                         "dc:title"));
         assertTrue(selections.getEntries().get(1).isSelected());
@@ -251,8 +233,11 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
         checkCoreQueryWithXMLParameter(parentIdParam, pp);
 
-        // Test that a new page provider is returned when one of the parameter changes.
-        // In this case, it's dummy.param that always changes.
+        // Test that a new page provider is returned when one of the parameter
+        // changes.
+        // In this case, it's dummy.param that changes.
+        facesContext.mapExpression("#{dummy.param}",
+                UUID.randomUUID().toString());
         PageProvider<DocumentModel> pp2 = (PageProvider<DocumentModel>) contentView.getPageProvider();
         assertTrue(!pp2.equals(pp));
         assertTrue(!pp2.getParameters()[1].equals(pp.getParameters()[1]));
@@ -281,15 +266,13 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
-        assertEquals(
-                String.format(
-                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                                + " AND ecm:isCheckedInVersion = 0"
-                                + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted'"
-                                + " AND ecm:parentId != '%s'"
-                                + " ORDER BY dc:title",
-                        parentIdParam, dummyParam),
+        assertEquals(String.format(
+                "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                        + " AND ecm:isCheckedInVersion = 0"
+                        + " AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:currentLifeCycleState != 'deleted'"
+                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title",
+                parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -299,23 +282,21 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number0", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number1", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number0",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number1",
+                docs.get(1).getPropertyValue("dc:title"));
 
         pp.nextPage();
         docs = pp.getCurrentPage();
 
-        assertEquals(
-                String.format(
-                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
-                                + " AND ecm:isCheckedInVersion = 0"
-                                + " AND ecm:mixinType != 'HiddenInNavigation'"
-                                + " AND ecm:currentLifeCycleState != 'deleted'"
-                                + " AND ecm:parentId != '%s'"
-                                + " ORDER BY dc:title",
-                        parentIdParam, dummyParam),
+        assertEquals(String.format(
+                "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                        + " AND ecm:isCheckedInVersion = 0"
+                        + " AND ecm:mixinType != 'HiddenInNavigation'"
+                        + " AND ecm:currentLifeCycleState != 'deleted'"
+                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title",
+                parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -325,10 +306,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number2", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number3", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number2",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number3",
+                docs.get(1).getPropertyValue("dc:title"));
 
         // test selection
         pp.setSelectedEntries(Arrays.asList(new DocumentModel[] { docs.get(1) }));
@@ -336,11 +317,13 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertNotNull(selections);
         assertEquals(2, selections.getSize());
         assertFalse(selections.isSelected());
-        assertEquals("Document number2",
+        assertEquals(
+                "Document number2",
                 selections.getEntries().get(0).getData().getPropertyValue(
                         "dc:title"));
         assertFalse(selections.getEntries().get(0).isSelected());
-        assertEquals("Document number3",
+        assertEquals(
+                "Document number3",
                 selections.getEntries().get(1).getData().getPropertyValue(
                         "dc:title"));
         assertTrue(selections.getEntries().get(1).isSelected());
@@ -622,10 +605,10 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals("Document number0", docs.get(0).getPropertyValue(
-                "dc:title"));
-        assertEquals("Document number1", docs.get(1).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number0",
+                docs.get(0).getPropertyValue("dc:title"));
+        assertEquals("Document number1",
+                docs.get(1).getPropertyValue("dc:title"));
 
         // fill search document with some properDocumentModelties
         searchDocument.setPropertyValue("dc:title", "number0");
@@ -649,8 +632,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
         assertNotNull(docs);
         assertEquals(1, docs.size());
-        assertEquals("Document number0", docs.get(0).getPropertyValue(
-                "dc:title"));
+        assertEquals("Document number0",
+                docs.get(0).getPropertyValue("dc:title"));
 
     }
 
