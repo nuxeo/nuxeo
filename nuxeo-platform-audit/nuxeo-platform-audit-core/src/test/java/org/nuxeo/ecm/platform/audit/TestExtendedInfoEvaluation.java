@@ -16,17 +16,17 @@
  */
 package org.nuxeo.ecm.platform.audit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.el.ExpressionFactory;
-
-import org.junit.Before;
+import org.jboss.el.ExpressionFactoryImpl;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -44,7 +44,7 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
         super.setUp();
 
         evaluatorUnderTest = new ExpressionEvaluator(
-                ExpressionFactory.newInstance());
+                new ExpressionFactoryImpl());
 
         openRepository();
     }

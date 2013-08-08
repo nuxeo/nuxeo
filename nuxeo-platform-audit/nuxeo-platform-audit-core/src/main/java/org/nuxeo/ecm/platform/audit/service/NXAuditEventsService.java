@@ -36,6 +36,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -81,8 +82,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import de.odysseus.el.ExpressionFactoryImpl;
-
 /**
  * Event service configuration.
  *
@@ -99,10 +98,10 @@ public class NXAuditEventsService extends DefaultComponent implements
     private static final String EXTENDED_INFO_EXT_POINT = "extendedInfo";
 
     private static final String ADAPTER_POINT = "adapter";
-    
+
     /**
      * If passed as true on the event properties, event not logged
-     * 
+     *
      * @since 5.7
      */
     public static final String DISABLE_AUDIT_LOGGER = "disableAuditLogger";
@@ -785,7 +784,7 @@ public class NXAuditEventsService extends DefaultComponent implements
 
         Boolean disabled = (Boolean) docCtx.getProperty(DISABLE_AUDIT_LOGGER);
         if (disabled != null && disabled) {
-            // don't log events with this flag 
+            // don't log events with this flag
             return;
         }
         Principal principal = docCtx.getPrincipal();
