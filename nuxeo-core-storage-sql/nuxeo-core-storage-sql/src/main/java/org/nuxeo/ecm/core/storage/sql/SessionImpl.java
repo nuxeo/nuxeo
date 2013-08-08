@@ -279,6 +279,12 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
+    public boolean isStateSharedByAllThreadSessions() {
+        // only the JCA handle returns true
+        return false;
+    }
+
+    @Override
     public String getRepositoryName() {
         return repository.getName();
     }

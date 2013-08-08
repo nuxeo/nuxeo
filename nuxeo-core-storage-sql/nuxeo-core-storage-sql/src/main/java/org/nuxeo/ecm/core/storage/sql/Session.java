@@ -48,6 +48,12 @@ public interface Session extends Connection {
     boolean isLive();
 
     /**
+     * Returns {@code true} if all sessions in the current thread share the same
+     * state.
+     */
+    boolean isStateSharedByAllThreadSessions();
+
+    /**
      * Gets the session repository name.
      *
      * @return the repository name

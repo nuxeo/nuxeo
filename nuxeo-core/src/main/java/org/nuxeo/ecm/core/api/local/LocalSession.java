@@ -181,8 +181,7 @@ public class LocalSession extends AbstractSession {
 
     @Override
     public boolean isStateSharedByAllThreadSessions() {
-        // each new LocalSession has its own state even in the same thread
-        return false;
+        return session.isStateSharedByAllThreadSessions();
     }
 
     @Override
