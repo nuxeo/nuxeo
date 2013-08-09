@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2002-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2002-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -37,6 +36,7 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
@@ -76,6 +76,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
         return tmp;
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -141,7 +142,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             Map<String, Blob> blobParameters, Map<String, String> parameters)
             throws ConversionException {
         CmdParameters params = new CmdParameters();
-        List<String> filesToDelete = new ArrayList<String>();
+        List<String> filesToDelete = new ArrayList<>();
 
         try {
             if (blobParameters != null) {
@@ -166,22 +167,16 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
             ExecResult result = getCommandLineService().execCommand(
                     commandName, params);
-
             if (!result.isSuccessful()) {
-                throw new ConversionException("CommandLine returned code "
-                        + result.getReturnCode() + ":\n  "
-                        + StringUtils.join(result.getOutput(), "\n  "),
-                        result.getError());
+                throw result.getError();
             }
-
             return new CmdReturn(params, result.getOutput());
         } catch (CommandNotAvailable e) {
             // XXX bubble installation instructions
             throw new ConversionException("Unable to find targetCommand", e);
-        } catch (IOException e) {
+        } catch (IOException | CommandException e) {
             throw new ConversionException(
                     "Error while converting via CommandLineService", e);
-
         } finally {
             for (String fileToDelete : filesToDelete) {
                 new File(fileToDelete).delete();
@@ -189,14 +184,16 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
         }
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         initParameters = descriptor.getParameters();
         if (initParameters == null) {
-            initParameters = new HashMap<String, String>();
+            initParameters = new HashMap<>();
         }
         getCommandLineService();
     }
 
+    @Override
     public ConverterCheckResult isConverterAvailable() {
         String commandName = getCommandName(null, null);
         if (commandName == null) {
