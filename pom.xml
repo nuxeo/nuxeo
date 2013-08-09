@@ -4,11 +4,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>5.7.3-SNAPSHOT</version>
+    <version>5.7.2</version>
   </parent>
 
   <groupId>org.nuxeo.ecm</groupId>
   <artifactId>nuxeo-diff-parent</artifactId>
+  <version>5.7.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo Diff Parent</name>
   <description>Parent project of the document diff feature projects</description>
