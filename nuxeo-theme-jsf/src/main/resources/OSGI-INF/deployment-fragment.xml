@@ -93,11 +93,6 @@
       <include>META-INF/**</include>
     </unzip>
 
-    <copy from="nxthemes-jsf.tmp/META-INF/nxthemes.taglib.xml"
-      to="nuxeo.war/META-INF/" />
-    <copy from="nxthemes-jsf.tmp/META-INF/nxthemes.tld"
-      to="nuxeo.war/META-INF/" />
-
     <delete path="nxthemes-jsf.tmp" />
   </install>
 
