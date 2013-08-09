@@ -3468,11 +3468,7 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-el-api</artifactId>
         <version>${tomcat.version}</version>
-        <!-- FIXME: remove the provided for now, waiting for explicitely
-          setting this dep on all modules referencing its classes -->
-        <!--
-          <scope>provided</scope>
-        -->
+        <scope>provided</scope>
       </dependency>
 
       <!-- Test Scope -->
