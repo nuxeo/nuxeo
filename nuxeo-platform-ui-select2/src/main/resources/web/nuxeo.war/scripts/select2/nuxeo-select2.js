@@ -171,6 +171,34 @@ function initSelect2Widget(el) {
 
   // init select2
   el.select2(select2_params);
+
+  el.on("select2-selecting", function(e) {
+    var newValue;
+    if (select2_params.multiple) {
+      var newObj = JSON.parse(initHolder.val());
+      newObj.push(e.object);
+      var newValue = JSON.stringify(newObj);
+    } else {
+      newValue = JSON.stringify(e.object);
+    }
+    initHolder.val(newValue);
+  });
+
+  el.on("select2-removed", function(e) {
+    var newValue = '';
+    if (select2_params.multiple) {
+      var tempObj = JSON.parse(initHolder.val());
+      var removedId = select2_params.id(e.removed);
+      jQuery.each(tempObj, function(index, result) {
+        if (select2_params.id(result) == removedId) {
+          tempObj.splice(index, 1);
+        }
+      });
+      newValue = JSON.stringify(tempObj);
+    }
+    initHolder.val(newValue);
+  });
+
 }
 
 function initSelect2AjaxWidget(widgetId, index) {
