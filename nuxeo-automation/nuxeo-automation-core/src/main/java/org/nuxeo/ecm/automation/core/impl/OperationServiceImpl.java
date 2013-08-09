@@ -127,7 +127,8 @@ public class OperationServiceImpl implements AutomationService {
         }
         OperationCallback tracer = null;
         if (ctx.getChainCallback() == null) {
-            tracer = Framework.getLocalService(TracerFactory.class).newTracer();
+            tracer = Framework.getLocalService(TracerFactory.class).newTracer(
+                    operationType.getId());
             ctx.addChainCallback(tracer);
         } else {
             // Not logging at output if success for a child chain

@@ -31,7 +31,7 @@ import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
  * Automation tracer recording all automation execution traces when mode
- * activated
+ * activated.
  *
  * @since 5.7.3
  */
@@ -51,8 +51,11 @@ public class Tracer implements OperationCallback {
 
     protected String factoryIndex;
 
-    protected Tracer(TracerFactory factory) {
+    protected Boolean printable;
+
+    protected Tracer(TracerFactory factory, Boolean printable) {
         this.factory = factory;
+        this.printable = printable;
     }
 
     protected void pushContext(OperationType newChain) {
@@ -126,6 +129,6 @@ public class Tracer implements OperationCallback {
 
     @Override
     public String getFormattedText() {
-        return trace.getFormattedText();
+        return printable ? trace.getFormattedText() : "";
     }
 }

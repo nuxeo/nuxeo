@@ -30,4 +30,8 @@ public interface TracerFactoryMBean {
     boolean getRecordingState();
 
     void clearTraces();
+
+    String getPrintableTraces();
+
+    void setPrintableTraces(String printableTraces);
 }

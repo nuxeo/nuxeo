@@ -17,10 +17,14 @@
  */
 package org.nuxeo.ecm.automation.core.trace;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationType;
@@ -36,15 +40,23 @@ public class TracerFactory implements TracerFactoryMBean {
 
     public static final String AUTOMATION_TRACE_PROPERTY = "org.nuxeo.automation.trace";
 
+    public static final String AUTOMATION_TRACE_PRINTABLE_PROPERTY = "org.nuxeo.automation.trace.printable";
+
+    private static final Log log = LogFactory.getLog(TracerFactory.class);
+
+    protected String printableTraces;
+
     protected Cache<String, ChainTraces> tracesCache;
 
     protected boolean recording;
 
     public TracerFactory() {
-        tracesCache = CacheBuilder.newBuilder().concurrencyLevel(10).maximumSize(
+        this.tracesCache = CacheBuilder.newBuilder().concurrencyLevel(10).maximumSize(
                 1000).expireAfterWrite(1, TimeUnit.HOURS).build();
         this.recording = Boolean.parseBoolean(Framework.getProperty(
                 AUTOMATION_TRACE_PROPERTY, "false"));
+        this.printableTraces = Framework.getProperty(
+                AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*");
     }
 
     protected static class ChainTraces {
@@ -81,11 +93,30 @@ public class TracerFactory implements TracerFactoryMBean {
      * If trace mode is enabled, instantiate {@link Tracer}. If not, instantiate
      * {@link TracerLite}.
      */
-    public OperationCallback newTracer() {
+    public OperationCallback newTracer(String operationTypeId) {
         if (recording) {
-            return new Tracer(this);
+            return new Tracer(this, printable(operationTypeId));
         }
         return new TracerLite(this);
+    }
+
+    protected Boolean printable(String operationTypeId) {
+        if (!"*".equals(printableTraces)) {
+            try {
+                String[] printableTraces = this.printableTraces.split(",");
+                return Arrays.asList(printableTraces).contains(operationTypeId);
+            } catch (PatternSyntaxException e) {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("The property ");
+                stringBuilder.append(AUTOMATION_TRACE_PRINTABLE_PROPERTY);
+                stringBuilder.append(":");
+                stringBuilder.append(printableTraces);
+                stringBuilder.append(" is wrongly set. All automation traces are printable.");
+                log.info(stringBuilder.toString(), e);
+                return true;
+            }
+        }
+        return true;
     }
 
     public String recordTrace(Trace trace) {
@@ -140,5 +171,15 @@ public class TracerFactory implements TracerFactoryMBean {
     @Override
     public boolean getRecordingState() {
         return recording;
+    }
+
+    @Override
+    public String getPrintableTraces() {
+        return printableTraces;
+    }
+
+    @Override
+    public void setPrintableTraces(String printableTraces) {
+        this.printableTraces = printableTraces;
     }
 }
