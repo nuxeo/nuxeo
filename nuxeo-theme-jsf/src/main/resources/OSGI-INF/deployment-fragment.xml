@@ -84,16 +84,4 @@
     </component>
   </extension>
 
-
-  <install>
-    <delete path="nxthemes-jsf.tmp" />
-    <mkdir path="nxthemes-jsf.tmp" />
-
-    <unzip from="${bundle.fileName}" to="nxthemes-jsf.tmp">
-      <include>META-INF/**</include>
-    </unzip>
-
-    <delete path="nxthemes-jsf.tmp" />
-  </install>
-
 </fragment>
