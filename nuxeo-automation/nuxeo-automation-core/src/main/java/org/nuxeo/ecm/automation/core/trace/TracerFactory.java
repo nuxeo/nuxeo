@@ -19,24 +19,30 @@ package org.nuxeo.ecm.automation.core.trace;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.runtime.api.Framework;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 /**
- * @since 5.7.3 The Automation tracer factory service
+ * @since 5.7.3 The Automation tracer factory service.
  */
 public class TracerFactory implements TracerFactoryMBean {
 
     public static final String AUTOMATION_TRACE_PROPERTY = "org.nuxeo.automation.trace";
 
-    protected Map<String, ChainTraces> traces = new HashMap<String, ChainTraces>();
+    protected Cache<String, ChainTraces> tracesCache;
 
     protected boolean recording;
 
     public TracerFactory() {
+        tracesCache = CacheBuilder.newBuilder().concurrencyLevel(10).maximumSize(
+                1000).expireAfterWrite(1, TimeUnit.HOURS).build();
         this.recording = Boolean.parseBoolean(Framework.getProperty(
                 AUTOMATION_TRACE_PROPERTY, "false"));
     }
@@ -84,32 +90,38 @@ public class TracerFactory implements TracerFactoryMBean {
 
     public String recordTrace(Trace trace) {
         String chainId = trace.chain.getId();
-        if (!traces.containsKey(chainId)) {
-            traces.put(chainId, new ChainTraces(trace.chain));
+        ChainTraces chainTraces = tracesCache.getIfPresent(chainId);
+        if (chainTraces == null) {
+            tracesCache.put(chainId, new ChainTraces(trace.chain));
         }
-        return traces.get(chainId).add(trace);
+        return tracesCache.getIfPresent(chainId).add(trace);
     }
 
     public Trace getTrace(OperationChain chain, int index) {
-        return traces.get(chain.getId()).getTrace(index);
+        return tracesCache.getIfPresent(chain.getId()).getTrace(index);
     }
 
+    /**
+     * @param key The name of the chain.
+     * @return The last trace of the given chain.
+     */
     public Trace getTrace(String key) {
-        ChainTraces chainTrace = traces.get(key);
-        return traces.get(key).getTrace(chainTrace.traces.size() - 1);
+        ChainTraces chainTrace = tracesCache.getIfPresent(key);
+        return tracesCache.getIfPresent(key).getTrace(
+                chainTrace.traces.size() - 1);
     }
 
     public void clearTrace(OperationChain chain, int index) {
-        traces.get(chain).removeTrace(Integer.valueOf(index));
+        tracesCache.getIfPresent(chain).removeTrace(Integer.valueOf(index));
     }
 
     public void clearTrace(OperationChain chain) {
-        traces.remove(chain);
+        tracesCache.invalidate(chain);
     }
 
     @Override
     public void clearTraces() {
-        traces.clear();
+        tracesCache.invalidateAll();
     }
 
     protected static String formatKey(OperationType chain, int index) {

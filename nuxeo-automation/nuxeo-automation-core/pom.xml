@@ -70,6 +70,10 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
     <!-- only for jsonnodetoproperties adapter shoul be moved in server module -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>

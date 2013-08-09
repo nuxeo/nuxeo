@@ -30,7 +30,6 @@ public class TraceException extends OperationException {
 
     public TraceException(OperationCallback tracer, Throwable cause) {
         super(tracer.getFormattedText(), cause);
-        traceFactory.clearTraces();
     }
 
     public TraceException(String message) {

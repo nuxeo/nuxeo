@@ -63,7 +63,7 @@ public class OperationServiceImpl implements AutomationService {
     protected Map<String, CompiledChainImpl> compiledChains = new HashMap<String, CompiledChainImpl>();
 
     /**
-     * Adapter registry
+     * Adapter registry.
      */
     protected AdapterKeyedRegistry adapters;
 
