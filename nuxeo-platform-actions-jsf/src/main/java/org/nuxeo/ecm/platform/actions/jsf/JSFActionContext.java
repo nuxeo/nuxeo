@@ -50,17 +50,18 @@ public class JSFActionContext extends AbstractActionContext implements
 
     @Override
     public boolean checkCondition(String expression) throws ELException {
-        if (StringUtils.isBlank(expression)) {
+        if (StringUtils.isBlank(expression)
+                || (expression != null && StringUtils.isBlank(expression.trim()))) {
             return false;
         }
-        expression = expression.trim();
+        String expr = expression.trim();
         // compatibility code, as JEXL could resolve that kind of expression:
         // detect if expression is in brackets #{}, otherwise add it
-        if (!expression.startsWith("#{") && !expression.startsWith("${")
+        if (!expr.startsWith("#{") && !expr.startsWith("${")
         // don't confuse error messages in case of simple mistakes in the
         // expression
-                && !expression.endsWith("}")) {
-            expression = "#{" + expression + "}";
+                && !expr.endsWith("}")) {
+            expr = "#{" + expr + "}";
         }
         ELContext finalContext = new JSFELContext(originalContext);
         VariableMapper vm = finalContext.getVariableMapper();
@@ -84,9 +85,9 @@ public class JSFActionContext extends AbstractActionContext implements
         putLocalVariable("SeamContext", new SeamContextHelper());
 
         // evaluate expression
-        ValueExpression expr = expressionFactory.createValueExpression(
-                finalContext, expression, Boolean.class);
-        return Boolean.TRUE.equals(expr.getValue(finalContext));
+        ValueExpression ve = expressionFactory.createValueExpression(
+                finalContext, expr, Boolean.class);
+        return Boolean.TRUE.equals(ve.getValue(finalContext));
     }
 
 }
