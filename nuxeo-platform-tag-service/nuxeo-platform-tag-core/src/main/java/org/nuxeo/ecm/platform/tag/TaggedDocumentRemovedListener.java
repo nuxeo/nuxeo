@@ -17,8 +17,6 @@
  */
 package org.nuxeo.ecm.platform.tag;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -72,21 +70,12 @@ public class TaggedDocumentRemovedListener implements PostCommitEventListener {
             String docId = doc.getId();
             CoreSession coreSession = docCtx.getCoreSession();
             try {
-                TagService tagService = Framework.getService(TagService.class);
-                if (tagService != null) {
-                    List<Tag> tags = tagService.getDocumentTags(coreSession,
-                            docId, null);
-                    if (tags != null) {
-                        for (Tag tag : tags) {
-                            tagService.untag(coreSession, doc.getId(),
-                                    tag.getLabel(), null);
-                        }
-                    }
-                }
-            } catch (Exception e) {
+
+                TagService tagService = Framework.getLocalService(TagService.class);
+                tagService.removeTags(coreSession, docId);
+            } catch (ClientException e) {
                 log.error(e, e);
             }
-            return;
         }
     }
 

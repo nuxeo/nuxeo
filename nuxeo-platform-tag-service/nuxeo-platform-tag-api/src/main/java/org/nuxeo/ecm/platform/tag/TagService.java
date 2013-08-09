@@ -78,6 +78,37 @@ public interface TagService {
             throws ClientException;
 
     /**
+     * Removes all the tags applied to a document.
+     *
+     * @since 5.7.3
+     */
+    void removeTags(CoreSession session, String docId) throws ClientException;
+
+    /**
+     * Copy all the tags applied to the source document to the destination
+     * document.
+     * <p>
+     * The tags are merged.
+     *
+     * @param srcDocId the source document id
+     * @param dstDocId the destination document id
+     * @since 5.7.3
+     */
+    void copyTags(CoreSession session, String srcDocId, String dstDocId)
+            throws ClientException;
+
+    /**
+     * Replace all the existing tags applied on the destination document by the
+     * ones applied on the source document.
+     *
+     * @param srcDocId the source document id
+     * @param dstDocId the destination document id
+     * @since 5.7.3
+     */
+    void replaceTags(CoreSession session, String srcDocId, String dstDocId)
+            throws ClientException;
+
+    /**
      * Gets the documents to which a tag is applied.
      *
      * @param session the session

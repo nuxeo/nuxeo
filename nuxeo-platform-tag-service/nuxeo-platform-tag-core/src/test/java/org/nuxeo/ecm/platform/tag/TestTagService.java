@@ -18,6 +18,9 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,46 +29,50 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.ws.NuxeoRemotingBean;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-public class TestTagService extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
+
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.tag",
+        "org.nuxeo.ecm.platform.ws" })
+@LocalDeploy("org.nuxeo.ecm.platform.tag:login-config.xml")
+public class TestTagService {
 
     protected static final Log log = LogFactory.getLog(TestTagService.class);
 
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     protected TagService tagService;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.tag");
-        deployBundle("org.nuxeo.ecm.platform.ws");
-        deployTestContrib("org.nuxeo.ecm.platform.tag",
-                getClass().getResource("/login-config.xml"));
-        openSession();
-        tagService = Framework.getLocalService(TagService.class);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
 
     // Oracle fails if we do too many connections in a short time, sleep
     // here to prevent this.
@@ -237,7 +244,6 @@ public class TestTagService extends SQLRepositoryTestCase {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
         file = session.createDocument(file);
-        session.save();
         String file1Id = file.getId();
         List<Tag> tags;
 
@@ -249,12 +255,13 @@ public class TestTagService extends SQLRepositoryTestCase {
 
         // delete doc
         session.removeDocument(file.getRef());
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
 
         // wait for async tag removal
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         // check no more tag
+        TransactionHelper.startTransaction();
         tags = tagService.getDocumentTags(session, file1Id, null);
         assertEquals(Collections.emptySet(), labels(tags));
     }
@@ -264,7 +271,6 @@ public class TestTagService extends SQLRepositoryTestCase {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
         file = session.createDocument(file);
-        session.save();
         String file1Id = file.getId();
         List<Tag> tags;
 
@@ -276,14 +282,266 @@ public class TestTagService extends SQLRepositoryTestCase {
 
         // trash doc
         file.followTransition(LifeCycleConstants.DELETE_TRANSITION);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
 
         // wait for async tag removal
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         // check no more tag
+        TransactionHelper.startTransaction();
         tags = tagService.getDocumentTags(session, file1Id, null);
         assertEquals(Collections.emptySet(), labels(tags));
+    }
+
+    @Test
+    public void testRemoveTags() throws ClientException {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File1");
+        file = session.createDocument(file);
+        session.save();
+
+        String fileId = file.getId();
+
+        tagService.tag(session, fileId, "foo", "Administrator");
+        tagService.tag(session, fileId, "bar", "leela");
+        tagService.tag(session, fileId, "foo", "bender");
+
+        assertEquals(2,
+                tagService.getDocumentTags(session, fileId, null).size());
+
+        tagService.removeTags(session, fileId);
+
+        assertEquals(0,
+                tagService.getDocumentTags(session, fileId, null).size());
+    }
+
+    @Test
+    public void testCopyTags() throws ClientException {
+        DocumentModel srcFile = session.createDocumentModel("/", "srcFile",
+                "File");
+        srcFile.setPropertyValue("dc:title", "File1");
+        srcFile = session.createDocument(srcFile);
+        session.save();
+        String srcDocId = srcFile.getId();
+
+        DocumentModel dstFile = session.createDocumentModel("/", "dstFile",
+                "File");
+        dstFile.setPropertyValue("dc:title", "File1");
+        dstFile = session.createDocument(dstFile);
+        session.save();
+        String dstDocId = dstFile.getId();
+
+        tagService.tag(session, srcDocId, "foo", "Administrator");
+        tagService.tag(session, srcDocId, "foo", "leela");
+        tagService.tag(session, srcDocId, "foo", "bender");
+        tagService.tag(session, srcDocId, "bar", "fry");
+        tagService.tag(session, srcDocId, "bar", "leela");
+        tagService.tag(session, srcDocId, "baz", "bender");
+
+        assertEquals(3,
+                tagService.getDocumentTags(session, srcDocId, null).size());
+        assertEquals(0,
+                tagService.getDocumentTags(session, dstDocId, null).size());
+
+        tagService.copyTags(session, srcDocId, dstDocId);
+
+        assertEquals(3,
+                tagService.getDocumentTags(session, srcDocId, null).size());
+        List<Tag> tags = tagService.getDocumentTags(session, dstDocId, null);
+        assertEquals(3, tags.size());
+        assertTrue(tags.contains(new Tag("foo", 0)));
+        assertTrue(tags.contains(new Tag("bar", 0)));
+        assertTrue(tags.contains(new Tag("baz", 0)));
+
+        assertEquals(
+                1,
+                tagService.getDocumentTags(session, dstDocId, "Administrator").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, dstDocId, "leela").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, dstDocId, "bender").size());
+    }
+
+    @Test
+    public void testReplaceTags() throws ClientException {
+        DocumentModel srcFile = session.createDocumentModel("/", "srcFile",
+                "File");
+        srcFile.setPropertyValue("dc:title", "File1");
+        srcFile = session.createDocument(srcFile);
+        String srcDocId = srcFile.getId();
+
+        DocumentModel dstFile = session.createDocumentModel("/", "dstFile",
+                "File");
+        dstFile.setPropertyValue("dc:title", "File1");
+        dstFile = session.createDocument(dstFile);
+        String dstDocId = dstFile.getId();
+
+        tagService.tag(session, srcDocId, "foo", "Administrator");
+        tagService.tag(session, srcDocId, "foo", "leela");
+        tagService.tag(session, srcDocId, "foo", "bender");
+        tagService.tag(session, srcDocId, "bar", "fry");
+        tagService.tag(session, srcDocId, "bar", "leela");
+        tagService.tag(session, srcDocId, "baz", "bender");
+
+        tagService.tag(session, dstDocId, "tag1", "Administrator");
+        tagService.tag(session, dstDocId, "tag1", "fry");
+        tagService.tag(session, dstDocId, "tag2", "leela");
+        tagService.tag(session, dstDocId, "tag2", "bender");
+
+        assertEquals(3,
+                tagService.getDocumentTags(session, srcDocId, null).size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, dstDocId, null).size());
+
+        tagService.replaceTags(session, srcDocId, dstDocId);
+
+        assertEquals(3,
+                tagService.getDocumentTags(session, srcDocId, null).size());
+        List<Tag> tags = tagService.getDocumentTags(session, dstDocId, null);
+        assertEquals(3, tags.size());
+        assertTrue(tags.contains(new Tag("foo", 0)));
+        assertTrue(tags.contains(new Tag("bar", 0)));
+        assertTrue(tags.contains(new Tag("baz", 0)));
+
+        assertEquals(
+                1,
+                tagService.getDocumentTags(session, dstDocId, "Administrator").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, dstDocId, "leela").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, dstDocId, "bender").size());
+    }
+
+    @Test
+    public void testCopyTagsOnVersion() throws ClientException {
+        DocumentModel doc;
+        doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:title", "File1");
+        doc = session.createDocument(doc);
+        String docId = doc.getId();
+
+        tagService.tag(session, docId, "foo", "Administrator");
+        tagService.tag(session, docId, "foo", "leela");
+        tagService.tag(session, docId, "foo", "bender");
+        tagService.tag(session, docId, "bar", "fry");
+        tagService.tag(session, docId, "bar", "leela");
+        tagService.tag(session, docId, "baz", "bender");
+        assertEquals(3, tagService.getDocumentTags(session, docId, null).size());
+
+        DocumentRef versionRef = checkIn(doc.getRef());
+        DocumentModel version = session.getDocument(versionRef);
+        String versionId = version.getId();
+
+        List<Tag> tags = tagService.getDocumentTags(session, versionId, null);
+        assertEquals(3, tags.size());
+        assertTrue(tags.contains(new Tag("foo", 0)));
+        assertTrue(tags.contains(new Tag("bar", 0)));
+        assertTrue(tags.contains(new Tag("baz", 0)));
+
+        assertEquals(
+                1,
+                tagService.getDocumentTags(session, versionId, "Administrator").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, versionId, "leela").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, versionId, "bender").size());
+    }
+
+    @Test
+    public void testCopyTagsOnProxy() throws ClientException {
+        DocumentModel doc;
+        doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:title", "File1");
+        doc = session.createDocument(doc);
+        String docId = doc.getId();
+
+        tagService.tag(session, docId, "foo", "Administrator");
+        tagService.tag(session, docId, "foo", "leela");
+        tagService.tag(session, docId, "foo", "bender");
+        tagService.tag(session, docId, "bar", "fry");
+        tagService.tag(session, docId, "bar", "leela");
+        tagService.tag(session, docId, "baz", "bender");
+        assertEquals(3, tagService.getDocumentTags(session, docId, null).size());
+
+        DocumentModel proxy = publishDocument(doc);
+        String proxyId = proxy.getId();
+
+        List<Tag> tags = tagService.getDocumentTags(session, proxyId, null);
+        assertEquals(3, tags.size());
+        assertTrue(tags.contains(new Tag("foo", 0)));
+        assertTrue(tags.contains(new Tag("bar", 0)));
+        assertTrue(tags.contains(new Tag("baz", 0)));
+
+        assertEquals(
+                1,
+                tagService.getDocumentTags(session, proxyId, "Administrator").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, proxyId, "leela").size());
+        assertEquals(2,
+                tagService.getDocumentTags(session, proxyId, "bender").size());
+    }
+
+    @Test
+    public void testCopyTagsOnRestoredVersion() throws ClientException {
+        DocumentModel doc;
+        doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:title", "File1");
+        doc = session.createDocument(doc);
+        String docId = doc.getId();
+
+        tagService.tag(session, docId, "foo", "Administrator");
+        tagService.tag(session, docId, "foo", "leela");
+        tagService.tag(session, docId, "foo", "bender");
+        tagService.tag(session, docId, "bar", "fry");
+        tagService.tag(session, docId, "bar", "leela");
+        tagService.tag(session, docId, "baz", "bender");
+
+        DocumentRef versionRef = checkIn(doc.getRef());
+        DocumentModel version = session.getDocument(versionRef);
+        String versionId = version.getId();
+
+        assertEquals(3, tagService.getDocumentTags(session, docId, null).size());
+        assertEquals(3,
+                tagService.getDocumentTags(session, versionId, null).size());
+
+        // put new tags on the version
+        tagService.removeTags(session, versionId);
+        tagService.tag(session, versionId, "tag1", "leela");
+        tagService.tag(session, versionId, "tag2", "fry");
+
+        restoreToVersion(doc.getRef(), version.getRef());
+
+        List<Tag> tags = tagService.getDocumentTags(session, docId, null);
+        assertEquals(2, tags.size());
+        assertTrue(tags.contains(new Tag("tag1", 0)));
+        assertTrue(tags.contains(new Tag("tag2", 0)));
+    }
+
+    protected DocumentRef checkIn(DocumentRef ref) throws ClientException {
+        DocumentRef versionRef = session.checkIn(ref, null, null);
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        return versionRef;
+    }
+
+    protected DocumentModel publishDocument(DocumentModel doc)
+            throws ClientException {
+        DocumentModel proxy = session.publishDocument(doc,
+                session.getRootDocument());
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        return proxy;
+    }
+
+    protected DocumentModel restoreToVersion(DocumentRef docRef,
+            DocumentRef versionRef) throws ClientException {
+        DocumentModel docModel = session.restoreToVersion(docRef, versionRef);
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        return docModel;
     }
 
     @Test

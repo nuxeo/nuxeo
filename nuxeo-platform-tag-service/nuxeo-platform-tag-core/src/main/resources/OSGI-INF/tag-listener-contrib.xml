@@ -11,6 +11,14 @@
       <event>lifecycle_transition_event</event>
     </listener>
 
+    <listener name="taggedVersionListener" async="true"
+      postCommit="true"
+      class="org.nuxeo.ecm.platform.tag.TaggedVersionListener">
+      <event>documentCheckedIn</event>
+      <event>documentRestored</event>
+      <event>documentProxyPublished</event>
+    </listener>
+
   </extension>
 
 </component>

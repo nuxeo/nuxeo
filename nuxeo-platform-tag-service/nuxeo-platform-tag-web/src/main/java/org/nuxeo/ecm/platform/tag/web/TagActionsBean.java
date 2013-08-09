@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.tag.Tag;
@@ -129,7 +130,7 @@ public class TagActionsBean implements Serializable {
         if (currentDocument == null) {
             return new ArrayList<Tag>(0);
         } else {
-            String docId = getDocIdForTag(currentDocument);
+            String docId = currentDocument.getId();
             List<Tag> tags = getTagService().getDocumentTags(documentManager,
                     docId, null);
             Collections.sort(tags, Tag.LABEL_COMPARATOR);
@@ -141,7 +142,10 @@ public class TagActionsBean implements Serializable {
      * Gets the doc id to use with the tag service for a given document.
      * <p>
      * Proxies are not tagged directly, their underlying document is.
+     *
+     * @deprecated since 5.7.3. The proxy is tagged itself.
      */
+    @Deprecated
     public static String getDocIdForTag(DocumentModel doc) {
         return doc.isProxy() ? doc.getSourceId() : doc.getId();
     }
@@ -155,8 +159,24 @@ public class TagActionsBean implements Serializable {
         if (StringUtils.isBlank(tagLabel)) {
             messageKey = "message.add.new.tagging.not.empty";
         } else {
-            String docId = getDocIdForTag(navigationContext.getCurrentDocument());
-            getTagService().tag(documentManager, docId, tagLabel, null);
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            String docId = currentDocument.getId();
+
+            TagService tagService = getTagService();
+            tagService.tag(documentManager, docId, tagLabel, null);
+            if (currentDocument.isVersion()) {
+                DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
+                if (!liveDocument.isCheckedOut()) {
+                    tagService.tag(documentManager, liveDocument.getId(),
+                            tagLabel, null);
+                }
+            } else if (!currentDocument.isCheckedOut()) {
+                DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
+                if (ref instanceof IdRef) {
+                    tagService.tag(documentManager, ref.toString(), tagLabel,
+                            null);
+                }
+            }
             messageKey = "message.add.new.tagging";
             // force invalidation
             Contexts.getEventContext().remove("currentDocumentTags");
@@ -171,8 +191,25 @@ public class TagActionsBean implements Serializable {
      * Removes a tagging from the current document.
      */
     public String removeTagging(String label) throws ClientException {
-        String docId = getDocIdForTag(navigationContext.getCurrentDocument());
-        getTagService().untag(documentManager, docId, label, null);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        String docId = currentDocument.getId();
+
+        TagService tagService = getTagService();
+        tagService.untag(documentManager, docId, label, null);
+
+        if (currentDocument.isVersion()) {
+            DocumentModel liveDocument = documentManager.getSourceDocument(currentDocument.getRef());
+            if (!liveDocument.isCheckedOut()) {
+                tagService.untag(documentManager, liveDocument.getId(), label,
+                        null);
+            }
+        } else if (!currentDocument.isCheckedOut()) {
+            DocumentRef ref = documentManager.getBaseVersion(currentDocument.getRef());
+            if (ref instanceof IdRef) {
+                tagService.untag(documentManager, ref.toString(), label, null);
+            }
+        }
+
         reset();
         // force invalidation
         Contexts.getEventContext().remove("currentDocumentTags");
