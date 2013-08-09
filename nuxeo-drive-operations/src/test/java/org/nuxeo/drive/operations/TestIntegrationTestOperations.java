@@ -145,6 +145,8 @@ public class TestIntegrationTestOperations {
                 USER_WORKSPACE_PARENT_PATH + "/nuxeoDriveTestUser-joe")));
         assertNotNull(session.getDocument(new PathRef(
                 USER_WORKSPACE_PARENT_PATH + "/nuxeoDriveTestUser-jack")));
+        // Save personal workspaces
+        session.save();
 
         // ----------------------------------------------------------------------
         // Setup the integration tests environment with other user names without
@@ -158,7 +160,7 @@ public class TestIntegrationTestOperations {
         // Check cleanup
         assertNull(userManager.getPrincipal("nuxeoDriveTestUser_joe"));
         assertNull(userManager.getPrincipal("nuxeoDriveTestUser_jack"));
-        // Invalidate VCS cache
+        // Process invalidations
         session.save();
         try {
             session.getDocument(new PathRef(USER_WORKSPACE_PARENT_PATH
@@ -200,6 +202,8 @@ public class TestIntegrationTestOperations {
                 "nuxeoDriveTestUser_sarah", session.getRootDocument());
         assertNotNull(session.getDocument(new PathRef(
                 USER_WORKSPACE_PARENT_PATH + "/nuxeoDriveTestUser-sarah")));
+        // Save personal workspaces
+        session.save();
 
         // ----------------------------------------------------------------------
         // Try to setup the integration tests environment as an unauthorized
@@ -234,7 +238,7 @@ public class TestIntegrationTestOperations {
         // ----------------------------------------------------------------------
         clientSession.newRequest(NuxeoDriveTearDownIntegrationTests.ID).execute();
         assertTrue(userManager.searchUsers("nuxeoDriveTestUser_").isEmpty());
-        // Invalidate VCS cache
+        // Process invalidations
         session.save();
         try {
             session.getDocument(new PathRef(USER_WORKSPACE_PARENT_PATH
