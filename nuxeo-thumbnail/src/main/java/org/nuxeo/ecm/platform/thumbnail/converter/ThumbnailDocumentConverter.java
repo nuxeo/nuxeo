@@ -9,15 +9,17 @@
  * Contributors:
  * Laurent Doguin <ldoguin@nuxeo.com>
  * Vladimir Pasquier <vpasquier@nuxeo.com>
- * 
+ *
  */
 package org.nuxeo.ecm.platform.thumbnail.converter;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -28,7 +30,9 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -36,7 +40,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * Converter bean managing the thumbnail conversion for picture documents
- * 
+ *
  * @since 5.7
  */
 public class ThumbnailDocumentConverter implements Converter {
@@ -93,13 +97,14 @@ public class ThumbnailDocumentConverter implements Converter {
 
             ExecResult res = cles.execCommand(THUMBNAIL_COMMAND, params);
             if (!res.isSuccessful()) {
-                return null;
+                throw res.getError();
             }
             Blob targetBlob = new FileBlob(outputFile);
             Framework.trackFile(outputFile, targetBlob);
             return new SimpleCachableBlobHolder(targetBlob);
-        } catch (Exception e) {
-            throw new ConversionException("Thumbnail conversion has failed", e);
+        } catch (CommandNotAvailable | IOException | ClientException
+                | CommandException e) {
+            throw new ConversionException("Thumbnail conversion failed", e);
         }
     }
 

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2007-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,7 @@ import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_HEIGHT;
 import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.OPTION_RESIZE_WIDTH;
 
-import java.awt.*;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
@@ -119,8 +120,9 @@ public class ImagingComponent extends DefaultComponent implements
     public String getImageMimeType(File file) {
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
-            if (file.getName()!=null) {
-                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(file.getName(), new FileBlob(file), "image/jpeg");
+            if (file.getName() != null) {
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
+                        file.getName(), new FileBlob(file), "image/jpeg");
             } else {
                 return mimetypeRegistry.getMimetypeFromFile(file);
             }
@@ -134,8 +136,9 @@ public class ImagingComponent extends DefaultComponent implements
     public String getImageMimeType(Blob blob) {
         try {
             MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
-            if (blob.getFilename()!=null) {
-                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob, "image/jpeg");
+            if (blob.getFilename() != null) {
+                return mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(
+                        blob.getFilename(), blob, "image/jpeg");
             } else {
                 return mimetypeRegistry.getMimetypeFromBlob(blob);
             }
@@ -186,11 +189,11 @@ public class ImagingComponent extends DefaultComponent implements
                 file = tmpFile;
             }
             imageInfo = ImageIdentifier.getInfo(file.getAbsolutePath());
-        } catch (CommandNotAvailable e) {
+        } catch (CommandNotAvailable | CommandException e) {
             log.error("Failed to get ImageInfo for file " + blob.getFilename(),
                     e);
         } catch (IOException e) {
-            log.error("Failed to tranfert file " + blob.getFilename(), e);
+            log.error("Failed to transfer file " + blob.getFilename(), e);
         } finally {
             if (tmpFile != null) {
                 tmpFile.delete();

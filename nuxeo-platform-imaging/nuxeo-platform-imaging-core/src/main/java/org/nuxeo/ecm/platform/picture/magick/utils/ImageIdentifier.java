@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,14 +14,13 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
- *
  */
 package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -37,13 +36,12 @@ public class ImageIdentifier extends MagickExecutor {
     private static final Log log = LogFactory.getLog(ImageIdentifier.class);
 
     public static ImageInfo getInfo(String inputFilePath)
-            throws CommandNotAvailable {
+            throws CommandNotAvailable, CommandException {
 
         ExecResult result = getIdentifyResult(inputFilePath);
-        if (result.getError() != null) {
-            log.debug("identify failed for file: " + inputFilePath + " ("
-                    + result.getError() + ")");
-            return null;
+        if (!result.isSuccessful()) {
+            log.debug("identify failed for file: " + inputFilePath);
+            throw result.getError();
         }
         String out = result.getOutput().get(
                 result.getOutput().size() > 1 ? result.getOutput().size() - 1
@@ -56,7 +54,6 @@ public class ImageIdentifier extends MagickExecutor {
 
     public static ExecResult getIdentifyResult(String inputFilePath)
             throws CommandNotAvailable {
-
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("inputFilePath", inputFilePath);
         return execCommand("identify", params);

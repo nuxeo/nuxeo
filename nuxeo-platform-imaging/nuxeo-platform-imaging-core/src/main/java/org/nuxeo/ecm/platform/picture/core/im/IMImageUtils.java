@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.BlobHelper;
 import org.nuxeo.ecm.platform.picture.core.ImageUtils;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
@@ -155,7 +157,8 @@ public class IMImageUtils implements ImageUtils {
     public Blob rotate(Blob blob, final int angle) {
         return new ImageMagickCaller() {
             @Override
-            public void callImageMagick() throws Exception {
+            public void callImageMagick() throws CommandNotAvailable,
+                    CommandException {
                 ImageRotater.rotate(sourceFile.getAbsolutePath(),
                         targetFile.getAbsolutePath(), angle);
             }
