@@ -220,5 +220,11 @@ function initSelect2Widgets() {
 };
 
 jQuery(document).ready(function() {
+  if(window.Prototype) {
+    delete Object.prototype.toJSON;
+    delete Array.prototype.toJSON;
+    delete Hash.prototype.toJSON;
+    delete String.prototype.toJSON;
+  }
   initSelect2Widgets();
 });
