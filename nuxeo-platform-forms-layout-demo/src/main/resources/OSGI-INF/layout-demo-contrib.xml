@@ -386,7 +386,7 @@
           <property name="minimumInputLength">2</property>
           <property name="instructionLabel">Type at least {0} "a" to display suggestion
           </property>
-          <property name="repository">default</property>
+          <property name="repository">default,layoutDemo</property>
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
@@ -453,7 +453,7 @@
           <property name="minimumInputLength">2</property>
           <property name="instructionLabel">Type at least {0} "a" to display suggestion
           </property>
-          <property name="repository">default</property>
+          <property name="repository">default,layoutDemo</property>
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
