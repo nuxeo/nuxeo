@@ -20,14 +20,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.el.ArrayELResolver;
-import javax.el.BeanELResolver;
-import javax.el.CompositeELResolver;
 import javax.el.ELContext;
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
-import javax.el.ListELResolver;
-import javax.el.MapELResolver;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
@@ -64,19 +59,7 @@ public class ExpressionContext extends ELContext {
         }
     }
 
-    private static class MyResolver extends CompositeELResolver {
-
-        private MyResolver() {
-            add(new DocumentModelResolver());
-            add(new MapELResolver());
-            add(new ListELResolver());
-            add(new ArrayELResolver());
-            add(new BeanELResolver());
-        }
-
-    }
-
-    protected final ELResolver resolver = new MyResolver();
+    protected final ELResolver resolver = new ExpressionResolver();
 
     protected final FunctionMapper functionMapper = new MyFunctionMapper();
 

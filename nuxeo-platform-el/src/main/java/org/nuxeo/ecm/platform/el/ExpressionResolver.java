@@ -22,13 +22,15 @@ package org.nuxeo.ecm.platform.el;
 import javax.el.ArrayELResolver;
 import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
+import javax.el.ListELResolver;
 import javax.el.MapELResolver;
-
 
 public class ExpressionResolver extends CompositeELResolver {
 
     public ExpressionResolver() {
+        add(new DocumentModelResolver());
         add(new MapELResolver());
+        add(new ListELResolver());
         add(new ArrayELResolver());
         add(new BeanELResolver());
     }
