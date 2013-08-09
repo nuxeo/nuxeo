@@ -3256,7 +3256,13 @@
         <artifactId>json</artifactId>
         <version>20070829</version>
       </dependency>
-      <!-- NXP-10566: comment out dupplicate EL implementations -->
+      <!--
+        NXP-10566: juel-api is mentioned here for reference but is exluded by
+        the distribution: java.el:el-api should be used instead as the
+        reference EL API module for now.
+        juel-impl is mentioned because it's required at runtime by shindig
+        gadgets modules.
+      -->
       <!--
         <dependency>
         <groupId>de.odysseus.juel</groupId>
@@ -3264,12 +3270,12 @@
         <version>2.1.2</version>
         <scope>test</scope>
         </dependency>
-        <dependency>
+      -->
+      <dependency>
         <groupId>de.odysseus.juel</groupId>
         <artifactId>juel-impl</artifactId>
         <version>2.1.2</version>
-        </dependency>
-      -->
+      </dependency>
       <dependency>
         <groupId>aopalliance</groupId>
         <artifactId>aopalliance</artifactId>
