@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -146,6 +146,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     /*
      * Service interface
      */
+    @Override
     public ExecResult execCommand(String commandName, CmdParameters params)
             throws CommandNotAvailable {
         CommandAvailability availability = getCommandAvailability(commandName);
@@ -158,6 +159,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         return executor.exec(cmdDesc, params);
     }
 
+    @Override
     public CommandAvailability getCommandAvailability(String commandName) {
         if (!commandDescriptors.containsKey(commandName)) {
             return new CommandAvailability(commandName
@@ -173,12 +175,14 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public List<String> getRegistredCommands() {
         List<String> cmds = new ArrayList<String>();
         cmds.addAll(commandDescriptors.keySet());
         return cmds;
     }
 
+    @Override
     public List<String> getAvailableCommands() {
         List<String> cmds = new ArrayList<String>();
 
