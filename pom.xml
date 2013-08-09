@@ -1952,7 +1952,11 @@
         <artifactId>jboss-seam-debug</artifactId>
         <version>${seam.version}</version>
       </dependency>
-      <!-- NXP-10566: EL implementation chosen -->
+      <!--
+        NXP-10566: EL implementation chosen, set as the default
+        implementation in tomcat by nuxeo-platform-el in file at
+        META-INF/services/javax.el.ExpressionFactory
+      -->
       <dependency>
         <groupId>org.jboss.el</groupId>
         <artifactId>jboss-el</artifactId>
@@ -3265,7 +3269,10 @@
         the distribution: java.el:el-api should be used instead as the
         reference EL API module for now.
         juel-impl is mentioned because it's required at runtime by shindig
-        gadgets modules.
+        gadgets modules, we're using a patched version to remove the file at
+        META-INF/services/javax.el.ExpressionFactory that's making juel
+        the default implementation in tomcat (we set the chosen one in
+        module nuxeo-platform-el instead).
       -->
       <!--
         <dependency>
@@ -3278,7 +3285,7 @@
       <dependency>
         <groupId>de.odysseus.juel</groupId>
         <artifactId>juel-impl</artifactId>
-        <version>2.1.2</version>
+        <version>2.1.2-NX1</version>
       </dependency>
       <dependency>
         <groupId>aopalliance</groupId>
