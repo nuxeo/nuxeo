@@ -5,7 +5,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="nature" type="selectOneDirectory">
+    <widget name="nature" type="select2Directory">
       <labels>
         <label mode="any">label.dublincore.nature</label>
       </labels>
@@ -17,13 +17,14 @@
         <mode value="view_summary">#{empty layoutValue.dc.nature?'hidden':'view'}</mode>
       </widgetModes>
       <properties mode="any">
+        <property name="width">300</property>
+        <property name="minimumInputLength">0</property>
+        <property name="hideInstructionLabel">true</property>
         <property name="directoryName">nature</property>
-        <property name="localize">true</property>
-        <property name="ordering">ordering,label</property>
       </properties>
     </widget>
 
-    <widget name="subjects" type="template">
+    <widget name="subjects" type="select2DirectoryMultiple">
       <labels>
         <label mode="any">label.dublincore.subject</label>
       </labels>
@@ -34,11 +35,12 @@
       <fields>
         <field>dc:subjects</field>
       </fields>
-      <widgetModes>
-        <mode value="view_summary">#{empty layoutValue.dc.subjects?'hidden':'view'}</mode>
-      </widgetModes>
       <properties mode="any">
-        <property name="template">/widgets/subjects_widget.xhtml</property>
+        <property name="width">300</property>
+        <property name="dbl10n">true</property>
+        <property name="minimumInputLength">0</property>
+        <property name="hideInstructionLabel">true</property>
+        <property name="directoryName">l10nsubjects</property>
       </properties>
     </widget>
 
@@ -74,7 +76,7 @@
       </properties>
     </widget>
 
-    <widget name="coverage" type="template">
+    <widget name="coverage" type="select2Directory">
       <labels>
         <label mode="any">label.dublincore.coverage</label>
       </labels>
@@ -89,7 +91,11 @@
         <mode value="view_summary">#{empty layoutValue.dc.coverage?'hidden':'view'}</mode>
       </widgetModes>
       <properties mode="any">
-        <property name="template">/widgets/coverage_widget.xhtml</property>
+        <property name="width">300</property>
+        <property name="dbl10n">true</property>
+        <property name="minimumInputLength">0</property>
+        <property name="hideInstructionLabel">true</property>
+        <property name="directoryName">l10ncoverage</property>
       </properties>
     </widget>
 
@@ -215,7 +221,8 @@
         <field>dc:contributors</field>
       </fields>
       <widgetModes>
-        <mode value="view_summary">#{empty layoutValue.dc.contributors?'hidden':'view'}</mode>
+        <mode value="view_summary">#{empty layoutValue.dc.contributors?'hidden':'view'}
+        </mode>
       </widgetModes>
       <properties mode="any">
         <property name="template">/widgets/contributors_widget.xhtml</property>
@@ -237,7 +244,8 @@
         <field>dc:lastContributor</field>
       </fields>
       <widgetModes>
-        <mode value="view_summary">#{empty layoutValue.dc.lastContributor?'hidden':'view'}</mode>
+        <mode value="view_summary">#{empty layoutValue.dc.lastContributor?'hidden':'view'}
+        </mode>
         <mode value="any">view</mode>
         <mode value="pdf">pdf</mode>
       </widgetModes>
@@ -274,7 +282,8 @@
         <field>dc:description</field>
       </fields>
       <widgetModes>
-        <mode value="view_summary">#{empty layoutValue.dc.description?'hidden':'view'}</mode>
+        <mode value="view_summary">#{empty layoutValue.dc.description?'hidden':'view'}
+        </mode>
       </widgetModes>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
@@ -384,7 +393,8 @@
 
     <layout name="heading">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -398,7 +408,8 @@
 
     <layout name="dublincore">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -446,7 +457,8 @@
 
     <layout name="file">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -457,7 +469,8 @@
 
     <layout name="note">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -468,7 +481,8 @@
 
     <layout name="files">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -494,7 +508,8 @@
 
     <layout name="dndEdit">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -527,7 +542,8 @@
 
     <layout name="bulkEdit@edit">
       <templates>
-        <template mode="any">/layouts/layout_bulkedit_template.xhtml</template>
+        <template mode="any">/layouts/layout_bulkedit_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>

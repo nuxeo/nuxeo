@@ -150,6 +150,10 @@
               setInputValue(this, data[k]);
             }
           });
+          // If select2 widget present on the pagee, then reinitialize them
+          if (typeof initSelect2Widgets == 'function') {
+            initSelect2Widgets();
+          }
         } else {
           // drop saved data !
           cleanupSavedData(key);
