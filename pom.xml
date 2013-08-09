@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
@@ -1423,13 +1424,16 @@
         <artifactId>ejb</artifactId>
         <version>${javax.ejb.version}</version>
       </dependency>
-      <dependency>
+      <!--
+        NXP-10566: comment out dupplicate EL API and implementation, use
+        tomcat deps instead
+      -->
+      <!--
+        <dependency>
         <groupId>javax.el</groupId>
         <artifactId>el-api</artifactId>
         <version>unknown</version>
-      </dependency>
-      <!-- NXP-10566: comment out dupplicate EL implementations -->
-      <!--
+        </dependency>
         <dependency>
         <groupId>javax.el</groupId>
         <artifactId>el-ri</artifactId>
@@ -3452,6 +3456,12 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-jdbc</artifactId>
         <version>${tomcat.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-el-api</artifactId>
+        <version>${tomcat.version}</version>
+        <scope>provided</scope>
       </dependency>
 
       <!-- Test Scope -->
