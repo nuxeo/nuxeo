@@ -28,10 +28,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper used for bulk edit actions
@@ -42,8 +42,16 @@ public class BulkEditHelper {
 
     private static final Log log = LogFactory.getLog(BulkEditHelper.class);
 
+    /**
+     * @deprecated since 5.7.3. Now in {@link BulkEditService}.
+     */
+    @Deprecated
     public static final String BULK_EDIT_PREFIX = "bulkEdit/";
 
+    /**
+     * @deprecated since 5.7.3. Now in {@link BulkEditService}.
+     */
+    @Deprecated
     public static final String CONTEXT_DATA = "contextData";
 
     private BulkEditHelper() {
@@ -103,25 +111,16 @@ public class BulkEditHelper {
      *
      * @param session the {@code CoreSession} to use
      * @param sourceDoc the doc where to get the metadata to copy
-     * @param targetDocs the docs where to set the metadatas
+     * @param targetDocs the docs where to set the metadata
+     *
+     * @deprecated since 5.7.3. Now in {@link BulkEditService}.
      */
+    @Deprecated
     public static void copyMetadata(CoreSession session,
             DocumentModel sourceDoc, List<DocumentModel> targetDocs)
             throws ClientException {
-        List<String> propertiesToCopy = getPropertiesToCopy(sourceDoc);
-        for (DocumentModel targetDoc : targetDocs) {
-            for (String propertyToCopy : propertiesToCopy) {
-                try {
-                    targetDoc.setPropertyValue(propertyToCopy,
-                            sourceDoc.getPropertyValue(propertyToCopy));
-                } catch (PropertyNotFoundException e) {
-                    String message = "%s property does not exist on %s";
-                    log.warn(String.format(message, propertyToCopy, targetDoc));
-                }
-            }
-        }
-        session.saveDocuments(targetDocs.toArray(new DocumentModel[targetDocs.size()]));
-        session.save();
+        Framework.getLocalService(BulkEditService.class).updateDocuments(session,
+                sourceDoc, targetDocs);
     }
 
     /**
@@ -129,7 +128,10 @@ public class BulkEditHelper {
      * properties are stored in the ContextData of {@code sourceDoc}: the key is
      * the xpath property, the value is {@code true} if the property has to be
      * copied, {@code false otherwise}.
+     *
+     * @deprecated since 5.7.3. Now in {@link BulkEditServiceImpl}.
      */
+    @Deprecated
     protected static List<String> getPropertiesToCopy(DocumentModel sourceDoc) {
         List<String> propertiesToCopy = new ArrayList<String>();
         for (Map.Entry<String, Serializable> entry : sourceDoc.getContextData().entrySet()) {

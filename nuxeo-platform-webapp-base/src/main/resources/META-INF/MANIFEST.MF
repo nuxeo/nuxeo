@@ -25,6 +25,8 @@ Nuxeo-Component: OSGI-INF/nxtreemanager-framework.xml,
  OSGI-INF/users-contentviews-contrib.xml,
  OSGI-INF/search-local-configuration-contrib.xml,
  OSGI-INF/reload-seam-contrib.xml,
- OSGI-INF/chains-contrib.xml
+ OSGI-INF/chains-contrib.xml,
+ OSGI-INF/bulkedit-service.xml,
+ OSGI-INF/bulkedit-service-contrib.xml
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.types.api

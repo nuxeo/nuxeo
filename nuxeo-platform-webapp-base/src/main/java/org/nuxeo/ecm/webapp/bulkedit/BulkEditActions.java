@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles Bulk Edit actions.
@@ -114,8 +115,9 @@ public class BulkEditActions implements Serializable {
     public String bulkEditSelection() throws ClientException {
         if (fictiveDocumentModel != null) {
             List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
-            BulkEditHelper.copyMetadata(documentManager, fictiveDocumentModel,
-                    selectedDocuments);
+            Framework.getLocalService(BulkEditService.class).updateDocuments(
+                    documentManager, fictiveDocumentModel, selectedDocuments);
+
             for (DocumentModel doc : selectedDocuments) {
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, doc);
             }

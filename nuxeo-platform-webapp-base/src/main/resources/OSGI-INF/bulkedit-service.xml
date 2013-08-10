@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.bulkedit.BulkEditService">
+
+  <documentation>
+    Service used to bulk edit a list of documents.
+
+    @author Thomas Roger (troger@nuxeo.com)
+    @since 5.7.3
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.webapp.bulkedit.BulkEditServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.webapp.bulkedit.BulkEditService"/>
+  </service>
+
+  <extension-point name="versioning">
+    <documentation>
+      The versioning extension point defines the versioning option that will be
+      used before editing a document through bulk edit.
+      The default value will be MINOR, to keep compatibility with previous
+      releases.
+      Possible values are NONE, MINOR OR MAJOR (see VersioningOption enumeration)
+      Other values will raise an IllegalArgumentException
+      @since 5.7.3
+      <code>
+        <versioning>
+          <defaultVersioningOption>MAJOR</defaultVersioningOption>
+        </versioning>
+      </code>
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webapp.bulkedit.VersioningDescriptor" />
+  </extension-point>
+
+</component>
