@@ -105,6 +105,7 @@ public class TestTagService {
         tagService.tag(session, file1Id, "mytag", "Administrator");
         tagService.tag(session, file1Id, "othertag", "Administrator");
         tagService.tag(session, file2Id, "mytag", "Administrator");
+        session.save();
 
         Set<String> mytag = new HashSet<String>(Arrays.asList("mytag"));
         Set<String> twotags = new HashSet<String>(Arrays.asList("mytag",
@@ -344,6 +345,7 @@ public class TestTagService {
                 tagService.getDocumentTags(session, dstDocId, null).size());
 
         tagService.copyTags(session, srcDocId, dstDocId);
+        session.save();
 
         assertEquals(3,
                 tagService.getDocumentTags(session, srcDocId, null).size());
@@ -375,6 +377,7 @@ public class TestTagService {
         dstFile.setPropertyValue("dc:title", "File1");
         dstFile = session.createDocument(dstFile);
         String dstDocId = dstFile.getId();
+        session.save();
 
         tagService.tag(session, srcDocId, "foo", "Administrator");
         tagService.tag(session, srcDocId, "foo", "leela");
@@ -394,6 +397,7 @@ public class TestTagService {
                 tagService.getDocumentTags(session, dstDocId, null).size());
 
         tagService.replaceTags(session, srcDocId, dstDocId);
+        session.save();
 
         assertEquals(3,
                 tagService.getDocumentTags(session, srcDocId, null).size());
