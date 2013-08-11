@@ -152,7 +152,7 @@ public class TestTagService {
 
         // global cloud
         List<Tag> cloud = tagService.getTagCloud(session, null, null, null);
-        assertEquals(2, cloud.size());
+        assertEquals(cloud.toString(), 2, cloud.size());
         Collections.sort(cloud, Tag.LABEL_COMPARATOR);
         Tag tag1 = cloud.get(0);
         assertEquals("mytag", tag1.getLabel());

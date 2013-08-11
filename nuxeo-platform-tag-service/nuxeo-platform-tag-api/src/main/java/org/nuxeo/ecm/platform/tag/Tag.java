@@ -68,6 +68,11 @@ public class Tag implements Serializable {
         return EqualsBuilder.reflectionEquals(this, o);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + label + ',' + weight + ')';
+    }
+
     protected static class TagLabelComparator implements Comparator<Tag> {
         public int compare(Tag t1, Tag t2) {
             return t1.label.compareToIgnoreCase(t2.label);
