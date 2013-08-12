@@ -376,8 +376,7 @@ public class DirectoryUIActionsBean implements Serializable {
         if (faces == null) {
             throw new IllegalArgumentException("Faces context is null");
         }
-        ActionContext ctx = new JSFActionContext(faces.getELContext(),
-                faces.getApplication().getExpressionFactory());
+        ActionContext ctx = new JSFActionContext(faces);
         ctx.putLocalVariable("SeamContext", new SeamContextHelper());
         ctx.putLocalVariable("directoryName", selectedDirectoryName);
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
