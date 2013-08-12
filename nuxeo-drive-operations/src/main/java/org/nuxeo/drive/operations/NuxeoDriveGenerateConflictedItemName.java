@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Generates a conflicted name for a {@link FileSystemItem} given its name, the
- * currently authenticated user's first name, last name and time zone.
+ * currently authenticated user's first name and last name.
  *
  * Doing so as an operation make it possible to override this part without
  * having to fork the client codebase.
