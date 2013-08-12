@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -49,7 +49,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator")
+@RepositoryConfig(user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
 public class TestBulkEditService {
@@ -106,6 +106,9 @@ public class TestBulkEditService {
 
     @Test
     public void testBulkEdit() throws ClientException {
+        // for tests, force the versioning policy to be the default one
+        ((BulkEditServiceImpl) bulkEditService).defaultVersioningOption = BulkEditServiceImpl.DEFAULT_VERSIONING_OPTION;
+
         List<DocumentModel> docs = createTestDocuments();
         DocumentModel sourceDoc = buildSimpleDocumentModel();
 

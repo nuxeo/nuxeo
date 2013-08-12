@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
@@ -49,7 +50,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator")
+@RepositoryConfig(user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy( { "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
 public class TestBulkEditHelper {
