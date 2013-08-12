@@ -172,33 +172,43 @@ function initSelect2Widget(el) {
   // init select2
   el.select2(select2_params);
 
-  el.on("select2-selecting", function(e) {
-    var newValue;
-    if (select2_params.multiple) {
-      var newObj = JSON.parse(initHolder.val());
-      newObj.push(e.object);
-      var newValue = JSON.stringify(newObj);
-    } else {
-      newValue = JSON.stringify(e.object);
-    }
-    initHolder.val(newValue);
-  });
-
-  el.on("select2-removed", function(e) {
-    var newValue = '';
-    if (select2_params.multiple) {
-      var tempObj = JSON.parse(initHolder.val());
-      var removedId = select2_params.id(e.removed);
-      jQuery.each(tempObj, function(index, result) {
-        if (select2_params.id(result) == removedId) {
-          tempObj.splice(index, 1);
+  // trigger for safeEdit restore
+  el.on("change", function(e) {
+    if (e) {
+      if (e.added) {
+        var newValue;
+        if (select2_params.multiple) {
+          var newObj = JSON.parse(initHolder.val());
+          newObj.push(e.added);
+          var newValue = JSON.stringify(newObj);
+        } else {
+          newValue = JSON.stringify(e.added);
         }
-      });
-      newValue = JSON.stringify(tempObj);
-    }
-    initHolder.val(newValue);
-  });
+        initHolder.val(newValue);
+      }
 
+      if (e.removed) {
+        var removedId = select2_params.id(e.removed);
+        if (select2_params.multiple) {
+          var newValue = '';
+          var tempObj = JSON.parse(initHolder.val());
+          jQuery.each(tempObj, function(index, result) {
+            if (result) {
+              if (select2_params.id(result) == removedId) {
+                tempObj.splice(index, 1);
+              }
+            }
+          });
+          newValue = JSON.stringify(tempObj);
+          initHolder.val(newValue);
+        } else {
+          if (initHolder.val() == removedId) {
+            initHolder.val('');
+          }
+        }
+      }
+    }
+  });
 }
 
 function initSelect2AjaxWidget(widgetId, index) {
@@ -220,7 +230,7 @@ function initSelect2Widgets() {
 };
 
 jQuery(document).ready(function() {
-  if(window.Prototype) {
+  if (window.Prototype) {
     delete Object.prototype.toJSON;
     delete Array.prototype.toJSON;
     delete Hash.prototype.toJSON;
