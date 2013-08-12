@@ -235,7 +235,10 @@
                             <ui:insert name="content_view_actions_before" />
                             <ui:insert name="content_view_actions">
                               <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
-                                <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory)}" cache="true">
+                                <nxu:set var="actionContext" value="#{actionContextProvider.createActionContext()}" cache="true">
+                                <nxu:set var="foo" value="#{actionContext.putLocalVariable('contentView', contentView)}" cache="true" />
+                                <nxu:set var="foo" value="#{actionContext.putLocalVariable('selectedDocuments', documentsListsManager.getWorkingList(contentView.selectionListName))}" cache="true" />
+                                <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory, actionContext)}" cache="true">
                                   <c:if test="#{not status.first and not empty actions}">
                                     <br />
                                   </c:if>
@@ -248,6 +251,7 @@
                                     actionsDisplay="buttons"
                                     ignoreTemplateProperty="true"
                                     addForm="true" />
+                                </nxu:set>
                                 </nxu:set>
                               </c:forEach>
                             </ui:insert>
