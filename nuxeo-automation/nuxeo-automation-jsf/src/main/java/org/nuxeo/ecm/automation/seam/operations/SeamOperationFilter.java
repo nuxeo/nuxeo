@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
-import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
+import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 
@@ -146,13 +146,7 @@ public class SeamOperationFilter {
 
     protected static void setSeamActionContext(OperationContext context,
             CoreSession session) {
-        FacesContext faces = FacesContext.getCurrentInstance();
-        if (faces == null) {
-            throw new IllegalArgumentException("FacesContext is null");
-        }
-        ActionContext seamActionContext = new JSFActionContext(
-                faces.getELContext(),
-                faces.getApplication().getExpressionFactory());
+        ActionContext seamActionContext = new SeamActionContext();
         NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
                 "navigationContext");
         seamActionContext.setCurrentDocument(navigationContext.getCurrentDocument());
