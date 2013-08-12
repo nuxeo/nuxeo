@@ -295,8 +295,7 @@ public class LayoutDemoContext implements Serializable {
                 if (faces == null) {
                     throw new IllegalArgumentException("Faces context is null");
                 }
-                ActionContext ctx = new JSFActionContext(faces.getELContext(),
-                        faces.getApplication().getExpressionFactory());
+                ActionContext ctx = new JSFActionContext(faces);
                 List<Action> actions = actionManager.getActions(
                         "LAYOUT_DEMO_ACTIONS", ctx);
                 if (actions != null) {
