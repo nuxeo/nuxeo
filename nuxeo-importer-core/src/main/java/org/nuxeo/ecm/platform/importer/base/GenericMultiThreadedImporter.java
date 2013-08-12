@@ -26,8 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -40,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.work.WorkManagerImpl.NamedThreadFactory;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -269,6 +270,34 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         rootImportTask.addListeners(listeners);
         rootImportTask.addImportingDocumentFilters(importingDocumentFilters);
         return rootImportTask;
+    }
+
+    /**
+     * Creates non-daemon threads at normal priority.
+     */
+    public static class NamedThreadFactory implements ThreadFactory {
+
+        private final AtomicInteger threadNumber = new AtomicInteger();
+
+        private final ThreadGroup group;
+
+        private final String prefix;
+
+        public NamedThreadFactory(String prefix) {
+            SecurityManager sm = System.getSecurityManager();
+            group = sm == null ? Thread.currentThread().getThreadGroup()
+                    : sm.getThreadGroup();
+            this.prefix = prefix;
+        }
+
+        @Override
+        public Thread newThread(Runnable r) {
+            String name = prefix + threadNumber.incrementAndGet();
+            Thread thread = new Thread(group, r, name);
+            // do not set daemon
+            thread.setPriority(Thread.NORM_PRIORITY);
+            return thread;
+        }
     }
 
     protected void doRun() throws Exception {
