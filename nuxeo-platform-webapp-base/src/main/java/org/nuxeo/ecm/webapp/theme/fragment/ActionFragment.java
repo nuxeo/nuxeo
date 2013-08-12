@@ -58,8 +58,7 @@ public final class ActionFragment extends AbstractFragment {
         if (faces == null) {
             throw new ModelException("Cannot acces JSF context");
         }
-        ActionContext ctx = new JSFActionContext(faces.getELContext(),
-                faces.getApplication().getExpressionFactory());
+        ActionContext ctx = new JSFActionContext(faces);
         ctx.putLocalVariable("SeamContext", new SeamContextHelper());
 
         ResourcesAccessor resourcesAccessor = (ResourcesAccessor) Component.getInstance("resourcesAccessor");

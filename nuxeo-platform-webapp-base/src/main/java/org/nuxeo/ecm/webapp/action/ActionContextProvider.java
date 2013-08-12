@@ -61,8 +61,7 @@ public class ActionContextProvider implements Serializable {
         if (faces == null) {
             throw new IllegalArgumentException("Faces context is null");
         }
-        ActionContext ctx = new JSFActionContext(faces.getELContext(),
-                faces.getApplication().getExpressionFactory());
+        ActionContext ctx = new JSFActionContext(faces);
         ctx.setCurrentDocument(navigationContext.getCurrentDocument());
         ctx.setDocumentManager(documentManager);
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);

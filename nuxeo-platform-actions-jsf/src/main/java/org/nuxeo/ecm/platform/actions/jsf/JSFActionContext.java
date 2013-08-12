@@ -21,6 +21,7 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +41,12 @@ public class JSFActionContext extends AbstractActionContext implements
     protected final ELContext originalContext;
 
     protected final ExpressionFactory expressionFactory;
+
+    public JSFActionContext(FacesContext faces) {
+        super();
+        this.originalContext = faces.getELContext();
+        this.expressionFactory = faces.getApplication().getExpressionFactory();
+    }
 
     public JSFActionContext(ELContext originalContext,
             ExpressionFactory expressionFactory) {

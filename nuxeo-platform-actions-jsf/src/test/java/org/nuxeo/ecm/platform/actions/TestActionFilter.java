@@ -62,9 +62,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
     }
 
     protected ActionContext getActionContext(DocumentModel doc) {
-        ActionContext context = new JSFActionContext(
-                facesContext.getELContext(),
-                facesContext.getApplication().getExpressionFactory());
+        ActionContext context = new JSFActionContext(facesContext);
         context.setCurrentDocument(doc);
         return context;
     }
@@ -214,9 +212,7 @@ public class TestActionFilter extends NXRuntimeTestCase {
     public void testFilterCaching() {
         ActionFilter filter = getFilter("WorkspaceOrSection");
         Action action = new Action();
-        ActionContext context = new JSFActionContext(
-                facesContext.getELContext(),
-                facesContext.getApplication().getExpressionFactory());
+        ActionContext context = new JSFActionContext(facesContext);
         context.setCurrentDocument(doc);
         assertEquals(0, context.size());
         filter.accept(action, context);
