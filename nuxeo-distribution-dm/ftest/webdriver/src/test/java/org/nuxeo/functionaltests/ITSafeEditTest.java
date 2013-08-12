@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Guillaume Renard
+ *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 package org.nuxeo.functionaltests;
 
@@ -24,12 +24,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
+import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -117,6 +121,44 @@ public class ITSafeEditTest extends AbstractTest {
 
     private final static String CONFIRM_RESTORE_SPAN_ELT_ID = "confirmRestore";
 
+    @After
+    public void after() throws Exception {
+        restoreSate();
+    }
+
+    @Before
+    public void before() throws Exception {
+        DocumentBasePage documentBasePage;
+        DocumentBasePage s = login();
+
+        // Create a new user if not exist
+        UsersGroupsBasePage page;
+        UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = usersTab.searchUser(USERNAME);
+        if (!usersTab.isUserFound(USERNAME)) {
+            page = usersTab.getUserCreatePage().createUser(USERNAME, USERNAME,
+                    "lastname1", "company1", "email1", PASSWORD, "members");
+            usersTab = page.getUsersTab(true);
+        } // search user usersTab =
+        usersTab.searchUser(USERNAME);
+        assertTrue(usersTab.isUserFound(USERNAME));
+
+        // create a new wokspace and grant all rights to the test user
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
+                "Workspaces");
+        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
+                WORKSPACE_TITLE, INITIAL_DESCRIPTION);
+        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
+        // Need WriteSecurity (so in practice Manage everything) to edit a
+        // Workspace
+        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
+                USERNAME)) {
+            accessRightSubTab.addPermissionForUser(USERNAME,
+                    "Manage everything", true);
+        }
+        logout();
+    }
+
     /**
      * workaround to by pass the popup windows which is supposed to prevent the
      * user from leaving the page with unsaved modification.
@@ -126,6 +168,39 @@ public class ITSafeEditTest extends AbstractTest {
     private void byPassLeavePagePopup() {
         ((JavascriptExecutor) driver).executeScript("window.onbeforeunload = function(e){};");
         ((JavascriptExecutor) driver).executeScript("jQuery(window).unbind('unload');");
+    }
+
+    private void checkSafeEditResoreProvided() {
+        // We must find the status message asking if we want to restore previous
+        // unchanged data and make sure it is visible
+        boolean isRestoreVisible = false;
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(3,
+                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
+        isRestoreVisible = wait.until((new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return !driver.findElement(By.id(CONFIRM_RESTORE_SPAN_ELT_ID)).getCssValue(
+                        "display").equals("none");
+            }
+        }));
+        assertTrue(isRestoreVisible);
+    }
+
+    /**
+     * Delete created user and data.
+     *
+     * @throws UserNotConnectedException
+     *
+     * @since 5.7.1
+     */
+    private void restoreSate() throws Exception {
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = usersTab.searchUser(USERNAME);
+        usersTab = usersTab.viewUser(USERNAME).deleteUser();
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
+                "Workspaces");
+        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
+        logout();
     }
 
     /**
@@ -173,35 +248,6 @@ public class ITSafeEditTest extends AbstractTest {
 
         DocumentBasePage documentBasePage;
         WebElement descriptionElt, titleElt;
-
-        DocumentBasePage s = login();
-
-        // Create a new user if not exist
-        UsersGroupsBasePage page;
-        UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(USERNAME);
-        if (!usersTab.isUserFound(USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(USERNAME, USERNAME,
-                    "lastname1", "company1", "email1", PASSWORD, "members");
-            usersTab = page.getUsersTab(true);
-        } // search user usersTab =
-        usersTab.searchUser(USERNAME);
-        assertTrue(usersTab.isUserFound(USERNAME));
-
-        // create a new wokspace and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                WORKSPACE_TITLE, INITIAL_DESCRIPTION);
-        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
-        // Need WriteSecurity (so in practice Manage everything) to edit a
-        // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                USERNAME)) {
-            accessRightSubTab.addPermissionForUser(USERNAME,
-                    "Manage everything", true);
-        }
-        logout();
 
         // Log as test user and edit the created workdspace
         documentBasePage = login(USERNAME, PASSWORD).getContentTab().goToDocument(
@@ -266,29 +312,9 @@ public class ITSafeEditTest extends AbstractTest {
         assertTrue(lsItem.contains(lookupString));
         log.debug("6 - " + localStorage.getLocalStorageLength());
 
-        // We must find the status message asking if we want to restore previous
-        // unchanged data and make sure it is visible
-        boolean isRestoreVisible = false;
+        checkSafeEditResoreProvided();
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(3,
-                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
-        isRestoreVisible = wait.until((new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                return !driver.findElement(By.id(CONFIRM_RESTORE_SPAN_ELT_ID)).getCssValue(
-                        "display").equals("none");
-            }
-        }));
-        assertTrue(isRestoreVisible);
-
-        // Let's restore
-        WebElement confirmRestoreYes = driver.findElement(By.id(CONFIRM_RESTORE_YES_ELT_ID));
-        // The following call randomly times out.
-        // confirmRestoreYes.click();
-        // We just want to trigger the js event handler attached to
-        // confirmRestoreYes element. This is the workaround.
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
-                confirmRestoreYes);
+        triggerSafeEditResotre();
 
         // We check that the title value has actually been restored
         titleElt = driver.findElement(By.name(TITLE_ELT_ID));
@@ -299,25 +325,56 @@ public class ITSafeEditTest extends AbstractTest {
         documentBasePage.getContentTab();
         logout();
 
-        restoreSate();
-
     }
 
     /**
-     * Delete created user and data.
+     * Check that safeEdit also works on select2. We test is against Coverage.
      *
-     * @throws UserNotConnectedException
+     * @throws Exception
      *
-     * @since 5.7.1
+     * @since 5.7.3
      */
-    private void restoreSate() throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(USERNAME);
-        usersTab = usersTab.viewUser(USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
+    @Test
+    public void testSafeEditOnSelect2() throws Exception {
+        DocumentBasePage documentBasePage;
+        // Log as test user and edit the created workdspace
+        documentBasePage = login(USERNAME, PASSWORD).getContentTab().goToDocument(
+                "Workspaces").getContentTab().goToDocument(WORKSPACE_TITLE);
+
+        // Create test File
+        FileDocumentBasePage filePage = createFile(documentBasePage,
+                "Test file", "Test File description", false, null, null, null);
+        EditTabSubPage editTabSubPage = filePage.getEditTab();
+
+        ITSelect2Test.editCoverage(ITSelect2Test.COVERAGE);
+
+        // We leave the page without saving, the safeEdit mechanism should be
+        // triggered ...
+        byPassLeavePagePopup();
+        filePage.getSummaryTab();
+        filePage.getEditTab();
+
+        checkSafeEditResoreProvided();
+
+        triggerSafeEditResotre();
+
+        WebElement savedCoverage = driver.findElement(By.xpath(ITSelect2Test.S2_COVERAGE_FIELD_XPATH));
+        assertTrue(savedCoverage.getText() != null);
+        assertTrue(savedCoverage.getText().equals(ITSelect2Test.COVERAGE));
+
+        editTabSubPage.save();
         logout();
+    }
+
+    private void triggerSafeEditResotre() {
+        // Let's restore
+        WebElement confirmRestoreYes = driver.findElement(By.id(CONFIRM_RESTORE_YES_ELT_ID));
+        // The following call randomly times out.
+        // confirmRestoreYes.click();
+        // We just want to trigger the js event handler attached to
+        // confirmRestoreYes element. This is the workaround.
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
+                confirmRestoreYes);
     }
 
 }
