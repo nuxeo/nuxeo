@@ -239,8 +239,7 @@ public class DamImportActions implements Serializable {
         Map<String, Serializable> importOptionProperties = selectedImportOption.getProperties();
         String chainOrOperationId = null;
         if (importOptionProperties.containsKey("chainId")) {
-            chainOrOperationId = "Chain."
-                    + (String) importOptionProperties.get("chainId");
+            chainOrOperationId = (String) importOptionProperties.get("chainId");
         } else if (importOptionProperties.containsKey("operationId")) {
             chainOrOperationId = (String) importOptionProperties.get("operationId");
         } else {
