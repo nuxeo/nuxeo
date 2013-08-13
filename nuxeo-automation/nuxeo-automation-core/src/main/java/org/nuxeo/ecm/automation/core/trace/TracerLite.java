@@ -57,7 +57,7 @@ public class TracerLite implements OperationCallback {
     protected void pushContext(OperationType newChain) {
         if (chain != null) {
             callingStacks.push(new Trace(parent, chain, calls));
-            parent = calls.getLast();
+            parent = calls.isEmpty() ? null : calls.getLast();
             calls.clear();
         }
         chain = newChain;
@@ -127,6 +127,7 @@ public class TracerLite implements OperationCallback {
 
     @Override
     public String getFormattedText() {
-        return trace != null ? trace.getLiteFormattedText() : "";
+        return trace != null ? trace.getLiteFormattedText()
+                : "You can activate automation trace mode to get more informations on automation executions";
     }
 }
