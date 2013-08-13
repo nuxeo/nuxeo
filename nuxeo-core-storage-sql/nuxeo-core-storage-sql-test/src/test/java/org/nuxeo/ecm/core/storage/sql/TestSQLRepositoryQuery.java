@@ -1646,6 +1646,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         // remove proxy
         session.removeDocument(proxy.getRef());
         session.save();
+        waitForAsyncCompletion();
+        session.save(); // process invalidations
 
         // leaves live doc and version
         dml = session.query(query);

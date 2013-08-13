@@ -27,14 +27,14 @@ import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
+ *
  * Async listener that is in charge to delete the versions. Before running the
  * delete operation on the versions passed as argument of the event, it will
  * call the registred {@link OrphanVersionRemovalFilter} to allow them to mark
  * some of the orphan versions to be kept.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 public class OrphanVersionRemoverListener implements PostCommitEventListener {
 
@@ -67,6 +67,7 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
     protected void removeIfPossible(CoreSession session,
             ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs)
             throws ClientException {
+        session.save(); // receive invalidations if no tx
 
         for (OrphanVersionRemovalFilter filter : getFilters()) {
             versionUUIDs = filter.getRemovableVersionIds(session,
@@ -80,6 +81,8 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
             log.debug("Removing version: " + id);
             session.removeDocument(new IdRef(id));
         }
+
+        session.save(); // send invalidations if no tx
     }
 
 }

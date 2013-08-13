@@ -3237,6 +3237,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         }
 
         session.removeDocument(proxy.getRef());
+        session.save();
+        waitForAsyncCompletion(); // orphan version removal
+        session.save(); // process invalidations
         list = session.getChildren(root.getRef());
         assertEquals(1, list.size());
 
