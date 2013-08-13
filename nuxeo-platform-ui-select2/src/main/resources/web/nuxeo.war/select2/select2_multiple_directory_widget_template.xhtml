@@ -13,7 +13,7 @@
     value="#{nxu:test(empty widgetProperty_instructionLabel, messages['label.suggestion.help.minChars'], nxu:test(widget.translated, messages[widgetProperty_instructionLabel], widgetProperty_instructionLabel))}"
     cache="true">
 
-    <c:if test="#{widget.mode == 'view'}">
+    <c:if test="#{widget.mode != 'edit'}">
 
       <h:outputText
         value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widget.translated, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
