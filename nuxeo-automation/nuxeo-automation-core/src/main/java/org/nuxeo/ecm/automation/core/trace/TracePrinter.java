@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -147,15 +148,20 @@ public class TracePrinter {
                     sb.append("Key: ");
                     sb.append(keyVariable);
                     sb.append(", Value: ");
-                    sb.append(call.getVariables().get(keyVariable));
+                    Object variable = call.getVariables().get(keyVariable);
+                    if (variable instanceof Calendar) {
+                        sb.append(((Calendar) variable).getTime());
+                    } else {
+                        sb.append(variable);
+                    }
                 }
             }
             printLine(sb.toString());
             sb = new StringBuilder();
-            if(!call.getNested().isEmpty()){
+            if (!call.getNested().isEmpty()) {
                 sb.append(System.getProperty("line.separator"));
                 printHeading("start sub chain");
-                for(Trace trace:call.getNested()){
+                for (Trace trace : call.getNested()) {
                     print(trace);
                 }
                 sb.append(System.getProperty("line.separator"));
@@ -209,11 +215,11 @@ public class TracePrinter {
             }
             printLine(stringBuilder.toString());
             stringBuilder = new StringBuilder();
-            for(Call call: calls){
-                if(!call.getNested().isEmpty()){
+            for (Call call : calls) {
+                if (!call.getNested().isEmpty()) {
                     stringBuilder.append(System.getProperty("line.separator"));
                     printHeading("start sub chain");
-                    for(Trace trace:call.getNested()){
+                    for (Trace trace : call.getNested()) {
                         litePrint(trace);
                     }
                     stringBuilder.append(System.getProperty("line.separator"));
