@@ -179,7 +179,8 @@ public class TracerFactory implements TracerFactoryMBean {
     }
 
     @Override
-    public void setPrintableTraces(String printableTraces) {
+    public String setPrintableTraces(String printableTraces) {
         this.printableTraces = printableTraces;
+        return printableTraces;
     }
 }

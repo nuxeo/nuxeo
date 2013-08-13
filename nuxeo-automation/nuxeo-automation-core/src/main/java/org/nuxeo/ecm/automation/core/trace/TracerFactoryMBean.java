@@ -33,5 +33,5 @@ public interface TracerFactoryMBean {
 
     String getPrintableTraces();
 
-    void setPrintableTraces(String printableTraces);
+    String setPrintableTraces(String printableTraces);
 }
