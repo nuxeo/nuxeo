@@ -91,7 +91,7 @@ public class AutomationFeature extends SimpleFeature {
 
     protected OperationCallback getTracer() {
         if (tracer == null) {
-            tracer = tracerFactory.newTracer();
+            tracer = tracerFactory.newTracer("*");
             if (context != null) {
                 context.addChainCallback(tracer);
             }
