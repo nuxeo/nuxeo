@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.EventService;
@@ -70,6 +71,50 @@ public class TestVersioningRemovalPolicy extends SQLRepositoryTestCase {
 
         vs = getVersion();
         assertEquals(0, vs.size());
+    }
+
+    @Test
+    public void shouldRemoveOrphanVersionsWhenProxyRemovedLast()
+            throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "File");
+        doc = session.createDocument(doc);
+        DocumentRef ver = doc.checkIn(VersioningOption.MINOR, "");
+        DocumentModel proxy = session.createProxy(ver, session.getRootDocument().getRef());
+
+        // remove the doc first
+        session.removeDocument(doc.getRef());
+        session.save();
+        waitForAsyncCompletion();
+        session.save();
+        DocumentModelList vs = getVersion();
+        assertEquals(1, vs.size()); // 1 version remains due to proxu
+
+        // remove proxy second
+        session.removeDocument(proxy.getRef());
+        session.save();
+        waitForAsyncCompletion();
+        session.save();
+        vs = getVersion();
+        assertEquals(0, vs.size()); // version deleted through last proxy
+    }
+
+    @Test
+    public void shouldNotRemoveOrphanVersionsWhenProxyRemovedButLiveRemains()
+            throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "testfile1",
+                "File");
+        doc = session.createDocument(doc);
+        DocumentRef ver = doc.checkIn(VersioningOption.MINOR, "");
+        DocumentModel proxy = session.createProxy(ver, session.getRootDocument().getRef());
+
+        // remove last proxy, but live doc still remains
+        session.removeDocument(proxy.getRef());
+        session.save();
+        waitForAsyncCompletion();
+        session.save();
+        DocumentModelList vs = getVersion();
+        assertEquals(1, vs.size()); // version not deleted
     }
 
     @Test

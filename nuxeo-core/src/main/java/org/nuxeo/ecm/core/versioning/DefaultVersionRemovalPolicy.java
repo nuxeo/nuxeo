@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.versioning;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -27,12 +28,13 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Removes the version history if no proxies exist, otherwise do nothing.
- * 
+ *
  * @author Florent Guillaume
  */
 public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
@@ -45,7 +47,30 @@ public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
     public void removeVersions(Session session, Document doc,
             CoreSession coreSession) throws ClientException {
         try {
-            if (session.getProxies(doc, null).isEmpty()) {
+            Collection<Document> proxies = session.getProxies(doc, null);
+            if (doc.isProxy()) {
+                // if doc is itself a proxy it should not be considered
+                // in the list of remaining proxies
+                proxies.remove(doc);
+                if (proxies.isEmpty()) {
+                    // removal of last proxy
+                    Document source = doc.getSourceDocument();
+                    if (source.isVersion()) {
+                        // get live doc from version
+                        try {
+                            source = source.getSourceDocument();
+                        } catch (NoSuchDocumentException e) {
+                            // live already removed
+                            source = null;
+                        }
+                    } // else was a live proxy
+                    // if a live doc remains, still don't remove versions
+                    if (source != null) {
+                        return;
+                    }
+                }
+            }
+            if (proxies.isEmpty()) {
                 List<String> versionsIds = doc.getVersionsIds();
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Removing %s versions for: %s",
