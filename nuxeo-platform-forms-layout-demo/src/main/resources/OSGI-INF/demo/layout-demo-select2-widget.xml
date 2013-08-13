@@ -31,7 +31,7 @@
           <property name="minimumInputLength">2</property>
           <property name="instructionLabel">Type at least {0} "a" to display suggestion
           </property>
-          <property name="repository">default</property>
+          <property name="repository">layoutDemo</property>
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
@@ -64,7 +64,7 @@
           <property name="minimumInputLength">2</property>
           <property name="instructionLabel">Type at least {0} "a" to display suggestion
           </property>
-          <property name="repository">default,layoutDemo</property>
+          <property name="repository">layoutDemo</property>
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
@@ -107,7 +107,7 @@
    return entry.label;
   }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
-          <property name="repository">default,layoutDemo</property>
+          <property name="repository">default</property>
         </properties>
       </widget>
     </layout>
