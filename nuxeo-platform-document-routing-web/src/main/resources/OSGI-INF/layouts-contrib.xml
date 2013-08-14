@@ -265,13 +265,14 @@
       <fields>
         <field>data.task.taskComments</field>
       </fields>
-      <properties widgetMode="any">
+      <properties mode="any">
+        <property name="localize">true</property>
         <property name="hideSubLabels">true</property>
       </properties>
       <subWidgets>
-        <widget name="listItem" type="textarea">
+        <widget name="comment" type="text">
           <fields>
-            <field></field>
+            <field>text</field>
           </fields>
         </widget>
       </subWidgets>
