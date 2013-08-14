@@ -358,18 +358,18 @@
           <property name="template">/widgets/join_list_widget_template.xhtml</property>
         </properties>
       </widget>
-      <widget name="text" type="textarea">
+      <widget name="text" type="template">
         <labels>
           <label mode="any">label.mail.text</label>
         </labels>
         <widgetModes>
           <mode value="any">view</mode>
         </widgetModes>
-        <properties widgetMode="any">
-          <property name="escape">false</property>
+        <properties mode="any">
+          <property name="template">/widgets/email_text_widget_template.xhtml</property>
         </properties>
         <fields>
-          <field>mail:htmlText</field>
+          <field>#{document.id}</field>
         </fields>
       </widget>
     </layout>
