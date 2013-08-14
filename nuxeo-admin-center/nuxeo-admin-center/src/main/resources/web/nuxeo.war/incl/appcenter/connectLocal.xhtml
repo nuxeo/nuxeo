@@ -6,11 +6,12 @@
 <div style="display:none" id="uploadForm">
 <h:form enctype="multipart/form-data" class="packageUploadBlock">
    <h5><h:outputText value="#{messages['label.upload.package']}" /></h5>
-   <nxu:inputFile  id="t_pkgupload" editFilename="false" value="#{connectStatus.packageToUpload}"
+   <nxu:inputFile required="true" id="t_pkgupload" editFilename="false" value="#{connectStatus.packageToUpload}"
    filename="#{connectStatus.packageFileName}">
    </nxu:inputFile>
     <h:message styleClass="errorMessage" for="t_pkgupload" />
    <h:commandButton value="#{messages['command.upload']}" action="#{connectStatus.uploadPackage()}" styleClass="button"/>
+   <input type="button" value="#{messages['command.cancel']}" onclick="jQuery('#uploadForm').css('display','none');" class="button" />
 </h:form>
 </div>
 <script>
