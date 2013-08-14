@@ -249,6 +249,7 @@
           <field>data.mail.text</field>
           <field>data.mail.htmlText</field>
           <field>data.dc.title</field>
+          <field>data.id</field>
         </fields>
       </widget>
       <widget name="listing_mail_attachments" type="listing_mail_attachments">
