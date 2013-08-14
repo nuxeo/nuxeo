@@ -18,10 +18,13 @@ import org.junit.runner.RunWith;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -299,8 +302,9 @@ public class OperationChainTest {
         try {
             service.run(ctx, chain);
             fail("Invalid chain not detected!");
-        } catch (InvalidChainException e) {
-            // test passed
+        } catch (OperationException e) {
+            assertEquals("Cannot find any valid path in operation chain",
+                    e.getCause().getMessage());
         }
     }
 
