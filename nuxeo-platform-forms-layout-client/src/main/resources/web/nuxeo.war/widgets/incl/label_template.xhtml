@@ -26,7 +26,7 @@ Accepted parameters:
       <h:outputText value="#{translatedLabel}"
         styleClass="widgetLabel #{labelStyleClass} #{nxu:test(required and isEditMode, 'required', '')}" />
     </c:if>
-    <c:if test="#{not empty widget.helpLabel and not hideHelp}">
+    <c:if test="#{not empty helpLabel and not hideHelp}">
       <div class="widgetHelpLabel">
         <h:outputText value="#{translatedLabel}"
           styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
