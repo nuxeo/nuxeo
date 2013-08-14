@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,9 +14,11 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 package org.nuxeo.ecm.platform.video.convert;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,12 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -48,6 +49,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -102,6 +104,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
     }
 
     @Test
+    @Ignore
     public void testScreenshotConverter() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
