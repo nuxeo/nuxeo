@@ -357,7 +357,7 @@
           <property name="template">/widgets/join_list_widget_template.xhtml</property>
         </properties>
       </widget>
-      <widget name="text" type="text">
+      <widget name="text" type="textarea">
         <labels>
           <label mode="any">label.mail.text</label>
         </labels>
