@@ -8,13 +8,13 @@
 
   <c:if test="#{100 > fn:length(field_0)}">
     <span title="#{field_0}" style="cursor:pointer;" onclick="openFancyBox('restAPI/preview/default/#{field_3}/default/?blobPostProcessing=true');">
-      <h:outputText value="#{field_0}..." id="#{widget.id}_mailPreviewTrigger"  />
+      <h:outputText value="#{field_0}..." id="#{widget.id}_mailPreviewTrigger"  /><h:graphicImage value="/icons/preview.png"/>
     </span>
   </c:if>  
   
   <c:if test="#{fn:length(field_0) > 99}" > 
     <span title="#{field_0}"  style="cursor:pointer;"  onclick="openFancyBox('restAPI/preview/default/#{field_3}/default/?blobPostProcessing=true');">
-      <h:outputText value="#{fn:substring(field_0,0,99)}..." id="#{widget.id}_mailPreviewTrigger"/>
+      <h:outputText value="#{fn:substring(field_0,0,99)}..." id="#{widget.id}_mailPreviewTrigger"/><h:graphicImage value="/icons/preview.png"/>
     </span>
   </c:if>
 
