@@ -42,7 +42,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * @since 5.7.2 Test for parametized chain
+ * Test for parametrized chain.
+ *
+ * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -130,4 +132,5 @@ public class TestOperationChainParametrization {
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertNotNull(doc);
     }
+
 }

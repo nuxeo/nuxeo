@@ -95,6 +95,8 @@ public class OperationChainContribution {
         @XNode("@type")
         protected String type = "string";
 
+        // why not XNode here? XContent requires to unescape XML entities, see
+        // below
         @XContent
         protected String value;
 
@@ -135,10 +137,10 @@ public class OperationChainContribution {
             OperationParameters params = chain.add(op.id);
             for (Param param : op.params) {
                 param.value = param.value.trim();
+                // decode XML entities in every case
+                param.value = StringEscapeUtils.unescapeXml(param.value);
                 if (param.value.startsWith("expr:")) {
                     param.value = param.value.substring(5);
-                    // decode XML entities
-                    param.value = StringEscapeUtils.unescapeXml(param.value);
                     if (param.value.contains("@{")) {
                         params.set(param.name,
                                 Scripting.newTemplate(param.value));
