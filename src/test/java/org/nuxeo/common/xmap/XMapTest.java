@@ -33,7 +33,6 @@ import org.nuxeo.common.xmap.Author.Gender;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class XMapTest {
 
@@ -72,23 +71,41 @@ public class XMapTest {
         assertEquals(Gender.MALE, author.gender);
         assertEquals(32, author.age);
         assertEquals("test1", author.getId());
-        assertEquals(3, author.items.size());
-        assertEquals(3, author.itemIds.size());
-        assertEquals(2, author.friends.size());
+        assertEquals(4, author.items.size());
+        assertEquals(4, author.itemIds.size());
         assertEquals("Item 1", author.items.get(0));
         assertEquals("Item 2", author.items.get(1));
         assertEquals("Item 3", author.items.get(2));
+        assertEquals("Item with parameters to < unescape", author.items.get(3));
         assertEquals("item1", author.itemIds.get(0));
         assertEquals("item2", author.itemIds.get(1));
         assertEquals("item3", author.itemIds.get(2));
+        assertEquals("item4", author.itemIds.get(3));
+        assertEquals(3, author.friends.size());
         assertEquals("friend1_fn", author.friends.get(0).firstName);
         assertEquals("friend1_ln", author.friends.get(0).lastName);
         assertEquals("friend2_fn", author.friends.get(1).firstName);
         assertEquals("friend2_ln", author.friends.get(1).lastName);
+        assertEquals("toUnescape", author.friends.get(2).firstName);
+        assertEquals("Map with parameters to < unescape",
+                author.friends.get(2).lastName);
 
-        assertEquals("Test\n      <b>content</b>", author.testContent.trim());
+        assertEquals(4, author.properties.size());
+        assertEquals("theName", author.properties.get("name"));
+        assertEquals("theColor", author.properties.get("color"));
+        assertEquals("theWeight", author.properties.get("weight"));
+        assertEquals("Prop with parameters to < unescape",
+                author.properties.get("toUnescape"));
+
+        // note the additional \n char after each tag (not sure if it's wanted)
+        assertEquals("Test\n      <b>content</b>\n not to &lt; unescape",
+                author.testContent.trim());
         String t = author.testContent2.getFirstChild().getTextContent().trim();
         assertEquals("Test", t);
+
+        assertEquals(
+                "SELECT * FROM Document WHERE dc:created < DATE '2013-08-19'",
+                author.textToUnescape);
 
         assertFalse(author.content.equals(author.content.trim()));
 
@@ -97,5 +114,9 @@ public class XMapTest {
         assertNull(author.testNullByDefaultForListHashSet);
         assertNotNull(author.itemsHashSet);
         assertTrue(author.itemsHashSet.size() == 2);
+
+        assertEquals(1, author.aliases.length);
+        assertEquals("test2", author.aliases[0].name);
+        assertEquals("text to be < unescaped", author.aliases[0].description);
     }
 }

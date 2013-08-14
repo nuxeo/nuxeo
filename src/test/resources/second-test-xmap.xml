@@ -28,6 +28,7 @@
       <item id="item1">Item 1</item>
       <item id="item2">Item 2</item>
       <item id="item3">Item 3</item>
+      <item id="item4">Item with parameters to &lt; unescape</item>
     </list>
     <listHashSet>
       <itemHashSet>item in HashSet1</itemHashSet>
@@ -42,6 +43,10 @@
         <firstName>friend2_fn</firstName>
         <lastName>friend2_ln</lastName>
       </friend>
+      <friend>
+        <firstName>toUnescape</firstName>
+        <lastName>Map with parameters to &lt; unescape</lastName>
+      </friend>
     </friends>
 
 
@@ -49,13 +54,17 @@
       <property name="name">theName</property>
       <property name="color">theColor</property>
       <property name="weight">theWeight</property>
+      <property name="toUnescape">Prop with parameters to &lt; unescape</property>
     </properties>
-
 
     <testContent>
       Test
-      <b>content</b>
+      <b>content</b> not to &lt; unescape
     </testContent>
+
+    <textToUnescape>
+      SELECT * FROM Document WHERE dc:created &lt; DATE '2013-08-19'
+    </textToUnescape>
 
     <item2>b</item2>
     <item3>c</item3>
@@ -72,7 +81,12 @@
       </person>
     </persons>
 
+    <alias name="test2">
+      <description>text to be &lt; unescaped</description>
+    </alias>
+
     <notInherited>dummyContent</notInherited>
+
   </inheritedAuthor>
 
 

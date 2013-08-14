@@ -36,7 +36,6 @@ import org.w3c.dom.DocumentFragment;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject(value = "author", order = { "item1", "item2" })
 public class Author {
@@ -91,6 +90,9 @@ public class Author {
 
     @XContent("testContent")
     DocumentFragment testContent2;
+
+    @XNode("textToUnescape")
+    String textToUnescape;
 
     boolean item1;
 
@@ -182,5 +184,19 @@ public class Author {
     // map to load objects
     @XNodeMap(value = "persons/person", key = "firstName", type = HashMap.class, componentType = Name.class)
     Map<String, Name> persons;
+
+    @XNodeList(value = "alias", type = Alias[].class, componentType = Alias.class)
+    protected Alias[] aliases = new Alias[0];
+
+    @XObject("alias")
+    public static class Alias {
+
+        @XNode("@name")
+        public String name;
+
+        @XNode("description")
+        public String description;
+
+    }
 
 }
