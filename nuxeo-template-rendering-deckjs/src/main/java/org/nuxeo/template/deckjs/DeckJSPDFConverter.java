@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,6 +18,7 @@ package org.nuxeo.template.deckjs;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -36,7 +38,9 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -47,6 +51,7 @@ public class DeckJSPDFConverter implements Converter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
+        File jsFile = null;
         try {
             CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
             CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
@@ -77,7 +82,7 @@ public class DeckJSPDFConverter implements Converter {
             }
 
             InputStream is = Activator.getResourceAsStream(DeckJSConverterConstants.DECK_JS2PDF_JS_SCRIPT_PATH);
-            File jsFile = File.createTempFile("phantomJsScript", ".js");
+            jsFile = File.createTempFile("phantomJsScript", ".js");
             FileWriter fw = new FileWriter(jsFile);
             IOUtils.copy(is, fw);
             fw.flush();
@@ -92,8 +97,7 @@ public class DeckJSPDFConverter implements Converter {
             params.addNamedParameter("jsFilePath", jsFile);
             ExecResult res = cles.execCommand("phantomjs", params);
             if (!res.isSuccessful()) {
-                jsFile.delete();
-                return null;
+                throw res.getError();
             }
             Blob pdfOutput = new FileBlob(outputFile);
             pdfOutput.setMimeType("application/pdf");
@@ -101,11 +105,12 @@ public class DeckJSPDFConverter implements Converter {
             filename = filename + ".pdf";
             pdfOutput.setFilename(filename);
             Framework.trackFile(outputFile, pdfOutput);
-            jsFile.delete();
             return new SimpleCachableBlobHolder(pdfOutput);
-
-        } catch (Exception e) {
-            throw new ConversionException("Error during pdf conversion", e);
+        } catch (CommandNotAvailable | IOException | ClientException
+                | CommandException e) {
+            throw new ConversionException("PDF conversion failed", e);
+        } finally {
+            org.apache.commons.io.FileUtils.deleteQuietly(jsFile);
         }
     }
 
