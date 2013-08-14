@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
@@ -66,7 +65,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         try {
             return TreeHelper.getOrCreateDateTreeFolder(session,
                     getOrCreateRootOfDocumentRouteInstanceStructure(session),
-                    new Date(), "Folder");
+                    new Date(), "HiddenFolder");
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }

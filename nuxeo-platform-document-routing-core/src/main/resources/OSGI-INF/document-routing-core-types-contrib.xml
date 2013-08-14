@@ -37,7 +37,7 @@
       <facet name="HiddenInNavigation" />
       <facet name="SystemDocument" />
       <subtypes>
-        <type>Folder</type>
+        <type>HiddenFolder</type>
       </subtypes>
     </doctype>
 
