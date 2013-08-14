@@ -78,9 +78,10 @@ input.rich-calendar-input[type="text"] {
   max-width: 14em }
 
 .chainSelect input[type="image"] {
-  margin: -0.1em .3em 0 -0.2em;
+  margin: -0.1em 0 0 0.2em;
   padding: 0;
-  vertical-align: top }
+  vertical-align: top;
+  float: right; }
 
 input.tagInput[type="text"] {
   background: url("${basePath}/icons/tag.png") no-repeat scroll 2px center / 12px auto transparent;
