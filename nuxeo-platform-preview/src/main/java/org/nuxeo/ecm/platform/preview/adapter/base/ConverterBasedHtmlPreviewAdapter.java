@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -55,7 +56,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
     protected MimetypeRegistry mimeTypeService;
 
     public static ConversionService getConversionService() throws Exception {
-        if (cs==null) {
+        if (cs == null) {
             cs = Framework.getService(ConversionService.class);
         }
         return cs;
@@ -94,13 +95,11 @@ public class ConverterBasedHtmlPreviewAdapter extends
     }
 
     /*
-    protected static boolean canHaveHtmlPreview(Blob blob) throws Exception {
-        if (blob == null) {
-            return false;
-        }
-        String srcMT = getMimeType(blob);
-        return getTransformService().getPluginByMimeTypes(srcMT, "text/html") != null;
-    }*/
+     * protected static boolean canHaveHtmlPreview(Blob blob) throws Exception {
+     * if (blob == null) { return false; } String srcMT = getMimeType(blob);
+     * return getTransformService().getPluginByMimeTypes(srcMT, "text/html") !=
+     * null; }
+     */
 
     protected String getDefaultPreviewFieldXPath() {
         return defaultFieldXPath;
@@ -118,26 +117,9 @@ public class ConverterBasedHtmlPreviewAdapter extends
     @Override
     public List<Blob> getPreviewBlobs(String xpath) throws PreviewException {
 
-        Blob blob2Preview=null;
-        BlobHolder blobHolder2preview=null;
+        BlobHolder blobHolder2preview = getBlobHolder2preview(xpath, adaptedDoc);
+        Blob blob2Preview = getBlob2preview(blobHolder2preview);
 
-        if ((xpath==null) || ("default".equals(xpath))) {
-            blobHolder2preview = adaptedDoc.getAdapter(BlobHolder.class);
-        }
-        else {
-            blobHolder2preview = new DocumentBlobHolder(adaptedDoc, xpath);
-        }
-
-        try {
-            blob2Preview = blobHolder2preview.getBlob();
-        } catch (ClientException e) {
-            throw new PreviewException("Error while getting blob", e);
-        }
-
-        if (blob2Preview == null) {
-            throw new NothingToPreviewException(
-                    "Can not preview a document without blob");
-        }
         List<Blob> blobResults = new ArrayList<Blob>();
 
         String srcMT = getMimeType(blob2Preview);
@@ -148,9 +130,10 @@ public class ConverterBasedHtmlPreviewAdapter extends
             return blobResults;
         }
 
-        String converterName=null;
+        String converterName = null;
         try {
-            converterName = getConversionService().getConverterName(srcMT, "text/html");
+            converterName = getConversionService().getConverterName(srcMT,
+                    "text/html");
         } catch (Exception e1) {
             throw new PreviewException("Unable to get converter", e1);
         }
@@ -160,10 +143,10 @@ public class ConverterBasedHtmlPreviewAdapter extends
             converterName = "any2html";
         }
 
-
         BlobHolder result;
         try {
-            result = getConversionService().convert(converterName, blobHolder2preview, null);
+            result = getConversionService().convert(converterName,
+                    blobHolder2preview, null);
             setMimeType(result);
             return result.getBlobs();
         } catch (ConverterNotAvailable e) {
@@ -174,6 +157,45 @@ public class ConverterBasedHtmlPreviewAdapter extends
             throw new PreviewException("Unexpected Error", e);
         }
 
+    }
+
+    /**
+     * @param blobHolder2preview
+     * @return
+     * @throws PreviewException
+     *
+     * @since 5.7.3
+     */
+    private Blob getBlob2preview(BlobHolder blobHolder2preview)
+            throws PreviewException {
+        try {
+            Blob blob2Preview = blobHolder2preview.getBlob();
+            if (blob2Preview == null) {
+                throw new NothingToPreviewException(
+                        "Can not preview a document without blob");
+            } else {
+                return blob2Preview;
+            }
+        } catch (ClientException e) {
+            throw new PreviewException("Error while getting blob", e);
+        }
+
+    }
+
+    /**
+     * Returns a blob holder suitable for a preview
+     * @param xpath
+     * @param adaptedDoc
+     * @return
+     *
+     * @since 5.7.3
+     */
+    private BlobHolder getBlobHolder2preview(String xpath, DocumentModel doc) {
+        if ((xpath == null) || ("default".equals(xpath))) {
+            return adaptedDoc.getAdapter(BlobHolder.class);
+        } else {
+            return new DocumentBlobHolder(adaptedDoc, xpath);
+        }
     }
 
     protected void setMimeType(BlobHolder result) throws ClientException {
@@ -187,8 +209,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
         }
     }
 
-
-    public String getMimeType(File file) throws ConversionException{
+    public String getMimeType(File file) throws ConversionException {
         try {
             return getMimeTypeService().getMimetypeFromFile(file);
         } catch (ConversionException e) {
@@ -211,11 +232,25 @@ public class ConverterBasedHtmlPreviewAdapter extends
         return mimeTypeService;
     }
 
+    @Override
     public void cleanup() {
 
     }
 
+    @Override
     public boolean cachable() {
+        return true;
+    }
+
+    @Override
+    public boolean hasBlobToPreview() throws PreviewException {
+        String xpath = getDefaultPreviewFieldXPath();
+
+        Blob blob2Preview = getBlob2preview(getBlobHolder2preview(xpath,
+                adaptedDoc));
+        if (blob2Preview == null) {
+            return false;
+        }
         return true;
     }
 

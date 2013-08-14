@@ -61,14 +61,17 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
         return previewManager;
     }
 
+    @Override
     public void setAdaptedDocument(DocumentModel doc) {
-        this.adaptedDoc = doc;
+        adaptedDoc = doc;
     }
 
+    @Override
     public String getFilePreviewURL() {
         return PreviewHelper.getPreviewURL(adaptedDoc);
     }
 
+    @Override
     public String getFilePreviewURL(String xpath) {
         return PreviewHelper.getPreviewURL(adaptedDoc, xpath);
     }
@@ -108,14 +111,17 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
         return sb.toString();
     }
 
+    @Override
     public List<Blob> getFilePreviewBlobs() throws PreviewException {
         return getFilePreviewBlobs(false);
     }
 
+    @Override
     public List<Blob> getFilePreviewBlobs(String xpath) throws PreviewException {
         return getFilePreviewBlobs(xpath, false);
     }
 
+    @Override
     public List<Blob> getFilePreviewBlobs(boolean postProcess)
             throws PreviewException {
         List<Blob> blobs = getPreviewBlobs();
@@ -127,6 +133,7 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
 
     protected abstract List<Blob> getPreviewBlobs() throws PreviewException;
 
+    @Override
     public List<Blob> getFilePreviewBlobs(String xpath, boolean postProcess)
             throws PreviewException {
         List<Blob> blobs = getPreviewBlobs(xpath);

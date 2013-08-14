@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
@@ -51,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam Action bean to handle the preview tabs and associated actions.
- * 
+ *
  * @author <a href="mailto:enriqueperez@yerbabuena.es">Enrique Perez</a>
  * @author tiry
  */
@@ -91,7 +92,17 @@ public class PreviewActionBean implements Serializable {
         if (document == null) {
             return false;
         }
-        return PreviewHelper.typeSupportsPreview(document);
+        if(PreviewHelper.typeSupportsPreview(document)) {
+            try {
+                return PreviewHelper.docHasBlobToPreview(document);
+            } catch (PreviewException e) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+
     }
 
     public String getPreviewURL() {

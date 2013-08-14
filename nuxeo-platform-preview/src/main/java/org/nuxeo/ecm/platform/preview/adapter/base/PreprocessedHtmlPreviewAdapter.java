@@ -77,12 +77,19 @@ public class PreprocessedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
         return getPreviewBlobs();
     }
 
+    @Override
     public void cleanup() {
         // nothing to do
     }
 
+    @Override
     public boolean cachable() {
         return false;
+    }
+
+    @Override
+    public boolean hasBlobToPreview() throws PreviewException {
+        return getPreviewBlobs().size() > 0;
     }
 
 }

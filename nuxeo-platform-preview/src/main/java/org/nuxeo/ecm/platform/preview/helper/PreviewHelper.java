@@ -22,10 +22,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
+import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
 public class PreviewHelper {
 
     public static final String PREVIEWURL_PREFIX = "restAPI/preview/";
+
     public static final String PREVIEWURL_DEFAULTXPATH = "default";
 
     protected static final Map<String, Boolean> hasPreviewByType = new ConcurrentHashMap<String, Boolean>();
@@ -84,6 +86,18 @@ public class PreviewHelper {
                 }
             }
         }
+    }
+
+    /**
+     * @param document
+     * @throws PreviewException
+     *
+     * @since 5.7.3
+     */
+    public static boolean docHasBlobToPreview(DocumentModel document)
+            throws PreviewException {
+        HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
+        return adapter == null ? false : adapter.hasBlobToPreview();
     }
 
 }
