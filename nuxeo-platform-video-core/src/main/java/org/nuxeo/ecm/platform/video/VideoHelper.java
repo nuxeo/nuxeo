@@ -39,7 +39,9 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
@@ -238,8 +240,11 @@ public class VideoHelper {
             // read the duration with a first command to adjust the best rate:
             ExecResult result = cleService.execCommand(
                     FFMPEG_INFO_COMMAND_LINE, params);
+            if (!result.isSuccessful()) {
+                throw result.getError();
+            }
             return VideoInfo.fromFFmpegOutput(result.getOutput());
-        } catch (Exception e) {
+        } catch (CommandNotAvailable | CommandException | IOException e) {
             throw ClientException.wrap(e);
         } finally {
             if (file != null) {

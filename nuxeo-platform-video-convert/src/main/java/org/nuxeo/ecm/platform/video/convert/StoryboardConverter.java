@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,10 +32,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -42,7 +44,9 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
@@ -120,7 +124,8 @@ public class StoryboardConverter extends BaseVideoConverter implements
             outFolder.mkdir();
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, inputFile.file.getAbsolutePath());
+            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER,
+                    inputFile.file.getAbsolutePath());
 
             Double duration = (Double) parameters.get("duration");
             if (duration == null) {
@@ -143,7 +148,8 @@ public class StoryboardConverter extends BaseVideoConverter implements
                         String.format("%04d", i));
                 outSubFolder.mkdir();
                 File outFile = new File(outSubFolder, "video-thumb-%04d.jpeg");
-                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
+                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER,
+                        outFile.getAbsolutePath());
                 params.addNamedParameter(POSITION_PARAMETER,
                         String.valueOf(timecode));
                 params.addNamedParameter(WIDTH_PARAM,
@@ -152,22 +158,11 @@ public class StoryboardConverter extends BaseVideoConverter implements
                         commonParams.get(HEIGHT_PARAM));
                 ExecResult result = cleService.execCommand(
                         FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
+
                 if (!result.isSuccessful()) {
-                    String commandLine = result.getCommandLine();
-                    log.error("Error executing command: " + commandLine);
-                    String output = StringUtils.join(result.getOutput(), "\n");
-                    log.error(output);
-                    Exception error = result.getError();
-                    if (error != null) {
-                        throw error;
-                    } else {
-                        throw new ConversionException(String.format(
-                                "Error computing video storyboard on"
-                                        + " file '%s' with command: %s",
-                                blob.getFilename(), commandLine));
-                    }
+                    throw result.getError();
                 }
-                @SuppressWarnings("unchecked")
+
                 List<File> thumbs = new ArrayList<File>(FileUtils.listFiles(
                         outSubFolder, new String[] { "jpeg" }, false));
                 if (thumbs.isEmpty()) {
@@ -189,15 +184,16 @@ public class StoryboardConverter extends BaseVideoConverter implements
                 comments.add(String.format("%s %d", blob.getFilename(), i));
             }
             return bh;
-        } catch (Exception e) {
+        } catch (IOException | CommandNotAvailable | ClientException
+                | CommandException e) {
+            String msg;
             if (blob != null) {
-                throw new ConversionException(
-                        "Error extracting story board from '"
-                                + blob.getFilename() + "': " + e.getMessage(),
-                        e);
+                msg = "Error extracting story board from '"
+                        + blob.getFilename() + "'";
             } else {
-                throw new ConversionException(e.getMessage(), e);
+                msg = "conversion failed";
             }
+            throw new ConversionException(msg, e);
         } finally {
             FileUtils.deleteQuietly(outFolder);
             if (inputFile != null && inputFile.isTempFile) {

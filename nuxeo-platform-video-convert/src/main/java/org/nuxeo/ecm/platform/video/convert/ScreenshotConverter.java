@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -36,7 +38,10 @@ import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,8 +55,6 @@ public class ScreenshotConverter extends BaseVideoConverter implements
     public static final Log log = LogFactory.getLog(ScreenshotConverter.class);
 
     public static final String FFMPEG_SCREENSHOT_COMMAND = "ffmpeg-screenshot";
-
-    protected CommandLineExecutorService cleService;
 
     @Override
     public void init(ConverterDescriptor descriptor) {
@@ -76,7 +79,8 @@ public class ScreenshotConverter extends BaseVideoConverter implements
                     ".tmp.jpeg");
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
+            params.addNamedParameter("inFilePath",
+                    inputFile.file.getAbsolutePath());
             params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
             Double position = 0.0;
             if (parameters != null) {
@@ -88,22 +92,27 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             long positionParam = Math.round(position);
             params.addNamedParameter(POSITION_PARAMETER,
                     String.valueOf(positionParam));
-            cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
+            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND,
+                    params);
+            if (!res.isSuccessful()) {
+                throw res.getError();
+            }
 
             Blob outBlob = StreamingBlob.createFromStream(
                     new FileInputStream(outFile), "image/jpeg").persist();
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg",
                     positionParam));
             return new SimpleCachableBlobHolder(outBlob);
-        } catch (Exception e) {
+        } catch (CommandNotAvailable | IOException | ClientException
+                | CommandException e) {
+            String msg;
             if (blob != null) {
-                throw new ConversionException(
-                        "error extracting screenshot from '"
-                                + blob.getFilename() + "': " + e.getMessage(),
-                        e);
+                msg = "error extracting screenshot from '" + blob.getFilename()
+                        + "'";
             } else {
-                throw new ConversionException(e.getMessage(), e);
+                msg = "conversion failed";
             }
+            throw new ConversionException(msg, e);
         } finally {
             FileUtils.deleteQuietly(outFile);
             if (inputFile != null && inputFile.isTempFile) {
