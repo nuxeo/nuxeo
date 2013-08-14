@@ -343,6 +343,10 @@ public class NotificationService extends DefaultComponent implements
         PlacefulService serviceBean = NotificationServiceHelper.getPlacefulServiceBean();
         Set<String> notificationNames = new HashSet<String>();
         for (Notification notification : getNotificationRegistry().getNotifications()) {
+            // Do not subscribe to auto-subscribed notification
+            if (notification.getAutoSubscribed()) {
+                continue;
+            }
             if (!notificationNames.contains(notification.getName())) {
                 // Check if notification is available for the current document
                 String availableIn = notification.getAvailableIn();
