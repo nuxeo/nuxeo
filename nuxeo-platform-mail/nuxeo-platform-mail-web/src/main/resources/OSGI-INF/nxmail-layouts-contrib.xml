@@ -562,15 +562,17 @@
           </property>
         </properties>
       </widget>
-      <widget name="ssl_protocols" type="text">
+      <widget name="ssl_protocols" type="template">
         <labels>
           <label mode="any">label.mail.folder.ssl_protocols</label>
         </labels>
         <fields>
           <field>prot:ssl_protocols</field>
         </fields>
-        <properties widgetMode="edit">
-          <property name="styleClass">dataInputText</property>
+        <properties mode="any">
+          <property name="template">
+            /widgets/emails_ssl_protocols_widget_template.xhtml
+          </property>
         </properties>
       </widget>
       <widget name="emails_limit" type="template">
