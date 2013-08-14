@@ -59,6 +59,26 @@ public class TestTextSearchCleaner extends NXRuntimeTestCase {
                 NXQLQueryBuilder.serializeFullText("\"a -b \""));
 
         assertEquals(
+                "= 'a* b'",
+                NXQLQueryBuilder.serializeFullText("a* b-"));
+
+        assertEquals(
+                "= 'a b'",
+                NXQLQueryBuilder.serializeFullText("a*b"));
+
+        assertEquals(
+                "= 'a  b'",
+                NXQLQueryBuilder.serializeFullText("a*-b"));
+
+        assertEquals(
+                "= 'a -b'",
+                NXQLQueryBuilder.serializeFullText("*a -b"));
+
+        assertEquals(
+                "= 'a -bc*'",
+                NXQLQueryBuilder.serializeFullText("a | -bc*"));
+
+        assertEquals(
                 "= 'a b'",
                 NXQLQueryBuilder.serializeFullText("a !#$%&()*+,-./:;<=>?@^`{|}~ b"));
 
