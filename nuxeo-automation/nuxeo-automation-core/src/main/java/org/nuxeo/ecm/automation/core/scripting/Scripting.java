@@ -95,13 +95,19 @@ public class Scripting {
         }
         map.put("This", input);
         map.put("Session", ctx.getCoreSession());
-        map.put("CurrentUser",
-                new PrincipalWrapper((NuxeoPrincipal) ctx.getPrincipal()));
+        PrincipalWrapper principalWrapper = new PrincipalWrapper(
+                (NuxeoPrincipal) ctx.getPrincipal());
+        map.put("CurrentUser", principalWrapper);
+        // Alias
+        map.put("currentUser", principalWrapper);
         map.put("Env", Framework.getProperties());
         map.put("Fn", Functions.getInstance());
         if (input instanceof DocumentModel) {
-            map.put("Document", new DocumentWrapper(ctx.getCoreSession(),
-                    (DocumentModel) input));
+            DocumentWrapper documentWrapper = new DocumentWrapper(
+                    ctx.getCoreSession(), (DocumentModel) input);
+            map.put("Document", documentWrapper);
+            // Alias
+            map.put("currentDocument", documentWrapper);
         }
         if (input instanceof DocumentModelList) {
             List<DocumentWrapper> docs = new ArrayList<DocumentWrapper>();

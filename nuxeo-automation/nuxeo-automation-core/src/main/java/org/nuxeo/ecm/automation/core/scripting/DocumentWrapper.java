@@ -179,7 +179,21 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.getPropertyValue(key);
     }
 
+    /**
+     * @since 5.7.3 Alias for #getProperty.
+     */
+    public Serializable getPropertyValue(String key) throws Exception {
+        return doc.getPropertyValue(key);
+    }
+
     public void setProperty(String key, Serializable value) throws Exception {
+        doc.setPropertyValue(key, value);
+    }
+
+    /**
+     * @since 5.7.3 Alias for #setProperty.
+     */
+    public void setPropertyValue(String key, Serializable value) throws Exception {
         doc.setPropertyValue(key, value);
     }
 
