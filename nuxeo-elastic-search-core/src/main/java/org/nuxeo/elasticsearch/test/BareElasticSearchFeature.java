@@ -26,10 +26,9 @@ public class BareElasticSearchFeature extends SimpleFeature {
     @Override
     public void start(FeaturesRunner runner) throws Exception {
 
-        String root = Framework.getProperty("nuxeo.data.dir");
-        File esDirectory = new File(root + "/elasticsearch");
+        File home = Framework.getRuntime().getHome();
+        File esDirectory = new File(home, "elasticsearch");
         esDirectory.mkdir();
-
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put("node.http.enabled", true)
                 .put("path.logs", esDirectory.getPath() + "/logs")
