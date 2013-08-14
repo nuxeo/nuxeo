@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task38e">
+  <system>
+    <type>RouteNode</type>
+    <path>SerialDocumentReview/Task38e</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task38e</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator/>
+    <dc:source/>
+    <dc:nature/>
+    <dc:contributors/>
+    <dc:created/>
+    <dc:description><![CDATA[Thank you for validating the document]]></dc:description>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified/>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor/>
+    <dc:title><![CDATA[wf.serialDocumentReview.chooseParticipants]]></dc:title>
+  </schema>
+  <schema xmlns:var_Task38e="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task38e" name="var_Task38e">
+    <var_Task38e:comment/>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon/>
+    <common:icon-expanded/>
+    <common:size/>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:lastActor/>
+    <rnode:canceled/>
+    <rnode:taskLayout><![CDATA[Task38e@taskLayout]]></rnode:taskLayout>
+    <rnode:taskButtons>
+      <button>
+        <name><![CDATA[cancel]]></name>
+        <label><![CDATA[wf.serialDocumentReview.cancel]]></label>
+        <filter><![CDATA[]]></filter>
+      </button>
+      <button>
+        <name><![CDATA[start_review]]></name>
+        <label><![CDATA[wf.serialDocumentReview.startReview]]></label>
+        <filter><![CDATA[]]></filter>
+      </button>
+    </rnode:taskButtons>
+    <rnode:button/>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
+    <rnode:startDate/>
+    <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:taskNotificationTemplate/>
+    <rnode:transitions>
+      <transition>
+        <chain><![CDATA[]]></chain>
+        <condition><![CDATA[NodeVariables["button"] =="cancel"]]></condition>
+        <name><![CDATA[cancelTask38e]]></name>
+        <targetId><![CDATA[Task5c1]]></targetId>
+        <label><![CDATA[cancel]]></label>
+      </transition>
+      <transition>
+        <chain><![CDATA[]]></chain>
+        <condition><![CDATA[NodeVariables["button"] =="start_review"]]></condition>
+        <name><![CDATA[start_reviewTask38e]]></name>
+        <targetId><![CDATA[Task6d8]]></targetId>
+        <label><![CDATA[start_review]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:nodeId><![CDATA[Task38e]]></rnode:nodeId>
+    <rnode:outputChain><![CDATA[initInitiatorComment]]></rnode:outputChain>
+    <rnode:merge/>
+    <rnode:taskAssignees/>
+    <rnode:taskAssigneesExpr><![CDATA[workflowInitiator]]></rnode:taskAssigneesExpr>
+    <rnode:taskY><![CDATA[136]]></rnode:taskY>
+    <rnode:count/>
+    <rnode:taskX><![CDATA[518]]></rnode:taskX>
+    <rnode:taskAssigneesPermission/>
+    <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>
+    <rnode:variablesFacet><![CDATA[facet-var_Task38e]]></rnode:variablesFacet>
+    <rnode:endDate/>
+    <rnode:taskDueDate/>
+    <rnode:inputChain><![CDATA[]]></rnode:inputChain>
+    <rnode:taskDescription/>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:taskDirective><![CDATA[wf.serialDocumentReview.pleaseSelect]]></rnode:taskDirective>
+  </schema>
+</document>

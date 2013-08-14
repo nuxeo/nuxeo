@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="Task6d8">
+  <system>
+    <type>RouteNode</type>
+    <path>SerialDocumentReview/Task6d8</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>facet-var_Task6d8</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator/>
+    <dc:source/>
+    <dc:nature/>
+    <dc:contributors/>
+    <dc:created/>
+    <dc:description><![CDATA[Thank you for validating the document]]></dc:description>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified/>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor/>
+    <dc:title><![CDATA[wf.serialDocumentReview.DocumentValidation]]></dc:title>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon/>
+    <common:icon-expanded/>
+    <common:size/>
+  </schema>
+  <schema xmlns:var_Task6d8="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task6d8" name="var_Task6d8">
+    <var_Task6d8:comment/>
+  </schema>
+  <schema xmlns:rnode="http://www.nuxeo.org/ecm/schemas/route_node/" name="route_node">
+    <rnode:lastActor/>
+    <rnode:canceled/>
+    <rnode:taskLayout><![CDATA[Task6d8@taskLayout]]></rnode:taskLayout>
+    <rnode:taskButtons>
+      <button>
+        <name><![CDATA[reject]]></name>
+        <label><![CDATA[wf.serialDocumentReview.Reject]]></label>
+        <filter><![CDATA[]]></filter>
+      </button>
+      <button>
+        <name><![CDATA[validate]]></name>
+        <label><![CDATA[wf.serialDocumentReview.Validate]]></label>
+        <filter><![CDATA[]]></filter>
+      </button>
+    </rnode:taskButtons>
+    <rnode:button/>
+    <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
+    <rnode:startDate/>
+    <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:taskNotificationTemplate><![CDATA[workflowTaskAssigned]]></rnode:taskNotificationTemplate>
+    <rnode:transitions>
+      <transition>
+        <chain><![CDATA[terminateWorkflow]]></chain>
+        <condition><![CDATA[NodeVariables["button"] == "validate" && WorkflowVariables["index"] == WorkflowVariables["participants"].length]]></condition>
+        <name><![CDATA[finishTask6d8]]></name>
+        <targetId><![CDATA[Task5c1]]></targetId>
+        <label><![CDATA[finish]]></label>
+      </transition>
+      <transition>
+        <chain><![CDATA[logInAudit]]></chain>
+        <condition><![CDATA[NodeVariables["button"] =="reject" && WorkflowVariables["index"] >= 0]]></condition>
+        <name><![CDATA[rejectTask6d8]]></name>
+        <targetId><![CDATA[Task6d8]]></targetId>
+        <label><![CDATA[reject]]></label>
+      </transition>
+      <transition>
+        <chain><![CDATA[logInAudit]]></chain>
+        <condition><![CDATA[NodeVariables["button"] =="reject" && WorkflowVariables["index"] ==-1]]></condition>
+        <name><![CDATA[request_updateTask6d8]]></name>
+        <targetId><![CDATA[Task542]]></targetId>
+        <label><![CDATA[request_update]]></label>
+      </transition>
+      <transition>
+        <chain><![CDATA[logInAudit]]></chain>
+        <condition><![CDATA[NodeVariables["button"] == "validate" && WorkflowVariables["index"] < WorkflowVariables["participants"].length]]></condition>
+        <name><![CDATA[validateTask6d8]]></name>
+        <targetId><![CDATA[Task6d8]]></targetId>
+        <label><![CDATA[validate]]></label>
+      </transition>
+    </rnode:transitions>
+    <rnode:nodeId><![CDATA[Task6d8]]></rnode:nodeId>
+    <rnode:outputChain><![CDATA[nextAssignee]]></rnode:outputChain>
+    <rnode:merge/>
+    <rnode:taskAssignees/>
+    <rnode:taskAssigneesExpr><![CDATA[WorkflowVariables["participants"][(int)WorkflowVariables.index]]]></rnode:taskAssigneesExpr>
+    <rnode:taskY><![CDATA[299]]></rnode:taskY>
+    <rnode:count/>
+    <rnode:taskX><![CDATA[324]]></rnode:taskX>
+    <rnode:taskAssigneesPermission><![CDATA[ReadWrite]]></rnode:taskAssigneesPermission>
+    <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>
+    <rnode:variablesFacet><![CDATA[facet-var_Task6d8]]></rnode:variablesFacet>
+    <rnode:endDate/>
+    <rnode:taskDueDate/>
+    <rnode:inputChain><![CDATA[reinitAssigneeComment]]></rnode:inputChain>
+    <rnode:taskDescription/>
+    <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
+    <rnode:taskDirective><![CDATA[wf.serialDocumentReview.AcceptReject]]></rnode:taskDirective>
+  </schema>
+</document>

@@ -160,7 +160,7 @@ NodeVariables["comment"]= null;}</param>
         </fields>
         <properties widgetMode="edit">
           <property name="orderable">true</property>
-          <property name="required">true</property>
+          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
         </properties>
       </widget>
       <widget name="validationOrReview" type="selectOneDirectory">
@@ -177,7 +177,7 @@ NodeVariables["comment"]= null;}</param>
         <properties widgetMode="edit">
           <property name="localize">true</property>
           <property name="directoryName">WorkflowType</property>
-          <property name="required">true</property>
+          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
         </properties>
         <properties widgetMode="view">
           <property name="localize">true</property>
