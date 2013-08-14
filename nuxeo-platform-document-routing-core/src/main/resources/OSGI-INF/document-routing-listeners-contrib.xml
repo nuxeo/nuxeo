@@ -36,6 +36,11 @@
       <event>executeEscalationRules</event>
     </listener>
 
+    <listener name="cleanOpenTasksOnWorkflowDone" async="true"
+      class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowDoneListener">
+      <event>afterRouteFinish</event>
+    </listener>
+    
   </extension>
 
 </component>

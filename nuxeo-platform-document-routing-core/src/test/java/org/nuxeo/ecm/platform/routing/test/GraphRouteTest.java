@@ -1581,4 +1581,68 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertTrue(subr.isCanceled());
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCancelTasksWhenWorkflowDone() throws Exception {
+        routeDoc = session.saveDocument(routeDoc);
+        DocumentModel node1 = createNode(routeDoc, "node1", session);
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(
+                node1,
+                transition("trans1", "node12",
+                        "NodeVariables[\"button\"] == \"trans1\"",
+                        "testchain_title1"),
+                transition("trans1", "node22",
+                        "NodeVariables[\"button\"] == \"trans1\"",
+                        "testchain_title1"),
+                transition("trans2", "node2", "true", ""));
+
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        String[] users = { "Administrator" };
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node12 = createNode(routeDoc, "node12", session);
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(
+                node1,
+                transition("trans12", "node2",
+                        "NodeVariables[\"button\"] == \"trans12\"",
+                        "testchain_title1"));
+
+        node12.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node12 = session.saveDocument(node12);
+
+        DocumentModel node22 = createNode(routeDoc, "node22", session);
+        node22.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(
+                node1,
+                transition("trans22", "node2",
+                        "NodeVariables[\"button\"] == \"trans22\"",
+                        "testchain_title1"));
+
+        node22.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node22 = session.saveDocument(node22);
+
+        DocumentModel node2 = createNode(routeDoc, "node2", session);
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+        DocumentRoute route = instantiateAndRun(session);
+        session.save();
+
+        List<Task> tasks = taskService.getAllTaskInstances(
+                route.getDocument().getId(), session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        routing.endTask(session, tasks.get(0), new HashMap<String, Object>(),
+                "trans1");
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
+        session.save();
+
+        tasks = taskService.getAllTaskInstances(route.getDocument().getId(),
+                session);
+        assertEquals(0, tasks.size());
+    }
 }
