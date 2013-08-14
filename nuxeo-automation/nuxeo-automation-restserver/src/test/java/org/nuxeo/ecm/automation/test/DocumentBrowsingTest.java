@@ -156,12 +156,19 @@ public class DocumentBrowsingTest extends BaseTest {
     @Test
     public void iCanDeleteADocument() throws Exception {
         // Given a document
+        DocumentModel folder = RestServerInit.getFolder(1, session);
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When I do a DELETE request
         ClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString());
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
+        assertEquals(Response.Status.OK.getStatusCode(),
                 response.getStatus());
+
+        // Then the parent document is returned
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String id = node.get("uid").getValueAsText();
+        assertEquals(folder.getId(), id);
+
 
         dispose(session);
         // Then the doc is deleted
