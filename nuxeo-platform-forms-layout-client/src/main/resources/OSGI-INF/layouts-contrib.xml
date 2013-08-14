@@ -2287,6 +2287,9 @@
                 <row>
                   <widget>showIfEmpty</widget>
                 </row>
+                <row>
+                  <widget>tip</widget>
+                </row>
               </rows>
               <widget name="foldable" type="checkbox">
                 <labels>
@@ -2334,6 +2337,21 @@
                 </helpLabels>
                 <fields>
                   <field>showIfEmpty</field>
+                </fields>
+              </widget>
+              <widget name="tip" type="text">
+                <labels>
+                  <label mode="any">Tip</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Label to display on top of the container
+                    widget content, that will be translated if the widget is
+                    translated. Available since 5.7.3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tip</field>
                 </fields>
               </widget>
               <widget name="headerStyleClass" type="text">

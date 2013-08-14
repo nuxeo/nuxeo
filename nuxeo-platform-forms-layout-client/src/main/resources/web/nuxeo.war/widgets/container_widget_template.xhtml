@@ -64,18 +64,17 @@
       <ui:include src="/widgets/incl/widget_label_template.xhtml">
         <ui:param name="labelStyleClass"
           value="#{widgetProperty_headerStyleClass}" />
-        <ui:param name="hideHelp" value="true" />
       </ui:include>
     </ui:define>
 
     <ui:define name="foldable_box_content">
 
-      <c:if test="#{showHeader and not empty widget.helpLabel}">
-        <nxu:set var="widgetHelpLabel"
-          value="#{nxu:test(widget.translated, messages[widget.helpLabel], widget.helpLabel)}"
+      <c:if test="#{showHeader and not empty widgetProperty_tip}">
+        <nxu:set var="tip"
+          value="#{nxu:test(widget.translated, messages[widgetProperty_tip], widgetProperty_tip)}"
           cache="true">
           <div class="tips">
-            <h:outputText value="#{widgetHelpLabel}" />
+            <h:outputText value="#{tip}" />
           </div>
         </nxu:set>
       </c:if>
