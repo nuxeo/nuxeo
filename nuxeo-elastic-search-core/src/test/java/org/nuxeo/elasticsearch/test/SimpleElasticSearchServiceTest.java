@@ -1,20 +1,14 @@
 package org.nuxeo.elasticsearch.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;

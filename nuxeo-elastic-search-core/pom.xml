@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
        <exclusions>
         <exclusion>
           <groupId>org.apache.lucene</groupId>
@@ -57,8 +57,24 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <scope>compile</scope>
+       <exclusions>
+        <exclusion>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-analyzers</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
-      <scope>test</scope>
+       <exclusions>
+        <exclusion>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-analyzers</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
