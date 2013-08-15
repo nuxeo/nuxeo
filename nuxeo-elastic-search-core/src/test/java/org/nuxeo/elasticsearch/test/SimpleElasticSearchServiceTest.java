@@ -1,8 +1,12 @@
 package org.nuxeo.elasticsearch.test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,6 +15,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -42,7 +47,7 @@ public class SimpleElasticSearchServiceTest {
     public void shouldIndexDocument() throws Exception {
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
-        doc.setPropertyValue("dc:title", "Test Me");
+        doc.setPropertyValue("dc:title", "TestMe");
         doc = session.createDocument(doc);
         session.save();
 
@@ -52,7 +57,7 @@ public class SimpleElasticSearchServiceTest {
         String res = ess.indexNow(doc);
         Assert.assertNotNull(res);
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch("nxmain")
+        SearchResponse searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
                 //.setTypes("doc")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 //.setQuery(QueryBuilders.termQuery("type", "File"))             // Query
@@ -64,6 +69,26 @@ public class SimpleElasticSearchServiceTest {
                 .actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
+        searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
+                .setTypes("doc")
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(QueryBuilders.fieldQuery("title", "TestMe"))
+                .setFrom(0).setSize(60)
+                .execute()
+                .actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
+
+        searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
+                .setTypes("doc")
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(QueryBuilders.fieldQuery("properties.dc:title", "TestMe"))
+                .setFrom(0).setSize(60)
+                .execute()
+                .actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
 
     }
 

@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -15,6 +14,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 
 public class ElasticSearchComponent extends DefaultComponent implements
         ElasticSearchService {
@@ -33,6 +32,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Node node;
 
     protected Client client;
+
+    public static final String MAIN_IDX = "nxmain";
+
+    public static final String NX_DOCUMENT = "doc";
 
     protected NuxeoElasticSearchConfig getConfig() {
         if (Framework.isTestModeSet() && config == null) {
@@ -87,7 +90,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             XContentBuilder builder = jsonBuilder();
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             JsonDocumentWriter.writeDocument(jsonGen, doc, doc.getSchemas(), null);
-            IndexResponse response = getClient().prepareIndex("nxmain", "doc", doc.getId())
+            IndexResponse response = getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId())
                     .setSource(builder).execute()
                     .actionGet();
             flushIfLocal();

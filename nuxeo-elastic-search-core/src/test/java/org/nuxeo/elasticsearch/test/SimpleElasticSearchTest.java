@@ -42,6 +42,8 @@ public class SimpleElasticSearchTest {
                 .startObject()
                     .field("name", "test1")
                     .field("type", "File")
+                    .field("yo", "man")
+                    .field("dc:title", "Yohou")
                     .field("dc:created", new Date())
                 .endObject();
 
@@ -57,12 +59,31 @@ public class SimpleElasticSearchTest {
         SearchResponse searchResponse = elasticSearchClient.prepareSearch("nxmain")
                 .setTypes("doc")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+//                .setQuery(QueryBuilders.termQuery("yo", "man"))             // Query
                 .setQuery(QueryBuilders.termQuery("name", "test1"))             // Query
+//                .setQuery(QueryBuilders.termQuery("type", "File"))             // Query
                 .setFrom(0).setSize(60)
                 .execute()
                 .actionGet();
 
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+        System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+
+
+
+        searchResponse = elasticSearchClient.prepareSearch("nxmain")
+                .setTypes("doc")
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+//                .setQuery(QueryBuilders.termQuery("yo", "man"))             // Query
+                .setQuery(QueryBuilders.fieldQuery("dc:title", "YoHou"))             // Query
+//                .setQuery(QueryBuilders.termQuery("type", "File"))             // Query
+                .setFrom(0).setSize(60)
+                .execute()
+                .actionGet();
+
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
+
 
     }
 
