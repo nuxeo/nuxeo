@@ -40,6 +40,8 @@ public class Select2Common {
 
     public static final String DEFAULT_KEY_SEPARATOR = "/";
 
+    public static final String OBSOLETE_FIELD_ID = "obsolete";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.
@@ -61,7 +63,8 @@ public class Select2Common {
         if (dbl10n) {
             int i = labelFieldName.indexOf(LANG_TOKEN);
             if (i >= 0) {
-                // a pattern is provided, let's compute the field name according to the current lang
+                // a pattern is provided, let's compute the field name according
+                // to the current lang
                 StringBuffer buf = new StringBuffer();
                 buf.append(labelFieldName.substring(0, i));
                 buf.append(lang);
@@ -70,7 +73,8 @@ public class Select2Common {
                 if (schema.getField(result) != null) {
                     return result;
                 } else {
-                    // there is no field for the current lang, let's pick english by default
+                    // there is no field for the current lang, let's pick
+                    // english by default
                     buf = new StringBuffer();
                     buf.append(labelFieldName.substring(0, i));
                     buf.append("en");
@@ -78,7 +82,8 @@ public class Select2Common {
                     return buf.toString();
                 }
             } else {
-                // No pattern, we assume that fields are named like 'xxx_en', 'xxx_fr', etc.
+                // No pattern, we assume that fields are named like 'xxx_en',
+                // 'xxx_fr', etc.
                 return labelFieldName + "_" + lang;
             }
         }

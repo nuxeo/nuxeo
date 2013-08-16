@@ -21,6 +21,7 @@ function configureOperationParameters(op, params, query) {
     op.addParameter("filterParent", params.filterParent);
     op.addParameter("canSelectParent", params.canSelectParent);
     op.addParameter("separator", params.separator);
+    op.addParameter("obsolete", params.obsolete);
   } else {
     // build default operation for Document
     op.addParameter("queryParams", query.term + "%");

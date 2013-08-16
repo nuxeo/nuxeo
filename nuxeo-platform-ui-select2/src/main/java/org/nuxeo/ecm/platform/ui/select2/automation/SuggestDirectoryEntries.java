@@ -21,7 +21,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -180,6 +182,11 @@ public class SuggestDirectoryEntries {
             return isLeaf;
         }
 
+        public boolean isObsolete() {
+            return isRoot ? false
+                    : obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0;
+        }
+
         private void mergeJsonAdapter(JSONAdapter branch) {
             JSONAdapter found = getChildren().get(branch.getLabel());
             if (found != null) {
@@ -288,7 +295,12 @@ public class SuggestDirectoryEntries {
     @Param(name = "keySeparator", required = false)
     protected String keySeparator = Select2Common.DEFAULT_KEY_SEPARATOR;
 
+    @Param(name = "obsolete", required = false)
+    protected boolean obsolete = false;
+
     private String label = null;
+
+    private boolean isChained = false;
 
     protected String getLang() {
         if (lang == null) {
@@ -303,8 +315,6 @@ public class SuggestDirectoryEntries {
     protected Locale getLocale() {
         return new Locale(getLang());
     }
-
-    private boolean isChained = false;
 
     @OperationMethod
     public Blob run() throws Exception {
@@ -334,21 +344,38 @@ public class SuggestDirectoryEntries {
             label = Select2Common.getLabelFieldName(schema, dbl10n,
                     labelFieldName, getLang());
 
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            if (!obsolete) {
+                filter.put(Select2Common.OBSOLETE_FIELD_ID, Long.valueOf(0));
+            }
+            Set<String> fullText = new TreeSet<String>();
             if (dbl10n && !translateLabels) {
                 postFilter = false;
                 // do the filtering at directory level
-                if (prefix == null || prefix.isEmpty()) {
+                if (prefix != null && !prefix.isEmpty()) {
+                    // filter.put(directory.getIdField(), prefix);
+                    filter.put(label, prefix);
+                    fullText.add(label);
+                }
+                if (filter.isEmpty()) {
+                    // No filtering and we want the obsolete. We take all the
+                    // entries
                     entries = session.getEntries();
                 } else {
-                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                    filter.put(directory.getIdField(), prefix);
-                    filter.put(label, prefix);
-                    entries = session.query(filter, filter.keySet());
+                    // We at least filter with prefix or/and exclude the
+                    // obsolete
+                    entries = session.query(filter, fullText);
                 }
             } else {
-                // Translated labels are not directly translated in the
-                // directory : get all entries and post-filter
-                entries = session.getEntries();
+                // Labels are translated in properties file, we have to post
+                // filter manually on all the entries
+                if (filter.isEmpty()) {
+                    // We want the obsolete. We take all the entries
+                    entries = session.getEntries();
+                } else {
+                    // We want to exclude the obsolete
+                    entries = session.query(filter);
+                }
             }
 
             JSONAdapter jsonAdapter = new JSONAdapter(session, schema);
@@ -362,8 +389,9 @@ public class SuggestDirectoryEntries {
 
                 if (prefix != null && !prefix.isEmpty() && postFilter) {
                     if (!adapter.getLabel().toLowerCase().startsWith(
-                            prefix.toLowerCase()))
+                            prefix.toLowerCase())) {
                         continue;
+                    }
                 }
 
                 jsonAdapter.push(adapter);

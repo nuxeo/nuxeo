@@ -680,6 +680,9 @@
                 <row>
                   <widget>filterParent</widget>
                 </row>
+                <row>
+                  <widget>obsolete</widget>
+                </row>
               </rows>
 
               <widget name="width" type="int">
@@ -873,6 +876,21 @@
                 </helpLabels>
                 <fields>
                   <field>filterParent</field>
+                </fields>
+              </widget>
+
+              <widget name="obsolete" type="checkbox">
+                <labels>
+                  <label mode="any">Display obsolete entry</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Check this option if you want obsolete
+                    entries to be selectable.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>obsolete</field>
                 </fields>
               </widget>
 
@@ -951,6 +969,9 @@
                 <row>
                   <widget>filterParent</widget>
                 </row>
+                <row>
+                  <widget>obsolete</widget>
+                </row>
               </rows>
 
               <widget name="width" type="int">
@@ -1144,6 +1165,21 @@
                 </helpLabels>
                 <fields>
                   <field>filterParent</field>
+                </fields>
+              </widget>
+
+              <widget name="obsolete" type="checkbox">
+                <labels>
+                  <label mode="any">Display obsolete entry</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Check this option if you want obsolete
+                    entries to be selectable.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>obsolete</field>
                 </fields>
               </widget>
 
