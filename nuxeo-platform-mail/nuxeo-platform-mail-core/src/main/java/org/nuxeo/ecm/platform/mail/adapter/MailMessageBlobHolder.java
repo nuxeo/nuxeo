@@ -17,6 +17,9 @@
  */
 package org.nuxeo.ecm.platform.mail.adapter;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,6 +35,10 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
  */
 public class MailMessageBlobHolder extends DocumentBlobHolder {
 
+    protected Pattern isHtmlPattern = Pattern.compile(
+            "(.*)<(html|head|body)>(.*)", Pattern.CASE_INSENSITIVE
+                    | Pattern.DOTALL);
+
     public MailMessageBlobHolder(DocumentModel doc, String xPath,
             String xPathFilename) {
         super(doc, xPath, xPathFilename);
@@ -42,7 +49,13 @@ public class MailMessageBlobHolder extends DocumentBlobHolder {
         String htmlTextProperty = (String) doc.getPropertyValue(xPath);
         if (htmlTextProperty != null && xPathFilename != null
                 && htmlTextProperty.length() != 0) {
-            Blob blob = new StringBlob(htmlTextProperty, "text/html");
+            Blob blob = new StringBlob(htmlTextProperty);
+            Matcher m = isHtmlPattern.matcher(htmlTextProperty);
+            if (m.matches()) {
+                blob.setMimeType("text/html");
+            } else {
+                blob.setMimeType("text/plain");
+            }
             blob.setFilename(xPathFilename);
             // set dummy digest to avoid comparison error
             blob.setDigest("notInBinaryStore");
