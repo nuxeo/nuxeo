@@ -19,7 +19,7 @@ endif
 all: start rest page test-nuxeo webengine dav multiconversation stop
 
 start:
-	-mkdir -p $(REPORT) $(LOG_HOME)o
+	-mkdir -p $(REPORT) $(LOG_HOME)
 	$(CREDCTL) restart
 	-$(MONCTL) restart
 	sleep 2 # sometime credential server is not yet listening

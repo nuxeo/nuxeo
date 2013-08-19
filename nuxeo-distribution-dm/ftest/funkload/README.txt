@@ -90,6 +90,11 @@ Layout
   members accounts (the ones present in the password.txt files) and will add
   a new workspace and folder with few file documents.
 
+* test_drive.py, Drive.conf
+
+  A test suite for Nuxeo Drive, you must have a Nuxeo DM (not a CAP), Nuxeo
+  Drive and token auth installed.
+
 * credential.conf, passwd.txt, groups.txt
 
   Credential xmlrpc configuration with unix like passwd/groups files used by
@@ -118,11 +123,16 @@ Requirement
 For other distro visit http://funkload.nuxeo.org/INSTALL
 
 
+
 Running test
 -------------
 
 Using a Makefile
 ~~~~~~~~~~~~~~~~~
+
+You need a Nuxeo DM (not CAP) running instance and Nuxeo Drive if you
+intend to run the drive test.
+
 
 * make
   this is equivalent to "make start rest page test-nuxeo stop"
@@ -143,6 +153,9 @@ Using a Makefile
 
 * make test-nuxeo
   Run the test_nuxeo suite.
+
+* make init drive
+  Run the Nuxeo Drive test (you need to run init once to create the test accounts).
 
 To run test on remote site use the URL option:
 
@@ -241,10 +254,10 @@ a heap history before each request and will save all SQL queries and
 heap history after.
 
 You can generate the pgfouine reports per page like this:
- 
+
 for f in `ls pg-test*.log`; do pgfouine -file $f -logtype stderr -top 30 > ${f%log}html; done
 
-You can view the amount of memory needed by page like this:     
+You can view the amount of memory needed by page like this:
 
 for f in `ls hh-test*-before.txt`; do e=${f%-before.txt}-end.txt; after=`grep Total $e | awk '{ print $3 }'`; before=`grep Total $f | awk '{ print $3 }'`; diff=`expr $after - $before`; hrdiff=`echo $diff | awk '{sum=$1;hum[1024**3]="Gb";hum[1024**2]="Mb";hum[1024]="Kb"; for (x=1024**3; x>=1024; x/=1024){ if (sum>=x) { printf "%.2f %s\n",sum/x,hum[x];break }}}'`; echo "${f%-before.txt} $before $after: $hrdiff"; done
 
