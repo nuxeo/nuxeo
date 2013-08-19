@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.contrib">
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchConfig">
+
+    <elasticSearchConfig autostartLocalNode="true">
+     <startupScript>/home/tiry/devs/elasticsearch-0.90.2/bin/elasticsearch</startupScript>
+     <nodeName>nuxeoTestNode</nodeName>
+     <clusterName>nuxeoTestCluster</clusterName>
+    </elasticSearchConfig>
+
+  </extension>
+
+</component>

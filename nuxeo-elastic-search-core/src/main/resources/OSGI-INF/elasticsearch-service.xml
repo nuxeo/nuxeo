@@ -1,11 +1,19 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.elasticsearch.ElasticSearchComponent" version="1.0">
 
   <implementation class="org.nuxeo.elasticsearch.ElasticSearchComponent" />
 
   <service>
       <provide interface="org.nuxeo.elasticsearch.ElasticSearchService" />
+      <provide interface="org.nuxeo.elasticsearch.ElasticSearchAdmin" />
   </service>
+
+  <extension-point name="elasticSearchConfig">
+    <documentation>
+      Extension point used to contribute the configuration for Elasticsearch engine.
+    </documentation>
+
+    <object class="org.nuxeo.elasticsearch.NuxeoElasticSearchConfig" />
+  </extension-point>
 
 </component>
