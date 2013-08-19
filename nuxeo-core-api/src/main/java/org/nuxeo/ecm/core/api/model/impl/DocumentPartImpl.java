@@ -52,6 +52,17 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         super(null);
         this.schema = schema;
         this.factory = factory == null ? DefaultPropertyFactory.getInstance() : factory;
+
+        // mark dirty if there are children that are complex properties
+        // in order to make sure that they'll be saved on creation, so
+        // that later on they aren't created lazily on read, which causes
+        // problems in parallel read situations
+        for (Field field : getType().getFields()) {
+            if (field.getType() instanceof ComplexType) {
+                setDirtyFlags(IS_NEW);
+                break;
+            }
+        }
     }
 
     public DocumentPartImpl(Schema schema) {

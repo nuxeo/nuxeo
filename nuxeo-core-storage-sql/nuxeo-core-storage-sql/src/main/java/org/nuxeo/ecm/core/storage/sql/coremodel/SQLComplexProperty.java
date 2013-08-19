@@ -96,9 +96,14 @@ public class SQLComplexProperty extends SQLBaseProperty implements
                                 + value);
             }
             Map<String, Object> map = (Map<String, Object>) value;
-            for (Entry<String, Object> entry : map.entrySet()) {
-                Property property = getProperty(entry.getKey());
-                property.setValue(entry.getValue());
+            // we iterate over all properties even if they are not in the map,
+            // in order to ensure that complex properties will be touched and
+            // therefore created in SQLSession.makeProperties
+            for (Property property : getProperties()) {
+                String key = property.getName();
+                if (map.containsKey(key)) {
+                    property.setValue(map.get(key));
+                }
             }
         }
     }

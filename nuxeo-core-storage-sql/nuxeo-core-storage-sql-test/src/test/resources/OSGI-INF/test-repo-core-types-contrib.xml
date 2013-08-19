@@ -52,6 +52,11 @@
       <schema name="test-properties" />
       <prefetch></prefetch>
     </doctype>
+    <doctype name="TestDocument2" extends="Document">
+      <schema name="dublincore" />
+      <schema name="test-properties" />
+      <prefetch></prefetch>
+    </doctype>
     <doctype name="TestDocumentWithDefaultPrefetch" extends="Document">
       <!-- default prefetch includes props from common and dc -->
       <schema name="common" />

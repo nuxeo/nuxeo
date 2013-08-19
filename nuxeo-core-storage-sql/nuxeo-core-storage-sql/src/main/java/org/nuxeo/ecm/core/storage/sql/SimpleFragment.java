@@ -90,7 +90,11 @@ public final class SimpleFragment extends Fragment {
             oldvalues = new Serializable[row.values.length];
             System.arraycopy(tmp, 0, oldvalues, 0, tmp.length);
         }
-        markModified();
+        if (getState() != State.ABSENT || value != null) {
+            // don't mark modified when setting null in an absent fragment
+            // to avoid creating unneeded rows
+            markModified();
+        }
     }
 
     /**

@@ -706,7 +706,7 @@ public class TestPropertyModel extends NXRuntimeTestCase {
 
         dp.init(map);
 
-        assertFalse(dp.isDirty());
+        assertTrue(dp.isDirty());
         assertFalse(dp.get("file").isDirty());
         assertFalse(dp.get("file").get("fileName").isDirty());
         assertFalse(dp.get("file").get("fileName").get("extension").isDirty());

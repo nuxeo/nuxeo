@@ -32,7 +32,9 @@ import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
@@ -387,6 +389,50 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         Object actualBlob = doc.getProperty("tp:fileComplexList/0/blob").getValue(
                 Blob.class);
         assertTrue(actualBlob instanceof Blob);
+    }
+
+    @Test
+    public void testComplexParallelFetch() throws Exception {
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "TestDocument2");
+        doc2.setPropertyValue("dc:title", "doc2");
+        doc2 = session.createDocument(doc2);
+        session.save();
+        // has not created the complex properties at that point
+
+        CoreSession s1 = openSessionAs("Administrator");
+        CoreSession s2 = openSessionAs("Administrator");
+        DocumentModel d1 = s1.getDocument(new IdRef(doc2.getId()));
+        DocumentModel d2 = s2.getDocument(new IdRef(doc2.getId()));
+        // read the complex prop to trigger documentpart fetch
+        // and node creation (SQLSession.makeProperties)
+        d1.getProperty("tp:complex");
+        d2.getProperty("tp:complex");
+        // write an unrelated property, to trigger flush()
+        d1.setPropertyValue("dc:title", "d1");
+        d2.setPropertyValue("dc:title", "d2");
+        s1.saveDocument(d1);
+        s2.saveDocument(d2);
+        s1.save();
+        // without the fix the following save would cause a second insert
+        s2.save();
+        closeSession(s1);
+        closeSession(s2);
+    }
+
+    @Test
+    public void testComplex2() throws Exception {
+        doc = session.createDocumentModel("/", "doc2", "TestDocument2");
+        doc = session.createDocument(doc);
+        session.save();
+        // has not created the complex properties at that point
+
+        // read the a complex propy to trigger documentpart fetch
+        // and node creation (SQLSession.makeProperties)
+        doc.getProperty("tp:complex");
+        // write an unrelated property, to trigger flush()
+        doc.setPropertyValue("dc:title", "doc2bis");
+        doc = session.saveDocument(doc);
+        session.save();
     }
 
     @Test
