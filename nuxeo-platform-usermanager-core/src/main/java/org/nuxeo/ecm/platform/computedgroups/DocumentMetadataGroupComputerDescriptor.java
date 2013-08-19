@@ -7,6 +7,9 @@ import org.nuxeo.ecm.platform.computedgroups.GroupComputer;
 import org.nuxeo.ecm.platform.computedgroups.GroupComputerDescriptor;
 
 @XObject("documentMetadataGroupComuter")
+/**
+ * @since 5.7.3
+ */
 public class DocumentMetadataGroupComputerDescriptor extends
         GroupComputerDescriptor {
 

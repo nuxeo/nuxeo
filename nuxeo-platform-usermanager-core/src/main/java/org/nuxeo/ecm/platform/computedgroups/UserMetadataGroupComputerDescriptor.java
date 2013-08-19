@@ -5,6 +5,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.ClientException;
 
 @XObject("userMetadataGroupComputer")
+/**
+ * @since 5.7.3
+ */
 public class UserMetadataGroupComputerDescriptor extends GroupComputerDescriptor {
 
     /**

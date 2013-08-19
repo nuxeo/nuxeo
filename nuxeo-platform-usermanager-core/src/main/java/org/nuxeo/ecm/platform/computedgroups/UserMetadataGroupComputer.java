@@ -9,6 +9,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
+/**
+ * Configurable Group Computer based on metadata of the user.
+ *
+ * @since 5.7.3
+ */
 public class UserMetadataGroupComputer extends AbstractGroupComputer {
 
     public static final Log log = LogFactory.getLog(UserMetadataGroupComputer.class);

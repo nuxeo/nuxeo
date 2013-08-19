@@ -15,6 +15,12 @@ import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Configurable Group Computer based on Metadata of Documents.
+ * Documents Selection is managed by NXQL where clause.
+ *
+ * @since 5.7.3
+ */
 public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
     public static final Log log = LogFactory.getLog(DocumentMetadataGroupComputer.class);
