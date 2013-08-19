@@ -72,7 +72,7 @@ import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
+ * Initialization for Select2.
  *
  * @since 5.7.3
  */

@@ -27,6 +27,11 @@ import javax.faces.convert.Converter;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
+/**
+ * Select2 converter.
+ *
+ * @since 5.7.3
+ */
 @Name("select2Converter")
 @BypassInterceptors
 @org.jboss.seam.annotations.faces.Converter

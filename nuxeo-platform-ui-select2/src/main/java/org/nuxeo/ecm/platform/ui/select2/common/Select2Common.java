@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
  * Group fields and methods used at initialization and runtime for select2
  * feature.
  *
- * @since 5.7.2
+ * @since 5.7.3
  */
 public class Select2Common {
 
@@ -52,7 +52,7 @@ public class Select2Common {
      * @param lang the current language
      * @return the final field name where we pick up the value
      *
-     * @since 5.7.2
+     * @since 5.7.3
      */
     public static String getLabelFieldName(final Schema schema, boolean dbl10n,
             String labelFieldName, final String lang) {

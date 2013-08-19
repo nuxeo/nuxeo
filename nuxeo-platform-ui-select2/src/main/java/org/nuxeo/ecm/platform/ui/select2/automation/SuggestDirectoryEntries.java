@@ -55,7 +55,7 @@ import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 /**
  * SuggestDirectoryEntries Operation
  *
- * @since 5.7.2
+ * @since 5.7.3
  */
 @Operation(id = SuggestDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.")
 public class SuggestDirectoryEntries {
