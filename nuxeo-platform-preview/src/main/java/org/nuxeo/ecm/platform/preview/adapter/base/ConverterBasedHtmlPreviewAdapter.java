@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -117,7 +116,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
     @Override
     public List<Blob> getPreviewBlobs(String xpath) throws PreviewException {
 
-        BlobHolder blobHolder2preview = getBlobHolder2preview(xpath, adaptedDoc);
+        BlobHolder blobHolder2preview = getBlobHolder2preview(xpath);
         Blob blob2Preview = getBlob2preview(blobHolder2preview);
 
         List<Blob> blobResults = new ArrayList<Blob>();
@@ -183,14 +182,14 @@ public class ConverterBasedHtmlPreviewAdapter extends
     }
 
     /**
-     * Returns a blob holder suitable for a preview
+     * Returns a blob holder suitable for a preview.
      * @param xpath
      * @param adaptedDoc
      * @return
      *
      * @since 5.7.3
      */
-    private BlobHolder getBlobHolder2preview(String xpath, DocumentModel doc) {
+    private BlobHolder getBlobHolder2preview(String xpath) {
         if ((xpath == null) || ("default".equals(xpath))) {
             return adaptedDoc.getAdapter(BlobHolder.class);
         } else {
@@ -246,8 +245,7 @@ public class ConverterBasedHtmlPreviewAdapter extends
     public boolean hasBlobToPreview() throws PreviewException {
         String xpath = getDefaultPreviewFieldXPath();
 
-        Blob blob2Preview = getBlob2preview(getBlobHolder2preview(xpath,
-                adaptedDoc));
+        Blob blob2Preview = getBlob2preview(getBlobHolder2preview(xpath));
         if (blob2Preview == null) {
             return false;
         }
