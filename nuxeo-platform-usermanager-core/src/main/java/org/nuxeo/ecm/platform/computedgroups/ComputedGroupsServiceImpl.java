@@ -70,19 +70,42 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
             throws Exception {
 
         if (COMPUTER_EP.equals(extensionPoint)) {
-            GroupComputerDescriptor desc = (GroupComputerDescriptor) contribution;
-            computers.put(desc.getName(), desc);
-        } else if (CHAIN_EP.equals(extensionPoint)) {
+            if (contribution instanceof GroupComputerDescriptor) {
+                GroupComputerDescriptor desc = (GroupComputerDescriptor) contribution;
+
+                if (desc.isEnabled()) {
+                    log.debug("Add " + desc.getName() + " from component " + contributor.getName());
+                    computers.put(desc.getName(), desc);
+                } else {
+                    if (computers.containsKey(desc.getName())) {
+                        log.debug("Remove " + desc.getName() + " from component " + contributor.getName());
+                        computers.remove(desc.getName());
+                    } else {
+                        log.warn("Can't remove " + desc.getName() + " as not found, from component " + contributor.getName());
+                    }
+                }
+                return;
+            } else {
+                throw new Exception(
+                        "Waiting GroupComputerDescriptor contribution kind, please look component "
+                                + contributor.getName());
+            }
+        }
+
+        if (CHAIN_EP.equals(extensionPoint)) {
             GroupComputerChainDescriptor desc = (GroupComputerChainDescriptor) contribution;
             if (desc.isAppend()) {
                 computerNames.addAll(desc.getComputerNames());
             } else {
                 computerNames = desc.getComputerNames();
             }
-
+            return;
         }
+
+        log.warn("Unkown contribution, please check the component " + contributor.getName());
     }
 
+    @Override
     public List<String> computeGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
 
         List<String> userGroups = new ArrayList<String>();

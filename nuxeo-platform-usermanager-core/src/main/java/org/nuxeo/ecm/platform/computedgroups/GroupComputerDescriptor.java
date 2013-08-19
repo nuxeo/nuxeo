@@ -44,11 +44,18 @@ public class GroupComputerDescriptor implements Serializable {
     @XNode("@name")
     protected String name;
 
+    @XNode("@enabled")
+    protected boolean enabled = true;
+
     public String getName() {
         if (name != null) {
             return name;
         }
         return computerClass.getSimpleName();
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public GroupComputer getComputer() throws ClientException {

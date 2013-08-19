@@ -20,10 +20,47 @@
 
     The contributed class must implement the org.nuxeo.ecm.platform.computedgroups.GroupComputer interface.
 
+    To simplify the Computer group generation you can also contribute a simple group computer without java
+    code contribution based on
+    <ul>
+      <li>user profile metadata (military grade given a abilitation level, for instance)</li>
+      <li>metadata given a list of documents (ex: local group)</li>
+    </ul>
+
+    For the first case, you just have to contribute:
+    <code>
+      <userMetadataGroupComputer enabled="false" xpath="company" groupPattern="grade_%s" name="grade_cg"/>
+    </code>
+
+    Here for each user, during the connection time, Nuxeo affect the group grade_xxx where xxx the value of
+    the company metadata stored into the user profile. If the company metadata is empty or contains only spaces
+    No group is affected to the user.
+
+    For the second possibility (metadata given a list of documents), you just have to contribute:
+    <code>
+      <documentMetadataGroupComuter xpath="dc:title" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
+    </code>
+
+    Here, we select documents created by the user. For each document found, we affect the group creator_xxx where xxx
+    is the title of the document. But you can also try this:
+
+    <code>
+      <documentMetadataGroupComuter xpath="ecm:uuid" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
+    </code>
+
+    Here, xxx is replaced by the id of the document. XPath value is based on NXQL query and fetch selector. See the NXQL documentation
+    to have more information.
+
     @author Thierry Delprat (td@nuxeo.com)
+    @author Benjamin JALON (bjalon@nuxeo.com)
         </documentation>
         <object
             class="org.nuxeo.ecm.platform.computedgroups.GroupComputerDescriptor" />
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.UserMetadataGroupComputerDescriptor" />
+        <object
+            class="org.nuxeo.ecm.platform.computedgroups.DocumentMetadataGroupComputerDescriptor" />
+
     </extension-point>
 
     <extension-point name="computerChain">
