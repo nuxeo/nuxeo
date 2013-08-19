@@ -223,4 +223,39 @@ public class TestImport extends ImportTestCase {
         closeSession();
     }
 
+    @Test
+    public void shouldImportWithNoBlobMapping() throws Exception {
+    	// Exact same test than above but without blob mapping.
+        String testPath = deployTestFiles("test4");
+        File xmlFile = new File(testPath + "/descriptor.xml");
+        assertTrue(xmlFile.exists());
+
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "OSGI-INF/importerservice-test-contrib6.xml");
+
+        ScannedFileImporter importer = new ScannedFileImporter();
+
+        ImporterConfig config = new ImporterConfig();
+        config.setTargetPath("/");
+        config.setNbThreads(1);
+        config.setBatchSize(10);
+        config.setUseXMLMapping(true);
+
+        importer.doImport(new File(testPath), config);
+
+        session.save();
+
+        DocumentModelList alldocs = session.query("select * from Picture order by ecm:path");
+
+        for (DocumentModel doc : alldocs) {
+            log.info("imported : " + doc.getPathAsString() + "-"
+                    + doc.getType());
+        }
+
+        assertEquals(1, alldocs.size());
+
+        DocumentModel doc = alldocs.get(0);
+        assertEquals(doc.getType(), "Picture");
+        closeSession();
+    }
 }
