@@ -19,8 +19,7 @@
 
 package org.nuxeo.webengine.sites;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.Collections;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
@@ -28,9 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.ui.tree.document.DocumentContentProvider;
 import org.nuxeo.webengine.sites.utils.SiteConstants;
-import org.nuxeo.webengine.sites.utils.SiteUtils;
 
 /**
  * Implementation of provider for the tree.
@@ -47,22 +46,19 @@ public class SiteContentProvider extends DocumentContentProvider {
 
     @Override
     public Object[] getChildren(Object obj) {
-        Object[] objects = super.getChildren(obj);
-        List<Object> v = new Vector<Object>();
-        for (Object o : objects) {
-            DocumentModel doc = (DocumentModel) o;
-            // filter pages
-            // WEB-214
-            try {
-                if (SiteUtils.getBoolean(doc, SiteConstants.WEBPAGE_PUSHTOMENU, false)
-                        && !SiteConstants.DELETED.equals(doc.getCurrentLifeCycleState())) {
-                    v.add(doc);
-                }
-            } catch (ClientException e) {
-                log.error(e);
-            }
+        DocumentModel parent = (DocumentModel) obj;
+
+        String query = "SELECT * FROM Document WHERE ecm:parentId = '"
+                + parent.getId()
+                + "' AND "
+                + SiteConstants.WEBPAGE_PUSHTOMENU + " = 1 AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title";
+        try {
+            DocumentModelList docs = session.query(query);
+            return docs.toArray();
+        } catch (ClientException e) {
+            log.error(e);
         }
-        return v.toArray();
+        return Collections.EMPTY_LIST.toArray();
     }
 
     @Override
