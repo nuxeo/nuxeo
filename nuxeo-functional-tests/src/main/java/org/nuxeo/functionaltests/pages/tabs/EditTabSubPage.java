@@ -76,4 +76,14 @@ public class EditTabSubPage extends AbstractPage {
         return asPage(DocumentBasePage.class);
     }
 
+    /**
+     * Save the modifications.
+     *
+     * @since 5.7.3
+     */
+    public DocumentBasePage save() {
+        save.click();
+        return asPage(DocumentBasePage.class);
+    }
+
 }
