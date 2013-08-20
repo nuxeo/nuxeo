@@ -195,4 +195,15 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         return 0;
     }
 
+    public Method getMethod() {
+        return method;
+    }
+
+    public Class<?> getProduce() {
+        return produce;
+    }
+
+    public Class<?> getConsume() {
+        return consume;
+    }
 }

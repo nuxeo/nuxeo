@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries;
@@ -159,11 +160,11 @@ public class DirectoryOperationsTest {
         try {
             service.run(ctx, chain);
             fail();
-        } catch (Exception e) {
-            if (!(e.getCause() instanceof DirectoryException)) {
+        } catch (OperationException e) {
+            if (!(e.getCause() instanceof OperationException)) {
                 fail();
             }
-            assertEquals(e.getCause().getMessage(),
+            assertEquals(e.getCause().getCause().getMessage(),
                     "Entry with id europe already exists");
         }
 

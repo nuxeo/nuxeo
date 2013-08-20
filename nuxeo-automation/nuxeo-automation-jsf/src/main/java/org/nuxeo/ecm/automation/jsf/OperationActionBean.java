@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.jsf.operations.AddErrorMessage;
 import org.nuxeo.ecm.automation.jsf.operations.AddInfoMessage;
 import org.nuxeo.ecm.automation.jsf.operations.SeamOperation;
@@ -90,9 +91,9 @@ public class OperationActionBean implements Serializable {
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         "Unknown chain: " + chain);
                 return null;
-            } catch (Throwable t) {
-                log.error(t, t);
-                Throwable cause = ExceptionHelper.unwrapException(t);
+            } catch (OperationException e) {
+                log.error("Failed to execute action: ", e);
+                Throwable cause = ExceptionHelper.unwrapException(e);
                 showError(ctx, (String) chain, cause);
                 return null;
             }

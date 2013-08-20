@@ -82,6 +82,13 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+             point="chains">
+    <chain id="traceSubchains">
+      <operation id="Context.FetchDocument" />
+    </chain>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
     <operation
       class="org.nuxeo.ecm.automation.server.test.ExitOperation" />

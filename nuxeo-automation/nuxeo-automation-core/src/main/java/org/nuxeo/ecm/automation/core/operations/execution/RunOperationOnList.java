@@ -60,11 +60,7 @@ public class RunOperationOnList {
 
     @OperationMethod
     public void run() throws Exception {
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
-        subctx.setInput(ctx.getInput());
+        OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
 
         Collection<?> list = null;
         if (ctx.get(listName) instanceof Object[]) {

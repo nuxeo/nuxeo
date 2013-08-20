@@ -1,15 +1,20 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
  * Contributors:
  *     bstefanescu
- *     vpasquier
- *     slacoin
+ *     vpasquier <vpasquier@nuxeo.com>
+ *     slacoin <slacoin@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.impl;
 
@@ -17,15 +22,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.automation.AdapterNotFoundException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.InvalidChainException;
+import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -33,8 +42,11 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.TraceException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The operation registry is thread safe and optimized for modifications at
@@ -44,12 +56,14 @@ import org.nuxeo.ecm.automation.core.Constants;
  */
 public class OperationServiceImpl implements AutomationService {
 
+    private static final Log log = LogFactory.getLog(OperationServiceImpl.class);
+
     protected final OperationTypeRegistry operations;
 
     protected Map<String, CompiledChainImpl> compiledChains = new HashMap<String, CompiledChainImpl>();
 
     /**
-     * Adapter registry
+     * Adapter registry.
      */
     protected AdapterKeyedRegistry adapters;
 
@@ -101,6 +115,7 @@ public class OperationServiceImpl implements AutomationService {
      */
     public Object run(OperationContext ctx, OperationType operationType,
             Map<String, Object> params) throws Exception {
+        Boolean mainChain = true;
         CompiledChainImpl chain;
         if (params == null) {
             params = new HashMap<String, Object>();
@@ -110,10 +125,21 @@ public class OperationServiceImpl implements AutomationService {
         if (params != null && !params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
+        OperationCallback tracer = null;
+        if (ctx.getChainCallback() == null) {
+            tracer = Framework.getLocalService(TracerFactory.class).newTracer(
+                    operationType.getId());
+            ctx.addChainCallback(tracer);
+        } else {
+            // Not logging at output if success for a child chain
+            mainChain = false;
+            tracer = ctx.getChainCallback();
+        }
         try {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
             if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
+                tracer.onChain(operationType);
                 chain = compiledChains.get(operationType.getId());
                 if (chain == null) {
                     chain = (CompiledChainImpl) operationType.newInstance(ctx,
@@ -129,11 +155,26 @@ public class OperationServiceImpl implements AutomationService {
                         toParams(operationType.getId()));
             }
             Object ret = chain.invoke(ctx);
+            tracer.onOutput(ret);
             if (ctx.getCoreSession() != null && ctx.isCommit()) {
                 // auto save session if any
                 ctx.getCoreSession().save();
             }
+            // Log at the end of the main chain execution
+            if (mainChain) {
+                log.info(tracer.getFormattedText());
+            }
             return ret;
+        } catch (OperationException oe) {
+            if (oe.isRollback()) {
+                ctx.setRollback();
+            }
+            tracer.onError(oe);
+            if (mainChain) {
+                throw new TraceException(tracer, oe);
+            } else {
+                throw new TraceException(oe);
+            }
         } finally {
             ctx.dispose();
         }
@@ -341,9 +382,8 @@ public class OperationServiceImpl implements AutomationService {
                 ObjectMapper mapper = new ObjectMapper();
                 return (T) mapper.convertValue(toAdapt, targetType);
             }
-            throw new AdapterNotFoundException(
-                    "No type adapter found for input: " + toAdapt.getClass()
-                            + " and output " + targetType, ctx);
+            throw new OperationException("No type adapter found for input: "
+                    + toAdapt.getClass() + " and output " + targetType);
         }
         return (T) adapter.getAdaptedValue(ctx, toAdapt);
     }

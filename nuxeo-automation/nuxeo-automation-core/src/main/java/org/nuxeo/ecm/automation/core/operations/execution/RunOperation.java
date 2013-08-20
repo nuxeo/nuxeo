@@ -51,11 +51,7 @@ public class RunOperation {
 
     @OperationMethod
     public void run() throws Exception {
-        Map<String, Object> vars = isolate ? new HashMap<String, Object>(
-                ctx.getVars()) : ctx.getVars();
-        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
-                vars);
-        subctx.setInput(ctx.getInput());
+        OperationContext subctx = ctx.getSubContext(isolate, ctx.getInput());
         service.run(subctx, chainId, (Map) chainParameters);
     }
 

@@ -25,7 +25,7 @@ public class OperationCompoundExceptionBuilder {
 
     protected OperationException newThrowable(List<OperationException> causes) {
         return new OperationCompoundException("",
-                causes.toArray(new OperationCompoundException[causes.size()]));
+                causes.toArray(new OperationException[causes.size()]));
     }
 
     public void add(OperationException error) {

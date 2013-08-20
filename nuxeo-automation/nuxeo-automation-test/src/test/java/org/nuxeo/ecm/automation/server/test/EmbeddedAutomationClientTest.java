@@ -385,8 +385,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             operationRequest.execute();
             fail("Call to SendMail operation should have thrown a RemoteException since the SMTP server is not reachable");
         } catch (RemoteException re) {
-            assertEquals("Failed to invoke operation Notification.SendMail",
-                    re.getCause().getMessage());
+            assertEquals("Failed to execute operation: Notification.SendMail",
+                    re.getMessage());
         }
 
         // Call SendMail with rollbackOnError = false
