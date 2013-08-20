@@ -42,6 +42,8 @@ public class Select2Common {
 
     public static final String OBSOLETE_FIELD_ID = "obsolete";
 
+    public static final String USER_SUGGESTION_SELECT2 = "select2User";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.

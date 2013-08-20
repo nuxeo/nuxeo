@@ -1195,6 +1195,460 @@
       </property>
     </widgetType>
 
+    <widgetType name="select2User">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Select2User</title>
+        <description>
+          <p>User Suggestion Widget based on Select2 JS library. Nuxeo
+            Automation is used to manage Select2 data binding.
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="select2_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>minimumInputLength</widget>
+                </row>
+                <row>
+                  <widget>repository</widget>
+                </row>
+                <row>
+                  <widget>customFormater</widget>
+                </row>
+                <row>
+                  <widget>labelProperty</widget>
+                </row>
+                <row>
+                  <widget>inlinejs</widget>
+                </row>
+                <row>
+                  <widget>hideInstructionLabel</widget>
+                </row>
+                <row>
+                  <widget>instructionLabel</widget>
+                </row>
+                <row>
+                  <widget>placeholder</widget>
+                </row>
+              </rows>
+
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Width in pixels of the Select2 ComboBox
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+
+              <widget name="minimumInputLength" type="int">
+                <labels>
+                  <label mode="any">Minimum input length</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Minimal number of characters before calling
+                    the server to fetch the suggestions
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>minimumInputLength</field>
+                </fields>
+              </widget>
+
+              <widget name="customFormater" type="text">
+                <labels>
+                  <label mode="any">Custom Formater</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Name of the JavaScript function name that
+                    will be called by select2 to do the formating of the
+                    suggestion entries.
+                    The target function should take as input
+                    the javascript Document as returned by Automation and should
+                    return some Html.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>customFormater</field>
+                </fields>
+              </widget>
+
+              <widget name="idProperty" type="text">
+                <labels>
+                  <label mode="any">Id Property</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Name of the Document property that should be
+                    used to define the ID of entry.
+                    If unset Document.uid will be
+                    used, otherwise Document.properties['idProperty'].
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>idProperty</field>
+                </fields>
+              </widget>
+
+              <widget name="labelProperty" type="text">
+                <labels>
+                  <label mode="any">Label Property</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Name of the Document property that should be
+                    used to define the Label of entry.
+                    If unset Document.title
+                    will be used, otherwise
+                    Document.properties['labelProperty'].
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>labelProperty</field>
+                </fields>
+              </widget>
+
+              <widget name="inlinejs" type="textarea">
+                <labels>
+                  <label mode="any">inline js</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Javascript to be injected in the page with
+                    the Widget.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>inlinejs</field>
+                </fields>
+              </widget>
+
+              <widget name="repository" type="text">
+                <labels>
+                  <label mode="any">target Repository</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Id of the Nuxeo repositry that should be
+                    accessed.
+                    If unsed, the default repository will be used.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>repository</field>
+                </fields>
+              </widget>
+
+              <widget name="hideInstructionLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Hide instructionLabel</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to hide the instruction label.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideInstructionLabel</field>
+                </fields>
+              </widget>
+
+              <widget name="instructionLabel" type="text">
+                <labels>
+                  <label mode="any">Instruction Label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The Instruction label is displayed below the
+                    widget.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>instructionLabel</field>
+                </fields>
+              </widget>
+
+              <widget name="placeholder" type="text">
+                <labels>
+                  <label mode="any">Placeholder</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The placeholder displayed in the select when
+                    no option
+                    is chosen yet.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>placeholder</field>
+                </fields>
+              </widget>
+
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /select2/select2_user_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="select2UserMultiple">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Select2UserMultiple</title>
+        <description>
+          <p>User Multiple Suggestion Widget based on Select2 JS library. Nuxeo
+            Automation is used to manage Select2 data binding.
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="select2_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>width</widget>
+                </row>
+                <row>
+                  <widget>minimumInputLength</widget>
+                </row>
+                <row>
+                  <widget>repository</widget>
+                </row>
+                <row>
+                  <widget>customFormater</widget>
+                </row>
+                <row>
+                  <widget>labelProperty</widget>
+                </row>
+                <row>
+                  <widget>inlinejs</widget>
+                </row>
+                <row>
+                  <widget>hideInstructionLabel</widget>
+                </row>
+                <row>
+                  <widget>instructionLabel</widget>
+                </row>
+                <row>
+                  <widget>placeholder</widget>
+                </row>
+              </rows>
+
+              <widget name="width" type="int">
+                <labels>
+                  <label mode="any">Width</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Width in pixels of the Select2 ComboBox
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>width</field>
+                </fields>
+              </widget>
+
+              <widget name="minimumInputLength" type="int">
+                <labels>
+                  <label mode="any">Minimum input length</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Minimal number of characters before calling
+                    the server to fetch the suggestions
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>minimumInputLength</field>
+                </fields>
+              </widget>
+
+              <widget name="customFormater" type="text">
+                <labels>
+                  <label mode="any">Custom Formater</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Name of the JavaScript function name that
+                    will be called by select2 to do the formating of the
+                    suggestion entries.
+                    The target function should take as input
+                    the javascript Document as returned by Automation and should
+                    return some Html.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>customFormater</field>
+                </fields>
+              </widget>
+
+              <widget name="idProperty" type="text">
+                <labels>
+                  <label mode="any">Id Property</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Name of the Document property that should be
+                    used to define the ID of entry.
+                    If unset Document.uid will be
+                    used, otherwise Document.properties['idProperty'].
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>idProperty</field>
+                </fields>
+              </widget>
+
+              <widget name="labelProperty" type="text">
+                <labels>
+                  <label mode="any">Label Property</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Name of the Document property that should be
+                    used to define the Label of entry.
+                    If unset Document.title
+                    will be used, otherwise
+                    Document.properties['labelProperty'].
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>labelProperty</field>
+                </fields>
+              </widget>
+
+              <widget name="inlinejs" type="textarea">
+                <labels>
+                  <label mode="any">inline js</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Javascript to be injected in the page with
+                    the Widget.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>inlinejs</field>
+                </fields>
+              </widget>
+
+              <widget name="repository" type="text">
+                <labels>
+                  <label mode="any">target Repository</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Id of the Nuxeo repositry that should be
+                    accessed.
+                    If unsed, the default repository will be used.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>repository</field>
+                </fields>
+              </widget>
+
+              <widget name="hideInstructionLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Hide instructionLabel</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean to hide the instruction label.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideInstructionLabel</field>
+                </fields>
+              </widget>
+
+              <widget name="instructionLabel" type="text">
+                <labels>
+                  <label mode="any">Instruction Label</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The Instruction label is displayed below the
+                    widget.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>instructionLabel</field>
+                </fields>
+              </widget>
+
+              <widget name="placeholder" type="text">
+                <labels>
+                  <label mode="any">Placeholder</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The placeholder displayed in the select when
+                    no option
+                    is chosen yet.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>placeholder</field>
+                </fields>
+              </widget>
+
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /select2/select2_multiple_user_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
 </component>

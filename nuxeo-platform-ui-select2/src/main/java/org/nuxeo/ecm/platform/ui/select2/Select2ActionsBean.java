@@ -68,6 +68,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
+import org.nuxeo.ecm.platform.ui.select2.automation.SuggestUserEntries;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.runtime.api.Framework;
 
@@ -153,6 +154,10 @@ public class Select2ActionsBean implements Serializable {
             // reset button.
             jg.writeStringField(Select2Common.PLACEHOLDER,
                     messages.get("label.vocabulary.selectValue"));
+        }
+
+        if (widget.getType().startsWith(Select2Common.USER_SUGGESTION_SELECT2)) {
+            jg.writeStringField("operationId", SuggestUserEntries.ID);
         }
 
         jg.writeEndObject();
@@ -650,6 +655,14 @@ public class Select2ActionsBean implements Serializable {
             }
         }
         return doc.getTitle();
+    }
+
+    public String resolveUserReference(final String storedReference) {
+        return "";
+    }
+
+    public String resolveMultipleUserReference(final String storedReference) {
+        return "[]";
     }
 
 }

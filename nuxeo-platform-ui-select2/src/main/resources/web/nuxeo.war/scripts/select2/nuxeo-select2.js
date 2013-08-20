@@ -22,6 +22,8 @@ function configureOperationParameters(op, params, query) {
     op.addParameter("canSelectParent", params.canSelectParent);
     op.addParameter("separator", params.separator);
     op.addParameter("obsolete", params.obsolete);
+  } else if(params.operationId == 'UserGroup.Suggestion') {
+    op.addParameter("prefix", query.term);
   } else {
     // build default operation for Document
     op.addParameter("queryParams", query.term + "%");
@@ -32,7 +34,7 @@ function configureOperationParameters(op, params, query) {
 }
 
 function fillResult(results, data, params) {
-  if (params.directoryName && params.directoryName.length > 0) {
+  if ((params.directoryName && params.directoryName.length > 0) || params.operationId == 'UserGroup.Suggestion') {
     // default result parsing for Directory entries
     for (i = 0; i < data.length; i++) {
       var entry = data[i];
@@ -127,13 +129,7 @@ function initSelect2Widget(el) {
   // append custom result formater if needed
   if (customFormaterFunction != null) {
     select2_params.formatResult = customFormaterFunction;
-    select2_params.formatSelection = function(doc) {
-      if (select2_params.labelFieldName != null) {
-        return doc.properties[select2_params.labelFieldName];
-      } else {
-        return getDefaultLabel(doc)
-      }
-    };
+    select2_params.formatSelection = customFormaterFunction;
   } else {
     select2_params.formatResult = getDefaultLabel;
     select2_params.formatSelection = function(doc) {
