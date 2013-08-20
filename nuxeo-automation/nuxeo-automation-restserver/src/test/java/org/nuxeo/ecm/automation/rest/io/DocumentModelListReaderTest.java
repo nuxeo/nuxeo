@@ -1,0 +1,137 @@
+/*
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     dmetzler
+ */
+package org.nuxeo.ecm.automation.rest.io;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.test.RestServerFeature;
+import org.nuxeo.ecm.automation.test.RestServerInit;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+
+/**
+ *
+ *
+ * @since 5.7.3
+ */
+@RunWith(FeaturesRunner.class)
+@Features({ RestServerFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
+public class DocumentModelListReaderTest {
+
+    private HttpServletRequest request = mock(HttpServletRequest.class);
+
+    @Inject
+    CoreSession session;
+
+    private String jsonDocumentWithId = "{"//
+            + "      \"entity-type\": \"document\","//
+            + "      \"repository\": \"default\","//
+            + "      \"uid\": \"%s\""//
+            + "     }";
+
+
+    private String jsonList = "{" //
+            + "  \"entity-type\": \"documents\","//
+            + "  \"entries\": ["//
+            + "%s" + "  ]"//
+            + "}";//
+
+
+    @Before
+    public void doBefore() {
+        when(request.getUserPrincipal()).thenReturn(session.getPrincipal());
+        when(request.getHeader("X-NXRepository")).thenReturn(
+                session.getRepositoryName());
+    }
+
+    @Test
+    public void iCanReadADocument() throws Exception {
+        DocumentModel note1 = RestServerInit.getNote(1, session);
+
+        String json = getDocsAsJson(1);
+        System.out.println(json);
+
+        DocumentModel doc = JSONDocumentModelReader.readRequest(json, null,
+                request);
+        assertNotNull(doc);
+        assertEquals(note1.getId(), doc.getId());
+
+    }
+
+    @Test
+    public void iCanReadADocumentModelList() throws Exception {
+
+        String docsAsJson = String.format(jsonList, getDocsAsJson(1, 2));
+
+        DocumentModelList docs = JSONDocumentModelListReader.readRequest(
+                docsAsJson, null, request);
+        assertEquals(2, docs.size());
+
+        assertEquals(RestServerInit.getNote(1, session).getId(),
+                docs.get(0).getId());
+
+    }
+
+    /**
+     * This return the json serialized notes separated by a ",".
+     * @param noteIds the note ids
+     * @return
+     *
+     * @since 5.7.3
+     */
+    private String getDocsAsJson(Integer... noteIds) {
+        return Joiner.on(",").join(
+                Lists.transform(Arrays.asList(noteIds),
+                        new Function<Integer, String>() {
+
+                            @Override
+                            public String apply(Integer noteIndex) {
+                                try {
+                                    DocumentModel note = RestServerInit.getNote(
+                                            noteIndex, session);
+                                    return String.format(jsonDocumentWithId,
+                                            note.getId());
+                                } catch (ClientException e) {
+                                    return "";
+                                }
+                            }
+
+                        }));
+    }
+
+}

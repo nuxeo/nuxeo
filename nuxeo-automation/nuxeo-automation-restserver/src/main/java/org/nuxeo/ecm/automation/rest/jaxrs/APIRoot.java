@@ -29,6 +29,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 /**
  * The root entry for the WebEngine module.
  *
+ * @since 5.7.2
  */
 @Path("/api")
 @Produces("text/html;charset=UTF-8")

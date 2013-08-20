@@ -111,14 +111,46 @@ public class JSONDocumentModelReader implements
      * @return
      * @throws Exception
      *
+     * @since TODO
+     */
+    private DocumentModel readRequest(String content,
+            MultivaluedMap<String, String> httpHeaders) throws Exception {
+        return readRequest(content, httpHeaders, request);
+    }
+
+    /**
+     * @param content
+     * @param httpHeaders
+     * @return
+     * @throws Exception
+     *
      * @since 5.7.2
      */
-    protected DocumentModel readRequest(String content,
-            MultivaluedMap<String, String> httpHeaders) throws Exception {
+    static protected DocumentModel readRequest(String content,
+            MultivaluedMap<String, String> httpHeaders,
+            HttpServletRequest request) throws Exception {
         JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(
                 content);
-        jp.nextToken(); // skip {
+        return readJson(jp, httpHeaders, request);
+    }
+
+    /**
+     * @param jp
+     * @param httpHeaders
+     * @param request2
+     * @return
+     *
+     * @since TODO
+     */
+    static DocumentModel readJson(JsonParser jp,
+            MultivaluedMap<String, String> httpHeaders,
+            HttpServletRequest request) throws Exception {
         JsonToken tok = jp.nextToken();
+
+        // skip {
+        if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
+            tok = jp.nextToken();
+        }
         DocumentModel tmp = new SimpleDocumentModel();
         String id = null;
         String type = null;
@@ -176,7 +208,9 @@ public class JSONDocumentModelReader implements
                         }
                     }
                 } catch (PropertyNotFoundException e) {
-                    log.warn(String.format("Trying to deserialize unexistent field : {%s}",field));
+                    log.warn(String.format(
+                            "Trying to deserialize unexistent field : {%s}",
+                            field));
                 }
             }
         }
@@ -191,9 +225,9 @@ public class JSONDocumentModelReader implements
 
     }
 
-    private void setBlobToDoc(DocumentModel doc, HttpServletRequest request,
-            Blob blob) throws PropertyException, ClientException,
-            PropertyNotFoundException {
+    private static void setBlobToDoc(DocumentModel doc,
+            HttpServletRequest request, Blob blob) throws PropertyException,
+            ClientException, PropertyNotFoundException {
         String xpath = request.getHeader("X-Blob-Property");
         if (xpath == null) {
             if (doc.hasSchema("file")) {
@@ -230,7 +264,7 @@ public class JSONDocumentModelReader implements
         }
     }
 
-    private Blob getRequestBlob(HttpServletRequest request) {
+    private static Blob getRequestBlob(HttpServletRequest request) {
         String batchId = request.getHeader("X-Batch-Id");
         if (StringUtils.isNotBlank(batchId)) {
             final BatchManager bm = Framework.getLocalService(BatchManager.class);
@@ -251,7 +285,7 @@ public class JSONDocumentModelReader implements
 
     }
 
-    protected void readProperties(JsonParser jp, DocumentModel doc)
+    protected static void readProperties(JsonParser jp, DocumentModel doc)
             throws Exception {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
@@ -270,7 +304,7 @@ public class JSONDocumentModelReader implements
         }
     }
 
-    protected Map<String, Serializable> readObjectProperty(JsonParser jp)
+    protected static Map<String, Serializable> readObjectProperty(JsonParser jp)
             throws Exception {
         Map<String, Serializable> map = new HashMap<>();
         readProperties(jp, map);
@@ -283,8 +317,8 @@ public class JSONDocumentModelReader implements
      * @throws Exception
      * @since TODO
      */
-    protected void readProperties(JsonParser jp, Map<String, Serializable> map)
-            throws Exception {
+    protected static void readProperties(JsonParser jp,
+            Map<String, Serializable> map) throws Exception {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
@@ -302,7 +336,7 @@ public class JSONDocumentModelReader implements
         }
     }
 
-    protected List<Serializable> readArrayProperty(JsonParser jp)
+    protected static List<Serializable> readArrayProperty(JsonParser jp)
             throws Exception {
         List<Serializable> list = new ArrayList<>();
         JsonToken tok = jp.nextToken();
