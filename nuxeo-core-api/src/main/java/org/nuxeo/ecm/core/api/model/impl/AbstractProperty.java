@@ -199,6 +199,11 @@ public abstract class AbstractProperty implements Property {
         return (flags & IS_DIRTY) != 0;
     }
 
+    @Override
+    public final boolean isReallyDirty() {
+        return (flags & IS_REALLY_DIRTY) != 0;
+    }
+
     protected final void setDirtyFlags(int dirtyFlags) {
         flags = dirtyFlags & DIRTY_MASK | flags & ~DIRTY_MASK;
     }

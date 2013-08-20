@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -433,6 +434,24 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("dc:title", "doc2bis");
         doc = session.saveDocument(doc);
         session.save();
+    }
+
+    @Test
+    public void testComplexNotDirtyOnRead() throws Exception {
+        doc = session.createDocumentModel("/", "doc2", "TestDocument2");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // reread doc
+        doc = session.getDocument(doc.getRef());
+        assertFalse(doc.isDirty());
+        // read a complex prop
+        Property prop = doc.getProperty("tp:complex");
+        // check that this does not mark the doc dirty
+        assertFalse(doc.isDirty());
+        // but changing the property does
+        prop.setValue(Collections.singletonMap("string", "abc"));
+        assertTrue(doc.isDirty());
     }
 
     @Test

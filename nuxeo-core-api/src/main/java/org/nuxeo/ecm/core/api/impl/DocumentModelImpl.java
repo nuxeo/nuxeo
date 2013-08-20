@@ -1111,7 +1111,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public boolean isDirty() {
         for (DataModel dm : dataModels.values()) {
             DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
-            if (part.isDirty()) {
+            if (part.isReallyDirty()) {
                 return true;
             }
         }

@@ -208,6 +208,11 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     int IS_DIRTY = IS_NEW | IS_REMOVED | IS_MOVED | IS_MODIFIED;
 
     /**
+     * A mask for the flags: REMOVED, MODIFIED, MOVED.
+     */
+    int IS_REALLY_DIRTY = IS_REMOVED | IS_MOVED | IS_MODIFIED;
+
+    /**
      * A mask for public flags.
      */
     int DIRTY_MASK = IS_PHANTOM | IS_DIRTY;
@@ -259,9 +264,18 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * This tests whether or not a dirty flag is set on the property.
      *
-     * @return true if the property changed
+     * @return true if the property changed or is new
      */
     boolean isDirty();
+
+    /**
+     * Tests whether a property is really dirty (actually modified, not just a
+     * newly instantiated complex property).
+     *
+     * @return true if the property is really dirty
+     * @since 5.7.3
+     */
+    boolean isReallyDirty();
 
     /**
      * Get the dirty flags that are set on this property.
