@@ -158,9 +158,10 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout select {
   width: 100% }
 .compactLayout input[type="text"].rich-calendar-input {
+  font-size: .9em;
   margin: .1em .3em .1em 0em;
   max-width: 56%;
-  min-width: 50% }
+  min-width: 65px }
 
 .compactLayout .tinyLabel {
   display: inline-block;

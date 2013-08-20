@@ -30,6 +30,8 @@ input[type="password"],
 textarea,
 select,
 .field {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 2px;
