@@ -20,8 +20,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
@@ -29,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.RestServerFeature;
 import org.nuxeo.ecm.automation.test.RestServerInit;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.automation.test.helpers.JSONDocumentHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -38,9 +36,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 /**
@@ -58,32 +53,18 @@ public class DocumentModelListReaderTest {
     @Inject
     CoreSession session;
 
-    private String jsonDocumentWithId = "{"//
-            + "      \"entity-type\": \"document\","//
-            + "      \"repository\": \"default\","//
-            + "      \"uid\": \"%s\""//
-            + "     }";
-
-
-    private String jsonList = "{" //
-            + "  \"entity-type\": \"documents\","//
-            + "  \"entries\": ["//
-            + "%s" + "  ]"//
-            + "}";//
 
 
     @Before
     public void doBefore() {
         when(request.getUserPrincipal()).thenReturn(session.getPrincipal());
-        when(request.getHeader("X-NXRepository")).thenReturn(
-                session.getRepositoryName());
     }
 
     @Test
     public void iCanReadADocument() throws Exception {
         DocumentModel note1 = RestServerInit.getNote(1, session);
 
-        String json = getDocsAsJson(1);
+        String json = JSONDocumentHelper.getDocAsJson(note1);
         System.out.println(json);
 
         DocumentModel doc = JSONDocumentModelReader.readRequest(json, null,
@@ -95,8 +76,10 @@ public class DocumentModelListReaderTest {
 
     @Test
     public void iCanReadADocumentModelList() throws Exception {
+        DocumentModel note1 = RestServerInit.getNote(1, session);
+        DocumentModel note2 = RestServerInit.getNote(2, session);
 
-        String docsAsJson = String.format(jsonList, getDocsAsJson(1, 2));
+        String docsAsJson = JSONDocumentHelper.getDocsListAsJson(note1,note2);
 
         DocumentModelList docs = JSONDocumentModelListReader.readRequest(
                 docsAsJson, null, request);
@@ -107,31 +90,6 @@ public class DocumentModelListReaderTest {
 
     }
 
-    /**
-     * This return the json serialized notes separated by a ",".
-     * @param noteIds the note ids
-     * @return
-     *
-     * @since 5.7.3
-     */
-    private String getDocsAsJson(Integer... noteIds) {
-        return Joiner.on(",").join(
-                Lists.transform(Arrays.asList(noteIds),
-                        new Function<Integer, String>() {
 
-                            @Override
-                            public String apply(Integer noteIndex) {
-                                try {
-                                    DocumentModel note = RestServerInit.getNote(
-                                            noteIndex, session);
-                                    return String.format(jsonDocumentWithId,
-                                            note.getId());
-                                } catch (ClientException e) {
-                                    return "";
-                                }
-                            }
-
-                        }));
-    }
 
 }
