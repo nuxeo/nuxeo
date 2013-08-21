@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.automation;
 
+import org.nuxeo.ecm.automation.core.OperationChainContribution;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,4 +108,5 @@ public class OperationChain implements Serializable {
     public Map<String, Object> getChainParameters() {
         return chainParameters;
     }
+
 }

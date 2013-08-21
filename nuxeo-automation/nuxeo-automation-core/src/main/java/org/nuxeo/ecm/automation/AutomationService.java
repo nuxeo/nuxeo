@@ -190,4 +190,49 @@ public interface AutomationService {
      * @return true if operation registry contains the given operation
      */
     boolean hasOperation(String id);
+
+    /**
+     * @since 5.7.3
+     */
+    void putChainException(ChainException exceptionChain);
+
+    /**
+     * @since 5.7.3
+     */
+    void removeExceptionChain(ChainException exceptionChain);
+
+    /**
+     * @since 5.7.3
+     */
+    ChainException[] getChainExceptions();
+
+    /**
+     * @since 5.7.3
+     */
+    ChainException getChainException(String onChainId);
+
+    /**
+     * @since 5.7.3
+     */
+    void putAutomationFilter(AutomationFilter automationFilter);
+
+    /**
+     * @since 5.7.3
+     */
+    void removeAutomationFilter(AutomationFilter automationFilter);
+
+    /**
+     * @since 5.7.3
+     */
+    AutomationFilter getAutomationFilter(String id);
+
+    /**
+     * @since 5.7.3
+     */
+    AutomationFilter[] getAutomationFilters();
+
+    /**
+     * @since 5.7.3
+     */
+    boolean hasChainException(String onChainId);
 }
