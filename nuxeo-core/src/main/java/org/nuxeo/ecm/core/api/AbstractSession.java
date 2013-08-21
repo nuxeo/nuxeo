@@ -179,7 +179,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     protected final Set<QueryAndFetchExecuteContextException> queryResults = new HashSet<QueryAndFetchExecuteContextException>();
 
-    protected void  createMetrics() {
+    protected void createMetrics() {
         createDocumentCount = registry.counter(MetricRegistry.name(
                 "nuxeo.repositories", repositoryName, "documents", "create"));
         deleteDocumentCount = registry.counter(MetricRegistry.name(
@@ -187,6 +187,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         updateDocumentCount = registry.counter(MetricRegistry.name(
                 "nuxeo.repositories", repositoryName, "documents", "update"));
     }
+
     /**
      * Private access to protected it again direct access since this field is
      * lazy loaded. You must use {@link #getEventService()} to get the service
