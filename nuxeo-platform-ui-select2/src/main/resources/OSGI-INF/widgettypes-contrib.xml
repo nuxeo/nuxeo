@@ -1413,14 +1413,14 @@
                 </fields>
               </widget>
 
-              <widget name="searchType" type="text">
+               <widget name="searchType" type="text">
                 <labels>
                   <label mode="any">Search type</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Two possible searches, enter USER_TYPE or
-                    GROUP_TYPE whether to restrict to users or groups. Leaving
+                    Two possible searches, enter 'user' or
+                    'group' whether to restrict to users or groups. Leaving
                     this property will search for both users and groups.
                   </label>
                 </helpLabels>
@@ -1665,8 +1665,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Two possible searches, enter USER_TYPE or
-                    GROUP_TYPE whether to restrict to users or groups. Leaving
+                    Two possible searches, enter 'user' or
+                    'group' whether to restrict to users or groups. Leaving
                     this property will search for both users and groups.
                   </label>
                 </helpLabels>
