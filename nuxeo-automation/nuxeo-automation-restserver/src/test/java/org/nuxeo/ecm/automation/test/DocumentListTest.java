@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -128,6 +127,36 @@ public class DocumentListTest extends BaseTest {
 
         assertFalse(session.exists(note1.getRef()));
         assertFalse(session.exists(folder0.getRef()));
+
+    }
+
+    @Test
+    public void iCanUpdateDocumentLists() throws Exception {
+        // Given two notes
+        DocumentModel note1 = RestServerInit.getNote(1, session);
+        DocumentModel note2 = RestServerInit.getNote(2, session);
+
+
+        String data = "{\"entity-type\":\"document\","
+                + "\"type\":\"Note\","
+                + "\"properties\":{"
+                + "    \"dc:description\":\"bulk description\""
+                + "  }"
+                + "}";
+
+        // When i call a bulk update
+        String ids = Joiner.on(";").join(Arrays.asList(new String[]{"id=" + note1.getId(), "id=" + note2.getId()}));
+        ClientResponse response = getResponse(RequestType.PUT, "/bulk;"+ids, data );
+
+        // Then the documents are updated accordingly
+
+        dispose(session);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        for(int i : new Integer[]{1,2}) {
+            note1 = RestServerInit.getNote(i, session);
+            assertEquals("bulk description", note1.getPropertyValue("dc:description"));
+        }
+
 
     }
 

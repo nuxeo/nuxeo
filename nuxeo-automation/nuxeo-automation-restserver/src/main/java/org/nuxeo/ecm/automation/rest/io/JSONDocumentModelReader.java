@@ -186,9 +186,11 @@ public class JSONDocumentModelReader implements
                 throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
         } else {
-            if (StringUtils.isNotBlank(type) && StringUtils.isNotBlank(name)) {
+            if (StringUtils.isNotBlank(type)) {
                 doc = DocumentModelFactory.createDocumentModel(type);
-                doc.setPathInfo(null, name);
+                if(StringUtils.isNotBlank(name)) {
+                    doc.setPathInfo(null, name);
+                }
             } else {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
