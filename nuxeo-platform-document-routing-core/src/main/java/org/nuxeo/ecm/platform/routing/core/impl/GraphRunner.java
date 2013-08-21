@@ -167,7 +167,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     log.error("Graph has no nodeId: " + nodeId);
                     continue;
                 }
-                finishTask(session, graph, node, task, true); // delete
+                cancelTask(session, graph, node, task);
             }
             session.save();
         } catch (ClientException e) {
@@ -406,5 +406,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         routing.finishTask(session, (DocumentRoute) graph, task, delete);
+    }
+
+    protected void cancelTask(CoreSession session, GraphRoute graph,
+            GraphNode node, Task task) throws DocumentRouteException {
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        routing.cancelTask(session, (DocumentRoute) graph, task);
     }
 }

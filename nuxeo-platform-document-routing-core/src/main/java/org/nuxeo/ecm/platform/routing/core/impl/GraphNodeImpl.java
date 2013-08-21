@@ -679,8 +679,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                     getDocumentRoute(session).getDocument().getId(), getId(),
                     session);
             for (Task task : tasks) {
-                Framework.getLocalService(DocumentRoutingService.class).finishTask(
-                        session, graph, task, true); // delete
+                Framework.getLocalService(DocumentRoutingService.class).cancelTask(
+                        session, graph, task);
             }
             session.save();
         } catch (ClientException e) {

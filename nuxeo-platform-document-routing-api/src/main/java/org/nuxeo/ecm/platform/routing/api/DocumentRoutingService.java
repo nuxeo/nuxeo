@@ -509,7 +509,7 @@ public interface DocumentRoutingService {
             throws ClientException;
 
     /**
-     * Finishes an open task. Called by a cancel action in the workflow. All
+     * Finishes an open task. All
      * permissions granted to the tasks assignees on the document following the
      * worklflow are removed. Doesn't resume the workflow as the
      * <code>completeTask</code> method.
@@ -524,5 +524,22 @@ public interface DocumentRoutingService {
      */
     void finishTask(CoreSession session, DocumentRoute route, Task task,
             boolean delete) throws DocumentRouteException;
+
+    /**
+     * Cancels an open task. Called by a cancel action in the workflow. All
+     * permissions granted to the tasks assignees on the document following the
+     * worklflow are removed. Doesn't resume the workflow as the
+     * <code>completeTask</code> method.
+     *
+     * @param session
+     * @param route
+     * @param task
+     * @param delete
+     * @throws DocumentRouteException
+     *
+     * @since 5.7.3
+     */
+    void cancelTask(CoreSession session, DocumentRoute route, Task task)
+            throws DocumentRouteException;
 
 }

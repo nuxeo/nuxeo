@@ -393,10 +393,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         route.cancel(session);
         route.getDocument().refresh();
         assertTrue(route.isCanceled());
+        session.save();
 
         tasks = taskService.getTaskInstances(doc, (NuxeoPrincipal) null,
                 session);
         assertEquals(0, tasks.size());
+        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        assertEquals(1, cancelledTasks.size());
     }
 
     @SuppressWarnings("unchecked")
@@ -1308,6 +1311,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
                 session);
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
+        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        assertEquals(1, cancelledTasks.size());
     }
 
     @SuppressWarnings("unchecked")
@@ -1644,5 +1649,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         tasks = taskService.getAllTaskInstances(route.getDocument().getId(),
                 session);
         assertEquals(0, tasks.size());
+        DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
+        assertEquals(2, cancelledTasks.size());
     }
 }

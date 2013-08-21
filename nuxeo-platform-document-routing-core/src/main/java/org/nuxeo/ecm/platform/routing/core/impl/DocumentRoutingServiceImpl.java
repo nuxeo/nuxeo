@@ -1023,4 +1023,17 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new DocumentRouteException("Cannot finish task", e);
         }
     }
+
+    @Override
+    public void cancelTask(CoreSession session, DocumentRoute route, Task task)
+            throws DocumentRouteException {
+        DocumentModelList docs = route.getAttachedDocuments(session);
+        try {
+            removePermissionFromTaskAssignees(session, docs, task);
+            task.cancel(session);
+            session.saveDocument(task.getDocument());
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Cannot cancel task", e);
+        }
+    }
 }
