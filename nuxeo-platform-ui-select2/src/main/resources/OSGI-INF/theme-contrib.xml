@@ -3,6 +3,20 @@
 
   <require>org.nuxeo.theme.nuxeo.default</require>
 
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="*">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+      </flavors>
+      <styles append="true">
+        <style>nuxeo-select2</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
     <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
@@ -26,6 +40,12 @@
       <path>scripts/select2/select2.js</path>
       <require>select2.js</require>
     </resource>
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo-select2">
+      <src>themes/css/nuxeo-select2.css</src>
+    </style>
   </extension>
 
 </component>
