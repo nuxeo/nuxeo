@@ -89,6 +89,16 @@ public class Select2ActionsBean implements Serializable {
 
     protected static final String SELECT2_RESOURCES_MARKER = "SELECT2_RESOURCES_MARKER";
 
+    private static List<String> formatList(JSONArray array) {
+        List<String> result = new ArrayList<String>();
+        if (array != null) {
+            for (int i = 0; i < array.size(); i++) {
+                result.add(array.getJSONObject(i).getString(Select2Common.LABEL));
+            }
+        }
+        return result;
+    }
+
     @In(create = true)
     protected Map<String, String> messages;
 
@@ -180,6 +190,91 @@ public class Select2ActionsBean implements Serializable {
         return layoutStore;
     }
 
+    protected JSONArray getMultipleDirectoryEntries(final Object value,
+            final String directoryName, final boolean translateLabels,
+            String keySeparator, final boolean dbl10n,
+            final String labelFieldName) {
+        JSONArray result = new JSONArray();
+        if (value == null) {
+            return result;
+        }
+
+        List<String> storedRefs = new ArrayList<>();
+        if (value instanceof List) {
+            for (Object v : (List) value) {
+                storedRefs.add(v.toString());
+            }
+        } else if (value instanceof Object[]) {
+            for (Object v : (Object[]) value) {
+                storedRefs.add(v.toString());
+            }
+        }
+
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        Directory directory = null;
+        Session session = null;
+        try {
+            directory = directoryService.getDirectory(directoryName);
+            if (directory == null) {
+                log.error("Could not find directory with name " + directoryName);
+                return result;
+            }
+            session = directory.getSession();
+            String schemaName = directory.getSchema();
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            Schema schema = schemaManager.getSchema(schemaName);
+            final Locale locale = org.jboss.seam.core.Locale.instance();
+            final String label = Select2Common.getLabelFieldName(schema,
+                    dbl10n, labelFieldName, locale.getLanguage());
+
+            for (String ref : storedRefs) {
+                JSONObject obj = resolveDirectoryEntry(ref, keySeparator,
+                        session, schema, label, translateLabels, dbl10n);
+                if (obj != null)
+                    result.add(obj);
+            }
+            return result;
+        } catch (DirectoryException de) {
+            log.error("An error occured while obtaining directory "
+                    + directoryName, de);
+            return result;
+        } finally {
+            try {
+                if (session != null) {
+                    session.close();
+                }
+            } catch (ClientException ce) {
+                log.error("Could not close directory session", ce);
+            }
+        }
+
+    }
+
+    protected JSONArray getMultipleUserReference(final Object value) {
+        if (value == null) {
+            return null;
+        }
+        JSONArray result = new JSONArray();
+        List<String> storedRefs = new ArrayList<>();
+        if (value instanceof List) {
+            for (Object v : (List) value) {
+                storedRefs.add(v.toString());
+            }
+        } else if (value instanceof Object[]) {
+            for (Object v : (Object[]) value) {
+                storedRefs.add(v.toString());
+            }
+        }
+
+        for (String ref : storedRefs) {
+            JSONObject resolved = getSingleUserReference(ref);
+            if (resolved != null && !resolved.isEmpty()) {
+                result.add(resolved);
+            }
+        }
+        return result;
+    }
+
     protected CoreSession getRepositorySession(final String repoName)
             throws ClientException {
 
@@ -207,6 +302,119 @@ public class Select2ActionsBean implements Serializable {
         } catch (Exception e) {
             throw new ClientException(e);
         }
+    }
+
+    protected JSONObject getSingleDirectoryEntry(final String storedReference,
+            final String directoryName, final boolean translateLabels,
+            String keySeparator, final boolean dbl10n,
+            final String labelFieldName) {
+
+        if (storedReference == null || storedReference.isEmpty()) {
+            return null;
+        }
+
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        Directory directory = null;
+        Session session = null;
+        try {
+            directory = directoryService.getDirectory(directoryName);
+            if (directory == null) {
+                log.error("Could not find directory with name " + directoryName);
+                return null;
+            }
+            session = directory.getSession();
+            String schemaName = directory.getSchema();
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            Schema schema = schemaManager.getSchema(schemaName);
+
+            final Locale locale = org.jboss.seam.core.Locale.instance();
+            final String label = Select2Common.getLabelFieldName(schema,
+                    dbl10n, labelFieldName, locale.getLanguage());
+
+            JSONObject obj = resolveDirectoryEntry(storedReference,
+                    keySeparator, session, schema, label, translateLabels,
+                    dbl10n);
+
+            return obj;
+        } catch (DirectoryException de) {
+            log.error("An error occured while obtaining directory "
+                    + directoryName, de);
+            return null;
+        } finally {
+            try {
+                if (session != null) {
+                    session.close();
+                }
+            } catch (ClientException ce) {
+                log.error("Could not close directory session", ce);
+            }
+        }
+
+    }
+
+    protected JSONObject getSingleUserReference(final String storedReference) {
+        UserManager userManager = Framework.getLocalService(UserManager.class);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        JSONObject obj = new JSONObject();
+        try {
+            DocumentModel userOrGroup = userManager.getUserModel(storedReference);
+            if (userOrGroup != null) {
+                Schema schema = schemaManager.getSchema("user");
+                String username = null;
+                String firstname = null;
+                String lastname = null;
+                for (Field field : schema.getFields()) {
+                    QName fieldName = field.getName();
+                    String key = fieldName.getLocalName();
+                    Serializable value = userOrGroup.getPropertyValue(fieldName.getPrefixedName());
+                    obj.element(key, value);
+                    if (key.equals("username")) {
+                        username = (String) value;
+                    } else if (key.equals("firstName")) {
+                        firstname = (String) value;
+                    } else if (key.equals("lastName")) {
+                        lastname = (String) value;
+                    }
+                }
+                String label = "";
+                if (firstname != null && !firstname.isEmpty()
+                        && lastname != null && !lastname.isEmpty()) {
+                    label = firstname + " " + lastname;
+                } else {
+                    label = username;
+                }
+                String userId = userOrGroup.getId();
+                obj.put(Select2Common.ID, userId);
+                obj.put(Select2Common.LABEL, label);
+                obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
+            } else {
+                userOrGroup = userManager.getGroupModel(storedReference);
+                if (userOrGroup != null) {
+                    Schema schema = schemaManager.getSchema("group");
+                    for (Field field : schema.getFields()) {
+                        QName fieldName = field.getName();
+                        String key = fieldName.getLocalName();
+                        Serializable value = userOrGroup.getPropertyValue(fieldName.getPrefixedName());
+                        obj.element(key, value);
+                        if (key.equals("grouplabel")) {
+                            obj.element(Select2Common.LABEL, value);
+                        }
+                    }
+                    String groupId = userOrGroup.getId();
+                    obj.put(Select2Common.ID, groupId);
+                    obj.put(Select2Common.TYPE_KEY_NAME,
+                            Select2Common.GROUP_TYPE);
+                } else {
+                    // TODO
+                    // We didn't find any match for the user or group.
+                }
+            }
+        } catch (ClientException e) {
+            log.error("An error occured while retrievin user/group reference"
+                    + storedReference);
+            return null;
+        }
+        return obj;
     }
 
     public boolean isMultiSelection(final Widget widget) {
@@ -289,66 +497,6 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    protected JSONArray getMultipleDirectoryEntries(final Object value,
-            final String directoryName, final boolean translateLabels,
-            String keySeparator, final boolean dbl10n,
-            final String labelFieldName) {
-        JSONArray result = new JSONArray();
-        if (value == null) {
-            return result;
-        }
-
-        List<String> storedRefs = new ArrayList<>();
-        if (value instanceof List) {
-            for (Object v : (List) value) {
-                storedRefs.add(v.toString());
-            }
-        } else if (value instanceof Object[]) {
-            for (Object v : (Object[]) value) {
-                storedRefs.add(v.toString());
-            }
-        }
-
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Directory directory = null;
-        Session session = null;
-        try {
-            directory = directoryService.getDirectory(directoryName);
-            if (directory == null) {
-                log.error("Could not find directory with name " + directoryName);
-                return result;
-            }
-            session = directory.getSession();
-            String schemaName = directory.getSchema();
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-            Schema schema = schemaManager.getSchema(schemaName);
-            final Locale locale = org.jboss.seam.core.Locale.instance();
-            final String label = Select2Common.getLabelFieldName(schema,
-                    dbl10n, labelFieldName, locale.getLanguage());
-
-            for (String ref : storedRefs) {
-                JSONObject obj = resolveDirectoryEntry(ref, keySeparator,
-                        session, schema, label, translateLabels, dbl10n);
-                if (obj != null)
-                    result.add(obj);
-            }
-            return result;
-        } catch (DirectoryException de) {
-            log.error("An error occured while obtaining directory "
-                    + directoryName, de);
-            return result;
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
-        }
-
-    }
-
     @SuppressWarnings("rawtypes")
     public List<String> resolveMultipleDirectoryEntryLabels(final Object value,
             final String directoryName, final boolean translateLabels,
@@ -356,16 +504,6 @@ public class Select2ActionsBean implements Serializable {
             final String labelFieldName) {
         return formatList(getMultipleDirectoryEntries(value, directoryName,
                 translateLabels, keySeparator, dbl10n, labelFieldName));
-    }
-
-    private static List<String> formatList(JSONArray array) {
-        List<String> result = new ArrayList<String>();
-        if (array != null) {
-            for (int i = 0; i < array.size(); i++) {
-                result.add(array.getJSONObject(i).getString(Select2Common.LABEL));
-            }
-        }
-        return result;
     }
 
     @SuppressWarnings("rawtypes")
@@ -457,6 +595,36 @@ public class Select2ActionsBean implements Serializable {
         }
 
         return json;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public String resolveMultipleUserReference(final Object value) {
+        if (value == null) {
+            return "[]";
+        }
+        JSONArray result = new JSONArray();
+        List<String> storedRefs = new ArrayList<>();
+        if (value instanceof List) {
+            for (Object v : (List) value) {
+                storedRefs.add(v.toString());
+            }
+        } else if (value instanceof Object[]) {
+            for (Object v : (Object[]) value) {
+                storedRefs.add(v.toString());
+            }
+        }
+
+        for (String ref : storedRefs) {
+            String resolved = resolveSingleUserReference(ref);
+            if (resolved != null && !resolved.isEmpty()) {
+                result.add(resolved);
+            }
+        }
+        return result.toString();
+    }
+
+    public List<String> resolveMultipleUserReferenceLabels(final Object value) {
+        return formatList(getMultipleUserReference(value));
     }
 
     protected DocumentModel resolveReference(final String repo,
@@ -552,54 +720,6 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    protected JSONObject getSingleDirectoryEntry(final String storedReference,
-            final String directoryName, final boolean translateLabels,
-            String keySeparator, final boolean dbl10n,
-            final String labelFieldName) {
-
-        if (storedReference == null || storedReference.isEmpty()) {
-            return null;
-        }
-
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Directory directory = null;
-        Session session = null;
-        try {
-            directory = directoryService.getDirectory(directoryName);
-            if (directory == null) {
-                log.error("Could not find directory with name " + directoryName);
-                return null;
-            }
-            session = directory.getSession();
-            String schemaName = directory.getSchema();
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-            Schema schema = schemaManager.getSchema(schemaName);
-
-            final Locale locale = org.jboss.seam.core.Locale.instance();
-            final String label = Select2Common.getLabelFieldName(schema,
-                    dbl10n, labelFieldName, locale.getLanguage());
-
-            JSONObject obj = resolveDirectoryEntry(storedReference,
-                    keySeparator, session, schema, label, translateLabels,
-                    dbl10n);
-
-            return obj;
-        } catch (DirectoryException de) {
-            log.error("An error occured while obtaining directory "
-                    + directoryName, de);
-            return null;
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
-        }
-
-    }
-
     public String resolveSingleDirectoryEntryLabel(
             final String storedReference, final String directoryName,
             final boolean translateLabels, String keySeparator,
@@ -656,108 +776,6 @@ public class Select2ActionsBean implements Serializable {
         return doc.getTitle();
     }
 
-    public String resolveUserReferenceLabel(final String storedReference) {
-        JSONObject obj = getSingleUserReference(storedReference);
-        if (obj == null) {
-            return "";
-        }
-        return obj.getString(Select2Common.LABEL);
-    }
-
-    public List<String> resolveMultipleUserReferenceLabels(final Object value) {
-        return formatList(getMultipleUserReference(value));
-    }
-
-    protected JSONObject getSingleUserReference(final String storedReference) {
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        JSONObject obj = new JSONObject();
-        try {
-            DocumentModel userOrGroup = userManager.getUserModel(storedReference);
-            if (userOrGroup != null) {
-                Schema schema = schemaManager.getSchema("user");
-                String username = null;
-                String firstname = null;
-                String lastname = null;
-                for (Field field : schema.getFields()) {
-                    QName fieldName = field.getName();
-                    String key = fieldName.getLocalName();
-                    Serializable value = userOrGroup.getPropertyValue(fieldName.getPrefixedName());
-                    obj.element(key, value);
-                    if (key.equals("username")) {
-                        username = (String) value;
-                    } else if (key.equals("firstName")) {
-                        firstname = (String) value;
-                    } else if (key.equals("lastName")) {
-                        lastname = (String) value;
-                    }
-                }
-                String label = "";
-                if (firstname != null && !firstname.isEmpty()
-                        && lastname != null && !lastname.isEmpty()) {
-                    label = firstname + " " + lastname;
-                } else {
-                    label = username;
-                }
-                String userId = userOrGroup.getId();
-                obj.put(Select2Common.ID, userId);
-                obj.put(Select2Common.LABEL, label);
-                obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
-            } else {
-                userOrGroup = userManager.getGroupModel(storedReference);
-                if (userOrGroup != null) {
-                    Schema schema = schemaManager.getSchema("group");
-                    for (Field field : schema.getFields()) {
-                        QName fieldName = field.getName();
-                        String key = fieldName.getLocalName();
-                        Serializable value = userOrGroup.getPropertyValue(fieldName.getPrefixedName());
-                        obj.element(key, value);
-                        if (key.equals("grouplabel")) {
-                            obj.element(Select2Common.LABEL, value);
-                        }
-                    }
-                    String groupId = userOrGroup.getId();
-                    obj.put(Select2Common.ID, groupId);
-                    obj.put(Select2Common.TYPE_KEY_NAME,
-                            Select2Common.GROUP_TYPE);
-                } else {
-                    // TODO
-                    // We didn't find any match for the user or group.
-                }
-            }
-        } catch (ClientException e) {
-            log.error("An error occured while retrievin user/group reference"
-                    + storedReference);
-            return null;
-        }
-        return obj;
-    }
-
-    protected JSONArray getMultipleUserReference(final Object value) {
-        if (value == null) {
-            return null;
-        }
-        JSONArray result = new JSONArray();
-        List<String> storedRefs = new ArrayList<>();
-        if (value instanceof List) {
-            for (Object v : (List) value) {
-                storedRefs.add(v.toString());
-            }
-        } else if (value instanceof Object[]) {
-            for (Object v : (Object[]) value) {
-                storedRefs.add(v.toString());
-            }
-        }
-
-        for (String ref : storedRefs) {
-            JSONObject resolved = getSingleUserReference(ref);
-            if (resolved != null && !resolved.isEmpty()) {
-                result.add(resolved);
-            }
-        }
-        return result;
-    }
-
     public String resolveSingleUserReference(final String storedReference) {
         JSONObject result = getSingleUserReference(storedReference);
         if (result != null) {
@@ -767,30 +785,12 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    public String resolveMultipleUserReference(final Object value) {
-        if (value == null) {
-            return "[]";
+    public String resolveUserReferenceLabel(final String storedReference) {
+        JSONObject obj = getSingleUserReference(storedReference);
+        if (obj == null) {
+            return "";
         }
-        JSONArray result = new JSONArray();
-        List<String> storedRefs = new ArrayList<>();
-        if (value instanceof List) {
-            for (Object v : (List) value) {
-                storedRefs.add(v.toString());
-            }
-        } else if (value instanceof Object[]) {
-            for (Object v : (Object[]) value) {
-                storedRefs.add(v.toString());
-            }
-        }
-
-        for (String ref : storedRefs) {
-            String resolved = resolveSingleUserReference(ref);
-            if (resolved != null && !resolved.isEmpty()) {
-                result.add(resolved);
-            }
-        }
-        return result.toString();
+        return obj.getString(Select2Common.LABEL);
     }
 
 }
