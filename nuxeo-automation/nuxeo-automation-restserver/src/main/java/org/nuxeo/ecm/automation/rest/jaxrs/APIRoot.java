@@ -64,7 +64,6 @@ public class APIRoot extends ModuleRoot {
     public Object getBulkDocuments(@MatrixParam("id")
     List<String> ids) throws ClientException {
         CoreSession session = getContext().getCoreSession();
-//        String[] ids = new String[]{id};
         List<DocumentModel> docs = new ArrayList<>(ids.size());
         for (String loopid : ids) {
             docs.add(session.getDocument(new IdRef(loopid )));
