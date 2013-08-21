@@ -15,11 +15,12 @@
      <script src="/nuxeo/scripts/select2/nuxeo-select2.js"/>
  </c:if>
 
+ <c:if test="#{widgetProperty_inlinejs != null }">
+     <script><h:outputText value="#{widgetProperty_inlinejs}" escape="false"/></script>
+ </c:if>
+
  <c:if test="#{request.getParameter('AJAXREQUEST') != null}">
      <script>initSelect2AjaxWidget("#{widget.id}", "#{model.rowIndex}");</script>
  </c:if>
 
- <c:if test="#{widgetProperty_inlinejs != null }">
-     <script><h:outputText value="#{widgetProperty_inlinejs}" escape="false"/></script>
- </c:if>
 </c:if>

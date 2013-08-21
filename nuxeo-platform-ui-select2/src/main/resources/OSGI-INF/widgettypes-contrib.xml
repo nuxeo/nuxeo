@@ -1249,6 +1249,9 @@
                 <row>
                   <widget>placeholder</widget>
                 </row>
+                <row>
+                  <widget>searchType</widget>
+                </row>
               </rows>
 
               <widget name="width" type="int">
@@ -1410,6 +1413,22 @@
                 </fields>
               </widget>
 
+              <widget name="searchType" type="text">
+                <labels>
+                  <label mode="any">Search type</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Two possible searches, enter USER_TYPE or
+                    GROUP_TYPE whether to restrict to users or groups. Leaving
+                    this property will search for both users and groups.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>placeholder</field>
+                </fields>
+              </widget>
+
             </layout>
           </layouts>
         </properties>
@@ -1475,6 +1494,9 @@
                 </row>
                 <row>
                   <widget>placeholder</widget>
+                </row>
+                <row>
+                  <widget>searchType</widget>
                 </row>
               </rows>
 
@@ -1630,6 +1652,22 @@
                     The placeholder displayed in the select when
                     no option
                     is chosen yet.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>placeholder</field>
+                </fields>
+              </widget>
+
+              <widget name="searchType" type="text">
+                <labels>
+                  <label mode="any">Search type</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Two possible searches, enter USER_TYPE or
+                    GROUP_TYPE whether to restrict to users or groups. Leaving
+                    this property will search for both users and groups.
                   </label>
                 </helpLabels>
                 <fields>

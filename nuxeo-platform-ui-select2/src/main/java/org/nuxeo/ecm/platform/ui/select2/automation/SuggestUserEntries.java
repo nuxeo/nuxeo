@@ -53,12 +53,6 @@ public class SuggestUserEntries {
 
     public static final String ID = "UserGroup.Suggestion";
 
-    public static final String USER_TYPE = "user";
-
-    public static final String GROUP_TYPE = "group";
-
-    public static final String TYPE_KEY_NAME = "type";
-
     @Context
     protected OperationContext ctx;
 
@@ -68,11 +62,8 @@ public class SuggestUserEntries {
     @Param(name = "prefix", required = false)
     protected String prefix;
 
-    @Param(name = "userOnly", required = false)
-    protected boolean userOnly = false;
-
-    @Param(name = "groupOnly", required = false)
-    protected boolean groupOnly = false;
+    @Param(name = "searchType", required = false)
+    protected String searchType;
 
     @Context
     protected UserManager userManager;
@@ -80,6 +71,14 @@ public class SuggestUserEntries {
     @OperationMethod
     public Blob run() throws ClientException {
         JSONArray result = new JSONArray();
+        boolean groupOnly = false, userOnly = false;
+        if (searchType != null && !searchType.isEmpty()) {
+            if (searchType.equals(Select2Common.USER_TYPE)) {
+                userOnly = true;
+            } else if (searchType.equals(Select2Common.GROUP_TYPE)) {
+                groupOnly = true;
+            }
+        }
         if (!groupOnly) {
             Schema schema = schemaManager.getSchema("user");
             DocumentModelList userList = userManager.searchUsers(prefix);
@@ -102,7 +101,8 @@ public class SuggestUserEntries {
                     }
                 }
                 String label = "";
-                if (firstname != null && !firstname.isEmpty() && lastname != null && !lastname.isEmpty()) {
+                if (firstname != null && !firstname.isEmpty()
+                        && lastname != null && !lastname.isEmpty()) {
                     label = firstname + " " + lastname;
                 } else {
                     label = username;
@@ -110,7 +110,7 @@ public class SuggestUserEntries {
                 String userId = user.getId();
                 obj.put(Select2Common.ID, userId);
                 obj.put(Select2Common.LABEL, label);
-                obj.put(TYPE_KEY_NAME, USER_TYPE);
+                obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
                 result.add(obj);
             }
         }
@@ -130,7 +130,7 @@ public class SuggestUserEntries {
                 }
                 String groupId = group.getId();
                 obj.put(Select2Common.ID, groupId);
-                obj.put(TYPE_KEY_NAME, GROUP_TYPE);
+                obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
                 result.add(obj);
             }
         }

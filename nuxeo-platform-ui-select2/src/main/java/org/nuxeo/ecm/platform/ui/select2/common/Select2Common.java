@@ -44,6 +44,12 @@ public class Select2Common {
 
     public static final String USER_SUGGESTION_SELECT2 = "select2User";
 
+    public static final String USER_TYPE = "user";
+
+    public static final String GROUP_TYPE = "group";
+
+    public static final String TYPE_KEY_NAME = "type";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.

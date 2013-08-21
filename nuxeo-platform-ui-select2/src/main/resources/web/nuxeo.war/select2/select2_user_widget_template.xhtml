@@ -15,7 +15,7 @@
 
     <c:if test="#{widget.mode != 'edit'}">
 
-<!-- XXX
+      <!-- XXX
  -->
     </c:if>
 
@@ -25,6 +25,7 @@
 
       <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
         var="currentValue">
+        <f:converter converterId="select2Converter"></f:converter>
         <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
           value="#{select2Actions.resolveUserReference(currentValue)}" />
       </nxu:valueHolder>
