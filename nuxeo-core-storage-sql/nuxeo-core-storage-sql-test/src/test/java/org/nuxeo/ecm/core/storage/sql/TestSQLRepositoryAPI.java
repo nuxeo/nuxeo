@@ -3607,12 +3607,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     /**
-     * Check that the "incrementBeforeUpdate" and "beforeDocumentModification"
-     * are not fired on a DocumentModel where the {@code isImmutable()} returns
-     * {@code true}.
+     * Check that the "incrementBeforeUpdate" is not fired on a DocumentModel
+     * where the {@code isImmutable()} returns {@code true}.
      */
     @Test
-    public void testDoNotFireBeforeUpdateEventsOnVersion() throws Exception {
+    public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listeners-contrib.xml");
 
@@ -3637,7 +3636,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(versionDoc);
         session.save();
 
-        assertTrue(DummyTestListener.EVENTS_RECEIVED.isEmpty());
+        assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
+        assertEquals("beforeDocumentModification", DummyTestListener.EVENTS_RECEIVED.get(0).getName());
+
     }
 
     private static final List<String> IGNORED_EVENTS = Arrays.asList(

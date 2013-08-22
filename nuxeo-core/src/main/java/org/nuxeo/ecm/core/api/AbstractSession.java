@@ -1923,17 +1923,15 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL,
                     readModel(doc));
 
-            if (!docModel.isImmutable()) {
-                // regular event, last chance to modify docModel
-                String name = docModel.getName();
-                notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
-                        options, null, null, true, true);
-                // did the event change the name? not applicable to Root whose
-                // name is null/empty
-                if (name != null && !name.equals(docModel.getName())) {
-                    doc = getSession().move(doc, doc.getParent(),
-                            docModel.getName());
-                }
+            // regular event, last chance to modify docModel
+            String name = docModel.getName();
+            notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
+                    options, null, null, true, true);
+            // did the event change the name? not applicable to Root whose
+            // name is null/empty
+            if (name != null && !name.equals(docModel.getName())) {
+                doc = getSession().move(doc, doc.getParent(),
+                        docModel.getName());
             }
 
             VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
