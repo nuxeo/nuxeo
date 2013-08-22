@@ -19,20 +19,15 @@ package org.nuxeo.ecm.automation.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.impl.OperationServiceImpl;
-import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
+import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
@@ -52,7 +47,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-exception-chain.xml")
-public class TestOperationChainException {
+public class TestChainException {
 
     protected DocumentModel src;
 
@@ -79,30 +74,22 @@ public class TestOperationChainException {
 
     @Test
     public void testChainExceptionContribution() throws Exception {
-        OperationChain chain = service.getOperationChain("contributedchain");
-        assertNotNull(chain.getExceptionChain());
-        assertEquals(3, chain.getExceptionChain().getCatchChains().size());
-        assertEquals("exceptionA",
-                chain.getExceptionChain().getCatchChains().get(0).getChainId());
+        ChainException chainException = service.getChainException("contributedchain");
+        assertNotNull(chainException);
+        assertEquals(3, chainException.getCatchChainExceptions().size());
+        assertEquals("chainException",
+                chainException.getCatchChainExceptions().get(0).getChainId());
     }
 
-    // TODO
-    public void testChainException() throws Exception {
+    @Test
+    public void testAutomationFilterContribution() throws Exception {
+        AutomationFilter automationFilter = service.getAutomationFilter("filterA");
+        assertNotNull(automationFilter);
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        OperationChain chain = new OperationChain("notRegisteredChain");
-        chain.add(FetchContextDocument.ID);
-        chain.add("o1").set("message", "Hello 1!");
-        chain.add("o2").set("message", "Hello 2!");
-        chain.add("oChainCtx").set("message",
-                "expr:@{ChainParameters['messageChain']}");
-        // Setting parameters of the chain
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("messageChain", "Hello i'm a chain!");
-        chain.addChainParameters(params);
-        // Checking if chain parameter is taken into account
-        DocumentModel doc = (DocumentModel) ((OperationServiceImpl) service).run(
-                ctx, chain);
-        Assert.assertNotNull(doc);
+        assertEquals(
+                Scripting.newTemplate("@{Document['dc:title']=='Source'}").eval(
+                        ctx),
+                automationFilter.getValue().eval(ctx));
     }
 }
