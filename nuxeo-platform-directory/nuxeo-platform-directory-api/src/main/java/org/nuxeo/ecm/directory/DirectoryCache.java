@@ -23,6 +23,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -39,6 +41,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class DirectoryCache {
+
+    private final static Log log = LogFactory.getLog(DirectoryCache.class);
 
     protected final Map<String, CachedEntry> entryStore = new HashMap<String, CachedEntry>();
 
@@ -76,6 +80,7 @@ public class DirectoryCache {
                 synchronized (this) {
                     // check that the cache limit has not yet been reached
                     if (maxSize > 0 && entryStore.size() >= maxSize) {
+                        log.warn("Directory cacheMaxSize is too small, flushing.");
                         entryStore.clear();
                     }
                     entryStore.put(entryId, new CachedEntry(dm, timeout));
