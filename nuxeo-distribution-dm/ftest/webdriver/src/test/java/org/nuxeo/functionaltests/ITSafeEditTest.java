@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
@@ -52,6 +53,8 @@ import com.google.common.base.Function;
  * @since 5.7.1
  */
 public class ITSafeEditTest extends AbstractTest {
+
+    public final static String COVERAGE = "France";
 
     /**
      * Convenient class to access localstorage of the browser.
@@ -346,7 +349,10 @@ public class ITSafeEditTest extends AbstractTest {
                 "Test file", "Test File description", false, null, null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 
-        ITSelect2Test.editCoverage(ITSelect2Test.COVERAGE);
+        Select2WidgetElement coverageWidget = new Select2WidgetElement(
+                driver,
+                By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']"));
+        coverageWidget.selectValue(COVERAGE);
 
         // We leave the page without saving, the safeEdit mechanism should be
         // triggered ...
