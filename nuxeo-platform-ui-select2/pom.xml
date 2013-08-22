@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
    <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
@@ -90,54 +89,4 @@
         <artifactId>javax.servlet-api</artifactId>
       </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <additionalProjectnatures>
-            <projectnature>org.nuxeo.ide.NuxeoNature</projectnature>
-          </additionalProjectnatures>
-          <classpathContainers>
-            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
-            <classpathContainer>org.nuxeo.ide.SDK_CONTAINER</classpathContainer>
-            <classpathContainer>org.nuxeo.ide.SDK_TEST_CONTAINER</classpathContainer>
-          </classpathContainers>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-resource</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/main/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
