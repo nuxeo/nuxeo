@@ -70,39 +70,43 @@
     <div id="#{widget.id}_tree">
      <h3><h:outputText
       value="#{messages['label.search.popup.title']}"/></h3>
-      <rich:tree
-        id="#{widget.id}_treeId"
-        iconExpanded="/icons/toggle_minus.png"
-        iconCollapsed="/icons/toggle_plus.png">
-        <rich:recursiveTreeNodesAdaptor
-          id="#{widget.id}_recursiveTreeNodesAdaptorId"
-          roots="#{vocabularyTreeActions.getRoots(widgetProperty_directoryName, widgetProperty_displayObsoleteEntries, keySeparator, widgetProperty_ordering)}"
-          nodes="#{node.children}"
-          var="node">
-          <rich:treeNode
-            id="#{widget.id}_treeNodeId"
-            highlightedClass="treeNodeHighlightedClass"
-            selectedClass="treeNodeSelectedClass">
-            <a4j:commandLink immediate="true"
-              id="#{widget.id}_addMultipleValueLink"
-              actionListener="#{treeWidgetActions.addSelectionToList}"
-              styleClass="treeLink" reRender="#{widget.id}_multipleValuePanel"
-              rendered="#{widgetProperty_multiSelect}">
-              <f:param name="selectionListId" value="#{widget.id}_list" />
-              <f:param name="selectedPath" value="#{widgetProperty_selectIdOnly ? node.id : node.path}" />
-              <h:outputText value="#{node.label}" />
-            </a4j:commandLink>
-            <a4j:commandLink
-              id="#{widget.id}_setSingleValueLink"
-              immediate="true"
-              onclick="set#{widget.id}SingleValue('#{widgetProperty_selectIdOnly ? node.label : vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, node.path, keySeparator)}', '#{widgetProperty_selectIdOnly ? node.id : node.path}')"
-              rendered="#{!widgetProperty_multiSelect}"
-              styleClass="treeLink">
-              <h:outputText value="#{node.label}" />
-            </a4j:commandLink>
-          </rich:treeNode>
-        </rich:recursiveTreeNodesAdaptor>
-      </rich:tree>
+      <a4j:region renderRegionOnly="true">
+          <rich:tree ajaxSingle="true" preserveModel="none"
+            ajaxChildActivationEncodeBehavior="none"
+            ajaxNodeSelectionEncodeBehavior="none"
+            id="#{widget.id}_treeId"
+            iconExpanded="/icons/toggle_minus.png"
+            iconCollapsed="/icons/toggle_plus.png">
+            <rich:recursiveTreeNodesAdaptor
+              id="#{widget.id}_recursiveTreeNodesAdaptorId"
+              roots="#{vocabularyTreeActions.getRoots(widgetProperty_directoryName, widgetProperty_displayObsoleteEntries, keySeparator, widgetProperty_ordering)}"
+              nodes="#{node.children}" var="node">
+              <rich:treeNode id="#{widget.id}_treeNodeId"
+                highlightedClass="treeNodeHighlightedClass"
+                selectedClass="treeNodeSelectedClass">
+                <a4j:commandLink immediate="true"
+                  id="#{widget.id}_addMultipleValueLink"
+                  actionListener="#{treeWidgetActions.addSelectionToList}"
+                  styleClass="treeLink"
+                  reRender="#{widget.id}_multipleValuePanel"
+                  rendered="#{widgetProperty_multiSelect}">
+                  <f:param name="selectionListId"
+                    value="#{widget.id}_list" />
+                  <f:param name="selectedPath"
+                    value="#{widgetProperty_selectIdOnly ? node.id : node.path}" />
+                  <h:outputText value="#{node.label}" />
+                </a4j:commandLink>
+                <a4j:commandLink id="#{widget.id}_setSingleValueLink"
+                  immediate="true"
+                  onclick="set#{widget.id}SingleValue('#{widgetProperty_selectIdOnly ? node.label : vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, node.path, keySeparator)}', '#{widgetProperty_selectIdOnly ? node.id : node.path}')"
+                  rendered="#{!widgetProperty_multiSelect}"
+                  styleClass="treeLink">
+                  <h:outputText value="#{node.label}" />
+                </a4j:commandLink>
+              </rich:treeNode>
+            </rich:recursiveTreeNodesAdaptor>
+          </rich:tree>
+        </a4j:region>
     </div>
   </div>
 
