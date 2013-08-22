@@ -36,11 +36,14 @@ import java.util.MissingResourceException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
@@ -98,6 +101,8 @@ public abstract class AbstractWebContext implements WebContext {
 
     protected String basePath;
 
+    private String repoName;
+
     protected AbstractWebContext(HttpServletRequest request) {
         engine = Framework.getLocalService(WebEngine.class);
         scriptExecutionStack = new LinkedList<File>();
@@ -112,14 +117,17 @@ public abstract class AbstractWebContext implements WebContext {
         this.module = module;
     }
 
+    @Override
     public Resource getRoot() {
         return root;
     }
 
+    @Override
     public void setRoot(Resource root) {
         this.root = root;
     }
 
+    @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (CoreSession.class == adapter) {
             return adapter.cast(getCoreSession());
@@ -137,14 +145,17 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
+    @Override
     public Module getModule() {
         return module;
     }
 
+    @Override
     public WebEngine getEngine() {
         return engine;
     }
 
+    @Override
     public UserSession getUserSession() {
         if (us == null) {
             us = UserSession.getCurrentSession(request);
@@ -152,26 +163,36 @@ public abstract class AbstractWebContext implements WebContext {
         return us;
     }
 
+    @Override
     public CoreSession getCoreSession() {
-        return SessionFactory.getSession(request);
+        if (StringUtils.isNotBlank(repoName)) {
+            return SessionFactory.getSession(request, repoName);
+        } else {
+            return SessionFactory.getSession(request);
+        }
     }
 
+    @Override
     public Principal getPrincipal() {
         return request.getUserPrincipal();
     }
 
+    @Override
     public HttpServletRequest getRequest() {
         return request;
     }
 
+    @Override
     public String getMethod() {
         return request.getMethod();
     }
 
+    @Override
     public String getModulePath() {
         return head.getPath();
     }
 
+    @Override
     public String getMessage(String key) {
         Messages messages = module.getMessages();
         try {
@@ -181,6 +202,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public String getMessage(String key, Object... args) {
         Messages messages = module.getMessages();
         try {
@@ -195,6 +217,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public String getMessage(String key, List<Object> args) {
         Messages messages = module.getMessages();
         try {
@@ -209,6 +232,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public String getMessageL(String key, String language) {
         Messages messages = module.getMessages();
         try {
@@ -218,6 +242,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public String getMessageL(String key, String locale, Object... args) {
         Messages messages = module.getMessages();
         try {
@@ -232,6 +257,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public String getMessageL(String key, String locale, List<Object> args) {
         Messages messages = module.getMessages();
         try {
@@ -246,6 +272,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public Locale getLocale() {
         UserSession us = getUserSession();
         if (us != null) {
@@ -259,6 +286,7 @@ public abstract class AbstractWebContext implements WebContext {
         return locale == null ? DEFAULT_LOCALE : locale;
     }
 
+    @Override
     public void setLocale(Locale locale) {
         UserSession us = getUserSession();
         if (us != null) {
@@ -266,6 +294,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public Resource newObject(String typeName, Object... args) {
         ResourceType type = module.getType(typeName);
         if (type == null) {
@@ -275,6 +304,7 @@ public abstract class AbstractWebContext implements WebContext {
         return newObject(type, args);
     }
 
+    @Override
     public Resource newObject(ResourceType type, Object... args) {
         Resource obj = type.newInstance();
         try {
@@ -289,6 +319,7 @@ public abstract class AbstractWebContext implements WebContext {
         return obj;
     }
 
+    @Override
     public AdapterResource newAdapter(Resource ctx, String serviceName,
             Object... args) {
         AdapterType st = module.getAdapter(ctx, serviceName);
@@ -305,11 +336,13 @@ public abstract class AbstractWebContext implements WebContext {
         return service;
     }
 
+    @Override
     public void setProperty(String key, Object value) {
         vars.put(key, value);
     }
 
     // TODO: use FormData to get query params?
+    @Override
     public Object getProperty(String key) {
         Object value = getUriInfo().getPathParameters().getFirst(key);
         if (value == null) {
@@ -321,11 +354,13 @@ public abstract class AbstractWebContext implements WebContext {
         return value;
     }
 
+    @Override
     public Object getProperty(String key, Object defaultValue) {
         Object value = getProperty(key);
         return value == null ? defaultValue : value;
     }
 
+    @Override
     public String getCookie(String name) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -338,11 +373,13 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
+    @Override
     public String getCookie(String name, String defaultValue) {
         String value = getCookie(name);
         return value == null ? defaultValue : value;
     }
 
+    @Override
     public FormData getForm() {
         if (form == null) {
             form = new FormData(request);
@@ -350,6 +387,7 @@ public abstract class AbstractWebContext implements WebContext {
         return form;
     }
 
+    @Override
     public String getBasePath() {
         if (basePath == null) {
             String webenginePath = request.getHeader(NUXEO_WEBENGINE_BASE_PATH);
@@ -381,6 +419,7 @@ public abstract class AbstractWebContext implements WebContext {
         return buf.toString();
     }
 
+    @Override
     public String getBaseURL() {
         StringBuffer sb = request.getRequestURL();
         int p = sb.indexOf(getBasePath());
@@ -390,6 +429,7 @@ public abstract class AbstractWebContext implements WebContext {
         return sb.toString();
     }
 
+    @Override
     public StringBuilder getServerURL() {
         StringBuilder url = new StringBuilder(
                 VirtualHostHelper.getServerURL(request));
@@ -399,10 +439,12 @@ public abstract class AbstractWebContext implements WebContext {
         return url;
     }
 
+    @Override
     public String getURI() {
         return request.getRequestURI();
     }
 
+    @Override
     public String getURL() {
         StringBuffer sb = request.getRequestURL();
         if (sb.charAt(sb.length() - 1) == '/') {
@@ -420,10 +462,12 @@ public abstract class AbstractWebContext implements WebContext {
         return buf;
     }
 
+    @Override
     public String getUrlPath() {
         return getUrlPathBuffer().toString();
     }
 
+    @Override
     public String getLoginPath() {
         StringBuilder buf = getUrlPathBuffer();
         int len = buf.length();
@@ -438,16 +482,19 @@ public abstract class AbstractWebContext implements WebContext {
      * This method is working only for root objects that implement
      * {@link ModuleResource}
      */
+    @Override
     public String getUrlPath(DocumentModel document) {
         return ((ModuleResource) head).getLink(document);
     }
 
+    @Override
     public Log getLog() {
         return log;
     }
 
     /* object stack API */
 
+    @Override
     public Resource push(Resource rs) {
         if (tail != null) {
             tail.setNext(rs);
@@ -460,6 +507,7 @@ public abstract class AbstractWebContext implements WebContext {
         return rs;
     }
 
+    @Override
     public Resource pop() {
         if (tail == null) {
             return null;
@@ -475,16 +523,19 @@ public abstract class AbstractWebContext implements WebContext {
         return rs;
     }
 
+    @Override
     public Resource tail() {
         return tail;
     }
 
+    @Override
     public Resource head() {
         return head;
     }
 
     /** template and script resolver */
 
+    @Override
     public ScriptFile getFile(String path) {
         if (path == null || path.length() == 0) {
             return null;
@@ -553,10 +604,12 @@ public abstract class AbstractWebContext implements WebContext {
 
     /* running scripts and rendering templates */
 
+    @Override
     public void render(String template, Writer writer) {
         render(template, null, writer);
     }
 
+    @Override
     public void render(String template, Object ctx, Writer writer) {
         ScriptFile script = getFile(template);
         if (script != null) {
@@ -567,6 +620,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void render(ScriptFile script, Object ctx, Writer writer) {
         Map map = null;
@@ -591,10 +645,12 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public Object runScript(String script) {
         return runScript(script, null);
     }
 
+    @Override
     public Object runScript(String script, Map<String, Object> args) {
         ScriptFile sf = getFile(script);
         if (sf != null) {
@@ -605,6 +661,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public Object runScript(ScriptFile script, Map<String, Object> args) {
         try {
             pushScriptFile(script.getFile());
@@ -620,6 +677,7 @@ public abstract class AbstractWebContext implements WebContext {
         }
     }
 
+    @Override
     public boolean checkGuard(String guard) throws ParseException {
         return PermissionService.parse(guard).check(this);
     }
@@ -633,6 +691,7 @@ public abstract class AbstractWebContext implements WebContext {
         return bindings;
     }
 
+    @Override
     public Resource getTargetObject() {
         Resource t = tail;
         while (t != null) {
@@ -644,6 +703,7 @@ public abstract class AbstractWebContext implements WebContext {
         return null;
     }
 
+    @Override
     public AdapterResource getTargetAdapter() {
         Resource t = tail;
         while (t != null) {
@@ -715,4 +775,14 @@ public abstract class AbstractWebContext implements WebContext {
         AbstractWebContext.isRepositoryDisabled = isRepositoryDisabled;
     }
 
+    @Override
+    public void setRepositoryName(String repoName) throws ClientException {
+        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+        if (rm.getRepository(repoName) != null) {
+            this.repoName = repoName;
+        } else {
+            throw new ClientException("Repository " + repoName + " not found");
+        }
+
+    }
 }

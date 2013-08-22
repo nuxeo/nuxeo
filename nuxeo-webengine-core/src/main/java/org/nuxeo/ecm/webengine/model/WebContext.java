@@ -30,6 +30,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebEngine;
@@ -479,5 +480,15 @@ public interface WebContext extends Adaptable {
      * @param guard the guard to check
      */
     boolean checkGuard(String guard) throws ParseException;
+
+    /**
+     * Sets the repository name that will be used by {@link #getCoreSession()}.
+     *
+     * @param repoName
+     * @throws ClientException if the repository is not found.
+     *
+     * @since 5.7.3
+     */
+    void setRepositoryName(String repoName) throws ClientException;
 
 }
