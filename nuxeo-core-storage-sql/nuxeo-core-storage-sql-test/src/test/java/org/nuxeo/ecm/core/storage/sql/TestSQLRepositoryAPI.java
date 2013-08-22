@@ -1016,8 +1016,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     // TODO: fix this test.
     @Test
     @Ignore
-    public void testGetDocumentDocumentRefStringArray()
-            throws ClientException {
+    public void testGetDocumentDocumentRefStringArray() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -1273,9 +1272,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
         folder1 = session.createDocument(folder1);
-        DocumentModel folder2 = new DocumentModelImpl("/folder1", "folder2", "Folder");
+        DocumentModel folder2 = new DocumentModelImpl("/folder1", "folder2",
+                "Folder");
         folder2 = session.createDocument(folder2);
-        DocumentModel file1 = new DocumentModelImpl("/folder1/folder2", "file1", "File");
+        DocumentModel file1 = new DocumentModelImpl("/folder1/folder2",
+                "file1", "File");
         file1 = session.createDocument(file1);
         session.save();
         docs = session.getParentDocuments(file1.getRef());
@@ -3386,7 +3387,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         // test that the copy has the extra schema values
         session.copy(folder.getRef(), root.getRef(), "folderCopy");
-        DocumentModel proxyCopy = session.getDocument(new PathRef("/folderCopy/file"));
+        DocumentModel proxyCopy = session.getDocument(new PathRef(
+                "/folderCopy/file"));
         assertTrue(proxyCopy.isProxy());
         assertEquals("proxyinfo", proxyCopy.getPropertyValue("info:info"));
     }
@@ -3605,12 +3607,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     /**
-     * Check that the "incrementBeforeUpdate" and "beforeDocumentModification"
-     * are not fired on a DocumentModel where the {@code isImmutable()} returns
-     * {@code true}.
+     * Check that the "incrementBeforeUpdate" is not fired on a DocumentModel
+     * where the {@code isImmutable()} returns {@code true}.
      */
     @Test
-    public void testDoNotFireBeforeUpdateEventsOnVersion() throws Exception {
+    public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-listeners-contrib.xml");
 
@@ -3635,15 +3636,16 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(versionDoc);
         session.save();
 
-        assertTrue(DummyTestListener.EVENTS_RECEIVED.isEmpty());
+        assertEquals(1, DummyTestListener.EVENTS_RECEIVED.size());
+        assertEquals("beforeDocumentModification", DummyTestListener.EVENTS_RECEIVED.get(0).getName());
+
     }
 
     private static final List<String> IGNORED_EVENTS = Arrays.asList(
             DocumentEventTypes.SESSION_SAVED,
             EventConstants.EVENT_VCS_INVALIDATIONS);
 
-    private static final List<String> IGNORE_VCS = Arrays.asList(
-            EventConstants.EVENT_VCS_INVALIDATIONS);
+    private static final List<String> IGNORE_VCS = Arrays.asList(EventConstants.EVENT_VCS_INVALIDATIONS);
 
     public static void assertEvents(String... expectedEventNames) {
         assertEvents(IGNORED_EVENTS, expectedEventNames);
@@ -3678,7 +3680,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         List<String> actual = new ArrayList<String>();
         for (Event event : DummyTestListener.EVENTS_RECEIVED) {
             String eventName = event.getName();
-            if (ignored != null  && ignored.contains(eventName)) {
+            if (ignored != null && ignored.contains(eventName)) {
                 continue;
             }
             EventContext context = event.getContext();

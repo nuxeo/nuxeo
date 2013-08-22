@@ -179,7 +179,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
     protected final Set<QueryAndFetchExecuteContextException> queryResults = new HashSet<QueryAndFetchExecuteContextException>();
 
-    protected void  createMetrics() {
+    protected void createMetrics() {
         createDocumentCount = registry.counter(MetricRegistry.name(
                 "nuxeo.repositories", repositoryName, "documents", "create"));
         deleteDocumentCount = registry.counter(MetricRegistry.name(
@@ -187,6 +187,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         updateDocumentCount = registry.counter(MetricRegistry.name(
                 "nuxeo.repositories", repositoryName, "documents", "update"));
     }
+
     /**
      * Private access to protected it again direct access since this field is
      * lazy loaded. You must use {@link #getEventService()} to get the service
@@ -1922,17 +1923,15 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL,
                     readModel(doc));
 
-            if (!docModel.isImmutable()) {
-                // regular event, last chance to modify docModel
-                String name = docModel.getName();
-                notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
-                        options, null, null, true, true);
-                // did the event change the name? not applicable to Root whose
-                // name is null/empty
-                if (name != null && !name.equals(docModel.getName())) {
-                    doc = getSession().move(doc, doc.getParent(),
-                            docModel.getName());
-                }
+            // regular event, last chance to modify docModel
+            String name = docModel.getName();
+            notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
+                    options, null, null, true, true);
+            // did the event change the name? not applicable to Root whose
+            // name is null/empty
+            if (name != null && !name.equals(docModel.getName())) {
+                doc = getSession().move(doc, doc.getParent(),
+                        docModel.getName());
             }
 
             VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
