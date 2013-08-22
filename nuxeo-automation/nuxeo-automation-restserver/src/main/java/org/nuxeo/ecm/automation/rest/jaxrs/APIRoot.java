@@ -17,21 +17,18 @@
 
 package org.nuxeo.ecm.automation.rest.jaxrs;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 /**
@@ -39,39 +36,35 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  *
  * @since 5.7.2
  */
-@Path("/api")
+@Path("/api{repo : (/repo/[^/]+?)?}")
 @Produces("text/html;charset=UTF-8")
 @WebObject(type = "APIRoot")
 public class APIRoot extends ModuleRoot {
 
-    @GET
-    public Object doGet() {
-        return getView("index");
-    }
+    @Path("/")
+    public Object doGetRepository(@PathParam("repo")
+    String repositoryParam) throws NoSuchDocumentException {
+        if (StringUtils.isNotBlank(repositoryParam)) {
+            String repoName = repositoryParam.substring("repo/".length() + 1);
+            try {
+                ctx.setRepositoryName(repoName);
+            } catch (final ClientException e) {
+                throw new WebResourceNotFoundException(e.getMessage());
+            }
 
-    @Path("path")
-    public Object getDocsByPath() {
-        return new JSONDocumentRoot(ctx, "/");
-    }
-
-    @Path("id/{id}")
-    public Object getDocsById(@PathParam("id")
-    String id) {
-        return new JSONDocumentRoot(ctx, new IdRef(id));
-    }
-
-    @Path("bulk")
-    public Object getBulkDocuments(@MatrixParam("id")
-    List<String> ids) throws ClientException {
-        CoreSession session = getContext().getCoreSession();
-        List<DocumentModel> docs = new ArrayList<>(ids.size());
-        for (String loopid : ids) {
-            docs.add(session.getDocument(new IdRef(loopid )));
         }
-
-
-        return newObject("bulk", new DocumentModelListImpl(docs));
-
+        return newObject("repo");
     }
 
+
+    @Override
+    public Object handleError(WebApplicationException e) {
+        if (e instanceof WebSecurityException) {
+            return Response.status(401).entity("not authorized").type("text/plain").build();
+        } else if (e instanceof WebResourceNotFoundException) {
+            return Response.status(404).entity(e.getMessage()).type("text/plain").build();
+        } else {
+            return super.handleError(e);
+        }
+    }
 }

@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
@@ -133,7 +132,8 @@ public class DocumentBrowsingTest extends BaseTest {
 
         String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\"}}";
 
-        ClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString() , data);
+        ClientResponse response = getResponse(RequestType.POST,
+                "path" + folder.getPathAsString(), data);
 
         assertEquals(Response.Status.CREATED.getStatusCode(),
                 response.getStatus());
@@ -147,7 +147,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then a document is created in the database
         dispose(session);
         DocumentModel doc = session.getDocument(new IdRef(id));
-        assertEquals(folder.getPathAsString() + "/newName", doc.getPathAsString());
+        assertEquals(folder.getPathAsString() + "/newName",
+                doc.getPathAsString());
         assertEquals("My title", doc.getTitle());
         assertEquals("File", doc.getType());
 
@@ -160,19 +161,45 @@ public class DocumentBrowsingTest extends BaseTest {
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When I do a DELETE request
-        ClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString());
-        assertEquals(Response.Status.OK.getStatusCode(),
-                response.getStatus());
+        ClientResponse response = getResponse(RequestType.DELETE,
+                "path" + doc.getPathAsString());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then the parent document is returned
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         String id = node.get("uid").getValueAsText();
         assertEquals(folder.getId(), id);
 
-
         dispose(session);
         // Then the doc is deleted
         assertTrue(!session.exists(doc.getRef()));
+
+    }
+
+    @Test
+    public void iCanChooseAnotherRepositoryName() throws Exception {
+        // Given an existing document
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        // When i do a GET Request on the note repository
+        ClientResponse response = getResponse(
+                RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path"
+                        + note.getPathAsString());
+
+        // Then i get a document
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEntityEqualsDoc(response.getEntityInputStream(), note);
+
+        // When i do a GET Request on a non existent repository
+        response = getResponse(
+                RequestType.GET,
+                "repo/nonexistentrepo/path"
+                        + note.getPathAsString());
+
+        // Then i reveive a 404
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+
 
     }
 
