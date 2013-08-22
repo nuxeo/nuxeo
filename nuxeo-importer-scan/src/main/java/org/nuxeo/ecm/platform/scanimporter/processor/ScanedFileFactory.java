@@ -138,11 +138,6 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
 
         BlobHolder bh = node.getBlobHolder();
 
-        String mimeType = bh.getBlob().getMimeType();
-        if (mimeType == null) {
-            mimeType = getMimeType(node.getName());
-        }
-
         String name = getValidNameFromFileName(node.getName());
         String fileName = node.getName();
 
