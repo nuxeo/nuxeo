@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -195,17 +196,34 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
         return cmds;
     }
 
+    public static boolean isWindows() {
+        String osName = System.getProperty("os.name");
+        return osName.toLowerCase().contains("windows");
+    }
+
     @Override
     public boolean isValidParameter(String parameter) {
-        return VALID_PARAMETER_PATTERN.matcher(parameter).matches();
+        Pattern VALID_PATTERN;
+        if (isWindows()) {
+            VALID_PATTERN = VALID_PARAMETER_PATTERN_WIN;
+        } else {
+            VALID_PATTERN = VALID_PARAMETER_PATTERN;
+        }
+        return VALID_PATTERN.matcher(parameter).matches();
     }
 
     @Override
     public void checkParameter(String parameter) {
         if (!isValidParameter(parameter)) {
+            Pattern VALID_PATTERN;
+            if (isWindows()) {
+                VALID_PATTERN = VALID_PARAMETER_PATTERN_WIN;
+            } else {
+                VALID_PATTERN = VALID_PARAMETER_PATTERN;
+            }
             throw new IllegalArgumentException(String.format(
                     "'%s' contains illegal characters. It should match: %s",
-                    parameter, VALID_PARAMETER_PATTERN));
+                    parameter, VALID_PATTERN));
         }
     }
 
