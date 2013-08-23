@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
@@ -52,12 +53,23 @@ public class ConnectionImpl implements Session {
 
     private static final Log log = LogFactory.getLog(ConnectionImpl.class);
 
+    private static final String STATE_IS_SHARED_BY_ALL_THREAD_SESSIONS_PROP = "nuxeo.core.avoid-unneeded-save";
+
+    /** Default is false for backward compatibility in the 5.6 branch. */
+    private static final String STATE_IS_SHARED_DEFAULT = "false";
+
+    private final boolean stateIsSharedByAllThreadSessions;
+
     private ManagedConnectionImpl managedConnection;
 
     private SessionImpl session;
 
     public ConnectionImpl(ManagedConnectionImpl managedConnection) {
         this.managedConnection = managedConnection;
+        String shared = Framework.getProperty(
+                STATE_IS_SHARED_BY_ALL_THREAD_SESSIONS_PROP,
+                STATE_IS_SHARED_DEFAULT);
+        stateIsSharedByAllThreadSessions = Boolean.parseBoolean(shared);
     }
 
     /*
@@ -155,7 +167,7 @@ public class ConnectionImpl implements Session {
     public boolean isStateSharedByAllThreadSessions() {
         // the JCA semantics is that in the same thread all handles point to the
         // same underlying session
-        return true;
+        return stateIsSharedByAllThreadSessions;
     }
 
     @Override
