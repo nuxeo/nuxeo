@@ -11,6 +11,8 @@
  */
 package org.nuxeo.runtime.api;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -106,6 +108,39 @@ public class ConnectionHelper {
             return null;
         }
         return getPhysicalConnection(dataSourceName);
+    }
+    /**
+     * Tries to unwrap the connection to get the real physical one (returned by
+     * the original datasource).
+     * <p>
+     * This should only be used by code that needs to cast the connection to a
+     * driver-specific class to use driver-specific features.
+     *
+     * @throws SQLException if no actual physical connection was allocated yet
+     */
+    public static Connection unwrap(Connection connection) throws SQLException {
+        // now try Apache DBCP unwrap (standard or Tomcat), to skip datasource
+        // wrapping layers
+        // this needs accessToUnderlyingConnectionAllowed=true in the pool
+        // config
+        try {
+            Method m = connection.getClass().getMethod("getInnermostDelegate");
+            m.setAccessible(true); // needed, method of inner private class
+            Connection delegate = (Connection) m.invoke(connection);
+            if (delegate == null) {
+                log.error("Cannot access underlying connection, you must use "
+                        + "accessToUnderlyingConnectionAllowed=true in the pool configuration");
+            } else {
+                connection = delegate;
+            }
+        } catch (NoSuchMethodException e) {
+            // ignore missing method, connection not coming from Apache pool
+        } catch (IllegalAccessException e) {
+            // ignore missing method, connection not coming from Apache pool
+        } catch (InvocationTargetException e) {
+            // ignore missing method, connection not coming from Apache pool
+        }
+        return connection;
     }
 
     /**
