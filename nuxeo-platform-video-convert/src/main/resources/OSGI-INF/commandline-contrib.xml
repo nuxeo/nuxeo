@@ -47,7 +47,8 @@
 
     <command name="ffmpeg-tomp4" enabled="true">
       <commandLine>ffmpeg</commandLine>
-      <parameterString> -i #{inFilePath} -s #{width}x#{height} -acodec  libfaac -vcodec libx264 -v 0 #{outFilePath}</parameterString>
+      <parameterString> -i #{inFilePath} -s #{width}x#{height} -acodec libfaac -vcodec libx264 -v 0 #{outFilePath}</parameterString>
+      <winParameterString> -i #{inFilePath} -s #{width}x#{height} -vcodec libx264 -v 0 #{outFilePath}</winParameterString>
       <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)
       </installationDirective>
     </command>
