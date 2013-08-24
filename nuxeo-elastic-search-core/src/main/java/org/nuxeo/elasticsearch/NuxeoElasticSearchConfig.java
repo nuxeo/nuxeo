@@ -1,5 +1,6 @@
 package org.nuxeo.elasticsearch;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.Framework;
 
 
 @XObject(value = "elasticSearchConfig")
@@ -14,8 +16,8 @@ public class NuxeoElasticSearchConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @XNode("@local")
-    protected boolean local = true;
+    @XNode("@inProcess")
+    protected boolean inProcess = false;
 
     @XNode("@autostartLocalNode")
     protected boolean autostartLocalNode = false;
@@ -38,6 +40,9 @@ public class NuxeoElasticSearchConfig implements Serializable {
     @XNode("hostIp")
     protected String hostIp;
 
+    @XNode("hostPort")
+    protected String hostPort;
+
     @XNode("nodeName")
     protected String nodeName = "Nuxeo";
 
@@ -47,15 +52,17 @@ public class NuxeoElasticSearchConfig implements Serializable {
     @XNodeList(value = "remoteNodes/node", type = ArrayList.class, componentType = String.class)
     protected List<String> remoteNodes;
 
-    public boolean isLocal() {
-        return local;
-    }
-
-    public void setLocal(boolean local) {
-        this.local = local;
+    public boolean isInProcess() {
+        return inProcess;
     }
 
     public String getDataPath() {
+        File home = Framework.getRuntime().getHome();
+        File esDirectory = new File(home, "elasticsearch");
+        if (!esDirectory.exists()) {
+            esDirectory.mkdir();
+        }
+        dataPath = esDirectory.getPath() + "/data";
         return dataPath;
     }
 
@@ -64,6 +71,12 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public String getLogPath() {
+        File home = Framework.getRuntime().getHome();
+        File esDirectory = new File(home, "elasticsearch");
+        if (!esDirectory.exists()) {
+            esDirectory.mkdir();
+        }
+        logPath = esDirectory.getPath() + "/logs";
         return logPath;
     }
 
@@ -92,6 +105,9 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public List<String> getRemoteNodes() {
+        if (remoteNodes.size()==0 && autostartLocalNode) {
+            remoteNodes.add(getHostIp() + ":" + getHostPort());
+        }
         return remoteNodes;
     }
 
@@ -115,14 +131,20 @@ public class NuxeoElasticSearchConfig implements Serializable {
         if (indexStorageType!=null) {
             sb.append(" -Des.index.store.type=" + indexStorageType);
         }
-        if (hostIp!=null) {
-            sb.append(" -Des.network.host=" + hostIp);
+        if (getHostIp()!=null) {
+            sb.append(" -Des.network.host=" + getHostIp());
         }
-        if (dataPath!=null) {
-            sb.append(" -Des.path.data=" + dataPath);
+
+        if (getHostPort()!=null) {
+            sb.append(" -Des.http.port=" + getHostPort());
         }
-        if (logPath!=null) {
-            sb.append(" -Des.path.logs=" + dataPath);
+
+        if (getDataPath()!=null) {
+            sb.append(" -Des.path.data=" + getDataPath());
+        }
+
+        if (getLogPath()!=null) {
+            sb.append(" -Des.path.logs=" + getLogPath());
         }
         if (clusterName!=null) {
             sb.append(" -Des.cluster.name="  + clusterName);
@@ -133,5 +155,25 @@ public class NuxeoElasticSearchConfig implements Serializable {
 
         return sb.toString();
     }
+
+    public void setInProcess(boolean inProcess) {
+        this.inProcess = inProcess;
+    }
+
+    public String getHostIp() {
+        if (hostIp== null && autostartLocalNode) {
+            hostIp = "127.0.0.1";
+        }
+        return hostIp;
+    }
+
+    public String getHostPort() {
+        if (hostPort== null && autostartLocalNode) {
+            hostPort = "9200";
+        }
+        return hostPort;
+    }
+
+
 
 }

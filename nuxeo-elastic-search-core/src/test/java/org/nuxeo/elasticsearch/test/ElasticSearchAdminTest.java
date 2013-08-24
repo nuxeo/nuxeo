@@ -1,5 +1,7 @@
 package org.nuxeo.elasticsearch.test;
 
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +31,12 @@ public class ElasticSearchAdminTest {
         NuxeoElasticSearchConfig config = esa.getConfig();
         Assert.assertEquals("nuxeoTestNode", config.getNodeName());
         Assert.assertEquals("nuxeoTestCluster", config.getClusterName());
-        
-        
+
+        NodesInfoResponse nodeInfoResponse = ess.getClient().admin().cluster().nodesInfo(new NodesInfoRequest()).actionGet();
+
+        Assert.assertEquals("nuxeoTestCluster", nodeInfoResponse.getClusterNameAsString());
+        Assert.assertEquals(1, nodeInfoResponse.getNodes().length);
+        Assert.assertEquals("nuxeoTestNode",nodeInfoResponse.getNodes()[0].getNode().getName());
 
    }
 }

@@ -4,6 +4,8 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +27,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -63,7 +63,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (Framework.isTestModeSet() && config == null) {
             // automatically generate test config
             config = new NuxeoElasticSearchConfig();
-            config.setLocal(true);
+            config.setInProcess(true);
             config.enableHttp(true);
             File home = Framework.getRuntime().getHome();
             File esDirectory = new File(home, "elasticsearch");
@@ -78,7 +78,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Settings getSettings() {
         NuxeoElasticSearchConfig config = getConfig();
         Settings settings = null;
-        if (config.isLocal()) {
+        if (config.isInProcess()) {
             settings = ImmutableSettings.settingsBuilder().put(
                     "node.http.enabled", config.enableHttp()).put("path.logs",
                     config.getLogPath()).put("path.data", config.getDataPath()).put(
@@ -100,7 +100,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected void flushIfLocal() {
-        if (getConfig().isLocal()) {
+        if (getConfig().isInProcess()) {
             // do the refresh
             getClient().admin().indices().prepareRefresh().execute().actionGet();
         }
@@ -131,24 +131,29 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (localNode == null) {
             NuxeoElasticSearchConfig config = getConfig();
             Settings settings = getSettings();
-            localNode = NodeBuilder.nodeBuilder().local(config.isLocal()).settings(
+            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess()).settings(
                     settings).node();
         }
         return localNode;
     }
 
-
     @Override
     public Client getClient() {
         if (client == null) {
-            if (getConfig().isLocal()) {
+            if (getConfig().isInProcess()) {
                 client = getLocalNode().client();
             } else {
                 TransportClient tClient = new TransportClient(getSettings());
                 for (String remoteNode : getConfig().getRemoteNodes()) {
                     String[] address = remoteNode.split(":");
-                    tClient.addTransportAddress(new InetSocketTransportAddress(
-                            address[0], Integer.parseInt(address[1])));
+                        try {
+                            InetAddress inet = InetAddress.getByName(address[0]);
+                            address[1] = "9300"; // Hard coded for now !
+                            tClient.addTransportAddress(new InetSocketTransportAddress(
+                                    inet, Integer.parseInt(address[1])));
+                        } catch (UnknownHostException e) {
+                            log.error("Unable to resolve host " + address[0], e);
+                        }
                 }
                 client = tClient;
             }
@@ -166,8 +171,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
-        if(getConfig()!=null && !getConfig().isLocal() && getConfig().autostartLocalNode()) {
-            ElasticSearchControler controler = new ElasticSearchControler(config);
+        if (getConfig() != null && !getConfig().isInProcess()
+                && getConfig().autostartLocalNode()) {
+            ElasticSearchControler controler = new ElasticSearchControler(
+                    config);
             if (controler.start()) {
                 log.info("Started Elastic Search");
             } else {
@@ -184,8 +191,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void release() {
         if (client != null) {
-            if(getConfig()!=null && !getConfig().isLocal() && getConfig().autostartLocalNode()) {
-                client.admin().cluster().nodesShutdown(new NodesShutdownRequest(getConfig().getNodeName())).actionGet();
+            if (getConfig() != null && !getConfig().isInProcess()
+                    && getConfig().autostartLocalNode()) {
+                client.admin().cluster().nodesShutdown(
+                        new NodesShutdownRequest(getConfig().getNodeName())).actionGet();
             }
             client.close();
         }
