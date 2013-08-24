@@ -7,13 +7,16 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
- <c:if test="#{select2Actions.mustIncludeResources()}">
-     <script>
-     var currentUserLang = "#{localeSelector.language}";
-     </script>
-     <script src="/nuxeo/scripts/select2/select2.js"/>
-     <script src="/nuxeo/scripts/select2/nuxeo-select2.js"/>
- </c:if>
+  <ui:fragment rendered="#{select2Actions.mustIncludeResources()}">
+    <c:if test="false">
+          Here we cannot use c:if test because if select2 is used in another part of the JSF tree which is not rendered, the test is even though evaluated during the RENDER_RESPONSE Phase and the scripts will be included in a JSF component which is not rendered/displayed.
+        </c:if>
+    <script>
+      var currentUserLang = "#{localeSelector.language}";
+    </script>
+    <script src="/nuxeo/scripts/select2/select2.js" />
+    <script src="/nuxeo/scripts/select2/nuxeo-select2.js" />
+  </ui:fragment>
 
  <c:if test="#{widgetProperty_inlinejs != null }">
      <script><h:outputText value="#{widgetProperty_inlinejs}" escape="false"/></script>
