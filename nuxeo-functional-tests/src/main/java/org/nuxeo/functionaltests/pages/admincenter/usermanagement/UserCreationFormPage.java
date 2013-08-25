@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -61,10 +62,6 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     WebElement secondPasswordInput;
 
     @Required
-    @FindBy(id = "createUserView:createUser:nxl_user:nxw_groups_suggest")
-    WebElement groupInput;
-
-    @Required
     @FindBy(id = "createUserView:createUser:button_save")
     WebElement createButton;
 
@@ -86,8 +83,8 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         emailInput.sendKeys(email);
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.sendKeys(password);
-        groupInput.sendKeys(group);
-        findElementWaitUntilEnabledAndClick(By.xpath("//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/tbody/tr[1]/td[2]"));
+        Select2WidgetElement groups = new Select2WidgetElement(driver, By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']"), true);
+        groups.selectValue(group);
         createButton.click();
         return asPage(UsersGroupsBasePage.class);
     }

@@ -18,6 +18,7 @@
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -48,10 +49,6 @@ public class UserEditFormPage extends UsersGroupsBasePage {
     WebElement emailInput;
 
     @Required
-    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_groups_2_suggest")
-    WebElement groupInput;
-
-    @Required
     @FindBy(xpath = "//input[@value=\"Save\"]")
     WebElement saveButton;
 
@@ -78,10 +75,8 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(companyInput, company);
         updateInput(emailInput, email);
         if (group != null) {
-            groupInput.sendKeys(group);
-            // add a space since there is one just after the icon
-            findElementWaitUntilEnabledAndClick(By.xpath("//span[text()=\""
-                    + group + "\"]"));
+            Select2WidgetElement groups = new Select2WidgetElement(driver, By.xpath("//*[@id='s2id_viewUserView:editUser:nxl_user_2:nxw_groups_2_select2']"), true);
+            groups.selectValue(group);
         }
         saveButton.click();
         return asPage(UserViewTabSubPage.class);

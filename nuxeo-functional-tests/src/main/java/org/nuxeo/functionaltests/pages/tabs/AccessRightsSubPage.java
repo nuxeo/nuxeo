@@ -19,21 +19,16 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
-import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.pagefactory.ByChained;
-import org.openqa.selenium.support.ui.Clock;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.SystemClock;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
@@ -41,9 +36,9 @@ import org.openqa.selenium.support.ui.SystemClock;
  */
 public class AccessRightsSubPage extends AbstractPage {
 
-    @Required
+    /*@Required
     @FindBy(id = "add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest")
-    WebElement userSelectionSuggestInputText;
+    WebElement userSelectionSuggestInputText;*/
 
     @Required
     @FindBy(id = "add_rights_form:rights_grant_select")
@@ -109,34 +104,8 @@ public class AccessRightsSubPage extends AbstractPage {
     public AccessRightsSubPage addPermissionForUser(String username,
             String permission, boolean grant) {
 
-        userSelectionSuggestInputText.sendKeys(username);
-
-        // Avoid NoSuchElementException when user suggestion can not be found
-        // even after timeout.
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(AbstractTest.AJAX_TIMEOUT_SECONDS * 1000 * 4);
-        WebDriverException lastException = null;
-        while (clock.isNowBefore(end)) {
-            try {
-                findElementWaitUntilEnabledAndClick(
-                        By.xpath("//table[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/tbody/tr[1]/td[2]"),
-                        AbstractTest.AJAX_TIMEOUT_SECONDS * 1000,
-                        AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
-                lastException = null;
-                break;
-            } catch (NotFoundException nfe) {
-                userSelectionSuggestInputText.sendKeys(Keys.ARROW_DOWN);
-                lastException = nfe;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-        }
-        if (lastException != null) {
-            throw lastException;
-        }
+        Select2WidgetElement userSelection = new Select2WidgetElement(driver, By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']"), true);
+        userSelection.selectValue(username);
 
         Select selectGrant = new Select(selectGrantElement);
 
