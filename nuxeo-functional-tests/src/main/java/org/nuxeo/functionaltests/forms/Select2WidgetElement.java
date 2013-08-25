@@ -42,9 +42,14 @@ public class Select2WidgetElement {
 
     private static final String S2_CSS_ACTIVE_CLASS = "select2-active";
 
-    private Function<WebDriver, Boolean> S2_SINGLE_WAIT_FUNCTION;
+    /**
+     * Select2 loading timeout in seconds.
+     */
+    private static final int SELECT2_LOADING_TIMEOUT = 5;
 
-    private Function<WebDriver, Boolean> S2_MULTIPLE_WAIT_FUNCTION;
+    private Function<WebDriver, Boolean> s2SingleWaitFunction;
+
+    private Function<WebDriver, Boolean> s2MultipleWaitFunction;
 
     private final WebElement element;
 
@@ -62,7 +67,7 @@ public class Select2WidgetElement {
         this.driver = driver;
         this.element = driver.findElement(by);
 
-        S2_SINGLE_WAIT_FUNCTION = new Function<WebDriver, Boolean>() {
+        s2SingleWaitFunction = new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
                 WebElement searchInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
                 return !searchInput.getAttribute("class").contains(
@@ -70,7 +75,7 @@ public class Select2WidgetElement {
             }
         };
 
-        S2_MULTIPLE_WAIT_FUNCTION = new Function<WebDriver, Boolean>() {
+        s2MultipleWaitFunction = new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
                 WebElement searchInput = element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH));
                 return !searchInput.getAttribute("class").contains(
@@ -108,7 +113,7 @@ public class Select2WidgetElement {
         }
         select2Field.click();
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(3,
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(SELECT2_LOADING_TIMEOUT,
                 TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
                 NoSuchElementException.class);
 
@@ -121,8 +126,8 @@ public class Select2WidgetElement {
 
         for (char c : value.toCharArray()) {
             suggestInput.sendKeys(c + "");
-            wait.until(mutliple ? S2_MULTIPLE_WAIT_FUNCTION
-                    : S2_SINGLE_WAIT_FUNCTION);
+            wait.until(mutliple ? s2MultipleWaitFunction
+                    : s2SingleWaitFunction);
         }
 
         WebElement suggestion = driver.findElement(By.xpath(S2_SUGGEST_RESULT_XPATH));
