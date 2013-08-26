@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -77,7 +78,6 @@ public class UserGroupTest extends BaseTest {
         user.setLastName("McCartney");
         String userJson = getPrincipalAsJson(user);
 
-
         // When I call a PUT on the Rest endpoint
         ClientResponse response = getResponse(RequestType.PUT, "/user/user1",
                 userJson);
@@ -94,8 +94,25 @@ public class UserGroupTest extends BaseTest {
 
     }
 
+    @Test
+    public void itCanDeleteAUser() throws Exception {
+        // Given a modified user
+        NuxeoPrincipal user = um.getPrincipal("user1");
+
+        // When I call a DELETE on the Rest endpoint
+        ClientResponse response = getResponse(RequestType.DELETE, "/user/user1");
+
+        // Then the user is deleted
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+        user = um.getPrincipal("user1");
+        assertNull(user);
+
+    }
+
     /**
      * Returns the Json representation of a user.
+     *
      * @param user
      * @return
      * @throws IOException

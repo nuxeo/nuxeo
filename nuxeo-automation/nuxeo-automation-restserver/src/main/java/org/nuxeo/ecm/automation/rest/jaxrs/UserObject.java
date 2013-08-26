@@ -16,10 +16,13 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -58,10 +61,21 @@ public class UserObject extends DefaultObject {
 
     @PUT
     public NuxeoPrincipal doUpdateUser(NuxeoPrincipal principal) {
-        UserManager um  = Framework.getLocalService(UserManager.class);
+        UserManager um = Framework.getLocalService(UserManager.class);
         try {
             um.updateUser(principal.getModel());
             return um.getPrincipal(principal.getName());
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    @DELETE
+    public Response doDeleteUser() {
+        UserManager um = Framework.getLocalService(UserManager.class);
+        try {
+            um.deleteUser(principal.getModel());
+            return Response.status(Status.NO_CONTENT).build();
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
