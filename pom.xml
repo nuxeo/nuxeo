@@ -4012,6 +4012,13 @@
         <artifactId>core</artifactId>
         <version>1.0-b02</version>
       </dependency>
+
+      <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+        <version>2.1.0-20130502</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
