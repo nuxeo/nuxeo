@@ -9,14 +9,14 @@
   <c:set var="lifeCycleState" value="#{currentDocument.getCurrentLifeCycleState()}" />
   <c:choose>
     <c:when test="#{lifeCycleState eq 'draft' and routeSecurityChecker.canValidateRoute(currentDocument)}">
-      <h:commandButton type="submit" class="button"
+      <h:commandButton type="submit" class="button smallButton"
         value="#{messages['action.validate.document.routing.model']}"
         action="#{routingActions.validateRouteModel()}" id="validate_route_model"/>
     </c:when>
     <c:when test="#{lifeCycleState eq 'validated'}">
       <nxl:layout mode="edit" value="#{currentDocument}"
         name="document_routing_instance" />
-      <h:commandButton type="submit" class="button"
+      <h:commandButton type="submit" class="button smallButton"
         value="#{messages['action.start.document.routing']}" action="#{routingActions.startRoute()}" id="start_route" />
     </c:when>
     <c:otherwise>

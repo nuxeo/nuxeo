@@ -20,7 +20,7 @@
     </c:when>
     <c:otherwise>
 	  <nxl:layout value="#{routingActions}" mode="edit" name="document_related_route" />
-	  <h:commandButton type="submit" class="button"
+	  <h:commandButton type="submit" class="button smallButton"
 	    value="#{messages['action.start.related.document.route']}"
 	    action="#{routingActions.startRouteRelatedToCurrentDocument()}" id="start_route"/>
     </c:otherwise>
