@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -72,6 +71,20 @@ public class UserGroupTest extends BaseTest {
     }
 
     @Test
+    public void itReturnsA404OnNonExistentUser() throws Exception {
+        // Given a non existent user
+
+        // When I call the Rest endpoint
+        ClientResponse response = getResponse(RequestType.GET,
+                "/user/nonexistentuser");
+
+        // Then it returns the Json
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),
+                response.getStatus());
+
+    }
+
+    @Test
     public void itCanUpdateAUser() throws Exception {
         // Given a modified user
         NuxeoPrincipal user = um.getPrincipal("user1");
@@ -104,13 +117,27 @@ public class UserGroupTest extends BaseTest {
         ClientResponse response = getResponse(RequestType.DELETE, "/user/user1");
 
         // Then the user is deleted
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
+                response.getStatus());
 
         user = um.getPrincipal("user1");
         assertNull(user);
 
     }
 
+    @Test
+    public void itCanDeleteIfNotAdmin() throws Exception {
+        // Given a modified user
+        service = getServiceFor("user1", "user1");
+
+        // When I call a DELETE on the Rest endpoint
+        ClientResponse response = getResponse(RequestType.DELETE, "/user/user2");
+
+        // Then the user is deleted
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+                response.getStatus());
+
+    }
 
     @Test
     public void itCanCreateAUser() throws Exception {
@@ -121,12 +148,13 @@ public class UserGroupTest extends BaseTest {
         principal.setCompany("nuxeo");
         principal.setEmail("test@nuxeo.com");
 
+        // When i POST it on the user endpoint
+        ClientResponse response = getResponse(RequestType.POST, "/user",
+                getPrincipalAsJson(principal));
 
-        //When i POST it on the user endpoint
-        ClientResponse response = getResponse(RequestType.POST, "/user",getPrincipalAsJson(principal));
-
-        //Then a user is created
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        // Then a user is created
+        assertEquals(Response.Status.CREATED.getStatusCode(),
+                response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEqualsUser("newuser", "test", "user", node);
 

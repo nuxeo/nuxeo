@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
         MediaType.APPLICATION_JSON + "+nxentity" })
 public class UserObject extends DefaultObject {
 
-    protected NuxeoPrincipal principal;
+    protected NuxeoPrincipal currentPrincipal;
 
     @Override
     protected void initialize(Object... args) {
@@ -52,12 +52,12 @@ public class UserObject extends DefaultObject {
                     "UserObject takes at least one parameter");
         }
 
-        principal = (NuxeoPrincipal) args[0];
+        currentPrincipal = (NuxeoPrincipal) args[0];
     }
 
     @GET
     public NuxeoPrincipal doGetUser() {
-        return principal;
+        return currentPrincipal;
     }
 
     @PUT
@@ -72,14 +72,15 @@ public class UserObject extends DefaultObject {
         }
     }
 
-    /**
-     *
-     * @since 5.7.3
-     */
     private void checkCurrentUserCanAdministrateUser() {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
-        if(!principal.isAdministrator()) {
-            throw new WebSecurityException("User is not allowed to edit users");
+        if (!principal.isAdministrator()) {
+            if ((!principal.isMemberOf("powerusers"))
+                    || currentPrincipal.isAdministrator()) {
+
+                throw new WebSecurityException(
+                        "User is not allowed to edit users");
+            }
         }
     }
 
@@ -88,7 +89,7 @@ public class UserObject extends DefaultObject {
         checkCurrentUserCanAdministrateUser();
         UserManager um = Framework.getLocalService(UserManager.class);
         try {
-            um.deleteUser(principal.getModel());
+            um.deleteUser(currentPrincipal.getModel());
             return Response.status(Status.NO_CONTENT).build();
         } catch (ClientException e) {
             throw WebException.wrap(e);
