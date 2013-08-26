@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -250,7 +252,7 @@ public class Select2ActionsBean implements Serializable {
 
     }
 
-    protected JSONArray getMultipleUserReference(final Object value) {
+    protected JSONArray getMultipleUserReference(final Object value, final boolean prefixed) {
         if (value == null) {
             return null;
         }
@@ -267,7 +269,7 @@ public class Select2ActionsBean implements Serializable {
         }
 
         for (String ref : storedRefs) {
-            JSONObject resolved = getSingleUserReference(ref);
+            JSONObject resolved = getSingleUserReference(ref, prefixed);
             if (resolved != null && !resolved.isEmpty()) {
                 result.add(resolved);
             }
@@ -352,13 +354,33 @@ public class Select2ActionsBean implements Serializable {
 
     }
 
-    protected JSONObject getSingleUserReference(final String storedReference) {
+    protected JSONObject getSingleUserReference(final String storedReference, final boolean prefixed) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         JSONObject obj = new JSONObject();
+        if (storedReference == null || storedReference.isEmpty()) {
+            return obj;
+        }
         try {
-            DocumentModel userOrGroup = userManager.getUserModel(storedReference);
-            if (userOrGroup != null) {
+            DocumentModel user = null;
+            DocumentModel group = null;
+            if (prefixed) {
+                String[] split = storedReference.split(":");
+                if (split == null || split.length != 2) {
+                    return obj;
+                }
+                if (split[0].equals(NuxeoPrincipal.PREFIX)) {
+                    user = userManager.getUserModel(split[1]);
+                } else if (split[0].equals(NuxeoGroup.PREFIX)) {
+                    group = userManager.getGroupModel(split[1]);
+                }
+            } else {
+                user = userManager.getUserModel(storedReference);
+                if (user == null) {
+                    group = userManager.getGroupModel(storedReference);
+                }
+            }
+            if (user != null) {
                 Schema schema = schemaManager.getSchema("user");
                 String username = null;
                 String firstname = null;
@@ -366,7 +388,7 @@ public class Select2ActionsBean implements Serializable {
                 for (Field field : schema.getFields()) {
                     QName fieldName = field.getName();
                     String key = fieldName.getLocalName();
-                    Serializable value = userOrGroup.getPropertyValue(fieldName.getPrefixedName());
+                    Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
                     obj.element(key, value);
                     if (key.equals("username")) {
                         username = (String) value;
@@ -383,31 +405,27 @@ public class Select2ActionsBean implements Serializable {
                 } else {
                     label = username;
                 }
-                String userId = userOrGroup.getId();
+                String userId = user.getId();
                 obj.put(Select2Common.ID, userId);
                 obj.put(Select2Common.LABEL, label);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
-            } else {
-                userOrGroup = userManager.getGroupModel(storedReference);
-                if (userOrGroup != null) {
+                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
+            } else if (group != null) {
                     Schema schema = schemaManager.getSchema("group");
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();
-                        Serializable value = userOrGroup.getPropertyValue(fieldName.getPrefixedName());
+                        Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
                         obj.element(key, value);
                         if (key.equals("grouplabel")) {
                             obj.element(Select2Common.LABEL, value);
                         }
                     }
-                    String groupId = userOrGroup.getId();
+                    String groupId = group.getId();
                     obj.put(Select2Common.ID, groupId);
                     obj.put(Select2Common.TYPE_KEY_NAME,
                             Select2Common.GROUP_TYPE);
-                } else {
-                    // TODO
-                    // We didn't find any match for the user or group.
-                }
+                    obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
             }
         } catch (ClientException e) {
             log.error("An error occured while retrievin user/group reference"
@@ -598,7 +616,7 @@ public class Select2ActionsBean implements Serializable {
     }
 
     @SuppressWarnings("rawtypes")
-    public String resolveMultipleUserReference(final Object value) {
+    public String resolveMultipleUserReference(final Object value, final boolean prefixed) {
         if (value == null) {
             return "[]";
         }
@@ -615,7 +633,7 @@ public class Select2ActionsBean implements Serializable {
         }
 
         for (String ref : storedRefs) {
-            String resolved = resolveSingleUserReference(ref);
+            String resolved = resolveSingleUserReference(ref, prefixed);
             if (resolved != null && !resolved.isEmpty()) {
                 result.add(resolved);
             }
@@ -623,8 +641,8 @@ public class Select2ActionsBean implements Serializable {
         return result.toString();
     }
 
-    public List<String> resolveMultipleUserReferenceLabels(final Object value) {
-        return formatList(getMultipleUserReference(value));
+    public List<String> resolveMultipleUserReferenceLabels(final Object value, final boolean prefixed) {
+        return formatList(getMultipleUserReference(value, prefixed));
     }
 
     protected DocumentModel resolveReference(final String repo,
@@ -776,8 +794,8 @@ public class Select2ActionsBean implements Serializable {
         return doc.getTitle();
     }
 
-    public String resolveSingleUserReference(final String storedReference) {
-        JSONObject result = getSingleUserReference(storedReference);
+    public String resolveSingleUserReference(final String storedReference, final boolean prefixed) {
+        JSONObject result = getSingleUserReference(storedReference, prefixed);
         if (result != null) {
             return result.toString();
         } else {
@@ -785,8 +803,8 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    public String resolveUserReferenceLabel(final String storedReference) {
-        JSONObject obj = getSingleUserReference(storedReference);
+    public String resolveUserReferenceLabel(final String storedReference, final boolean prefixed) {
+        JSONObject obj = getSingleUserReference(storedReference, prefixed);
         if (obj == null) {
             return "";
         }

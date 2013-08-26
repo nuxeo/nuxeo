@@ -50,6 +50,8 @@ public class Select2Common {
 
     public static final String TYPE_KEY_NAME = "type";
 
+    public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.

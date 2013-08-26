@@ -147,6 +147,10 @@ function initSelect2Widget(el) {
     select2_params.id = function(doc) {
       return doc.properties[params.idProperty];
     };
+  } else if (params.prefixed) {
+    select2_params.id = function(item) {
+      return item.prefixed_id;
+    };
   } else {
     select2_params.id = getDefaultId;
   }

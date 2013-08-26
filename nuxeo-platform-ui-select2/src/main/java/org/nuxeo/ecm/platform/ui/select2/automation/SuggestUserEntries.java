@@ -33,6 +33,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -111,6 +113,7 @@ public class SuggestUserEntries {
                 obj.put(Select2Common.ID, userId);
                 obj.put(Select2Common.LABEL, label);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
+                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
                 result.add(obj);
             }
         }
@@ -131,6 +134,7 @@ public class SuggestUserEntries {
                 String groupId = group.getId();
                 obj.put(Select2Common.ID, groupId);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
+                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
                 result.add(obj);
             }
         }

@@ -27,7 +27,7 @@
         var="currentValue">
         <f:converter converterId="select2Converter"></f:converter>
         <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
-          value="#{select2Actions.resolveMultipleUserReference(currentValue)}" />
+          value="#{select2Actions.resolveMultipleUserReference(currentValue, widgetProperty_prefixed)}" />
       </nxu:valueHolder>
 
       <c:if test="#{!widgetProperty_hideInstructionLabel}">
