@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -107,6 +108,33 @@ public class UserGroupTest extends BaseTest {
 
         user = um.getPrincipal("user1");
         assertNull(user);
+
+    }
+
+
+    @Test
+    public void itCanCreateAUser() throws Exception {
+        // Given a new user
+        NuxeoPrincipal principal = new NuxeoPrincipalImpl("newuser");
+        principal.setFirstName("test");
+        principal.setLastName("user");
+        principal.setCompany("nuxeo");
+        principal.setEmail("test@nuxeo.com");
+
+
+        //When i POST it on the user endpoint
+        ClientResponse response = getResponse(RequestType.POST, "/user",getPrincipalAsJson(principal));
+
+        //Then a user is created
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEqualsUser("newuser", "test", "user", node);
+
+        principal = um.getPrincipal("newuser");
+        assertEquals("test", principal.getFirstName());
+        assertEquals("user", principal.getLastName());
+        assertEquals("nuxeo", principal.getCompany());
+        assertEquals("test@nuxeo.com", principal.getEmail());
 
     }
 
