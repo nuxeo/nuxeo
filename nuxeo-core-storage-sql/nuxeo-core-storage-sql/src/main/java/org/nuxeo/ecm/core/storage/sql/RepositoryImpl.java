@@ -266,8 +266,12 @@ public class RepositoryImpl implements Repository {
 
                     mapper = backend.newMapper(model, pathResolver);
 
-                    // first connection, initialize the database
-                    mapper.createDatabase();
+                    if (repositoryDescriptor.noDDL) {
+                        log.info("Skipping database creation");
+                    } else {
+                        // first connection, initialize the database
+                        mapper.createDatabase();
+                    }
                     if (repositoryDescriptor.clusteringEnabled) {
                         log.info("Clustering enabled with "
                                 + repositoryDescriptor.clusteringDelay
