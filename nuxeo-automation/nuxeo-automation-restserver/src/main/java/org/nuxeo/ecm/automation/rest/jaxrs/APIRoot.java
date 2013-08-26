@@ -61,6 +61,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("users");
     }
 
+    @Path("/group")
+    public Object doGetGroup() {
+        return newObject("groups");
+    }
+
 
     @Override
     public Object handleError(WebApplicationException e) {

@@ -16,7 +16,8 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -165,6 +167,42 @@ public class UserGroupTest extends BaseTest {
         assertEquals("test@nuxeo.com", principal.getEmail());
 
     }
+
+    @Test
+    public void itCanGetAGroup() throws Exception {
+        // Given a group
+        NuxeoGroup group = um.getGroup("group1");
+
+        // When i GET on the API
+        ClientResponse response = getResponse(RequestType.GET, "/group/"
+                + group.getName());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Then i GET the Group
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEqualsGroup(group.getName(), group.getLabel(), node);
+
+    }
+
+    /**
+     * Assert that the given node represents a group which properties are given
+     * in parameters
+     *
+     * @param groupName
+     * @param groupLabel
+     * @param node
+     *
+     * @since 5.7.3
+     */
+    private void assertEqualsGroup(String groupName, String groupLabel,
+            JsonNode node) {
+        assertEquals("user", node.get("entity-type").getValueAsText());
+        assertEquals(groupName,
+                node.get("groupname").getValueAsText());
+        assertEquals(groupLabel,
+                node.get("label").getValueAsText());
+    }
+
 
     /**
      * Returns the Json representation of a user.

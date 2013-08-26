@@ -65,7 +65,6 @@ public class DocumentModelListReaderTest {
         DocumentModel note1 = RestServerInit.getNote(1, session);
 
         String json = JSONDocumentHelper.getDocAsJson(note1);
-        System.out.println(json);
 
         DocumentModel doc = JSONDocumentModelReader.readRequest(json, null,
                 request);

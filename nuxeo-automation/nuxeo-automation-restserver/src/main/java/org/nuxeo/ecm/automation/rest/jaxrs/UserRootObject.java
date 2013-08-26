@@ -43,33 +43,27 @@ import org.nuxeo.runtime.api.Framework;
         MediaType.APPLICATION_JSON + "+nxentity" })
 public class UserRootObject extends DefaultObject {
 
-
     @Path("{username}")
     public Object getUser(@PathParam("username")
     String username) {
         UserManager um = Framework.getLocalService(UserManager.class);
         try {
             NuxeoPrincipal user = um.getPrincipal(username);
+            if (user == null) {
+                throw new WebResourceNotFoundException("User does not exist");
+            }
             return newObject("user", user);
         } catch (ClientException e) {
-            return new WebResourceNotFoundException(e.getMessage());
+            throw WebException.wrap(e);
         }
     }
 
     @POST
     public Response createUser(NuxeoPrincipal principal) {
         try {
-            if(principal.getName() == null) {
-                throw new WebException("User MUST have a name",
-                        Response.Status.PRECONDITION_FAILED.getStatusCode());
-            }
-
             UserManager um = Framework.getLocalService(UserManager.class);
-            NuxeoPrincipal user = um.getPrincipal(principal.getName());
-            if (user != null) {
-                throw new WebException("User already exists",
-                        Response.Status.PRECONDITION_FAILED.getStatusCode());
-            }
+            checkPrincipalHasAName(principal);
+            checkPrincipalDoesNotAlreadyExists(principal, um);
 
             um.createUser(principal.getModel());
             return Response.status(Status.CREATED).entity(
@@ -77,6 +71,22 @@ public class UserRootObject extends DefaultObject {
 
         } catch (ClientException e) {
             throw WebException.wrap(e);
+        }
+    }
+
+    private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal,
+            UserManager um) throws ClientException {
+        NuxeoPrincipal user = um.getPrincipal(principal.getName());
+        if (user != null) {
+            throw new WebException("User already exists",
+                    Response.Status.PRECONDITION_FAILED.getStatusCode());
+        }
+    }
+
+    private void checkPrincipalHasAName(NuxeoPrincipal principal) {
+        if (principal.getName() == null) {
+            throw new WebException("User MUST have a name",
+                    Response.Status.PRECONDITION_FAILED.getStatusCode());
         }
     }
 

@@ -40,6 +40,9 @@ public class RestServerInit implements RepositoryInit {
     public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson",
             "Gates" };
 
+    public static final String[] GROUPNAMES = { "Stark", "Lannister", "Targaryen",
+    "Greyjoy" };
+
     @Override
     public void populate(CoreSession session) throws ClientException {
         // Create some docs
@@ -76,10 +79,32 @@ public class RestServerInit implements RepositoryInit {
                 userModel.setProperty(schemaName, "username", userId);
                 userModel.setProperty(schemaName, "firstName", FIRSTNAMES[idx]);
                 userModel.setProperty(schemaName, "lastName", LASTNAMES[idx]);
+                userModel.setProperty(schemaName, "password", userId);
                 userModel = um.createUser(userModel);
                 principal = um.getPrincipal(userId);
             }
         }
+
+
+        //Create some groups
+        for (int idx = 0; idx < 4; idx++) {
+            String groupId = "group" + idx;
+
+            UserManager um = Framework.getLocalService(UserManager.class);
+
+            NuxeoPrincipal principal = um.getPrincipal(groupId);
+
+            if (principal == null) {
+
+                DocumentModel groupModel = um.getBareGroupModel();
+                String schemaName = um.getGroupSchemaName();
+                groupModel.setProperty(schemaName, "groupname", groupId);
+                groupModel.setProperty(schemaName, "grouplabel", GROUPNAMES[idx]);
+                groupModel = um.createGroup(groupModel);
+                principal = um.getPrincipal(groupId);
+            }
+        }
+
 
     }
 

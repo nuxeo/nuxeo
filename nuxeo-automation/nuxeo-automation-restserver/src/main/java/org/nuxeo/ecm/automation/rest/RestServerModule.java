@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.automation.rest.io.BusinessAdapterReader;
 import org.nuxeo.ecm.automation.rest.io.JSONDocumentModelReader;
+import org.nuxeo.ecm.automation.rest.io.NuxeoGroupWriter;
 import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalReader;
 import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
@@ -62,6 +63,7 @@ public class RestServerModule extends WebEngineModule {
         result.add(new JSONDocumentModelReader());
         result.add(new NuxeoPrincipalWriter());
         result.add(new NuxeoPrincipalReader());
+        result.add(new NuxeoGroupWriter());
         return result;
     }
 
