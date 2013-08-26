@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.select2;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,7 +53,10 @@ public class Select2Converter implements Serializable, Converter {
             return null;
         } else {
             String[] values = value.split(getSeparator());
-            return Arrays.asList(values);
+            // Be careful here, if we just return Arrays.asList(values), the
+            // resulting list will be unmodifiable and this might cause an error
+            // if something try to add elements. Let's make sure it'll be modifiable
+            return new ArrayList<String>(Arrays.asList(values));
         }
     }
 
