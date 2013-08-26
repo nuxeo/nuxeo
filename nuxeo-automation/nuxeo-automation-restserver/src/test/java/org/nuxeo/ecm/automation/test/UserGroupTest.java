@@ -18,11 +18,17 @@ package org.nuxeo.ecm.automation.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -59,13 +65,70 @@ public class UserGroupTest extends BaseTest {
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        assertEquals("user", node.get("entity-type").getValueAsText());
-        assertEquals("user1", node.get("id").getValueAsText());
-        assertEquals("John",
-                node.get("properties").get("firstName").getValueAsText());
-        assertEquals("Lennon",
-                node.get("properties").get("lastName").getValueAsText());
+        assertEqualsUser("user1", "John", "Lennon", node);
 
+    }
+
+    @Test
+    public void itCanUpdateAUser() throws Exception {
+        // Given a modified user
+        NuxeoPrincipal user = um.getPrincipal("user1");
+        user.setFirstName("Paul");
+        user.setLastName("McCartney");
+        String userJson = getPrincipalAsJson(user);
+
+
+        // When I call a PUT on the Rest endpoint
+        ClientResponse response = getResponse(RequestType.PUT, "/user/user1",
+                userJson);
+
+        // Then it changes the user
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEqualsUser("user1", "Paul", "McCartney", node);
+
+        user = um.getPrincipal("user1");
+        assertEquals("Paul", user.getFirstName());
+        assertEquals("McCartney", user.getLastName());
+
+    }
+
+    /**
+     * Returns the Json representation of a user.
+     * @param user
+     * @return
+     * @throws IOException
+     *
+     * @since 5.7.3
+     */
+    private String getPrincipalAsJson(NuxeoPrincipal user) throws IOException {
+        NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
+        OutputStream out = new ByteArrayOutputStream();
+        npw.writeTo(user, NuxeoPrincipal.class, null, null, null, null, out);
+        String userJson = out.toString();
+        return userJson;
+    }
+
+    /**
+     * Assert that the given node represents a user which properties are given
+     * in parameters.
+     *
+     * @param username
+     * @param firstname
+     * @param lastname
+     * @param node
+     *
+     * @since 5.7.3
+     */
+    private void assertEqualsUser(String username, String firstname,
+            String lastname, JsonNode node) {
+        assertEquals("user", node.get("entity-type").getValueAsText());
+        assertEquals(username, node.get("id").getValueAsText());
+        assertEquals(firstname,
+                node.get("properties").get("firstName").getValueAsText());
+        assertEquals(lastname,
+                node.get("properties").get("lastName").getValueAsText());
     }
 
 }

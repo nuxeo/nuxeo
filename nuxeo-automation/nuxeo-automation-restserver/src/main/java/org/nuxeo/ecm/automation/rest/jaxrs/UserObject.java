@@ -17,12 +17,17 @@
 package org.nuxeo.ecm.automation.rest.jaxrs;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -49,6 +54,17 @@ public class UserObject extends DefaultObject {
     @GET
     public NuxeoPrincipal doGetUser() {
         return principal;
+    }
+
+    @PUT
+    public NuxeoPrincipal doUpdateUser(NuxeoPrincipal principal) {
+        UserManager um  = Framework.getLocalService(UserManager.class);
+        try {
+            um.updateUser(principal.getModel());
+            return um.getPrincipal(principal.getName());
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
     }
 
 }
