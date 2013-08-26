@@ -281,7 +281,7 @@ public class RepositoryImpl implements Repository {
                 }
             }
             finally {
-            	modelSetupLock.unlock();
+                modelSetupLock.unlock();
             }
         }
         mapper = backend.newMapper(model, pathResolver);
