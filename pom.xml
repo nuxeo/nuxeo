@@ -247,7 +247,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-core</artifactId>
-        <version>${nuxeo.features.version}-CP03</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -282,7 +282,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-comment-web</artifactId>
-        <version>${nuxeo.features.version}-CP04</version>
+        <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
