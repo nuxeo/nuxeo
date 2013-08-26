@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.elasticsearch.core;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/elasticsearch-service.xml,
  OSGI-INF/listener-contrib.xml,
- OSGI-INF/operations-contrib.xml
+ OSGI-INF/operations-contrib.xml,
+ OSGI-INF/workmanager-config.xml

@@ -26,10 +26,9 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
     }
 
     @Override
-    public void work() throws Exception {
-        CoreSession session = initSession(repositoryName);
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        DocumentModelIterator iter = session.getChildrenIterator(docRef);
+    protected void doIndexingWork(CoreSession session,
+            ElasticSearchService ess, DocumentModel doc) throws Exception {
+        DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
         while (iter.hasNext()) {
             DocumentModel child = iter.next();
             if (!isAlreadyScheduledForIndexing(child)) {
@@ -43,6 +42,11 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
             }
         }
 
+    }
+
+    @Override
+    protected Work clone(DocumentModel doc) {
+        return new ChildrenIndexingWorker(doc);
     }
 
 }

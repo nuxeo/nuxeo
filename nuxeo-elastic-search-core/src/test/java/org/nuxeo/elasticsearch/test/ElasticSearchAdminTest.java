@@ -20,7 +20,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class ElasticSearchAdminTest {
 
     @Test
-    public void shouldHaveDeclaredService() throws Exception {
+    public void verifyNodeStartedWithConfig() throws Exception {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);

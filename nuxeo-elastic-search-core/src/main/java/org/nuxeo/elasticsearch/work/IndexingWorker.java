@@ -27,17 +27,19 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     }
 
     @Override
-    public void work() throws Exception {
-        CoreSession session = initSession(repositoryName);
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-
-        DocumentModel doc = session.getDocument(docRef);
+    protected void doIndexingWork(CoreSession session,
+            ElasticSearchService ess, DocumentModel doc) throws Exception {
         ess.indexNow(doc);
         if (recurse) {
             ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(doc);
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             wm.schedule(subWorker);
         }
+    }
+
+    @Override
+    protected Work clone(DocumentModel doc) {
+        return new IndexingWorker(doc, recurse);
     }
 
 }

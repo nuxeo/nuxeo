@@ -9,8 +9,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.ElasticSearchService;
+import org.nuxeo.elasticsearch.listener.ElasticsearchIndexingListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -38,15 +40,17 @@ public class SimpleElasticSearchServiceTest {
     }
 
     @Test
-    public void shouldIndexDocument() throws Exception {
-
-        DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
-        doc.setPropertyValue("dc:title", "TestMe");
-        doc = session.createDocument(doc);
-        session.save();
+    public void shouldIndexDocuments() throws Exception {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
+
+        DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
+        doc.setPropertyValue("dc:title", "TestMe");
+        doc.putContextData(ElasticsearchIndexingListener.DISABLE_AUTO_INDEXING,
+                Boolean.TRUE);
+        doc = session.createDocument(doc);
+        session.save();
 
         String res = ess.indexNow(doc);
         Assert.assertNotNull(res);
@@ -73,7 +77,6 @@ public class SimpleElasticSearchServiceTest {
                 .actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-
         searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
                 .setTypes("doc")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
@@ -83,8 +86,8 @@ public class SimpleElasticSearchServiceTest {
                 .actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-
     }
+
 
 
 
