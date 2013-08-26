@@ -20,8 +20,11 @@ import org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Repo init to test Rest API
@@ -31,8 +34,15 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
  */
 public class RestServerInit implements RepositoryInit {
 
+    public static final String[] FIRSTNAMES = { "Steve", "John", "Georges",
+            "Bill" };
+
+    public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson",
+            "Gates" };
+
     @Override
     public void populate(CoreSession session) throws ClientException {
+        // Create some docs
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.createDocumentModel("/", "folder_" + i,
                     "Folder");
@@ -50,6 +60,26 @@ public class RestServerInit implements RepositoryInit {
         }
 
         session.save();
+
+        // Create some users
+        for (int idx = 0; idx < 4; idx++) {
+            String userId = "user" + idx;
+
+            UserManager um = Framework.getLocalService(UserManager.class);
+
+            NuxeoPrincipal principal = um.getPrincipal(userId);
+
+            if (principal == null) {
+
+                DocumentModel userModel = um.getBareUserModel();
+                String schemaName = um.getUserSchemaName();
+                userModel.setProperty(schemaName, "username", userId);
+                userModel.setProperty(schemaName, "firstName", FIRSTNAMES[idx]);
+                userModel.setProperty(schemaName, "lastName", LASTNAMES[idx]);
+                userModel = um.createUser(userModel);
+                principal = um.getPrincipal(userId);
+            }
+        }
 
     }
 

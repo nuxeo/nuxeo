@@ -56,6 +56,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("repo");
     }
 
+    @Path("/user")
+    public Object doGetUser() {
+        return newObject("users");
+    }
+
 
     @Override
     public Object handleError(WebApplicationException e) {
