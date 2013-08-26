@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,9 +25,10 @@ import org.elasticsearch.node.NodeBuilder;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -42,6 +44,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Node localNode;
 
     protected Client client;
+
+    protected final CopyOnWriteArrayList<String> pendingWork = new CopyOnWriteArrayList<String>();
 
     public static final String EP_Config = "elasticSearchConfig";
 
@@ -94,9 +98,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public void index(DocumentLocation docLocation, boolean children) {
-        // TODO Auto-generated method stub
+    public void index(DocumentModel doc, boolean recurse) {
 
+        boolean added = pendingWork.addIfAbsent(getWorkKey(doc));
+        if (!added) {
+            log.debug("Skip indexing for " + doc
+                    + " since it is already scheduled");
+            return;
+        }
+
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        IndexingWorker idxWork = new IndexingWorker(doc, recurse);
+        wm.schedule(idxWork, true);
     }
 
     protected void flushIfLocal() {
@@ -108,7 +121,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public String indexNow(DocumentModel doc) throws ClientException {
-
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
@@ -118,6 +130,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             IndexResponse response = getClient().prepareIndex(MAIN_IDX,
                     NX_DOCUMENT, doc.getId()).setSource(builder).execute().actionGet();
             flushIfLocal();
+            pendingWork.remove(getWorkKey(doc));
             return response.getId();
         } catch (IOException e) {
             e.printStackTrace();
@@ -146,14 +159,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 TransportClient tClient = new TransportClient(getSettings());
                 for (String remoteNode : getConfig().getRemoteNodes()) {
                     String[] address = remoteNode.split(":");
-                        try {
-                            InetAddress inet = InetAddress.getByName(address[0]);
-                            address[1] = "9300"; // Hard coded for now !
-                            tClient.addTransportAddress(new InetSocketTransportAddress(
-                                    inet, Integer.parseInt(address[1])));
-                        } catch (UnknownHostException e) {
-                            log.error("Unable to resolve host " + address[0], e);
-                        }
+                    try {
+                        InetAddress inet = InetAddress.getByName(address[0]);
+                        address[1] = "9300"; // Hard coded for now !
+                        tClient.addTransportAddress(new InetSocketTransportAddress(
+                                inet, Integer.parseInt(address[1])));
+                    } catch (UnknownHostException e) {
+                        log.error("Unable to resolve host " + address[0], e);
+                    }
                 }
                 client = tClient;
             }
@@ -203,5 +216,20 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         client = null;
         localNode = null;
+    }
+
+    protected String getWorkKey(DocumentModel doc) {
+        return doc.getRepositoryName() + ":" + doc.getId();
+    }
+
+    public boolean isAlreadyScheduledForIndexing(DocumentModel doc) {
+        if (pendingWork.contains(getWorkKey(doc))) {
+            return true;
+        }
+        return false;
+    }
+
+    public int getPendingIndexingTasksCount() {
+        return pendingWork.size();
     }
 }

@@ -21,15 +21,16 @@ public class ElasticSearchControler {
     protected final NuxeoElasticSearchConfig config;
 
     public ElasticSearchControler(NuxeoElasticSearchConfig config) {
-        this.config=config;
+        this.config = config;
     }
 
-    public boolean start(){
+    public boolean start() {
 
-        if (config.getStartupScript()!=null) {
+        if (config.getStartupScript() != null) {
             File script = new File(config.getStartupScript());
-            if (! script.exists()) {
-                log.warn("Can not autostart ElasticSearch : script " + config.getStartupScript() + " not found");
+            if (!script.exists()) {
+                log.warn("Can not autostart ElasticSearch : script "
+                        + config.getStartupScript() + " not found");
                 return false;
             }
             return exec(config.asCommandLineArg());
@@ -44,24 +45,20 @@ public class ElasticSearchControler {
         return osName.toLowerCase().contains("windows");
     }
 
-
     protected boolean exec(String command) {
-        List<String> output = new ArrayList<String>();
         String[] cmd;
         if (isWindows()) {
             cmd = new String[] { "cmd", "/C", command };
             cmd = (String[]) ArrayUtils.addAll(cmd, new String[] { "2>&1" });
         } else {
-            cmd = new String[] { "/bin/sh", "-c",
-                    command   + " 2>&1"};
+            cmd = new String[] { "/bin/sh", "-c", command + " 2>&1" };
         }
         String commandLine = StringUtils.join(cmd, " ");
 
         Process p1;
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Running system command: "
-                        + commandLine);
+                log.debug("Running system command: " + commandLine);
             }
             p1 = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
@@ -86,10 +83,6 @@ public class ElasticSearchControler {
         }
 
         return true;
-    }
-
-    protected static void buildDirectory() {
-        File home = Framework.getRuntime().getHome();
     }
 
 }
