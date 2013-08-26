@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -61,6 +62,7 @@ public class UserObject extends DefaultObject {
 
     @PUT
     public NuxeoPrincipal doUpdateUser(NuxeoPrincipal principal) {
+        checkCurrentUserCanAdministrateUser();
         UserManager um = Framework.getLocalService(UserManager.class);
         try {
             um.updateUser(principal.getModel());
@@ -70,8 +72,20 @@ public class UserObject extends DefaultObject {
         }
     }
 
+    /**
+     *
+     * @since 5.7.3
+     */
+    private void checkCurrentUserCanAdministrateUser() {
+        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        if(!principal.isAdministrator()) {
+            throw new WebSecurityException("User is not allowed to edit users");
+        }
+    }
+
     @DELETE
     public Response doDeleteUser() {
+        checkCurrentUserCanAdministrateUser();
         UserManager um = Framework.getLocalService(UserManager.class);
         try {
             um.deleteUser(principal.getModel());
