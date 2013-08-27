@@ -38,7 +38,7 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
     public void work() throws Exception {
         CoreSession session = initSession(repositoryName);
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-
+/*
         if (!session.exists(docRef) && Framework.isTestModeSet()) {
             // temporary hack for Test setup not being transactional
             Thread.sleep(500);
@@ -46,13 +46,13 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
 //            wm.schedule(this.clone(doc));
             return;
         }
-
+*/
         DocumentModel doc = session.getDocument(docRef);
         doIndexingWork(session, ess, doc);
     }
 
     protected abstract void doIndexingWork(CoreSession session, ElasticSearchService ess, DocumentModel doc) throws Exception ;
 
-    protected abstract Work clone(DocumentModel doc);
+    //protected abstract Work clone(DocumentModel doc);
 
 }

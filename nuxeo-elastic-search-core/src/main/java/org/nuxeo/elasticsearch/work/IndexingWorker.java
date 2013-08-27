@@ -37,9 +37,10 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
         }
     }
 
+    /*
     @Override
     protected Work clone(DocumentModel doc) {
         return new IndexingWorker(doc, recurse);
-    }
+    }*/
 
 }

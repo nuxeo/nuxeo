@@ -44,6 +44,25 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql-ra</artifactId>
+    </dependency>
+    <dependency>
+     <groupId>org.nuxeo.runtime</groupId>
+     <artifactId>nuxeo-runtime-jtajca</artifactId>
+     <scope>test</scope>
+   </dependency>
+    <dependency>
+     <groupId>org.nuxeo.runtime</groupId>
+     <artifactId>nuxeo-runtime-datasource</artifactId>
+     <scope>test</scope>
+   </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.components</groupId>
+      <artifactId>geronimo-transaction</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-server</artifactId>
     </dependency>
@@ -86,6 +105,7 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
     </dependency>
+
 
 
     <dependency>

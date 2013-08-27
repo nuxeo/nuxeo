@@ -44,9 +44,10 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
 
     }
 
+    /*
     @Override
     protected Work clone(DocumentModel doc) {
         return new ChildrenIndexingWorker(doc);
-    }
+    }*/
 
 }

@@ -18,6 +18,7 @@ import org.nuxeo.elasticsearch.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -45,6 +46,10 @@ public class ElasticSearchServiceIndexingTest {
             doc = session.createDocument(doc);
         }
         session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        TransactionHelper.startTransaction();
 
         Assert.assertTrue(esa.getPendingIndexingTasksCount()>0);
 

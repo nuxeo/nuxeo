@@ -5,7 +5,7 @@
     <queue id="elasticSearchIndexing">
       <name>ElasticSearch Indexing</name>
       <maxThreads>1</maxThreads>
-      <usePriority>true</usePriority>
+      <!-- <usePriority>true</usePriority> -->
       <category>elasticSearchIndexing</category>
       <clearCompletedAfterSeconds>600</clearCompletedAfterSeconds>
     </queue>
