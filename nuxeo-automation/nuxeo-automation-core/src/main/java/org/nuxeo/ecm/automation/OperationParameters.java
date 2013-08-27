@@ -62,7 +62,7 @@ public class OperationParameters implements Serializable {
     public OperationParameters set(String key, Object valueRef) {
         if (valueRef instanceof String) {
             if (((String) valueRef).startsWith("expr:")) {
-                valueRef = ((String) valueRef).substring(5);
+                valueRef = ((String) valueRef).substring(5).trim();
                 // Unescape xml checking
                 valueRef = StringEscapeUtils.unescapeXml(((String) valueRef));
                 if (((String) valueRef).contains("@{")) {
