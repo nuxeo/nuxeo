@@ -937,6 +937,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         DocumentModel newGroupModel = getBareGroupModel();
         newGroupModel.setProperty(groupSchemaName, groupIdField,
                 group.getName());
+        newGroupModel.setProperty(groupSchemaName, groupLabelField, group.getLabel());
         newGroupModel.setProperty(groupSchemaName, groupMembersField,
                 group.getMemberUsers());
         newGroupModel.setProperty(groupSchemaName, groupSubGroupsField,
@@ -1021,6 +1022,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         DocumentModel newGroupModel = getGroupModel(group.getName());
         newGroupModel.setProperty(groupSchemaName, groupIdField,
                 group.getName());
+        newGroupModel.setProperty(groupSchemaName, groupLabelField,
+                group.getLabel());
         newGroupModel.setProperty(groupSchemaName, groupMembersField,
                 group.getMemberUsers());
         newGroupModel.setProperty(groupSchemaName, groupSubGroupsField,

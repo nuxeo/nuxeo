@@ -19,15 +19,9 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,6 +60,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     protected UserService userService;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -91,6 +86,7 @@ public class TestUserManager extends NXRuntimeTestCase {
         userManager = userService.getUserManager();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
@@ -760,6 +756,25 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals(newU1.getName(), u1.getName());
         assertEquals(newU1.getGroups(), u1.getGroups());
         assertEquals(newU1.getRoles(), u1.getRoles());
+    }
+
+    @Test
+    public void testUpdateGroupLabel() throws Exception {
+        deleteTestObjects();
+
+        NuxeoGroup g = new NuxeoGroupImpl("test_g");
+        g.setLabel("test group");
+        userManager.createGroup(g);
+
+        g = userManager.getGroup("test_g");
+        assertEquals("test group", g.getLabel());
+
+        g.setLabel("another group");
+        userManager.updateGroup(g);
+
+        g = userManager.getGroup("test_g");
+        assertEquals("another group", g.getLabel());
+
     }
 
     @Test
