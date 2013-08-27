@@ -179,10 +179,9 @@ public class OperationServiceImpl implements AutomationService {
             // Handle exception chain and rollback
             String operationTypeId = operationType.getId();
             if (hasChainException(operationTypeId)) {
-                // Inject exception name into the context
-                ctx.put("Exception", oe.getClass().getSimpleName());
                 // Rollback is handled by chain exception
-                return run(ctx, getChainExceptionToRun(ctx, operationTypeId));
+                return run(ctx,
+                        getChainExceptionToRun(ctx, operationTypeId, oe));
             } else if (oe.isRollback()) {
                 ctx.setRollback();
             }
@@ -202,7 +201,10 @@ public class OperationServiceImpl implements AutomationService {
      *        given chain failure.
      */
     protected String getChainExceptionToRun(OperationContext ctx,
-            String operationTypeId) throws OperationException {
+            String operationTypeId, OperationException oe)
+            throws OperationException {
+        // Inject exception name into the context
+        ctx.put("Exception", oe.getClass().getSimpleName());
         ChainException chainException = getChainException(operationTypeId);
         CatchChainException catchChainException = new CatchChainException();
         for (CatchChainException catchChainExceptionItem : chainException.getCatchChainExceptions()) {
@@ -231,6 +233,8 @@ public class OperationServiceImpl implements AutomationService {
         if (chainId.isEmpty())
             throw new OperationException(
                     "No chain exception has been selected to be run. You should verify Automation filters applied.");
+        if (catchChainException.getRollBack())
+            ctx.setRollback();
         return catchChainException.getChainId();
     }
 
@@ -505,7 +509,7 @@ public class OperationServiceImpl implements AutomationService {
      * @since 5.7.3
      */
     @Override
-    public ChainException[] getChainExceptions(){
+    public ChainException[] getChainExceptions() {
         Collection<ChainException> chainExceptions = chainExceptionRegistry.lookup().values();
         return chainExceptions.toArray(new ChainException[chainExceptions.size()]);
     }
@@ -514,7 +518,7 @@ public class OperationServiceImpl implements AutomationService {
      * @since 5.7.3
      */
     @Override
-    public ChainException getChainException(String onChainId){
+    public ChainException getChainException(String onChainId) {
         return chainExceptionRegistry.getChainException(onChainId);
     }
 
@@ -522,8 +526,8 @@ public class OperationServiceImpl implements AutomationService {
      * @since 5.7.3
      */
     @Override
-    public boolean hasChainException(String onChainId){
-        return chainExceptionRegistry.getChainException(onChainId)!=null;
+    public boolean hasChainException(String onChainId) {
+        return chainExceptionRegistry.getChainException(onChainId) != null;
     }
 
     /**
@@ -546,7 +550,7 @@ public class OperationServiceImpl implements AutomationService {
      * @since 5.7.3
      */
     @Override
-    public AutomationFilter getAutomationFilter(String id){
+    public AutomationFilter getAutomationFilter(String id) {
         return automationFilterRegistry.getAutomationFilter(id);
     }
 
@@ -554,7 +558,7 @@ public class OperationServiceImpl implements AutomationService {
      * @since 5.7.3
      */
     @Override
-    public AutomationFilter[] getAutomationFilters(){
+    public AutomationFilter[] getAutomationFilters() {
         Collection<AutomationFilter> automationFilters = automationFilterRegistry.lookup().values();
         return automationFilters.toArray(new AutomationFilter[automationFilters.size()]);
     }
