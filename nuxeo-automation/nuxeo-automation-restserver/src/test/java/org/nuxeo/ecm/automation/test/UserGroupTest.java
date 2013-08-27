@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -29,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -47,7 +47,7 @@ import com.sun.jersey.api.client.ClientResponse;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
-@RepositoryConfig(init = RestServerInit.class)
+@RepositoryConfig(init = RestServerInit.class, cleanup = Granularity.METHOD)
 public class UserGroupTest extends BaseUserTest {
 
     @Inject
@@ -222,5 +222,62 @@ public class UserGroupTest extends BaseUserTest {
 
     }
 
+    @Test
+    public void itCanAddAGroupToAUser() throws Exception {
+        // Given a user and a group
+        NuxeoPrincipal principal = um.getPrincipal("user1");
+        NuxeoGroup group = um.getGroup("group1");
+        assertFalse(principal.isMemberOf(group.getName()));
+
+        // When i POST this group
+        ClientResponse response = getResponse(RequestType.POST, "/user/"
+                + principal.getName() + "/group/" + group.getName());
+
+        assertEquals(Response.Status.CREATED.getStatusCode(),
+                response.getStatus());
+
+        principal = um.getPrincipal(principal.getName());
+        assertTrue(principal.isMemberOf(group.getName()));
+
+    }
+
+    @Test
+    public void itCanAddAUserToAGroup() throws Exception {
+        // Given a user and a group
+        NuxeoPrincipal principal = um.getPrincipal("user1");
+        NuxeoGroup group = um.getGroup("group2");
+        assertFalse(principal.isMemberOf(group.getName()));
+
+        // When i POST this group
+        ClientResponse response = getResponse(RequestType.POST, "/group/"
+                + group.getName() + "/user/" + principal.getName());
+
+        assertEquals(Response.Status.CREATED.getStatusCode(),
+                response.getStatus());
+
+        principal = um.getPrincipal(principal.getName());
+        assertTrue(principal.isMemberOf(group.getName()));
+    }
+
+    @Test
+    public void itCanRemoveAUserToAGroup() throws Exception {
+        // Given a user in a group
+        NuxeoPrincipal principal = um.getPrincipal("user1");
+        NuxeoGroup group = um.getGroup("group1");
+        principal.setGroups(Arrays.asList(new String[] { group.getName() }));
+        um.updateUser(principal.getModel());
+        assertTrue(principal.isMemberOf(group.getName()));
+
+        // When i POST this group
+        ClientResponse response = getResponse(RequestType.DELETE, "/user/"
+                + principal.getName() + "/group/" + group.getName());
+
+        assertEquals(Response.Status.OK.getStatusCode(),
+                response.getStatus());
+
+        principal = um.getPrincipal(principal.getName());
+        assertFalse(principal.isMemberOf(group.getName()));
+
+    }
 
 }

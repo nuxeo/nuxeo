@@ -21,6 +21,8 @@ import java.io.Serializable;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -62,7 +65,7 @@ public class GroupObject extends DefaultObject {
 
     @PUT
     public NuxeoGroup doUpdateGroup(NuxeoGroup updateGroup) {
-        checkCurrentUserCanAdministrateGroup();
+        checkCurrentUserCanAdministerGroup();
         UserManager um = Framework.getLocalService(UserManager.class);
         try {
 
@@ -84,7 +87,7 @@ public class GroupObject extends DefaultObject {
     @DELETE
     public Response doDeleteGroup() {
         try {
-            checkCurrentUserCanAdministrateGroup();
+            checkCurrentUserCanAdministerGroup();
             UserManager um = Framework.getLocalService(UserManager.class);
             um.deleteGroup(um.getGroupModel(group.getName()));
             return Response.status(Status.NO_CONTENT).build();
@@ -93,7 +96,24 @@ public class GroupObject extends DefaultObject {
         }
     }
 
-    private void checkCurrentUserCanAdministrateGroup() {
+    @Path("user/{username}")
+    public Object doGetUserToGroup(@PathParam("username")
+    String username) {
+        try {
+            UserManager um = Framework.getLocalService(UserManager.class);
+            NuxeoPrincipal principal = um.getPrincipal(username);
+            if (principal == null) {
+                throw new WebResourceNotFoundException("User not found");
+            }
+            return newObject("userToGroup", principal, group);
+
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+
+    }
+
+    private void checkCurrentUserCanAdministerGroup() {
         UserManager um = Framework.getLocalService(UserManager.class);
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {

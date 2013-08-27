@@ -19,16 +19,20 @@ package org.nuxeo.ecm.automation.rest.jaxrs;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -63,7 +67,7 @@ public class UserObject extends DefaultObject {
     @PUT
     public NuxeoPrincipal doUpdateUser(NuxeoPrincipal principal) {
         UserManager um = Framework.getLocalService(UserManager.class);
-        checkCurrentUserCanAdministrateUser(um);
+        checkCurrentUserCanAdministerUser(um);
         try {
             um.updateUser(principal.getModel());
             return um.getPrincipal(principal.getName());
@@ -72,7 +76,7 @@ public class UserObject extends DefaultObject {
         }
     }
 
-    private void checkCurrentUserCanAdministrateUser(UserManager um) {
+    private void checkCurrentUserCanAdministerUser(UserManager um) {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
             if ((!principal.isMemberOf("powerusers"))
@@ -84,10 +88,26 @@ public class UserObject extends DefaultObject {
         }
     }
 
+    @Path("group/{groupName}")
+    public Object doGetUserToGroup(@PathParam("groupName")
+    String groupName) {
+        try {
+            UserManager um = Framework.getLocalService(UserManager.class);
+            NuxeoGroup group = um.getGroup(groupName);
+            if (group == null) {
+                throw new WebResourceNotFoundException("Group not found");
+            }
+
+            return newObject("userToGroup", currentPrincipal, group);
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+    }
+
     @DELETE
     public Response doDeleteUser() {
         UserManager um = Framework.getLocalService(UserManager.class);
-        checkCurrentUserCanAdministrateUser(um);
+        checkCurrentUserCanAdministerUser(um);
         try {
             um.deleteUser(currentPrincipal.getModel());
             return Response.status(Status.NO_CONTENT).build();

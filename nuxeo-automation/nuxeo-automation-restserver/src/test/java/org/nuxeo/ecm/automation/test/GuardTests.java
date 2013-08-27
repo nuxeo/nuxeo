@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import javax.ws.rs.core.Response;
 
@@ -137,5 +137,37 @@ public class GuardTests extends BaseUserTest {
         //Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
+    }
+
+    @Test
+    public void onlyAdminCanAddAGroupToAUser() throws Exception {
+        // Given a modified group
+        NuxeoGroup group = um.getGroup("group1");
+        NuxeoPrincipal principal = um.getPrincipal("user1");
+
+        // When i POST this group
+        ClientResponse response = getResponse(RequestType.POST, "/group/"
+                + group.getName() + "/user/" + principal.getName(), getGroupAsJson(group));
+
+        //Then it returns a 401
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+                response.getStatus());
+
+    }
+
+    @Test
+    public void onlyAdminCanRemoveAGroupFromAUser() throws Exception {
+        // Given a modified group
+        NuxeoGroup group = um.getGroup("group1");
+        NuxeoPrincipal principal = um.getPrincipal("user1");
+
+        // When i POST this group
+        ClientResponse response = getResponse(RequestType.DELETE, "/group/"
+                + group.getName() + "/user/" + principal.getName());
+
+        //Then it returns a 401
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+                response.getStatus());
+
     }
 }
