@@ -138,6 +138,9 @@ public class TracerFactory implements TracerFactoryMBean {
      */
     public Trace getTrace(String key) {
         ChainTraces chainTrace = tracesCache.getIfPresent(key);
+        if (chainTrace == null) {
+            return null;
+        }
         return tracesCache.getIfPresent(key).getTrace(
                 chainTrace.traces.size() - 1);
     }
