@@ -174,16 +174,19 @@ public class OperationServiceImpl implements AutomationService {
             }
             return ret;
         } catch (OperationException oe) {
+            // Record trace
+            tracer.onError(oe);
             // Handle exception chain and rollback
             String operationTypeId = operationType.getId();
             if (hasChainException(operationTypeId)) {
+                // Inject exception name into the context
+                ctx.put("Exception", oe.getClass().getSimpleName());
                 // Rollback is handled by chain exception
-                run(ctx, getChainExceptionToRun(ctx, operationTypeId));
+                return run(ctx, getChainExceptionToRun(ctx, operationTypeId));
             } else if (oe.isRollback()) {
                 ctx.setRollback();
             }
-            // Handle exception and trace.
-            tracer.onError(oe);
+            // Handle exception
             if (mainChain) {
                 throw new TraceException(tracer, oe);
             } else {
@@ -207,9 +210,9 @@ public class OperationServiceImpl implements AutomationService {
             if (catchChainExceptionItem.hasFilter()) {
                 AutomationFilter filter = getAutomationFilter(catchChainExceptionItem.getFilterId());
                 try {
-                    Boolean filterValue = (Boolean) filter.getValue().eval(ctx);
+                    String filterValue = (String) filter.getValue().eval(ctx);
                     // Check if priority for this chain exception is higher
-                    if (filterValue) {
+                    if (Boolean.parseBoolean(filterValue)) {
                         catchChainException = getCatchChainExceptionByPriority(
                                 catchChainException, catchChainExceptionItem);
                     }
@@ -223,9 +226,12 @@ public class OperationServiceImpl implements AutomationService {
                 catchChainException = getCatchChainExceptionByPriority(
                         catchChainException, catchChainExceptionItem);
             }
-            return catchChainException.getChainId();
         }
-        return "";
+        String chainId = catchChainException.getChainId();
+        if (chainId.isEmpty())
+            throw new OperationException(
+                    "No chain exception has been selected to be run. You should verify Automation filters applied.");
+        return catchChainException.getChainId();
     }
 
     /**
@@ -234,7 +240,7 @@ public class OperationServiceImpl implements AutomationService {
     protected CatchChainException getCatchChainExceptionByPriority(
             CatchChainException catchChainException,
             CatchChainException catchChainExceptionItem) {
-        return catchChainException.getOrder() >= catchChainExceptionItem.getOrder() ? catchChainExceptionItem
+        return catchChainException.getPriority() <= catchChainExceptionItem.getPriority() ? catchChainExceptionItem
                 : catchChainException;
     }
 
