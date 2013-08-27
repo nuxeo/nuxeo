@@ -73,7 +73,8 @@ public class UserToGroupObject extends DefaultObject {
     }
 
     private void checkPrincipalCanAdministerGroupAndUser(UserManager um) {
-        if (!principal.isAdministrator()) {
+        NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        if (!currentPrincipal.isAdministrator()) {
             if (!principal.isMemberOf("powerusers")
                     || UserRootObject.isNotAPowerUserEditableUser(principal, um)
                     || GroupRootObject.isNotAPowerUserEditableObject(group, um)) {
