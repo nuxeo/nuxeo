@@ -35,7 +35,7 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@title=\"Add to worklist\"]")
     public WebElement addToWorklistButton;
 
-    @FindBy(xpath = "//img[@title=\"Permanent link to this document\"]")
+    @FindBy(xpath = "//form[@id='nxw_documentActionsUpperButtons_1_permalinkAction_form']//img")
     public WebElement permaButton;
 
     public String permaBoxFocusName = "permalinkFocus";
