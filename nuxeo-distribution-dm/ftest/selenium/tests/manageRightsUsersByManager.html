@@ -18,6 +18,11 @@
 	<td></td>
 </tr>
 <tr>
+    <td>setSpeed</td>
+    <td>300</td>
+    <td></td>
+</tr>
+<tr>
 	<td>open</td>
 	<td>restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- Selenium manageRightsUsersByManager</td>
 	<td></td>
@@ -74,37 +79,29 @@
 	<td></td>
 </tr>
 <!--jsmith donne a jdoe droits d'ecriture-->
+<!-- Since 5.7.3 rights is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>jdoe</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td>jdoe</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>jdoe</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>John Doe</td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
-</tr>
-<!-- wait for table to appear -->
-<tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
-</tr>
+<!--  -->
 <tr>
 	<td>select</td>
 	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
@@ -123,9 +120,9 @@
 </tr>
 <!--Empty user selection to set new local rights-->
 <tr>
-	<td>click</td>
-	<td>add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_delete</td>
-	<td></td>
+    <td>click</td>
+    <td>//li[@class='select2-search-choice'][1]/a</td>
+    <td></td>
 </tr>
 <!-- wait for table to disappear -->
 <tr>
@@ -134,37 +131,29 @@
 	<td>10000</td>
 </tr>
 <!--jsmith donne a bree droits de lecture-->
+<!-- Since 5.7.3 rights is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>bree</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td>bree</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>bree</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Bree Van de Kaamp</td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
-</tr>
-<!-- wait for table to appear -->
-<tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
-</tr>
+<!--  -->
 <tr>
 	<td>select</td>
 	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
@@ -177,9 +166,9 @@
 </tr>
 <!--Empty user selection to set new local rights-->
 <tr>
-	<td>click</td>
-	<td>add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_delete</td>
-	<td></td>
+    <td>click</td>
+    <td>//li[@class='select2-search-choice'][1]/a</td>
+    <td></td>
 </tr>
 <!-- wait for table to disappear -->
 <tr>
@@ -188,37 +177,29 @@
 	<td>10000</td>
 </tr>
 <!--jsmith donne a lbramard droits de lecture-->
+<!-- Since 5.7.3 rights is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>lbramard</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td>lbramard</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>lbramard</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Lucien Bramard</td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
-</tr>
-<!-- wait for table to appear -->
-<tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
-</tr>
+<!--  -->
 <tr>
 	<td>select</td>
 	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
@@ -231,9 +212,9 @@
 </tr>
 <!--Empty user selection to set new local rights-->
 <tr>
-	<td>click</td>
-	<td>add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_delete</td>
-	<td></td>
+    <td>click</td>
+    <td>//li[@class='select2-search-choice'][1]/a</td>
+    <td></td>
 </tr>
 <!-- wait for table to disappear -->
 <tr>
@@ -242,37 +223,29 @@
 	<td>10000</td>
 </tr>
 <!--jsmith donne a linnet droits d'ecriture-->
+<!-- Since 5.7.3 rights is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>linnet</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest']</td>
-	<td>linnet</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_selection_select2'] input</td>
+    <td>linnet</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Linnet Scavo</td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
-</tr>
-<!-- wait for table to appear -->
-<tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') != null</td>
-	<td>10000</td>
-</tr>
+<!--  -->
 <tr>
 	<td>select</td>
 	<td>//*[@id='add_rights_form']/table/tbody/tr/td[2]/div/table/tbody/tr[2]/td[2]/select</td>
@@ -298,7 +271,11 @@
 	<td>link=Log out</td>
 	<td></td>
 </tr>
-
+<tr>
+    <td>setSpeed</td>
+    <td>0</td>
+    <td></td>
+</tr>
 </tbody></table>
 </body>
 </html>

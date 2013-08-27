@@ -97,41 +97,29 @@
 	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
 	<td>bender1</td>
 </tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_groups_select2'] input</td>
+    <td>administrators</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td>administrators</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_groups_select2'] input</td>
+    <td>administrators</td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Administrators group</td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
+<!--  -->
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
@@ -197,41 +185,29 @@
 	<td>//*[@id=&quot;createUserView:createUser:nxl_user:nxw_secondPassword&quot;]</td>
 	<td>leela1</td>
 </tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_groups_select2'] input</td>
+    <td>administrators</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='createUserView:createUser:nxl_user:nxw_groups_suggest']</td>
-	<td>administrators</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_groups_select2'] input</td>
+    <td>administrators</td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Administrators group</td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='createUserView:createUser:nxl_user:nxw_groups_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
+<!--  -->
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
