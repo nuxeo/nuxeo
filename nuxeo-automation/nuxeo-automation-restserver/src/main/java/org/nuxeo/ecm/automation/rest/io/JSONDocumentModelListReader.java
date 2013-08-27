@@ -36,6 +36,7 @@ import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.webengine.WebException;
 
 /**
  *
@@ -61,7 +62,11 @@ public class JSONDocumentModelListReader implements
             throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            if (content.isEmpty()) {
+                throw new WebException("No content in request body",
+                        Response.Status.BAD_REQUEST.getStatusCode());
+            }
+
         }
 
         try {
@@ -125,7 +130,6 @@ public class JSONDocumentModelListReader implements
         DocumentModelList entries = new DocumentModelListImpl();
 
         // Skip the start of the array
-
 
         while (jp.nextToken() == JsonToken.START_OBJECT) {
 

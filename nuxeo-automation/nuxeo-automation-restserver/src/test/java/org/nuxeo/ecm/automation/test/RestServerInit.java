@@ -20,6 +20,7 @@ import org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -40,8 +41,8 @@ public class RestServerInit implements RepositoryInit {
     public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson",
             "Gates" };
 
-    public static final String[] GROUPNAMES = { "Stark", "Lannister", "Targaryen",
-    "Greyjoy" };
+    public static final String[] GROUPNAMES = { "Stark", "Lannister",
+            "Targaryen", "Greyjoy" };
 
     @Override
     public void populate(CoreSession session) throws ClientException {
@@ -85,26 +86,24 @@ public class RestServerInit implements RepositoryInit {
             }
         }
 
-
-        //Create some groups
+        // Create some groups
         for (int idx = 0; idx < 4; idx++) {
             String groupId = "group" + idx;
 
             UserManager um = Framework.getLocalService(UserManager.class);
 
-            NuxeoPrincipal principal = um.getPrincipal(groupId);
+            NuxeoGroup group = um.getGroup(groupId);
 
-            if (principal == null) {
+            if (group == null) {
 
                 DocumentModel groupModel = um.getBareGroupModel();
                 String schemaName = um.getGroupSchemaName();
                 groupModel.setProperty(schemaName, "groupname", groupId);
-                groupModel.setProperty(schemaName, "grouplabel", GROUPNAMES[idx]);
+                groupModel.setProperty(schemaName, "grouplabel",
+                        GROUPNAMES[idx]);
                 groupModel = um.createGroup(groupModel);
-                principal = um.getPrincipal(groupId);
             }
         }
-
 
     }
 

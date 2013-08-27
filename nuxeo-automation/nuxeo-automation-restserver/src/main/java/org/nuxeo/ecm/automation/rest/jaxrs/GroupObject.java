@@ -16,10 +16,24 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs;
 
+import java.io.Serializable;
+
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -44,5 +58,51 @@ public class GroupObject extends DefaultObject {
     @GET
     public NuxeoGroup doGetGroup() {
         return group;
+    }
+
+    @PUT
+    public NuxeoGroup doUpdateGroup(NuxeoGroup updateGroup) {
+        checkCurrentUserCanAdministrateGroup();
+        UserManager um = Framework.getLocalService(UserManager.class);
+        try {
+
+            DocumentModel groupModel = um.getGroupModel(group.getName());
+            groupModel.setPropertyValue(um.getGroupLabelField(),
+                    updateGroup.getLabel());
+            groupModel.setPropertyValue(um.getGroupMembersField(),
+                    (Serializable) updateGroup.getMemberUsers());
+            groupModel.setPropertyValue(um.getGroupSubGroupsField(),
+                    (Serializable) updateGroup.getMemberGroups());
+
+            um.updateGroup(groupModel);
+            return um.getGroup(group.getName());
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    @DELETE
+    public Response doDeleteGroup() {
+        try {
+            checkCurrentUserCanAdministrateGroup();
+            UserManager um = Framework.getLocalService(UserManager.class);
+            um.deleteGroup(um.getGroupModel(group.getName()));
+            return Response.status(Status.NO_CONTENT).build();
+        } catch (ClientException e) {
+            throw WebException.wrap(e);
+        }
+    }
+
+    private void checkCurrentUserCanAdministrateGroup() {
+        UserManager um = Framework.getLocalService(UserManager.class);
+        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        if (!principal.isAdministrator()) {
+            if ((!principal.isMemberOf("powerusers"))
+                    || um.getAdministratorsGroups().contains(group.getName())) {
+
+                throw new WebSecurityException(
+                        "User is not allowed to edit this group");
+            }
+        }
     }
 }

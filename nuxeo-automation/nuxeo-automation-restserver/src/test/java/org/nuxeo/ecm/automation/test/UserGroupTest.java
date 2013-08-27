@@ -22,16 +22,18 @@ import static org.junit.Assert.assertNull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.rest.io.NuxeoGroupWriter;
 import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -50,7 +52,7 @@ import com.sun.jersey.api.client.ClientResponse;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
-@RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
+@RepositoryConfig(init = RestServerInit.class)
 public class UserGroupTest extends BaseTest {
 
     @Inject
@@ -184,6 +186,80 @@ public class UserGroupTest extends BaseTest {
 
     }
 
+    @Test
+    public void itCanChangeAGroup() throws Exception {
+        // Given a modified group
+        NuxeoGroup group = um.getGroup("group1");
+        group.setLabel("modifiedGroup");
+        group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
+        group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+
+        //When i PUT this group
+        ClientResponse response = getResponse(RequestType.PUT, "/group/"
+                + group.getName(), getGroupAsJson(group));
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        //Then the group is modified server side
+        group = um.getGroup("group1");
+        assertEquals("modifiedGroup", group.getLabel());
+        assertEquals(2, group.getMemberUsers().size());
+        assertEquals(1, group.getMemberGroups().size());
+    }
+
+
+    @Test
+    public void onlyAdminCanUpdateGroups() throws Exception {
+        // User another login/pw
+        service = getServiceFor("user1", "user1");
+
+        // Given a modified group
+        NuxeoGroup group = um.getGroup("group1");
+        group.setLabel("modifiedGroup");
+
+        //When i PUT this group
+        ClientResponse response = getResponse(RequestType.PUT, "/group/"
+                + group.getName(), getGroupAsJson(group));
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void itCanDeleteGroup() throws Exception {
+
+        //When i DELETE on a group resources
+        ClientResponse response = getResponse(RequestType.PUT, "/group/group1");
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+        //Then the group is deleted
+        assertNull(um.getGroup("group1"));
+    }
+
+    @Test
+    public void itCanCreateAGroup() throws Exception {
+        // Given a modified group
+        NuxeoGroup group = new NuxeoGroupImpl("newGroup");
+        group.setLabel("a new group");
+        group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
+        group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
+
+        //When i POST this group
+        ClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        //Then the group is modified server side
+        group = um.getGroup("newGroup");
+        assertEquals("a new group", group.getLabel());
+        assertEquals(2, group.getMemberUsers().size());
+        assertEquals(1, group.getMemberGroups().size());
+
+    }
+
+    private String getGroupAsJson(NuxeoGroup group) throws IOException {
+        NuxeoGroupWriter npw = new NuxeoGroupWriter();
+        OutputStream out = new ByteArrayOutputStream();
+        npw.writeTo(group, NuxeoGroup.class, null, null, null, null, out);
+        return out.toString();
+    }
+
     /**
      * Assert that the given node represents a group which properties are given
      * in parameters
@@ -196,13 +272,10 @@ public class UserGroupTest extends BaseTest {
      */
     private void assertEqualsGroup(String groupName, String groupLabel,
             JsonNode node) {
-        assertEquals("user", node.get("entity-type").getValueAsText());
-        assertEquals(groupName,
-                node.get("groupname").getValueAsText());
-        assertEquals(groupLabel,
-                node.get("label").getValueAsText());
+        assertEquals("group", node.get("entity-type").getValueAsText());
+        assertEquals(groupName, node.get("groupname").getValueAsText());
+        assertEquals(groupLabel, node.get("label").getValueAsText());
     }
-
 
     /**
      * Returns the Json representation of a user.

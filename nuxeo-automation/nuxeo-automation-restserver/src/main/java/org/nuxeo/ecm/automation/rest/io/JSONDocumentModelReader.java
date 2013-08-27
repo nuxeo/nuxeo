@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -94,7 +95,11 @@ public class JSONDocumentModelReader implements
             throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            if (content.isEmpty()) {
+                throw new WebException("No content in request body",
+                        Response.Status.BAD_REQUEST.getStatusCode());
+            }
+
         }
 
         try {
@@ -188,7 +193,7 @@ public class JSONDocumentModelReader implements
         } else {
             if (StringUtils.isNotBlank(type)) {
                 doc = DocumentModelFactory.createDocumentModel(type);
-                if(StringUtils.isNotBlank(name)) {
+                if (StringUtils.isNotBlank(name)) {
                     doc.setPathInfo(null, name);
                 }
             } else {

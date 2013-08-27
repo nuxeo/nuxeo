@@ -16,7 +16,8 @@
  */
 package org.nuxeo.ecm.automation.rest.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,8 +54,6 @@ public class DocumentModelListReaderTest {
     @Inject
     CoreSession session;
 
-
-
     @Before
     public void doBefore() {
         when(request.getUserPrincipal()).thenReturn(session.getPrincipal());
@@ -78,7 +77,7 @@ public class DocumentModelListReaderTest {
         DocumentModel note1 = RestServerInit.getNote(1, session);
         DocumentModel note2 = RestServerInit.getNote(2, session);
 
-        String docsAsJson = JSONDocumentHelper.getDocsListAsJson(note1,note2);
+        String docsAsJson = JSONDocumentHelper.getDocsListAsJson(note1, note2);
 
         DocumentModelList docs = JSONDocumentModelListReader.readRequest(
                 docsAsJson, null, request);
@@ -88,7 +87,5 @@ public class DocumentModelListReaderTest {
                 docs.get(0).getId());
 
     }
-
-
 
 }

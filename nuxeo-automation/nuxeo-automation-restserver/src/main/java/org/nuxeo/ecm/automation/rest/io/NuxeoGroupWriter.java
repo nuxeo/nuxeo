@@ -77,7 +77,7 @@ public class NuxeoGroupWriter implements MessageBodyWriter<NuxeoGroup> {
      */
     private void writeGroup(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException, IOException{
         jg.writeStartObject();
-        jg.writeStringField("entity-type", "user");
+        jg.writeStringField("entity-type", "group");
         jg.writeStringField("groupname", group.getName());
 
         jg.writeStringField("label", group.getLabel());
