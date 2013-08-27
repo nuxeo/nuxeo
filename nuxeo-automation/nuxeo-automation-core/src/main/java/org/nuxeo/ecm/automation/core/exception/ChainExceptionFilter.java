@@ -44,8 +44,7 @@ public class ChainExceptionFilter implements AutomationFilter {
     public ChainExceptionFilter(String id, String value) {
         this.id = id;
         if (value.startsWith("expr:")) {
-            value = value.trim();
-            value = value.substring(5);
+            value = value.substring(5).trim();
             // Unescape xml checking
             value = StringEscapeUtils.unescapeXml(value);
             if (value.contains("@{")) {
@@ -61,8 +60,7 @@ public class ChainExceptionFilter implements AutomationFilter {
         this.id = automationFilterDescriptor.getId();
         String value = automationFilterDescriptor.getValue();
         if (value.startsWith("expr:")) {
-            value = value.trim();
-            value = value.substring(5);
+            value = value.substring(5).trim();
             // Unescape xml checking
             value = StringEscapeUtils.unescapeXml(value);
             if (value.contains("@{")) {

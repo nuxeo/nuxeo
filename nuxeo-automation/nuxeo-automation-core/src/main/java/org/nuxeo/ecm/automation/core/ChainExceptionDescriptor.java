@@ -55,8 +55,8 @@ public class ChainExceptionDescriptor {
         @XNode("@chainId")
         protected String chainId;
 
-        @XNode("@order")
-        protected Integer order = 0;
+        @XNode("@priority")
+        protected Integer priority = 0;
 
         @XNode("@rollBack")
         protected Boolean rollBack = true;
@@ -68,8 +68,8 @@ public class ChainExceptionDescriptor {
             return chainId;
         }
 
-        public Integer getOrder() {
-            return order;
+        public Integer getPriority() {
+            return priority;
         }
 
         public Boolean getRollBack() {

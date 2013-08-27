@@ -23,7 +23,7 @@ public class CatchChainException {
 
     protected final String chainId;
 
-    protected final Integer order;
+    protected final Integer priority;
 
     protected final String filterId;
 
@@ -31,15 +31,15 @@ public class CatchChainException {
 
     public CatchChainException() {
         this.chainId = "";
-        this.order = 0;
+        this.priority = 0;
         this.rollBack = true;
         this.filterId = "";
     }
 
-    public CatchChainException(String chainId, Integer order, Boolean rollBack,
+    public CatchChainException(String chainId, Integer priority, Boolean rollBack,
             String filterId) {
         this.chainId = chainId;
-        this.order = order;
+        this.priority = priority;
         this.rollBack = rollBack;
         this.filterId = filterId;
     }
@@ -48,8 +48,8 @@ public class CatchChainException {
         return chainId;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getPriority() {
+        return priority;
     }
 
     public Boolean getRollBack() {

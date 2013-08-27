@@ -59,7 +59,7 @@ public class ChainExceptionImpl implements ChainException {
         this.onChainId = chainExceptionDescriptor.getOnChainId();
         for(ChainExceptionDescriptor.ChainExceptionRun chainExceptionRunDesc: chainExceptionDescriptor.getChainExceptionsRun()){
             CatchChainException chainExceptionRun = new CatchChainException(chainExceptionRunDesc.getChainId(),
-                    chainExceptionRunDesc.getOrder(),chainExceptionRunDesc.getRollBack(),chainExceptionRunDesc.getFilterId());
+                    chainExceptionRunDesc.getPriority(),chainExceptionRunDesc.getRollBack(),chainExceptionRunDesc.getFilterId());
             catchChainExceptions.add(chainExceptionRun);
         }
     }

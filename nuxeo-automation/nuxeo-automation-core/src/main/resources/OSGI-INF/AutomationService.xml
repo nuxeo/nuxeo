@@ -45,9 +45,9 @@
 
       <code>
         <catchChain id="catchChainA" onChainId="contributedchain">
-          <run chainId="chainException" order="0" rollBack="false" filterId="filterA" exception="*"/>
-          <run chainId="chainException" order="0" rollBack="false" filterId="filterA" exception="NullPointException"/>
-          <run chainId="chainException" order="10" rollBack="true" filterId="filterB"/>
+          <run chainId="chainException" priority="0" rollBack="false" filterId="filterA"/>
+          <run chainId="chainException" priority="0" rollBack="false" filterId="filterA"/>
+          <run chainId="chainException" priority="10" rollBack="true" filterId="filterB"/>
         </catchChain>
       </code>
     </documentation>
