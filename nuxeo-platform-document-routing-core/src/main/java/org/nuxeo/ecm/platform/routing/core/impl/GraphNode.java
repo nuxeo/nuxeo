@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -103,6 +104,10 @@ public interface GraphNode {
 
     String PROP_NODE_Y_COORDINATE = "rnode:taskY";
 
+    /**
+     * @since 5.7.3 a node can create multiple tasks, in this case, this stores
+     *        the status of the last task ended
+     */
     String PROP_NODE_BUTTON = "rnode:button";
 
     String PROP_NODE_START_DATE = "rnode:startDate";
@@ -167,6 +172,24 @@ public interface GraphNode {
 
     // @since 5.7.2
     String PROP_ESCALATION_RULE_EXECUTED = "executed";
+
+    // @since 5.7.3
+    String PROP_HAS_MULTIPLE_TASKS = "rnode:hasMultipleTasks";
+
+    // @since 5.7.3
+    String PROP_TASKS_INFO = "rnode:tasksInfo";
+
+    // @since 5.7.3
+    String PROP_TASK_INFO_ACTOR = "actor";
+
+    // @since 5.7.3
+    String PROP_TASK_INFO_COMMENT = "comment";
+
+    // @since 5.7.3
+    String PROP_TASK_INFO_STATUS = "status";
+
+    // @since 5.7.3
+    String PROP_TASK_INFO_TASK_DOC_ID = "taskDocId";
 
     /**
      * The internal state of a node.
@@ -395,6 +418,83 @@ public interface GraphNode {
 
         public boolean isMultipleExecution() {
             return multipleExecution;
+        }
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    class TaskInfo implements Comparable<TaskInfo> {
+
+        protected String taskDocId;
+
+        protected String actor;
+
+        protected String comment;
+
+        protected String status;
+
+        protected MapProperty prop;
+
+        protected GraphNode node;
+
+        public TaskInfo(GraphNode node, Property p) throws ClientException {
+            this.prop = (MapProperty) p;
+            this.node = node;
+            this.taskDocId = (String) p.get(PROP_TASK_INFO_TASK_DOC_ID).getValue();
+            this.status = (String) p.get(PROP_TASK_INFO_STATUS).getValue();
+            this.actor = (String) p.get(PROP_TASK_INFO_ACTOR).getValue();
+            this.comment = (String) p.get(PROP_TASK_INFO_COMMENT).getValue();
+        }
+
+        public TaskInfo(GraphNode node, String taskDocId)
+                throws ClientException {
+            this.node = node;
+            this.prop = (MapProperty) ((ListProperty) node.getDocument().getProperty(
+                    PROP_TASKS_INFO)).addEmpty();
+            this.prop.get(PROP_TASK_INFO_TASK_DOC_ID).setValue(taskDocId);
+            this.taskDocId = taskDocId;
+        }
+
+        @Override
+        public int compareTo(TaskInfo o) {
+            return taskDocId.compareTo(o.taskDocId);
+        }
+
+        public String getTaskDocId() {
+            return taskDocId;
+        }
+
+        public String getActor() {
+            return actor;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public GraphNode getNode() {
+            return node;
+        }
+
+        public void setComment(String comment) throws ClientException {
+            this.comment = comment;
+            prop.get(PROP_TASK_INFO_COMMENT).setValue(comment);
+        }
+
+        public void setStatus(String status) throws ClientException {
+            this.status = status;
+            prop.get(PROP_TASK_INFO_STATUS).setValue(status);
+
+        }
+
+        public void setActor(String actor) throws ClientException {
+            this.actor = actor;
+            prop.get(PROP_TASK_INFO_ACTOR).setValue(actor);
         }
     }
 
@@ -701,4 +801,48 @@ public interface GraphNode {
      * @since 5.7.2
      */
     List<EscalationRule> getEscalationRules();
+
+    /**
+     * Checks if this node has created multiple tasks, one for each assignees.
+     *
+     * @since 5.7.3
+     */
+    boolean hasMultipleTasks();
+
+    /**
+     * Gets all the tasks info for the tasks created from this node
+     *
+     * @since 5.7.3
+     */
+    List<TaskInfo> getTasksInfo();
+
+    /**
+     * Persist the info when a new task is created from this node
+     *
+     * @since 5.7.3
+     */
+    void addTaskInfo(String taskId) throws ClientException;
+
+    /**
+     * Persist these info from the task on the node. Status is the id of the
+     * button clicked to end the task by the actor.
+     *
+     * @since 5.7.3
+     */
+    void updateTaskInfo(String taskId, String status, String actor,
+            String comment) throws ClientException;
+
+    /**
+     * Gets all the processed tasks originating from this node
+     *
+     * @since 5.7.3
+     */
+    List<TaskInfo> getProcessedTasksInfo();
+
+    /**
+     * Returns false if all tasks created from this node were processed
+     *
+     * @since 5.7.3
+     */
+    boolean hasUnprocessedTasks();
 }

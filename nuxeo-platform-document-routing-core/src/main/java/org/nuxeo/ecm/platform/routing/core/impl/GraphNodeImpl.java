@@ -88,6 +88,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
 
     protected List<EscalationRule> escalationRules;
 
+    protected List<TaskInfo> tasksInfo;
+
     public GraphNodeImpl(DocumentModel doc, GraphRouteImpl graph) {
         super(doc, new GraphRunner());
         this.graph = graph;
@@ -988,5 +990,79 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean hasMultipleTasks() {
+        return getBoolean(PROP_HAS_MULTIPLE_TASKS);
+    }
+
+    protected List<TaskInfo> computeTasksInfo() {
+        try {
+            ListProperty props = (ListProperty) document.getProperty(PROP_TASKS_INFO);
+            List<TaskInfo> tasks = new ArrayList<TaskInfo>(props.size());
+            for (Property p : props) {
+                tasks.add(new TaskInfo(this, p));
+            }
+            return tasks;
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<TaskInfo> getTasksInfo() {
+        if (tasksInfo == null) {
+            tasksInfo = computeTasksInfo();
+        }
+        return tasksInfo;
+    }
+
+    @Override
+    public void addTaskInfo(String taskId) throws ClientException {
+        getTasksInfo().add(new TaskInfo(this, taskId));
+        saveDocument();
+    }
+
+    @Override
+    public void updateTaskInfo(String taskId, String status, String actor,
+            String comment) throws ClientException {
+        boolean updated = false;
+        List<TaskInfo> tasksInfo = getTasksInfo();
+        for (TaskInfo taskInfo : tasksInfo) {
+            if (taskId.equals(taskInfo.getTaskDocId())) {
+                taskInfo.setComment(comment);
+                taskInfo.setStatus(status);
+                taskInfo.setActor(actor);
+                updated = true;
+            }
+        }
+        // handle backward compatibility
+        if (!updated) {
+            // task created before 5.7.3;
+            TaskInfo ti = new TaskInfo(this, taskId);
+            ti.setActor(actor);
+            ti.setStatus(status);
+            ti.setComment(comment);
+            getTasksInfo().add(ti);
+        }
+        saveDocument();
+    }
+
+    @Override
+    public List<TaskInfo> getProcessedTasksInfo() {
+        List<TaskInfo> tasksInfo = getTasksInfo();
+        List<TaskInfo> processedTasks = new ArrayList<TaskInfo>();
+        for (TaskInfo taskInfo : tasksInfo) {
+            if (taskInfo.getStatus() != null) {
+                processedTasks.add(taskInfo);
+            }
+        }
+        return processedTasks;
+    }
+
+    @Override
+    public boolean hasUnprocessedTasks() {
+        return getTasksInfo().size() != getProcessedTasksInfo().size();
     }
 }

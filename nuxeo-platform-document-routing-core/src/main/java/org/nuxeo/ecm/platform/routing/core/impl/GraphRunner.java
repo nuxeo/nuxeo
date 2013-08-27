@@ -133,8 +133,14 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 node.setButton(status);
             }
             if (task != null) {
-                finishTask(session, graph, node, task, false);
+                finishTask(session, graph, node, task, false, status);
                 // don't delete (yet)
+            }
+            if (node.hasUnprocessedTasks()) {
+                // do nothing, the workflow is resumed only when all the tasks
+                // created from
+                // this node are processed
+                return;
             }
             runGraph(session, element, node);
         } catch (ClientException e) {
@@ -225,7 +231,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             case RUNNING_INPUT:
                 node.starting();
                 node.executeChain(node.getInputChain());
-                if (node.hasTask()) {
+                if (node.hasTask() || node.hasMultipleTasks()) {
                     createTask(session, graph, node); // may create several
                     node.setState(State.SUSPENDED);
                 }
@@ -378,12 +384,14 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             // TODO documents other than the first are not attached to the task
             // (task API allows only one document)
             DocumentModel doc = docs.size() > 0 ? docs.get(0) : null;
-            // we may get several tasks if there's one per actor
+            // we may get several tasks if there's one per actor when the node
+            // has the property
+            // hasMultipleTasks set to true
             List<Task> tasks = taskService.createTask(session,
                     (NuxeoPrincipal) session.getPrincipal(), doc,
                     node.getTaskDocType(), node.getDocument().getTitle(),
                     node.getId(), routeInstance.getDocument().getId(),
-                    new ArrayList<String>(actors), false,
+                    new ArrayList<String>(actors), node.hasMultipleTasks(),
                     node.getTaskDirective(), null, dueDate, taskVariables,
                     null, node.getWorkflowContextualInfo(session, true));
 
@@ -395,7 +403,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             for (Task task : tasks) {
                 routing.grantPermissionToTaskAssignees(session,
                         taskAssigneesPermission, docs, task);
+                node.addTaskInfo(task.getId());
             }
+
         } catch (ClientException e) {
             throw new DocumentRouteException("Can not create task", e);
         }
@@ -404,8 +414,33 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
     protected void finishTask(CoreSession session, GraphRoute graph,
             GraphNode node, Task task, boolean delete)
             throws DocumentRouteException {
+        finishTask(session, graph, node, task, delete, null);
+    }
+
+    protected void finishTask(CoreSession session, GraphRoute graph,
+            GraphNode node, Task task, boolean delete, String status)
+            throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         routing.finishTask(session, (DocumentRoute) graph, task, delete);
+        if (status != null) {
+            String comment;
+            try {
+                comment = task.getComments().size() > 0 ? task.getComments().get(
+                        0).getText()
+                        : "";
+                // actor
+                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                String actor = principal.getOriginatingUser();
+                if (actor == null) {
+                    actor = principal.getName();
+                }
+                node.updateTaskInfo(task.getId(), status, actor, comment);
+            } catch (ClientException e) {
+                throw new DocumentRouteException(
+                        "Can not update task info on originating node "
+                                + node.getId(), e);
+            }
+        }
     }
 
     protected void cancelTask(CoreSession session, GraphRoute graph,

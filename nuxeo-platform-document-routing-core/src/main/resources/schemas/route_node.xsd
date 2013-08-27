@@ -18,6 +18,7 @@
   <xs:element name="subRouteVariables" type="node:keyvalues" />
 
   <xs:element name="hasTask" type="xs:boolean" />
+  <xs:element name="hasMultipleTasks" type="xs:boolean" />
   <xs:element name="taskDirective" type="xs:string" />
   <xs:element name="taskDescription" type="xs:string" />
   <xs:element name="taskDueDate" type="xs:date" />
@@ -42,6 +43,7 @@
   <xs:element name="taskX" type="xs:string" />
   <xs:element name="taskY" type="xs:string" />
   <xs:element name="escalationRules" type="node:escalation_rules" />
+  <xs:element name="tasksInfo" type="node:tasks_info" />
 
   <xs:complexType name="transitions">
     <xs:sequence>
@@ -106,6 +108,22 @@
     <xs:sequence>
       <xs:element name="key" type="xs:string" />
       <xs:element name="value" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  
+   <xs:complexType name="tasks_info">
+    <xs:sequence>
+      <xs:element name="task_info" type="node:task_info"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+   
+   <xs:complexType name="task_info">
+    <xs:sequence>
+      <xs:element name="actor" type="xs:string" />
+      <xs:element name="comment" type="xs:string" />
+      <xs:element name="status"  type="xs:string"/> 
+      <xs:element name="taskDocId" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
 
