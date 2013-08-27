@@ -204,6 +204,20 @@
       </to-view-id>
       <redirect />
     </navigation-case>
+    <navigation-case>
+      <from-outcome>select2_user_widget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/select2UserWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>select2_user_multiple_widget</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoWidgets/select2UserMultipleWidget.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
 
   </extension>
 

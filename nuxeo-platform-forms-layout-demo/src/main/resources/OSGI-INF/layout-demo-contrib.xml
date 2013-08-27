@@ -498,6 +498,68 @@
       </layouts>
     </widgetType>
 
+    <widgetType name="select2User">
+      <label>Select2User</label>
+      <viewId>select2_user_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:anotherTextField</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to find a user
+          </property>
+          <property name="repository">default</property>
+          <property name="customFormater">userformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function userformater(entry) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:2px'>" + entry.label + "</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2UserWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2UserMultiple">
+      <label>Select2UserMultiple</label>
+      <viewId>select2_user_multiple_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to find a user
+          </property>
+          <property name="repository">default</property>
+          <property name="customFormater">userformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function userformater(entry) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:2px'>" + entry.label + "</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2UserMultipleWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
   </extension>
 
 </component>

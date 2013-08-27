@@ -151,6 +151,80 @@
       </widget>
     </layout>
 
+    <layout name="select2UserWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>user</widget>
+        </row>
+      </rows>
+
+      <widget name="user" type="select2User">
+        <labels>
+          <label mode="any">User or Group</label>
+        </labels>
+        <fields>
+          <field>lds:anotherTextField</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">300</property>
+          <property name="minimumInputLength">2</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="placeholder">Choose a user/group</property>
+          <property name="repository">default</property>
+          <property name="customFormater">userformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function userformater(entry) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:2px'>" + entry.label + "</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="select2UserMultipleWidgetLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>user</widget>
+        </row>
+      </rows>
+
+      <widget name="user" type="select2UserMultiple">
+        <labels>
+          <label mode="any">User or Group</label>
+        </labels>
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <properties mode="any">
+          <property name="width">300</property>
+          <property name="minimumInputLength">2</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="placeholder">Choose one or more user/group</property>
+          <property name="repository">default</property>
+          <property name="customFormater">userformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function userformater(entry) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:2px'>" + entry.label + "</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </properties>
+      </widget>
+    </layout>
+
   </extension>
 
 </component>
