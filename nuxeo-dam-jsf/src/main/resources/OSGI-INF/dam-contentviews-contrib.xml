@@ -281,7 +281,7 @@
       </labels>
       <translated>true</translated>
       <subWidgets>
-        <widget name="dc_creator" type="multipleUsersSuggestion">
+        <widget name="dc_creator" type="select2UserMultiple">
           <labels>
             <label mode="any">label.dublincore.creator</label>
           </labels>
@@ -289,10 +289,19 @@
             <field>dams:dc_creator</field>
           </fields>
           <properties widgetMode="any">
-            <property name="userSuggestionSearchType">USER_TYPE</property>
-            <property name="displaySuggestionOnTop">true</property>
-            <property name="hideHelpLabel">true</property>
-            <property name="hideSearchTypeText">true</property>
+            <property name="searchType">user</property>
+            <property name="width">200</property>
+            <property name="minimumInputLength">3</property>
+            <property name="hideInstructionLabel">true</property>
+            <property name="customFormater">userformater</property>
+            <property name="inlinejs"> <![CDATA[
+  function userformater(entry) {
+   var markup = "<table><tr>";
+   markup += "<td><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:2px'>" + entry.label + "</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
           </properties>
         </widget>
         <widget name="damc_author" type="text">
@@ -316,7 +325,7 @@
       <properties widgetMode="any">
       </properties>
       <subWidgets>
-        <widget name="dc_subjects" type="select_l10n_vocabulary_tree">
+        <widget name="dc_subjects" type="select2DirectoryMultiple">
           <labels>
             <label mode="any">label.dublincore.subject</label>
           </labels>
@@ -326,10 +335,13 @@
           </fields>
           <properties widgetMode="any">
             <property name="directoryName">l10nsubjects</property>
-            <property name="multiSelect">true</property>
+            <property name="width">200</property>
+            <property name="dbl10n">true</property>
+            <property name="minimumInputLength">0</property>
+            <property name="hideInstructionLabel">true</property>
           </properties>
         </widget>
-        <widget name="dc_coverage" type="select_l10n_vocabulary_tree">
+        <widget name="dc_coverage" type="select2DirectoryMultiple">
           <labels>
             <label mode="any">label.dublincore.coverage</label>
           </labels>
@@ -339,7 +351,10 @@
           </fields>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
-            <property name="multiSelect">true</property>
+            <property name="width">200</property>
+            <property name="dbl10n">true</property>
+            <property name="minimumInputLength">0</property>
+            <property name="hideInstructionLabel">true</property>
           </properties>
         </widget>
       </subWidgets>
