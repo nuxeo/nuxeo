@@ -44,7 +44,7 @@
       </properties>
     </widget>
 
-    <widget name="search_nature" type="selectManyDirectory">
+    <widget name="search_nature" type="select2Directory">
       <labels>
         <label mode="any">label.dublincore.nature</label>
       </labels>
@@ -53,12 +53,14 @@
         <field>search:nature</field>
       </fields>
       <properties mode="any">
+        <property name="width">300</property>
+        <property name="minimumInputLength">0</property>
+        <property name="hideInstructionLabel">true</property>
         <property name="directoryName">nature</property>
-        <property name="localize">true</property>
       </properties>
     </widget>
 
-    <widget name="search_subjects" type="template">
+    <widget name="search_subjects" type="select2DirectoryMultiple">
       <labels>
         <label mode="any">label.dublincore.subject</label>
       </labels>
@@ -67,7 +69,11 @@
         <field>search:subjects</field>
       </fields>
       <properties mode="any">
-        <property name="template">/widgets/subjects_widget.xhtml</property>
+        <property name="width">300</property>
+        <property name="dbl10n">true</property>
+        <property name="minimumInputLength">0</property>
+        <property name="hideInstructionLabel">true</property>
+        <property name="directoryName">l10nsubjects</property>
       </properties>
     </widget>
 
@@ -97,7 +103,7 @@
       </properties>
     </widget>
 
-    <widget name="search_coverage" type="template">
+    <widget name="search_coverage" type="select2Directory">
       <labels>
         <label mode="any">label.dublincore.coverage</label>
       </labels>
@@ -106,9 +112,11 @@
         <field>search:coverage</field>
       </fields>
       <properties mode="any">
-        <property name="template">
-          /widgets/search_coverage_widget.xhtml
-        </property>
+        <property name="width">300</property>
+        <property name="dbl10n">true</property>
+        <property name="minimumInputLength">0</property>
+        <property name="hideInstructionLabel">true</property>
+        <property name="directoryName">l10ncoverage</property>
       </properties>
     </widget>
 
