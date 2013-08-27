@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs;
 
+import java.util.List;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -30,6 +32,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,6 +65,7 @@ public class UserRootObject extends DefaultObject {
     public Response createUser(NuxeoPrincipal principal) {
         try {
             UserManager um = Framework.getLocalService(UserManager.class);
+            checkCurrentUserCanCreatePrincipal(principal, um);
             checkPrincipalHasAName(principal);
             checkPrincipalDoesNotAlreadyExists(principal, um);
 
@@ -72,6 +76,38 @@ public class UserRootObject extends DefaultObject {
         } catch (ClientException e) {
             throw WebException.wrap(e);
         }
+    }
+
+    private void checkCurrentUserCanCreatePrincipal(NuxeoPrincipal principal,
+            UserManager um) {
+        NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
+        if (!currentUser.isAdministrator()) {
+            if (!currentUser.isMemberOf("powerusers")
+                    || isNotAPowerUserEditableUser(principal, um)) {
+                throw new WebSecurityException("Cannot create a user");
+            }
+        }
+    }
+
+    /**
+     * Checks if the principal is allowed to be edited by a power user.
+     * This includes admin group
+     * @param principal the user to check
+     * @param um2
+     * @return
+     *
+     */
+    static boolean isNotAPowerUserEditableUser(NuxeoPrincipal principal,
+            UserManager um) {
+        // power user can only create a non admin group
+        List<String> adminGroups = um.getAdministratorsGroups();
+        for (String adminGroup : adminGroups) {
+            if (principal.getAllGroups().contains(adminGroup)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal,

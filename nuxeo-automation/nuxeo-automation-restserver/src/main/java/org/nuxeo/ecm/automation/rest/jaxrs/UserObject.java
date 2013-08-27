@@ -62,8 +62,8 @@ public class UserObject extends DefaultObject {
 
     @PUT
     public NuxeoPrincipal doUpdateUser(NuxeoPrincipal principal) {
-        checkCurrentUserCanAdministrateUser();
         UserManager um = Framework.getLocalService(UserManager.class);
+        checkCurrentUserCanAdministrateUser(um);
         try {
             um.updateUser(principal.getModel());
             return um.getPrincipal(principal.getName());
@@ -72,11 +72,11 @@ public class UserObject extends DefaultObject {
         }
     }
 
-    private void checkCurrentUserCanAdministrateUser() {
+    private void checkCurrentUserCanAdministrateUser(UserManager um) {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
             if ((!principal.isMemberOf("powerusers"))
-                    || currentPrincipal.isAdministrator()) {
+                    || UserRootObject.isNotAPowerUserEditableUser(principal, um)) {
 
                 throw new WebSecurityException(
                         "User is not allowed to edit users");
@@ -86,8 +86,8 @@ public class UserObject extends DefaultObject {
 
     @DELETE
     public Response doDeleteUser() {
-        checkCurrentUserCanAdministrateUser();
         UserManager um = Framework.getLocalService(UserManager.class);
+        checkCurrentUserCanAdministrateUser(um);
         try {
             um.deleteUser(currentPrincipal.getModel());
             return Response.status(Status.NO_CONTENT).build();

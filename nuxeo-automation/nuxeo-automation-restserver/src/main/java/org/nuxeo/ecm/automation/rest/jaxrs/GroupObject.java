@@ -98,7 +98,7 @@ public class GroupObject extends DefaultObject {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
             if ((!principal.isMemberOf("powerusers"))
-                    || um.getAdministratorsGroups().contains(group.getName())) {
+                    || GroupRootObject.isNotAPowerUserEditableObject(group, um)) {
 
                 throw new WebSecurityException(
                         "User is not allowed to edit this group");

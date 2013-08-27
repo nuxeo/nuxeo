@@ -19,9 +19,6 @@ package org.nuxeo.ecm.automation.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Arrays;
 
 import javax.ws.rs.core.Response;
@@ -29,8 +26,6 @@ import javax.ws.rs.core.Response;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.rest.io.NuxeoGroupWriter;
-import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
@@ -53,7 +48,7 @@ import com.sun.jersey.api.client.ClientResponse;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(init = RestServerInit.class)
-public class UserGroupTest extends BaseTest {
+public class UserGroupTest extends BaseUserTest {
 
     @Inject
     UserManager um;
@@ -130,20 +125,6 @@ public class UserGroupTest extends BaseTest {
     }
 
     @Test
-    public void itCanDeleteIfNotAdmin() throws Exception {
-        // Given a modified user
-        service = getServiceFor("user1", "user1");
-
-        // When I call a DELETE on the Rest endpoint
-        ClientResponse response = getResponse(RequestType.DELETE, "/user/user2");
-
-        // Then the user is deleted
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                response.getStatus());
-
-    }
-
-    @Test
     public void itCanCreateAUser() throws Exception {
         // Given a new user
         NuxeoPrincipal principal = new NuxeoPrincipalImpl("newuser");
@@ -194,42 +175,28 @@ public class UserGroupTest extends BaseTest {
         group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
 
-        //When i PUT this group
+        // When i PUT this group
         ClientResponse response = getResponse(RequestType.PUT, "/group/"
                 + group.getName(), getGroupAsJson(group));
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        //Then the group is modified server side
+        // Then the group is modified server side
         group = um.getGroup("group1");
         assertEquals("modifiedGroup", group.getLabel());
         assertEquals(2, group.getMemberUsers().size());
         assertEquals(1, group.getMemberGroups().size());
     }
 
-
-    @Test
-    public void onlyAdminCanUpdateGroups() throws Exception {
-        // User another login/pw
-        service = getServiceFor("user1", "user1");
-
-        // Given a modified group
-        NuxeoGroup group = um.getGroup("group1");
-        group.setLabel("modifiedGroup");
-
-        //When i PUT this group
-        ClientResponse response = getResponse(RequestType.PUT, "/group/"
-                + group.getName(), getGroupAsJson(group));
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-    }
-
     @Test
     public void itCanDeleteGroup() throws Exception {
 
-        //When i DELETE on a group resources
-        ClientResponse response = getResponse(RequestType.PUT, "/group/group1");
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        // When i DELETE on a group resources
+        ClientResponse response = getResponse(RequestType.DELETE,
+                "/group/group1");
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
+                response.getStatus());
 
-        //Then the group is deleted
+        // Then the group is deleted
         assertNull(um.getGroup("group1"));
     }
 
@@ -241,11 +208,13 @@ public class UserGroupTest extends BaseTest {
         group.setMemberUsers(Arrays.asList(new String[] { "user1", "user2" }));
         group.setMemberGroups(Arrays.asList(new String[] { "group2" }));
 
-        //When i POST this group
-        ClientResponse response = getResponse(RequestType.POST, "/group/", getGroupAsJson(group));
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        // When i POST this group
+        ClientResponse response = getResponse(RequestType.POST, "/group/",
+                getGroupAsJson(group));
+        assertEquals(Response.Status.CREATED.getStatusCode(),
+                response.getStatus());
 
-        //Then the group is modified server side
+        // Then the group is modified server side
         group = um.getGroup("newGroup");
         assertEquals("a new group", group.getLabel());
         assertEquals(2, group.getMemberUsers().size());
@@ -253,66 +222,5 @@ public class UserGroupTest extends BaseTest {
 
     }
 
-    private String getGroupAsJson(NuxeoGroup group) throws IOException {
-        NuxeoGroupWriter npw = new NuxeoGroupWriter();
-        OutputStream out = new ByteArrayOutputStream();
-        npw.writeTo(group, NuxeoGroup.class, null, null, null, null, out);
-        return out.toString();
-    }
-
-    /**
-     * Assert that the given node represents a group which properties are given
-     * in parameters
-     *
-     * @param groupName
-     * @param groupLabel
-     * @param node
-     *
-     * @since 5.7.3
-     */
-    private void assertEqualsGroup(String groupName, String groupLabel,
-            JsonNode node) {
-        assertEquals("group", node.get("entity-type").getValueAsText());
-        assertEquals(groupName, node.get("groupname").getValueAsText());
-        assertEquals(groupLabel, node.get("label").getValueAsText());
-    }
-
-    /**
-     * Returns the Json representation of a user.
-     *
-     * @param user
-     * @return
-     * @throws IOException
-     *
-     * @since 5.7.3
-     */
-    private String getPrincipalAsJson(NuxeoPrincipal user) throws IOException {
-        NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
-        OutputStream out = new ByteArrayOutputStream();
-        npw.writeTo(user, NuxeoPrincipal.class, null, null, null, null, out);
-        String userJson = out.toString();
-        return userJson;
-    }
-
-    /**
-     * Assert that the given node represents a user which properties are given
-     * in parameters.
-     *
-     * @param username
-     * @param firstname
-     * @param lastname
-     * @param node
-     *
-     * @since 5.7.3
-     */
-    private void assertEqualsUser(String username, String firstname,
-            String lastname, JsonNode node) {
-        assertEquals("user", node.get("entity-type").getValueAsText());
-        assertEquals(username, node.get("id").getValueAsText());
-        assertEquals(firstname,
-                node.get("properties").get("firstName").getValueAsText());
-        assertEquals(lastname,
-                node.get("properties").get("lastName").getValueAsText());
-    }
 
 }
