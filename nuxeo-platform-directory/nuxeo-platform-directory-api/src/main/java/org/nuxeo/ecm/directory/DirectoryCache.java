@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -45,6 +47,8 @@ import com.codahale.metrics.SharedMetricRegistries;
  */
 public class DirectoryCache {
 
+    private final static Log log = LogFactory.getLog(DirectoryCache.class);
+
     protected final String name;
 
     protected final Map<String, CachedEntry> entryStore = new HashMap<String, CachedEntry>();
@@ -61,7 +65,6 @@ public class DirectoryCache {
 
     protected final Counter sizeCounter;
 
-
     // time out in seconds an entry is kept in cache, entryCacheTimeout <= 0
     // means entries are kept in cache till manual invalidation
     protected int timeout = 0;
@@ -73,6 +76,7 @@ public class DirectoryCache {
         sizeCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "size"));
         maxCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "max"));
     }
+
     // maximum number of entries kept in cache, entryCacheMaxSize <= 0 means
     // cache disabled; if the limit is reached, all entries get invalidated
     protected int maxSize = 0;
@@ -101,6 +105,8 @@ public class DirectoryCache {
                 synchronized (this) {
                     // check that the cache limit has not yet been reached
                     if (maxSize > 0 && entryStore.size() >= maxSize) {
+                        log.warn("Directory cacheMaxSize for " + name
+                                + " is too small, flushing.");
                         entryStore.clear();
                     }
                     entryStore.put(entryId, new CachedEntry(dm, timeout));
