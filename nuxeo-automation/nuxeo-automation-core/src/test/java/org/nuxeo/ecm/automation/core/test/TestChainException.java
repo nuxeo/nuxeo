@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,8 +29,10 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -51,19 +54,30 @@ public class TestChainException {
 
     protected DocumentModel src;
 
+    protected DocumentModel doc;
+
     @Inject
     AutomationService service;
 
     @Inject
     CoreSession session;
 
+    @Inject
+    TracerFactory factory;
+
     @Before
     public void initRepo() throws Exception {
+        // Document with Source as title
         src = session.createDocumentModel("/", "src", "Folder");
         src.setPropertyValue("dc:title", "Source");
         src = session.createDocument(src);
+        // Document with Document as title
+        doc = session.createDocumentModel("/", "doc", "Folder");
+        doc.setPropertyValue("dc:title", "Document");
+        doc = session.createDocument(doc);
         session.save();
         src = session.getDocument(src.getRef());
+        doc = session.getDocument(doc.getRef());
     }
 
     @After
@@ -77,7 +91,7 @@ public class TestChainException {
         ChainException chainException = service.getChainException("contributedchain");
         assertNotNull(chainException);
         assertEquals(3, chainException.getCatchChainExceptions().size());
-        assertEquals("chainException",
+        assertEquals("chainExceptionA",
                 chainException.getCatchChainExceptions().get(0).getChainId());
     }
 
@@ -89,7 +103,35 @@ public class TestChainException {
         ctx.setInput(src);
         assertEquals(
                 Scripting.newTemplate("@{Document['dc:title']=='Source'}").eval(
-                        ctx),
-                automationFilter.getValue().eval(ctx));
+                        ctx), automationFilter.getValue().eval(ctx));
+    }
+
+    @Test
+    public void testAutomationChainException() throws Exception {
+        // Activate trace mode to verify if exception chain has been run
+        if (!factory.getRecordingState()) {
+            factory.toggleRecording();
+        }
+
+        // verify for a simple catch chain if it has been run
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+        service.run(ctx, "anothercontributedchain");
+        assertNotNull(factory.getTrace("chainExceptionA"));
+
+        ctx = new OperationContext(session);
+        ctx.setInput(src);
+        assertTrue(service.run(ctx, "contributedchain") instanceof DocumentModel);
+        // Verify that result is documentmodel from operation3 of
+        // chainExceptionA
+        // Verify if chainExceptionA has been run after contributedchain failure
+        assertNotNull(factory.getTrace("chainExceptionA"));
+
+        ctx = new OperationContext(session);
+        ctx.setInput(doc);
+        // Verify that result is documentref from operation2 of chainExceptionB
+        assertTrue(service.run(ctx, "contributedchain") instanceof DocumentRef);
+        // Verify if chainExceptionB has been run after contributedchain failure
+        assertNotNull(factory.getTrace("chainExceptionB"));
     }
 }
