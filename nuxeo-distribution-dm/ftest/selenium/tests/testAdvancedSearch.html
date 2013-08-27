@@ -152,10 +152,21 @@
 	<td>searchForm:nxl_advanced_search:nxw_search_all_words</td>
 	<td>advancedSearchTest</td>
 </tr>
+<!-- Since 5.7.3 nature is a select2 widget-->
 <tr>
-	<td>select</td>
-	<td>searchForm:nxl_advanced_search:nxw_search_nature</td>
-	<td>label=Article</td>
+    <td>clickAt</td>
+    <td>css=div[id$='nxw_search_nature_select2'] a</td>
+    <td></td>
+</tr>
+<tr>
+    <td>waitForElementPresent</td>
+    <td>css=.select2-result-label:contains('Article')</td>
+    <td></td>
+</tr>
+<tr>
+    <td>clickAt</td>
+    <td>css=.select2-result-label:contains('Article')</td>
+    <td></td>
 </tr>
 <tr>
 	<td>clickAndWait</td>
