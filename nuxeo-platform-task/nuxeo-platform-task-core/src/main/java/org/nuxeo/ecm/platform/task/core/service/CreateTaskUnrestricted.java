@@ -149,7 +149,8 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                     throws ClientException {
         if (createOneTaskPerActor) {
             for (String prefixedActorId : prefixedActorIds) {
-                createTask(coreSession, principal, document, taskName,
+                createTask(coreSession, principal, document, taskDocumentType,
+                        taskName, taskType, processId,
                         Collections.singletonList(prefixedActorId), false,
                         directive, comment, dueDate, taskVariables, parentPath);
             }
