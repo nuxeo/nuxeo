@@ -14,16 +14,11 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.jaxrs;
+package org.nuxeo.ecm.automation.rest.jaxrs.usermanager;
 
 import java.io.Serializable;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -31,10 +26,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -42,62 +34,42 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 @WebObject(type = "groups")
-public class GroupRootObject extends DefaultObject {
+public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
-    @Path("{groupName}")
-    public Object doGetGroup(@PathParam("groupName")
-    String groupName) {
-        try {
-            UserManager um = Framework.getLocalService(UserManager.class);
-            NuxeoGroup group = um.getGroup(groupName);
-            if (group == null) {
-                throw new WebResourceNotFoundException("Group does not exist");
-            }
-            return newObject("group", group);
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
-        }
+    @Override
+    protected NuxeoGroup getArtifact(String id) throws ClientException {
+        return um.getGroup(id);
     }
 
-    @POST
-    public Response doCreateGroup(NuxeoGroup group) {
-        try {
-            UserManager um = Framework.getLocalService(UserManager.class);
-            checkCurrentUserCanCreateGroup(group, um);
-            checkGroupHasAName(group);
-            checkGroupDoesNotAlreadyExists(group, um);
-
-            DocumentModel groupModel = buildModelFromGroup(group, um);
-
-            um.createGroup(groupModel);
-            return Response.status(Status.CREATED).entity(
-                    um.getGroup(group.getName())).build();
-
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
-        }
+    @Override
+    protected String getArtifactType() {
+        return "group";
     }
 
+    @Override
+    protected void checkPrecondition(NuxeoGroup group) throws ClientException {
+        checkCurrentUserCanCreateGroup(group, um);
+        checkGroupHasAName(group);
+        checkGroupDoesNotAlreadyExists(group, um);
+    }
 
-    private void checkCurrentUserCanCreateGroup(NuxeoGroup group,
-            UserManager um) {
+    @Override
+    protected NuxeoGroup createArtifact(NuxeoGroup group)
+            throws ClientException {
+        DocumentModel groupModel = buildModelFromGroup(group, um);
+
+        um.createGroup(groupModel);
+        return um.getGroup(group.getName());
+    }
+
+    private void checkCurrentUserCanCreateGroup(NuxeoGroup group, UserManager um) {
         NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!currentUser.isAdministrator()) {
             if (!currentUser.isMemberOf("powerusers")
-                    || isNotAPowerUserEditableObject(group,um)) {
+                    || !isAPowerUserEditableArtifact(group)) {
                 throw new WebSecurityException("Cannot create a group");
             }
         }
-    }
-
-    /**
-     * @param group
-     * @param um
-     * @return
-     *
-     */
-    public static boolean isNotAPowerUserEditableObject(NuxeoGroup group, UserManager um) {
-       return um.getAdministratorsGroups().contains(group.getName());
     }
 
     /**
@@ -148,6 +120,24 @@ public class GroupRootObject extends DefaultObject {
             throw new WebException("Group MUST have a name",
                     Response.Status.PRECONDITION_FAILED.getStatusCode());
         }
+    }
+
+    @Override
+    boolean isAPowerUserEditableArtifact(NuxeoGroup artifact) {
+        return !um.getAdministratorsGroups().contains(artifact.getName());
+    }
+
+    /**
+     * @param group
+     * @param um
+     * @return
+     *
+     */
+    static boolean isAPowerUserEditableObject(NuxeoGroup group) {
+        GroupRootObject gro = new GroupRootObject();
+        gro.initialize();
+
+        return gro.isAPowerUserEditableArtifact(group);
     }
 
 }

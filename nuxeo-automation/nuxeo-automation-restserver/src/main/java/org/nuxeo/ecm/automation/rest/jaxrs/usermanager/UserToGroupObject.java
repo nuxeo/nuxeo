@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.jaxrs;
+package org.nuxeo.ecm.automation.rest.jaxrs.usermanager;
 
 import java.util.List;
 
@@ -76,8 +76,8 @@ public class UserToGroupObject extends DefaultObject {
         NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!currentPrincipal.isAdministrator()) {
             if (!principal.isMemberOf("powerusers")
-                    || UserRootObject.isNotAPowerUserEditableUser(principal, um)
-                    || GroupRootObject.isNotAPowerUserEditableObject(group, um)) {
+                    || !UserRootObject.isAPowerUserEditableUser(principal)
+                    || !GroupRootObject.isAPowerUserEditableObject(group)) {
                 throw new WebSecurityException("Cannot edit user");
             }
         }

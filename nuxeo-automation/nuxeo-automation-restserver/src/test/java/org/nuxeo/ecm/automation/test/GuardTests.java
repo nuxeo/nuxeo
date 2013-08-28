@@ -63,7 +63,7 @@ public class GuardTests extends BaseUserTest {
         // When I call a DELETE on the Rest endpoint
         ClientResponse response = getResponse(RequestType.DELETE, "/user/user2");
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
 
@@ -77,7 +77,7 @@ public class GuardTests extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.PUT,
                 "/user/" + user.getName(), getPrincipalAsJson(user));
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
 
@@ -92,7 +92,7 @@ public class GuardTests extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.POST, "/user",
                 getPrincipalAsJson(principal));
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
 
@@ -107,7 +107,7 @@ public class GuardTests extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.POST, "/group/",
                 getGroupAsJson(group));
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
 
@@ -122,7 +122,7 @@ public class GuardTests extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.PUT, "/group/"
                 + group.getName(), getGroupAsJson(group));
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
 
@@ -134,7 +134,7 @@ public class GuardTests extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.DELETE,
                 "/group/group1");
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
     }
@@ -147,9 +147,10 @@ public class GuardTests extends BaseUserTest {
 
         // When i POST this group
         ClientResponse response = getResponse(RequestType.POST, "/group/"
-                + group.getName() + "/user/" + principal.getName(), getGroupAsJson(group));
+                + group.getName() + "/user/" + principal.getName(),
+                getGroupAsJson(group));
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
 
@@ -165,9 +166,10 @@ public class GuardTests extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.DELETE, "/group/"
                 + group.getName() + "/user/" + principal.getName());
 
-        //Then it returns a 401
+        // Then it returns a 401
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
 
     }
+
 }
