@@ -77,7 +77,7 @@ public class UserToGroupObject extends DefaultObject {
         if (!currentPrincipal.isAdministrator()) {
             if (!principal.isMemberOf("powerusers")
                     || !UserRootObject.isAPowerUserEditableUser(principal)
-                    || !GroupRootObject.isAPowerUserEditableObject(group)) {
+                    || !GroupRootObject.isAPowerUserEditableGroup(group)) {
                 throw new WebSecurityException("Cannot edit user");
             }
         }

@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.rest.jaxrs.usermanager;
 import java.io.Serializable;
 
 import javax.ws.rs.core.Response;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -124,7 +126,8 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
     @Override
     boolean isAPowerUserEditableArtifact(NuxeoGroup artifact) {
-        return !um.getAdministratorsGroups().contains(artifact.getName());
+        return isAPowerUserEditableGroup(artifact);
+
     }
 
     /**
@@ -133,11 +136,10 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
      * @return
      *
      */
-    static boolean isAPowerUserEditableObject(NuxeoGroup group) {
-        GroupRootObject gro = new GroupRootObject();
-        gro.initialize();
+    static boolean isAPowerUserEditableGroup(NuxeoGroup group) {
+        UserManager um = Framework.getLocalService(UserManager.class);
+        return !um.getAdministratorsGroups().contains(group.getName());
 
-        return gro.isAPowerUserEditableArtifact(group);
     }
 
 }

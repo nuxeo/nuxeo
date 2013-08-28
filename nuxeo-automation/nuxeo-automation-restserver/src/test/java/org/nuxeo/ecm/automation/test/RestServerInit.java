@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * Repo init to test Rest API
  *
@@ -79,20 +78,21 @@ public class RestServerInit implements RepositoryInit {
         for (int idx = 0; idx < 4; idx++) {
             String userId = "user" + idx;
 
-
             NuxeoPrincipal principal = um.getPrincipal(userId);
 
-            if (principal == null) {
-
-                DocumentModel userModel = um.getBareUserModel();
-                String schemaName = um.getUserSchemaName();
-                userModel.setProperty(schemaName, "username", userId);
-                userModel.setProperty(schemaName, "firstName", FIRSTNAMES[idx]);
-                userModel.setProperty(schemaName, "lastName", LASTNAMES[idx]);
-                userModel.setProperty(schemaName, "password", userId);
-                userModel = um.createUser(userModel);
-                principal = um.getPrincipal(userId);
+            if (principal != null) {
+                um.deleteUser(principal.getModel());
             }
+
+            DocumentModel userModel = um.getBareUserModel();
+            String schemaName = um.getUserSchemaName();
+            userModel.setProperty(schemaName, "username", userId);
+            userModel.setProperty(schemaName, "firstName", FIRSTNAMES[idx]);
+            userModel.setProperty(schemaName, "lastName", LASTNAMES[idx]);
+            userModel.setProperty(schemaName, "password", userId);
+            userModel = um.createUser(userModel);
+            principal = um.getPrincipal(userId);
+
         }
 
         // Create some groups
@@ -107,7 +107,7 @@ public class RestServerInit implements RepositoryInit {
 
         // Add the power user group to user0
         NuxeoPrincipal principal = um.getPrincipal(POWER_USER_LOGIN);
-        principal.setGroups(Arrays.asList(new String[]{"powerusers"}));
+        principal.setGroups(Arrays.asList(new String[] { "powerusers" }));
         um.updateUser(principal.getModel());
 
     }
@@ -120,8 +120,7 @@ public class RestServerInit implements RepositoryInit {
             DocumentModel groupModel = um.getBareGroupModel();
             String schemaName = um.getGroupSchemaName();
             groupModel.setProperty(schemaName, "groupname", groupId);
-            groupModel.setProperty(schemaName, "grouplabel",
-                    groupLabel);
+            groupModel.setProperty(schemaName, "grouplabel", groupLabel);
             groupModel = um.createGroup(groupModel);
         }
     }

@@ -266,6 +266,7 @@ public class UserGroupTest extends BaseUserTest {
         NuxeoGroup group = um.getGroup("group1");
         principal.setGroups(Arrays.asList(new String[] { group.getName() }));
         um.updateUser(principal.getModel());
+        principal = um.getPrincipal("user1");
         assertTrue(principal.isMemberOf(group.getName()));
 
         // When i POST this group

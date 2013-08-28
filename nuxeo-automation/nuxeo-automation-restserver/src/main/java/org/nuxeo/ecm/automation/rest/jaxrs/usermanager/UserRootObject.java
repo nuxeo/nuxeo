@@ -21,11 +21,13 @@ import java.util.List;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -80,14 +82,7 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
 
     @Override
     boolean isAPowerUserEditableArtifact(NuxeoPrincipal artifact) {
-        List<String> adminGroups = um.getAdministratorsGroups();
-        for (String adminGroup : adminGroups) {
-            if (artifact.getAllGroups().contains(adminGroup)) {
-                return false;
-            }
-        }
-
-        return true;
+        return isAPowerUserEditableUser(artifact);
     }
 
     /**
@@ -96,10 +91,17 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
      * @return
      *
      */
-    static boolean isAPowerUserEditableUser(NuxeoPrincipal currentArtifact) {
-        UserRootObject uro = new UserRootObject();
-        uro.initialize();
-        return uro.isAPowerUserEditableArtifact(currentArtifact);
+    static boolean isAPowerUserEditableUser(NuxeoPrincipal user) {
+        UserManager um = Framework.getLocalService(UserManager.class);
+        List<String> adminGroups = um.getAdministratorsGroups();
+        for (String adminGroup : adminGroups) {
+            if (user.getAllGroups().contains(adminGroup)) {
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
 }
