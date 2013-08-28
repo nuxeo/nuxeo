@@ -44,7 +44,7 @@
       </properties>
     </widget>
 
-    <widget name="search_nature" type="select2Directory">
+    <widget name="search_nature" type="select2DirectoryMultiple">
       <labels>
         <label mode="any">label.dublincore.nature</label>
       </labels>
@@ -103,7 +103,7 @@
       </properties>
     </widget>
 
-    <widget name="search_coverage" type="select2Directory">
+    <widget name="search_coverage" type="select2DirectoryMultiple">
       <labels>
         <label mode="any">label.dublincore.coverage</label>
       </labels>
