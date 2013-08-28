@@ -16,7 +16,8 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import javax.ws.rs.core.Response;
 
@@ -162,7 +163,7 @@ public class GuardTests extends BaseUserTest {
         NuxeoGroup group = um.getGroup("group1");
         NuxeoPrincipal principal = um.getPrincipal("user1");
 
-        // When i POST this group
+        // When i DELETE this group
         ClientResponse response = getResponse(RequestType.DELETE, "/group/"
                 + group.getName() + "/user/" + principal.getName());
 
@@ -171,5 +172,46 @@ public class GuardTests extends BaseUserTest {
                 response.getStatus());
 
     }
+
+    @Test
+    public void powerUserCantDeleteAdminArtifacts() throws Exception {
+        // Given a power user
+        NuxeoPrincipal principal = RestServerInit.getPowerUser();
+        service = getServiceFor(principal.getName(), principal.getName());
+
+        // When i try to delete admin user
+        ClientResponse response = getResponse(RequestType.DELETE,
+                "/user/Administrator");
+        // Then it returns a 401
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+                response.getStatus());
+
+        // When i try to delete admin user
+        response = getResponse(RequestType.DELETE, "/group/administrators");
+        // Then it returns a 401
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
+                response.getStatus());
+
+    }
+
+    @Test
+    public void powerUserCanDeleteNonAdminArtifacts() throws Exception {
+        // Given a power user
+        NuxeoPrincipal principal = RestServerInit.getPowerUser();
+        service = getServiceFor(principal.getName(), principal.getName());
+
+        // When i try to delete admin user
+        ClientResponse response = getResponse(RequestType.DELETE,
+                "/user/user2");
+        // Then it return a NO_CONTENT response
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
+                response.getStatus());
+
+        assertNull(um.getPrincipal("user2"));
+
+    }
+
+
+
 
 }
