@@ -24,8 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -39,6 +37,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -124,13 +123,7 @@ public class ITSafeEditTest extends AbstractTest {
 
     private final static String CONFIRM_RESTORE_SPAN_ELT_ID = "confirmRestore";
 
-    @After
-    public void after() throws Exception {
-        restoreSate();
-    }
-
-    @Before
-    public void before() throws Exception {
+    private void prepare() throws Exception {
         DocumentBasePage documentBasePage;
         DocumentBasePage s = login();
 
@@ -177,7 +170,7 @@ public class ITSafeEditTest extends AbstractTest {
         // We must find the status message asking if we want to restore previous
         // unchanged data and make sure it is visible
         boolean isRestoreVisible = false;
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(3,
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
                 TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
                 NoSuchElementException.class);
         isRestoreVisible = wait.until((new Function<WebDriver, Boolean>() {
@@ -248,6 +241,8 @@ public class ITSafeEditTest extends AbstractTest {
             log.warn("Browser not supported. Nothing to run.");
             return;
         }
+
+        prepare();
 
         DocumentBasePage documentBasePage;
         WebElement descriptionElt, titleElt;
@@ -328,6 +323,7 @@ public class ITSafeEditTest extends AbstractTest {
         documentBasePage.getContentTab();
         logout();
 
+        restoreSate();
     }
 
     /**
@@ -339,6 +335,14 @@ public class ITSafeEditTest extends AbstractTest {
      */
     @Test
     public void testSafeEditOnSelect2() throws Exception {
+
+        if (!runTestForBrowser()) {
+            log.warn("Browser not supported. Nothing to run.");
+            return;
+        }
+
+        prepare();
+
         DocumentBasePage documentBasePage;
         // Log as test user and edit the created workdspace
         documentBasePage = login(USERNAME, PASSWORD).getContentTab().goToDocument(
@@ -353,6 +357,21 @@ public class ITSafeEditTest extends AbstractTest {
                 driver,
                 By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']"));
         coverageWidget.selectValue(COVERAGE);
+
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
+                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
+
+        try {
+            wait.until(new Function<WebDriver, Boolean>() {
+                public Boolean apply(WebDriver driver) {
+                    WebElement saveFeedback = driver.findElement(By.id("savedFeedback"));
+                    return saveFeedback.isDisplayed();
+                }
+            });
+        } catch (TimeoutException e) {
+            log.warn("Could not see saved message, maybe I was too slow and it has already disappeared. Let's see if I can restore.");
+        }
 
         // We leave the page without saving, the safeEdit mechanism should be
         // triggered ...
@@ -370,6 +389,8 @@ public class ITSafeEditTest extends AbstractTest {
 
         editTabSubPage.save();
         logout();
+
+        restoreSate();
     }
 
     private void triggerSafeEditResotre() {
