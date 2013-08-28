@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
    <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-feature-parent</artifactId>
+    <artifactId>nuxeo-features-parent</artifactId>
     <version>5.7.3-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-platform-ui-select2</artifactId>
