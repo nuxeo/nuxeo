@@ -48,7 +48,8 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     protected transient PropertyFactory factory;
 
 
-    public DocumentPartImpl(Schema schema, PropertyFactory factory) {
+    public DocumentPartImpl(Schema schema, PropertyFactory factory,
+            boolean isVersion) {
         super(null);
         this.schema = schema;
         this.factory = factory == null ? DefaultPropertyFactory.getInstance() : factory;
@@ -57,12 +58,20 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         // in order to make sure that they'll be saved on creation, so
         // that later on they aren't created lazily on read, which causes
         // problems in parallel read situations
+        if (isVersion) {
+            // although not for versions
+            return;
+        }
         for (Field field : getType().getFields()) {
             if (field.getType() instanceof ComplexType) {
                 setDirtyFlags(IS_NEW);
                 break;
             }
         }
+    }
+
+    public DocumentPartImpl(Schema schema, PropertyFactory factory) {
+        this(schema, factory, false);
     }
 
     public DocumentPartImpl(Schema schema) {

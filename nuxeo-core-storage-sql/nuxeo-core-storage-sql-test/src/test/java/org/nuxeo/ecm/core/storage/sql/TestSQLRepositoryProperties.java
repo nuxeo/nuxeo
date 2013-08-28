@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,11 +31,13 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.Ignore;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
@@ -452,6 +455,27 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         // but changing the property does
         prop.setValue(Collections.singletonMap("string", "abc"));
         assertTrue(doc.isDirty());
+    }
+
+    @Test
+    public void testComplexNotDirtyOnVersionRead() throws Exception {
+        doc = session.createDocumentModel("/", "doc2", "TestDocument2");
+        doc = session.createDocument(doc);
+        DocumentRef verRef = doc.checkIn(null, null);
+
+        // reread doc
+        DocumentModel ver = session.getDocument(verRef);
+        assertFalse(ver.isDirty());
+        // read a complex prop
+        Property prop = ver.getProperty("tp:complex");
+        // check that this does not mark the doc dirty
+        assertFalse(ver.isDirty());
+        assertFalse(prop.isDirty());
+        // modify the version (allowed property)
+        ver.setPropertyValue("dc:issued", new Date());
+        // try to re-save the version
+        // works if the complex document part is not dirty
+        ver = session.saveDocument(ver);
     }
 
     @Test
