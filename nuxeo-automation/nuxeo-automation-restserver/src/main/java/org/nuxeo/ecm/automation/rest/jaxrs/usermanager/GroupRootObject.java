@@ -23,11 +23,9 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,7 +48,7 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
     @Override
     protected void checkPrecondition(NuxeoGroup group) throws ClientException {
-        checkCurrentUserCanCreateGroup(group, um);
+        checkCurrentUserCanCreateArtifact(group);
         checkGroupHasAName(group);
         checkGroupDoesNotAlreadyExists(group, um);
     }
@@ -62,16 +60,6 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
         um.createGroup(groupModel);
         return um.getGroup(group.getName());
-    }
-
-    private void checkCurrentUserCanCreateGroup(NuxeoGroup group, UserManager um) {
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
-        if (!currentUser.isAdministrator()) {
-            if (!currentUser.isMemberOf("powerusers")
-                    || !isAPowerUserEditableArtifact(group)) {
-                throw new WebSecurityException("Cannot create a group");
-            }
-        }
     }
 
     /**
