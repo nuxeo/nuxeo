@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/test/testschema3"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/test/testschema3"
+  >
+
+  <xs:complexType name="animal">
+    <xs:sequence>
+      <xs:element name="race" type="xs:string"/>
+      <xs:element name="name" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="animal" type="nxs:animal"/>
+
+</xs:schema>

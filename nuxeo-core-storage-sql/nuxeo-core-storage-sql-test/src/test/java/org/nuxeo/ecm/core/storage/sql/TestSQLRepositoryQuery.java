@@ -281,6 +281,11 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(1, dml.size());
         dml = session.query("SELECT * FROM File WHERE content/name = 'testfile.txt'");
         assertEquals(1, dml.size());
+        // with prefix (even though schema has no prefix)
+        dml = session.query("SELECT * FROM File WHERE file:content/length > 0");
+        assertEquals(1, dml.size());
+        dml = session.query("SELECT * FROM File WHERE file:content/name = 'testfile.txt'");
+        assertEquals(1, dml.size());
     }
 
     @Test

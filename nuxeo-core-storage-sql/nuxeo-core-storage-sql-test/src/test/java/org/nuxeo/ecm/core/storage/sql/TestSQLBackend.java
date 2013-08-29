@@ -3435,6 +3435,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // tst:friends/1/lastname = 'Smith'
         friend1.setSimpleProperty("lastname", "Smith");
 
+        // this one doesn't have a schema prefix
+        Node person = session.addChildNode(doc, "animal", null, "animal",
+                true);
+        // animal/race = 'dog'
+        person.setSimpleProperty("race", "dog");
+        // animal/name = 'Scooby'
+        person.setSimpleProperty("name", "Scooby");
+
         session.save();
 
         return Arrays.asList(docId);
@@ -3611,6 +3619,43 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // alternate xpath syntax
         clause = "tst:friends/item[*1]/firstname = 'John'"
                 + " AND tst:friends/item[*1]/lastname = 'Smith'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+    }
+
+    @Test
+    public void testQueryComplexPrefix() throws Exception {
+        if (this instanceof TestSQLBackendNet
+                || this instanceof ITSQLBackendNet) {
+            return;
+        }
+
+        Session session = repository.getConnection();
+        List<Serializable> oneDoc = makeComplexDoc(session);
+        String clause;
+        PartialList<Serializable> res;
+
+        // schema with a prefix
+        clause = "tst:owner/firstname = 'Bruce'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        // use of prefix is mandatory if defined
+        try {
+            clause = "owner/firstname = 'Bruce'";
+            session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+            fail("Should fail on missing prefix");
+        } catch (Exception e) {
+            assertEquals("No such property: owner/firstname", e.getMessage());
+        }
+
+        // schema without a prefix
+        clause = "animal/race = 'dog'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+
+        // allow use with schema-name-as-prefix
+        clause = "testschema3:animal/race = 'dog'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
         assertEquals(oneDoc, res.list);
     }

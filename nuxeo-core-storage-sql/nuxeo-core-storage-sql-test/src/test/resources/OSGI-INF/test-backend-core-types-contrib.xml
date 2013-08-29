@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="testschema" src="schemas/testschema.xsd" prefix="tst" />
     <schema name="testschema2" src="schemas/testschema2.xsd" prefix="tst2" />
+    <schema name="testschema3" src="schemas/testschema3.xsd" /> <!-- no prefix -->
     <schema name="age" src="schemas/age.xsd" prefix="age" />
     <!-- tags not in core -->
     <schema name="tag" src="schemas/tag.xsd" prefix="tag"/>
@@ -15,6 +16,7 @@
     <doctype name="Root" extends="Document" />
     <doctype name="TestDoc" extends="Document">
       <schema name="testschema" />
+      <schema name="testschema3" />
       <prefetch>testschema</prefetch>
     </doctype>
     <doctype name="TestDoc2" extends="Document">

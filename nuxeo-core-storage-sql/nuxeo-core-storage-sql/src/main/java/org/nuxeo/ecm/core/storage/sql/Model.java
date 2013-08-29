@@ -661,10 +661,8 @@ public class Model {
         String prefix = schema.getNamespace().prefix;
         if (prefix.isEmpty()) {
             for (Entry<String, ModelProperty> e : propertyInfoByPath.entrySet()) {
-                String key = e.getKey();
-                if (!key.contains("/")) {
-                    alsoWithPrefixes.put(schemaName + ':' + key, e.getValue());
-                }
+                alsoWithPrefixes.put(schemaName + ':' + e.getKey(),
+                        e.getValue());
             }
         } else {
             prefixToSchema.put(prefix, schemaName);
@@ -674,7 +672,7 @@ public class Model {
         Set<String> simplePaths = new HashSet<String>();
         for (Entry<String, ModelProperty> entry : propertyInfoByPath.entrySet()) {
             ModelProperty pi = entry.getValue();
-            if (pi == ModelProperty.NONE) {
+            if (pi.isIntermediateSegment()) {
                 continue;
             }
             if (pi.propertyType != PropertyType.STRING
@@ -707,7 +705,7 @@ public class Model {
             Type fieldType = field.getType();
             if (fieldType.isComplexType()) {
                 // complex type
-                propertyInfoByPath.put(path, ModelProperty.NONE);
+                propertyInfoByPath.put(path, new ModelProperty(propertyName));
                 inferTypePropertyPaths((ComplexType) fieldType, path + '/',
                         propertyInfoByPath, done);
                 continue;
@@ -715,7 +713,8 @@ public class Model {
                 Type listFieldType = ((ListType) fieldType).getFieldType();
                 if (!listFieldType.isSimpleType()) {
                     // complex list
-                    propertyInfoByPath.put(path + "/*", ModelProperty.NONE);
+                    propertyInfoByPath.put(path + "/*", new ModelProperty(
+                            propertyName));
                     inferTypePropertyPaths((ComplexType) listFieldType, path
                             + "/*/", propertyInfoByPath, done);
                     continue;
@@ -921,7 +920,12 @@ public class Model {
         return mergedPropertyInfos.get(propertyName);
     }
 
-    /** returns {@link ModelProperty#NONE} if legal prefix */
+    /**
+     * Gets the model of the property for the given path.
+     *
+     * Returns something with {@link ModelProperty#isIntermediateSegment()} =
+     * true for an intermediate segment of a complex property.
+     */
     public ModelProperty getPathPropertyInfo(String xpath) {
         return allPathPropertyInfos.get(xpath);
     }

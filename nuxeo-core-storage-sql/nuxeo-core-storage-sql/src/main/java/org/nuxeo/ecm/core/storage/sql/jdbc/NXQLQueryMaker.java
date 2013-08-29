@@ -1222,7 +1222,7 @@ public class NXQLQueryMaker implements QueryMaker {
         protected void checkProperty(String xpath) {
             String simple = simpleXPath(xpath);
             ModelProperty prop = model.getPathPropertyInfo(simple);
-            if (prop == null || prop == ModelProperty.NONE) {
+            if (prop == null || prop.isIntermediateSegment()) {
                 throw new QueryMakerException("No such property: " + xpath);
             }
         }
@@ -1496,10 +1496,11 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 if (i < segments.length - 1) {
                     // non-final segment
-                    if (prop != ModelProperty.NONE) {
+                    if (!prop.isIntermediateSegment()) {
                         throw new QueryMakerException("No such property: "
                                 + xpath);
                     }
+                    segment = prop.getIntermediateSegment(); // canonical
                     contextKey = contextStart + segment + contextSuffix;
                     Table table = propertyHierTables.get(contextKey);
                     if (table == null) {
@@ -1515,7 +1516,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     contextHier = table;
                 } else {
                     // last segment
-                    if (prop == ModelProperty.NONE) {
+                    if (prop.isIntermediateSegment()) {
                         throw new QueryMakerException("No such property: "
                                 + xpath);
                     }
