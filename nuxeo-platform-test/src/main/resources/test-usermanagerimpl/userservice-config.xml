@@ -38,7 +38,7 @@
       <defaultGroup>defgr</defaultGroup>
       <userListingMode>search_only</userListingMode>
       <userSortField>username</userSortField>
-      <groupSortField>sn</groupSortField>
+      <groupSortField>groupname</groupSortField>
     </userManager>
   </extension>
 
