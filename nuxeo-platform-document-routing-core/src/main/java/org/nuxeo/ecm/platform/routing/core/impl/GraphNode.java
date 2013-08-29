@@ -553,7 +553,8 @@ public interface GraphNode {
     long getCanceledCount();
 
     /**
-     * Cancels the task if this is a suspended task node.
+     * Cancels the task if this is a suspended task node. The tasks are canceled
+     * with an empty status.
      */
     void cancelTasks();
 
@@ -833,16 +834,25 @@ public interface GraphNode {
             String comment) throws ClientException;
 
     /**
-     * Gets all the processed tasks originating from this node
+     * Gets all the ended tasks originating from this node. This also counts the
+     * canceled tasks.
+     *
+     * @since 5.7.3
+     */
+    List<TaskInfo> getEndedTasksInfo();
+
+    /**
+     * Gets all the ended tasks originating from this node that were processed
+     * with a status. Doesn't count the canceled tasks.
      *
      * @since 5.7.3
      */
     List<TaskInfo> getProcessedTasksInfo();
 
     /**
-     * Returns false if all tasks created from this node were processed
+     * Returns false if all tasks created from this node were ended.
      *
      * @since 5.7.3
      */
-    boolean hasUnprocessedTasks();
+    boolean hasOpenTasks();
 }

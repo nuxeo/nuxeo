@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+import org.nuxeo.ecm.platform.routing.core.api.TasksInfoWrapper;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -406,6 +407,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         String button = (String) getProperty(PROP_NODE_BUTTON);
         Map<String, Serializable> nodeVariables = getVariables();
         nodeVariables.put("button", button);
+        nodeVariables.put("numberOfProcessedTasks",
+                getProcessedTasksInfo().size());
+        nodeVariables.put("numberOfTasks", getTasksInfo().size());
+        nodeVariables.put("tasks", (Serializable) new TasksInfoWrapper(
+                getTasksInfo()));
         context.put("NodeVariables", (Serializable) nodeVariables);
         context.put("nodeId", getId());
         String state = getState().name().toLowerCase();
@@ -676,13 +682,13 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public void cancelTasks() {
         CoreSession session = getSession();
         TaskService taskService = Framework.getLocalService(TaskService.class);
+        String routeDocId = getDocumentRoute(session).getDocument().getId();
+        DocumentRoutingService routingService = Framework.getLocalService(DocumentRoutingService.class);
         try {
-            List<Task> tasks = taskService.getAllTaskInstances(
-                    getDocumentRoute(session).getDocument().getId(), getId(),
-                    session);
+            List<Task> tasks = taskService.getAllTaskInstances(routeDocId,
+                    getId(), session);
             for (Task task : tasks) {
-                Framework.getLocalService(DocumentRoutingService.class).cancelTask(
-                        session, graph, task);
+                routingService.cancelTask(session, routeDocId, task.getId());
             }
             session.save();
         } catch (ClientException e) {
@@ -1050,19 +1056,32 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
+    public List<TaskInfo> getEndedTasksInfo() {
+        List<TaskInfo> tasksInfo = getTasksInfo();
+        List<TaskInfo> endedTasks = new ArrayList<TaskInfo>();
+        for (TaskInfo taskInfo : tasksInfo) {
+            if (taskInfo.getStatus() != null) {
+                endedTasks.add(taskInfo);
+            }
+        }
+        return endedTasks;
+    }
+
+    @Override
+    public boolean hasOpenTasks() {
+        return getTasksInfo().size() != getEndedTasksInfo().size();
+    }
+
+    @Override
     public List<TaskInfo> getProcessedTasksInfo() {
         List<TaskInfo> tasksInfo = getTasksInfo();
         List<TaskInfo> processedTasks = new ArrayList<TaskInfo>();
         for (TaskInfo taskInfo : tasksInfo) {
-            if (taskInfo.getStatus() != null) {
+            if (taskInfo.getStatus() != null
+                    && !"".equals(taskInfo.getStatus())) {
                 processedTasks.add(taskInfo);
             }
         }
         return processedTasks;
-    }
-
-    @Override
-    public boolean hasUnprocessedTasks() {
-        return getTasksInfo().size() != getProcessedTasksInfo().size();
     }
 }

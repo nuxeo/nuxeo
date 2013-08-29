@@ -136,7 +136,10 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 finishTask(session, graph, node, task, false, status);
                 // don't delete (yet)
             }
-            if (node.hasUnprocessedTasks()) {
+            if (node.hasOpenTasks()) {
+                log.info("Node "
+                        + node.getId()
+                        + "has open tasks, the workflow can not be resumed for now.");
                 // do nothing, the workflow is resumed only when all the tasks
                 // created from
                 // this node are processed
@@ -156,24 +159,14 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         }
         // also cancel tasks
         TaskService taskService = Framework.getLocalService(TaskService.class);
+        DocumentRoutingService routingService = Framework.getLocalService(DocumentRoutingService.class);
         GraphRoute graph = (GraphRoute) element;
         try {
             List<Task> tasks = taskService.getAllTaskInstances(
                     element.getDocument().getId(), session);
             for (Task task : tasks) {
-                String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
-                if (StringUtils.isEmpty(nodeId)) {
-                    log.error("Task has no nodeId: " + task);
-                    continue;
-                }
-                GraphNode node;
-                try {
-                    node = graph.getNode(nodeId);
-                } catch (IllegalArgumentException e) {
-                    log.error("Graph has no nodeId: " + nodeId);
-                    continue;
-                }
-                cancelTask(session, graph, node, task);
+                routingService.cancelTask(session,
+                        element.getDocument().getId(), task.getId());
             }
             session.save();
         } catch (ClientException e) {
@@ -421,10 +414,15 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             GraphNode node, Task task, boolean delete, String status)
             throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-        routing.finishTask(session, (DocumentRoute) graph, task, delete);
-        if (status != null) {
-            String comment;
-            try {
+        DocumentModelList docs = graph.getAttachedDocumentModels();
+        try {
+            routing.removePermissionFromTaskAssignees(session, docs, task);
+            // delete task
+            if (delete) {
+                session.removeDocument(new IdRef(task.getId()));
+            }
+            if (status != null) {
+                String comment;
                 comment = task.getComments().size() > 0 ? task.getComments().get(
                         0).getText()
                         : "";
@@ -435,17 +433,10 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     actor = principal.getName();
                 }
                 node.updateTaskInfo(task.getId(), status, actor, comment);
-            } catch (ClientException e) {
-                throw new DocumentRouteException(
-                        "Can not update task info on originating node "
-                                + node.getId(), e);
-            }
-        }
-    }
 
-    protected void cancelTask(CoreSession session, GraphRoute graph,
-            GraphNode node, Task task) throws DocumentRouteException {
-        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-        routing.cancelTask(session, (DocumentRoute) graph, task);
+            }
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Cannot finish task", e);
+        }
     }
 }

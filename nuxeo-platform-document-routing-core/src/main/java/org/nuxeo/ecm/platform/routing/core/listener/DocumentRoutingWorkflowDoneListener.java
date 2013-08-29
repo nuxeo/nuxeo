@@ -19,13 +19,11 @@ package org.nuxeo.ecm.platform.routing.core.listener;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.task.Task;
@@ -51,19 +49,13 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
         CoreSession session = docCtx.getCoreSession();
-
         DocumentModel routeInstanceDoc = docCtx.getSourceDocument();
-        DocumentRoute graph = routeInstanceDoc.getAdapter(DocumentRoute.class);
-        if (graph == null) {
-            throw new ClientRuntimeException("Document "
-                    + routeInstanceDoc.getId()
-                    + "can not be adapted to DocumentRoute");
-        }
 
         List<Task> openTasks = Framework.getLocalService(TaskService.class).getAllTaskInstances(
                 routeInstanceDoc.getId(), session);
         for (Task task : openTasks) {
-            getDocumentRoutingService().cancelTask(session, graph, task);
+            getDocumentRoutingService().cancelTask(session,
+                    routeInstanceDoc.getId(), task.getId());
         }
     }
 

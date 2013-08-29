@@ -457,7 +457,8 @@ public interface DocumentRoutingService {
             throws ClientException;
 
     /**
-     * Ends a task
+     * Ends a task. If this is the last task the workflow
+     * will continue.
      *
      * @param session
      * @param task
@@ -509,10 +510,11 @@ public interface DocumentRoutingService {
             throws ClientException;
 
     /**
-     * Finishes an open task. All
-     * permissions granted to the tasks assignees on the document following the
-     * worklflow are removed. Doesn't resume the workflow as the
-     * <code>completeTask</code> method.
+     * Finishes an open task. All permissions granted to the tasks assignees on
+     * the document following the worklflow are removed. Doesn't resume the
+     * workflow as the <code>completeTask</code> method. Not executed using an
+     * unrestricted session.
+     *
      *
      * @param session
      * @param route
@@ -521,6 +523,7 @@ public interface DocumentRoutingService {
      * @throws DocumentRouteException
      *
      * @since 5.7
+     * @deprecated // will be removed in 5.8, use completeTask instead
      */
     void finishTask(CoreSession session, DocumentRoute route, Task task,
             boolean delete) throws DocumentRouteException;
@@ -539,7 +542,7 @@ public interface DocumentRoutingService {
      *
      * @since 5.7.3
      */
-    void cancelTask(CoreSession session, DocumentRoute route, Task task)
+    void cancelTask(CoreSession session, String routeId, String taskId)
             throws DocumentRouteException;
 
 }

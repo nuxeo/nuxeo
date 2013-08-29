@@ -1660,9 +1660,10 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     public void testRouteWithMultipleTasks() throws Exception {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
-
         NuxeoPrincipal user2 = userManager.getPrincipal("myuser2");
         assertNotNull(user2);
+        NuxeoPrincipal user3 = userManager.getPrincipal("myuser3");
+        assertNotNull(user3);
 
         routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
                 "FacetRoute1");
@@ -1673,8 +1674,10 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
+                transition(
+                        "trans1",
+                        "node2",
+                        "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"trans1\") ==1",
                         "testchain_title1"));
 
         // task properties
@@ -1685,7 +1688,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
                 "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_MULTIPLE_TASKS, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
-        String[] users = { user1.getName(), user2.getName() };
+
+        // pass 3 assignees to create 3 tasks at this node
+        String[] users = { user1.getName(), user2.getName(), user3.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
         setButtons(node1, button("btn1", "label-btn1", "filterrr"));
         node1 = session.saveDocument(node1);
@@ -1696,19 +1701,21 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node2 = session.saveDocument(node2);
 
+        // run workflow
         DocumentRoute route = instantiateAndRun(session);
+        GraphRoute graph = route.getDocument().getAdapter(GraphRoute.class);
 
-        // tests that there are 2 tasks created from this node
+        // verify that there are 3 tasks created from this node
         List<Task> tasks = taskService.getAllTaskInstances(
                 route.getDocument().getId(), "node1", session);
         assertNotNull(tasks);
-        assertEquals(2, tasks.size());
+        assertEquals(3, tasks.size());
+        assertEquals(3, graph.getNode("node1").getTasksInfo().size());
 
+        // end first task as user 1
         Map<String, Object> data = new HashMap<String, Object>();
         CoreSession sessionUser1 = openSession(user1);
-        // task assignees have READ on the route instance
         assertNotNull(sessionUser1.getDocument(route.getDocument().getRef()));
-        // end task as user 1
         tasks = taskService.getTaskInstances(doc, user1, sessionUser1);
         assertEquals(1, tasks.size());
         Task task1 = tasks.get(0);
@@ -1719,20 +1726,23 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         routing.endTask(sessionUser1, tasks.get(0), data, "faketrans1");
         closeSession(sessionUser1);
 
-        // end task and verify that route was not done, as there is still an
-        // open task
+        // verify that route was not done, as there are still 2
+        // open tasks
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         session = openSession(admin);
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
+        graph = route.getDocument().getAdapter(GraphRoute.class);
         assertFalse(route.isDone());
+        assertEquals(1, graph.getNode("node1").getEndedTasksInfo().size());
+        assertEquals(1, graph.getNode("node1").getProcessedTasksInfo().size());
 
+        // end task2 as user 2
         data = new HashMap<String, Object>();
         data.put("comment", "testcomment");
         CoreSession sessionUser2 = openSession(user2);
-        // task assignees have READ on the route instance
         assertNotNull(sessionUser2.getDocument(route.getDocument().getRef()));
-        // end task as user 1
+
         tasks = taskService.getTaskInstances(doc, user2, sessionUser2);
         assertEquals(1, tasks.size());
         Task task2 = tasks.get(0);
@@ -1742,35 +1752,63 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
         closeSession(sessionUser2);
 
-        // end task and verify that route is done now
+        // verify that route is not done yet, 2 tasks were done but there is
+        // still one open
         session = openSession(admin);
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
-        assertTrue(route.isDone());
+        graph = route.getDocument().getAdapter(GraphRoute.class);
+        assertFalse(route.isDone());
+        assertEquals(2, graph.getNode("node1").getEndedTasksInfo().size());
 
-        // also verify that the task-related into was updated on the nodes
-        GraphRoute graph = route.getDocument().getAdapter(GraphRoute.class);
+        // cancel the last open task, resume the route and verify that route is
+        // done now
+        tasks = taskService.getTaskInstances(doc, user3, session);
+        assertEquals(1, tasks.size());
+        Task task3 = tasks.get(0);
+
+        routing.cancelTask(session, route.getDocument().getId(), task3.getId());
+        routing.resumeInstance(route.getDocument().getId(), "node1", null,
+                null, session);
+
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        graph = route.getDocument().getAdapter(GraphRoute.class);
+
+        assertTrue(route.isDone());
+        assertEquals(3, graph.getNode("node1").getEndedTasksInfo().size());
+        assertEquals(2, graph.getNode("node1").getProcessedTasksInfo().size());
+
+        // also verify that the actor and the comment where updated on the node
+        // when the tasks were completed or canceled
         GraphNode graphNode1 = graph.getNode("node1");
         List<GraphNode.TaskInfo> tasksInfo = graphNode1.getTasksInfo();
-        assertEquals(tasksInfo.size(), 2);
+        assertEquals(tasksInfo.size(), 3);
         int task1Index = 0;
+        int task2Index = 1;
+        int task3Index = 2;
         for (TaskInfo taskInfo : tasksInfo) {
             if (taskInfo.getTaskDocId().equals(task1.getId())) {
                 task1Index = tasksInfo.indexOf(taskInfo);
             }
+            if (taskInfo.getTaskDocId().equals(task2.getId())) {
+                task2Index = tasksInfo.indexOf(taskInfo);
+            }
+            if (taskInfo.getTaskDocId().equals(task3.getId())) {
+                task3Index = tasksInfo.indexOf(taskInfo);
+            }
         }
 
         assertEquals("myuser1", tasksInfo.get(task1Index).getActor());
-        assertEquals("myuser2", tasksInfo.get(task1Index + 1).getActor());
+        assertEquals("myuser2", tasksInfo.get(task2Index).getActor());
+        // task3 was canceled as an admin
+        assertEquals("admin", tasksInfo.get(task3Index).getActor());
 
         assertEquals("faketrans1", tasksInfo.get(task1Index).getStatus());
-        assertEquals("trans1", tasksInfo.get(task1Index + 1).getStatus());
+        assertEquals("trans1", tasksInfo.get(task2Index).getStatus());
+        assertEquals("", tasksInfo.get(task3Index).getStatus());
 
-        assertEquals("testcomment", tasksInfo.get(task1Index + 1).getComment());
-
-        assertEquals(
-                "test",
-                route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+        assertEquals("testcomment", tasksInfo.get(task2Index).getComment());
         closeSession(session);
     }
 }

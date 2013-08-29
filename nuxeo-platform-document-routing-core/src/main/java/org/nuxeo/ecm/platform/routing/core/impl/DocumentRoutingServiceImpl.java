@@ -172,12 +172,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         eventProperties.put(
                 DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY,
                 route);
-        eventProperties.put(
-                DocumentEventContext.CATEGORY_PROPERTY_KEY,
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
                 DocumentRoutingConstants.ROUTING_CATEGORY);
-        DocumentEventContext envContext = new DocumentEventContext(
-                session, session.getPrincipal(),
-                route.getDocument());
+        DocumentEventContext envContext = new DocumentEventContext(session,
+                session.getPrincipal(), route.getDocument());
         envContext.setProperties(eventProperties);
         EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
         try {
@@ -314,7 +312,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public void resumeInstance(String routeId, String nodeId,
@@ -1025,15 +1022,54 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void cancelTask(CoreSession session, DocumentRoute route, Task task)
-            throws DocumentRouteException {
-        DocumentModelList docs = route.getAttachedDocuments(session);
+    public void cancelTask(CoreSession session, final String routeId,
+            final String taskId) throws DocumentRouteException {
         try {
-            removePermissionFromTaskAssignees(session, docs, task);
-            task.cancel(session);
-            session.saveDocument(task.getDocument());
+            new UnrestrictedSessionRunner(session) {
+                @Override
+                public void run() throws ClientException {
+                    DocumentModel routeDoc = session.getDocument(new IdRef(
+                            routeId));
+                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                    if (routeInstance == null) {
+                        throw new DocumentRouteException(
+                                "Invalid routeInstanceId: " + routeId);
+                    }
+                    DocumentModel taskDoc = session.getDocument(new IdRef(
+                            taskId));
+                    Task task = taskDoc.getAdapter(Task.class);
+                    if (task == null) {
+                        throw new DocumentRouteException("Invalid taskId: "
+                                + taskId);
+                    }
+                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                    removePermissionFromTaskAssignees(session, docs, task);
+                    task.cancel(session);
+                    session.saveDocument(task.getDocument());
+                    // task is considered processed with the status "" when is
+                    // canceled
+                    updateTaskInfo(session, routeInstance, task, "");
+                }
+            }.runUnrestricted();
         } catch (ClientException e) {
             throw new DocumentRouteException("Cannot cancel task", e);
         }
+    }
+
+    protected void updateTaskInfo(CoreSession session, GraphRoute graph,
+            Task task, String status) throws ClientException {
+        String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
+        if (StringUtils.isEmpty(nodeId)) {
+            throw new DocumentRouteException("No nodeId found on task: "
+                    + task.getId());
+        }
+        GraphNode node = graph.getNode(nodeId);
+
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        String actor = principal.getOriginatingUser();
+        if (actor == null) {
+            actor = principal.getName();
+        }
+        node.updateTaskInfo(task.getId(), status, actor, null);
     }
 }
