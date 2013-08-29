@@ -794,6 +794,7 @@ BEGIN
   DECLARE @read_acl NVARCHAR(4000);
   DECLARE @ret NVARCHAR(4000);
   DECLARE @first TINYINT;
+  DECLARE @pos INT;
   SET @curid = @id;
   SET @first = 1;
   WHILE @curid IS NOT NULL BEGIN
@@ -808,6 +809,10 @@ BEGIN
       SET @newid = (SELECT versionableid FROM versions WHERE [id] = @curid)
     SET @first = 0;
     SET @curid = @newid;
+    -- Stop on deny all
+    SET @pos = CHARINDEX('-Everyone', @ret);
+    IF @pos > 0
+      SET @curid = NULL;
   END;
   IF @ret IS NULL
     SET @ret = N'_empty';
