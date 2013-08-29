@@ -89,27 +89,46 @@
 
 
                     <f:subview id="#{idPrefix}_subview">
-                      <h:outputFormat styleClass="boldLabel"
-                        value="#{messages['label.route.task.type']} ">
-                        <f:param
-                          value="#{messages[routingActions.getRouteInstanceFor(task).title]} - #{messages[task.name]}" />
-                      </h:outputFormat>
-                      <h:outputText
-                        value="#{messages['label.route.task.assigned.to']} " />
-                      <c:forEach var="actor" items="#{task.actors}">
-                        <nxl:widgetType name="template" mode="view"
-                          template="/document_routing_widgets/route_assignee_widget_template.xhtml"
-                          value="#{actor}" />
-                      </c:forEach>
-                      <div class="dueDate warningLabel">
-                        <h:outputText
-                          value=" #{messages['label.route.task.due.date']} " />
-                        <h:outputText value="#{task.dueDate}" />
-                      </div>
-                      <div class="directive quote">
-                        <h:outputText
-                          value="#{messages[task.directive]}" />
-                      </div>
+
+                      <table class="dataTableNoBorder">
+                        <tbody>
+                          <tr>
+                            <td class="labelColumn">Workflow step</td>
+                            <td class="fieldColumn"><h:outputText
+                                value="#{messages[routingActions.getRouteInstanceFor(task).title]} - #{messages[task.name]}" />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="labelColumn"><h:outputText
+                                value="#{messages['label.route.task.assigned.to']}" />
+                            </td>
+                            <td class="fieldColumn"><c:forEach
+                                var="actor" items="#{task.actors}">
+                                <nxl:widgetType name="template"
+                                  mode="view"
+                                  template="/document_routing_widgets/route_assignee_widget_template.xhtml"
+                                  value="#{actor}" />
+                              </c:forEach></td>
+                          </tr>
+                          <tr>
+                            <td class="labelColumn"><h:outputText
+                                value=" #{messages['label.route.task.due.date']} " />
+                            </td>
+                            <td class="fieldColumn dueDate warningLabel">
+                              <h:outputText value="#{task.dueDate}" />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="labelColumn"><h:outputText
+                                value="#{messages['label.review.user.comment']}" />
+                            </td>
+                            <td class="fieldColumn"><h:outputText
+                                value="#{messages[task.directive]}" />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
                     </f:subview>
 
                     <a4j:outputPanel id="#{idPrefix}_ajax_panel"
