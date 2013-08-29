@@ -61,7 +61,7 @@
 
   function getFormItems(formSelector) {
     return jQuery(formSelector).find(
-        "input,select,textarea,td.mceIframeContainer>iframe");
+        "input:not(.select2-input),select,textarea,td.mceIframeContainer>iframe");
   }
 
   function getFormItemsForSecondPass(formSelector) {
