@@ -3723,7 +3723,7 @@
           <field></field>
         </fields>
         <labels>
-          <label mode="any"></label>
+          <label mode="any">label.security.usersOrGroups</label>
         </labels>
         <properties mode="any">
           <property name="template">
@@ -3737,6 +3737,8 @@
           <property name="operationId">UserGroup.Suggestion</property>
           <property name="width">300</property>
           <property name="minimumInputLength">3</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="placeholder">label.security.search</property>
           <property name="customFormater">userformater</property>
           <property name="inlinejs"> <![CDATA[
   function userformater(entry) {
@@ -3769,7 +3771,7 @@
           <field></field>
         </fields>
         <labels>
-          <label mode="any"></label>
+          <label mode="any">label.security.usersOrGroups</label>
         </labels>
         <properties mode="any">
           <property name="template">
@@ -3784,6 +3786,8 @@
           <property name="prefixed">true</property>
           <property name="width">300</property>
           <property name="minimumInputLength">3</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="placeholder">label.security.search</property>
           <property name="customFormater">userformater</property>
           <property name="inlinejs"> <![CDATA[
   function userformater(entry) {
