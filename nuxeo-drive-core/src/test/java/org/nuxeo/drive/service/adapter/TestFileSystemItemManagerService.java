@@ -407,7 +407,9 @@ public class TestFileSystemItemManagerService {
         } catch (ClientException e) {
             assertEquals(
                     String.format(
-                            "Cannot create a folder in file system item with id %s because it is not a folder.",
+                            "Cannot create a folder in file system item with id %s because it is not a folder but is: "
+                                    + "DocumentBackedFileItem(id=\"%s\", name=\"Joe.odt\")",
+                            DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                             DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()),
                     e.getMessage());
         }
