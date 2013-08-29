@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs.usermanager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Produces;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
@@ -64,6 +66,7 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
         return um.getPrincipal(principal.getName());
     }
 
+
     private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal,
             UserManager um) throws ClientException {
         NuxeoPrincipal user = um.getPrincipal(principal.getName());
@@ -104,4 +107,17 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
 
     }
 
+    @Override
+    protected List<NuxeoPrincipal> searchArtifact(String query)
+            throws ClientException {
+        List<DocumentModel> searchUsers = um.searchUsers(query);
+        List<NuxeoPrincipal> users = new ArrayList<>(searchUsers.size());
+        for (DocumentModel userDoc : searchUsers) {
+            NuxeoPrincipal principal = um.getPrincipal(userDoc.getProperty(
+                    um.getUserIdField()).getValue(String.class));
+            users.add(principal);
+        }
+        return users;
+
+    }
 }

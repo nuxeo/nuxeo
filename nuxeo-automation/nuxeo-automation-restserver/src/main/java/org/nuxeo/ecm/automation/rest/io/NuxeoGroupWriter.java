@@ -71,16 +71,17 @@ public class NuxeoGroupWriter implements MessageBodyWriter<NuxeoGroup> {
     /**
      * @param createGenerator
      * @param group
+     * @return
      * @throws IOException
      * @throws JsonGenerationException
      *
      */
-    private void writeGroup(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException, IOException{
+    public static void writeGroup(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException, IOException{
         jg.writeStartObject();
         jg.writeStringField("entity-type", "group");
         jg.writeStringField("groupname", group.getName());
 
-        jg.writeStringField("label", group.getLabel());
+        jg.writeStringField("grouplabel", group.getLabel());
 
         jg.writeArrayFieldStart("memberUsers");
         for(String user : group.getMemberUsers()) {

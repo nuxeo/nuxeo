@@ -62,7 +62,7 @@ public class BaseUserTest extends BaseTest {
             JsonNode node) {
         assertEquals("group", node.get("entity-type").getValueAsText());
         assertEquals(groupName, node.get("groupname").getValueAsText());
-        assertEquals(groupLabel, node.get("label").getValueAsText());
+        assertEquals(groupLabel, node.get("grouplabel").getValueAsText());
     }
 
     /**

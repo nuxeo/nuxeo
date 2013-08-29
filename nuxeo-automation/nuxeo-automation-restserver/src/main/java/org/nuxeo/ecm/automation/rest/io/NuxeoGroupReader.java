@@ -119,7 +119,7 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
                 if (group == null) {
                     group = new NuxeoGroupImpl(id);
                 }
-            } else if ("label".equals(key)) {
+            } else if ("grouplabel".equals(key)) {
                 group.setLabel(jp.readValueAs(String.class));
             } else if ("memberUsers".equals(key)) {
                 tok = jp.nextToken();

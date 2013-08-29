@@ -16,13 +16,19 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -273,11 +279,46 @@ public class UserGroupTest extends BaseUserTest {
         ClientResponse response = getResponse(RequestType.DELETE, "/user/"
                 + principal.getName() + "/group/" + group.getName());
 
-        assertEquals(Response.Status.OK.getStatusCode(),
-                response.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         principal = um.getPrincipal(principal.getName());
         assertFalse(principal.isMemberOf(group.getName()));
+
+    }
+
+    @Test
+    public void itCanSearchUsers() throws Exception {
+        // Given a search string
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("q", "Steve");
+
+        ClientResponse response = getResponse(RequestType.GET, "/user/search",
+                queryParams);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode items = (ArrayNode) node.get("items");
+        assertEquals(1, items.size());
+        assertEquals("user0",
+                node.get("items").get(0).get("id").getValueAsText());
+
+    }
+
+    @Test
+    public void itCanSearchGroups() throws Exception {
+        // Given a search string
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("q", "Lannister");
+
+        ClientResponse response = getResponse(RequestType.GET, "/group/search",
+                queryParams);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode items = (ArrayNode) node.get("items");
+        assertEquals(1, items.size());
+        assertEquals("Lannister",items.get(0).get("grouplabel").getValueAsText());
+
 
     }
 

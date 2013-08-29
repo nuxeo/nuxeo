@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.automation.rest.jaxrs.usermanager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
@@ -127,6 +129,20 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     static boolean isAPowerUserEditableGroup(NuxeoGroup group) {
         UserManager um = Framework.getLocalService(UserManager.class);
         return !um.getAdministratorsGroups().contains(group.getName());
+
+    }
+
+    @Override
+    protected List<NuxeoGroup> searchArtifact(String query)
+            throws ClientException {
+        List<DocumentModel> searchUsers = um.searchGroups(query);
+        List<NuxeoGroup> groups = new ArrayList<>(searchUsers.size());
+        for (DocumentModel userDoc : searchUsers) {
+            NuxeoGroup group = um.getGroup(userDoc.getProperty(
+                    um.getGroupIdField()).getValue(String.class));
+            groups.add(group);
+        }
+        return groups;
 
     }
 

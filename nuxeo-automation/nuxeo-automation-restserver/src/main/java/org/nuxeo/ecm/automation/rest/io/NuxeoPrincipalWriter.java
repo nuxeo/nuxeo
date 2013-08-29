@@ -89,7 +89,7 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
      *
      * @since 5.7.3
      */
-    private void writePrincipal(JsonGenerator jg, NuxeoPrincipal principal)
+    public static void writePrincipal(JsonGenerator jg, NuxeoPrincipal principal)
             throws JsonGenerationException, IOException, ClientException {
 
         jg.writeStartObject();
@@ -116,7 +116,7 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
      * @throws ClientException
      * @since 5.7.3
      */
-    private void writeProperties(JsonGenerator jg, DocumentModel doc)
+    static private void writeProperties(JsonGenerator jg, DocumentModel doc)
             throws JsonGenerationException, IOException, ClientException {
         UserManager um = Framework.getLocalService(UserManager.class);
 
@@ -200,7 +200,7 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
      *
      * @since 5.7.3
      */
-    private void writeExtendedGroups(JsonGenerator jg, List<String> allGroups)
+    static private void writeExtendedGroups(JsonGenerator jg, List<String> allGroups)
             throws JsonGenerationException, IOException, ClientException {
         UserManager um = Framework.getLocalService(UserManager.class);
 

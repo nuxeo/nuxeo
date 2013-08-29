@@ -16,9 +16,16 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs.usermanager;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -71,6 +78,28 @@ public abstract class AbstractUMRootObject<T> extends DefaultObject {
             throw WebException.wrap(e);
         }
     }
+
+    @GET
+    @Path("search")
+    public Response search(final @QueryParam("q")
+    String query) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, InvocationTargetException {
+        Method method = this.getClass().getDeclaredMethod("searchArtifact",
+                String.class);
+
+        GenericEntity<Object> entity = new GenericEntity<Object>(method.invoke(
+                this, query), method.getGenericReturnType());
+        return Response.ok(entity).build();
+
+    }
+
+    /**
+     * @param query
+     * @return
+     *
+     */
+    protected abstract List<T> searchArtifact(String query)
+            throws ClientException;
 
     /**
      * Returns the artifact given its id.
