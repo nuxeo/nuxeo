@@ -67,6 +67,8 @@ public class NotificationEventListener implements
 
     private static final Log log = LogFactory.getLog(NotificationEventListener.class);
 
+    private static final String CHECK_READ_PERMISSION_PROPERTY = "notification.check.read.permission";
+
     private DocumentViewCodecManager docLocator;
 
     private UserManager userManager;
@@ -234,12 +236,14 @@ public class NotificationEventListener implements
             }
         }
 
-        if (!ctx.getCoreSession().hasPermission(principal,
-                ctx.getSourceDocument().getRef(), SecurityConstants.READ)) {
-            log.debug("Notification will not be sent: + '" + subscriptor
-                    + "' do not have Read permission on document "
-                    + ctx.getSourceDocument().getId());
-            return;
+        if (Boolean.parseBoolean(Framework.getProperty(CHECK_READ_PERMISSION_PROPERTY))) {
+            if (!ctx.getCoreSession().hasPermission(principal,
+                    ctx.getSourceDocument().getRef(), SecurityConstants.READ)) {
+                log.debug("Notification will not be sent: + '" + subscriptor
+                        + "' do not have Read permission on document "
+                        + ctx.getSourceDocument().getId());
+                return;
+            }
         }
 
         log.debug("Producing notification message.");

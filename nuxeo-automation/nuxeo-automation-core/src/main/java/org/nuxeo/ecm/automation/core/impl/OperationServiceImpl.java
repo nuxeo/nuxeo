@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,16 +22,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationCallback;
@@ -45,13 +45,15 @@ import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.TraceException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.exception.CatchChainException;
+import org.nuxeo.ecm.automation.core.exception.ChainExceptionRegistry;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * The operation registry is thread safe and optimized for modifications at
  * startup and lookups at runtime.
- *
+ * 
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationServiceImpl implements AutomationService {
@@ -59,6 +61,10 @@ public class OperationServiceImpl implements AutomationService {
     private static final Log log = LogFactory.getLog(OperationServiceImpl.class);
 
     protected final OperationTypeRegistry operations;
+
+    protected final ChainExceptionRegistry chainExceptionRegistry;
+
+    protected final AutomationFilterRegistry automationFilterRegistry;
 
     protected Map<String, CompiledChainImpl> compiledChains = new HashMap<String, CompiledChainImpl>();
 
@@ -70,6 +76,8 @@ public class OperationServiceImpl implements AutomationService {
     public OperationServiceImpl() {
         operations = new OperationTypeRegistry();
         adapters = new AdapterKeyedRegistry();
+        chainExceptionRegistry = new ChainExceptionRegistry();
+        automationFilterRegistry = new AutomationFilterRegistry();
     }
 
     @Override
@@ -157,19 +165,27 @@ public class OperationServiceImpl implements AutomationService {
             Object ret = chain.invoke(ctx);
             tracer.onOutput(ret);
             if (ctx.getCoreSession() != null && ctx.isCommit()) {
-                // auto save session if any
+                // auto save session if any.
                 ctx.getCoreSession().save();
             }
-            // Log at the end of the main chain execution
+            // Log at the end of the main chain execution.
             if (mainChain) {
                 log.info(tracer.getFormattedText());
             }
             return ret;
         } catch (OperationException oe) {
-            if (oe.isRollback()) {
+            // Record trace
+            tracer.onError(oe);
+            // Handle exception chain and rollback
+            String operationTypeId = operationType.getId();
+            if (hasChainException(operationTypeId)) {
+                // Rollback is handled by chain exception
+                return run(ctx,
+                        getChainExceptionToRun(ctx, operationTypeId, oe));
+            } else if (oe.isRollback()) {
                 ctx.setRollback();
             }
-            tracer.onError(oe);
+            // Handle exception
             if (mainChain) {
                 throw new TraceException(tracer, oe);
             } else {
@@ -178,6 +194,58 @@ public class OperationServiceImpl implements AutomationService {
         } finally {
             ctx.dispose();
         }
+    }
+
+    /**
+     * @since 5.7.3 Fetch the right chain id to run when catching exception for
+     *        given chain failure.
+     */
+    protected String getChainExceptionToRun(OperationContext ctx,
+            String operationTypeId, OperationException oe)
+            throws OperationException {
+        // Inject exception name into the context
+        ctx.put("Exception", oe.getClass().getSimpleName());
+        ChainException chainException = getChainException(operationTypeId);
+        CatchChainException catchChainException = new CatchChainException();
+        for (CatchChainException catchChainExceptionItem : chainException.getCatchChainExceptions()) {
+            // Check first a possible filter value
+            if (catchChainExceptionItem.hasFilter()) {
+                AutomationFilter filter = getAutomationFilter(catchChainExceptionItem.getFilterId());
+                try {
+                    String filterValue = (String) filter.getValue().eval(ctx);
+                    // Check if priority for this chain exception is higher
+                    if (Boolean.parseBoolean(filterValue)) {
+                        catchChainException = getCatchChainExceptionByPriority(
+                                catchChainException, catchChainExceptionItem);
+                    }
+                } catch (Exception e) {
+                    throw new OperationException(
+                            "Cannot evaluate Automation Filter "
+                                    + filter.getId() + " mvel expression.", e);
+                }
+            } else {
+                // Check if priority for this chain exception is higher
+                catchChainException = getCatchChainExceptionByPriority(
+                        catchChainException, catchChainExceptionItem);
+            }
+        }
+        String chainId = catchChainException.getChainId();
+        if (chainId.isEmpty())
+            throw new OperationException(
+                    "No chain exception has been selected to be run. You should verify Automation filters applied.");
+        if (catchChainException.getRollBack())
+            ctx.setRollback();
+        return catchChainException.getChainId();
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    protected CatchChainException getCatchChainExceptionByPriority(
+            CatchChainException catchChainException,
+            CatchChainException catchChainExceptionItem) {
+        return catchChainException.getPriority() <= catchChainExceptionItem.getPriority() ? catchChainExceptionItem
+                : catchChainException;
     }
 
     public static OperationParameters[] toParams(String... ids) {
@@ -421,4 +489,77 @@ public class OperationServiceImpl implements AutomationService {
         return primitiveType;
     }
 
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public void putChainException(ChainException exceptionChain) {
+        chainExceptionRegistry.addContribution(exceptionChain);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public void removeExceptionChain(ChainException exceptionChain) {
+        chainExceptionRegistry.removeContribution(exceptionChain);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public ChainException[] getChainExceptions() {
+        Collection<ChainException> chainExceptions = chainExceptionRegistry.lookup().values();
+        return chainExceptions.toArray(new ChainException[chainExceptions.size()]);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public ChainException getChainException(String onChainId) {
+        return chainExceptionRegistry.getChainException(onChainId);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public boolean hasChainException(String onChainId) {
+        return chainExceptionRegistry.getChainException(onChainId) != null;
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public void putAutomationFilter(AutomationFilter automationFilter) {
+        automationFilterRegistry.addContribution(automationFilter);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public void removeAutomationFilter(AutomationFilter automationFilter) {
+        automationFilterRegistry.removeContribution(automationFilter);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public AutomationFilter getAutomationFilter(String id) {
+        return automationFilterRegistry.getAutomationFilter(id);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    @Override
+    public AutomationFilter[] getAutomationFilters() {
+        Collection<AutomationFilter> automationFilters = automationFilterRegistry.lookup().values();
+        return automationFilters.toArray(new AutomationFilter[automationFilters.size()]);
+    }
 }

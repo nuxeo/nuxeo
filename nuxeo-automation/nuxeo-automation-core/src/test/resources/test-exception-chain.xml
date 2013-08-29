@@ -1,0 +1,78 @@
+<component name="org.nuxeo.ecm.core.rules.test-exception-chain" version="1.0">
+
+  <extension point="operations"
+             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <operation class="org.nuxeo.ecm.automation.core.test.Operation1"/>
+    <operation class="org.nuxeo.ecm.automation.core.test.Operation2"/>
+    <operation class="org.nuxeo.ecm.automation.core.test.Operation3"/>
+    <operation class="org.nuxeo.ecm.automation.core.test.OperationFailure"/>
+  </extension>
+
+  <extension point="chains"
+             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <chain id="contributedchain">
+      <operation id="o1">
+        <param type="string" name="message">Hello 1!</param>
+      </operation>
+      <operation id="o3">
+        <param type="string" name="message">Hello 2!</param>
+      </operation>
+      <operation id="operationFailure"/>
+    </chain>
+
+    <chain id="anothercontributedchain">
+      <operation id="o1">
+        <param type="string" name="message">Hello 1!</param>
+      </operation>
+      <operation id="o3">
+        <param type="string" name="message">Hello 2!</param>
+      </operation>
+      <operation id="operationFailure"/>
+    </chain>
+
+    <chain id="chainExceptionA">
+      <operation id="o1">
+        <param type="string" name="message">Hello 1!</param>
+      </operation>
+      <operation id="o3">
+        <param type="string" name="message">Hello 3!</param>
+      </operation>
+    </chain>
+
+    <chain id="chainExceptionB">
+      <operation id="o1">
+        <param type="string" name="message">Hello 1!</param>
+      </operation>
+      <operation id="o2">
+        <param type="string" name="message">Hello 2!</param>
+      </operation>
+    </chain>
+
+  </extension>
+
+  <extension point="chainException"
+             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <catchChain id="catchChainA" onChainId="contributedchain">
+      <run chainId="chainExceptionA" priority="0" rollBack="true" filterId="filterA"/>
+      <run chainId="chainExceptionA" priority="0" rollBack="false" filterId="filterA"/>
+      <run chainId="chainExceptionB" priority="10" rollBack="true" filterId="filterB"/>
+    </catchChain>
+
+    <catchChain id="catchChainB" onChainId="anothercontributedchain">
+      <run chainId="chainExceptionA" rollBack="false"/>
+    </catchChain>
+
+  </extension>
+
+  <extension point="automationFilter"
+             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
+    <filter id="filterA">expr:@{Document['dc:title']=='Source'}</filter>
+
+    <filter id="filterB">expr:@{Document['dc:title']=='Document'}</filter>
+
+  </extension>
+
+</component>

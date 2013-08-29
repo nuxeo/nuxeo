@@ -1,10 +1,15 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
  * Contributors:
  *     bstefanescu
@@ -190,4 +195,49 @@ public interface AutomationService {
      * @return true if operation registry contains the given operation
      */
     boolean hasOperation(String id);
+
+    /**
+     * @since 5.7.3
+     */
+    void putChainException(ChainException exceptionChain);
+
+    /**
+     * @since 5.7.3
+     */
+    void removeExceptionChain(ChainException exceptionChain);
+
+    /**
+     * @since 5.7.3
+     */
+    ChainException[] getChainExceptions();
+
+    /**
+     * @since 5.7.3
+     */
+    ChainException getChainException(String onChainId);
+
+    /**
+     * @since 5.7.3
+     */
+    void putAutomationFilter(AutomationFilter automationFilter);
+
+    /**
+     * @since 5.7.3
+     */
+    void removeAutomationFilter(AutomationFilter automationFilter);
+
+    /**
+     * @since 5.7.3
+     */
+    AutomationFilter getAutomationFilter(String id);
+
+    /**
+     * @since 5.7.3
+     */
+    AutomationFilter[] getAutomationFilters();
+
+    /**
+     * @since 5.7.3
+     */
+    boolean hasChainException(String onChainId);
 }

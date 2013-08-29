@@ -31,6 +31,46 @@
     <object class="org.nuxeo.ecm.automation.core.OperationChainContribution" />
   </extension-point>
 
+  <extension-point name="chainException">
+    <documentation>
+      @since 5.7.3
+      @author Vladimir Pasquier (vpasquier@nuxeo.com)
+
+      Chain Exception registration.
+      Chain exception provides mean, during an Automation execution, to catch for a given chain, exception and to run
+      specific chain/operation. Filter condition (filterException extension point), order (priority) and rollback
+      options are available.
+
+      Example of chain exception:
+
+      <code>
+        <catchChain id="catchChainA" onChainId="contributedchain">
+          <run chainId="chainException" priority="0" rollBack="false" filterId="filterA"/>
+          <run chainId="chainException" priority="0" rollBack="false" filterId="filterA"/>
+          <run chainId="chainException" priority="10" rollBack="true" filterId="filterB"/>
+        </catchChain>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.automation.core.ChainExceptionDescriptor"/>
+  </extension-point>
+
+  <extension-point name="automationFilter">
+    <documentation>
+      @since 5.7.3
+      @author Vladimir Pasquier (vpasquier@nuxeo.com)
+
+      Automation Filter registration. See one usage of the filter into Chain Exception extension point: chainException.
+
+      Example of Automation filter:
+
+      <code>
+        <filter id="filterA">expr:@{Document['dc:title']=='file'}</filter>
+        <filter id="filterB">expr:@{Document['dc:title']=='document'}</filter>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.automation.core.AutomationFilterDescriptor"/>
+  </extension-point>
+
   <extension-point name="event-handlers">
     <documentation>Core Event Handlers bound to operations</documentation>
     <object class="org.nuxeo.ecm.automation.core.events.EventHandler" />
