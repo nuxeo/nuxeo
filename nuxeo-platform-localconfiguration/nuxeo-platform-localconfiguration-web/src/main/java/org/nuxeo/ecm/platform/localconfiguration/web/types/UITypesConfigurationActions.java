@@ -85,7 +85,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @param document the domain to configure
      * @return a List of type of document, not currently selected for the domain
      * @throws ClientException
-     * @Since 5.5
+     * @since 5.5
      */
     public List<Type> getNotSelectedTypes(DocumentModel document)
             throws ClientException {
@@ -134,7 +134,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @param document the domain to configure
      * @return List of documen type selected for the domain
      * @throws ClientException
-     * @Since 5.5
+     * @since 5.5
      */
     public List<Type> getSelectedTypes(DocumentModel document)
             throws ClientException {
