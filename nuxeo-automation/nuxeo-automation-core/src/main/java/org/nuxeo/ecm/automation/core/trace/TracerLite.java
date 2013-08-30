@@ -30,7 +30,7 @@ import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 
 /**
  * Automation tracer recording lightweight automation execution traces when mode
- * deactivated
+ * deactivated.
  *
  * @since 5.7.3
  */
