@@ -17,9 +17,7 @@
 package org.nuxeo.ecm.automation.core.impl;
 
 import org.nuxeo.ecm.automation.AutomationFilter;
-import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 import java.util.HashMap;
