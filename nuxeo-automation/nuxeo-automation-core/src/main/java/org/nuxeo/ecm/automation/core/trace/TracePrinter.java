@@ -169,7 +169,7 @@ public class TracePrinter {
             }
             printLine(sb.toString());
         } catch (IOException e) {
-            log.error(e);
+            log.error("Nuxeo TracePrinter cannot write traces output", e);
         }
     }
 
@@ -228,7 +228,7 @@ public class TracePrinter {
             }
             printLine(stringBuilder.toString());
         } catch (IOException e) {
-            log.error(e);
+            log.error("Nuxeo TracePrinter cannot write traces output", e);
         }
     }
 
