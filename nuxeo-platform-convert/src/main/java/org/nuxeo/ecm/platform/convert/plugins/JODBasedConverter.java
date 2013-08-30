@@ -18,7 +18,9 @@
  */
 package org.nuxeo.ecm.platform.convert.plugins;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -34,12 +36,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.artofsolving.jodconverter.OfficeDocumentConverter;
 import org.artofsolving.jodconverter.StandardConversionTask;
-import org.artofsolving.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
-import org.artofsolving.jodconverter.document.DocumentFormatRegistry;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -53,6 +54,8 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 import com.sun.star.uno.RuntimeException;
 
 /**
@@ -64,8 +67,6 @@ public class JODBasedConverter implements ExternalConverter {
     protected static final String TMP_PATH_PARAMETER = "TmpDirectory";
 
     private static final Log log = LogFactory.getLog(JODBasedConverter.class);
-
-    private static final DocumentFormatRegistry formatRegistry = new DefaultDocumentFormatRegistry();
 
     /**
      * Boolean conversion parameter for PDF/A-1.
@@ -103,7 +104,7 @@ public class JODBasedConverter implements ExternalConverter {
      * @param sourceFormat the source format
      * @param pdfa1 true if PDF/A-1 is required
      */
-    protected DocumentFormat getDestinationFormat(DocumentFormat sourceFormat,
+    protected DocumentFormat getDestinationFormat(OfficeDocumentConverter documentConverter, DocumentFormat sourceFormat,
             boolean pdfa1) {
         String mimeType = getDestinationMimeType();
         boolean topdf = "application/pdf".equals(mimeType);
@@ -133,7 +134,7 @@ public class JODBasedConverter implements ExternalConverter {
             destinationFormat.setStoreProperties(sourceFamily, storeProperties);
         } else {
             // use default JODConverter registry
-            destinationFormat = formatRegistry.getFormatByMediaType(mimeType);
+            destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(mimeType);
         }
         return destinationFormat;
     }
@@ -145,10 +146,10 @@ public class JODBasedConverter implements ExternalConverter {
      *
      * @return DocumentFormat for the given file
      */
-    private static DocumentFormat getSourceFormat(File file) throws Exception {
+    private static DocumentFormat getSourceFormat(OfficeDocumentConverter documentConverter, File file) throws Exception {
         MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimetypeStr = mimetypeRegistry.getMimetypeFromFile(file);
-        DocumentFormat format = formatRegistry.getFormatByMediaType(mimetypeStr);
+        DocumentFormat format = documentConverter.getFormatRegistry().getFormatByMediaType(mimetypeStr);
         return format;
     }
 
@@ -157,8 +158,8 @@ public class JODBasedConverter implements ExternalConverter {
      *
      * @return DocumentFormat for the given mimetype
      */
-    private static DocumentFormat getSourceFormat(String mimetype) {
-        return formatRegistry.getFormatByMediaType(mimetype);
+    private static DocumentFormat getSourceFormat(OfficeDocumentConverter documentConverter, String mimetype) {
+        return documentConverter.getFormatRegistry().getFormatByMediaType(mimetype);
     }
 
     @Override
@@ -166,167 +167,192 @@ public class JODBasedConverter implements ExternalConverter {
         super.finalize();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
         Blob inputBlob;
-        OfficeDocumentConverter documentConverter;
         try {
             inputBlob = blobHolder.getBlob();
-            OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
-            documentConverter = oooManagerService.getDocumentConverter();
-
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw new ConversionException("Error while getting Blob", e);
         }
-
         if (inputBlob == null) {
             return null;
         }
+
+        OfficeDocumentConverter documentConverter = newDocumentConverter();
         // This plugin do deal only with one input source.
         String sourceMimetype = inputBlob.getMimeType();
 
         boolean pdfa1 = parameters != null
                 && Boolean.TRUE.equals(parameters.get(PDFA1_PARAM));
 
-        if (documentConverter != null) {
-            File sourceFile = null;
-            File outFile = null;
-            File[] files = null;
-            try {
 
-                // If the input blob has the HTML mime type, make sure the
-                // charset meta is present, add it if not
-                if ("text/html".equals(sourceMimetype)) {
-                    inputBlob = checkCharsetMeta(inputBlob);
+        File sourceFile = null;
+        File outFile = null;
+        File[] files = null;
+        try {
+
+            // If the input blob has the HTML mime type, make sure the
+            // charset meta is present, add it if not
+            if ("text/html".equals(sourceMimetype)) {
+                inputBlob = checkCharsetMeta(inputBlob);
+            }
+
+            // Get original file extension
+            String ext = inputBlob.getFilename();
+            int dotPosition = ext.lastIndexOf('.');
+            if (dotPosition == -1) {
+                ext = ".bin";
+            } else {
+                ext = ext.substring(dotPosition);
+            }
+            // Copy in a file to be able to read it several time
+            sourceFile = File.createTempFile("NXJOOoConverterDocumentIn", ext);
+            InputStream stream = inputBlob.getStream();
+            // if (stream.markSupported()) {
+            // stream.reset(); // works on a JCRBlobInputStream
+            // }
+            FileUtils.copyToFile(stream, sourceFile);
+
+            DocumentFormat sourceFormat = null;
+            if (sourceMimetype != null) {
+                // Try to fetch it from the registry.
+                sourceFormat = getSourceFormat(documentConverter,
+                        sourceMimetype);
+            }
+            // If not found in the registry or not given as a parameter.
+            // Try to sniff ! What does that smell ? :)
+            if (sourceFormat == null) {
+                sourceFormat = getSourceFormat(documentConverter, sourceFile);
+            }
+
+            if (sourceFormat.getMediaType().startsWith("text/")) {
+                String encoding = inputBlob.getEncoding();
+                if (encoding == null) {
+                    CharsetDetector charsetDetecor = new CharsetDetector();
+                    charsetDetecor.setText(new BufferedInputStream(new FileInputStream(sourceFile)));
+                    CharsetMatch match = charsetDetecor.detect();
+                    encoding = match.getName();
+                }
+                @SuppressWarnings("rawtypes")
+                Map loadProperties =  sourceFormat.getLoadProperties();
+                if (loadProperties == null) {
+                    loadProperties = new HashMap<String,Object>();
+                }
+                loadProperties.put("FilterName", "Text (encoded)");
+                loadProperties.put("FilterOptions", encoding);
+                sourceFormat.setLoadProperties(loadProperties);
+            }
+
+            // From plugin settings because we know the destination
+            // mimetype.
+            DocumentFormat destinationFormat = getDestinationFormat(documentConverter,
+                    sourceFormat, pdfa1);
+
+            // allow HTML2PDF filtering
+
+            List<Blob> blobs = new ArrayList<Blob>();
+
+            if (descriptor.getDestinationMimeType().equals("text/html")) {
+                String tmpDirPath = getTmpDirectory();
+                File myTmpDir = new File(tmpDirPath + "/JODConv_"
+                        + System.currentTimeMillis());
+                boolean created = myTmpDir.mkdir();
+                if (!created) {
+                    throw new ConversionException("Unable to create temp dir");
                 }
 
-                // Get original file extension
-                String ext = inputBlob.getFilename();
-                int dotPosition = ext.lastIndexOf('.');
-                if (dotPosition == -1) {
-                    ext = ".bin";
-                } else {
-                    ext = ext.substring(dotPosition);
-                }
-                // Copy in a file to be able to read it several time
-                sourceFile = File.createTempFile("NXJOOoConverterDocumentIn",
-                        ext);
-                InputStream stream = inputBlob.getStream();
-                // if (stream.markSupported()) {
-                // stream.reset(); // works on a JCRBlobInputStream
-                // }
-                FileUtils.copyToFile(stream, sourceFile);
+                outFile = new File(myTmpDir.getAbsolutePath() + "/"
+                        + "NXJOOoConverterDocumentOut."
+                        + destinationFormat.getExtension());
 
-                DocumentFormat sourceFormat = null;
-                if (sourceMimetype != null) {
-                    // Try to fetch it from the registry.
-                    sourceFormat = getSourceFormat(sourceMimetype);
-                }
-                // If not found in the registry or not given as a parameter.
-                // Try to sniff ! What does that smell ? :)
-                if (sourceFormat == null) {
-                    sourceFormat = getSourceFormat(sourceFile);
+                created = outFile.createNewFile();
+                if (!created) {
+                    throw new ConversionException("Unable to create temp file");
                 }
 
-                // From plugin settings because we know the destination
-                // mimetype.
-                DocumentFormat destinationFormat = getDestinationFormat(
-                        sourceFormat, pdfa1);
+                log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                log.debug("Input File = " + outFile.getAbsolutePath());
+                // Perform the actual conversion.
+                documentConverter.convert(sourceFile, outFile,
+                        destinationFormat, parameters);
 
-                // allow HTML2PDF filtering
-
-                List<Blob> blobs = new ArrayList<Blob>();
-
-                if (descriptor.getDestinationMimeType().equals("text/html")) {
-                    String tmpDirPath = getTmpDirectory();
-                    File myTmpDir = new File(tmpDirPath + "/JODConv_"
-                            + System.currentTimeMillis());
-                    boolean created = myTmpDir.mkdir();
-                    if (!created) {
-                        throw new ConversionException(
-                                "Unable to create temp dir");
-                    }
-
-                    outFile = new File(myTmpDir.getAbsolutePath() + "/"
-                            + "NXJOOoConverterDocumentOut."
-                            + destinationFormat.getExtension());
-
-                    created = outFile.createNewFile();
-                    if (!created) {
-                        throw new ConversionException(
-                                "Unable to create temp file");
-                    }
-
-                    log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-                    log.debug("Input File = " + outFile.getAbsolutePath());
-                    // Perform the actual conversion.
-                    documentConverter.convert(sourceFile, outFile,
-                            destinationFormat, parameters);
-
-                    files = myTmpDir.listFiles();
-                    for (File file : files) {
-                        Blob blob = StreamingBlob.createFromByteArray(new FileSource(
-                                file).getBytes());
-                        blob.setFilename(file.getName());
-                        blobs.add(blob);
-                        // add a blob for the index
-                        if (file.getName().equals(outFile.getName())) {
-                            File indexFile = File.createTempFile("idx-", file.getName());
-                            FileUtils.copy(file, indexFile);
-                            Blob indexBlob = StreamingBlob.createFromByteArray(new FileSource(
-                                    indexFile).getBytes());
-                            indexBlob.setFilename("index.html");
-                            blobs.add(0, indexBlob);
-                            indexFile.delete();
-                        }
-                    }
-
-                } else {
-                    outFile = File.createTempFile("NXJOOoConverterDocumentOut",
-                            '.' + destinationFormat.getExtension());
-
-                    // Perform the actual conversion.
-                    documentConverter.convert(sourceFile, outFile,
-                            destinationFormat, parameters);
-
-                    // load the content in the file since it will be deleted
-                    // soon: TODO: find a way to stream it to the streaming
-                    // server without loading it all in memory
-                    Blob blob = StreamingBlob.createFromByteArray(
-                            new FileSource(outFile).getBytes(),
-                            getDestinationMimeType());
+                files = myTmpDir.listFiles();
+                for (File file : files) {
+                    Blob blob = StreamingBlob.createFromByteArray(new FileSource(
+                            file).getBytes());
+                    blob.setFilename(file.getName());
                     blobs.add(blob);
-                }
-                return new SimpleCachableBlobHolder(blobs);
-            } catch (Exception e) {
-                log.error(
-                        String.format(
-                                "An error occurred trying to convert a file to from %s to %s: %s",
-                                sourceMimetype, getDestinationMimeType(),
-                                e.getMessage()), e);
-                throw new ConversionException("Error in JODConverter", e);
-            } finally {
-                if (sourceFile != null) {
-                    sourceFile.delete();
-                }
-                if (outFile != null) {
-                    outFile.delete();
+                    // add a blob for the index
+                    if (file.getName().equals(outFile.getName())) {
+                        File indexFile = File.createTempFile("idx-",
+                                file.getName());
+                        FileUtils.copy(file, indexFile);
+                        Blob indexBlob = StreamingBlob.createFromByteArray(new FileSource(
+                                indexFile).getBytes());
+                        indexBlob.setFilename("index.html");
+                        blobs.add(0, indexBlob);
+                        indexFile.delete();
+                    }
                 }
 
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.exists()) {
-                            file.delete();
-                        }
+            } else {
+                outFile = File.createTempFile("NXJOOoConverterDocumentOut",
+                        '.' + destinationFormat.getExtension());
+
+                // Perform the actual conversion.
+                documentConverter.convert(sourceFile, outFile,
+                        destinationFormat, parameters);
+
+                // load the content in the file since it will be deleted
+                // soon: TODO: find a way to stream it to the streaming
+                // server without loading it all in memory
+                Blob blob = StreamingBlob.createFromByteArray(new FileSource(
+                        outFile).getBytes(), getDestinationMimeType());
+                blobs.add(blob);
+            }
+            return new SimpleCachableBlobHolder(blobs);
+        } catch (Exception e) {
+            log.error(
+                    String.format(
+                            "An error occurred trying to convert a file to from %s to %s: %s",
+                            sourceMimetype, getDestinationMimeType(),
+                            e.getMessage()), e);
+            throw new ConversionException("Error in JODConverter", e);
+        } finally {
+            if (sourceFile != null) {
+                sourceFile.delete();
+            }
+            if (outFile != null) {
+                outFile.delete();
+            }
+
+            if (files != null) {
+                for (File file : files) {
+                    if (file.exists()) {
+                        file.delete();
                     }
                 }
             }
-        } else {
+        }
+
+    }
+
+    protected OfficeDocumentConverter newDocumentConverter()
+            throws ConversionException {
+        OfficeDocumentConverter documentConverter = null;
+        try {
+            OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
+            documentConverter = oooManagerService.getDocumentConverter();
+        } catch (Exception e) {
+        }
+        if (documentConverter == null) {
             throw new ConversionException(
                     "Could not connect to the remote OpenOffice server");
         }
-
+        return documentConverter;
     }
 
     @Override
