@@ -24,7 +24,7 @@ import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class LocalURLClassLoader extends URLClassLoader implements
         LocalClassLoader {
@@ -43,20 +43,22 @@ public class LocalURLClassLoader extends URLClassLoader implements
     }
 
     @Override
-    public synchronized Class<?> loadLocalClass(String name, boolean resolve)
+    public Class<?> loadLocalClass(String name, boolean resolve)
             throws ClassNotFoundException {
         // do not look into parent
-        Class<?> clazz = findLoadedClass(name);
+        synchronized(getParent()) {
+            Class<?> clazz = findLoadedClass(name);
 
-        if (clazz == null) {
-            clazz = findClass(name);
+            if (clazz == null) {
+                clazz = findClass(name);
+            }
+
+            if (resolve) {
+                resolveClass(clazz);
+            }
+
+            return clazz;
         }
-
-        if (resolve) {
-            resolveClass(clazz);
-        }
-
-        return clazz;
     }
 
     @Override
