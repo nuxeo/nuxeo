@@ -10,6 +10,6 @@
   <xs:element name="allowedTypes" type="nxs:typeList"/>
   <xs:element name="deniedTypes" type="nxs:typeList"/>
   <xs:element name="denyAllTypes" type="xs:boolean"/>
-  <xs:element name="defaultType" type="xs:string" default="File"/>
+  <xs:element name="defaultType" type="xs:string" />
 
 </xs:schema>

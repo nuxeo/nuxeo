@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.types.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="uiTypesLocalConfigurationListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationListener"
+      priority="100">
+      <event>beforeDocumentModification</event>
+    </listener>
+
+  </extension>
+
+</component>
