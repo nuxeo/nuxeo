@@ -38,19 +38,9 @@
         <h:outputLink
           value="#{nxd:liveEditUrl(layoutValue, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
           <h:outputText value="#{messages['label.document.directEdit']}" />
-        </h:outputLink> 
+        </h:outputLink>
       </h:panelGroup>
     </nxu:methodResult>
-    
-    <c:if test="#{widget.mode == 'view'}">
-      <h:commandLink action="#{previewActions.doSetFieldXPath}">
-        <f:param name="fieldXPath"
-          value="#{widget.fieldDefinitions[0].propertyName}" />
-        <f:param name="previewTabId"
-          value="#{nxu:test(!empty widget.properties.previewTabId, widget.properties.previewTabId, 'TAB_PREVIEW')}" />
-        <h:outputText value=" | #{messages['command.preview.file']}" />
-      </h:commandLink>
-    </c:if>
 
   </c:if>
 
