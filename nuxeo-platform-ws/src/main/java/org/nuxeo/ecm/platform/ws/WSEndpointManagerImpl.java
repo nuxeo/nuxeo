@@ -26,6 +26,8 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(WSEndpointManagerImpl.class);
 
+    private static final int APPLICATION_STARTED_ORDER = 1500;
+
     protected WSEndpointRegistry regitry = new WSEndpointRegistry();
 
     protected Map<String, Endpoint> endpoints = new HashMap<>();
@@ -102,5 +104,10 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
             ep.stop();
             endpoints.remove(name);
         }
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        return APPLICATION_STARTED_ORDER;
     }
 }
