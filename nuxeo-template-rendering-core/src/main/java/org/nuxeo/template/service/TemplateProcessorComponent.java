@@ -14,6 +14,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -50,6 +51,8 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     public static final String CONTEXT_EXTENSION_XP = "contextExtension";
 
     public static final String OUTPUT_FORMAT_EXTENSION_XP = "outputFormat";
+
+    private static final String FILTER_VERSIONS_PROPERTY = "nuxeo.templating.filterVersions";
 
     protected ContextFactoryRegistry contextExtensionRegistry;
 
@@ -231,6 +234,9 @@ public class TemplateProcessorComponent extends DefaultComponent implements
     protected String buildTemplateSearchQuery(String targetType) {
         StringBuffer sb = new StringBuffer(
                 "select * from Document where ecm:mixinType = 'Template' AND ecm:currentLifeCycleState != 'deleted'");
+        if (Boolean.parseBoolean(Framework.getProperty(FILTER_VERSIONS_PROPERTY))) {
+            sb.append(" AND ecm:isCheckedInVersion = 0");
+        }
         if (targetType != null) {
             sb.append(" AND tmpl:applicableTypes IN ( 'all', '" + targetType
                     + "')");
