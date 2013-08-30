@@ -42,6 +42,12 @@ public class TracerFactory implements TracerFactoryMBean {
 
     public static final String AUTOMATION_TRACE_PRINTABLE_PROPERTY = "org.nuxeo.automation.trace.printable";
 
+    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
+
+    protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
+
+    protected static final Integer CACHE_TIMEOUT = 1;
+
     private static final Log log = LogFactory.getLog(TracerFactory.class);
 
     protected String printableTraces;
@@ -51,8 +57,9 @@ public class TracerFactory implements TracerFactoryMBean {
     protected boolean recording;
 
     public TracerFactory() {
-        this.tracesCache = CacheBuilder.newBuilder().concurrencyLevel(10).maximumSize(
-                1000).expireAfterWrite(1, TimeUnit.HOURS).build();
+        this.tracesCache = CacheBuilder.newBuilder().concurrencyLevel(
+                CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
+                CACHE_TIMEOUT, TimeUnit.HOURS).build();
         this.recording = Boolean.parseBoolean(Framework.getProperty(
                 AUTOMATION_TRACE_PROPERTY, "false"));
         this.printableTraces = Framework.getProperty(
