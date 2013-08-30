@@ -7,8 +7,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
   String context = request.getContextPath();
-  String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
-  String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
 
   String user_message = (String) request.getAttribute("user_message");
   String exception_message = (String) request.getAttribute("exception_message");
@@ -27,7 +25,7 @@
 <html>
 <fmt:setBundle basename="messages" var="messages"/>
 <head>
-  <title><%=productName%> - Error Page</title>
+  <title>Page not found</title>
   <style type="text/css">
 <!--
 body {
@@ -134,11 +132,6 @@ a:hover {
 <table border="0" width="50%" cellpadding="0" cellspacing="0" align="center"
   valign="center">
 
-  <tr>
-    <td>
-      <h3><%=productName%> - <%=productVersion%></h3>
-    </td>
-  </tr>
   <tr>
     <td>
 
