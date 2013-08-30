@@ -192,6 +192,22 @@
     <resource name="moment.js">
       <path>scripts/moment.min-1.5.0nx.js</path>
     </resource>
+    <!-- jquery-ui -->
+    <resource name="jquery.ui.core.js">
+      <path>scripts/jquery/jquery.ui.core.js</path>
+    </resource>
+    <resource name="jquery.ui.widget.js">
+      <path>scripts/jquery/jquery.ui.widget.js</path>
+    </resource>
+    <resource name="jquery.ui.mouse.js">
+      <path>scripts/jquery/jquery.ui.mouse.js</path>
+    </resource>
+    <resource name="jquery.ui.sortable.js">
+      <path>scripts/jquery/jquery.ui.sortable.js</path>
+      <require>jquery.ui.core.js</require>
+      <require>jquery.ui.mouse.js</require>
+      <require>jquery.ui.widget.js</require>
+    </resource>
   </extension>
 
   <!-- Register mapping between theme pages and resources -->
