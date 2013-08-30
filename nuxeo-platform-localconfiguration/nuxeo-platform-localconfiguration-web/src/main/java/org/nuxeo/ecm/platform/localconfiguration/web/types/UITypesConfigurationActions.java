@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -105,7 +104,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @param document the domain to configure
      * @return a List of type of document, not currently selected for the domain
      * @throws ClientException
-     * @Since 5.5
+     * @since 5.5
      */
     public List<Type> getNotSelectedTypes(DocumentModel document)
             throws ClientException {
@@ -155,7 +154,7 @@ public class UITypesConfigurationActions implements Serializable {
      * @param document the domain to configure
      * @return List of documen type selected for the domain
      * @throws ClientException
-     * @Since 5.5
+     * @since 5.5
      */
     public List<Type> getSelectedTypes(DocumentModel document)
             throws ClientException {

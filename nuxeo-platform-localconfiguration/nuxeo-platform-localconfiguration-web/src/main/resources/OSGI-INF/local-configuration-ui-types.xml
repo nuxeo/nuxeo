@@ -68,7 +68,7 @@
 
     <widget name="default_type" type="default_type">
       <labels>
-        <label mode="any">label.local.configuration.ui.defaultType</label>
+        <label mode="any">label.local.configuration.ui.automaticType</label>
       </labels>
       <translated>true</translated>
       <fields>
