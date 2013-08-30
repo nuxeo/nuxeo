@@ -19,7 +19,7 @@
           message="Error.Document.Not.Found" code="404" />
         <handler error=".*NoSuchPropertyException"
           message="Error.Document.NoSuchProperty" />
-        <handler error=".*SecurityException" message="Error.Insuffisant.Rights" />
+        <handler error=".*SecurityException" message="Error.Insuffisant.Rights" page="/nuxeo_security_error.jsp" />
         <handler error=".*" message="Error.Unknown" />
       </handlers>
     </errorHandlers>
