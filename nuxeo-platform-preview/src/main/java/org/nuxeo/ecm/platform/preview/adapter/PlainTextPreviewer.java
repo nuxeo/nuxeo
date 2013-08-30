@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.preview.adapter;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,30 +29,55 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
+import com.ibm.icu.text.CharsetDetector;
+
 public class PlainTextPreviewer extends AbstractPreviewer implements
         MimeTypePreviewer {
 
+    protected String htmlContent(String content) {
+        return "<pre>"
+                + content.replace("&", "&amp;").replace("<", "&lt;").replace(
+                        ">", "&gt;").replace("\'", "&apos;").replace("\"",
+                        "&quot;").replace("\n", "<br/>") + "</pre>";
+    }
+
+    @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm)
             throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();
 
         StringBuilder htmlPage = new StringBuilder();
 
-        htmlPage.append("<html><body>");
+        byte[] data;
         try {
-            String temp = blob.getString().replace("&", "&amp;").replace("<",
-                    "&lt;").replace(">", "&gt;").replace("\'", "&apos;").replace(
-                    "\"", "&quot;");
-            htmlPage.append("<pre>").append(temp.replace("\n", "<br/>")).append(
-                    "</pre>");
+            data = blob.getByteArray();
         } catch (IOException e) {
-            throw new PreviewException(e);
+            throw new PreviewException("Cannot fetch blob content", e);
         }
+        String encoding = blob.getEncoding();
+        if (encoding == null) {
+            CharsetDetector detector = new CharsetDetector();
+            detector.setText(data);
+            encoding = detector.detect().getName();
+        }
+
+        String content = null;
+        try {
+            content = new String(data, encoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new PreviewException("Cannot encode blob content to string", e);
+        }
+
+        htmlPage.append("<?xml version=\"1.0\" encoding=\"").append(encoding).append(
+                "\"/>");
+        htmlPage.append("<html>");
+        htmlPage.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=").append(encoding).append("\"/></head>");
+        htmlPage.append("<body>");
+        htmlPage.append(htmlContent(content));
         htmlPage.append("</body></html>");
 
-        Blob mainBlob = new StringBlob(htmlPage.toString());
+        Blob mainBlob = new StringBlob(htmlPage.toString(), "text/html", encoding);
         mainBlob.setFilename("index.html");
-        mainBlob.setMimeType("text/html");
 
         blobResults.add(mainBlob);
         return blobResults;

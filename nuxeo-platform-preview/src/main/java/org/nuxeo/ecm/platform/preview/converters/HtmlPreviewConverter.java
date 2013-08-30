@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -97,6 +98,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
         return subConverters;
     }
 
+    @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
 
@@ -121,13 +123,24 @@ public class HtmlPreviewConverter implements ExternalConverter {
             result = getConversionService().convert(converterName, result,
                     parameters);
         }
+        Blob blob;
+        try {
+            blob = result.getBlob();
+        } catch (ClientException e) {
+            throw new ConversionException("Cannot fetch html blob", e);
+        }
+        if (blob.getEncoding() == null) {
+            blob.setEncoding("UTF-8");
+        }
         return result;
     }
 
+    @Override
     public void init(ConverterDescriptor descriptor) {
         // TODO Auto-generated method stub
     }
 
+    @Override
     public ConverterCheckResult isConverterAvailable() {
         ConverterCheckResult result = new ConverterCheckResult();
         result.setAvailable(getCanUseOOo2Html() || getCanUsePDF2Html());
