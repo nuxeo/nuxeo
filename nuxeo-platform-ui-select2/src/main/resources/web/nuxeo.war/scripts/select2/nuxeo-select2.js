@@ -174,6 +174,15 @@ function initSelect2Widget(el) {
   // init select2
   el.select2(select2_params);
 
+  // Make selected items sortable
+  if (params.multiple == 'true' && params.sortable == 'true') {
+    el.select2("container").find("ul.select2-choices").sortable({
+      containment: 'parent',
+      start: function() { el.select2("onSortStart"); },
+      update: function() { el.select2("onSortEnd"); }
+    });
+  }
+
   // trigger for safeEdit restore
   el.on("change", function(e) {
     if (e) {

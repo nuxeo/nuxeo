@@ -345,6 +345,9 @@
                   <widget>minimumInputLength</widget>
                 </row>
                 <row>
+                  <widget>sortable</widget>
+                </row>
+                <row>
                   <widget>repository</widget>
                 </row>
                 <row>
@@ -408,6 +411,20 @@
                 </helpLabels>
                 <fields>
                   <field>minimumInputLength</field>
+                </fields>
+              </widget>
+
+              <widget name="sortable" type="checkbox">
+                <labels>
+                  <label mode="any">Enable sorting on selected entries</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean enable sorting on selected entries.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>sortable</field>
                 </fields>
               </widget>
 
@@ -940,6 +957,9 @@
                   <widget>minimumInputLength</widget>
                 </row>
                 <row>
+                  <widget>sortable</widget>
+                </row>
+                <row>
                   <widget>directoryName</widget>
                 </row>
                 <row>
@@ -1019,6 +1039,20 @@
                 </helpLabels>
                 <fields>
                   <field>minimumInputLength</field>
+                </fields>
+              </widget>
+
+              <widget name="sortable" type="checkbox">
+                <labels>
+                  <label mode="any">Enable sorting on selected entries</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean enable sorting on selected entries.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>sortable</field>
                 </fields>
               </widget>
 
@@ -1475,6 +1509,9 @@
                   <widget>minimumInputLength</widget>
                 </row>
                 <row>
+                  <widget>sortable</widget>
+                </row>
+                <row>
                   <widget>repository</widget>
                 </row>
                 <row>
@@ -1526,6 +1563,20 @@
                 </helpLabels>
                 <fields>
                   <field>minimumInputLength</field>
+                </fields>
+              </widget>
+
+              <widget name="sortable" type="checkbox">
+                <labels>
+                  <label mode="any">Enable sorting on selected entries</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean enable sorting on selected entries.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>sortable</field>
                 </fields>
               </widget>
 

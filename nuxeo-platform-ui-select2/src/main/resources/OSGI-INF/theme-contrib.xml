@@ -22,8 +22,9 @@
     <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
       <format-type>widget</format-type>
       <resource>select2.css</resource>
-      <!-- TODO Later, we can include nuxeo-select2.js here but for know we import
-        it inline because it'll be easier to debug oif needed <resource>nuxeo-select2.js</resource> -->
+      <resource>jquery.ui.sortable.js</resource>
+      <!-- TODO Later, we can include nuxeo-select2.js here but for now we import
+        it inline because it'll be easier to debug if needed <resource>nuxeo-select2.js</resource> -->
     </view>
 
   </extension>
