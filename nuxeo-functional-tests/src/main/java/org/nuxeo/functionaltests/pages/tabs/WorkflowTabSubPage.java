@@ -19,7 +19,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 /**
  * @since 5.7
  */
-import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -31,9 +31,6 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     @FindBy(xpath = "//form[contains(@id, 'nxl_current_route_layout_current_route_user_tasks_form')]")
     public WebElement workflowTasksForm;
 
-    @FindBy(xpath = "//input[contains(@id, 'nxw_participants_suggest')]")
-    public WebElement searchTaskAssigneesInput;
-
     @FindBy(xpath = "//select[contains(@id, 'nxw_validationOrReview')]")
     public WebElement reviewSelector;
 
@@ -42,12 +39,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void addWorkflowReviewer() {
-        searchTaskAssigneesInput.sendKeys("jdoe");
-        findElementWaitUntilEnabledAndClick(
-                By.xpath("//table[contains(@id, 'nxw_participants_suggestionBox:suggest')]/tbody/tr[1]/td[2]"),
-                AbstractTest.AJAX_TIMEOUT_SECONDS * 1000,
-                AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
-        reviewSelector.click();
+        Select2WidgetElement particpants = new Select2WidgetElement(driver, By.xpath("//*[@id='s2id_nxl_current_route_layout:nxl_current_route_layout_current_route_user_tasks_form:nxl_Task38e_taskLayout:nxw_participants_select2']"), true);
+        particpants.selectValue("jdoe");
         selectItemInDropDownMenu(reviewSelector, "Simple review");
     }
 
