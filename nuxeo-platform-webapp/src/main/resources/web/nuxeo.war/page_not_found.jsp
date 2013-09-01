@@ -14,88 +14,50 @@
   <title>Page not found</title>
   <style type="text/css">
 <!--
-body {
-  background: url(<%=context%>/img/fond_error.gif ) 0 0 repeat-x #ffffff;
-  margin: 0px;
-}
+body { background: url("<%=context%>/img/error_pages/page_background.gif") repeat scroll 0 0 transparent;
+  color: #999;
+  font: normal 100%/1.5 "Lucida Grande", Arial, Verdana, sans-serif;
+  margin: 0 }
 
-H1 {
-  color: #0080ff;
-  font: bold 20px Verdana, sans-serif;
-  margin: 50px 0 40px 0;
-}
+.container {  margin: 2em auto;
+  text-align: center;
+  width: 70% }
 
-H2 {
-  color: #505050;
-  font: bold 12px Verdana, sans-serif;
-  margin: 15px 0 15px 0;
-  padding: 5px;
-  background: #EBF5FF;
-  border: 1px solid #3299ff;
-}
+h1 { color: #000;
+  font-size: 150%;
+  margin: 3.5em 0 .5em 0 }
 
-H3 {
-  color: #000;
-  font: normal 16px Verdana, sans-serif;
-  margin: 20px 0 0 0;
-}
+h2 { color: #b20000;
+  font-size: 110%;
+  margin: 1em }
 
-a {
-  font-family: Verdana, sans-serif;
-  color: #595959;
-  font-style: sans-serif;
-  font-size: 10pt;
-}
+h1, h2 { font-weight: bold }
 
-a:hover {
-  color: #404040;
-}
+p { max-width: 600px; margin: .4em auto }
 
-.links {
-  font-family: Verdana, sans-serif;
-  color: #7B7B7B;
-  font-style: sans-serif;
-  font-size: 10pt;
-  margin: 40px 0 0 0;
-}
+a.block { background: url("<%=context%>/img/error_pages/refresh.png") no-repeat scroll center 10px #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #00729c;
+  display: inline-block;
+  font-weight: bold;
+  margin: .4em;
+  padding: 3em .8em .8em;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: top;
+  width: 7em }
+a.block:hover { background-color: #e9f1f4; border-color: #e9f1f4; color: #000 }
+a.block.back { background-image: url("<%=context%>/img/error_pages/back.png") }
+a.block.stack { background-image: url("<%=context%>/img/error_pages/show.png") }
+a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
 
-.logo {
-  margin: 0 70px 0 0;
-}
+.block img { display: block;
+    margin: 0 auto }
 
-.stacktrace {
-  padding: 0 5px 0 20px;
-  background: url(<%=context%>/icons/page_text.gif ) no-repeat scroll 0%;
-  margin: 10px 0 0 0;
-}
-
-.back {
-  padding: 0 5px 0 20px;
-  background: url(<%=context%>/icons/back.png ) no-repeat scroll 0%;
-  margin: 10px 0;
-}
-
-.change {
-  padding: 0 5px 0 20px;
-  background: url(<%=context%>/icons/user_go.png ) no-repeat scroll 0%;
-}
-
-#stackTrace {
-  border: 1px solid #999999;
-  padding: 3px;
-  margin: 15px 0;
-  width: 700px;
-  height: 700px;
-  overflow: auto;
-}
-#requestDump {
-  border: 1px solid #999999;
-  padding: 3px;
-  margin: 15px 0;
-  width: 700px;
-  height: 700px;
-  overflow: auto;
-}
+.links { margin: 2em 0 0 0 }
+.links span { display: inline-block;
+  font-size: 85% }
 -->
   </style>
   <script language="javascript" type="text/javascript">
@@ -115,23 +77,20 @@ a:hover {
 </head>
 <body>
 
-<table border="0" width="50%" cellpadding="0" cellspacing="0" align="center">
-  <tr>
-    <td>
+  <div class="container">
+    <h1>Sorry, the page you requested cannot be found.</h1>
+    <p>The page you are trying to reach has been moved or doesn't exist anymore.
+    Click on the following links to get back to the platform.</p>
 
-      <h1>Page Not Found</h1>
-
-      <div class="links">
-        <div class="back">
-          <a href="<%=context%>/">back</a>
-        </div>
-        <div class="change">
-          <a href="<%=context%>/logout">change username</a>
-        </div>
-      </div>
-    </td>
-  </tr>
-</table>
+    <div class="links">
+      <a class="block back" href="<%=context %>/">
+        <span>Back to default view</span>
+      </a>
+      <a class="block change" href="<%=context%>/logout">
+        <span>Change username</span>
+      </a>
+    </div>
+  </div>
 
 </body>
 </html>

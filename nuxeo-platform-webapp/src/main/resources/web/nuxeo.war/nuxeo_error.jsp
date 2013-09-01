@@ -28,88 +28,60 @@
   <title>An error occurred</title>
   <style type="text/css">
 <!--
-body {
-  background: url(<%=context%>/img/fond_error.gif ) 0 0 repeat-x #ffffff;
-  margin: 0px;
-}
+body { background: url("<%=context%>/img/error_pages/page_background.gif") repeat scroll 0 0 transparent;
+  color: #999;
+  font: normal 100%/1.5 "Lucida Grande", Arial, Verdana, sans-serif;
+  margin: 0 }
 
-H1 {
-  color: #0080ff;
-  font: bold 20px Verdana, sans-serif;
-  margin: 50px 0 40px 0;
-}
+.container {  margin: 2em auto;
+  text-align: center;
+  width: 70% }
 
-H2 {
-  color: #505050;
-  font: bold 12px Verdana, sans-serif;
-  margin: 15px 0 15px 0;
-  padding: 5px;
-  background: #EBF5FF;
-  border: 1px solid #3299ff;
-}
+h1 { color: #000;
+  font-size: 150%;
+  margin: 3.5em 0 .5em 0 }
 
-H3 {
-  color: #000;
-  font: normal 16px Verdana, sans-serif;
-  margin: 20px 0 0 0;
-}
+h2 { color: #b20000;
+  font-size: 110%;
+  margin: 1em }
 
-a {
-  font-family: Verdana, sans-serif;
-  color: #595959;
-  font-style: sans-serif;
-  font-size: 10pt;
-}
+h1, h2 { font-weight: bold }
 
-a:hover {
-  color: #404040;
-}
+p { max-width: 600px; margin: .4em auto }
 
-.links {
-  font-family: Verdana, sans-serif;
-  color: #7B7B7B;
-  font-style: sans-serif;
-  font-size: 10pt;
-  margin: 40px 0 0 0;
-}
+a.block { background: url("<%=context%>/img/error_pages/refresh.png") no-repeat scroll center 10px #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  color: #00729c;
+  display: inline-block;
+  font-weight: bold;
+  margin: .4em;
+  padding: 3em .8em .8em;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: top;
+  width: 7em }
+a.block:hover { background-color: #e9f1f4; border-color: #e9f1f4; color: #000 }
+a.block.back { background-image: url("<%=context%>/img/error_pages/back.png") }
+a.block.stack { background-image: url("<%=context%>/img/error_pages/show.png") }
+a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
 
-.logo {
-  margin: 0 70px 0 0;
-}
+.block img { display: block;
+    margin: 0 auto }
 
-.stacktrace {
-  padding: 0 5px 0 20px;
-  background: url(<%=context%>/icons/page_text.gif ) no-repeat scroll 0%;
-  margin: 10px 0 0 0;
-}
+.links { margin: 2em 0 0 0 }
+.links span { display: inline-block;
+  font-size: 85% }
 
-.back {
-  padding: 0 5px 0 20px;
-  background: url(<%=context%>/icons/back.png ) no-repeat scroll 0%;
-  margin: 10px 0;
-}
-
-.change {
-  padding: 0 5px 0 20px;
-  background: url(<%=context%>/icons/user_go.png ) no-repeat scroll 0%;
-}
-
-#stackTrace {
-  border: 1px solid #999999;
-  padding: 3px;
-  margin: 15px 0;
-  width: 700px;
-  height: 700px;
+.errorDetail { background-color:#fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 40%;
+  margin: 1em auto;
   overflow: auto;
-}
-#requestDump {
-  border: 1px solid #999999;
-  padding: 3px;
-  margin: 15px 0;
-  width: 700px;
-  height: 700px;
-  overflow: auto;
-}
+  padding: 0.5em;
+  text-align: left;
+  width: 100% }
 -->
   </style>
   <script language="javascript" type="text/javascript">
@@ -128,62 +100,55 @@ a:hover {
   </script>
 </head>
 <body>
+  <div class="container">
+    <h1><%=pageTitle%></h1>
 
-<table border="0" width="50%" cellpadding="0" cellspacing="0" align="center"
-  valign="center">
-    <td>
+    <% if (!isAnonymous) { %>
+      <p><%=user_message%></p>
+      <div class="links">
+        <a class="block back" href="<%=context %>/">
+          <span>Back to default view</span>
+        </a>
+        <a class="block change" href="<%=context%>/logout">
+          <span>Change username</span>
+        </a>
+        </a>
+        <a class="block stack" href="#" onclick="javascript:toggleError('stackTrace'); return false;">
+          <span>Show stacktrace</span>
+        </a>
+        <a class="block dump"href="#" onclick="javascript:toggleError('requestDump'); return false;">
+          <span>View context dump</span>
+        </a>
 
-      <h1><%=pageTitle%></h1>
-
-      <% if (!isAnonymous) { %>
-        <h2><%=user_message%></h2>
-        <div class="links">
-          <div class="back">
-            <a href="<%=context %>/">back</a>
-          </div>
-          <div class="change">
-            <a href="<%=context%>/logout">change username</a>
-          </div>
-          <div class="stacktrace">
-            <a href="#"
-               onclick="javascript:toggleError('stackTrace'); return false;">
-             show stacktrace
-            </a>
-          </div>
-          <div id="stackTrace" style="display: none;">
-            <h2><%=exception_message %></h2>
-            <inputTextarea rows="20" cols="300" readonly="true">
-              <pre>
-              <%=stackTrace%>
-              </pre>
-            </inputTextarea>
-          </div>
-          <div class="stacktrace">
-            <a href="#"
-               onclick="javascript:toggleError('requestDump'); return false;">
-              show context dump
-            </a>
-          </div>
-          <div id="requestDump" style="display: none;">
-            <h2>Context</h2>
-            <inputTextarea rows="20" cols="300" readonly="true">
-              <pre>
-              <%=request_dump%>
-              </pre>
-            </inputTextarea>
-          </div>
+       <div class="errorDetail" id="stackTrace" style="display: none;">
+          <h2><%=exception_message %></h2>
+          <inputTextarea rows="20" cols="100" readonly="true">
+            <pre>
+            <%=stackTrace%>
+            </pre>
+          </inputTextarea>
         </div>
 
-      <%} else { %>
-        <h2> You must be authenticated to perform this operation </h2>
-        <div class="change">
-          <a href="<%=context%>/logout">Login</a>
+        <div class="errorDetail" id="requestDump" style="display: none;">
+          <h2>Context</h2>
+          <inputTextarea rows="20" cols="100" readonly="true">
+            <pre>
+            <%=request_dump%>
+            </pre>
+          </inputTextarea>
         </div>
-      <%} %>
 
-    </td>
-  </tr>
-</table>
+      </div>
+
+    <%} else { %>
+      <p>You must be authenticated to perform this operation.</p>
+      <div class="links">
+        <a class="block change" href="<%=context%>/logout">
+          <span>Sign in</span>
+        </a>
+      </div>
+    <%} %>
+  </div>
 
 </body>
 </html>
