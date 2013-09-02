@@ -444,7 +444,7 @@ public class Select2ActionsBean implements Serializable {
 
     public boolean mustIncludeResources() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null) {
+        if (facesContext != null && facesContext.getRenderResponse()) {
             HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 
             if (request.getAttribute(SELECT2_RESOURCES_MARKER) != null) {

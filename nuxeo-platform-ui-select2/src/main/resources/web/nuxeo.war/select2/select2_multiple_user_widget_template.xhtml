@@ -23,7 +23,7 @@
 
       <ui:include src="/select2/include/select2_js.xhtml" />
 
-      <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+      <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}" required="#{widgetProperty_required}"
         var="currentValue">
         <f:converter converterId="select2Converter"></f:converter>
         <h:inputHidden readonly="true" id="#{widget.id}_select2_init"

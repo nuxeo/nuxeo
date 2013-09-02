@@ -73,6 +73,9 @@
                 <row>
                   <widget>placeholder</widget>
                 </row>
+                <row>
+                  <widget>required</widget>
+                </row>
               </rows>
 
               <widget name="width" type="int">
@@ -382,6 +385,9 @@
                 </row>
                 <row>
                   <widget>placeholder</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
                 </row>
               </rows>
 
@@ -700,6 +706,9 @@
                 <row>
                   <widget>obsolete</widget>
                 </row>
+                <row>
+                  <widget>required</widget>
+                </row>
               </rows>
 
               <widget name="width" type="int">
@@ -991,6 +1000,9 @@
                 </row>
                 <row>
                   <widget>obsolete</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
                 </row>
               </rows>
 
@@ -1286,6 +1298,9 @@
                 <row>
                   <widget>searchType</widget>
                 </row>
+                <row>
+                  <widget>required</widget>
+                </row>
               </rows>
 
               <widget name="width" type="int">
@@ -1534,6 +1549,9 @@
                 </row>
                 <row>
                   <widget>searchType</widget>
+                </row>
+                <row>
+                  <widget>required</widget>
                 </row>
               </rows>
 
