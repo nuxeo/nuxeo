@@ -79,6 +79,15 @@
         <handler>org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler</handler>
       </handlers>
     </endpoint>
+
+    <endpoint name="ObjectService" address="/cmis/ObjectService"
+      implementor="org.apache.chemistry.opencmis.server.impl.webservices.ObjectService"
+      namespace="http://docs.oasis-open.org/ns/cmis/ws/200908/" port="ObjectServicePort" service="ObjectService"
+      wsdl="nuxeo.war/WEB-INF/wsdl/CMISWS-Service.wsdl" enable-mtom="true">
+      <handlers>
+        <handler>org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAuthHandler</handler>
+      </handlers>
+    </endpoint>
   </extension>
 
 </component>

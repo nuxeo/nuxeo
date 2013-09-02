@@ -21,20 +21,17 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.impl.webservices.AbstractService;
-import org.apache.chemistry.opencmis.server.impl.webservices.AuthHandler;
-import org.apache.chemistry.opencmis.server.impl.webservices.WebSphereAuthHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.Authenticator;
 
-import com.sun.xml.ws.api.handler.MessageHandlerContext;
-
 /**
  * SOAP handler that extracts authentication information from the SOAP headers
  * and propagates it to Nuxeo for login.
  */
-public class NuxeoCmisAuthHandler extends CXFAuthHandler implements LoginProvider {
+public class NuxeoCmisAuthHandler extends CXFAuthHandler implements
+        LoginProvider {
 
     public static final String NUXEO_LOGIN_CONTEXT = "nuxeo.opencmis.LoginContext";
 
