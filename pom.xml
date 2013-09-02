@@ -3676,6 +3676,12 @@
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-commons-impl</artifactId>
         <version>${chemistry.opencmis.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
@@ -4008,6 +4014,29 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http</artifactId>
         <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>jaxws-rt</artifactId>
+        <version>2.2.5</version>
+        <exclusions>
+          <!-- bad classes pulled by dependency com.sun.xml.ws:policy -->
+          <exclusion>
+            <!-- classes conflict with com.sun.xml.bind:jaxb-impl -->
+            <groupId>com.sun.xml.txw2</groupId>
+            <artifactId>txw2</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- classes conflict with com.sun.xml.bind:jaxb-impl -->
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-runtime</artifactId>
+          </exclusion>
+          <exclusion>
+            <!-- classes conflict with org.codehaus.woodstox:stax2-api -->
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>
