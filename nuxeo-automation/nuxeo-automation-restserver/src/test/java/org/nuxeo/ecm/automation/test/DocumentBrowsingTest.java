@@ -16,7 +16,8 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
@@ -41,7 +42,6 @@ import com.sun.jersey.api.client.ClientResponse;
  *
  * @since 5.7.2
  */
-
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
@@ -192,14 +192,12 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEntityEqualsDoc(response.getEntityInputStream(), note);
 
         // When i do a GET Request on a non existent repository
-        response = getResponse(
-                RequestType.GET,
-                "repo/nonexistentrepo/path"
-                        + note.getPathAsString());
+        response = getResponse(RequestType.GET, "repo/nonexistentrepo/path"
+                + note.getPathAsString());
 
         // Then i reveive a 404
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(),
+                response.getStatus());
 
     }
 

@@ -20,15 +20,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
- *
- *
  * @since 5.7.2
  */
-public class BusinessBeanAdapterFactory implements DocumentAdapterFactory{
+public class BusinessBeanAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
-        if("Note".equals(doc.getType())) {
+        if ("Note".equals(doc.getType())) {
             return new BusinessBeanAdapter(doc);
         }
 

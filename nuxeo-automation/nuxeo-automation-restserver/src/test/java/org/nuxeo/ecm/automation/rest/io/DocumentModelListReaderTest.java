@@ -40,8 +40,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)

@@ -317,8 +317,8 @@ public class UserGroupTest extends BaseUserTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         ArrayNode items = (ArrayNode) node.get("items");
         assertEquals(1, items.size());
-        assertEquals("Lannister",items.get(0).get("grouplabel").getValueAsText());
-
+        assertEquals("Lannister",
+                items.get(0).get("grouplabel").getValueAsText());
 
     }
 

@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.core.Response;
 
@@ -37,8 +39,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
- *
- *
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
@@ -47,7 +47,6 @@ import com.sun.jersey.api.client.ClientResponse;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class AdapterBindingTest extends BaseTest {
-
 
     @Test
     public void iCanGetAnAdapter() throws Exception {

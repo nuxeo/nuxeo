@@ -33,7 +33,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Repo init to test Rest API
  *
- *
  * @since 5.7.2
  */
 public class RestServerInit implements RepositoryInit {

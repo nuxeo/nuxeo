@@ -22,12 +22,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- *
- *
  * @since 5.7.2
  */
 public class BusinessBeanAdapter extends BusinessAdapter {
-
 
     /**
      * Default constructor is needed for jackson mapping

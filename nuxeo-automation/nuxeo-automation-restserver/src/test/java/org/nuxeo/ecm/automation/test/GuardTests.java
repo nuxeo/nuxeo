@@ -38,8 +38,6 @@ import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)
@@ -201,8 +199,7 @@ public class GuardTests extends BaseUserTest {
         service = getServiceFor(principal.getName(), principal.getName());
 
         // When i try to delete admin user
-        ClientResponse response = getResponse(RequestType.DELETE,
-                "/user/user2");
+        ClientResponse response = getResponse(RequestType.DELETE, "/user/user2");
         // Then it return a NO_CONTENT response
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
                 response.getStatus());
@@ -210,8 +207,5 @@ public class GuardTests extends BaseUserTest {
         assertNull(um.getPrincipal("user2"));
 
     }
-
-
-
 
 }

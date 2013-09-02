@@ -44,9 +44,9 @@ public class JSONDocumentNode {
 
     /**
      * Update a property value on the JSON object
+     *
      * @param key
      * @param value
-     *
      * @since 5.7.2
      */
     public void setPropertyValue(String key, String value) {
@@ -57,9 +57,9 @@ public class JSONDocumentNode {
 
     /**
      * Return the object as JSON
+     *
      * @return
      * @throws IOException
-     *
      * @since 5.7.2
      */
     public String asJson() throws IOException {

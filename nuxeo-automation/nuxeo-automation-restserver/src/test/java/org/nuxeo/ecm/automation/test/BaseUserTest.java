@@ -29,18 +29,16 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
- *
- *
  * @since 5.7.3
  */
 public class BaseUserTest extends BaseTest {
 
     /**
      * Returns the json representation of a group
+     *
      * @param group
      * @return
      * @throws IOException
-     *
      */
     protected String getGroupAsJson(NuxeoGroup group) throws IOException {
         NuxeoGroupWriter npw = new NuxeoGroupWriter();
@@ -56,7 +54,6 @@ public class BaseUserTest extends BaseTest {
      * @param groupName
      * @param groupLabel
      * @param node
-     *
      */
     protected void assertEqualsGroup(String groupName, String groupLabel,
             JsonNode node) {
@@ -71,7 +68,6 @@ public class BaseUserTest extends BaseTest {
      * @param user
      * @return
      * @throws IOException
-     *
      */
     protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException {
         NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
@@ -89,7 +85,6 @@ public class BaseUserTest extends BaseTest {
      * @param firstname
      * @param lastname
      * @param node
-     *
      */
     protected void assertEqualsUser(String username, String firstname,
             String lastname, JsonNode node) {

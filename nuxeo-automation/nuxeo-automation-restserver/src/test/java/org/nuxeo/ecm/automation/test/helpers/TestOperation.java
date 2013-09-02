@@ -27,9 +27,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * Basic operation that just record the documents on which it was called and the
- * parameters used
- *
+ * Basic operation that just record the documents on which it was called and
+ * the parameters used
  *
  * @since 5.7.2
  */
@@ -62,8 +61,8 @@ public class TestOperation {
 
     /**
      * Returns the list of calls since last reset
-     * @return
      *
+     * @return
      * @since 5.7.2
      */
     public static List<OperationCall> getCalls() {
@@ -72,7 +71,6 @@ public class TestOperation {
 
     /**
      * Resets the calls to the operation
-     *
      *
      * @since 5.7.2
      */

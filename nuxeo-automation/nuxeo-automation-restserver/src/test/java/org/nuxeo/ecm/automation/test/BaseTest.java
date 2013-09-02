@@ -49,8 +49,6 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 /**
- *
- *
  * @since 5.7.2
  */
 public class BaseTest {
@@ -65,25 +63,22 @@ public class BaseTest {
 
     @Before
     public void doBefore() {
-        service = getServiceFor("Administrator","Administrator");
-
+        service = getServiceFor("Administrator", "Administrator");
 
         mapper = new ObjectMapper();
 
     }
 
     /**
-     *
      * @param user
      * @param password
      * @return
-     *
      * @since 5.7.3
      */
     protected WebResource getServiceFor(String user, String password) {
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
-        client.addFilter(new HTTPBasicAuthFilter(user,password));
+        client.addFilter(new HTTPBasicAuthFilter(user, password));
         return client.resource("http://localhost:18090/api/");
     }
 
