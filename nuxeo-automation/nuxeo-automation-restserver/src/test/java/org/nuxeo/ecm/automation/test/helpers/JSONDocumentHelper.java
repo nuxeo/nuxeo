@@ -17,14 +17,18 @@
 package org.nuxeo.ecm.automation.test.helpers;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
+import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3
@@ -36,9 +40,16 @@ public class JSONDocumentHelper {
     public static String getDocAsJson(String[] schemas, DocumentModel doc)
             throws Exception {
         OutputStream out = new ByteArrayOutputStream();
-        JsonDocumentWriter.writeDocument(out, doc, schemas);
+        JsonGenerator jg = getJsonGenerator(out);
+        JsonDocumentWriter.writeDocument(jg, doc, DEFAULT_SCHEMAS);
         return out.toString();
 
+    }
+
+    private static JsonGenerator getJsonGenerator(OutputStream out)
+            throws IOException {
+        JsonFactoryManager factoryProvider = Framework.getLocalService(JsonFactoryManager.class);
+        return factoryProvider.getJsonFactory().createJsonGenerator(out);
     }
 
     public static String getDocAsJson(DocumentModel doc) throws Exception {
@@ -50,7 +61,8 @@ public class JSONDocumentHelper {
         OutputStream out = new ByteArrayOutputStream();
         DocumentModelList docList = new DocumentModelListImpl(
                 Arrays.asList(docs));
-        JsonDocumentListWriter.writeDocuments(out, docList, schemas);
+        JsonDocumentListWriter.writeDocuments(getJsonGenerator(out), docList,
+                schemas);
         return out.toString();
     }
 

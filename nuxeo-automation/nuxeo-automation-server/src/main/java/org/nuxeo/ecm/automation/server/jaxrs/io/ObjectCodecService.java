@@ -33,6 +33,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -66,7 +68,10 @@ public class ObjectCodecService {
 
     protected Map<String, ObjectCodec<?>> _codecsByName;
 
-    public ObjectCodecService() {
+    private JsonFactory jsonFactory;
+
+    public ObjectCodecService(JsonFactory jsonFactory) {
+        this.jsonFactory = jsonFactory;
         codecs = new HashMap<Class<?>, ObjectCodec<?>>();
         codecsByName = new HashMap<String, ObjectCodec<?>>();
         init();
@@ -165,7 +170,8 @@ public class ObjectCodecService {
 
     public void write(OutputStream out, Object object, boolean prettyPint)
             throws IOException {
-        JsonGenerator jg = JsonWriter.createGenerator(out);
+
+        JsonGenerator jg = jsonFactory.createJsonGenerator(out,JsonEncoding.UTF8);
         if (prettyPint) {
             jg.useDefaultPrettyPrinter();
         }
@@ -212,7 +218,8 @@ public class ObjectCodecService {
 
     public Object read(InputStream in, ClassLoader cl, CoreSession session)
             throws IOException, ClassNotFoundException {
-        return read(JsonWriter.getFactory().createJsonParser(in), cl, session);
+        JsonParser jp = jsonFactory.createJsonParser(in);
+        return read(jp, cl, session);
     }
 
     public Object read(JsonParser jp, ClassLoader cl, CoreSession session)
@@ -600,21 +607,21 @@ public class ObjectCodecService {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        ArrayList<Object> list = new ArrayList<Object>();
-        list.add("v1");
-        list.add(2);
-        list.add(new Date());
-        map.put("list", list);
-        map.put("k", "v");
-        map.put("k2", "v");
-        map.put("k1", "v");
-        ObjectCodecService s = new ObjectCodecService();
-        String json = s.toString(map, true);
-        System.out.println(json);
-        System.out.println("================");
-        System.out.println(s.toString(s.read(json, null), true));
-    }
+//    public static void main(String[] args) throws Exception {
+//        Map<String, Object> map = new LinkedHashMap<String, Object>();
+//        ArrayList<Object> list = new ArrayList<Object>();
+//        list.add("v1");
+//        list.add(2);
+//        list.add(new Date());
+//        map.put("list", list);
+//        map.put("k", "v");
+//        map.put("k2", "v");
+//        map.put("k1", "v");
+//        ObjectCodecService s = new ObjectCodecService();
+//        String json = s.toString(map, true);
+//        System.out.println(json);
+//        System.out.println("================");
+//        System.out.println(s.toString(s.read(json, null), true));
+//    }
 
 }

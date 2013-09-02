@@ -24,14 +24,16 @@ import java.util.List;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -54,6 +56,9 @@ import org.nuxeo.runtime.api.Framework;
 @Produces({ "application/json+nxentity", "application/json" })
 public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
 
+    @Context
+    JsonFactory factory;
+
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
@@ -75,7 +80,7 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
             WebApplicationException {
 
         try {
-            writePrincipal(JsonWriter.createGenerator(entityStream), principal);
+            writePrincipal(factory.createJsonGenerator(entityStream, JsonEncoding.UTF8), principal);
         } catch (ClientException e) {
             throw new WebApplicationException(e);
         }

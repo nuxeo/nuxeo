@@ -24,13 +24,15 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
@@ -41,6 +43,9 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @since 5.7.3
  */
 public abstract class EntityListWriter<T> implements MessageBodyWriter<List<T>> {
+
+    @Context
+    JsonFactory factory;
 
     /**
      * Returns the entity-type value of the list (ie: users, groups....)
@@ -99,7 +104,7 @@ public abstract class EntityListWriter<T> implements MessageBodyWriter<List<T>> 
             OutputStream entityStream) throws IOException,
             WebApplicationException {
         try {
-            writeList(JsonWriter.createGenerator(entityStream), list);
+            writeList(factory.createJsonGenerator(entityStream, JsonEncoding.UTF8), list);
         } catch (ClientException e) {
             throw new WebApplicationException(e);
         }

@@ -22,9 +22,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.automation.rest.io.NuxeoGroupWriter;
 import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
+import org.nuxeo.ecm.automation.server.AutomationServerComponent;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
@@ -39,11 +42,13 @@ public class BaseUserTest extends BaseTest {
      * @param group
      * @return
      * @throws IOException
+     * @throws ClientException
+     *
      */
-    protected String getGroupAsJson(NuxeoGroup group) throws IOException {
-        NuxeoGroupWriter npw = new NuxeoGroupWriter();
+    protected String getGroupAsJson(NuxeoGroup group) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
-        npw.writeTo(group, NuxeoGroup.class, null, null, null, null, out);
+        JsonGenerator jg = AutomationServerComponent.me.getFactory().createJsonGenerator(out);
+        NuxeoGroupWriter.writeGroup(jg, group);
         return out.toString();
     }
 
@@ -68,11 +73,13 @@ public class BaseUserTest extends BaseTest {
      * @param user
      * @return
      * @throws IOException
+     * @throws ClientException
+     *
      */
-    protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException {
-        NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
+    protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
-        npw.writeTo(user, NuxeoPrincipal.class, null, null, null, null, out);
+        JsonGenerator jg = AutomationServerComponent.me.getFactory().createJsonGenerator(out);
+        NuxeoPrincipalWriter.writePrincipal(jg, user);
         String userJson = out.toString();
         return userJson;
     }

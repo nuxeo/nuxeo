@@ -33,10 +33,11 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -59,18 +60,25 @@ public class JsonDocumentListWriter implements
     private static final Log log = LogFactory.getLog(JsonDocumentListWriter.class);
 
     @Context
+    JsonFactory factory;
+
+
+    @Context
     protected HttpHeaders headers;
 
+    @Override
     public long getSize(DocumentModelList arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         return -1;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
         return DocumentModelList.class.isAssignableFrom(arg0);
     }
 
+    @Override
     public void writeTo(DocumentModelList docs, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream out)
@@ -88,9 +96,9 @@ public class JsonDocumentListWriter implements
         }
     }
 
-    public static void writeDocuments(OutputStream out, DocumentModelList docs,
+    public void writeDocuments(OutputStream out, DocumentModelList docs,
             String[] schemas) throws Exception {
-        writeDocuments(JsonWriter.createGenerator(out), docs, schemas);
+        writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs, schemas);
     }
 
     public static void writeDocuments(JsonGenerator jg, DocumentModelList docs,

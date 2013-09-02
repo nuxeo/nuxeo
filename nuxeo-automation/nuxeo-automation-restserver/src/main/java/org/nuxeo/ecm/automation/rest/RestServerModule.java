@@ -35,6 +35,7 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAutomationInfoWriter
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonExceptionWriter;
+import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonFactoryProvider;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonLoginInfoWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonOperationWriter;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonRecordSetWriter;
@@ -70,6 +71,7 @@ public class RestServerModule extends WebEngineModule {
         result.add(new NuxeoGroupReader());
         result.add(new NuxeoGroupListWriter());
         result.add(new NuxeoPrincipalListWriter());
+        result.add(new JsonFactoryProvider());
         return result;
     }
 

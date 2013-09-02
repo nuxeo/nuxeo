@@ -59,7 +59,8 @@ public class AutomationServerComponent extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         bindings = new HashMap<String, RestBinding>();
-        codecs = new ObjectCodecService();
+        factory = createFactory();
+        codecs = new ObjectCodecService(getFactory());
         me = this;
     }
 
@@ -111,7 +112,6 @@ public class AutomationServerComponent extends DefaultComponent implements
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
-        factory = createFactory();
         codecs.postInit();
     }
 
@@ -123,14 +123,17 @@ public class AutomationServerComponent extends DefaultComponent implements
         return factory;
     }
 
+    @Override
     public RestBinding getOperationBinding(String name) {
         return lookup().get(name);
     }
 
+    @Override
     public RestBinding getChainBinding(String name) {
         return lookup().get("Chain." + name);
     }
 
+    @Override
     public RestBinding[] getBindings() {
         Map<String, RestBinding> map = lookup();
         return map.values().toArray(new RestBinding[map.size()]);
@@ -141,18 +144,21 @@ public class AutomationServerComponent extends DefaultComponent implements
                 : binding.getName();
     }
 
+    @Override
     public synchronized void addBinding(RestBinding binding) {
         String key = getBindingKey(binding);
         bindings.put(key, binding);
         lookup = null;
     }
 
+    @Override
     public synchronized RestBinding removeBinding(RestBinding binding) {
         RestBinding result = bindings.remove(getBindingKey(binding));
         lookup = null;
         return result;
     }
 
+    @Override
     public boolean accept(String name, boolean isChain, HttpServletRequest req) {
         if (isChain) {
             name = "Chain." + name;

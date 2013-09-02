@@ -23,14 +23,16 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 
 /**
  * @author bstefanescu
@@ -39,6 +41,9 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 @Provider
 @Produces("application/json")
 public class JsonTreeWriter implements MessageBodyWriter<JsonNode> {
+
+    @Context
+    JsonFactory factory;
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
@@ -58,7 +63,7 @@ public class JsonTreeWriter implements MessageBodyWriter<JsonNode> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException,
             WebApplicationException {
-        JsonGenerator jg = JsonWriter.getFactory().createJsonGenerator(entityStream);
+        JsonGenerator jg = factory.createJsonGenerator(entityStream, JsonEncoding.UTF8);
         jg.writeTree(t);
         jg.flush();
     }

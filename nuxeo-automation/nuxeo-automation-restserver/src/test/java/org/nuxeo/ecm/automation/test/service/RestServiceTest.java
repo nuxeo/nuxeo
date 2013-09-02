@@ -16,7 +16,8 @@
  */
 package org.nuxeo.ecm.automation.test.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,13 +30,15 @@ import java.util.List;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.rest.service.HeaderDocEvaluationContext;
 import org.nuxeo.ecm.automation.rest.service.RestContributor;
 import org.nuxeo.ecm.automation.rest.service.RestContributorService;
 import org.nuxeo.ecm.automation.rest.service.RestContributorServiceImpl;
 import org.nuxeo.ecm.automation.rest.service.RestEvaluationContext;
-import org.nuxeo.ecm.automation.rest.service.HeaderDocEvaluationContext;
 import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.automation.test.RestServerInit;
@@ -49,8 +52,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
 /**
@@ -109,7 +110,7 @@ public class RestServiceTest {
         ObjectMapper m = new ObjectMapper();
         JsonNode node = m.readTree(json);
         assertEquals("documents",
-                node.get("children").get("entity-type").asText());
+                node.get("children").get("entity-type").getValueAsText());
 
     }
 

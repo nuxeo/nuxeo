@@ -73,11 +73,11 @@ public class JsonWriter {
         }
     }
 
-    public static JsonFactory getFactory() {
+    private static JsonFactory getFactory() {
         return AutomationServerComponent.me.getFactory();
     }
 
-    public static JsonGenerator createGenerator(OutputStream out)
+    private static JsonGenerator createGenerator(OutputStream out)
             throws IOException {
         return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
     }

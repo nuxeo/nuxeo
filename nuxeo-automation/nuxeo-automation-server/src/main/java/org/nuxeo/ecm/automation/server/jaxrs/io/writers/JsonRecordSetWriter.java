@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -28,14 +29,15 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 
 /**
  * Manage JSON Marshalling for {@link RecordSet} objects
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
@@ -44,6 +46,9 @@ import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
 
     protected static Log log = LogFactory.getLog(JsonRecordSetWriter.class);
+
+    @Context
+    JsonFactory factory;
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
@@ -75,7 +80,7 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
     protected void writeRecords(OutputStream out, RecordSet records)
             throws Exception {
 
-        JsonGenerator jg = JsonWriter.createGenerator(out);
+        JsonGenerator jg = factory.createJsonGenerator(out, JsonEncoding.UTF8);
 
         jg.writeStartObject();
         jg.writeStringField("entity-type", "recordset");

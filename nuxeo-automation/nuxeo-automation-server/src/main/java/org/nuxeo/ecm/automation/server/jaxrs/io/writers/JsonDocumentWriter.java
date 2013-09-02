@@ -31,11 +31,12 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
@@ -61,18 +62,24 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     private static final Log log = LogFactory.getLog(JsonDocumentWriter.class);
 
     @Context
+    JsonFactory factory;
+
+    @Context
     protected HttpHeaders headers;
 
+    @Override
     public long getSize(DocumentModel arg0, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4) {
         return -1L;
     }
 
+    @Override
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
         return DocumentModel.class.isAssignableFrom(arg0);
     }
 
+    @Override
     public void writeTo(DocumentModel doc, Class<?> arg1, Type arg2,
             Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream out)
@@ -94,7 +101,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
     }
 
-    public static void writeDocument(OutputStream out, DocumentModel doc,
+    public void writeDocument(OutputStream out, DocumentModel doc,
             String[] schemas) throws Exception {
         writeDocument(out, doc, schemas, null);
     }
@@ -102,10 +109,10 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     /**
      * @since 5.6
      */
-    public static void writeDocument(OutputStream out, DocumentModel doc,
+    public void writeDocument(OutputStream out, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters)
             throws Exception {
-        writeDocument(JsonWriter.createGenerator(out), doc, schemas,
+        writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc, schemas,
                 contextParameters);
     }
 
