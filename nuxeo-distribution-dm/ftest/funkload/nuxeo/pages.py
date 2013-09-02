@@ -220,53 +220,13 @@ class BasePage:
                    'Wrong page')
 
         jsfState = fl.getLastJsfState()
-        fl.post(fl.server_url + "/view_admin.faces", params=[
-            ['AJAXREQUEST', 'createUserView:createUser:nxl_user:nxw_groups_ajax_region'],
-            ['createUserView:createUser:nxl_user:nxw_username', username],
-            ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
-            ['createUserView:createUser:nxl_user:nxw_lastname', lastname],
-            ['createUserView:createUser:nxl_user:nxw_company', company],
-            ['createUserView:createUser:nxl_user:nxw_email', email],
-            ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
-            ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
-            ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggest', groups],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
-            ['createUserView:createUser', 'createUserView:createUser'],
-            ['autoScroll', ''],
-            ['javax.faces.ViewState', jsfState],
-            ['hideVirtualGroups', 'true'],
-            ['userSuggestionSearchType', 'GROUP_TYPE'],
-            ['userSuggestionMaxSearchResults', '0'],
-            ['ajaxSingle', 'createUserView:createUser:nxl_user:nxw_groups_suggestionBox'],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox', 'createUserView:createUser:nxl_user:nxw_groups_suggestionBox'],
-            ['inputvalue', groups],
-            ['AJAX:EVENTS_COUNT', '1']],
-            description="Create user search group")
+        fl.post(fl.server_url + "/site/automation/UserGroup.Suggestion",
+                Data('application/json+nxrequest; charset=UTF-8',
+                     '{"params":{"prefix":"' + groups + '"},"context":{}}'),
+                description="Search group")
+        fl.assert_(groups in fl.getBody(), "Group not found")
 
-        fl.post(fl.server_url + "/view_admin.faces", params=[
-            ['AJAXREQUEST', 'createUserView:createUser:nxl_user:nxw_groups_ajax_region'],
-            ['createUserView:createUser:nxl_user:nxw_username', username],
-            ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
-            ['createUserView:createUser:nxl_user:nxw_lastname', lastname],
-            ['createUserView:createUser:nxl_user:nxw_company', company],
-            ['createUserView:createUser:nxl_user:nxw_email', email],
-            ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
-            ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
-            ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggest', ''],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox_selection', '0'],
-            ['createUserView:createUser', 'createUserView:createUser'],
-            ['autoScroll', ''],
-            ['javax.faces.ViewState', jsfState],
-            ['hideVirtualGroups', 'true'],
-            ['userSuggestionSearchType', 'GROUP_TYPE'],
-            ['userSuggestionMaxSearchResults', '0'],
-            ['suggestionSelectionListId', 'nxw_groups_list'],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select', 'createUserView:createUser:nxl_user:nxw_groups_suggestionBox:nxw_groups_listRegion_select']],
-            description="Create user select group")
-
-
+        # /tmp/tmp2uCzyC_funkload/watch0001.request
         fl.post(fl.server_url + "/view_admin.faces", params=[
             ['AJAXREQUEST', '_viewRoot'],
             ['createUserView:createUser:nxl_user:nxw_username', username],
@@ -277,14 +237,15 @@ class BasePage:
             ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
             ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
             ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggest', groups],
-            ['createUserView:createUser:nxl_user:nxw_groups_suggestionBox_selection', ''],
+            # ['createUserView:createUser:nxl_user:nxw_groups_select2_init', '[{"parentGroups":[],"grouplabel":"Members group","label":"Members group","description":"Group of users with read access rights","groupname":"members","subGroups":[],"members":[],"id":"members","type":"group","prefixed_id":"group:members"}]'],
+            ['createUserView:createUser:nxl_user:nxw_groups_select2', groups],
+            # ['createUserView:createUser:nxl_user:nxw_groups_select2_params', '{"multiple":"true","translateLabels":"true","template":"/select2/select2_multiple_user_widget_template.xhtml","hideVirtualGroups":"true","userSuggestionSearchType":"GROUP_TYPE","inlinejs":"function userformater(entry) {\\n   var markup = \\"<table><tr>\\";\\n   markup += \\"<td><img src=\'/nuxeo/icons/\\" + entry.type + \\".png\'/></td>\\";\\n   markup += \\"<td style=\'padding:2px\'>\\" + entry.label + \\"</td>\\";\\n   markup += \\"</tr></table>\\";\\n   return markup;\\n  }","minimumInputLength":"3","width":"300","searchType":"group","customFormater":"userformater","operationId":"UserGroup.Suggestion","placeholder":"S\xc3\xa9lectionnez une valeur."}'],
             ['createUserView:createUser', 'createUserView:createUser'],
             ['autoScroll', ''],
             ['javax.faces.ViewState', jsfState],
-            ['createUserView:createUser:button_save_and_create', 'createUserView:createUser:button_save_and_create']],
-                description="Create user submit form")
-
+            ['createUserView:createUser:button_save_and_create', 'createUserView:createUser:button_save_and_create'],
+            ['AJAX:EVENTS_COUNT', '1']],
+            description="Create user")
         fl.assert_('User already exists' in fl.getBody() or 
                    'User created' in fl.getBody())
         return self
@@ -704,50 +665,23 @@ class FolderPage(BasePage):
         fl.assert_('Local rights' in fl.getBody(),
                    'Current page is not a rights tab.')
         server_url = fl.server_url
-        params = [
-            ['AJAXREQUEST', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_ajax_region'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', ''],
-            ['add_rights_form:rights_grant_select', 'Grant'],
-            ['add_rights_form:rights_permission_select', 'Everything'],
-            ['add_rights_form', 'add_rights_form'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['userSuggestionSearchType', ''],
-            ['userSuggestionMaxSearchResults', '0'],
-            ['ajaxSingle', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox'],
-            ['inputvalue', user],
-            ['AJAX:EVENTS_COUNT', '1']]
-        fl.post(server_url + "/view_documents.faces", params,
-                description="Grant perm search user.")
+        state = fl.getLastJsfState()
+        fl.post(server_url + "/site/automation/UserGroup.Suggestion",
+                Data('application/json+nxrequest; charset=UTF-8',
+                     '{"params":{"prefix":"' + user + '"},"context":{}}'),
+                description="Search user")
         fl.assert_(user in fl.getBody(), "User not found")
 
-        state = fl.getLastJsfState()
-        params = [
-            ['AJAXREQUEST', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_ajax_region'],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', user],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', '0'],
+        fl.post(server_url + "/view_documents.faces", params=[
+            ['add_rights_form', 'add_rights_form'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_select2_init', '[{"parentGroups":[],"grouplabel":"Members group","label":"Members group","description":"Group of users with read access rights","groupname":"members","subGroups":[],"members":[],"id":"members","type":"group","prefixed_id":"group:members"}]'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_select2', 'members'],
+            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_select2_params', '{"multiple":"true","translateLabels":"true","template":"/select2/select2_multiple_user_widget_template.xhtml","inlinejs":"function userformater(entry) {\\n   var markup = \\"<table><tr>\\";\\n   markup += \\"<td><img src=\'/nuxeo/icons/\\" + entry.type + \\".png\'/></td>\\";\\n   markup += \\"<td style=\'padding:2px\'>\\" + entry.label + \\"</td>\\";\\n   markup += \\"</tr></table>\\";\\n   return markup;\\n  }","placeholder":"Rechercher des utilisateurs ou des groupes","hideInstructionLabel":"true","minimumInputLength":"3","width":"300","customFormater":"userformater","operationId":"UserGroup.Suggestion"}'],
             ['add_rights_form:rights_grant_select', 'Grant'],
             ['add_rights_form:rights_permission_select', permission],
-            ['add_rights_form', 'add_rights_form'],
-            ['javax.faces.ViewState', state],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select', 'add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox:nxw_selection_listRegion_select'],
-            ['suggestionSelectionListId', 'nxw_selection_list'],
-            ['suggestionInputSelectorId', 'nxw_selection_suggest']]
-        fl.post(server_url + "/view_documents.faces", params,
-                description="Grant perm select user " + user)
-
-        params = [
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggest', ''],
-            ['add_rights_form:nxl_user_group_suggestion:nxw_selection_suggestionBox_selection', ''],
-            ['add_rights_form:rights_grant_select', 'Grant'],
-            ['add_rights_form:rights_permission_select', permission],
-            ['add_rights_form:rights_add_button', 'Add permission'],
-            ['add_rights_form', 'add_rights_form'],
-            ['javax.faces.ViewState', state]]
-        fl.post(server_url + "/view_documents.faces", params,
-                description="Grant perm %s to %s" % (permission, user))
-        fl.assert_('Save local rights' in fl.getBody())
+            ['add_rights_form:rights_add_button', 'Add'],
+            ['javax.faces.ViewState', state]],
+            description="Add permission to user")
 
         params = [
             ['validate_rights:document_rights_validate_button', 'Save local rights'],
