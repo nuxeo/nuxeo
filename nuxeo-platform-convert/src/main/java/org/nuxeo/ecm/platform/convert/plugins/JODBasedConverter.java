@@ -110,9 +110,10 @@ public class JODBasedConverter implements ExternalConverter {
         boolean topdf = "application/pdf".equals(mimeType);
         boolean html2pdf = "text/html".equals(sourceFormat.getMediaType())
                 && topdf;
-        DocumentFormat destinationFormat;
+        DocumentFormat destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(mimeType);
+
         if (topdf) {
-            destinationFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF",
+            DocumentFormat pdfFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF",
                     "pdf", "application/pdf");
             Map<String, Object> storeProperties = new HashMap<String, Object>();
             DocumentFamily sourceFamily = sourceFormat.getInputFamily();
@@ -131,10 +132,10 @@ public class JODBasedConverter implements ExternalConverter {
                 filterData.put("UseTaggedPDF", Boolean.TRUE); // per spec
                 storeProperties.put("FilterData", filterData);
             }
-            destinationFormat.setStoreProperties(sourceFamily, storeProperties);
-        } else {
-            // use default JODConverter registry
-            destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(mimeType);
+            pdfFormat.setStoreProperties(sourceFamily, storeProperties);
+            pdfFormat.setStorePropertiesByFamily(destinationFormat.getStorePropertiesByFamily());
+
+            destinationFormat = pdfFormat;
         }
         return destinationFormat;
     }
