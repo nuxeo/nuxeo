@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Benjamin Jalon
+ */
+
 package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
@@ -11,13 +28,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.computedgroups.AbstractGroupComputer;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Configurable Group Computer based on Metadata of Documents.
- * Documents Selection is managed by NXQL where clause.
+ * Configurable Group Computer based on Metadata of Documents. Documents
+ * Selection is managed by NXQL where clause.
  *
  * @since 5.7.3
  */
@@ -36,8 +52,10 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
         this.whereClause = whereClause;
         this.xpath = xpath;
         this.groupPattern = groupPattern;
-        if (whereClause == null || whereClause.isEmpty() || groupPattern == null || groupPattern.isEmpty()) {
-            throw new ClientException("Bad Contribution Document Metadata Computer Group Configuration");
+        if (whereClause == null || whereClause.isEmpty()
+                || groupPattern == null || groupPattern.isEmpty()) {
+            throw new ClientException(
+                    "Bad Contribution Document Metadata Computer Group Configuration");
         }
     }
 
