@@ -107,6 +107,11 @@
                   </h:commandLink>
                 </h:panelGroup>
               </nxu:methodResult>
+              <nxh:outputLink value="javascript:openFancyBox('${previewActions.getPreviewURL(currentDocument, nxd:propertyPath('files:files', model.rowIndex, 'file'))}'); return false;">
+                <nxh:graphicImage value="/icons/preview.png"
+                  title="#{messages['label.document.preview']}"
+                  alt="#{messages['label.document.preview']}"/>
+              </nxh:outputLink>
               <nxh:outputLink
                 value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
                 <nxh:graphicImage value="/icons/download.png"
