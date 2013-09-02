@@ -117,6 +117,10 @@ public class PreviewActionBean implements Serializable {
         return PreviewHelper.getPreviewURL(doc, fieldXPathValue);
     }
 
+    public String getPreviewURL(DocumentModel doc, String field) {
+        return PreviewHelper.getPreviewURL(doc, protectField(field));
+    }
+
     public String getPreviewWithBlobPostProcessingURL() {
         String url = getPreviewURL();
         url += "?blobPostProcessing=true";
@@ -174,9 +178,13 @@ public class PreviewActionBean implements Serializable {
 
     public String doSetFieldXPath() throws ClientException {
         if (fieldXPath != null) {
-            fieldXPathValue = fieldXPath.replace("/", "-");
+            fieldXPathValue = protectField(fieldXPath);
         }
         return webActions.setCurrentTabAndNavigate(previewTabId);
+    }
+
+    protected String protectField(String field) {
+        return field.replace("/", "-");
     }
 
 }
