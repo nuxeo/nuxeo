@@ -21,7 +21,6 @@ import java.util.Arrays;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
-import org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,6 +31,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -70,7 +70,7 @@ public class RestServerInit implements RepositoryInit {
                     "note_" + i, "Note");
             doc.setPropertyValue("dc:title", "Note " + i);
 
-            doc.getAdapter(BusinessBeanAdapter.class).setNote("Note " + i);
+            doc.setPropertyValue("note:note", "Note " + i);
             doc = session.createDocument(doc);
         }
 
@@ -90,6 +90,14 @@ public class RestServerInit implements RepositoryInit {
 
         UserManager um = Framework.getLocalService(UserManager.class);
         // Create some users
+        if (um != null) {
+            createUsersAndGroups(um);
+        }
+
+    }
+
+    private void createUsersAndGroups(UserManager um) throws ClientException,
+            UserAlreadyExistsException, GroupAlreadyExistsException {
         for (int idx = 0; idx < 4; idx++) {
             String userId = "user" + idx;
 
@@ -124,7 +132,6 @@ public class RestServerInit implements RepositoryInit {
         NuxeoPrincipal principal = um.getPrincipal(POWER_USER_LOGIN);
         principal.setGroups(Arrays.asList(new String[] { "powerusers" }));
         um.updateUser(principal.getModel());
-
     }
 
     private void createGroup(UserManager um, String groupId, String groupLabel)

@@ -1,0 +1,21 @@
+<component name="org.nuxeo.ecm.automation.rest.service.RestContributorService">
+
+  <implementation class="org.nuxeo.ecm.automation.rest.service.RestContributorServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.automation.rest.service.RestContributorService" />
+  </service>
+
+
+  <extension-point name="contributor">
+    <documentation>
+      Used to register filter that are used by the default VersionRemovalPolicy implementation to check asynchronously what versions can really be removed.
+      <code>
+        <contributor name="children" class="org.nuxeo.ecm.automation.rest.test.service.SampleChildrenContributor">
+        </contributor>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.automation.rest.service.ContributorDescriptor"/>
+  </extension-point>
+
+</component>

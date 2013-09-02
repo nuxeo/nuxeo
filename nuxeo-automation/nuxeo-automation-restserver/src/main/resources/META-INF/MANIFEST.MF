@@ -9,4 +9,5 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: nuxeo-automation-restserver
 Nuxeo-WebModule: org.nuxeo.ecm.automation.rest.RestServerModule;name=api;extends=base;package=org/nuxeo/ecm/automation/rest/jaxrs
 Nuxeo-Component: OSGI-INF/pageprovider-contrib.xml,
- OSGI-INF/docviewurl-service-contrib.xml
+ OSGI-INF/docviewurl-service-contrib.xml,
+ OSGI-INF/restcontributor-service.xml
