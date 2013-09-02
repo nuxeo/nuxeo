@@ -10,7 +10,7 @@
 
     <command name="ffmpeg-info" enabled="true">
       <commandLine>ffprobe</commandLine>
-      <parameterString> -i #{inFilePath}</parameterString>
+      <parameterString> #{inFilePath}</parameterString>
       <installationDirective>You need to install ffmpeg from http://ffmpeg.org (apt-get install ffmpeg)
       </installationDirective>
     </command>
