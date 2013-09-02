@@ -192,7 +192,7 @@
     <resource name="moment.js">
       <path>scripts/moment.min-1.5.0nx.js</path>
     </resource>
-    <!-- jquery-ui -->
+    <!-- jquery-ui resources: order plugins according to their dependencies. -->
     <resource name="jquery.ui.core.js">
       <path>scripts/jquery/jquery.ui.core.js</path>
     </resource>
@@ -205,8 +205,8 @@
     <resource name="jquery.ui.sortable.js">
       <path>scripts/jquery/jquery.ui.sortable.js</path>
       <require>jquery.ui.core.js</require>
-      <require>jquery.ui.mouse.js</require>
       <require>jquery.ui.widget.js</require>
+      <require>jquery.ui.mouse.js</require>
     </resource>
   </extension>
 
