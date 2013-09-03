@@ -18,9 +18,7 @@
  */
 package org.nuxeo.ecm.platform.convert.plugins;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -54,8 +52,6 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
-import com.ibm.icu.text.CharsetDetector;
-import com.ibm.icu.text.CharsetMatch;
 import com.sun.star.uno.RuntimeException;
 
 /**
@@ -104,39 +100,58 @@ public class JODBasedConverter implements ExternalConverter {
      * @param sourceFormat the source format
      * @param pdfa1 true if PDF/A-1 is required
      */
-    protected DocumentFormat getDestinationFormat(OfficeDocumentConverter documentConverter, DocumentFormat sourceFormat,
-            boolean pdfa1) {
+    protected DocumentFormat getDestinationFormat(
+            OfficeDocumentConverter documentConverter,
+            DocumentFormat sourceFormat, boolean pdfa1) {
         String mimeType = getDestinationMimeType();
-        boolean topdf = "application/pdf".equals(mimeType);
-        boolean html2pdf = "text/html".equals(sourceFormat.getMediaType())
-                && topdf;
-        DocumentFormat destinationFormat;
-        if (topdf) {
-            destinationFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF",
-                    "pdf", "application/pdf");
-            Map<String, Object> storeProperties = new HashMap<String, Object>();
-            DocumentFamily sourceFamily = sourceFormat.getInputFamily();
-            String filterName;
-            if (html2pdf) {
-                // we have to be strict regarding output FilterName,
-                // use "writer_web_pdf_Export" instead of "writer_pdf_Export"
-                filterName = "writer_web_pdf_Export";
-            } else {
-                filterName = PDF_FILTER_NAMES.get(sourceFamily);
-            }
-            storeProperties.put("FilterName", filterName);
-            if (pdfa1) {
-                Map<String, Object> filterData = new HashMap<String, Object>();
-                filterData.put("SelectPdfVersion", Integer.valueOf(1)); // PDF/A-1
-                filterData.put("UseTaggedPDF", Boolean.TRUE); // per spec
-                storeProperties.put("FilterData", filterData);
-            }
-            destinationFormat.setStoreProperties(sourceFamily, storeProperties);
-        } else {
-            // use default JODConverter registry
-            destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(mimeType);
+        DocumentFormat destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(
+                mimeType);
+        if ("application/pdf".equals(mimeType)) {
+            destinationFormat = extendPDFFormat(sourceFormat,
+                    destinationFormat, pdfa1);
         }
         return destinationFormat;
+    }
+
+    protected DocumentFormat extendPDFFormat(DocumentFormat sourceFormat,
+            DocumentFormat defaultFormat, boolean pdfa1) {
+        DocumentFamily sourceFamily = sourceFormat.getInputFamily();
+        String sourceMediaType = sourceFormat.getMediaType();
+        DocumentFormat pdfFormat = new DocumentFormat(
+                pdfa1 ? "PDF/A-1" : "PDF", "pdf", "application/pdf");
+        Map<DocumentFamily, Map<String, ?>> storePropertiesByFamily = new HashMap<DocumentFamily, Map<String, ?>>();
+        Map<DocumentFamily, Map<String, ?>> defaultStorePropertiesByFamily = defaultFormat.getStorePropertiesByFamily();
+        for (DocumentFamily family : defaultStorePropertiesByFamily.keySet()) {
+            if (family.equals(sourceFamily)) {
+                continue;
+            }
+            storePropertiesByFamily.put(family,
+                    defaultStorePropertiesByFamily.get(family));
+        }
+        storePropertiesByFamily.put(
+                sourceFamily,
+                extendPDFStoreProperties(sourceMediaType, pdfa1,
+                        defaultStorePropertiesByFamily.get(sourceFamily)));
+        pdfFormat.setStorePropertiesByFamily(storePropertiesByFamily);
+        return pdfFormat;
+    }
+
+    protected Map<String, Object> extendPDFStoreProperties(String mediatype,
+            boolean pdfa1, Map<String, ?> originalProperties) {
+        Map<String, Object> extendedProperties = new HashMap<String, Object>();
+        for (Map.Entry<String, ?> entry : originalProperties.entrySet()) {
+            extendedProperties.put(entry.getKey(), entry.getValue());
+        }
+        if ("text/html".equals(mediatype)) {
+            extendedProperties.put("FilterName", "writer_web_pdf_Export");
+        }
+        if (pdfa1) {
+            Map<String, Object> filterData = new HashMap<String, Object>();
+            filterData.put("SelectPdfVersion", Integer.valueOf(1)); // PDF/A-1
+            filterData.put("UseTaggedPDF", Boolean.TRUE); // per spec
+            extendedProperties.put("FilterData", filterData);
+        }
+        return extendedProperties;
     }
 
     /**
@@ -146,10 +161,13 @@ public class JODBasedConverter implements ExternalConverter {
      *
      * @return DocumentFormat for the given file
      */
-    private static DocumentFormat getSourceFormat(OfficeDocumentConverter documentConverter, File file) throws Exception {
+    private static DocumentFormat getSourceFormat(
+            OfficeDocumentConverter documentConverter, File file)
+            throws Exception {
         MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimetypeStr = mimetypeRegistry.getMimetypeFromFile(file);
-        DocumentFormat format = documentConverter.getFormatRegistry().getFormatByMediaType(mimetypeStr);
+        DocumentFormat format = documentConverter.getFormatRegistry().getFormatByMediaType(
+                mimetypeStr);
         return format;
     }
 
@@ -158,8 +176,10 @@ public class JODBasedConverter implements ExternalConverter {
      *
      * @return DocumentFormat for the given mimetype
      */
-    private static DocumentFormat getSourceFormat(OfficeDocumentConverter documentConverter, String mimetype) {
-        return documentConverter.getFormatRegistry().getFormatByMediaType(mimetype);
+    private static DocumentFormat getSourceFormat(
+            OfficeDocumentConverter documentConverter, String mimetype) {
+        return documentConverter.getFormatRegistry().getFormatByMediaType(
+                mimetype);
     }
 
     @Override
@@ -171,9 +191,12 @@ public class JODBasedConverter implements ExternalConverter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
+        blobHolder = new UTF8CharsetConverter().convert(blobHolder, parameters);
         Blob inputBlob;
+        String blobPath;
         try {
             inputBlob = blobHolder.getBlob();
+            blobPath = blobHolder.getFilePath();
         } catch (ClientException e) {
             throw new ConversionException("Error while getting Blob", e);
         }
@@ -187,7 +210,6 @@ public class JODBasedConverter implements ExternalConverter {
 
         boolean pdfa1 = parameters != null
                 && Boolean.TRUE.equals(parameters.get(PDFA1_PARAM));
-
 
         File sourceFile = null;
         File outFile = null;
@@ -228,28 +250,10 @@ public class JODBasedConverter implements ExternalConverter {
                 sourceFormat = getSourceFormat(documentConverter, sourceFile);
             }
 
-            if (sourceFormat.getMediaType().startsWith("text/")) {
-                String encoding = inputBlob.getEncoding();
-                if (encoding == null) {
-                    CharsetDetector charsetDetecor = new CharsetDetector();
-                    charsetDetecor.setText(new BufferedInputStream(new FileInputStream(sourceFile)));
-                    CharsetMatch match = charsetDetecor.detect();
-                    encoding = match.getName();
-                }
-                @SuppressWarnings("rawtypes")
-                Map loadProperties =  sourceFormat.getLoadProperties();
-                if (loadProperties == null) {
-                    loadProperties = new HashMap<String,Object>();
-                }
-                loadProperties.put("FilterName", "Text (encoded)");
-                loadProperties.put("FilterOptions", encoding);
-                sourceFormat.setLoadProperties(loadProperties);
-            }
-
             // From plugin settings because we know the destination
             // mimetype.
-            DocumentFormat destinationFormat = getDestinationFormat(documentConverter,
-                    sourceFormat, pdfa1);
+            DocumentFormat destinationFormat = getDestinationFormat(
+                    documentConverter, sourceFormat, pdfa1);
 
             // allow HTML2PDF filtering
 
@@ -277,7 +281,7 @@ public class JODBasedConverter implements ExternalConverter {
                 log.debug("Input File = " + outFile.getAbsolutePath());
                 // Perform the actual conversion.
                 documentConverter.convert(sourceFile, outFile,
-                        destinationFormat, parameters);
+                        destinationFormat);
 
                 files = myTmpDir.listFiles();
                 for (File file : files) {
@@ -315,12 +319,10 @@ public class JODBasedConverter implements ExternalConverter {
             }
             return new SimpleCachableBlobHolder(blobs);
         } catch (Exception e) {
-            log.error(
-                    String.format(
-                            "An error occurred trying to convert a file to from %s to %s: %s",
-                            sourceMimetype, getDestinationMimeType(),
-                            e.getMessage()), e);
-            throw new ConversionException("Error in JODConverter", e);
+            String msg = String.format(
+                    "An error occurred trying to convert file %s to from %s to %s",
+                    blobPath, sourceMimetype, getDestinationMimeType());
+            throw new ConversionException(msg, e);
         } finally {
             if (sourceFile != null) {
                 sourceFile.delete();

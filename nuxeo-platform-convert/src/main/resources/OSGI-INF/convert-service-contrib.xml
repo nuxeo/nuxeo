@@ -4,6 +4,19 @@
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
     point="converter">
 
+    <converter name="2utf8" class="org.nuxeo.ecm.platform.convert.plugins.UTF8CharsetConverter">
+      <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>text/html</sourceMimeType>
+      <sourceMimeType>text/plain</sourceMimeType>
+      <sourceMimeType>text/csv</sourceMimeType>
+      <sourceMimeType>text/tsv</sourceMimeType>
+      <destinationMimeType>text/xml</destinationMimeType>
+      <destinationMimeType>text/html</destinationMimeType>
+      <destinationMimeType>text/plain</destinationMimeType>
+      <destinationMimeType>text/csv</destinationMimeType>
+      <destinationMimeType>text/tsv</destinationMimeType>
+    </converter>
+    
     <converter name="zip2html" class="org.nuxeo.ecm.platform.convert.plugins.Zip2HtmlConverter">
       <destinationMimeType>text/html</destinationMimeType>
       <sourceMimeType>application/zip</sourceMimeType>
@@ -108,6 +121,7 @@
 
     </converter>
 
+   
    <converter name="any2pdf"
       class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
       <destinationMimeType>application/pdf</destinationMimeType>
@@ -116,6 +130,9 @@
       <sourceMimeType>text/html</sourceMimeType>
       <sourceMimeType>text/plain</sourceMimeType>
       <sourceMimeType>text/rtf</sourceMimeType>
+      <sourceMimeType>text/csv</sourceMimeType>
+      <sourceMimeType>text/tsv</sourceMimeType>
+      
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/msword</sourceMimeType>
@@ -181,12 +198,16 @@
    </converter>
 
 
- <converter name="office2html"
+    <converter name="office2html"
       class="org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter">
       <destinationMimeType>text/html</destinationMimeType>
 
+      <sourceMimeType>text/xml</sourceMimeType>
+      <sourceMimeType>text/html</sourceMimeType>
       <sourceMimeType>text/plain</sourceMimeType>
       <sourceMimeType>text/rtf</sourceMimeType>
+      <sourceMimeType>text/csv</sourceMimeType>
+      <sourceMimeType>text/tsv</sourceMimeType>
 
       <!-- Microsoft office documents -->
       <sourceMimeType>application/msword</sourceMimeType>
@@ -245,9 +266,9 @@
         <parameter name="ooo_host_port">
           ${org.nuxeo.ecm.platform.transform.ooo.host.port}
         </parameter>
-    </parameters>
-   </converter>
-
+     </parameters>
+    </converter>
+    
     <converter name="md2html" class="org.nuxeo.ecm.platform.convert.plugins.Md2HtmlConverter">
       <destinationMimeType>text/html</destinationMimeType>
       <sourceMimeType>text/x-web-markdown</sourceMimeType>
