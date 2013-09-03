@@ -2,6 +2,360 @@
 <component name="org.nuxeo.ecm.platform.ui.select2.widgettype.contrib">
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="width" type="int">
+      <labels>
+        <label mode="any">Width</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Width in pixels of the Select2 ComboBox
+        </label>
+      </helpLabels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+    <widget name="minimumInputLength" type="int">
+      <labels>
+        <label mode="any">Minimum input length</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Minimal number of characters before calling
+          the server
+          to fetch the suggestions
+        </label>
+      </helpLabels>
+      <fields>
+        <field>minimumInputLength</field>
+      </fields>
+    </widget>
+
+    <widget name="query" type="text">
+      <labels>
+        <label mode="any">NXQL Query</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          NXQL Query to fetch the suggestions
+        </label>
+      </helpLabels>
+      <fields>
+        <field>query</field>
+      </fields>
+    </widget>
+
+    <widget name="documentSchemas" type="text">
+      <labels>
+        <label mode="any">Document Schemas</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Document Schemas that should be fetched and
+          sent to the
+          JS client side.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>documentSchemas</field>
+      </fields>
+    </widget>
+
+    <widget name="customFormater" type="text">
+      <labels>
+        <label mode="any">Custom Formater</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the JavaScript function name that
+          will be
+          called by select2 to do the formating of the
+          suggestion entries.
+          The
+          target function should take as input
+          the javascript Document as
+          returned by Automation and should
+          return some Html.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>customFormater</field>
+      </fields>
+    </widget>
+
+    <widget name="idProperty" type="text">
+      <labels>
+        <label mode="any">Id Property</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the Document property that should be
+          used to
+          define the ID of entry.
+          If unset Document.uid will be
+          used, otherwise
+          Document.properties['idProperty'].
+        </label>
+      </helpLabels>
+      <fields>
+        <field>idProperty</field>
+      </fields>
+    </widget>
+
+    <widget name="labelProperty" type="text">
+      <labels>
+        <label mode="any">Label Property</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the Document property that should be
+          used to
+          define the Label of entry.
+          If unset Document.title
+          will be used,
+          otherwise
+          Document.properties['labelProperty'].
+        </label>
+      </helpLabels>
+      <fields>
+        <field>labelProperty</field>
+      </fields>
+    </widget>
+
+    <widget name="inlinejs" type="textarea">
+      <labels>
+        <label mode="any">inline js</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Javascript to be injected in the page with
+          the Widget.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>inlinejs</field>
+      </fields>
+    </widget>
+
+    <widget name="repository" type="text">
+      <labels>
+        <label mode="any">target Repository</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Id of the Nuxeo repositry that should be
+          accessed.
+          If
+          unsed, the default repository will be used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>repository</field>
+      </fields>
+    </widget>
+
+
+    <widget name="operationId" type="text">
+      <labels>
+        <label mode="any">operationId</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          ID of the Automation Operation that will be
+          used to
+          fetch the suggestions.
+          If unsed,
+          Document.PageProvider will be used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>operationId</field>
+      </fields>
+    </widget>
+
+    <widget name="initOperationId" type="text">
+      <labels>
+        <label mode="any">initOperationId</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          ID of the Automation Operation that will be
+          used to
+          fetch the initial Document from the stored value..
+          If unsed, simple uid
+          resolution will be used.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>initOperationId</field>
+      </fields>
+    </widget>
+
+    <widget name="hideInstructionLabel" type="checkbox">
+      <labels>
+        <label mode="any">Hide instructionLabel</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean to hide the instruction label.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideInstructionLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="instructionLabel" type="text">
+      <labels>
+        <label mode="any">Instruction Label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The Instruction label is displayed below the
+          widget.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>instructionLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="placeholder" type="text">
+      <labels>
+        <label mode="any">Placeholder</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The placeholder displayed in the select when
+          no option
+          is chosen yet.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>placeholder</field>
+      </fields>
+    </widget>
+
+    <widget name="directoryName" type="text">
+      <labels>
+        <label mode="any">Directory Name</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the directory
+        </label>
+      </helpLabels>
+      <fields>
+        <field>directory</field>
+      </fields>
+    </widget>
+
+
+    <widget name="sortable" type="checkbox">
+      <labels>
+        <label mode="any">Enable sorting on selected entries</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean enable sorting on selected entries.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>sortable</field>
+      </fields>
+    </widget>
+
+    <widget name="dbl10n" type="checkbox">
+      <labels>
+        <label mode="any">Activate dbl10n</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option means that the labels are
+          localized
+          with translations provided in the directory itself
+          (i.e. in fields).
+          Otherwise labels are translated as usual
+          picking values in
+          messages*.properties files.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>dbl10n</field>
+      </fields>
+    </widget>
+
+    <widget name="canSelectParent" type="checkbox">
+      <labels>
+        <label mode="any">Can select parent</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option to allow selection of
+          intermediate
+          groups.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>canSelectParent</field>
+      </fields>
+    </widget>
+
+    <widget name="filterParent" type="checkbox">
+      <labels>
+        <label mode="any">Filter parent</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option to apply filter on
+          intermediate
+          groups.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>filterParent</field>
+      </fields>
+    </widget>
+
+    <widget name="obsolete" type="checkbox">
+      <labels>
+        <label mode="any">Display obsolete entry</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option if you want obsolete
+          entries to be
+          selectable.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>obsolete</field>
+      </fields>
+    </widget>
+
+    <widget name="searchType" type="text">
+      <labels>
+        <label mode="any">Search type</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Two possible searches, enter 'user' or
+          'group' whether to restrict to users or groups. Leaving
+          this
+          property will search for both users and groups.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>searchType</field>
+      </fields>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
     <widgetType name="select2Widget">
@@ -77,229 +431,6 @@
                   <widget>required</widget>
                 </row>
               </rows>
-
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Width in pixels of the Select2 ComboBox
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
-
-              <widget name="minimumInputLength" type="int">
-                <labels>
-                  <label mode="any">Minimum input length</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Minimal number of characters before calling
-                    the server to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minimumInputLength</field>
-                </fields>
-              </widget>
-
-              <widget name="query" type="text">
-                <labels>
-                  <label mode="any">NXQL Query</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    NXQL Query to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>query</field>
-                </fields>
-              </widget>
-
-              <widget name="documentSchemas" type="text">
-                <labels>
-                  <label mode="any">Document Schemas</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Document Schemas that should be fetched and
-                    sent to the JS client side.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>documentSchemas</field>
-                </fields>
-              </widget>
-
-              <widget name="customFormater" type="text">
-                <labels>
-                  <label mode="any">Custom Formater</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the JavaScript function name that
-                    will be called by select2 to do the formating of the
-                    suggestion entries.
-                    The target function should take as input
-                    the javascript Document as returned by Automation and should
-                    return some Html.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>customFormater</field>
-                </fields>
-              </widget>
-
-              <widget name="idProperty" type="text">
-                <labels>
-                  <label mode="any">Id Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the ID of entry.
-                    If unset Document.uid will be
-                    used, otherwise Document.properties['idProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>idProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="labelProperty" type="text">
-                <labels>
-                  <label mode="any">Label Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the Label of entry.
-                    If unset Document.title
-                    will be used, otherwise
-                    Document.properties['labelProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>labelProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="inlinejs" type="textarea">
-                <labels>
-                  <label mode="any">inline js</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Javascript to be injected in the page with
-                    the Widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>inlinejs</field>
-                </fields>
-              </widget>
-
-              <widget name="repository" type="text">
-                <labels>
-                  <label mode="any">target Repository</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Id of the Nuxeo repositry that should be
-                    accessed.
-                    If unsed, the default repository will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>repository</field>
-                </fields>
-              </widget>
-
-
-              <widget name="operationId" type="text">
-                <labels>
-                  <label mode="any">operationId</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    ID of the Automation Operation that will be
-                    used to fetch the suggestions.
-                    If unsed,
-                    Document.PageProvider will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>operationId</field>
-                </fields>
-              </widget>
-
-              <widget name="initOperationId" type="text">
-                <labels>
-                  <label mode="any">initOperationId</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    ID of the Automation Operation that will be
-                    used to fetch the initial Document from the stored value..
-                    If unsed, simple uid resolution will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>initOperationId</field>
-                </fields>
-              </widget>
-
-              <widget name="hideInstructionLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide instructionLabel</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean to hide the instruction label.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideInstructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="instructionLabel" type="text">
-                <labels>
-                  <label mode="any">Instruction Label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The Instruction label is displayed below the
-                    widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>instructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="placeholder" type="text">
-                <labels>
-                  <label mode="any">Placeholder</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The placeholder displayed in the select when
-                    no option
-                    is chosen yet.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
             </layout>
           </layouts>
         </properties>
@@ -390,243 +521,6 @@
                   <widget>required</widget>
                 </row>
               </rows>
-
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Width in pixels of the Select2 ComboBox
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
-
-              <widget name="minimumInputLength" type="int">
-                <labels>
-                  <label mode="any">Minimum input length</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Minimal number of characters before calling
-                    the server to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minimumInputLength</field>
-                </fields>
-              </widget>
-
-              <widget name="sortable" type="checkbox">
-                <labels>
-                  <label mode="any">Enable sorting on selected entries</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean enable sorting on selected entries.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>sortable</field>
-                </fields>
-              </widget>
-
-              <widget name="query" type="text">
-                <labels>
-                  <label mode="any">NXQL Query</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    NXQL Query to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>query</field>
-                </fields>
-              </widget>
-
-              <widget name="documentSchemas" type="text">
-                <labels>
-                  <label mode="any">Document Schemas</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Document Schemas that should be fetched and
-                    sent to the JS client side.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>documentSchemas</field>
-                </fields>
-              </widget>
-
-              <widget name="customFormater" type="text">
-                <labels>
-                  <label mode="any">Custom Formater</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the JavaScript function name that
-                    will be called by select2 to do the formating of the
-                    suggestion entries.
-                    The target function should take as input
-                    the javascript Document as returned by Automation and should
-                    return some Html.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>customFormater</field>
-                </fields>
-              </widget>
-
-              <widget name="idProperty" type="text">
-                <labels>
-                  <label mode="any">Id Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the ID of entry.
-                    If unset Document.uid will be
-                    used, otherwise Document.properties['idProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>idProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="labelProperty" type="text">
-                <labels>
-                  <label mode="any">Label Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the Label of entry.
-                    If unset Document.title
-                    will be used, otherwise
-                    Document.properties['labelProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>labelProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="inlinejs" type="textarea">
-                <labels>
-                  <label mode="any">inline js</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Javascript to be injected in the page with
-                    the Widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>inlinejs</field>
-                </fields>
-              </widget>
-
-              <widget name="repository" type="text">
-                <labels>
-                  <label mode="any">target Repository</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Id of the Nuxeo repositry that should be
-                    accessed.
-                    If unsed, the default repository will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>repository</field>
-                </fields>
-              </widget>
-
-
-              <widget name="operationId" type="text">
-                <labels>
-                  <label mode="any">operationId</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    ID of the Automation Operation that will be
-                    used to fetch the suggestions.
-                    If unsed,
-                    Document.PageProvider will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>operationId</field>
-                </fields>
-              </widget>
-
-              <widget name="initOperationId" type="text">
-                <labels>
-                  <label mode="any">initOperationId</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    ID of the Automation Operation that will be
-                    used to fetch the initial Document from the stored value..
-                    If unsed, simple uid resolution will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>initOperationId</field>
-                </fields>
-              </widget>
-
-              <widget name="hideInstructionLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide instructionLabel</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean to hide the instruction label.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideInstructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="instructionLabel" type="text">
-                <labels>
-                  <label mode="any">Instruction Label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The Instruction label is displayed below the
-                    widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>instructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="placeholder" type="text">
-                <labels>
-                  <label mode="any">Placeholder</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The placeholder displayed in the select when
-                    no option
-                    is chosen yet.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
             </layout>
           </layouts>
         </properties>
@@ -710,216 +604,6 @@
                   <widget>required</widget>
                 </row>
               </rows>
-
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Width in pixels of the select2 combobox
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
-
-              <widget name="customFormater" type="text">
-                <labels>
-                  <label mode="any">Custom Formater</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the JavaScript function name that
-                    will be called by select2 to do the formating of the
-                    suggestion entries.
-                    The target function should take as input
-                    the javascript Document as returned by Automation and should
-                    return some Html.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>customFormater</field>
-                </fields>
-              </widget>
-
-              <widget name="minimumInputLength" type="int">
-                <labels>
-                  <label mode="any">Minimum input length</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Minimal number of characters before calling
-                    the server to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minimumInputLength</field>
-                </fields>
-              </widget>
-
-              <widget name="directoryName" type="text">
-                <labels>
-                  <label mode="any">Directory Name</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the directory
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>directory</field>
-                </fields>
-              </widget>
-
-              <widget name="labelFieldName" type="text">
-                <labels>
-                  <label mode="any">Label field name</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Directory field that should be
-                    used to define the Label of entry.
-                    If unset 'label'
-                    will be
-                    used. In case of localization with a directory field for
-                    each supported language (see dbl10n option), by default
-                    fields named like 'label_en', 'label_fr' or 'label_de' will
-                    be searched. You can customize looked up fields by specifing
-                    a pattern like
-                    'label_{lang}' where the part {lang} will be
-                    replaced with
-                    the current locale.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>labelProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="inlinejs" type="textarea">
-                <labels>
-                  <label mode="any">inline js</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Javascript to be injected in the page with
-                    the Widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>inlinejs</field>
-                </fields>
-              </widget>
-
-              <widget name="hideInstructionLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide instructionLabel</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean to hide the instruction label.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideInstructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="instructionLabel" type="text">
-                <labels>
-                  <label mode="any">Instruction Label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The Instruction label is displayed below the
-                    widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>instructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="dbl10n" type="checkbox">
-                <labels>
-                  <label mode="any">Activate dbl10n</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option means that the labels are
-                    localized with translations provided in the directory itself
-                    (i.e. in fields). Otherwise labels are translated as usual
-                    picking values in messages*.properties files.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>dbl10n</field>
-                </fields>
-              </widget>
-
-              <widget name="placeholder" type="text">
-                <labels>
-                  <label mode="any">Placeholder</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The placeholder displayed in the select when
-                    no option
-                    is chosen yet.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
-              <widget name="canSelectParent" type="checkbox">
-                <labels>
-                  <label mode="any">Can select parent</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option to allow selection of
-                    intermediate groups.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>canSelectParent</field>
-                </fields>
-              </widget>
-
-              <widget name="filterParent" type="checkbox">
-                <labels>
-                  <label mode="any">Filter parent</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option to apply filter on
-                    intermediate groups.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>filterParent</field>
-                </fields>
-              </widget>
-
-              <widget name="obsolete" type="checkbox">
-                <labels>
-                  <label mode="any">Display obsolete entry</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option if you want obsolete
-                    entries to be selectable.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>obsolete</field>
-                </fields>
-              </widget>
-
             </layout>
           </layouts>
         </properties>
@@ -1302,182 +986,6 @@
                   <widget>required</widget>
                 </row>
               </rows>
-
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Width in pixels of the Select2 ComboBox
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
-
-              <widget name="minimumInputLength" type="int">
-                <labels>
-                  <label mode="any">Minimum input length</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Minimal number of characters before calling
-                    the server to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minimumInputLength</field>
-                </fields>
-              </widget>
-
-              <widget name="customFormater" type="text">
-                <labels>
-                  <label mode="any">Custom Formater</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the JavaScript function name that
-                    will be called by select2 to do the formating of the
-                    suggestion entries.
-                    The target function should take as input
-                    the javascript Document as returned by Automation and should
-                    return some Html.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>customFormater</field>
-                </fields>
-              </widget>
-
-              <widget name="idProperty" type="text">
-                <labels>
-                  <label mode="any">Id Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the ID of entry.
-                    If unset Document.uid will be
-                    used, otherwise Document.properties['idProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>idProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="labelProperty" type="text">
-                <labels>
-                  <label mode="any">Label Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the Label of entry.
-                    If unset Document.title
-                    will be used, otherwise
-                    Document.properties['labelProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>labelProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="inlinejs" type="textarea">
-                <labels>
-                  <label mode="any">inline js</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Javascript to be injected in the page with
-                    the Widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>inlinejs</field>
-                </fields>
-              </widget>
-
-              <widget name="repository" type="text">
-                <labels>
-                  <label mode="any">target Repository</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Id of the Nuxeo repositry that should be
-                    accessed.
-                    If unsed, the default repository will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>repository</field>
-                </fields>
-              </widget>
-
-              <widget name="hideInstructionLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide instructionLabel</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean to hide the instruction label.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideInstructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="instructionLabel" type="text">
-                <labels>
-                  <label mode="any">Instruction Label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The Instruction label is displayed below the
-                    widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>instructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="placeholder" type="text">
-                <labels>
-                  <label mode="any">Placeholder</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The placeholder displayed in the select when
-                    no option
-                    is chosen yet.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
-               <widget name="searchType" type="text">
-                <labels>
-                  <label mode="any">Search type</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Two possible searches, enter 'user' or
-                    'group' whether to restrict to users or groups. Leaving
-                    this property will search for both users and groups.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
             </layout>
           </layouts>
         </properties>
@@ -1554,196 +1062,6 @@
                   <widget>required</widget>
                 </row>
               </rows>
-
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Width in pixels of the Select2 ComboBox
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
-
-              <widget name="minimumInputLength" type="int">
-                <labels>
-                  <label mode="any">Minimum input length</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Minimal number of characters before calling
-                    the server to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minimumInputLength</field>
-                </fields>
-              </widget>
-
-              <widget name="sortable" type="checkbox">
-                <labels>
-                  <label mode="any">Enable sorting on selected entries</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean enable sorting on selected entries.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>sortable</field>
-                </fields>
-              </widget>
-
-              <widget name="customFormater" type="text">
-                <labels>
-                  <label mode="any">Custom Formater</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the JavaScript function name that
-                    will be called by select2 to do the formating of the
-                    suggestion entries.
-                    The target function should take as input
-                    the javascript Document as returned by Automation and should
-                    return some Html.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>customFormater</field>
-                </fields>
-              </widget>
-
-              <widget name="idProperty" type="text">
-                <labels>
-                  <label mode="any">Id Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the ID of entry.
-                    If unset Document.uid will be
-                    used, otherwise Document.properties['idProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>idProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="labelProperty" type="text">
-                <labels>
-                  <label mode="any">Label Property</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Document property that should be
-                    used to define the Label of entry.
-                    If unset Document.title
-                    will be used, otherwise
-                    Document.properties['labelProperty'].
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>labelProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="inlinejs" type="textarea">
-                <labels>
-                  <label mode="any">inline js</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Javascript to be injected in the page with
-                    the Widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>inlinejs</field>
-                </fields>
-              </widget>
-
-              <widget name="repository" type="text">
-                <labels>
-                  <label mode="any">target Repository</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Id of the Nuxeo repositry that should be
-                    accessed.
-                    If unsed, the default repository will be used.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>repository</field>
-                </fields>
-              </widget>
-
-              <widget name="hideInstructionLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide instructionLabel</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean to hide the instruction label.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideInstructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="instructionLabel" type="text">
-                <labels>
-                  <label mode="any">Instruction Label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The Instruction label is displayed below the
-                    widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>instructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="placeholder" type="text">
-                <labels>
-                  <label mode="any">Placeholder</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The placeholder displayed in the select when
-                    no option
-                    is chosen yet.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
-              <widget name="searchType" type="text">
-                <labels>
-                  <label mode="any">Search type</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Two possible searches, enter 'user' or
-                    'group' whether to restrict to users or groups. Leaving
-                    this property will search for both users and groups.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
             </layout>
           </layouts>
         </properties>
