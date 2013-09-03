@@ -25,7 +25,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-server</artifactId>
+      <artifactId>nuxeo-automation-io</artifactId>
     </dependency>
 
 
