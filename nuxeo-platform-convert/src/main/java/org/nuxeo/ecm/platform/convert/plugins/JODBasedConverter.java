@@ -107,36 +107,45 @@ public class JODBasedConverter implements ExternalConverter {
     protected DocumentFormat getDestinationFormat(OfficeDocumentConverter documentConverter, DocumentFormat sourceFormat,
             boolean pdfa1) {
         String mimeType = getDestinationMimeType();
-        boolean topdf = "application/pdf".equals(mimeType);
-        boolean html2pdf = "text/html".equals(sourceFormat.getMediaType())
-                && topdf;
-        DocumentFormat destinationFormat;
-        if (topdf) {
-            destinationFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF",
-                    "pdf", "application/pdf");
-            Map<String, Object> storeProperties = new HashMap<String, Object>();
-            DocumentFamily sourceFamily = sourceFormat.getInputFamily();
-            String filterName;
-            if (html2pdf) {
-                // we have to be strict regarding output FilterName,
-                // use "writer_web_pdf_Export" instead of "writer_pdf_Export"
-                filterName = "writer_web_pdf_Export";
-            } else {
-                filterName = PDF_FILTER_NAMES.get(sourceFamily);
-            }
-            storeProperties.put("FilterName", filterName);
-            if (pdfa1) {
-                Map<String, Object> filterData = new HashMap<String, Object>();
-                filterData.put("SelectPdfVersion", Integer.valueOf(1)); // PDF/A-1
-                filterData.put("UseTaggedPDF", Boolean.TRUE); // per spec
-                storeProperties.put("FilterData", filterData);
-            }
-            destinationFormat.setStoreProperties(sourceFamily, storeProperties);
-        } else {
-            // use default JODConverter registry
-            destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(mimeType);
+        DocumentFormat destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(mimeType);
+        if ("application/pdf".equals(mimeType)) {
+            destinationFormat = newPDFFormat(sourceFormat, destinationFormat, pdfa1);
         }
         return destinationFormat;
+    }
+
+    protected DocumentFormat newPDFFormat(DocumentFormat sourceFormat, DocumentFormat defaultFormat, boolean pdfa1) {
+        boolean html2pdf = "text/html".equals(sourceFormat.getMediaType());
+        DocumentFamily sourceFamily =sourceFormat.getInputFamily();
+        DocumentFormat pdfFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF",
+                "pdf", "application/pdf");
+        Map<DocumentFamily, Map<String,?>> storePropertiesByFamily = new HashMap<DocumentFamily,Map<String,?>>();
+        pdfFormat.setStorePropertiesByFamily(storePropertiesByFamily);
+        Map<DocumentFamily, Map<String,?>> defaultStorePropertiesByFamily = defaultFormat.getStorePropertiesByFamily();
+        for (DocumentFamily family:defaultStorePropertiesByFamily.keySet()) {
+            if (family.equals(sourceFamily)) {
+                continue;
+            }
+            storePropertiesByFamily.put(family, defaultStorePropertiesByFamily.get(family));
+        }
+        Map<String, Object> storeProperties = new HashMap<String, Object>();
+        String filterName;
+        if (html2pdf) {
+            // we have to be strict regarding output FilterName,
+            // use "writer_web_pdf_Export" instead of "writer_pdf_Export"
+            filterName = "writer_web_pdf_Export";
+        } else {
+            filterName = PDF_FILTER_NAMES.get(sourceFamily);
+        }
+        storeProperties.put("FilterName", filterName);
+        if (pdfa1) {
+            Map<String, Object> filterData = new HashMap<String, Object>();
+            filterData.put("SelectPdfVersion", Integer.valueOf(1)); // PDF/A-1
+            filterData.put("UseTaggedPDF", Boolean.TRUE); // per spec
+            storeProperties.put("FilterData", filterData);
+        }
+        storePropertiesByFamily.put(sourceFamily, storeProperties);
+        return  pdfFormat;
     }
 
     /**
