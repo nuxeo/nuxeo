@@ -11,7 +11,7 @@ import javax.ws.rs.PathParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,9 +33,9 @@ import fr.opensagres.xdocreport.remoting.resources.services.ResourcesException;
 import fr.opensagres.xdocreport.remoting.resources.services.jaxrs.JAXRSResourcesService;
 
 /**
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 public class XDocReportResourceService extends AbstractResourceService
         implements JAXRSResourcesService {
@@ -50,10 +50,12 @@ public class XDocReportResourceService extends AbstractResourceService
         return null;
     }
 
+    @Override
     public String getName() {
         return "Nuxeo-Repository";
     }
 
+    @Override
     public Resource getRoot() {
         Resource root = new NonRecursiveResource();
         root.setType(ResourceType.CATEGORY);
@@ -81,7 +83,7 @@ public class XDocReportResourceService extends AbstractResourceService
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        JsonGenerator gen = JsonWriter.createGenerator(out);
+        JsonGenerator gen = JsonHelper.createJsonGenerator(out);
         gen.writeObject(names);
 
         return out.toString();
