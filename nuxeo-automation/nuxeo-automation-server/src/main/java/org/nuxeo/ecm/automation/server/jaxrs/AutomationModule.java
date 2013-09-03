@@ -16,21 +16,21 @@ import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonRequestReader;
-import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartFormRequestReader;
-import org.nuxeo.ecm.automation.server.jaxrs.io.MultiPartRequestReader;
-import org.nuxeo.ecm.automation.server.jaxrs.io.UrlEncodedFormRequestReader;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.BlobsWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAdapterWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonAutomationInfoWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentListWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonExceptionWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonFactoryProvider;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonLoginInfoWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonOperationWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonRecordSetWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonTreeWriter;
+import org.nuxeo.ecm.automation.jaxrs.JsonFactoryProvider;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonAdapterWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonExceptionWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonLoginInfoWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonRecordSetWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonTreeWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.BlobsWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.JsonAutomationInfoWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.JsonOperationWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.JsonRequestReader;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartFormRequestReader;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartRequestReader;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.UrlEncodedFormRequestReader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

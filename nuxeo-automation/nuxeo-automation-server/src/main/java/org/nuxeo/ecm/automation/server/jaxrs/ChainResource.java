@@ -15,6 +15,7 @@ import javax.ws.rs.GET;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

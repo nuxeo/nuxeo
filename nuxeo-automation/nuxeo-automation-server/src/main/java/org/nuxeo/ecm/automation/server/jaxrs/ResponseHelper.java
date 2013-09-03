@@ -25,7 +25,9 @@ import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
-import org.nuxeo.ecm.automation.server.jaxrs.io.MultipartBlobs;
+import org.nuxeo.ecm.automation.jaxrs.DefaultJsonAdapter;
+import org.nuxeo.ecm.automation.jaxrs.JsonAdapter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.MultipartBlobs;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

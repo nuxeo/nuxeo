@@ -27,7 +27,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;

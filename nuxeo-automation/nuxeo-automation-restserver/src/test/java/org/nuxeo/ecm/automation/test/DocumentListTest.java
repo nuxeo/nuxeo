@@ -52,7 +52,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
-@LocalDeploy("nuxeo-automation-restserver:pageprovider-test-contrib.xml")
+@LocalDeploy("org.nuxeo.ecm.automation.restserver:pageprovider-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentListTest extends BaseTest {
 

@@ -16,20 +16,6 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs.adapters;
 
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationType;
-import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
-import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
-import org.nuxeo.ecm.automation.server.AutomationServer;
-import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
-import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.WebAdapter;
-import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
-import org.nuxeo.runtime.api.Framework;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,6 +24,20 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
+import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
+import org.nuxeo.ecm.automation.server.AutomationServer;
+import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.2 - Web adapter that expose how to run an operation on a document

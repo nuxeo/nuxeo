@@ -17,6 +17,8 @@ import javax.ws.rs.core.Context;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

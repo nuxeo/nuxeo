@@ -25,9 +25,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
-import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodec;
-import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodecService;
-import org.nuxeo.ecm.automation.server.jaxrs.DefaultJsonAdapter;
+import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
+import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
+import org.nuxeo.ecm.automation.jaxrs.DefaultJsonAdapter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.rest.DocumentObject;

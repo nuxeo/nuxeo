@@ -20,7 +20,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.JsonFactory;
-import org.nuxeo.ecm.automation.jaxrs.JsonFactoryManager;
+import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
