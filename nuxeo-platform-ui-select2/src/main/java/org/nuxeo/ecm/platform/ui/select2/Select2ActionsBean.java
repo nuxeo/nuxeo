@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
@@ -41,6 +42,7 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.FacesLifecycle;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -445,13 +447,16 @@ public class Select2ActionsBean implements Serializable {
     public boolean mustIncludeResources() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null && facesContext.getRenderResponse()) {
-            HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+            PhaseId currentPhaseId = FacesLifecycle.getPhaseId();
+            if (currentPhaseId.equals(PhaseId.RENDER_RESPONSE)) {
+                HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 
-            if (request.getAttribute(SELECT2_RESOURCES_MARKER) != null) {
-                return false;
-            } else {
-                request.setAttribute(SELECT2_RESOURCES_MARKER, "done");
-                return true;
+                if (request.getAttribute(SELECT2_RESOURCES_MARKER) != null) {
+                    return false;
+                } else {
+                    request.setAttribute(SELECT2_RESOURCES_MARKER, "done");
+                    return true;
+                }
             }
         }
         return false;
