@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.io;
+package org.nuxeo.ecm.automation.jaxrs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,10 +40,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -58,10 +57,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach
@@ -81,6 +77,9 @@ public class JSONDocumentModelReader implements
 
     @Context
     HttpServletRequest request;
+
+    @Context
+    JsonFactory factory;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
@@ -131,10 +130,10 @@ public class JSONDocumentModelReader implements
      *
      * @since 5.7.2
      */
-    static protected DocumentModel readRequest(String content,
+    protected DocumentModel readRequest(String content,
             MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws Exception {
-        JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(
+        JsonParser jp = factory.createJsonParser(
                 content);
         return readJson(jp, httpHeaders, request);
     }
@@ -145,9 +144,8 @@ public class JSONDocumentModelReader implements
      * @param request2
      * @return
      *
-     * @since TODO
      */
-    static DocumentModel readJson(JsonParser jp,
+    public static DocumentModel readJson(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws Exception {
         JsonToken tok = jp.nextToken();
@@ -271,23 +269,25 @@ public class JSONDocumentModelReader implements
         }
     }
 
+
     private static Blob getRequestBlob(HttpServletRequest request) {
-        String batchId = request.getHeader("X-Batch-Id");
-        if (StringUtils.isNotBlank(batchId)) {
-            final BatchManager bm = Framework.getLocalService(BatchManager.class);
-
-            request.setAttribute(REQUEST_BATCH_ID, batchId);
-            RequestContext.getActiveContext(request).addRequestCleanupHandler(
-                    new RequestCleanupHandler() {
-                        @Override
-                        public void cleanup(HttpServletRequest req) {
-                            String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
-                            bm.clean(bid);
-                        }
-
-                    });
-            return bm.getBlob(batchId, "0");
-        }
+        //FIXME: make it work back
+//        String batchId = request.getHeader("X-Batch-Id");
+//        if (StringUtils.isNotBlank(batchId)) {
+//            final BatchManager bm = Framework.getLocalService(BatchManager.class);
+//
+//            request.setAttribute(REQUEST_BATCH_ID, batchId);
+//            RequestContext.getActiveContext(request).addRequestCleanupHandler(
+//                    new RequestCleanupHandler() {
+//                        @Override
+//                        public void cleanup(HttpServletRequest req) {
+//                            String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
+//                            bm.clean(bid);
+//                        }
+//
+//                    });
+//            return bm.getBlob(batchId, "0");
+//        }
         return null;
 
     }

@@ -16,7 +16,7 @@
  *     vpasquier
  *     slacoin
  */
-package org.nuxeo.ecm.automation.server.jaxrs.io;
+package org.nuxeo.ecm.automation.jaxrs.codec;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

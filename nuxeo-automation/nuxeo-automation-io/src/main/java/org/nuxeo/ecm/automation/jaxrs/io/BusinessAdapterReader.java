@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.io;
+package org.nuxeo.ecm.automation.jaxrs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,13 +32,15 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
-import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
+import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodecService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JAX-RS Message body reeader to decode BusinessAdapter
@@ -52,6 +54,9 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
 
     @Context
     protected HttpServletRequest request;
+
+    @Context
+    JsonFactory factory;
 
     private CoreSession getCoreSession() {
         return SessionFactory.getSession(request);
@@ -95,9 +100,9 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
     }
 
     public BusinessAdapter readRequest0(String content, MultivaluedMap<String, String> headers) throws Exception {
-        ObjectCodecService codecService = AutomationServerComponent.me.getCodecs();
+        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
 
-        JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(content);
+        JsonParser jp = factory.createJsonParser(content);
         JsonNode inputNode = jp.readValueAsTree();
 
         return  (BusinessAdapter) codecService.readNode(inputNode, getCoreSession());

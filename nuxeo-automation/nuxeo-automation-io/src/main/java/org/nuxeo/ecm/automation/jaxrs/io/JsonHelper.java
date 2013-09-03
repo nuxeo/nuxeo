@@ -14,35 +14,33 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.io;
+package org.nuxeo.ecm.automation.jaxrs.io;
 
 import java.io.IOException;
-
-import javax.ws.rs.Produces;
-import javax.ws.rs.ext.Provider;
-
+import java.io.OutputStream;
+import org.codehaus.jackson.JsonEncoding;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
 
 /**
  *
  *
  * @since 5.7.3
  */
-@Provider
-@Produces({ "application/json+nxentity", "application/json" })
-public class NuxeoGroupListWriter extends EntityListWriter<NuxeoGroup> {
+public final class JsonHelper {
 
-    @Override
-    protected String getEntityType() {
-        return "groups";
-    }
-
-    @Override
-    protected void writeItem(JsonGenerator jg, NuxeoGroup item)
-            throws ClientException, IOException {
-        NuxeoGroupWriter.writeGroup(jg, item);
+    /**
+     * Helper method to centralize the JsonEncoding to use
+     *
+     * @param jsonFactory
+     * @param out
+     * @return
+     * @throws IOException
+     *
+     */
+    public static JsonGenerator createJsonGenerator(JsonFactory jsonFactory,
+            OutputStream out) throws IOException {
+        return jsonFactory.createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
 }

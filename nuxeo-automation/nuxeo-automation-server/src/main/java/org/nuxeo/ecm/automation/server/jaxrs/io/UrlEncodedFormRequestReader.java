@@ -23,9 +23,12 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,6 +49,9 @@ public class UrlEncodedFormRequestReader implements
 
     @Context
     protected HttpServletRequest request;
+
+    @Context
+    JsonFactory factory;
 
     public CoreSession getCoreSession() {
         return SessionFactory.getSession(request);
@@ -83,9 +89,14 @@ public class UrlEncodedFormRequestReader implements
         if (jsonString == null) {
             return null;
         }
-
-        return JsonRequestReader.readRequest(jsonString, httpHeaders,
-                getCoreSession());
+        JsonParser jp = factory.createJsonParser(jsonString);
+        try {
+            return JsonRequestReader.readRequest(jp, httpHeaders,
+                    getCoreSession());
+        } catch (Exception e) {
+            throw new WebApplicationException(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        }
     }
 
 }

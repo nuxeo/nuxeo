@@ -22,19 +22,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
-import org.nuxeo.ecm.automation.rest.io.NuxeoGroupWriter;
-import org.nuxeo.ecm.automation.rest.io.NuxeoPrincipalWriter;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.automation.jaxrs.io.NuxeoGroupWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.NuxeoPrincipalWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+
+import com.google.inject.Inject;
 
 /**
  * @since 5.7.3
  */
 public class BaseUserTest extends BaseTest {
+
+    @Inject
+    JsonFactory factory;
 
     /**
      * Returns the json representation of a group
@@ -47,7 +53,7 @@ public class BaseUserTest extends BaseTest {
      */
     protected String getGroupAsJson(NuxeoGroup group) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = AutomationServerComponent.me.getFactory().createJsonGenerator(out);
+        JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
         NuxeoGroupWriter.writeGroup(jg, group);
         return out.toString();
     }
@@ -78,7 +84,7 @@ public class BaseUserTest extends BaseTest {
      */
     protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = AutomationServerComponent.me.getFactory().createJsonGenerator(out);
+        JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
         NuxeoPrincipalWriter.writePrincipal(jg, user);
         String userJson = out.toString();
         return userJson;

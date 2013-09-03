@@ -10,7 +10,7 @@
     </binding>
   </extension>
 
-  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+  <extension target="org.nuxeo.ecm.automation.jaxrs.codec.IOComponent"
         point="codecs">
         <codec class="org.nuxeo.ecm.automation.server.test.MyObjectCodec" />
   </extension>

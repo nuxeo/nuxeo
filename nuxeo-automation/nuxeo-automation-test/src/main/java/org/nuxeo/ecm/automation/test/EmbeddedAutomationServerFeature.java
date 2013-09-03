@@ -35,7 +35,7 @@ import com.google.inject.Scopes;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @Deploy({ "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
+    "nuxeo-automation-io","org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.query.api" })
 @Features({WebEngineFeature.class})
 public class EmbeddedAutomationServerFeature extends SimpleFeature  {

@@ -22,7 +22,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonFactory;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
+import org.nuxeo.ecm.automation.jaxrs.JsonFactoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -43,7 +44,7 @@ public class JsonFactoryProvider implements
 
     @Override
     public JsonFactory getValue() {
-        return AutomationServerComponent.me.getFactory();
+        return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
     }
 
     @Override

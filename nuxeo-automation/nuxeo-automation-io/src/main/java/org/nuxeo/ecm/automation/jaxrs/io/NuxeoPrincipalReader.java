@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.io;
+package org.nuxeo.ecm.automation.jaxrs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -35,10 +36,10 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -58,6 +59,9 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
 
     protected static final Log log = LogFactory.getLog(NuxeoPrincipalReader.class);
+
+    @Context
+    JsonFactory factory;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
@@ -91,7 +95,7 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
     private NuxeoPrincipal readRequest(String content,
             MultivaluedMap<String, String> httpHeaders) {
         try {
-            JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(
+            JsonParser jp = factory.createJsonParser(
                     content);
             return readJson(jp, httpHeaders);
         } catch (ClientException | IOException e) {

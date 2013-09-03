@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.io;
+package org.nuxeo.ecm.automation.jaxrs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,9 +30,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -48,6 +48,9 @@ public class JSONDocumentModelListReader implements
 
     @Context
     private HttpServletRequest request;
+
+    @Context
+    JsonFactory factory;
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
@@ -84,13 +87,27 @@ public class JSONDocumentModelListReader implements
      * @throws Exception
      * @since 5.7.3
      */
-    public static DocumentModelList readRequest(String content,
+    public DocumentModelList readRequest(String content,
             MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws Exception {
 
+        JsonParser jp = factory.createJsonParser(content);
+        return readRequest(jp, httpHeaders, request);
+
+    }
+
+    /**
+     * @param jp
+     * @param httpHeaders
+     * @param request2
+     * @return
+     * @throws Exception
+     * @since TODO
+     */
+    public static DocumentModelList readRequest(JsonParser jp,
+            MultivaluedMap<String, String> httpHeaders,
+            HttpServletRequest request) throws Exception {
         DocumentModelList result = null;
-        JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(
-                content);
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {

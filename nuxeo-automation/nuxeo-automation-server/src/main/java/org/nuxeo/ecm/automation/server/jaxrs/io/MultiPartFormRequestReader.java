@@ -31,6 +31,8 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
@@ -54,6 +56,9 @@ public class MultiPartFormRequestReader implements
 
     @Context
     protected HttpServletRequest request;
+
+    @Context
+    JsonFactory factory;
 
 
     public CoreSession getCoreSession() {
@@ -90,7 +95,8 @@ public class MultiPartFormRequestReader implements
                         in, ctype));
                 BodyPart part = mp.getBodyPart(0); // use content ids
                 InputStream pin = part.getInputStream();
-                req = JsonRequestReader.readRequest(pin, headers, getCoreSession());
+                JsonParser jp = factory.createJsonParser(pin);
+                req = JsonRequestReader.readRequest(jp, headers, getCoreSession());
                 int cnt = mp.getCount();
                 if (cnt == 2) { // a blob
                     req.setInput(readBlob(request, mp.getBodyPart(1)));

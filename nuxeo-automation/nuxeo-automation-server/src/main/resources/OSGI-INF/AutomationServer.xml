@@ -8,7 +8,6 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.automation.server.AutomationServer" />
-    <provide interface="org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService" />
   </service>
 
   <extension-point name="bindings">
@@ -16,9 +15,6 @@
     <object class="org.nuxeo.ecm.automation.server.RestBinding" />
   </extension-point>
 
-  <extension-point name="codecs">
-    <documentation>JSON codecs for adapting marshalling objects</documentation>
-    <object class="org.nuxeo.ecm.automation.server.jaxrs.io.CodecDescriptor" />
-  </extension-point>
+
 
 </component>

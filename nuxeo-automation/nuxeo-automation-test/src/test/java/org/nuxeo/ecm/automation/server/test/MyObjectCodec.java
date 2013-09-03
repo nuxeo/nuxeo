@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodec;
+import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodec;
 
 
 /**

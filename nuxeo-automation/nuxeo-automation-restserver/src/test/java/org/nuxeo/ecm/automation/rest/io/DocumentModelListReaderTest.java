@@ -21,11 +21,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.jaxrs.JsonFactoryManager;
+import org.nuxeo.ecm.automation.jaxrs.io.JSONDocumentModelListReader;
+import org.nuxeo.ecm.automation.jaxrs.io.JSONDocumentModelReader;
 import org.nuxeo.ecm.automation.test.RestServerFeature;
 import org.nuxeo.ecm.automation.test.RestServerInit;
 import org.nuxeo.ecm.automation.test.helpers.JSONDocumentHelper;
@@ -52,6 +59,9 @@ public class DocumentModelListReaderTest {
     @Inject
     CoreSession session;
 
+    @Inject
+    JsonFactoryManager factoryManager;
+
     @Before
     public void doBefore() {
         when(request.getUserPrincipal()).thenReturn(session.getPrincipal());
@@ -63,8 +73,10 @@ public class DocumentModelListReaderTest {
 
         String json = JSONDocumentHelper.getDocAsJson(note1);
 
-        DocumentModel doc = JSONDocumentModelReader.readRequest(json, null,
-                request);
+
+        JsonParser jp = getParserFor(json);
+        DocumentModel doc = JSONDocumentModelReader.readJson(jp, null, request);
+
         assertNotNull(doc);
         assertEquals(note1.getId(), doc.getId());
 
@@ -77,13 +89,21 @@ public class DocumentModelListReaderTest {
 
         String docsAsJson = JSONDocumentHelper.getDocsListAsJson(note1, note2);
 
+
+        JsonParser jp = getParserFor(docsAsJson);
+
         DocumentModelList docs = JSONDocumentModelListReader.readRequest(
-                docsAsJson, null, request);
+               jp, null, request);
         assertEquals(2, docs.size());
 
         assertEquals(RestServerInit.getNote(1, session).getId(),
                 docs.get(0).getId());
 
+    }
+
+    private JsonParser getParserFor(String docsAsJson) throws IOException,
+            JsonParseException {
+        return factoryManager.getJsonFactory().createJsonParser(docsAsJson);
     }
 
 }

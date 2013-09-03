@@ -6,18 +6,14 @@
     <version>5.7.3-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-automation-server</artifactId>
-  <name>Nuxeo Automation Server</name>
-  <description>Automation Server provides end points for jax-rs and web service access to automation framework.</description>
+  <artifactId>nuxeo-automation-io</artifactId>
+  <name>Nuxeo Automation IO</name>
+  <description>Automation IO provides Message body reader/writer for JAX-RS marshalling.</description>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-io</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

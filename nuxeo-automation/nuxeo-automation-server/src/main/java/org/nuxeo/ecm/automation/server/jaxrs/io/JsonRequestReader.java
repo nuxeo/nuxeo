@@ -28,10 +28,11 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
+import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentInputResolver;
 import org.nuxeo.ecm.automation.server.jaxrs.io.resolvers.DocumentsInputResolver;
@@ -49,6 +50,9 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     @Context
     private HttpServletRequest request;
+
+    @Context
+    JsonFactory factory;
 
     public CoreSession getCoreSession() {
         return SessionFactory.getSession(request);
@@ -98,9 +102,9 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return readRequest(in, headers, getCoreSession());
     }
 
-    public static ExecutionRequest readRequest(InputStream in,
-            MultivaluedMap<String, String> headers, CoreSession session) throws IOException,
-            WebApplicationException {
+    public ExecutionRequest readRequest(InputStream in,
+            MultivaluedMap<String, String> headers, CoreSession session)
+            throws IOException, WebApplicationException {
         // As stated in http://tools.ietf.org/html/rfc4627.html UTF-8 is the
         // default encoding for JSON content
         // TODO: add introspection on the first bytes to detect other admissible
@@ -113,11 +117,11 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return readRequest(content, headers, session);
     }
 
-    public static ExecutionRequest readRequest(String content,
+    public ExecutionRequest readRequest(String content,
             MultivaluedMap<String, String> headers, CoreSession session)
             throws WebApplicationException {
         try {
-            return readRequest0(content, headers,session);
+            return readRequest0(content, headers, session);
         } catch (WebApplicationException e) {
             throw e;
         } catch (Exception e) {
@@ -125,12 +129,28 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         }
     }
 
-    public static ExecutionRequest readRequest0(String content,
+    public ExecutionRequest readRequest0(String content,
+            MultivaluedMap<String, String> headers, CoreSession session)
+            throws Exception {
+
+        JsonParser jp = factory.createJsonParser(content);
+
+        return readRequest(jp, headers, session);
+    }
+
+    /**
+     * @param jp
+     * @param headers
+     * @param session
+     * @return
+     * @throws Exception
+     * @since TODO
+     */
+    public static ExecutionRequest readRequest(JsonParser jp,
             MultivaluedMap<String, String> headers, CoreSession session) throws Exception {
         ExecutionRequest req = new ExecutionRequest();
-        ObjectCodecService codecService = AutomationServerComponent.me.getCodecs();
-        JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(
-                content);
+
+        ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
@@ -165,20 +185,21 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         return req;
     }
 
-    private static void readParams(JsonParser jp, ExecutionRequest req, CoreSession session)
-            throws Exception {
+    private static void readParams(JsonParser jp, ExecutionRequest req,
+            CoreSession session) throws Exception {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
-            req.setParam(key, codecService.readNode(jp.readValueAsTree(), session));
+            req.setParam(key,
+                    codecService.readNode(jp.readValueAsTree(), session));
             tok = jp.nextToken();
         }
     }
 
-    private static void readContext(JsonParser jp, ExecutionRequest req, CoreSession session)
-            throws Exception {
+    private static void readContext(JsonParser jp, ExecutionRequest req,
+            CoreSession session) throws Exception {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
         while (tok != JsonToken.END_OBJECT) {

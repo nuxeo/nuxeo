@@ -19,7 +19,7 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
+import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodecService;
 import org.nuxeo.runtime.api.Framework;
 
 /**

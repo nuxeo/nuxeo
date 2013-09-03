@@ -1,0 +1,10 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-automation-restserver
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.7.2.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: nuxeo-automation-io
+Nuxeo-Component: OSGI-INF/codec-service.xml

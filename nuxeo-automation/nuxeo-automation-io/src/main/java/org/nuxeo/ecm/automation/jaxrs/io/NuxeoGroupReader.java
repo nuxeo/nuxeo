@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.rest.io;
+package org.nuxeo.ecm.automation.jaxrs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,16 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
@@ -47,6 +48,10 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
+
+    @Context
+    JsonFactory factory;
+
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
@@ -77,7 +82,7 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
     private NuxeoGroup readRequest(String json,
             MultivaluedMap<String, String> httpHeaders) {
         try {
-            JsonParser jp = AutomationServerComponent.me.getFactory().createJsonParser(
+            JsonParser jp = factory.createJsonParser(
                     json);
             return readJson(jp, httpHeaders);
         } catch (ClientException | IOException e) {

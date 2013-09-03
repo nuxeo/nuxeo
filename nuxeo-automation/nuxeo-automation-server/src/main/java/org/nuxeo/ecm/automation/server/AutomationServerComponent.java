@@ -20,18 +20,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.introspect.BasicBeanDescription;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.codehaus.jackson.map.ser.BeanSerializer;
-import org.codehaus.jackson.map.ser.BeanSerializerModifier;
-import org.nuxeo.ecm.automation.server.jaxrs.io.CodecDescriptor;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.ObjectCodecService;
+import org.nuxeo.ecm.automation.jaxrs.JsonFactoryManager;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -42,33 +33,30 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class AutomationServerComponent extends DefaultComponent implements
         AutomationServer {
 
+    /**
+     * Was used to get the JsonFactory, but since 5.7.3 use either:
+     *   * <code>{@link JsonFactoryManager#getJsonFactory()}</code>
+     *   * Context annotation in JAX-RS object (providers or resources)
+     */
+    @Deprecated
     public static AutomationServerComponent me;
 
     protected static final String XP_BINDINGS = "bindings";
-
-    protected static final String XP_CODECS = "codecs";
 
     protected Map<String, RestBinding> bindings;
 
     protected volatile Map<String, RestBinding> lookup;
 
-    protected ObjectCodecService codecs;
-
-    protected JsonFactory factory;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         bindings = new HashMap<String, RestBinding>();
-        factory = createFactory();
-        codecs = new ObjectCodecService(getFactory());
         me = this;
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         bindings = null;
-        codecs = null;
-        factory = null;
         me = null;
     }
 
@@ -79,9 +67,6 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             addBinding(binding);
-        } else if (XP_CODECS.equals(extensionPoint)) {
-            CodecDescriptor codec = (CodecDescriptor) contribution;
-            codecs.addCodec(codec.newInstance());
         }
     }
 
@@ -92,9 +77,6 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             removeBinding(binding);
-        } else if (XP_CODECS.equals(extensionPoint)) {
-            CodecDescriptor codec = (CodecDescriptor) contribution;
-            codecs.removeCodec(codec.newInstance().getJavaType());
         }
     }
 
@@ -103,24 +85,21 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (AutomationServer.class.isAssignableFrom(adapter)) {
             return adapter.cast(this);
         }
-        if (ObjectCodecService.class.isAssignableFrom(adapter)) {
-            return adapter.cast(codecs);
-        }
         return null;
     }
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
-        codecs.postInit();
     }
 
-    public ObjectCodecService getCodecs() {
-        return codecs;
-    }
 
+    /**
+     * Since 5.7.3, use {@link JsonFactoryManager#getJsonFactory()}
+     */
+    @Deprecated
     public JsonFactory getFactory() {
-        return factory;
+        return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
     }
 
     @Override
@@ -204,37 +183,6 @@ public class AutomationServerComponent extends DefaultComponent implements
             }
         }
         return _lookup;
-    }
-
-    protected JsonFactory createFactory() {
-        JsonFactory factory = new JsonFactory();
-        final ObjectMapper oc = new ObjectMapper(factory);
-        final SimpleModule module = new SimpleModule("automation",
-                Version.unknownVersion()) {
-
-            @Override
-            public void setupModule(SetupContext context) {
-                super.setupModule(context);
-
-                context.addBeanSerializerModifier(new BeanSerializerModifier() {
-
-                    @Override
-                    public JsonSerializer<?> modifySerializer(
-                            SerializationConfig config,
-                            BasicBeanDescription beanDesc,
-                            JsonSerializer<?> serializer) {
-                        if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
-                            return super.modifySerializer(config, beanDesc, serializer);
-                        }
-                        return new JsonWriter.ThrowableSerializer((BeanSerializer) serializer);
-                    }
-                });
-            }
-        };
-        oc.registerModule(module);
-
-        factory.setCodec(oc);
-        return factory;
     }
 
 }

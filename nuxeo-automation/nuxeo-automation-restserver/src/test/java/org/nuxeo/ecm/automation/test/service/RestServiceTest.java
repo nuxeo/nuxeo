@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -39,7 +40,6 @@ import org.nuxeo.ecm.automation.rest.service.RestContributor;
 import org.nuxeo.ecm.automation.rest.service.RestContributorService;
 import org.nuxeo.ecm.automation.rest.service.RestContributorServiceImpl;
 import org.nuxeo.ecm.automation.rest.service.RestEvaluationContext;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.automation.test.RestServerInit;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -71,6 +71,9 @@ public class RestServiceTest {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    JsonFactory factory;
 
     @Test
     public void itCanGetTheRestContributorService() throws Exception {
@@ -115,9 +118,7 @@ public class RestServiceTest {
     }
 
     private JsonGenerator getJsonGenerator(OutputStream out) throws IOException {
-        JsonGenerator jg = AutomationServerComponent.me.getFactory().createJsonGenerator(
-                out);
-        return jg;
+        return factory.createJsonGenerator(out);
     }
 
     private HttpHeaders getFakeHeaders() {

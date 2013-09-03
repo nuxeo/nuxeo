@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.automation.jaxrs.codec.IOComponent">
+
+
+  <documentation>@author Damien Metzler (dmetzler@nuxeo.com)</documentation>
+
+  <implementation class="org.nuxeo.ecm.automation.jaxrs.IOComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.automation.jaxrs.JsonFactoryManager" />
+    <provide interface="org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodecService" />
+  </service>
+
+  <extension-point name="codecs">
+    <documentation>JSON codecs for adapting marshalling objects</documentation>
+    <object class="org.nuxeo.ecm.automation.jaxrs.codec.CodecDescriptor" />
+  </extension-point>
+
+</component>

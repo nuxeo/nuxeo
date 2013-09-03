@@ -24,15 +24,14 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.ser.BeanSerializer;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.server.AutomationServerComponent;
+import org.nuxeo.ecm.automation.jaxrs.JsonFactoryManager;
+import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodec;
+import org.nuxeo.ecm.automation.jaxrs.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.jaxrs.AutomationInfo;
 import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.LoginInfo;
@@ -44,37 +43,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class JsonWriter {
 
-    public static class ThrowableSerializer extends BeanSerializer {
-
-
-        public ThrowableSerializer(BeanSerializer src) {
-            super(src);
-        }
-
-        @Override
-        protected void serializeFields(Object bean, JsonGenerator jgen,
-                SerializerProvider provider) throws IOException,
-                JsonGenerationException {
-            serializeClassName(bean, jgen, provider);
-            super.serializeFields(bean, jgen, provider);
-        }
-
-        @Override
-        protected void serializeFieldsFiltered(Object bean, JsonGenerator jgen,
-                SerializerProvider provider) throws IOException,
-                JsonGenerationException {
-            serializeClassName(bean, jgen, provider);
-            super.serializeFieldsFiltered(bean, jgen, provider);
-        }
-
-        protected void serializeClassName(Object bean, JsonGenerator jgen, SerializerProvider provider) throws JsonGenerationException, IOException {
-            jgen.writeFieldName("className");
-            jgen.writeString(bean.getClass().getName());
-        }
-    }
 
     private static JsonFactory getFactory() {
-        return AutomationServerComponent.me.getFactory();
+        return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
     }
 
     private static JsonGenerator createGenerator(OutputStream out)
