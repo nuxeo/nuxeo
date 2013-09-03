@@ -45,8 +45,8 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.server.jaxrs.io.JsonWriter;
-import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -131,7 +131,7 @@ public class Select2ActionsBean implements Serializable {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
 
-        JsonGenerator jg = JsonWriter.createGenerator(out);
+        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
         jg.writeStartObject();
 
         // multiple is not in properties and we must add it because Select2
@@ -232,8 +232,9 @@ public class Select2ActionsBean implements Serializable {
             for (String ref : storedRefs) {
                 JSONObject obj = resolveDirectoryEntry(ref, keySeparator,
                         session, schema, label, translateLabels, dbl10n);
-                if (obj != null)
+                if (obj != null) {
                     result.add(obj);
+                }
             }
             return result;
         } catch (DirectoryException de) {
@@ -587,7 +588,7 @@ public class Select2ActionsBean implements Serializable {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
-        JsonGenerator jg = JsonWriter.createGenerator(out);
+        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
         String[] schemas = null;
         if (schemaNames != null && !schemaNames.isEmpty()) {
             schemas = schemaNames.split(",");
@@ -767,8 +768,9 @@ public class Select2ActionsBean implements Serializable {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
-        JsonDocumentWriter.writeDocument(out, doc, schemas);
-        out.flush();
+        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
+        JsonDocumentWriter.writeDocument(jg, doc, schemas);
+        jg.flush();
         return new String(baos.toByteArray(), "UTF-8");
 
     }

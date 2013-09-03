@@ -18,9 +18,12 @@ package org.nuxeo.ecm.automation.jaxrs.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
+
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -41,6 +44,17 @@ public final class JsonHelper {
     public static JsonGenerator createJsonGenerator(JsonFactory jsonFactory,
             OutputStream out) throws IOException {
         return jsonFactory.createJsonGenerator(out, JsonEncoding.UTF8);
+    }
+
+    /**
+     * @param out
+     * @return
+     * @throws IOException
+     *
+     */
+    public static JsonGenerator createJsonGenerator(OutputStream out) throws IOException {
+        JsonFactory jsonFactory = Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
+        return createJsonGenerator(jsonFactory, out);
     }
 
 }
