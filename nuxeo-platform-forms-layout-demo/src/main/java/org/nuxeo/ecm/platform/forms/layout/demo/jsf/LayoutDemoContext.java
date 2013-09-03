@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -98,6 +99,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Destroy
+    @BypassInterceptors
     public void closeCoreSession() throws LoginException {
         if (demoCoreSession != null) {
             CoreInstance.getInstance().close(demoCoreSession);
