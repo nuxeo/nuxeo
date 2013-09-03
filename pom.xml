@@ -856,6 +856,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.automation</groupId>
+        <artifactId>nuxeo-automation-io</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.automation</groupId>
         <artifactId>nuxeo-automation-restserver</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
