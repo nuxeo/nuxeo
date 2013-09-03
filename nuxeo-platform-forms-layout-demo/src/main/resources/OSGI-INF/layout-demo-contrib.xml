@@ -165,6 +165,193 @@
       </layouts>
     </widgetType>
 
+    <widgetType name="select2Widget">
+      <label>Select2</label>
+      <viewId>select2_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:anotherTextField</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">layoutDemo</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema,common</property>
+          <property name="customFormater">myformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function myformater(doc) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:2px'><img src='/nuxeo" + doc.properties['common:icon'] + "'/></td>";
+   markup += "<td style='padding:2px'>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2WidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2WidgetMultiple">
+      <label>Select2Multiple</label>
+      <viewId>select2_widget_multiple</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">layoutDemo</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2WidgetMultipleLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2Directory">
+      <label>Select2Directory</label>
+      <viewId>select2_directory_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectSelect2DirectoryField</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">l10ncoverage</property>
+          <property name="customFormater">dirformater</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose a country</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="repository">default</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2DirectoryWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2DirectoryMultiple">
+      <label>Select2DirectoryMultiple</label>
+      <viewId>select2_directory_multiple_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:selectSelect2DirectoryMultiField</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minimumInputLength">0</property>
+          <property name="hideInstructionLabel">true</property>
+          <property name="directoryName">l10nsubjects</property>
+          <property name="customFormater">dirformater</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose one or more topics</property>
+          <property name="inlinejs"> <![CDATA[
+  function dirformater(entry) {
+   return entry.label;
+  }]]></property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="repository">default</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2DirectoryMultipleWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2User">
+      <label>Select2User</label>
+      <viewId>select2_user_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:anotherTextField</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to find a user
+          </property>
+          <property name="repository">default</property>
+          <property name="customFormater">userformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function userformater(entry) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:2px'>" + entry.label + "</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2UserWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="select2UserMultiple">
+      <label>Select2UserMultiple</label>
+      <viewId>select2_user_multiple_widget</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:stringList</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minimumInputLength">2</property>
+          <property name="instructionLabel">Type at least {0} "a" to find a user
+          </property>
+          <property name="repository">default</property>
+          <property name="customFormater">userformater</property>
+          <property name="inlinejs"> <![CDATA[
+  function userformater(entry) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:2px'>" + entry.label + "</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="select2UserMultipleWidgetLayout"
+          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+      </layouts>
+    </widgetType>
+
     <widgetType name="checkbox">
       <label>Checkbox</label>
       <viewId>checkboxWidget</viewId>
@@ -370,193 +557,6 @@
       <layouts>
         <layout name="listing_versionWidgetLayout" isListing="true"
           src="sources/OSGI-INF/demo/layout-demo-listing-version-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="select2Widget">
-      <label>Select2</label>
-      <viewId>select2_widget</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:anotherTextField</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">200</property>
-          <property name="minimumInputLength">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to display suggestion
-          </property>
-          <property name="repository">layoutDemo</property>
-          <property name="query">
-            select * from Document where dc:title LIKE ?
-          </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema,common</property>
-          <property name="customFormater">myformater</property>
-          <property name="inlinejs"> <![CDATA[
-  function myformater(doc) {
-   var markup = "<table><tr>";
-   markup += "<td style='padding:2px'><img src='/nuxeo" + doc.properties['common:icon'] + "'/></td>";
-   markup += "<td style='padding:2px'>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2WidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="select2Directory">
-      <label>Select2Directory</label>
-      <viewId>select2_directory_widget</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:selectSelect2DirectoryField</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">300</property>
-          <property name="labelFieldName">label_{lang}</property>
-          <property name="dbl10n">true</property>
-          <property name="minimumInputLength">0</property>
-          <property name="hideInstructionLabel">true</property>
-          <property name="directoryName">l10ncoverage</property>
-          <property name="customFormater">dirformater</property>
-          <property name="keySeparator">/</property>
-          <property name="placeholder">Choose a country</property>
-          <property name="inlinejs"> <![CDATA[
-  function dirformater(entry) {
-   return entry.label;
-  }]]></property>
-          <property name="documentSchemas">dublincore,layout_demo_schema</property>
-          <property name="repository">default</property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2DirectoryWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="select2WidgetMultiple">
-      <label>Select2Multiple</label>
-      <viewId>select2_widget_multiple</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:stringList</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">200</property>
-          <property name="minimumInputLength">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to display suggestion
-          </property>
-          <property name="repository">layoutDemo</property>
-          <property name="query">
-            select * from Document where dc:title LIKE ?
-          </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema</property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2WidgetMultipleLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="select2DirectoryMultiple">
-      <label>Select2DirectoryMultiple</label>
-      <viewId>select2_directory_multiple_widget</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:selectSelect2DirectoryMultiField</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">300</property>
-          <property name="labelFieldName">label_{lang}</property>
-          <property name="dbl10n">true</property>
-          <property name="minimumInputLength">0</property>
-          <property name="hideInstructionLabel">true</property>
-          <property name="directoryName">l10nsubjects</property>
-          <property name="customFormater">dirformater</property>
-          <property name="keySeparator">/</property>
-          <property name="placeholder">Choose one or more topics</property>
-          <property name="inlinejs"> <![CDATA[
-  function dirformater(entry) {
-   return entry.label;
-  }]]></property>
-          <property name="documentSchemas">dublincore,layout_demo_schema</property>
-          <property name="repository">default</property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2DirectoryMultipleWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="select2User">
-      <label>Select2User</label>
-      <viewId>select2_user_widget</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:anotherTextField</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">200</property>
-          <property name="minimumInputLength">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to find a user
-          </property>
-          <property name="repository">default</property>
-          <property name="customFormater">userformater</property>
-          <property name="inlinejs"> <![CDATA[
-  function userformater(entry) {
-   var markup = "<table><tr>";
-   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
-   markup += "<td style='padding:2px'>" + entry.label + "</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2UserWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="select2UserMultiple">
-      <label>Select2UserMultiple</label>
-      <viewId>select2_user_multiple_widget</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:stringList</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">200</property>
-          <property name="minimumInputLength">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to find a user
-          </property>
-          <property name="repository">default</property>
-          <property name="customFormater">userformater</property>
-          <property name="inlinejs"> <![CDATA[
-  function userformater(entry) {
-   var markup = "<table><tr>";
-   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
-   markup += "<td style='padding:2px'>" + entry.label + "</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2UserMultipleWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
       </layouts>
     </widgetType>
 
