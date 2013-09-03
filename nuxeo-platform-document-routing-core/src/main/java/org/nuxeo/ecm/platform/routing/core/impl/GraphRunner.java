@@ -135,6 +135,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (task != null) {
                 finishTask(session, graph, node, task, false, status);
                 // don't delete (yet)
+            } else {
+                // cancel any remaing tasks on this node
+                node.cancelTasks();
             }
             if (node.hasOpenTasks()) {
                 log.info("Node "
@@ -158,23 +161,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             return;
         }
         // also cancel tasks
-        TaskService taskService = Framework.getLocalService(TaskService.class);
-        DocumentRoutingService routingService = Framework.getLocalService(DocumentRoutingService.class);
         GraphRoute graph = (GraphRoute) element;
-        try {
-            List<Task> tasks = taskService.getAllTaskInstances(
-                    element.getDocument().getId(), session);
-            for (Task task : tasks) {
-                routingService.cancelTask(session,
-                        element.getDocument().getId(), task.getId());
-            }
-            session.save();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
         // also cancel sub-workflows
         try {
             for (GraphNode node : graph.getNodes()) {
+                node.cancelTasks();
                 node.cancelSubRoute();
             }
         } catch (DocumentRouteException e) {
@@ -389,6 +380,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     null, node.getWorkflowContextualInfo(session, true));
 
             routing.makeRoutingTasks(session, tasks);
+            for (Task task : tasks) {
+                node.addTaskInfo(task.getId());
+            }
             String taskAssigneesPermission = node.getTaskAssigneesPermission();
             if (StringUtils.isEmpty(taskAssigneesPermission)) {
                 return;
@@ -396,7 +390,6 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             for (Task task : tasks) {
                 routing.grantPermissionToTaskAssignees(session,
                         taskAssigneesPermission, docs, task);
-                node.addTaskInfo(task.getId());
             }
 
         } catch (ClientException e) {
@@ -421,20 +414,17 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (delete) {
                 session.removeDocument(new IdRef(task.getId()));
             }
-            if (status != null) {
-                String comment;
-                comment = task.getComments().size() > 0 ? task.getComments().get(
-                        0).getText()
-                        : "";
-                // actor
-                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-                String actor = principal.getOriginatingUser();
-                if (actor == null) {
-                    actor = principal.getName();
-                }
-                node.updateTaskInfo(task.getId(), status, actor, comment);
-
+            String comment = task.getComments().size() > 0 ? task.getComments().get(
+                    0).getText()
+                    : "";
+            // actor
+            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            String actor = principal.getOriginatingUser();
+            if (actor == null) {
+                actor = principal.getName();
             }
+            node.updateTaskInfo(task.getId(), true, status, actor, comment);
+
         } catch (ClientException e) {
             throw new DocumentRouteException("Cannot finish task", e);
         }

@@ -189,6 +189,9 @@ public interface GraphNode {
     String PROP_TASK_INFO_STATUS = "status";
 
     // @since 5.7.3
+    String PROP_TASK_INFO_ENDED = "ended";
+
+    // @since 5.7.3
     String PROP_TASK_INFO_TASK_DOC_ID = "taskDocId";
 
     /**
@@ -434,6 +437,8 @@ public interface GraphNode {
 
         protected String status;
 
+        protected boolean ended;
+
         protected MapProperty prop;
 
         protected GraphNode node;
@@ -445,6 +450,10 @@ public interface GraphNode {
             this.status = (String) p.get(PROP_TASK_INFO_STATUS).getValue();
             this.actor = (String) p.get(PROP_TASK_INFO_ACTOR).getValue();
             this.comment = (String) p.get(PROP_TASK_INFO_COMMENT).getValue();
+            Property ended = prop.get(PROP_TASK_INFO_ENDED);
+            if (ended != null) {
+                this.ended = BooleanUtils.isTrue(ended.getValue(Boolean.class));
+            }
         }
 
         public TaskInfo(GraphNode node, String taskDocId)
@@ -481,6 +490,10 @@ public interface GraphNode {
             return node;
         }
 
+        public boolean isEnded() {
+            return ended;
+        }
+
         public void setComment(String comment) throws ClientException {
             this.comment = comment;
             prop.get(PROP_TASK_INFO_COMMENT).setValue(comment);
@@ -495,6 +508,11 @@ public interface GraphNode {
         public void setActor(String actor) throws ClientException {
             this.actor = actor;
             prop.get(PROP_TASK_INFO_ACTOR).setValue(actor);
+        }
+
+        public void setEnded(boolean ended) throws ClientException {
+            this.ended = ended;
+            prop.get(PROP_TASK_INFO_ENDED).setValue(Boolean.valueOf(ended));
         }
     }
 
@@ -553,8 +571,7 @@ public interface GraphNode {
     long getCanceledCount();
 
     /**
-     * Cancels the task if this is a suspended task node. The tasks are canceled
-     * with an empty status.
+     * Cancels the tasks not ended on this node.
      */
     void cancelTasks();
 
@@ -830,8 +847,8 @@ public interface GraphNode {
      *
      * @since 5.7.3
      */
-    void updateTaskInfo(String taskId, String status, String actor,
-            String comment) throws ClientException;
+    void updateTaskInfo(String taskId, boolean ended, String status,
+            String actor, String comment) throws ClientException;
 
     /**
      * Gets all the ended tasks originating from this node. This also counts the

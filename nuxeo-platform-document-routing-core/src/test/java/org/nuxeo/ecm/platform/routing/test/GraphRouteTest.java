@@ -1806,7 +1806,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         assertEquals("faketrans1", tasksInfo.get(task1Index).getStatus());
         assertEquals("trans1", tasksInfo.get(task2Index).getStatus());
-        assertEquals("", tasksInfo.get(task3Index).getStatus());
+        assertEquals(null, tasksInfo.get(task3Index).getStatus());
 
         assertEquals("testcomment", tasksInfo.get(task2Index).getComment());
         closeSession(session);

@@ -1044,11 +1044,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                     }
                     DocumentModelList docs = routeInstance.getAttachedDocumentModels();
                     removePermissionFromTaskAssignees(session, docs, task);
-                    task.cancel(session);
+                    if (task.isOpened()) {
+                        task.cancel(session);
+                    }
                     session.saveDocument(task.getDocument());
-                    // task is considered processed with the status "" when is
+                    // task is considered processed with the status "null" when is
                     // canceled
-                    updateTaskInfo(session, routeInstance, task, "");
+                    updateTaskInfo(session, routeInstance, task, null);
                 }
             }.runUnrestricted();
         } catch (ClientException e) {
@@ -1070,6 +1072,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         if (actor == null) {
             actor = principal.getName();
         }
-        node.updateTaskInfo(task.getId(), status, actor, null);
+        node.updateTaskInfo(task.getId(), true, status, actor, null);
     }
 }

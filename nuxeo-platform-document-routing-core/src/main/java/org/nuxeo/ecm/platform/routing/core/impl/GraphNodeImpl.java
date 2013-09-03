@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
@@ -55,7 +56,6 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.api.TasksInfoWrapper;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
-import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -681,16 +681,13 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     @Override
     public void cancelTasks() {
         CoreSession session = getSession();
-        TaskService taskService = Framework.getLocalService(TaskService.class);
-        String routeDocId = getDocumentRoute(session).getDocument().getId();
-        DocumentRoutingService routingService = Framework.getLocalService(DocumentRoutingService.class);
         try {
-            List<Task> tasks = taskService.getAllTaskInstances(routeDocId,
-                    getId(), session);
-            for (Task task : tasks) {
-                routingService.cancelTask(session, routeDocId, task.getId());
+            List<TaskInfo> tasks = getTasksInfo();
+            for (TaskInfo task : tasks) {
+                if (!task.isEnded()) {
+                    cancelTask(session, task.getTaskDocId());
+                }
             }
-            session.save();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
@@ -1031,8 +1028,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public void updateTaskInfo(String taskId, String status, String actor,
-            String comment) throws ClientException {
+    public void updateTaskInfo(String taskId, boolean ended, String status,
+            String actor, String comment) throws ClientException {
         boolean updated = false;
         List<TaskInfo> tasksInfo = getTasksInfo();
         for (TaskInfo taskInfo : tasksInfo) {
@@ -1040,6 +1037,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 taskInfo.setComment(comment);
                 taskInfo.setStatus(status);
                 taskInfo.setActor(actor);
+                taskInfo.setEnded(true);
                 updated = true;
             }
         }
@@ -1050,6 +1048,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             ti.setActor(actor);
             ti.setStatus(status);
             ti.setComment(comment);
+            ti.setEnded(true);
             getTasksInfo().add(ti);
         }
         saveDocument();
@@ -1060,7 +1059,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         List<TaskInfo> tasksInfo = getTasksInfo();
         List<TaskInfo> endedTasks = new ArrayList<TaskInfo>();
         for (TaskInfo taskInfo : tasksInfo) {
-            if (taskInfo.getStatus() != null) {
+            if (taskInfo.isEnded()) {
                 endedTasks.add(taskInfo);
             }
         }
@@ -1077,11 +1076,39 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         List<TaskInfo> tasksInfo = getTasksInfo();
         List<TaskInfo> processedTasks = new ArrayList<TaskInfo>();
         for (TaskInfo taskInfo : tasksInfo) {
-            if (taskInfo.getStatus() != null
-                    && !"".equals(taskInfo.getStatus())) {
+            if (taskInfo.isEnded() && taskInfo.getStatus() != null) {
                 processedTasks.add(taskInfo);
             }
         }
         return processedTasks;
+    }
+
+    protected void cancelTask(CoreSession session, final String taskId)
+            throws DocumentRouteException {
+        try {
+            DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+            Task task = taskDoc.getAdapter(Task.class);
+            if (task == null) {
+                throw new DocumentRouteException("Invalid taskId: " + taskId);
+            }
+            DocumentModelList docs = graph.getAttachedDocumentModels();
+            Framework.getLocalService(DocumentRoutingService.class).removePermissionFromTaskAssignees(
+                    session, docs, task);
+            if (task.isOpened()) {
+                task.cancel(session);
+            }
+            session.saveDocument(task.getDocument());
+            // task is considered processed with the status "null" when is
+            // canceled
+            // actor
+            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+            String actor = principal.getOriginatingUser();
+            if (actor == null) {
+                actor = principal.getName();
+            }
+            updateTaskInfo(taskId, true, null, actor, null);
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Cannot cancel task", e);
+        }
     }
 }

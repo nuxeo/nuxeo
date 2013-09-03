@@ -124,6 +124,7 @@
       <xs:element name="comment" type="xs:string" />
       <xs:element name="status"  type="xs:string"/> 
       <xs:element name="taskDocId" type="xs:string" />
+      <xs:element name="ended" type="xs:boolean" default="false"/> 
     </xs:sequence>
   </xs:complexType>
 
