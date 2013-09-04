@@ -4,18 +4,23 @@
     target="org.nuxeo.ecm.automation.io.services.contributor.RestContributorService"
     point="contributor">
 
-    <contributor name="children" class="org.nuxeo.ecm.automation.test.service.SampleChildrenContributor">
+    <contributor name="children" class="org.nuxeo.ecm.automation.io.services.contributor.ChildrenContributor">
       <category>test</category>
     </contributor>
 
-    <contributor name="children1" class="org.nuxeo.ecm.automation.test.service.SampleChildrenContributor">
+    <contributor name="children1" class="org.nuxeo.ecm.automation.io.services.contributor.ChildrenContributor">
       <category>anothertest</category>
     </contributor>
 
-    <contributor name="children2" class="org.nuxeo.ecm.automation.test.service.SampleChildrenContributor">
+    <contributor name="children2" class="org.nuxeo.ecm.automation.io.services.contributor.ChildrenContributor">
       <category>anothertest</category>
       <category>yetanothertest</category>
     </contributor>
+
+    <contributor name="breadcrumb" class="org.nuxeo.ecm.automation.io.services.contributor.BreadcrumbContributor">
+      <category>breadcrumb</category>
+    </contributor>
+
 
   </extension>
 </component>

@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
@@ -32,7 +34,6 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-
 
 /**
  *
@@ -116,13 +117,17 @@ public class RestContributorServiceImpl extends DefaultComponent implements
     }
 
     private List<String> getCategoriesToActivate(RestEvaluationContext ec) {
-        List<String> requestHeader = ec.getHeaders().getRequestHeader(
-                NXCONTENT_CATEGORY_HEADER);
-        if (requestHeader != null && !requestHeader.isEmpty()) {
-            return Arrays.asList(StringUtils.split(requestHeader.get(0), ',', true));
-        } else {
-            return new ArrayList<>(0);
+        HttpHeaders headers = ec.getHeaders();
+        if (headers != null) {
+            List<String> requestHeader = headers.getRequestHeader(NXCONTENT_CATEGORY_HEADER);
+            if (requestHeader != null && !requestHeader.isEmpty()) {
+                return Arrays.asList(StringUtils.split(requestHeader.get(0),
+                        ',', true));
+            } else {
+                return new ArrayList<>(0);
+            }
         }
+        return new ArrayList<>(0);
     }
 
 }

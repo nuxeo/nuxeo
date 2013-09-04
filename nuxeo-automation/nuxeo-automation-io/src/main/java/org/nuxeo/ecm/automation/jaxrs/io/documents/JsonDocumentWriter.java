@@ -33,11 +33,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.automation.io.services.contributor.HeaderDocEvaluationContext;
+import org.nuxeo.ecm.automation.io.services.contributor.RestContributorService;
+import org.nuxeo.ecm.automation.io.services.contributor.RestEvaluationContext;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -49,6 +54,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -125,7 +131,15 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @since 5.6
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters)
+            String[] schemas, Map<String, String> contextParameters) throws Exception {
+        writeDocument(jg, doc, schemas,contextParameters, null);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public static void writeDocument(JsonGenerator jg, DocumentModel doc,
+            String[] schemas, Map<String, String> contextParameters, HttpHeaders headers)
             throws Exception {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "document");
@@ -182,10 +196,30 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
                 jg.writeStringField(parameter.getKey(), parameter.getValue());
             }
         }
+
+        writeRestContributions(jg, doc, headers);
         jg.writeEndObject();
 
         jg.writeEndObject();
         jg.flush();
+    }
+
+
+    /**
+     * @param jg
+     * @param doc
+     * @param headers
+     * @throws ClientException
+     * @throws IOException
+     * @throws JsonGenerationException
+     *
+     * @since 5.7.3
+     */
+    protected static void writeRestContributions(JsonGenerator jg,
+            DocumentModel doc, HttpHeaders headers) throws JsonGenerationException, IOException, ClientException {
+        RestContributorService rcs = Framework.getLocalService(RestContributorService.class);
+        RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers);
+        rcs.writeContext(jg, ec);
     }
 
     protected static void writeProperties(JsonGenerator jg, DocumentModel doc,

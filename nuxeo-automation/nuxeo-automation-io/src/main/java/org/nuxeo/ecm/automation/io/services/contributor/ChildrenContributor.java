@@ -14,15 +14,13 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.test.service;
+package org.nuxeo.ecm.automation.io.services.contributor;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.automation.io.services.contributor.RestContributor;
-import org.nuxeo.ecm.automation.io.services.contributor.RestEvaluationContext;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -31,12 +29,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- *
+ * This contributor adds a document list with all children to the
+ * contextParameters map. It is provided as sample and may not be used directly.
+ * For instance if you have millions of children, it will get all of them.
  *
  * @since 5.7.3
  */
-public class SampleChildrenContributor implements RestContributor {
-
+public class ChildrenContributor implements RestContributor {
 
     @Override
     public void contribute(JsonGenerator jg, RestEvaluationContext ec)
@@ -63,6 +62,5 @@ public class SampleChildrenContributor implements RestContributor {
             throw new RuntimeException(e);
         }
     }
-
 
 }

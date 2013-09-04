@@ -18,12 +18,15 @@ package org.nuxeo.ecm.automation.test.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -31,6 +34,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,10 +65,15 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
-@RepositoryConfig(cleanup=Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.io" })
 @LocalDeploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")
 public class RestServiceTest {
+
+    /**
+     *
+     */
+    private static final String[] NO_SCHEMA = new String[] {};
 
     @Inject
     RestContributorService rcs;
@@ -121,12 +130,77 @@ public class RestServiceTest {
         jg.flush();
 
         // Then it is filled with children contributor
-        String json = out.toString();
-        ObjectMapper m = new ObjectMapper();
-        JsonNode node = m.readTree(json);
+        JsonNode node = parseJson(out);
         assertEquals("documents",
                 node.get("children").get("entity-type").getValueAsText());
 
+    }
+
+    @Test
+    public void documentWriterUsesTheRestConributorService() throws Exception {
+        // Given a document
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JsonGenerator jg = getJsonGenerator(out);
+        DocumentModel folder = session.getDocument(new PathRef("/folder1"));
+
+        // When it is written as Json with appropriate headers
+        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA,
+                new HashMap<String, String>(), getFakeHeaders());
+        jg.flush();
+
+        // Then it contains contextParameters with contributor
+        JsonNode node = parseJson(out);
+        assertNotNull(node.get("contextParameters").get("children"));
+
+        // When it is written as Json with empty headers
+        out = new ByteArrayOutputStream();
+        jg = getJsonGenerator(out);
+        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA,
+                new HashMap<String, String>(), null);
+        jg.flush();
+
+        // Then it contains contextParameters with contributor
+        node = parseJson(out);
+        assertNull(node.get("contextParameters").get("children"));
+
+    }
+
+    @Test
+    public void itCanContributeWithBreadcrumb() throws Exception {
+        // Given a document
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JsonGenerator jg = getJsonGenerator(out);
+        DocumentModel folder = session.getDocument(new PathRef("/folder1/doc0"));
+
+        // When it is written as Json with breadcrumb context category
+        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA,
+                new HashMap<String, String>(), getFakeHeaders("breadcrumb"));
+        jg.flush();
+
+        // Then it contains the breadcrumb in contextParameters
+        JsonNode node = parseJson(out);
+        JsonNode breadCrumbEntries = node.get("contextParameters").get(
+                "breadcrumb").get("entries");
+        assertEquals("/folder1",
+                breadCrumbEntries.get(0).get("path").getValueAsText());
+        assertEquals("/folder1/doc0",
+                breadCrumbEntries.get(1).get("path").getValueAsText());
+
+    }
+
+    /**
+     * @param out
+     * @return
+     * @throws IOException
+     * @throws JsonProcessingException
+     *
+     */
+    private JsonNode parseJson(ByteArrayOutputStream out)
+            throws JsonProcessingException, IOException {
+        String json = out.toString();
+        System.out.println(json);
+        ObjectMapper m = new ObjectMapper();
+        return m.readTree(json);
     }
 
     private JsonGenerator getJsonGenerator(OutputStream out) throws IOException {
@@ -134,15 +208,19 @@ public class RestServiceTest {
     }
 
     private HttpHeaders getFakeHeaders() {
+        return getFakeHeaders("test");
+    }
+
+    private HttpHeaders getFakeHeaders(String category) {
         HttpHeaders headers = mock(HttpHeaders.class);
 
         when(
                 headers.getRequestHeader(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER)).thenReturn(
-                Arrays.asList(new String[] {}));
+                Arrays.asList(NO_SCHEMA));
 
         when(
                 headers.getRequestHeader(RestContributorServiceImpl.NXCONTENT_CATEGORY_HEADER)).thenReturn(
-                Arrays.asList(new String[] { "test" }));
+                Arrays.asList(new String[] { category }));
         return headers;
     }
 
