@@ -68,15 +68,14 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
             throw new PreviewException("Cannot encode blob content to string", e);
         }
 
-        htmlPage.append("<?xml version=\"1.0\" encoding=\"").append(encoding).append(
-                "\"/>");
+        htmlPage.append("<?xml version=\"1.0\" encoding=\"UTF-8\"/>");
         htmlPage.append("<html>");
-        htmlPage.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=").append(encoding).append("\"/></head>");
+        htmlPage.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/></head>");
         htmlPage.append("<body>");
         htmlPage.append(htmlContent(content));
         htmlPage.append("</body></html>");
 
-        Blob mainBlob = new StringBlob(htmlPage.toString(), "text/html", encoding);
+        Blob mainBlob = new StringBlob(htmlPage.toString(), "text/html", "UTF-8");
         mainBlob.setFilename("index.html");
 
         blobResults.add(mainBlob);

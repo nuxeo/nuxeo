@@ -68,20 +68,20 @@ public class TestService {
     public void testLatin1() throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
         DocumentModel doc = repo.createDocumentModel("/", "fake", "File");
         doc = repo.createDocument(doc);
-        checkLatin1(doc, "latin1.txt", "text/plain", "ISO-8859-1");
-        checkLatin1(doc, "latin1.xhtml", "text/html", "ISO-8859-1");
-        checkLatin1(doc, "latin1.csv", "text/csv", "UTF-8");
+        checkLatin1(doc, "latin1.txt", "text/plain");
+        checkLatin1(doc, "latin1.xhtml", "text/html");
+        checkLatin1(doc, "latin1.csv", "text/csv");
     }
 
     @Inject protected CoreSession repo;
 
-    public void checkLatin1(DocumentModel doc, String name, String mtype, String encoding) throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
+    public void checkLatin1(DocumentModel doc, String name, String mtype) throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
         File file = new File(getClass().getResource("/" + name).getPath());
         Blob blob = new FileBlob(file);
         blob.setMimeType(mtype);
         doc.getAdapter(BlobHolder.class).setBlob(blob);
         HtmlPreviewAdapter adapter = doc.getAdapter(HtmlPreviewAdapter.class);
         Blob htmlBlob = adapter.getFilePreviewBlobs().get(0);
-        Assert.assertThat(htmlBlob.getEncoding(), Matchers.is(encoding));
+        Assert.assertThat(htmlBlob.getString(), Matchers.containsString("Test de prévisualisation avant rattachement"));
     }
 }
