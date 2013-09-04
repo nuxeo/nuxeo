@@ -323,6 +323,9 @@
       <renderer-type>
         org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
       </renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>

@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +81,6 @@ public class UIEditableList extends UIInput implements NamingContainer,
     protected String model = "";
 
     protected Object template;
-
-    protected Object defaultValue;
 
     protected Boolean diff;
 
@@ -167,26 +164,14 @@ public class UIEditableList extends UIInput implements NamingContainer,
 
         if (superState != null || stampState != null) {
             return new Object[] { superState, stampState, getSubmittedValue(),
-                    editableModel, model, template, diff, number, removeEmpty,
-                    defaultValue };
+                    editableModel, model, template, diff, number, removeEmpty };
         }
         return null;
     }
 
-    // FIXME AT: should use the list property as EditableModel instead
     @Override
-    @SuppressWarnings("rawtypes")
     public Object getValue() {
         Object value = super.getValue();
-        if (value == null
-                || ((value instanceof Object[]) && ((Object[]) value).length == 0)
-                || ((value instanceof Collection) && ((Collection) value).size() == 0)) {
-            // check defaultValue attribute
-            Object defaultValue = getDefaultValue();
-            if (defaultValue != null) {
-                value = getDefaultValue();
-            }
-        }
         if (value instanceof ListProperty) {
             try {
                 value = ((ListProperty) value).getValue();
@@ -195,26 +180,6 @@ public class UIEditableList extends UIInput implements NamingContainer,
             }
         }
         return value;
-    }
-
-    public Object getDefaultValue() {
-        if (defaultValue != null) {
-            return defaultValue;
-        }
-        ValueExpression ve = getValueExpression("defaultValue");
-        if (ve != null) {
-            try {
-                return ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
     }
 
     @Override
@@ -234,7 +199,6 @@ public class UIEditableList extends UIInput implements NamingContainer,
             diff = (Boolean) array[6];
             number = (Integer) array[7];
             removeEmpty = (Boolean) array[8];
-            defaultValue = array[9];
         } else {
             superState = null;
             stampState = null;

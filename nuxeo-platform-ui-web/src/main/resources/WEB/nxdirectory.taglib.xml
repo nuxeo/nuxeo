@@ -50,6 +50,9 @@
     <component>
       <component-type>nxdirectory.selectOneListbox</component-type>
       <renderer-type>nxdirectory.selectOneListbox</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
@@ -57,6 +60,9 @@
     <component>
       <component-type>nxdirectory.selectManyListbox</component-type>
       <renderer-type>nxdirectory.selectManyListbox</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
@@ -64,6 +70,9 @@
     <component>
       <component-type>nxdirectory.DirectoryEntryOutput</component-type>
       <renderer-type>nxdirectory.DirectoryEntryOutput</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 
@@ -72,6 +81,9 @@
     <component>
       <component-type>nxdirectory.ChainSelectOutput</component-type>
       <renderer-type>nxdirectory.ChainSelectOutput</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 
@@ -80,6 +92,9 @@
     <tag-name>chainSelect</tag-name>
     <component>
       <component-type>nxdirectory.chainSelect</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 
@@ -87,6 +102,9 @@
     <tag-name>chainSelectOne</tag-name>
     <component>
       <component-type>nxdirectory.ChainSelectOne</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 
@@ -94,6 +112,9 @@
     <tag-name>chainSelectMany</tag-name>
     <component>
       <component-type>nxdirectory.ChainSelectMany</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 
@@ -102,6 +123,9 @@
     <tag-name>chainSelectListbox</tag-name>
     <component>
       <component-type>nxdirectory.chainSelectListbox</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 
@@ -109,6 +133,9 @@
     <tag-name>chainSelectMultiListbox</tag-name>
     <component>
       <component-type>nxdirectory.chainSelectMultiListbox</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 

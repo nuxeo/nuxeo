@@ -44,7 +44,10 @@ import com.sun.facelets.util.FacesAPI;
  * if no parameters are needed.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @deprecated since 5.7.3: resolving method expressions for value expressions
+ *             is now supported by the default EL, this is now useless
  */
+@Deprecated
 public class GenericValueHolderRule extends MetaRule {
 
     static final class LiteralConverterMetadata extends Metadata {
@@ -72,7 +75,8 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((UIComponent) instance).setValueBinding("converter",
+            ((UIComponent) instance).setValueBinding(
+                    "converter",
                     new LegacyValueBinding(attr.getValueExpression(ctx,
                             Converter.class)));
         }
@@ -132,7 +136,8 @@ public class GenericValueHolderRule extends MetaRule {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((UIComponent) instance).setValueBinding("value",
+            ((UIComponent) instance).setValueBinding(
+                    "value",
                     new LegacyValueBinding(attr.getValueExpression(ctx,
                             Object.class)));
         }

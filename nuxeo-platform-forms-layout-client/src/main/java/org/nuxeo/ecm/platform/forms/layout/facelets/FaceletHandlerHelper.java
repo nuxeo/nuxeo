@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -60,7 +61,6 @@ import com.sun.facelets.tag.jsf.ConvertHandler;
 import com.sun.facelets.tag.jsf.ConverterConfig;
 import com.sun.facelets.tag.jsf.ValidateHandler;
 import com.sun.facelets.tag.jsf.ValidatorConfig;
-import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Helpers for layout/widget handlers.
@@ -508,7 +508,7 @@ public final class FaceletHandlerHelper {
         ComponentConfig config = TagConfigFactory.createComponentConfig(
                 tagConfig, tagConfigId, attributes, nextHandler, componentType,
                 rendererType);
-        return new HtmlComponentHandler(config);
+        return new GenericHtmlComponentHandler(config);
     }
 
     /**

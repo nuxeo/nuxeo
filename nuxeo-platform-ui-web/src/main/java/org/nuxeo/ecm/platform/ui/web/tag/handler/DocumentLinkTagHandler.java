@@ -35,7 +35,6 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Component tag handler that wires a document link tag to a command link tag.
@@ -44,7 +43,7 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class DocumentLinkTagHandler extends HtmlComponentHandler {
+public class DocumentLinkTagHandler extends GenericHtmlComponentHandler {
 
     private static final Log log = LogFactory.getLog(DocumentLinkTagHandler.class);
 

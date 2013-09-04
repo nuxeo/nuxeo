@@ -56,8 +56,6 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
 
     protected String var;
 
-    protected Object defaultValue;
-
     protected Boolean submitValue;
 
     @Override
@@ -284,26 +282,6 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
         this.var = var;
     }
 
-    public Object getDefaultValue() {
-        if (defaultValue != null) {
-            return defaultValue;
-        }
-        ValueExpression ve = getValueExpression("defaultValue");
-        if (ve != null) {
-            try {
-                return ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
     public Boolean getSubmitValue() {
         if (submitValue != null) {
             return submitValue;
@@ -330,13 +308,6 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
             // get original value bound
             value = super.getValue();
         }
-        if (value == null) {
-            // check defaultValue attribute
-            Object defaultValue = getDefaultValue();
-            if (defaultValue != null) {
-                value = getDefaultValue();
-            }
-        }
         return value;
     }
 
@@ -362,9 +333,8 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);
         var = (String) values[1];
-        defaultValue = values[2];
-        submitValue = (Boolean) values[3];
-        setSubmittedValue(values[4]);
+        submitValue = (Boolean) values[2];
+        setSubmittedValue(values[3]);
     }
 
     /**
@@ -375,8 +345,8 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
      */
     @Override
     public Object saveState(FacesContext context) {
-        return new Object[] { super.saveState(context), var, defaultValue,
-                submitValue, getSubmittedValue() };
+        return new Object[] { super.saveState(context), var, submitValue,
+                getSubmittedValue() };
     }
 
     /**

@@ -417,7 +417,7 @@
         org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList
       </component-type>
       <handler-class>
-        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
       </handler-class>
     </component>
   </tag>
@@ -427,6 +427,9 @@
       <component-type>
         org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor
       </component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
@@ -499,6 +502,9 @@
     <component>
       <component-type>org.apache.myfaces.HtmlGraphicImage</component-type>
       <renderer-type>javax.faces.NXImage</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
@@ -512,12 +518,18 @@
     <component>
       <component-type>org.apache.myfaces.HtmlSelectOneRadio</component-type>
       <renderer-type>org.apache.myfaces.Radio</renderer-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>radio</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlRadio</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler
+      </handler-class>
     </component>
   </tag>
 

@@ -31,12 +31,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentSupport;
-import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Tag handler for a {@link UIValueHolder} component, that exposes the value
@@ -44,7 +44,7 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
  *
  * @since 5.5
  */
-public class ValueHolderTagHandler extends HtmlComponentHandler {
+public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
 
     protected final Log log = LogFactory.getLog(ValueHolderTagHandler.class);
 

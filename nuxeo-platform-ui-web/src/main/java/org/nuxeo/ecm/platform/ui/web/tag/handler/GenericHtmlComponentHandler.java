@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import javax.faces.component.ValueHolder;
 
-import org.nuxeo.ecm.platform.ui.web.tag.jsf.GenericValueHolderRule;
+import org.nuxeo.ecm.platform.ui.web.tag.jsf.DefaultValueHolderRule;
 
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.jsf.ComponentConfig;
@@ -30,11 +30,8 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
 /**
  * Generic HTML component handler.
  * <p>
- * Handler evaluating the "value" attribute as a regular value expression, or
- * invoking a method expression.
- * <p>
- * The method can have parameters and the expression must use parentheses even
- * if no parameters are needed.
+ * Handler that manages a defaultValue attribute set on the tag, to default to
+ * this value when value is null or empty. *
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
@@ -45,17 +42,16 @@ public class GenericHtmlComponentHandler extends HtmlComponentHandler {
     }
 
     /**
-     * Create meta rule set as regular html component, overriding value holder
-     * rule to use a generic value holder rule.
+     * Create meta rule set as regular html component, adding a default value
+     * holder rule.
+     *
+     * @see DefaultValueHolderRule
      */
     @Override
     protected MetaRuleset createMetaRuleset(Class type) {
         MetaRuleset m = super.createMetaRuleset(type);
-        // alias value so that regular ValueHolder rule does not apply, actually
-        // this is not necessary as last rule added applies.
         if (ValueHolder.class.isAssignableFrom(type)) {
-            m.alias("value", "genericValue");
-            m.addRule(GenericValueHolderRule.Instance);
+            m.addRule(DefaultValueHolderRule.Instance);
         }
         return m;
     }
