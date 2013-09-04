@@ -1287,13 +1287,14 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Available since 5.7.1. Flag indicating that the title is localized.
+                    Available since 5.7.1. Flag indicating that
+                    the title is localized.
                   </label>
                 </helpLabels>
                 <fields>
                   <field>localize</field>
                 </fields>
-            </widget>
+              </widget>
             </layout>
           </layouts>
         </properties>
@@ -1954,7 +1955,8 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    Displays the search layout of this content view.
+                    Displays the search layout of this content
+                    view.
                   </label>
                 </helpLabels>
                 <fields>
@@ -2355,13 +2357,18 @@
         <sinceVersion>5.7.2</sinceVersion>
         <title>Toggleable Document Form</title>
         <description>
-          This widget displays the document layouts of a document which mode
+          This widget displays the document layouts of a document
+          which mode
           can be toggled, with forms inside it.
 
-          Note that usually layouts do not contain
-          any forms, but are surrounded by one, and nesting forms breaks the
-          available actions. So you should make sure there is no enclosing form
-          around the layout, or around this widget, when using it.
+          Note that usually
+          layouts do not contain
+          any forms, but are surrounded by one, and
+          nesting forms breaks the
+          available actions. So you should make sure
+          there is no enclosing form
+          around the layout, or around this widget,
+          when using it.
         </description>
         <categories>
           <category>tab_designer</category>
@@ -3457,6 +3464,69 @@
       </widgetModes>
     </widget>
 
+    <widget name="document_edit_current_version" type="text">
+      <labels>
+        <label mode="any">label.version</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">label.versioning.currentVersion.tooltip</label>
+      </helpLabels>
+      <translated>true</translated>
+      <fields>
+        <field>#{versioningManager.getVersionLabel(layoutValue)}</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+        <mode value="create">hidden</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="document_edit_versioning_options" type="setVariable">
+      <labels>
+        <label mode="any">label.versioning.selectVersioningOption</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">label.versioning.changeVersion.tooltip</label>
+      </helpLabels>
+      <translated>true</translated>
+      <widgetModes>
+        <mode value="create">hidden</mode>
+        <mode value="any">
+          #{nxu:test(versioningManager.getVersionIncEditOptions(layoutValue).hasOptions(),
+          mode, 'hidden')}
+        </mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="var">incOptions</property>
+        <property name="value">
+          #{versioningManager.getVersionIncEditOptions(layoutValue)}
+        </property>
+        <property name="cache">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="select" type="selectOneRadio">
+          <fields>
+            <field>contextData['default/VersioningOption']</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="defaultValue">
+              #{incOptions.defaultVersioningAction.name()}
+            </property>
+            <property name="converter">documentVersioningConverter</property>
+            <property name="layout">pageDirection</property>
+            <property name="required">true</property>
+            <property name="requiredMessage">
+              #{messages['error.versioning.none_selected']}
+            </property>
+          </properties>
+          <selectOptions>
+            <options value="#{incOptions.optionsForDisplay}" var="item"
+              itemLabel="#{messages[item.getValue()]}" itemValue="#{item.getKey()}" />
+          </selectOptions>
+        </widget>
+      </subWidgets>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -3749,7 +3819,7 @@
    return markup;
   }]]></property>
         </properties>
-         <widgetModes>
+        <widgetModes>
           <mode value="create">edit</mode>
         </widgetModes>
       </widget>
@@ -3798,7 +3868,7 @@
    return markup;
   }]]></property>
         </properties>
-         <widgetModes>
+        <widgetModes>
           <mode value="create">edit</mode>
         </widgetModes>
       </widget>
@@ -3826,6 +3896,12 @@
       <rows>
         <row>
           <widget>document_edit_comment</widget>
+        </row>
+        <row>
+          <widget>document_edit_current_version</widget>
+        </row>
+        <row>
+          <widget>document_edit_versioning_options</widget>
         </row>
       </rows>
     </layout>
