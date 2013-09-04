@@ -16,7 +16,20 @@
  */
 package org.nuxeo.ecm.automation.rest.jaxrs.adapters;
 
-import java.util.Map;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
+import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
+import org.nuxeo.ecm.automation.server.AutomationServer;
+import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
+import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
+import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.runtime.api.Framework;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
@@ -27,25 +40,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationChain;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationNotFoundException;
-import org.nuxeo.ecm.automation.OperationParameters;
-import org.nuxeo.ecm.automation.server.AutomationServer;
-import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
-import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
-import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.webengine.model.WebAdapter;
-import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
-import org.nuxeo.runtime.api.Framework;
-
 /**
- * Web adapter that expose how to run an operation on a document
- *
- * @since 5.7.2
+ * @since 5.7.2 - Web adapter that expose how to run an operation on a document
  */
 @WebAdapter(name = OperationAdapter.NAME, type = "OperationService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
@@ -60,30 +56,37 @@ public class OperationAdapter extends DefaultAdapter {
     HttpServletRequest request, ExecutionRequest xreq) {
         try {
             AutomationServer srv = Framework.getLocalService(AutomationServer.class);
-            if (!srv.accept(oid, isChain(oid), request)) {
+            if (!srv.accept(oid, false, request)) {
                 return ResponseHelper.notFound();
             }
 
             AutomationService service = Framework.getLocalService(AutomationService.class);
 
-            DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-            if (doc != null) {
-                xreq.setInput(doc);
-            } else {
-                DocumentModelList docs = getTarget().getAdapter(
-                        DocumentModelList.class);
-                xreq.setInput(docs);
+            OperationType operationType = service.getOperation(oid);
+
+            // If chain, taking the first operation to do the input lookup after
+            if (operationType instanceof ChainTypeImpl) {
+                OperationChain chain = ((ChainTypeImpl) operationType).getChain();
+                if (!chain.getOperations().isEmpty()) {
+                    operationType = service.getOperation(chain.getOperations().get(
+                            0).id());
+                } else {
+                    throw new WebException("Chain '" + oid
+                            + "' doesn't contain any operation");
+                }
+            }
+
+            for (InvokableMethod method : operationType.getMethods()) {
+                if (getTarget().getAdapter(method.getInputType()) != null) {
+                    xreq.setInput(getTarget().getAdapter(method.getInputType()));
+                    break;
+                }
             }
 
             OperationContext ctx = xreq.createContext(request,
                     getContext().getCoreSession());
 
-            ctx.putAll(xreq.getParams());
-
-            OperationChain chain = getOperationChain(service, oid,
-                    xreq.getParams());
-
-            return Response.ok(service.run(ctx, chain)).build();
+            return Response.ok(service.run(ctx, oid, xreq.getParams())).build();
         } catch (Throwable e) {
             throw ExceptionHandler.newException("Failed to execute operation: "
                     + oid, e);
@@ -91,25 +94,4 @@ public class OperationAdapter extends DefaultAdapter {
 
     }
 
-    private boolean isChain(String oid) {
-        return oid.startsWith("Chain.");
-    }
-
-    private OperationChain getOperationChain(AutomationService service,
-            String oid, Map<String, Object> params)
-            throws OperationNotFoundException {
-
-        if (isChain(oid)) {
-            return service.getOperationChain(getRealChainId(oid));
-        } else {
-            OperationChain chain = new OperationChain("operation");
-            OperationParameters oparams = new OperationParameters(oid, params);
-            chain.add(oparams);
-            return chain;
-        }
-    }
-
-    private String getRealChainId(String oid) {
-        return isChain(oid) ? oid.substring(6) : oid;
-    }
 }
