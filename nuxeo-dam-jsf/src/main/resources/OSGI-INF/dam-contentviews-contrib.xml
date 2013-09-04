@@ -291,7 +291,7 @@
           <properties widgetMode="any">
             <property name="searchType">user</property>
             <property name="width">200</property>
-            <property name="minimumInputLength">3</property>
+            <property name="minChars">3</property>
             <property name="hideInstructionLabel">true</property>
           </properties>
         </widget>
@@ -328,7 +328,7 @@
             <property name="directoryName">l10nsubjects</property>
             <property name="width">200</property>
             <property name="dbl10n">true</property>
-            <property name="minimumInputLength">0</property>
+            <property name="minChars">0</property>
             <property name="hideInstructionLabel">true</property>
           </properties>
         </widget>
@@ -344,7 +344,7 @@
             <property name="directoryName">l10ncoverage</property>
             <property name="width">200</property>
             <property name="dbl10n">true</property>
-            <property name="minimumInputLength">0</property>
+            <property name="minChars">0</property>
             <property name="hideInstructionLabel">true</property>
           </properties>
         </widget>
