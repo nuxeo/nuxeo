@@ -13,36 +13,38 @@
     value="#{nxu:test(empty widgetProperty_instructionLabel, messages['label.suggestion.help.minChars'], nxu:test(widget.translated, messages[widgetProperty_instructionLabel], widgetProperty_instructionLabel))}"
     cache="true">
 
-    <c:if test="#{widget.mode != 'edit'}">
+    <c:choose>
 
-      <h:outputText
-        value="#{select2Actions.resolveSingleReferenceLabel(field_0, widgetProperty_repository, widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_labelProperty)}" />
+      <c:when
+        test="#{nxl:isLikePlainMode(widget.mode) or widget.mode == 'pdf'}">
+        <h:outputText
+          value="#{select2Actions.resolveSingleReferenceLabel(field_0, widgetProperty_repository, widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_labelProperty)}" />
 
-    </c:if>
+      </c:when>
 
-    <c:if test="#{widget.mode == 'edit'}">
+      <c:otherwise>
+        <ui:include src="/select2/include/select2_js.xhtml" />
 
-      <ui:include src="/select2/include/select2_js.xhtml" />
+        <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+          required="#{widgetProperty_required}" var="currentValue">
+          <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+            value="#{select2Actions.resolveSingleReference(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_documentSchemas)}" />
+        </nxu:valueHolder>
 
-      <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}" required="#{widgetProperty_required}"
-        var="currentValue">
-        <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
-          value="#{select2Actions.resolveSingleReference(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_documentSchemas)}" />
-      </nxu:valueHolder>
+        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideInstructionLabel}">
+          <p class="detail">
+            <h:outputFormat value="#{instructionLabel}">
+              <f:param value="#{widgetProperty_minChars}" />
+            </h:outputFormat>
+          </p>
+        </c:if>
 
-      <c:if test="#{!widgetProperty_hideInstructionLabel}">
-        <p class="detail">
-          <h:outputFormat value="#{instructionLabel}">
-            <f:param value="#{widgetProperty_minChars}" />
-          </h:outputFormat>
-        </p>
-      </c:if>
+        <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+          value="#{select2Actions.encodeParameters(widget)}" />
+        <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
+      </c:otherwise>
 
-      <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
-        value="#{select2Actions.encodeParameters(widget)}" />
-      <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
-
-    </c:if>
+    </c:choose>
 
   </nxu:set>
 

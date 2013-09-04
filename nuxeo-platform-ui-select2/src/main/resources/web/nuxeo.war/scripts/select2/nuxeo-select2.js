@@ -16,8 +16,8 @@ function docEntryDefaultFormatter(doc) {
     markup += "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"
   }
   markup += doc.title;
-  if (entry.warn_message) {
-    markup += "<img src='/nuxeo/icons/warning.gif' title='" + entry.warn_message + "'/>"
+  if (doc.warn_message) {
+    markup += "<img src='/nuxeo/icons/warning.gif' title='" + doc.warn_message + "'/>"
   }
   return markup;
 }
@@ -110,6 +110,8 @@ function initSelect2Widget(el) {
   var paramsHolder = jQuery("#" + paramId);
   params = JSON.parse(paramsHolder.val());
 
+  var readonly = params.readonly == 'true';
+
   var initId = (elid + "_init").split(":").join("\\:");
   var initHolder = jQuery("#" + initId);
   var initDoc = null;
@@ -201,13 +203,18 @@ function initSelect2Widget(el) {
     select2_params.multiple = true;
   }
 
-  if (params.placeholder) {
+  if (params.placeholder && !readonly) {
     select2_params.placeholder = params.placeholder;
     select2_params.allowClear = true;
   }
 
   // init select2
   el.select2(select2_params);
+
+  // view or edit mode
+  if (readonly) {
+    el.select2("readonly", true);
+  }
 
   // Make selected items sortable
   if (params.multiple == 'true' && params.sortable == 'true') {

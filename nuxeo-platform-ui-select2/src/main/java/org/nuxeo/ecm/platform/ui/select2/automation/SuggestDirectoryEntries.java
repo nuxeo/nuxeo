@@ -110,8 +110,9 @@ public class SuggestDirectoryEntries {
                 }
             }
             if (obsolete) {
-                if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID) && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
-                  obj.element(Select2Common.WARN_MESSAGE_LABEL, "obsole");
+                if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
+                        && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
+                    obj.element(Select2Common.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
                 }
             }
         }
@@ -307,6 +308,8 @@ public class SuggestDirectoryEntries {
 
     private boolean isChained = false;
 
+    private String obsoleteWarningMessage = null;
+
     protected String getLang() {
         if (lang == null) {
             lang = (String) ctx.get("lang");
@@ -319,6 +322,14 @@ public class SuggestDirectoryEntries {
 
     protected Locale getLocale() {
         return new Locale(getLang());
+    }
+
+    protected String getObsoleteWarningMessage() {
+        if (obsoleteWarningMessage == null) {
+            obsoleteWarningMessage = I18NUtils.getMessageString("messages",
+                    "obsolete", new Object[0], getLocale());
+        }
+        return obsoleteWarningMessage;
     }
 
     @OperationMethod

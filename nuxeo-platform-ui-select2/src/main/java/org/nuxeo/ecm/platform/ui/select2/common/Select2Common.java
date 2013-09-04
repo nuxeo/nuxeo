@@ -66,6 +66,8 @@ public class Select2Common {
 
     public static final String DIR_DEFAULT_FORMATTER = "dirEntryDefaultFormatter";
 
+    public static final String READ_ONLY_PARAM = "readonly";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.

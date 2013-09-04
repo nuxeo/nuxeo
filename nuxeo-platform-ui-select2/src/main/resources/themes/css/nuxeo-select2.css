@@ -61,3 +61,15 @@ author: lkemen@nuxeo.com
 .select2-drop-mask {
 	z-index : 10098;
 }
+
+/* Customize readonly mode used for view mode */
+div.select2-container-disabled > a.select2-choice, div.select2-container-disabled > ul.select2-choices {
+	border: 0px !important;
+	background-color: #FFF !important;
+	cursor: text !important;
+	webkit-user-select: none;
+}
+
+div.select2-container-disabled span.select2-arrow {
+	display: none !important;
+}

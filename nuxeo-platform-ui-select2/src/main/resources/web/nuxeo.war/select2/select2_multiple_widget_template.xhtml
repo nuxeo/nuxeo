@@ -13,37 +13,41 @@
     value="#{nxu:test(empty widgetProperty_instructionLabel, messages['label.suggestion.help.minChars'], nxu:test(widget.translated, messages[widgetProperty_instructionLabel], widgetProperty_instructionLabel))}"
     cache="true">
 
-    <c:if test="#{widget.mode != 'edit'}">
-      <c:forEach var="label"
-        items="#{select2Actions.resolveMultipleReferenceLabels(field_0, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_labelProperty)}">
-        <h:outputText value="#{label}" />
-        <br />
-      </c:forEach>
-    </c:if>
+    <c:choose>
 
-    <c:if test="#{widget.mode == 'edit'}">
+      <c:when
+        test="#{nxl:isLikePlainMode(widget.mode) or widget.mode == 'pdf'}">
+        <c:forEach var="label"
+          items="#{select2Actions.resolveMultipleReferenceLabels(field_0, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_labelProperty)}">
+          <h:outputText value="#{label}" />
+          <br />
+        </c:forEach>
+      </c:when>
 
-      <ui:include src="/select2/include/select2_js.xhtml" />
+      <c:otherwise>
+        <ui:include src="/select2/include/select2_js.xhtml" />
 
-      <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}" required="#{widgetProperty_required}"
-        var="currentValue">
-        <f:converter converterId="select2Converter"></f:converter>
-        <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
-          value="#{select2Actions.resolveMultipleReferences(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty, widgetProperty_documentSchemas)}" />
-      </nxu:valueHolder>
-      <c:if test="#{!widgetProperty_hideInstructionLabel}">
-        <p class="detail">
-          <h:outputFormat value="#{instructionLabel}">
-            <f:param value="#{widgetProperty_minChars}" />
-          </h:outputFormat>
-        </p>
-      </c:if>
+        <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+          required="#{widgetProperty_required}" var="currentValue">
+          <f:converter converterId="select2Converter"></f:converter>
+          <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+            value="#{select2Actions.resolveMultipleReferences(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty, widgetProperty_documentSchemas)}" />
+        </nxu:valueHolder>
 
-      <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
-        value="#{select2Actions.encodeParameters(widget)}" />
-      <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
+        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideInstructionLabel}">
+          <p class="detail">
+            <h:outputFormat value="#{instructionLabel}">
+              <f:param value="#{widgetProperty_minChars}" />
+            </h:outputFormat>
+          </p>
+        </c:if>
 
-    </c:if>
+        <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+          value="#{select2Actions.encodeParameters(widget)}" />
+        <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
+      </c:otherwise>
+
+    </c:choose>
 
   </nxu:set>
 
