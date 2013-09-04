@@ -102,7 +102,7 @@ public class SuggestDirectoryEntries {
                 if (label.equals(key)) {
                     if (translateLabels && !dbl10n) {
                         // translations are in messages*.properties files
-                        value = translate((String) value);
+                        value = translate(value.toString());
                     }
                     obj.element(Select2Common.LABEL, value);
                 } else {
