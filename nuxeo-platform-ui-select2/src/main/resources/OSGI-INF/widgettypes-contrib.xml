@@ -21,12 +21,12 @@
       </fields>
     </widget>
 
-    <widget name="minimumInputLength" type="int">
+    <widget name="minChars" type="int">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Minimum input length</label>
+        <label mode="any">Minimum number of characters</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -36,7 +36,7 @@
         </label>
       </helpLabels>
       <fields>
-        <field>minimumInputLength</field>
+        <field>minChars</field>
       </fields>
     </widget>
 
@@ -510,7 +510,7 @@
                   <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minimumInputLength</widget>
+                  <widget category="widgetTypeConf">minChars</widget>
                 </row>
               </rows>
             </layout>
@@ -603,7 +603,7 @@
                   <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minimumInputLength</widget>
+                  <widget category="widgetTypeConf">minChars</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">sortable</widget>
@@ -686,7 +686,7 @@
                   <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minimumInputLength</widget>
+                  <widget category="widgetTypeConf">minChars</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">canSelectParent</widget>
@@ -774,7 +774,7 @@
                   <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minimumInputLength</widget>
+                  <widget category="widgetTypeConf">minChars</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">canSelectParent</widget>
@@ -862,7 +862,7 @@
                   <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minimumInputLength</widget>
+                  <widget category="widgetTypeConf">minChars</widget>
                 </row>
               </rows>
             </layout>
@@ -938,7 +938,7 @@
                   <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minimumInputLength</widget>
+                  <widget category="widgetTypeConf">minChars</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">sortable</widget>

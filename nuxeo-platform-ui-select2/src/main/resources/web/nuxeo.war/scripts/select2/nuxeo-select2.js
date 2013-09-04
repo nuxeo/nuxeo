@@ -123,7 +123,7 @@ function initSelect2Widget(el) {
 
   // build select2 parameters
   var select2_params = {
-    minimumInputLength : params.minimumInputLength,
+    minimumInputLength : params.minChars,
     query : function(query) {
 
       configureOperationParameters(op, params, query);

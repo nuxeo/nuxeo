@@ -36,7 +36,7 @@
       <c:if test="#{!widgetProperty_hideInstructionLabel}">
         <p class="detail">
           <h:outputFormat value="#{instructionLabel}">
-            <f:param value="#{widgetProperty_minimumInputLength}" />
+            <f:param value="#{widgetProperty_minChars}" />
           </h:outputFormat>
         </p>
       </c:if>
