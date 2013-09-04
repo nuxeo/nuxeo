@@ -3734,7 +3734,7 @@
           <property name="operationId">UserGroup.Suggestion</property>
           <property name="searchType">group</property>
           <property name="width">300</property>
-          <property name="minimumInputLength">3</property>
+          <property name="minChars">3</property>
           <property name="customFormater">userEntryDefaultFormatter</property>
         </properties>
       </widget>
@@ -3803,7 +3803,7 @@
           </property>
           <property name="operationId">UserGroup.Suggestion</property>
           <property name="width">300</property>
-          <property name="minimumInputLength">3</property>
+          <property name="minChars">3</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">label.security.search</property>
           <property name="customFormater">userEntryDefaultFormatter</property>
@@ -3844,7 +3844,7 @@
           <property name="operationId">UserGroup.Suggestion</property>
           <property name="prefixed">true</property>
           <property name="width">300</property>
-          <property name="minimumInputLength">3</property>
+          <property name="minChars">3</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">label.security.search</property>
           <property name="customFormater">userEntryDefaultFormatter</property>
