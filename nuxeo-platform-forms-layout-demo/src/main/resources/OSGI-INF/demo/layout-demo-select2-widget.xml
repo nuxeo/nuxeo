@@ -35,7 +35,7 @@
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="documentSchemas">dublincore,layout_demo_schema,common</property>
         </properties>
       </widget>
     </layout>
@@ -68,7 +68,7 @@
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="documentSchemas">dublincore,layout_demo_schema,common</property>
         </properties>
       </widget>
     </layout>
@@ -99,13 +99,8 @@
           <property name="minimumInputLength">0</property>
           <property name="hideInstructionLabel">true</property>
           <property name="directoryName">l10ncoverage</property>
-          <property name="customFormater">dirformater</property>
           <property name="keySeparator">/</property>
           <property name="placeholder">Choose a country</property>
-          <property name="inlinejs"> <![CDATA[
-  function dirformater(entry) {
-   return entry.label;
-  }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
           <property name="repository">default</property>
         </properties>
@@ -138,13 +133,8 @@
           <property name="minimumInputLength">0</property>
           <property name="hideInstructionLabel">true</property>
           <property name="directoryName">l10nsubjects</property>
-          <property name="customFormater">dirformater</property>
           <property name="keySeparator">/</property>
           <property name="placeholder">Choose a topic</property>
-          <property name="inlinejs"> <![CDATA[
-  function dirformater(entry) {
-   return entry.label;
-  }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
           <property name="repository">default</property>
         </properties>
@@ -175,15 +165,6 @@
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">Choose a user/group</property>
           <property name="repository">default</property>
-          <property name="customFormater">userformater</property>
-          <property name="inlinejs"> <![CDATA[
-  function userformater(entry) {
-   var markup = "<table><tr>";
-   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
-   markup += "<td style='padding:2px'>" + entry.label + "</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
         </properties>
       </widget>
     </layout>
@@ -212,15 +193,6 @@
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">Choose one or more user/group</property>
           <property name="repository">default</property>
-          <property name="customFormater">userformater</property>
-          <property name="inlinejs"> <![CDATA[
-  function userformater(entry) {
-   var markup = "<table><tr>";
-   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
-   markup += "<td style='padding:2px'>" + entry.label + "</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
         </properties>
       </widget>
     </layout>
