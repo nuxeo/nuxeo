@@ -30,8 +30,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.actions.ELActionContext;
+import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.platform.el.ExpressionContext;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -109,11 +117,53 @@ public class RestContributorServiceImpl extends DefaultComponent implements
         for (String category : getCategoriesToActivate(ec)) {
             for (ContributorDescriptor descriptor : getContributorDescriptors(
                     category, ec)) {
+
+                writeContextWithFilteredContributors(jg, ec, descriptor);
+            }
+        }
+
+    }
+
+    /**
+     * Write the context for filtered contributors
+     *
+     * @param jg
+     * @param ec
+     * @param descriptor
+     * @throws IOException
+     * @throws JsonGenerationException
+     * @throws ClientException
+     *
+     */
+    private void writeContextWithFilteredContributors(JsonGenerator jg,
+            RestEvaluationContext ec, ContributorDescriptor descriptor)
+            throws IOException, JsonGenerationException, ClientException {
+        for (String filterId : descriptor.filterIds) {
+            ActionManager as = Framework.getLocalService(ActionManager.class);
+            if (as.checkFilter(filterId, createActionContext(ec))) {
                 jg.writeFieldName(descriptor.name);
                 descriptor.getRestContributor().contribute(jg, ec);
             }
         }
+    }
 
+    /**
+     * Creates an ActionService compatible ActionContext to evaluate filters
+     *
+     * @param ec
+     * @return
+     *
+     */
+    private ActionContext createActionContext(RestEvaluationContext ec) {
+        ActionContext actionContext = new ELActionContext(
+                new ExpressionContext(), new ExpressionFactoryImpl());
+        CoreSession session = ec.getDocumentModel().getCoreSession();
+        actionContext.setDocumentManager(session);
+        actionContext.setCurrentPrincipal((NuxeoPrincipal) session.getPrincipal());
+
+        actionContext.setCurrentDocument(ec.getDocumentModel());
+
+        return actionContext;
     }
 
     private List<String> getCategoriesToActivate(RestEvaluationContext ec) {

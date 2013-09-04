@@ -22,6 +22,9 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.actions.ActionFilter;
+import org.nuxeo.ecm.platform.actions.DefaultActionFilter;
+
 
 /**
  *
@@ -39,7 +42,14 @@ public class ContributorDescriptor {
 
 
     @XNode("@class")
-    public Class<?> klass;
+    public Class<? extends RestContributor> klass;
+
+    @XNodeList(value = "filter-id", type = ArrayList.class, componentType = String.class)
+    protected List<String> filterIds;
+
+    @XNodeList(value = "filter", type = ActionFilter[].class, componentType = DefaultActionFilter.class)
+    protected ActionFilter[] filters;
+
 
 
     /**
@@ -48,7 +58,7 @@ public class ContributorDescriptor {
      */
     public RestContributor getRestContributor() {
         try {
-            return (RestContributor) klass.newInstance();
+            return klass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             return null;
         }
