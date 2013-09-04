@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -182,14 +183,31 @@ public class RoutingTaskActionsBean implements Serializable {
     public List<Action> getTaskButtons(Task task) throws ClientException {
         List<Button> buttons = getTaskInfo(task, false).buttons;
         List<Action> actions = new ArrayList<Action>();
+
+        DocumentModel workflowInstance = documentManager.getDocument(new IdRef(
+                task.getProcessId()));
+        GraphRoute workflow = workflowInstance.getAdapter(GraphRoute.class);
+        if (workflow == null) {
+            // task was not created by a workflow process , no actions to
+            // display;
+            return actions;
+        }
+        GraphNode node = workflow.getNode(task.getType());
         for (Button button : buttons) {
             Action action = new Action(button.getName(),
                     Action.EMPTY_CATEGORIES);
             action.setLabel(button.getLabel());
             boolean displayAction = true;
             if (StringUtils.isNotEmpty(button.getFilter())) {
+                ActionContext actionContext = actionContextProvider.createActionContext();
+                if (node != null) {
+                    Map<String, Object> workflowContextualInfo = new HashMap<String, Object>();
+                    workflowContextualInfo.putAll(node.getWorkflowContextualInfo(
+                            documentManager, true));
+                    actionContext.putAllLocalVariables(workflowContextualInfo);
+                }
                 displayAction = getActionService().checkFilter(button.filter,
-                        actionContextProvider.createActionContext());
+                        actionContext);
             }
             if (displayAction) {
                 actions.add(action);
