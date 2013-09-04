@@ -1,3 +1,13 @@
+function userEntryDefaultFormatter(entry) {
+  var markup = "<img src='/nuxeo/icons/" + entry.type + ".png'/>" + entry.label;
+  return markup;
+}
+
+function docEntryDefaultFormatter(doc) {
+  var markup = "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"+ doc.title;
+  return markup;
+}
+
 function getOperationName(params) {
   var opName = params.operationId;
   if (typeof (opName) == 'undefined' || opName == '') {
@@ -9,6 +19,7 @@ function getOperationName(params) {
   }
   return opName;
 }
+
 function configureOperationParameters(op, params, query) {
   if (params.directoryName && params.directoryName.length > 0) {
     // build default operation for Directory

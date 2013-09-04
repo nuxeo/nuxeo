@@ -44,6 +44,8 @@ public class Select2Common {
 
     public static final String USER_SUGGESTION_SELECT2 = "select2User";
 
+    public static final String SUGGESTION_SELECT2 = "select2Widget";
+
     public static final String USER_TYPE = "user";
 
     public static final String GROUP_TYPE = "group";
@@ -51,6 +53,12 @@ public class Select2Common {
     public static final String TYPE_KEY_NAME = "type";
 
     public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
+
+    public static final String CUSTOM_FORMATTER = "customFormater";
+
+    public static final String USER_DEFAULT_FORMATTER = "userEntryDefaultFormatter";
+
+    public static final String DOC_DEFAULT_FORMATTER = "docEntryDefaultFormatter";
 
     /**
      * Compute the filed name of the directory that holds the value that we want

@@ -129,7 +129,6 @@ public class Select2ActionsBean implements Serializable {
      * @since 5.7.3
      */
     public String encodeParameters(final Widget widget) throws Exception {
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
 
@@ -147,6 +146,7 @@ public class Select2ActionsBean implements Serializable {
 
         Map<String, Serializable> propertySet = widget.getProperties();
         boolean hasPlaceholder = false;
+        boolean hasCustomFormatter = false;
 
         for (Entry<String, Serializable> entry : propertySet.entrySet()) {
 
@@ -158,6 +158,8 @@ public class Select2ActionsBean implements Serializable {
                 if (isTranslated) {
                     value = messages.get(entry.getValue().toString());
                 }
+            } else if (entry.getKey().equals(Select2Common.CUSTOM_FORMATTER)) {
+                hasCustomFormatter = true;
             }
 
             jg.writeStringField(entry.getKey(), value);
@@ -173,6 +175,15 @@ public class Select2ActionsBean implements Serializable {
 
         if (widget.getType().startsWith(Select2Common.USER_SUGGESTION_SELECT2)) {
             jg.writeStringField("operationId", SuggestUserEntries.ID);
+            if (!hasCustomFormatter) {
+                jg.writeStringField(Select2Common.CUSTOM_FORMATTER,
+                        Select2Common.USER_DEFAULT_FORMATTER);
+            }
+        } else if (widget.getType().startsWith(Select2Common.SUGGESTION_SELECT2)) {
+            if (!hasCustomFormatter) {
+                jg.writeStringField(Select2Common.CUSTOM_FORMATTER,
+                        Select2Common.DOC_DEFAULT_FORMATTER);
+            }
         }
 
         jg.writeEndObject();
