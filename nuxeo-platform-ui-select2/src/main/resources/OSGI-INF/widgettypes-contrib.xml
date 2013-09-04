@@ -429,6 +429,40 @@
       </selectOptions>
     </widget>
 
+    <widget name="containerCssClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Container css class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Css class of the selection container
+        </label>
+      </helpLabels>
+      <fields>
+        <field>containerCssClass</field>
+      </fields>
+    </widget>
+
+    <widget name="dropdownCssClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Dropdown css class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Css class of the dropdown suggestion
+        </label>
+      </helpLabels>
+      <fields>
+        <field>dropdownCssClass</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -491,6 +525,9 @@
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">containerCssClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -511,6 +548,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
               </rows>
             </layout>
@@ -584,6 +624,9 @@
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">containerCssClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -607,6 +650,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">sortable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
               </rows>
             </layout>
@@ -667,6 +713,9 @@
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">containerCssClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -696,6 +745,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">obsolete</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
               </rows>
             </layout>
@@ -755,6 +807,9 @@
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">containerCssClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -787,6 +842,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">sortable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
               </rows>
             </layout>
@@ -843,6 +901,9 @@
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">containerCssClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -863,6 +924,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
               </rows>
             </layout>
@@ -919,6 +983,9 @@
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">containerCssClass</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -942,6 +1009,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">sortable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
               </rows>
             </layout>

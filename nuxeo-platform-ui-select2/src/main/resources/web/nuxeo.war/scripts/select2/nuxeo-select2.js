@@ -123,6 +123,8 @@ function initSelect2Widget(el) {
 
   // build select2 parameters
   var select2_params = {
+    containerCssClass : params.containerCssClass,
+    dropdownCssClass : params.dropdownCssClass,
     minimumInputLength : params.minChars,
     query : function(query) {
 
