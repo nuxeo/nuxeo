@@ -130,7 +130,8 @@ public class RestServiceTest {
         jg.flush();
 
         // Then it is filled with children contributor
-        JsonNode node = parseJson(out);
+        String jsonFolder = out.toString();
+        JsonNode node = parseJson(jsonFolder);
         assertEquals("documents",
                 node.get("children").get("entity-type").getValueAsText());
 
@@ -172,7 +173,6 @@ public class RestServiceTest {
 
         // When it is written as Json with breadcrumb context category
         String jsonFolder = getDocumentAsJson(folder, "breadcrumb");
-
         // Then it contains the breadcrumb in contextParameters
         JsonNode node = parseJson(jsonFolder);
         JsonNode breadCrumbEntries = node.get("contextParameters").get(

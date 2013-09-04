@@ -117,34 +117,30 @@ public class RestContributorServiceImpl extends DefaultComponent implements
         for (String category : getCategoriesToActivate(ec)) {
             for (ContributorDescriptor descriptor : getContributorDescriptors(
                     category, ec)) {
-
-                writeContextWithFilteredContributors(jg, ec, descriptor);
+                if (evaluateFilter(ec, descriptor)) {
+                    jg.writeFieldName(descriptor.name);
+                    descriptor.getRestContributor().contribute(jg, ec);
+                }
             }
         }
 
     }
 
     /**
-     * Write the context for filtered contributors
-     *
-     * @param jg
      * @param ec
      * @param descriptor
-     * @throws IOException
-     * @throws JsonGenerationException
-     * @throws ClientException
+     * @return
      *
      */
-    private void writeContextWithFilteredContributors(JsonGenerator jg,
-            RestEvaluationContext ec, ContributorDescriptor descriptor)
-            throws IOException, JsonGenerationException, ClientException {
+    private boolean evaluateFilter(RestEvaluationContext ec,
+            ContributorDescriptor descriptor) {
         for (String filterId : descriptor.filterIds) {
             ActionManager as = Framework.getLocalService(ActionManager.class);
-            if (as.checkFilter(filterId, createActionContext(ec))) {
-                jg.writeFieldName(descriptor.name);
-                descriptor.getRestContributor().contribute(jg, ec);
+            if (!as.checkFilter(filterId, createActionContext(ec))) {
+                return false;
             }
         }
+        return true;
     }
 
     /**
