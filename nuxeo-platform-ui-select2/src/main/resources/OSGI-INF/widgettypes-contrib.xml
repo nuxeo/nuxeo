@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.ui.select2.widgettype.contrib">
 
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
     <widget name="width" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Width</label>
       </labels>
@@ -19,6 +22,9 @@
     </widget>
 
     <widget name="minimumInputLength" type="int">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Minimum input length</label>
       </labels>
@@ -35,6 +41,9 @@
     </widget>
 
     <widget name="query" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">NXQL Query</label>
       </labels>
@@ -49,6 +58,9 @@
     </widget>
 
     <widget name="documentSchemas" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Document Schemas</label>
       </labels>
@@ -65,6 +77,9 @@
     </widget>
 
     <widget name="customFormater" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Custom Formater</label>
       </labels>
@@ -87,6 +102,9 @@
     </widget>
 
     <widget name="idProperty" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Id Property</label>
       </labels>
@@ -106,6 +124,9 @@
     </widget>
 
     <widget name="labelProperty" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Label Property</label>
       </labels>
@@ -125,7 +146,44 @@
       </fields>
     </widget>
 
+    <widget name="labelFieldName" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Label field name</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the Directory field that should be
+          used to
+          define the Label of entry.
+          If unset 'label'
+          will be
+          used. In case of
+          localization with a directory field for
+          each supported language (see
+          dbl10n option), by default
+          fields named like 'label_en', 'label_fr' or
+          'label_de' will
+          be searched. You can customize looked up fields by
+          specifing
+          a pattern like
+          'label_{lang}' where the part {lang} will be
+          replaced with
+          the current locale.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>labelFieldName</field>
+      </fields>
+    </widget>
+
+
     <widget name="inlinejs" type="textarea">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">inline js</label>
       </labels>
@@ -141,6 +199,9 @@
     </widget>
 
     <widget name="repository" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">target Repository</label>
       </labels>
@@ -157,8 +218,10 @@
       </fields>
     </widget>
 
-
     <widget name="operationId" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">operationId</label>
       </labels>
@@ -177,6 +240,9 @@
     </widget>
 
     <widget name="initOperationId" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">initOperationId</label>
       </labels>
@@ -195,6 +261,9 @@
     </widget>
 
     <widget name="hideInstructionLabel" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Hide instructionLabel</label>
       </labels>
@@ -209,6 +278,9 @@
     </widget>
 
     <widget name="instructionLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Instruction Label</label>
       </labels>
@@ -223,23 +295,10 @@
       </fields>
     </widget>
 
-    <widget name="placeholder" type="text">
-      <labels>
-        <label mode="any">Placeholder</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          The placeholder displayed in the select when
-          no option
-          is chosen yet.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>placeholder</field>
-      </fields>
-    </widget>
-
     <widget name="directoryName" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Directory Name</label>
       </labels>
@@ -251,10 +310,15 @@
       <fields>
         <field>directory</field>
       </fields>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+      </properties>
     </widget>
 
-
     <widget name="sortable" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Enable sorting on selected entries</label>
       </labels>
@@ -269,6 +333,9 @@
     </widget>
 
     <widget name="dbl10n" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Activate dbl10n</label>
       </labels>
@@ -289,6 +356,9 @@
     </widget>
 
     <widget name="canSelectParent" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Can select parent</label>
       </labels>
@@ -305,6 +375,9 @@
     </widget>
 
     <widget name="filterParent" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Filter parent</label>
       </labels>
@@ -321,6 +394,9 @@
     </widget>
 
     <widget name="obsolete" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Display obsolete entry</label>
       </labels>
@@ -336,21 +412,21 @@
       </fields>
     </widget>
 
-    <widget name="searchType" type="text">
+    <widget name="searchType" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
       <labels>
         <label mode="any">Search type</label>
       </labels>
-      <helpLabels>
-        <label mode="any">
-          Two possible searches, enter 'user' or
-          'group' whether to restrict to users or groups. Leaving
-          this
-          property will search for both users and groups.
-        </label>
-      </helpLabels>
       <fields>
         <field>searchType</field>
       </fields>
+      <selectOptions>
+        <option itemLabel="Users and Groups" itemValue="" />
+        <option itemLabel="Users" itemValue="user" />
+        <option itemLabel="Groups" itemValue="group" />
+      </selectOptions>
     </widget>
 
   </extension>
@@ -386,49 +462,55 @@
             <layout name="select2_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">width</widget>
                 </row>
                 <row>
-                  <widget>minimumInputLength</widget>
+                  <widget category="widgetTypeConf">repository</widget>
                 </row>
                 <row>
-                  <widget>repository</widget>
+                  <widget category="widgetTypeConf">operationId</widget>
                 </row>
                 <row>
-                  <widget>operationId</widget>
+                  <widget category="widgetTypeConf">initOperationId</widget>
                 </row>
                 <row>
-                  <widget>initOperationId</widget>
+                  <widget category="widgetTypeConf">query</widget>
                 </row>
                 <row>
-                  <widget>query</widget>
+                  <widget category="widgetTypeConf">documentSchemas</widget>
                 </row>
                 <row>
-                  <widget>documentSchemas</widget>
+                  <widget category="widgetTypeConf">idProperty</widget>
                 </row>
                 <row>
-                  <widget>customFormater</widget>
+                  <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget>idProperty</widget>
+                  <widget category="widgetTypeConf">customFormater</widget>
                 </row>
                 <row>
-                  <widget>labelProperty</widget>
+                  <widget category="widgetTypeConf">inlinejs</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>inlinejs</widget>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget>hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">instructionLabel</widget>
                 </row>
                 <row>
-                  <widget>instructionLabel</widget>
+                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget>placeholder</widget>
-                </row>
-                <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">minimumInputLength</widget>
                 </row>
               </rows>
             </layout>
@@ -470,55 +552,61 @@
         </fields>
         <properties>
           <layouts mode="any">
-            <layout name="select2multiple_widget_type_properties_any">
+            <layout name="select2Multiple_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">width</widget>
                 </row>
                 <row>
-                  <widget>minimumInputLength</widget>
+                  <widget category="widgetTypeConf">repository</widget>
                 </row>
                 <row>
-                  <widget>sortable</widget>
+                  <widget category="widgetTypeConf">operationId</widget>
                 </row>
                 <row>
-                  <widget>repository</widget>
+                  <widget category="widgetTypeConf">initOperationId</widget>
                 </row>
                 <row>
-                  <widget>operationId</widget>
+                  <widget category="widgetTypeConf">query</widget>
                 </row>
                 <row>
-                  <widget>initOperationId</widget>
+                  <widget category="widgetTypeConf">documentSchemas</widget>
                 </row>
                 <row>
-                  <widget>query</widget>
+                  <widget category="widgetTypeConf">idProperty</widget>
                 </row>
                 <row>
-                  <widget>documentSchemas</widget>
+                  <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget>customFormater</widget>
+                  <widget category="widgetTypeConf">customFormater</widget>
                 </row>
                 <row>
-                  <widget>idProperty</widget>
+                  <widget category="widgetTypeConf">inlinejs</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2Multiple_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>labelProperty</widget>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget>inlinejs</widget>
+                  <widget category="widgetTypeConf">instructionLabel</widget>
                 </row>
                 <row>
-                  <widget>hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget>instructionLabel</widget>
+                  <widget category="widgetTypeConf">minimumInputLength</widget>
                 </row>
                 <row>
-                  <widget>placeholder</widget>
-                </row>
-                <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">sortable</widget>
                 </row>
               </rows>
             </layout>
@@ -559,49 +647,55 @@
         </fields>
         <properties>
           <layouts mode="any">
-            <layout name="select2_directory_widget_type_properties_any">
+            <layout name="select2Directory_type_properties_any">
               <rows>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">width</widget>
                 </row>
                 <row>
-                  <widget>minimumInputLength</widget>
+                  <widget category="widgetTypeConf">directoryName</widget>
                 </row>
                 <row>
-                  <widget>directoryName</widget>
+                  <widget category="widgetTypeConf">dbl10n</widget>
                 </row>
                 <row>
-                  <widget>labelFieldName</widget>
+                  <widget category="widgetTypeConf">labelFieldName</widget>
                 </row>
                 <row>
-                  <widget>customFormater</widget>
+                  <widget category="widgetTypeConf">customFormater</widget>
                 </row>
                 <row>
-                  <widget>inlinejs</widget>
+                  <widget category="widgetTypeConf">inlinejs</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2Directory_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget>instructionLabel</widget>
+                  <widget category="widgetTypeConf">instructionLabel</widget>
                 </row>
                 <row>
-                  <widget>dbl10n</widget>
+                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget>placeholder</widget>
+                  <widget category="widgetTypeConf">minimumInputLength</widget>
                 </row>
                 <row>
-                  <widget>canSelectParent</widget>
+                  <widget category="widgetTypeConf">canSelectParent</widget>
                 </row>
                 <row>
-                  <widget>filterParent</widget>
+                  <widget category="widgetTypeConf">filterParent</widget>
                 </row>
                 <row>
-                  <widget>obsolete</widget>
-                </row>
-                <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">obsolete</widget>
                 </row>
               </rows>
             </layout>
@@ -641,278 +735,60 @@
         </fields>
         <properties>
           <layouts mode="any">
-            <layout name="select2_directory_widget_type_properties_any">
+            <layout name="select2DirectoryMultiple_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">width</widget>
                 </row>
                 <row>
-                  <widget>minimumInputLength</widget>
+                  <widget category="widgetTypeConf">directoryName</widget>
                 </row>
                 <row>
-                  <widget>sortable</widget>
+                  <widget category="widgetTypeConf">dbl10n</widget>
                 </row>
                 <row>
-                  <widget>directoryName</widget>
+                  <widget category="widgetTypeConf">labelFieldName</widget>
                 </row>
                 <row>
-                  <widget>labelFieldName</widget>
+                  <widget category="widgetTypeConf">customFormater</widget>
                 </row>
                 <row>
-                  <widget>customFormater</widget>
-                </row>
-                <row>
-                  <widget>inlinejs</widget>
-                </row>
-                <row>
-                  <widget>hideInstructionLabel</widget>
-                </row>
-                <row>
-                  <widget>instructionLabel</widget>
-                </row>
-                <row>
-                  <widget>dbl10n</widget>
-                </row>
-                <row>
-                  <widget>placeholder</widget>
-                </row>
-                <row>
-                  <widget>canSelectParent</widget>
-                </row>
-                <row>
-                  <widget>filterParent</widget>
-                </row>
-                <row>
-                  <widget>obsolete</widget>
-                </row>
-                <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">inlinejs</widget>
                 </row>
               </rows>
-
-              <widget name="width" type="int">
-                <labels>
-                  <label mode="any">Width</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Width in pixels of the select2 combobox
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>width</field>
-                </fields>
-              </widget>
-
-              <widget name="customFormater" type="text">
-                <labels>
-                  <label mode="any">Custom Formater</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the JavaScript function name that
-                    will be called by select2 to do the formating of the
-                    suggestion entries.
-                    The target function should take as input
-                    the javascript Document as returned by Automation and should
-                    return some Html.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>customFormater</field>
-                </fields>
-              </widget>
-
-              <widget name="minimumInputLength" type="int">
-                <labels>
-                  <label mode="any">Minimum input length</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Minimal number of characters before calling
-                    the server to fetch the suggestions
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>minimumInputLength</field>
-                </fields>
-              </widget>
-
-              <widget name="sortable" type="checkbox">
-                <labels>
-                  <label mode="any">Enable sorting on selected entries</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean enable sorting on selected entries.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>sortable</field>
-                </fields>
-              </widget>
-
-              <widget name="directoryName" type="text">
-                <labels>
-                  <label mode="any">Directory Name</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the directory
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>directory</field>
-                </fields>
-              </widget>
-
-              <widget name="labelFieldName" type="text">
-                <labels>
-                  <label mode="any">Label field name</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Name of the Directory field that should be
-                    used to define the Label of entry.
-                    If unset 'label'
-                    will be
-                    used. In case of localization with a directory field for
-                    each supported language (see dbl10n option), by default
-                    fields named like 'label_en', 'label_fr' or 'label_de' will
-                    be searched. You can customize looked up fields by specifing
-                    a pattern like
-                    'label_{lang}' where the part {lang} will be
-                    replaced with
-                    the current locale.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>labelProperty</field>
-                </fields>
-              </widget>
-
-              <widget name="inlinejs" type="textarea">
-                <labels>
-                  <label mode="any">inline js</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Javascript to be injected in the page with
-                    the Widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>inlinejs</field>
-                </fields>
-              </widget>
-
-              <widget name="hideInstructionLabel" type="checkbox">
-                <labels>
-                  <label mode="any">Hide instructionLabel</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Boolean to hide the instruction label.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideInstructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="instructionLabel" type="text">
-                <labels>
-                  <label mode="any">Instruction Label</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The Instruction label is displayed below the
-                    widget.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>instructionLabel</field>
-                </fields>
-              </widget>
-
-              <widget name="dbl10n" type="checkbox">
-                <labels>
-                  <label mode="any">Activate dbl10n</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option means that the labels are
-                    localized with translations provided in the directory itself
-                    (i.e. in fields). Otherwise labels are translated as usual
-                    picking values in messages*.properties files.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>dbl10n</field>
-                </fields>
-              </widget>
-
-              <widget name="placeholder" type="text">
-                <labels>
-                  <label mode="any">Placeholder</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The placeholder displayed in the select when
-                    no option
-                    is chosen yet.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>placeholder</field>
-                </fields>
-              </widget>
-
-              <widget name="canSelectParent" type="checkbox">
-                <labels>
-                  <label mode="any">Can select parent</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option to allow selection of
-                    intermediate groups.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>canSelectParent</field>
-                </fields>
-              </widget>
-
-              <widget name="filterParent" type="checkbox">
-                <labels>
-                  <label mode="any">Filter parent</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option to apply filter on
-                    intermediate groups.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>filterParent</field>
-                </fields>
-              </widget>
-
-              <widget name="obsolete" type="checkbox">
-                <labels>
-                  <label mode="any">Display obsolete entry</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Check this option if you want obsolete
-                    entries to be selectable.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>obsolete</field>
-                </fields>
-              </widget>
-
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2DirectoryMultiple_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">instructionLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">minimumInputLength</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">canSelectParent</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">filterParent</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">obsolete</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">sortable</widget>
+                </row>
+              </rows>
             </layout>
           </layouts>
         </properties>
@@ -950,40 +826,43 @@
         </fields>
         <properties>
           <layouts mode="any">
-            <layout name="select2_widget_type_properties_any">
+            <layout name="select2User_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">width</widget>
                 </row>
                 <row>
-                  <widget>minimumInputLength</widget>
+                  <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget>repository</widget>
+                  <widget category="widgetTypeConf">searchType</widget>
                 </row>
                 <row>
-                  <widget>customFormater</widget>
+                  <widget category="widgetTypeConf">customFormater</widget>
                 </row>
                 <row>
-                  <widget>labelProperty</widget>
+                  <widget category="widgetTypeConf">inlinejs</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2User_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>inlinejs</widget>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget>hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">instructionLabel</widget>
                 </row>
                 <row>
-                  <widget>instructionLabel</widget>
+                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget>placeholder</widget>
-                </row>
-                <row>
-                  <widget>searchType</widget>
-                </row>
-                <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">minimumInputLength</widget>
                 </row>
               </rows>
             </layout>
@@ -1023,43 +902,46 @@
         </fields>
         <properties>
           <layouts mode="any">
-            <layout name="select2_widget_type_properties_any">
+            <layout name="select2UserMultiple_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>width</widget>
+                  <widget category="widgetTypeConf">width</widget>
                 </row>
                 <row>
-                  <widget>minimumInputLength</widget>
+                  <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget>sortable</widget>
+                  <widget category="widgetTypeConf">searchType</widget>
                 </row>
                 <row>
-                  <widget>repository</widget>
+                  <widget category="widgetTypeConf">customFormater</widget>
                 </row>
                 <row>
-                  <widget>customFormater</widget>
+                  <widget category="widgetTypeConf">inlinejs</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="select2UserMultiple_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget>labelProperty</widget>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget>inlinejs</widget>
+                  <widget category="widgetTypeConf">instructionLabel</widget>
                 </row>
                 <row>
-                  <widget>hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
                 </row>
                 <row>
-                  <widget>instructionLabel</widget>
+                  <widget category="widgetTypeConf">minimumInputLength</widget>
                 </row>
                 <row>
-                  <widget>placeholder</widget>
-                </row>
-                <row>
-                  <widget>searchType</widget>
-                </row>
-                <row>
-                  <widget>required</widget>
+                  <widget category="widgetTypeConf">sortable</widget>
                 </row>
               </rows>
             </layout>
