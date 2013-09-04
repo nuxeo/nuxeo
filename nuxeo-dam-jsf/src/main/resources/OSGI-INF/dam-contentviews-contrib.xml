@@ -293,15 +293,6 @@
             <property name="width">200</property>
             <property name="minimumInputLength">3</property>
             <property name="hideInstructionLabel">true</property>
-            <property name="customFormater">userformater</property>
-            <property name="inlinejs"> <![CDATA[
-  function userformater(entry) {
-   var markup = "<table><tr>";
-   markup += "<td><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
-   markup += "<td style='padding:2px'>" + entry.label + "</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
           </properties>
         </widget>
         <widget name="damc_author" type="text">
