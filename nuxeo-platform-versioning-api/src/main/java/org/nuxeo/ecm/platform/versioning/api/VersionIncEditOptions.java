@@ -20,7 +20,9 @@ package org.nuxeo.ecm.platform.versioning.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class composes a result of versioning interrogation about what
@@ -38,8 +40,14 @@ public class VersionIncEditOptions implements Serializable {
 
     /**
      * Returns action to be presented by default to user.
+     * <p>
+     * Since 5.7.3, returns {@link VersioningActions#ACTION_NO_INCREMENT} by
+     * default instead of null, when not set.
      */
     public VersioningActions getDefaultVersioningAction() {
+        if (defaultVersioningAction == null) {
+            return VersioningActions.ACTION_NO_INCREMENT;
+        }
         return defaultVersioningAction;
     }
 
@@ -54,6 +62,31 @@ public class VersionIncEditOptions implements Serializable {
 
     public List<VersioningActions> getOptions() {
         return options;
+    }
+
+    /**
+     * Returns true if some incrementation options are defined.
+     *
+     * @since 5.7.3
+     */
+    public boolean hasOptions() {
+        return options != null && !options.isEmpty();
+    }
+
+    /**
+     * Returns the versioning selection options for display.
+     *
+     * @since 5.7.3
+     */
+    public Map<String, String> getOptionsForDisplay() {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+        if (options != null) {
+            for (VersioningActions option : options) {
+                String label = "label.versioning.option." + option.toString();
+                map.put(option.name(), label);
+            }
+        }
+        return map;
     }
 
     @Override

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.versioning.api;
 
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 
 /**
@@ -29,9 +30,9 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
  */
 public enum VersioningActions implements Serializable {
 
-    ACTION_NO_INCREMENT("no_inc"), //
-    ACTION_INCREMENT_MINOR("inc_minor"), //
-    ACTION_INCREMENT_MAJOR("inc_major");
+    ACTION_NO_INCREMENT("no_inc", VersioningOption.NONE), //
+    ACTION_INCREMENT_MINOR("inc_minor", VersioningOption.MINOR), //
+    ACTION_INCREMENT_MAJOR("inc_major", VersioningOption.MAJOR);
 
     public static final String KEY_FOR_INC_OPTION = VersioningDocument.KEY_FOR_INC_OPTION;
 
@@ -45,8 +46,25 @@ public enum VersioningActions implements Serializable {
 
     private final String name;
 
-    VersioningActions(String name) {
+    /**
+     * Equivalent core increment option.
+     *
+     * @since 5.7.3
+     */
+    private final VersioningOption vo;
+
+    VersioningActions(String name, VersioningOption vo) {
         this.name = name;
+        this.vo = vo;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    public VersioningOption getVersioningOption() {
+        return vo;
     }
 
     public static VersioningActions getByActionName(String actionName) {
@@ -58,9 +76,19 @@ public enum VersioningActions implements Serializable {
         return null;
     }
 
-    @Override
-    public String toString() {
-        return name;
+    /**
+     * Returns the corresponding core versioning option for this UI versioning
+     * action.
+     *
+     * @since 5.7.3
+     */
+    public static VersioningActions getByVersioningOption(VersioningOption vo) {
+        for (VersioningActions va : VersioningActions.values()) {
+            if (va.getVersioningOption().equals(vo)) {
+                return va;
+            }
+        }
+        return null;
     }
 
 }
