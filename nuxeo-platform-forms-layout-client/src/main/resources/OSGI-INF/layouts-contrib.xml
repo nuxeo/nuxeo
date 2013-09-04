@@ -3069,7 +3069,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/set_value_widget_template.xhtml
+        /widgets/set_variable_widget_template.xhtml
       </property>
     </widgetType>
 
