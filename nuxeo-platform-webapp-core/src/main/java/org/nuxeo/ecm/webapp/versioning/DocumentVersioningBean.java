@@ -45,7 +45,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -82,6 +81,11 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
+    /**
+     * @deprecated since 5.7.3: versioning options map does not need to be kept
+     *             in cache anymore here
+     */
+    @Deprecated
     protected Map<String, String> availableVersioningOptionsMap;
 
     @In(create = true)
@@ -97,14 +101,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     private Boolean rendered;
 
     private VersioningActions selectedOption;
-
-    @Override
-    @Deprecated
-    public Collection<VersioningActions> getCurrentItemVersioningOptions() {
-        VersionIncEditOptions options = getCurrentAvailableVersioningOptions();
-        return options == null ? Collections.<VersioningActions> emptyList()
-                : options.getOptions();
-    }
 
     @Override
     public Collection<VersionModel> getItemVersioningHistory(
@@ -126,17 +122,9 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return versions;
     }
 
-    // FIXME: should cache the list and invalidate it correctly as it refers to
-    // current document
     @Override
     public Collection<VersionModel> getCurrentItemVersioningHistory() {
         return getItemVersioningHistory(navigationContext.getCurrentDocument());
-    }
-
-    @Override
-    @Factory(value = "currentDocumentIncrementationRules", scope = EVENT)
-    public String factoryForIncrementationRules() {
-        return null;
     }
 
     @Factory(autoCreate = true, value = "currentDocumentVersionInfo", scope = EVENT)
@@ -145,12 +133,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         String versionLabel = versioningManager.getVersionLabel(doc);
         boolean available = versionLabel != null && versionLabel.length() != 0;
         return new VersionInfo(versionLabel, available);
-    }
-
-    @Override
-    @Deprecated
-    public String getIncRulesResult() {
-        return null;
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
@@ -162,6 +144,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         rendered = null;
     }
 
+    @Deprecated
     @Override
     public Map<String, String> getAvailableVersioningOptionsMap() {
         // FIXME: should cache the map and invalidate it correctly as it refers
@@ -176,17 +159,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return availableVersioningOptionsMap;
     }
 
-    /**
-     * For documents about to be created there should be no versioning options.
-     */
-    @Observer(value = { EventNames.NEW_DOCUMENT_CREATED }, create = false)
-    @BypassInterceptors
-    public void resetRenderingStatus() {
-        rendered = Boolean.FALSE;
-    }
-
     @Override
-    // deprecated in public API
     public Map<String, String> getVersioningOptionsMap(DocumentModel doc) {
         Map<String, String> map = new LinkedHashMap<String, String>();
         VersionIncEditOptions options = getAvailableVersioningOptions(doc);
@@ -202,11 +175,16 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return map;
     }
 
+    /**
+     * @deprecated since 5.7.3: options are resolved from the layout value
+     *             instead now that a generic widget definition handles it
+     */
+    @Deprecated
     private VersionIncEditOptions getCurrentAvailableVersioningOptions() {
         return getAvailableVersioningOptions(navigationContext.getCurrentDocument());
     }
 
-    private VersionIncEditOptions getAvailableVersioningOptions(
+    public VersionIncEditOptions getAvailableVersioningOptions(
             DocumentModel doc) {
         try {
             return versioningManager.getVersionIncEditOptions(doc);
@@ -221,6 +199,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return versioningManager.getVersionLabel(doc);
     }
 
+    @Deprecated
     @Override
     public String getVersioningOptionInstanceId() {
         if (selectedOption == null) {
@@ -237,6 +216,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return selectedOption.name();
     }
 
+    @Deprecated
     @Override
     public void setVersioningOptionInstanceId(String optionId)
             throws ClientException {
@@ -244,6 +224,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
                 optionId);
     }
 
+    @Deprecated
     @Override
     public void setVersioningOptionInstanceId(DocumentModel docModel,
             String optionId) throws ClientException {
@@ -256,6 +237,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         }
     }
 
+    @Deprecated
     @Override
     public void setVersioningOptionInstanceId(DocumentModel docModel,
             VersioningActions option) throws ClientException {
@@ -291,43 +273,18 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         throw new ValidatorException(message);
     }
 
-    @Override
     @Deprecated
-    public void setCreateSnapshot(boolean createSnapshot) {
-        DocumentModel doc = navigationContext.getCurrentDocument();
-        doc.putContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
-                Boolean.valueOf(createSnapshot));
-    }
-
-    @Override
-    @Deprecated
-    public boolean getCreateSnapshot() throws ClientException {
-        DocumentModel doc = navigationContext.getCurrentDocument();
-        return Boolean.TRUE.equals(doc.getContextData(ScopeType.REQUEST,
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
-    }
-
-    @Override
-    @Deprecated
-    public boolean getDefaultCreateSnapshot() throws ClientException {
-        return false;
-    }
-
-    @Override
-    @Deprecated
-    public boolean getDisplayCreateSnapshotOption() throws ClientException {
-        return false;
-    }
-
     @Override
     @Factory(value = "renderVersioningOptionsForCurrentDocument", scope = EVENT)
     public boolean factoryForRenderVersioningOption() {
         return getRendered();
     }
 
-    // FIXME: should cache the boolean invalidate it correctly as it refers to
-    // current document
+    /**
+     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget
+     *             definition instead
+     */
+    @Deprecated
     public boolean getRendered() {
         if (rendered == null) {
             rendered = Boolean.FALSE;
@@ -343,6 +300,11 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return rendered.booleanValue();
     }
 
+    /**
+     * @deprecated since 5.7.3: rendered clause is now evaluated on the widget
+     *             definition instead
+     */
+    @Deprecated
     public void setRendered(Boolean rendered) {
         this.rendered = rendered;
     }

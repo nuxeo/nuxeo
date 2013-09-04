@@ -38,16 +38,6 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 public interface DocumentVersioning {
 
     /**
-     * Provides an explaining message of the inc options availability.
-     *
-     * @return key for the message (to be read from messages bundles)
-     *
-     * @deprecated since 5.4
-     */
-    @Deprecated
-    String getIncRulesResult();
-
-    /**
      * Returns the available versioning options for the document parameter and
      * state.
      *
@@ -56,15 +46,6 @@ public interface DocumentVersioning {
      * @return a collection of option names.
      */
     Collection<VersionModel> getItemVersioningHistory(DocumentModel document);
-
-    /**
-     * Returns the available versioning options for the currentItem and state.
-     *
-     * @return a collection of option names.
-     *
-     * @deprecated since 5.4
-     */
-    Collection<VersioningActions> getCurrentItemVersioningOptions();
 
     /**
      * Returns the available versioning history for the current document and
@@ -77,32 +58,57 @@ public interface DocumentVersioning {
     /**
      * Creates a Map with versioning options (as keys) and labels (as map entry
      * values).
-     *
-     * @deprecated since 5.4
      */
-    @Deprecated
     Map<String, String> getVersioningOptionsMap(
             final DocumentModel documentModel);
 
+    /**
+     * @deprecated since 5.7.3: available versioning options are resolved by
+     *             the widget now
+     */
+    @Deprecated
     Map<String, String> getAvailableVersioningOptionsMap();
 
     String getVersionLabel(DocumentModel document) throws ClientException;
 
+    /**
+     * @deprecated since 5.7.3: selected option is not kept on this bean
+     *             anymore, it's kept by the JSF component behind widget
+     *             definition
+     */
+    @Deprecated
     String getVersioningOptionInstanceId();
 
-    String factoryForIncrementationRules();
-
+    /**
+     * @deprecated since 5.7.3: rendered clause for available versioning
+     *             options are resolved by the widget now
+     */
+    @Deprecated
     boolean factoryForRenderVersioningOption();
 
     /**
      * Web action method to set version increment option to the current
      * documentModel.
+     *
+     * @deprecated since 5.7.3: document context map is now filled directly by
+     *             the widget
      */
+    @Deprecated
     void setVersioningOptionInstanceId(String optionId) throws ClientException;
 
+    /**
+     * @deprecated since 5.7.3: document context map is now filled directly by
+     *             the widget
+     */
+    @Deprecated
     void setVersioningOptionInstanceId(DocumentModel document, String optionId)
             throws ClientException;
 
+    /**
+     * @deprecated since 5.7.3: document context map is now filled directly by
+     *             the widget
+     */
+    @Deprecated
     void setVersioningOptionInstanceId(DocumentModel document,
             VersioningActions option) throws ClientException;
 
@@ -114,27 +120,4 @@ public interface DocumentVersioning {
     void validateOptionSelection(FacesContext context, UIComponent component,
             Object value);
 
-    /**
-     * @deprecated since 5.4
-     */
-    @Deprecated
-    void setCreateSnapshot(boolean createSnapshot);
-
-    /**
-     * @deprecated since 5.4
-     */
-    @Deprecated
-    boolean getCreateSnapshot() throws ClientException;
-
-    /**
-     * @deprecated since 5.4
-     */
-    @Deprecated
-    boolean getDefaultCreateSnapshot() throws ClientException;
-
-    /**
-     * @deprecated since 5.4
-     */
-    @Deprecated
-    boolean getDisplayCreateSnapshotOption() throws ClientException;
 }
