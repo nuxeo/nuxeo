@@ -28,7 +28,7 @@
         </fields>
         <properties mode="any">
           <property name="width">200</property>
-          <property name="minimumInputLength">2</property>
+          <property name="minChars">2</property>
           <property name="instructionLabel">Type at least {0} "a" to display suggestion
           </property>
           <property name="repository">layoutDemo</property>
@@ -61,7 +61,7 @@
         </fields>
         <properties mode="any">
           <property name="width">200</property>
-          <property name="minimumInputLength">2</property>
+          <property name="minChars">2</property>
           <property name="instructionLabel">Type at least {0} "a" to display suggestion
           </property>
           <property name="repository">layoutDemo</property>
@@ -96,7 +96,7 @@
           <property name="width">300</property>
           <property name="labelFieldName">label_{lang}</property>
           <property name="dbl10n">true</property>
-          <property name="minimumInputLength">0</property>
+          <property name="minChars">0</property>
           <property name="hideInstructionLabel">true</property>
           <property name="directoryName">l10ncoverage</property>
           <property name="keySeparator">/</property>
@@ -130,7 +130,7 @@
           <property name="width">300</property>
           <property name="labelFieldName">label_{lang}</property>
           <property name="dbl10n">true</property>
-          <property name="minimumInputLength">0</property>
+          <property name="minChars">0</property>
           <property name="hideInstructionLabel">true</property>
           <property name="directoryName">l10nsubjects</property>
           <property name="keySeparator">/</property>
@@ -161,7 +161,7 @@
         </fields>
         <properties mode="any">
           <property name="width">300</property>
-          <property name="minimumInputLength">2</property>
+          <property name="minChars">2</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">Choose a user/group</property>
           <property name="repository">default</property>
@@ -189,7 +189,7 @@
         </fields>
         <properties mode="any">
           <property name="width">300</property>
-          <property name="minimumInputLength">2</property>
+          <property name="minChars">2</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">Choose one or more user/group</property>
           <property name="repository">default</property>
