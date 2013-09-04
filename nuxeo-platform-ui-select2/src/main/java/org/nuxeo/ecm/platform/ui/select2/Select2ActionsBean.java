@@ -184,6 +184,11 @@ public class Select2ActionsBean implements Serializable {
                 jg.writeStringField(Select2Common.CUSTOM_FORMATTER,
                         Select2Common.DOC_DEFAULT_FORMATTER);
             }
+        }  else if (widget.getType().startsWith(Select2Common.DIR_SUGGESTION_SELECT2)) {
+            if (!hasCustomFormatter) {
+                jg.writeStringField(Select2Common.CUSTOM_FORMATTER,
+                        Select2Common.DIR_DEFAULT_FORMATTER);
+            }
         }
 
         jg.writeEndObject();
@@ -471,6 +476,13 @@ public class Select2ActionsBean implements Serializable {
             }
         }
         return false;
+    }
+
+    protected JSONObject createNotFoundEntry(final String id) {
+        JSONObject obj = new JSONObject();
+        obj.put(Select2Common.LABEL, id);
+        obj.put(Select2Common.WARN_MESSAGE_LABEL, "entry not found");
+        return obj;
     }
 
     protected JSONObject resolveDirectoryEntry(final String storedReference,

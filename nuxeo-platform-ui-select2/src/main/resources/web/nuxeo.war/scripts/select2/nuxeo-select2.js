@@ -1,10 +1,32 @@
 function userEntryDefaultFormatter(entry) {
-  var markup = "<img src='/nuxeo/icons/" + entry.type + ".png'/>" + entry.label;
+  var markup = "";
+  if (entry.type) {
+    markup += "<img src='/nuxeo/icons/" + entry.type + ".png'/>";
+  }
+  markup += entry.label;
+  if (entry.warn_message) {
+    markup += "<img src='/nuxeo/icons/warning.gif' title='" + entry.warn_message + "'/>"
+  }
   return markup;
 }
 
 function docEntryDefaultFormatter(doc) {
-  var markup = "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"+ doc.title;
+  var markup = "";
+  if (doc.properties['common:icon']) {
+    markup += "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"
+  }
+  markup += doc.title;
+  if (entry.warn_message) {
+    markup += "<img src='/nuxeo/icons/warning.gif' title='" + entry.warn_message + "'/>"
+  }
+  return markup;
+}
+
+function dirEntryDefaultFormatter(entry) {
+  var markup = entry.label;
+  if (entry.warn_message) {
+    markup += "<img src='/nuxeo/icons/warning.gif' title='" + entry.warn_message + "'/>"
+  }
   return markup;
 }
 

@@ -109,6 +109,11 @@ public class SuggestDirectoryEntries {
                     obj.element(key, value);
                 }
             }
+            if (obsolete) {
+                if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID) && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
+                  obj.element(Select2Common.WARN_MESSAGE_LABEL, "obsole");
+                }
+            }
         }
 
         public Map<String, JSONAdapter> getChildren() {

@@ -60,6 +60,12 @@ public class Select2Common {
 
     public static final String DOC_DEFAULT_FORMATTER = "docEntryDefaultFormatter";
 
+    public static final String WARN_MESSAGE_LABEL = "warn_message";
+
+    public static final String DIR_SUGGESTION_SELECT2 = "select2Directory";
+
+    public static final String DIR_DEFAULT_FORMATTER = "dirEntryDefaultFormatter";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.
