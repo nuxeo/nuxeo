@@ -3492,7 +3492,8 @@
       <widgetModes>
         <mode value="create">hidden</mode>
         <mode value="any">
-          #{nxu:test(versioningManager.getVersionIncEditOptions(layoutValue).hasOptions(),
+          #{nxu:test(layoutValue.isVersionable() and not currentDocument.folder and
+          versioningManager.getVersionIncEditOptions(layoutValue).hasOptions(),
           mode, 'hidden')}
         </mode>
       </widgetModes>
