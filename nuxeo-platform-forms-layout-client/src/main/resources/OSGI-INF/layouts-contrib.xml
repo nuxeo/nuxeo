@@ -2951,6 +2951,128 @@
       </property>
     </widgetType>
 
+    <widgetType name="setVariable">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Set variable</title>
+        <description>
+          <p>
+            This widget exposes a variable to the context for
+            rendering,
+            allowing its sub widgets to reference it.
+          </p>
+          <p>
+            This is mostly useful to simplify resolution of a variable in sub
+            contexts, and benefit from caching on the variable resolution.
+          </p>
+        </description>
+        <properties>
+          <layouts mode="any">
+            <layout name="set_variable_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>var</widget>
+                </row>
+                <row>
+                  <widget>value</widget>
+                </row>
+                <row>
+                  <widget>cache</widget>
+                </row>
+                <row>
+                  <widget>resolveTwice</widget>
+                </row>
+              </rows>
+              <widget name="var" type="text">
+                <labels>
+                  <label mode="any">Variable name</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The variable under which name the value will
+                    be exposed, making it available to sub widgets.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>var</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="value" type="text">
+                <labels>
+                  <label mode="any">Value</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The value to resolve for the variable name.
+                    The variable under which name the value will
+                    be exposed,
+                    making it available to sub widgets.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>value</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="cache" type="checkbox">
+                <labels>
+                  <label mode="any">Cache</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean expressing if exposed value should
+                    be cached in the page.
+                    If set to true, the variable will be
+                    resolved only once per page rendering (or re-rendering in
+                    case of ajax requests). Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cache</field>
+                </fields>
+              </widget>
+              <widget name="resolveTwice" type="checkbox">
+                <labels>
+                  <label mode="any">Resolve twice</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Boolean expressing if expression should be
+                    resolved twice: sometimes the expression uses a
+                    configuration element, and the first resolution of the
+                    expression will resolve to another expression, that may need
+                    to be itself evaluated again. Defaults to false.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>resolveTwice</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+        <categories>
+          <category>dev</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <acceptingSubWidgets>true</acceptingSubWidgets>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/set_value_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
