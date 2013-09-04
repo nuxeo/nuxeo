@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test.helpers;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -25,6 +26,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class OperationCall {
 
+    protected Blob blob;
+
     private DocumentModel doc;
 
     private String one;
@@ -33,6 +36,12 @@ public class OperationCall {
 
     public OperationCall(DocumentModel doc, String one, Integer two) {
         this.doc = doc;
+        this.one = one;
+        this.two = two;
+    }
+
+    public OperationCall(Blob blob, String one, Integer two) {
+        this.blob = blob;
         this.one = one;
         this.two = two;
     }
@@ -49,4 +58,7 @@ public class OperationCall {
         return doc;
     }
 
+    public Blob getBlob() {
+        return blob;
+    }
 }

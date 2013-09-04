@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
@@ -57,6 +58,12 @@ public class TestOperation {
             calls.add(new OperationCall(doc, one, two));
         }
         return docs;
+    }
+
+    @OperationMethod
+    public Blob run(Blob blob) throws Exception {
+            calls.add(new OperationCall(blob, one, two));
+        return blob;
     }
 
     /**

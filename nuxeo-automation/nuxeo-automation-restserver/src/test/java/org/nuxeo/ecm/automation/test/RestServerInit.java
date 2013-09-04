@@ -16,8 +16,11 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import java.io.File;
 import java.util.Arrays;
 
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.test.adapters.BusinessBeanAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -25,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
@@ -69,6 +73,18 @@ public class RestServerInit implements RepositoryInit {
             doc.getAdapter(BusinessBeanAdapter.class).setNote("Note " + i);
             doc = session.createDocument(doc);
         }
+
+        // Create a file
+        DocumentModel doc = session.createDocumentModel("/folder_1",
+                "file", "File");
+        doc.setPropertyValue("dc:title", "File");
+        doc = session.createDocument(doc);
+        // upload file blob
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("blob.json");
+        FileBlob fb = new FileBlob(fieldAsJsonFile);
+        fb.setMimeType("image/jpeg");
+        DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+        session.saveDocument(doc);
 
         session.save();
 
@@ -132,6 +148,11 @@ public class RestServerInit implements RepositoryInit {
     public static DocumentModel getNote(int index, CoreSession session)
             throws ClientException {
         return session.getDocument(new PathRef("/folder_1/note_" + index));
+    }
+
+    public static DocumentModel getFile(int index, CoreSession session)
+            throws ClientException {
+        return session.getDocument(new PathRef("/folder_1/file"));
     }
 
     public static NuxeoPrincipal getPowerUser() throws ClientException {

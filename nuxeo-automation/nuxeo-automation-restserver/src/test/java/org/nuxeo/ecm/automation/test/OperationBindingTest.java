@@ -13,21 +13,30 @@
  *
  * Contributors:
  *     dmetzler
+ *     vpasquier
  */
 package org.nuxeo.ecm.automation.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.core.trace.Trace;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.automation.rest.jaxrs.adapters.BlobAdapter;
 import org.nuxeo.ecm.automation.rest.jaxrs.adapters.OperationAdapter;
 import org.nuxeo.ecm.automation.test.helpers.OperationCall;
 import org.nuxeo.ecm.automation.test.helpers.TestOperation;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -89,7 +98,7 @@ public class OperationBindingTest extends BaseTest {
         // When i call the REST binding on the document resource
         ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/"
                 + note.getId() + "/@" + OperationAdapter.NAME
-                + "/Chain.testChain", "{}");
+                + "/testChain", "{}");
 
         // Then the operation is called twice on the document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -122,6 +131,21 @@ public class OperationBindingTest extends BaseTest {
         List<OperationCall> calls = TestOperation.getCalls();
         assertEquals(session.getChildren(folder.getRef()).size(), calls.size());
 
+    }
+
+    @Test
+    public void itCanRunAutomationWithBlob() throws Exception {
+        // Given a file
+        DocumentModel file = RestServerInit.getFile(1, session);
+
+        // When i call the REST binding on the blob resource
+        getResponse(RequestType.POSTREQUEST, "id/" + file.getId() + "/@"
+                + BlobAdapter.NAME + "/file:content/@" + OperationAdapter.NAME
+                + "/testOp", PARAMS);
+
+        // Then the operation is called on a document blob
+        List<OperationCall> calls = TestOperation.getCalls();
+        assertNotNull(calls.get(0).getBlob());
     }
 
 }
