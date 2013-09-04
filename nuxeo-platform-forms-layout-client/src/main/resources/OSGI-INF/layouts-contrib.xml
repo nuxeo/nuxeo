@@ -1961,6 +1961,37 @@
       </handler-class>
     </widgetType>
 
+    <widgetType name="selectOneRadio">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Select One Radio</title>
+        <description></description>
+        <categories>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!-- TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneRadioWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
     <widgetType name="selectManyDirectory">
       <configuration>
         <title>Multiple vocabulary</title>

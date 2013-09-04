@@ -269,7 +269,7 @@ public class UISelectItems extends javax.faces.component.UISelectItems
                 Map map = (Map) value;
                 for (Object obj : map.entrySet()) {
                     Entry currentItem = (Entry) obj;
-                    putIteratorToRequestParam(currentItem.getValue());
+                    putIteratorToRequestParam(currentItem);
                     SelectItem selectItem = createSelectItem();
                     removeIteratorFromRequestParam();
                     if (selectItem != null) {
