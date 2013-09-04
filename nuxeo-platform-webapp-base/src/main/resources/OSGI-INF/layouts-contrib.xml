@@ -3476,8 +3476,11 @@
         <field>#{versioningManager.getVersionLabel(layoutValue)}</field>
       </fields>
       <widgetModes>
-        <mode value="any">view</mode>
         <mode value="create">hidden</mode>
+        <mode value="any">
+          #{nxu:test(layoutValue.versionable and
+          !layoutValue.folder, 'view', 'hidden')}
+        </mode>
       </widgetModes>
     </widget>
 
