@@ -543,4 +543,18 @@ public interface DocumentRoutingService {
     void cancelTask(CoreSession session, String taskId)
             throws DocumentRouteException;
 
+    /**
+     * Reassigns the given task to the list of actors. Removes the permissions
+     * granted on the document following the workflow to the current task
+     * assignees and grants them to the new actors.
+     *
+     * @param session
+     * @param taskId
+     * @param actors
+     * @param comment
+     *
+     * @since 5.7.3
+     */
+    void reassignTask(CoreSession session, String taskId, List<String> actors,
+            String comment) throws DocumentRouteException;
 }

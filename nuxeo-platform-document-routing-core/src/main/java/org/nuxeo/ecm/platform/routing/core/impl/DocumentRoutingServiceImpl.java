@@ -1091,4 +1091,61 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
         node.updateTaskInfo(task.getId(), true, status, actor, null);
     }
+
+    @Override
+    public void reassignTask(CoreSession session, final String taskId,
+            final List<String> actors, final String comment)
+            throws DocumentRouteException {
+        try {
+            new UnrestrictedSessionRunner(session) {
+
+                @Override
+                public void run() throws ClientException {
+                    DocumentModel taskDoc = session.getDocument(new IdRef(
+                            taskId));
+                    Task task = taskDoc.getAdapter(Task.class);
+                    if (task == null) {
+                        throw new DocumentRouteException("Invalid taskId: "
+                                + taskId);
+                    }
+                    if (!task.isOpened()) {
+                        throw new DocumentRouteException("Task  " + taskId
+                                + " is not opened, can not reassign it");
+                    }
+                    String routeId = task.getProcessId();
+                    if (routeId != null) {
+                        DocumentModel routeDoc = session.getDocument(new IdRef(
+                                routeId));
+                        GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                        if (routeInstance == null) {
+                            throw new DocumentRouteException(
+                                    "Invalid routeInstanceId: " + routeId
+                                            + " referenced by the task "
+                                            + taskId);
+                        }
+                        GraphNode node = routeInstance.getNode(task.getType());
+                        if (node == null) {
+                            throw new DocumentRouteException("Invalid node "
+                                    + routeId + " referenced by the task "
+                                    + taskId);
+                        }
+                        DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                        // remove permissions on the document following the
+                        // workflow for the current assignees
+                        removePermissionFromTaskAssignees(session, docs, task);
+                        Framework.getLocalService(TaskService.class).reassignTask(
+                                session, taskId, actors, comment);
+                        // refresh task
+                        task.getDocument().refresh();
+                        // grant permission to the new assignees
+                        grantPermissionToTaskAssignees(session,
+                                node.getTaskAssigneesPermission(), docs, task);
+                    }
+                }
+            }.runUnrestricted();
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Can not reassign task " + taskId,
+                    e);
+        }
+    }
 }

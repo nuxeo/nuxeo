@@ -4,6 +4,7 @@
     point="event">
     <event name="auditLogRoute" />
     <event name="workflowTaskAssigned"/>
+    <event name="workflowTaskReassigned"/>
     <event name="workflowTaskCompleted"/>
     <event name="workflowCanceled"/>
     
