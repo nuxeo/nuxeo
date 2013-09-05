@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -72,12 +73,14 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
         DocumentReader reader = new NuxeoArchiveReader(tmp);
         ExportedDocument root = reader.read();
         PathRef rootRef = new PathRef(path, root.getPath().toString());
-
+        ACP currentRouteModelACP = null;
         if (session.exists(rootRef)) {
             DocumentModel target = session.getDocument(rootRef);
             if (target.getPath().removeLastSegments(1).equals(new Path(path))) {
                 overWrite = true;
                 // clean up existing route before import
+                DocumentModel routeModel = session.getDocument(rootRef);
+                currentRouteModelACP = routeModel.getACP();
                 session.removeDocument(rootRef);
             }
         }
@@ -99,14 +102,26 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
             pipe.setReader(reader);
             pipe.setWriter(writer);
             pipe.run();
+        } catch (IllegalArgumentException e) {
+            log.error("Can not import route model", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("interrupted", e);
+        } catch (RuntimeException e) {
+            log.error("Can not import route model", e);
+            throw e;
         } catch (Exception e) {
-             log.error(e, e);
+            log.error("Can not import route model", e);
+            throw new RuntimeException(e);
         } finally {
             reader.close();
             writer.close();
         }
         tmp.delete();
-        return session.getDocument(resultingRef);
+        DocumentModel newRouteModel = session.getDocument(resultingRef);
+        if (currentRouteModelACP != null && overwrite && overWrite) {
+            newRouteModel.setACP(currentRouteModelACP, true);
+        }
+        return session.saveDocument(newRouteModel);
     }
-
 }
