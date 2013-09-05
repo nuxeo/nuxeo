@@ -16,21 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ws.rs.core.HttpHeaders;
-
+import com.google.inject.Inject;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
@@ -44,6 +30,7 @@ import org.nuxeo.ecm.automation.io.services.contributor.RestContributor;
 import org.nuxeo.ecm.automation.io.services.contributor.RestContributorService;
 import org.nuxeo.ecm.automation.io.services.contributor.RestContributorServiceImpl;
 import org.nuxeo.ecm.automation.io.services.contributor.RestEvaluationContext;
+import org.nuxeo.ecm.automation.jaxrs.io.audit.LogEntryWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,16 +38,29 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import com.google.inject.Inject;
+import javax.ws.rs.core.HttpHeaders;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
- *
- *
  * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)
@@ -70,9 +70,6 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")
 public class RestServiceTest {
 
-    /**
-     *
-     */
     private static final String[] NO_SCHEMA = new String[] {};
 
     @Inject
@@ -203,6 +200,33 @@ public class RestServiceTest {
         children = node.get("contextParameters").get("children");
         assertNull(children);
 
+    }
+
+    @Test
+    public void itCanWriteLogEntry() throws Exception {
+        DocumentModel folder = session.getDocument(new PathRef("/folder1"));
+        String id = folder.getId();
+
+        LogEntry entry = new LogEntryImpl();
+        entry.setEventId("documentModified");
+        entry.setDocUUID(id);
+        entry.setEventDate(new Date());
+        entry.setDocPath("/" + id);
+        entry.setRepositoryId("test");
+        entry.setCategory("Workflow");
+        entry.setComment("comment");
+        entry.setDocLifeCycle("deleted");
+        entry.setLogDate(new Date());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JsonGenerator jg = getJsonGenerator(out);
+
+        // When it is written as Json
+        LogEntryWriter.writeLogEntry(jg, entry);
+        jg.flush();
+
+        // Then it contains
+        JsonNode node = parseJson(out);
+        assertEquals("Workflow", node.get("category").getTextValue());
     }
 
     /**
