@@ -59,6 +59,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -473,7 +474,7 @@ public abstract class NuxeoLauncher {
                 "auxww" };
 
         protected static final String[] SOLARIS_10_PS = { "/usr/ucb/ps",
-        "auxww" };
+                "auxww" };
 
         protected static final Pattern PS_OUTPUT_LINE = Pattern.compile("^"
                 + "[^\\s]+\\s+" // USER
@@ -492,8 +493,7 @@ public abstract class NuxeoLauncher {
             if (solarisVersion == null) {
                 List<String> lines;
                 try {
-                    lines = execute(new String[] { "/usr/bin/uname",
-                            "-r" });
+                    lines = execute(new String[] { "/usr/bin/uname", "-r" });
                 } catch (IOException e) {
                     log.debug(e.getMessage(), e);
                     lines = Collections.emptyList();
@@ -598,7 +598,7 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Gets the java options with Nuxeo properties substituted.
+     * Gets the Java options with 'nuxeo.*' properties substituted.
      *
      * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
      *
@@ -606,17 +606,8 @@ public abstract class NuxeoLauncher {
      */
     protected String getJavaOptsProperty() {
         String ret = System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT);
-        String properties[] = { Environment.NUXEO_HOME_DIR,
-                Environment.NUXEO_LOG_DIR, Environment.NUXEO_DATA_DIR,
-                Environment.NUXEO_TMP_DIR };
-
-        for (String property : properties) {
-            String value = configurationGenerator.getUserConfig().getProperty(
-                    property);
-            if (value != null && !value.isEmpty()) {
-                ret = ret.replace("${" + property + "}", value);
-            }
-        }
+        ret = StrSubstitutor.replace(ret,
+                configurationGenerator.getUserConfig());
         return ret;
     }
 
