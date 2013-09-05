@@ -54,8 +54,7 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
         List<Task> openTasks = Framework.getLocalService(TaskService.class).getAllTaskInstances(
                 routeInstanceDoc.getId(), session);
         for (Task task : openTasks) {
-            getDocumentRoutingService().cancelTask(session,
-                    routeInstanceDoc.getId(), task.getId());
+            getDocumentRoutingService().cancelTask(session, task.getId());
         }
     }
 

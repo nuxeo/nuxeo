@@ -457,8 +457,7 @@ public interface DocumentRoutingService {
             throws ClientException;
 
     /**
-     * Ends a task. If this is the last task the workflow
-     * will continue.
+     * Ends a task. If this is the last task the workflow will continue.
      *
      * @param session
      * @param task
@@ -529,20 +528,19 @@ public interface DocumentRoutingService {
             boolean delete) throws DocumentRouteException;
 
     /**
-     * Cancels an open task. Called by a cancel action in the workflow. All
+     * Cancels an open task. If the task was created by an workflow, all
      * permissions granted to the tasks assignees on the document following the
      * worklflow are removed. Doesn't resume the workflow as the
      * <code>completeTask</code> method.
      *
      * @param session
-     * @param route
      * @param task
      * @param delete
      * @throws DocumentRouteException
      *
      * @since 5.7.3
      */
-    void cancelTask(CoreSession session, String routeId, String taskId)
+    void cancelTask(CoreSession session, String taskId)
             throws DocumentRouteException;
 
 }

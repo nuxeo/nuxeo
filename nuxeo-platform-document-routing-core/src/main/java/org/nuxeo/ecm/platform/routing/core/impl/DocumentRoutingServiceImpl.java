@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -93,6 +95,8 @@ import com.google.common.cache.CacheBuilder;
  */
 public class DocumentRoutingServiceImpl extends DefaultComponent implements
         DocumentRoutingService {
+
+    private static Log log = LogFactory.getLog(DocumentRoutingServiceImpl.class);
 
     /** Routes in any state (model or not). */
     private static final String AVAILABLE_ROUTES_QUERY = String.format(
@@ -1022,19 +1026,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void cancelTask(CoreSession session, final String routeId,
-            final String taskId) throws DocumentRouteException {
+    public void cancelTask(CoreSession session, final String taskId)
+            throws DocumentRouteException {
         try {
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
-                    DocumentModel routeDoc = session.getDocument(new IdRef(
-                            routeId));
-                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
-                    if (routeInstance == null) {
-                        throw new DocumentRouteException(
-                                "Invalid routeInstanceId: " + routeId);
-                    }
                     DocumentModel taskDoc = session.getDocument(new IdRef(
                             taskId));
                     Task task = taskDoc.getAdapter(Task.class);
@@ -1042,15 +1039,35 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                         throw new DocumentRouteException("Invalid taskId: "
                                 + taskId);
                     }
-                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    removePermissionFromTaskAssignees(session, docs, task);
-                    if (task.isOpened()) {
-                        task.cancel(session);
+
+                    if (!task.isOpened()) {
+                        log.info("Can not cancel task " + taskId
+                                + "as is not open");
+                        return;
+                    }
+                    task.cancel(session);
+
+                    // if the task was created by an workflow , update info
+                    String routeId = task.getProcessId();
+                    if (routeId != null) {
+                        DocumentModel routeDoc = session.getDocument(new IdRef(
+                                routeId));
+                        GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                        if (routeInstance == null) {
+                            throw new DocumentRouteException(
+                                    "Invalid routeInstanceId: " + routeId);
+                        }
+
+                        DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                        removePermissionFromTaskAssignees(session, docs, task);
+                        // task is considered processed with the status "null"
+                        // when
+                        // is
+                        // canceled
+                        updateTaskInfo(session, routeInstance, task, null);
                     }
                     session.saveDocument(task.getDocument());
-                    // task is considered processed with the status "null" when is
-                    // canceled
-                    updateTaskInfo(session, routeInstance, task, null);
+
                 }
             }.runUnrestricted();
         } catch (ClientException e) {

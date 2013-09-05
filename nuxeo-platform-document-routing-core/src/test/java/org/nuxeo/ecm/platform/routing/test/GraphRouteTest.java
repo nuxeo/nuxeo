@@ -1767,7 +1767,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals(1, tasks.size());
         Task task3 = tasks.get(0);
 
-        routing.cancelTask(session, route.getDocument().getId(), task3.getId());
+        routing.cancelTask(session, task3.getId());
         routing.resumeInstance(route.getDocument().getId(), "node1", null,
                 null, session);
 
