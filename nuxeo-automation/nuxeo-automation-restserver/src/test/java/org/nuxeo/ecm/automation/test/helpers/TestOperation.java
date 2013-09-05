@@ -38,8 +38,6 @@ public class TestOperation {
 
     public static final String ID = "testOp";
 
-    public static List<OperationCall> calls = new ArrayList<>();
-
     @Param(name = "one")
     String one;
 
@@ -48,41 +46,17 @@ public class TestOperation {
 
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
-        calls.add(new OperationCall(doc, one, two));
         return doc;
     }
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
-        for (DocumentModel doc : docs) {
-            calls.add(new OperationCall(doc, one, two));
-        }
         return docs;
     }
 
     @OperationMethod
     public Blob run(Blob blob) throws Exception {
-            calls.add(new OperationCall(blob, one, two));
         return blob;
-    }
-
-    /**
-     * Returns the list of calls since last reset
-     *
-     * @return
-     * @since 5.7.2
-     */
-    public static List<OperationCall> getCalls() {
-        return calls;
-    }
-
-    /**
-     * Resets the calls to the operation
-     *
-     * @since 5.7.2
-     */
-    public static void reset() {
-        calls.clear();
     }
 
 }

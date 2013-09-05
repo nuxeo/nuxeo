@@ -18,24 +18,22 @@
 package org.nuxeo.ecm.automation.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
-import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.automation.rest.jaxrs.adapters.BlobAdapter;
 import org.nuxeo.ecm.automation.rest.jaxrs.adapters.OperationAdapter;
-import org.nuxeo.ecm.automation.test.helpers.OperationCall;
-import org.nuxeo.ecm.automation.test.helpers.TestOperation;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -45,12 +43,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
- * Test the Rest binding to run operations
- *
- * @since 5.7.2
+ * @since 5.7.2 - Test the Rest binding to run operations
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
@@ -61,11 +58,20 @@ public class OperationBindingTest extends BaseTest {
 
     private static String PARAMS = "{\"params\":{\"one\":\"1\",\"two\": 2}}";
 
+    @Inject
+    protected AutomationService automationService;
+
+    @Inject
+    protected TracerFactory factory;
+
     @Override
     @Before
     public void doBefore() {
         super.doBefore();
-        TestOperation.reset();
+        // Activate trace mode
+        if (!factory.getRecordingState()) {
+            factory.toggleRecording();
+        }
     }
 
     @Test
@@ -81,13 +87,16 @@ public class OperationBindingTest extends BaseTest {
 
         // Then the operation is called on the document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        List<OperationCall> calls = TestOperation.getCalls();
-        assertEquals(1, calls.size());
+        // Then the operation is called on all children documents
+        Trace trace = factory.getTrace("testOp");
+        assertEquals(1, trace.getCalls().size());
 
-        OperationCall call = calls.get(0);
-        assertEquals("1", call.getParamOne());
-        assertEquals(2, call.getParamTwo());
-        assertEquals(note.getId(), call.getDocument().getId());
+        Map parameters = (Map) trace.getCalls().get(0).getVariables().get(
+                Constants.VAR_RUNTIME_CHAIN);
+
+        assertEquals("1", parameters.get("one"));
+        assertEquals(2, parameters.get("two"));
+        assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
     }
 
     @Test
@@ -97,23 +106,25 @@ public class OperationBindingTest extends BaseTest {
 
         // When i call the REST binding on the document resource
         ClientResponse response = getResponse(RequestType.POSTREQUEST, "id/"
-                + note.getId() + "/@" + OperationAdapter.NAME
-                + "/testChain", "{}");
+                + note.getId() + "/@" + OperationAdapter.NAME + "/testChain",
+                "{}");
 
         // Then the operation is called twice on the document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        List<OperationCall> calls = TestOperation.getCalls();
-        assertEquals(2, calls.size());
+        // Then the operation is called on all children documents
+        Trace trace = factory.getTrace("testChain");
+        assertEquals(2, trace.getCalls().size());
 
-        OperationCall call = calls.get(0);
-        assertEquals("One", call.getParamOne());
-        assertEquals(2, call.getParamTwo());
-        assertEquals(note.getId(), call.getDocument().getId());
+        Map parameters = (Map) trace.getCalls().get(0).getParmeters();
 
-        call = calls.get(1);
-        assertEquals("Two", call.getParamOne());
-        assertEquals(4, call.getParamTwo());
+        assertEquals("One", parameters.get("one"));
+        assertEquals("2", parameters.get("two"));
+        assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
+
+        parameters = (Map) trace.getCalls().get(1).getParmeters();
+        assertEquals("4", parameters.get("two"));
+        assertEquals("Two", parameters.get("one"));
 
     }
 
@@ -128,8 +139,9 @@ public class OperationBindingTest extends BaseTest {
                 + "/@children/@" + OperationAdapter.NAME + "/testOp", PARAMS);
 
         // Then the operation is called on all children documents
-        List<OperationCall> calls = TestOperation.getCalls();
-        assertEquals(session.getChildren(folder.getRef()).size(), calls.size());
+        Trace trace = factory.getTrace("testOp");
+        assertEquals(1, trace.getCalls().size());
+        assertEquals(6, ((PaginableDocumentModelList) trace.getOutput()).size());
 
     }
 
@@ -144,8 +156,8 @@ public class OperationBindingTest extends BaseTest {
                 + "/testOp", PARAMS);
 
         // Then the operation is called on a document blob
-        List<OperationCall> calls = TestOperation.getCalls();
-        assertNotNull(calls.get(0).getBlob());
+        Trace trace = factory.getTrace("testOp");
+        assertTrue(trace.getOutput() instanceof Blob);
     }
 
 }
