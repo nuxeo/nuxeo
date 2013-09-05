@@ -232,7 +232,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Deprecated
     public List<String> getRoles() {
-        return roles;
+        return new ArrayList<String>(roles);
     }
 
     public void setPassword(String password) {
@@ -308,7 +308,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public List<String> getAllGroups() {
-        return allGroups;
+        return new ArrayList<String>(allGroups);
     }
 
     public void updateAllGroups() throws ClientException {
@@ -384,7 +384,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public List<String> getVirtualGroups() {
-        return virtualGroups;
+        return new ArrayList<String>(virtualGroups);
     }
 
     public void setVirtualGroups(List<String> virtualGroups,
