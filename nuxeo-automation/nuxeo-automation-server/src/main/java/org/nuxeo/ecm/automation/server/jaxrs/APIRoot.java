@@ -66,6 +66,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("groups");
     }
 
+    @Path("/automation")
+    public Object getAutomationEndPoint() throws Exception {
+        return new AutomationResource();
+    }
+
 
     @Override
     public Object handleError(WebApplicationException e) {
