@@ -59,6 +59,8 @@
     <filter-mapping>
       <filter-name>RequestContextFilter</filter-name>
       <url-pattern>/site/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
     <filter>
@@ -69,6 +71,8 @@
     <filter-mapping>
       <filter-name>WebEngineFilter</filter-name>
       <url-pattern>/site/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
     <filter>
@@ -81,6 +85,8 @@
     <filter-mapping>
       <filter-name>SessionCleanupFilter</filter-name>
       <url-pattern>/site/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
 
