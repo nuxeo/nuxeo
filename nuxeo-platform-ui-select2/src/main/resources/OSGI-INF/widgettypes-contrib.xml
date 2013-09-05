@@ -76,12 +76,12 @@
       </fields>
     </widget>
 
-    <widget name="customFormater" type="text">
+    <widget name="suggestionFormatter" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Custom Formater</label>
+        <label mode="any">Suggestion Formatter</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -97,7 +97,32 @@
         </label>
       </helpLabels>
       <fields>
-        <field>customFormater</field>
+        <field>suggestionFormatter</field>
+      </fields>
+    </widget>
+
+    <widget name="selectionFormatter" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Selection Formater</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the JavaScript function name that
+          will be
+          called by select2 to do the formating of the
+          selected entries.
+          The
+          target function should take as input
+          the javascript Document as
+          returned by Automation and should
+          return some Html.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>selectionFormatter</field>
       </fields>
     </widget>
 
@@ -517,7 +542,7 @@
                   <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">customFormater</widget>
+                  <widget category="widgetTypeConf">selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
@@ -550,13 +575,17 @@
                   <widget category="widgetTypeConf">query</widget>
                 </row>
                 <row>
-                 <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -622,7 +651,7 @@
                   <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">customFormater</widget>
+                  <widget category="widgetTypeConf">selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
@@ -655,7 +684,8 @@
                   <widget category="widgetTypeConf">query</widget>
                 </row>
                 <row>
-                 <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">sortable</widget>
@@ -665,6 +695,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -720,7 +753,7 @@
                   <widget category="widgetTypeConf">labelFieldName</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">customFormater</widget>
+                  <widget category="widgetTypeConf">selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
@@ -763,6 +796,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -817,7 +853,7 @@
                   <widget category="widgetTypeConf">labelFieldName</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">customFormater</widget>
+                  <widget category="widgetTypeConf">selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
@@ -863,6 +899,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -914,7 +953,7 @@
                   <widget category="widgetTypeConf">searchType</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">customFormater</widget>
+                  <widget category="widgetTypeConf">selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
@@ -948,6 +987,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -999,7 +1041,7 @@
                   <widget category="widgetTypeConf">searchType</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">customFormater</widget>
+                  <widget category="widgetTypeConf">selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">inlinejs</widget>
@@ -1036,6 +1078,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>

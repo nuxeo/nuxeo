@@ -54,23 +54,31 @@ public class Select2Common {
 
     public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
 
-    public static final String CUSTOM_FORMATTER = "customFormater";
+    public static final String SUGGESTION_FORMATTER = "suggestionFormatter";
 
-    public static final String USER_DEFAULT_FORMATTER = "userEntryDefaultFormatter";
+    public static final String SELECTION_FORMATTER = "selectionFormatter";
 
-    public static final String DOC_DEFAULT_FORMATTER = "docEntryDefaultFormatter";
+    public static final String USER_DEFAULT_SUGGESTION_FORMATTER = "userEntryDefaultFormatter";
+
+    public static final String DOC_DEFAULT_SUGGESTION_FORMATTER = "docEntryDefaultFormatter";
 
     public static final String WARN_MESSAGE_LABEL = "warn_message";
 
     public static final String DIR_SUGGESTION_SELECT2 = "select2Directory";
 
-    public static final String DIR_DEFAULT_FORMATTER = "dirEntryDefaultFormatter";
+    public static final String DIR_DEFAULT_SUGGESTION_FORMATTER = "dirEntryDefaultFormatter";
 
     public static final String READ_ONLY_PARAM = "readonly";
 
     public static final String RERENDER_JS_FUNCTION_NAME = "reRenderFunctionName";
 
     public static final String AJAX_RERENDER = "ajaxReRender";
+
+    public static final String USER_DEFAULT_SELECTION_FORMATTER = USER_DEFAULT_SUGGESTION_FORMATTER;
+
+    public static final String DOC_DEFAULT_SELECTION_FORMATTER = DOC_DEFAULT_SUGGESTION_FORMATTER;
+
+    public static final String DIR_DEFAULT_SELECTION_FORMATTER = DIR_DEFAULT_SUGGESTION_FORMATTER;
 
     /**
      * Compute the filed name of the directory that holds the value that we want

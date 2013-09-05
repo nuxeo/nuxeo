@@ -145,9 +145,7 @@ public class Select2ActionsBean implements Serializable {
         jg.writeStringField("translateLabels", "" + isTranslated);
 
         Map<String, Serializable> propertySet = widget.getProperties();
-        boolean hasPlaceholder = false;
-        boolean hasCustomFormatter = false;
-        boolean hasAjaxReRender = false;
+        boolean hasPlaceholder = false, hasSuggestionFormatter = false, hasSelectionFormatter = false, hasAjaxReRender = false;
 
         for (Entry<String, Serializable> entry : propertySet.entrySet()) {
 
@@ -159,8 +157,10 @@ public class Select2ActionsBean implements Serializable {
                 if (isTranslated) {
                     value = messages.get(entry.getValue().toString());
                 }
-            } else if (entry.getKey().equals(Select2Common.CUSTOM_FORMATTER)) {
-                hasCustomFormatter = true;
+            } else if (entry.getKey().equals(Select2Common.SUGGESTION_FORMATTER)) {
+                hasSuggestionFormatter = true;
+            } else if (entry.getKey().equals(Select2Common.SELECTION_FORMATTER)) {
+                hasSelectionFormatter = true;
             } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
                 hasAjaxReRender = true;
             }
@@ -176,22 +176,35 @@ public class Select2ActionsBean implements Serializable {
                     messages.get("label.vocabulary.selectValue"));
         }
 
+        // Had default selection and suggestion formatter if needed.
         if (widget.getType().startsWith(Select2Common.USER_SUGGESTION_SELECT2)) {
             jg.writeStringField("operationId", SuggestUserEntries.ID);
-            if (!hasCustomFormatter) {
-                jg.writeStringField(Select2Common.CUSTOM_FORMATTER,
-                        Select2Common.USER_DEFAULT_FORMATTER);
+            if (!hasSuggestionFormatter) {
+                jg.writeStringField(Select2Common.SUGGESTION_FORMATTER,
+                        Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER);
+            }
+            if (!hasSelectionFormatter) {
+                jg.writeStringField(Select2Common.SELECTION_FORMATTER,
+                        Select2Common.USER_DEFAULT_SELECTION_FORMATTER);
             }
         } else if (widget.getType().startsWith(Select2Common.SUGGESTION_SELECT2)) {
-            if (!hasCustomFormatter) {
-                jg.writeStringField(Select2Common.CUSTOM_FORMATTER,
-                        Select2Common.DOC_DEFAULT_FORMATTER);
+            if (!hasSuggestionFormatter) {
+                jg.writeStringField(Select2Common.SUGGESTION_FORMATTER,
+                        Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER);
+            }
+            if (!hasSelectionFormatter) {
+                jg.writeStringField(Select2Common.SELECTION_FORMATTER,
+                        Select2Common.DOC_DEFAULT_SELECTION_FORMATTER);
             }
         } else if (widget.getType().startsWith(
                 Select2Common.DIR_SUGGESTION_SELECT2)) {
-            if (!hasCustomFormatter) {
-                jg.writeStringField(Select2Common.CUSTOM_FORMATTER,
-                        Select2Common.DIR_DEFAULT_FORMATTER);
+            if (!hasSuggestionFormatter) {
+                jg.writeStringField(Select2Common.SUGGESTION_FORMATTER,
+                        Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER);
+            }
+            if (!hasSelectionFormatter) {
+                jg.writeStringField(Select2Common.SELECTION_FORMATTER,
+                        Select2Common.DIR_DEFAULT_SELECTION_FORMATTER);
             }
         }
 
@@ -201,7 +214,8 @@ public class Select2ActionsBean implements Serializable {
         jg.writeStringField(Select2Common.READ_ONLY_PARAM,
                 Boolean.toString(readonly));
         if (hasAjaxReRender) {
-            jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME, widget.getId() + "_reRender");
+            jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME,
+                    widget.getId() + "_reRender");
         }
 
         jg.writeEndObject();
@@ -498,7 +512,8 @@ public class Select2ActionsBean implements Serializable {
         return createEntryWithWarnMessage(id, "entry not found");
     }
 
-    protected JSONObject createEntryWithWarnMessage(final String label, final String warnMessage) {
+    protected JSONObject createEntryWithWarnMessage(final String label,
+            final String warnMessage) {
         JSONObject obj = new JSONObject();
         obj.put(Select2Common.LABEL, label);
         obj.put(Select2Common.WARN_MESSAGE_LABEL, warnMessage);
@@ -547,7 +562,8 @@ public class Select2ActionsBean implements Serializable {
             // Add a warning message if the entity is obsolete
             if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
                     && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
-                obj.element(Select2Common.WARN_MESSAGE_LABEL, messages.get("obsolete"));
+                obj.element(Select2Common.WARN_MESSAGE_LABEL,
+                        messages.get("obsolete"));
             }
 
             obj.element(Select2Common.COMPUTED_ID, storedReference);

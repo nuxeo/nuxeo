@@ -141,10 +141,15 @@ function initSelect2Widget(el) {
   // init Automation Operation
   var op = jQuery().automation(opName, automationParams);
 
-  // detect if we need custom result formating
-  var customFormaterFunction = null;
-  if (params.customFormater && params.customFormater.length > 0) {
-    customFormaterFunction = eval(params.customFormater);
+  // detect if we need custom selection formatting
+  var selectionFormatterFunction = null;
+  if (params.selectionFormatter && params.selectionFormatter.length > 0) {
+    selectionFormatterFunction = eval(params.selectionFormatter);
+  }
+  //detect if we need custom suggestion formatting
+  var suggestionFormatterFunction = null;
+  if (params.suggestionFormatter && params.suggestionFormatter.length > 0) {
+    suggestionFormatterFunction = eval(params.suggestionFormatter);
   }
 
   // build select2 parameters
@@ -166,12 +171,10 @@ function initSelect2Widget(el) {
     }
   }
 
-  // append custom result formater if needed
-  if (customFormaterFunction != null) {
-    select2_params.formatResult = customFormaterFunction;
-    select2_params.formatSelection = customFormaterFunction;
+  // append custom selection formatter if needed
+  if (selectionFormatterFunction != null) {
+    select2_params.formatSelection = selectionFormatterFunction;
   } else {
-    select2_params.formatResult = getDefaultLabel;
     select2_params.formatSelection = function(doc) {
       if (select2_params.labelFieldName != null) {
         return doc.properties[select2_params.labelFieldName];
@@ -180,8 +183,14 @@ function initSelect2Widget(el) {
       }
     };
   }
+  // append custom suggestion formatter if needed
+  if (suggestionFormatterFunction != null) {
+    select2_params.formatResult = suggestionFormatterFunction;
+  } else {
+    select2_params.formatResult = getDefaultLabel;
+  }
 
-  // append id formater if needed
+  // append id formatter if needed
   if (params.idProperty && params.idProperty.length > 0) {
     select2_params.id = function(doc) {
       return doc.properties[params.idProperty];
