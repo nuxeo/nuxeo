@@ -1,23 +1,29 @@
-/*******************************************************************************
- * (C) Copyright ${creation_year} Nuxeo SA (http://nuxeo.com/) and contributors.
+/*
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *******************************************************************************/
+ *
+ * Contributors:
+ *     vpasquier <vpasquier@nuxeo.com>
+ *     slacoin <slacoin@nuxeo.com>
+ */
 package org.nuxeo.ecm.automation.server.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,11 +34,13 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.trace.Call;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -63,9 +71,20 @@ public class CanTraceChainsTest {
     @Inject
     TracerFactory factory;
 
+    DocumentModel src;
+
     @Before
-    public void setup() throws OperationException {
+    public void setup() throws OperationException, ClientException {
         service.putOperation(DummyOperation.class);
+        // Setup a document
+        src = session.createDocumentModel("/", "src", "Workspace");
+        src.setPropertyValue("dc:title", "Source");
+        src = session.createDocument(src);
+        session.save();
+        // Enable trace mode
+        if (!factory.getRecordingState()) {
+            factory.toggleRecording();
+        }
     }
 
     @After
@@ -82,11 +101,6 @@ public class CanTraceChainsTest {
 
         context.setInput(DummyOperation.ID);
         context.put(DummyOperation.ID, DummyOperation.ID);
-
-        // Activate trace mode
-        if (!factory.getRecordingState()) {
-            factory.toggleRecording();
-        }
 
         service.run(context, chain);
 
@@ -110,15 +124,6 @@ public class CanTraceChainsTest {
 
     @Test
     public void testSubchainsTrace() throws Exception {
-        // Setup a document
-        DocumentModel src = session.createDocumentModel("/", "src", "Workspace");
-        src.setPropertyValue("dc:title", "Source");
-        src = session.createDocument(src);
-        session.save();
-        // Enable trace mode
-        if (!factory.getRecordingState()) {
-            factory.toggleRecording();
-        }
         final String chainid = "traceSubchains";
         OperationChain chain = new OperationChain("parentChain");
         OperationParameters runOnListParams = new OperationParameters(
@@ -140,5 +145,15 @@ public class CanTraceChainsTest {
         assertEquals(
                 nested.get(1).getCalls().get(0).getVariables().get("item"),
                 "two");
+    }
+
+    @Test
+    public void testOperationTrace() throws Exception {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("value", src);
+        service.run(context, FetchDocument.ID, parameters);
+        Trace trace = factory.getTrace(FetchDocument.ID);
+        List<Call> calls = trace.getCalls();
+        assertEquals(1, calls.size());
     }
 }

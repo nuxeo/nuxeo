@@ -103,12 +103,12 @@ public class Tracer implements OperationCallback {
 
     @Override
     public void onOperation(OperationContext context, OperationType type,
-            InvokableMethod method, Map<String, Object> parms) {
+            InvokableMethod method, Map<String, Object> params) {
         if (type instanceof ChainTypeImpl) {
             pushContext(type);
             return;
         }
-        Call call = new Call(chain, context, type, method, parms);
+        Call call = new Call(chain, context, type, method, params);
         calls.add(call);
     }
 

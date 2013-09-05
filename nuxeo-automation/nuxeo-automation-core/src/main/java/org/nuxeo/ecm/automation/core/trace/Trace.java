@@ -43,7 +43,8 @@ public class Trace {
 
     Trace(Call parent, OperationType chain, List<Call> operations) {
         this.parent = parent;
-        this.chain = chain;
+        // If chain doesn't exist, this should be one operation call
+        this.chain = chain != null ? chain : operations.get(0).getType();
         this.operations = new ArrayList<Call>(operations);
         this.output = null;
         this.error = null;
@@ -52,7 +53,8 @@ public class Trace {
     Trace(Call parent, OperationType chain, List<Call> calls,
             OperationException error) {
         this.parent = parent;
-        this.chain = chain;
+        // If chain doesn't exist, this should be one operation call
+        this.chain = chain != null ? chain : calls.get(0).getType();
         this.operations = new ArrayList<Call>(calls);
         this.output = null;
         this.error = error;
@@ -60,7 +62,8 @@ public class Trace {
 
     Trace(Call parent, OperationType chain, List<Call> calls, Object output) {
         this.parent = parent;
-        this.chain = chain;
+        // If chain doesn't exist, this should be one operation call
+        this.chain = chain != null ? chain : calls.get(0).getType();
         this.operations = new ArrayList<Call>(calls);
         this.output = output;
         this.error = null;
