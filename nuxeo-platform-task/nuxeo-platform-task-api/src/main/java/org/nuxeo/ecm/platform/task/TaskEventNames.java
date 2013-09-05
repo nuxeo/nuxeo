@@ -85,6 +85,11 @@ public final class TaskEventNames {
     public static final String WORKFLOW_TASKS_COMPUTED = "workflowTasksComputed";
 
     /**
+     * @since 5.7.3
+     */
+    public static final String WORKFLOW_TASK_REASSIGNED = "workflowTaskReassigned";
+
+    /**
      * Fired when a new work items list is created.
      */
     public static final String WORK_ITEMS_LIST_ADDED = "workItemsListAdded";

@@ -115,7 +115,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and
      * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED}, passing the task in the
      * event properties using key {@link #TASK_INSTANCE_EVENT_PROPERTIES_KEY}
-     * Also the map eventInfo is passed in the event properties 
+     * Also the map eventInfo is passed in the event properties
      *
      * @param coreSession the session to use when notifying
      * @param principal the principal marked as initiator of the task and used
@@ -239,4 +239,19 @@ public interface TaskService extends Serializable, TaskProvider {
      * @return the path registered in the taskPersister extension point.
      */
     String getTaskRootParentPath(CoreSession coreSession);
+
+    /**
+     * Reassign the given task to the list of actors. The ACLs set for current
+     * assignees and task initiator are removed and new actors are granted
+     * 'Manage everything' on the task document. The 'workflowTaskReassigned'
+     * event is triggered.
+     *
+     * @param session
+     * @param taskId
+     * @param actors
+     *
+     * @since 5.7.3
+     */
+    void reassignTask(CoreSession session, String taskId, List<String> actors,
+            String comment) throws ClientException;
 }

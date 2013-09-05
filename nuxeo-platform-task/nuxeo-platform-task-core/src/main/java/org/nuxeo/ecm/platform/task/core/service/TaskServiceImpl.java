@@ -37,6 +37,10 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
@@ -159,25 +163,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
         for (Task task : tasks) {
             // notify
-            Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-            ArrayList<String> notificationRecipients = new ArrayList<String>();
-            notificationRecipients.addAll(actorIds);
-            if (principal != null) {
-                if (!notificationRecipients.contains(NuxeoPrincipal.PREFIX
-                        + principal.getName())) {
-                    notificationRecipients.add(NuxeoPrincipal.PREFIX
-                            + principal.getName());
-                }
-            }
-            eventProperties.put(
-                    NotificationConstants.RECIPIENTS_KEY,
-                    notificationRecipients.toArray(new String[notificationRecipients.size()]));
-            if (eventInfo != null) {
-                eventProperties.putAll(eventInfo);
-            }
-            TaskEventNotificationHelper.notifyEvent(coreSession, document,
-                    principal, task, TaskEventNames.WORKFLOW_TASK_ASSIGNED,
-                    eventProperties, comment, null);
+            notifyEvent(coreSession, task, document,
+                    TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventInfo, comment,
+                    principal, actorIds);
         }
         return tasks;
     }
@@ -494,5 +482,90 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             }
         }
         return tasks;
+    }
+
+    @Override
+    public void reassignTask(CoreSession session, final String taskId,
+            final List<String> newActors, final String comment)
+            throws ClientException {
+        new UnrestrictedSessionRunner(session) {
+
+            @Override
+            public void run() throws ClientException {
+                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+                Task task = taskDoc.getAdapter(Task.class);
+                if (task == null) {
+                    throw new ClientException("Invalid taskId: " + taskId);
+                }
+                List<String> currentAssignees = task.getActors();
+                String taskInitator = task.getInitiator();
+
+                // remove ACLs set for current assignees
+                ACP acp = taskDoc.getACP();
+                ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+                List<ACE> toRemove = new ArrayList<ACE>();
+
+                for (ACE ace : acl.getACEs()) {
+                    if (currentAssignees.contains(ace.getUsername())
+                            || taskInitator.equals(ace.getUsername())) {
+                        toRemove.add(ace);
+                    }
+                }
+                acl.removeAll(toRemove);
+
+                // grant EVERYTHING on task doc to the new actors
+                List<String> actorIds = new ArrayList<String>();
+                for (String actor : newActors) {
+                    if (actor.startsWith(NotificationConstants.GROUP_PREFIX)
+                            || actor.startsWith(NotificationConstants.USER_PREFIX)) {
+                        // prefixed assignees with "user:" or "group:"
+                        actorIds.add(actor.substring(actor.indexOf(":") + 1));
+                    } else {
+                        actorIds.add(actor);
+                    }
+                }
+                for (String actorId : actorIds) {
+                    acl.add(new ACE(actorId, SecurityConstants.EVERYTHING, true));
+                }
+
+                taskDoc.setACP(acp, true);
+                task.setActors(actorIds);
+                session.saveDocument(taskDoc);
+
+                notifyEvent(session, task, session.getDocument(new IdRef(
+                        task.getTargetDocumentId())),
+                        TaskEventNames.WORKFLOW_TASK_REASSIGNED,
+                        new HashMap<String, Serializable>(), comment, null,
+                        actorIds);
+
+            }
+        }.runUnrestricted();
+
+    }
+
+    protected void notifyEvent(CoreSession session, Task task,
+            DocumentModel doc, String event,
+            Map<String, Serializable> eventInfo, String comment,
+            NuxeoPrincipal principal, List<String> actorIds)
+            throws ClientException {
+        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        ArrayList<String> notificationRecipients = new ArrayList<String>();
+        notificationRecipients.addAll(actorIds);
+        if (principal != null) {
+            if (!notificationRecipients.contains(NuxeoPrincipal.PREFIX
+                    + principal.getName())) {
+                notificationRecipients.add(NuxeoPrincipal.PREFIX
+                        + principal.getName());
+            }
+        }
+        eventProperties.put(
+                NotificationConstants.RECIPIENTS_KEY,
+                notificationRecipients.toArray(new String[notificationRecipients.size()]));
+        if (eventInfo != null) {
+            eventProperties.putAll(eventInfo);
+        }
+        TaskEventNotificationHelper.notifyEvent(session, doc, principal, task,
+                TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventProperties,
+                comment, null);
     }
 }
