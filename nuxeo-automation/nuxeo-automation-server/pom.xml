@@ -99,6 +99,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-base</artifactId>
+    </dependency>
 
     <!-- only for tests -->
     <dependency>
@@ -159,5 +163,7 @@
       <artifactId>org.osgi.compendium</artifactId>
       <scope>test</scope>
     </dependency>
+
+
   </dependencies>
 </project>

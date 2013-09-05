@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;

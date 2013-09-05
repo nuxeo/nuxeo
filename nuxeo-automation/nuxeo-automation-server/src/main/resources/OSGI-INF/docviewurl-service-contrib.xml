@@ -1,0 +1,10 @@
+<component name="">
+
+  <extension
+    target="org.nuxeo.ecm.platform.url.service.DocumentViewCodecService"
+    point="codecs">
+    <documentViewCodec name="restdocid" enabled="true"
+      default="false" class="org.nuxeo.ecm.automation.server.jaxrs.RestDocumentViewCodec" />
+  </extension>
+
+</component>
