@@ -268,10 +268,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-restserver</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-io</artifactId>
     </dependency>
 
