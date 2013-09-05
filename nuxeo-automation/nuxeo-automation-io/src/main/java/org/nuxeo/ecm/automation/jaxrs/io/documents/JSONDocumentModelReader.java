@@ -21,10 +21,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -41,9 +37,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -52,7 +50,6 @@ import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
@@ -71,7 +68,7 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 public class JSONDocumentModelReader implements
         MessageBodyReader<DocumentModel> {
 
-    //private static final String REQUEST_BATCH_ID = "batchId";
+    // private static final String REQUEST_BATCH_ID = "batchId";
 
     protected static final Log log = LogFactory.getLog(JSONDocumentModelReader.class);
 
@@ -104,8 +101,7 @@ public class JSONDocumentModelReader implements
         try {
             return readRequest(content, httpHeaders);
         } catch (Exception e) {
-            throw new WebApplicationException(
-                    Response.Status.INTERNAL_SERVER_ERROR);
+            throw WebException.wrap(e);
         }
     }
 
@@ -133,8 +129,7 @@ public class JSONDocumentModelReader implements
     protected DocumentModel readRequest(String content,
             MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws Exception {
-        JsonParser jp = factory.createJsonParser(
-                content);
+        JsonParser jp = factory.createJsonParser(content);
         return readJson(jp, httpHeaders, request);
     }
 
@@ -164,7 +159,10 @@ public class JSONDocumentModelReader implements
             if ("uid".equals(key)) {
                 id = jp.readValueAs(String.class);
             } else if ("properties".equals(key)) {
-                readProperties(jp, tmp);
+                Properties props = readProperties(jp, tmp);
+                // Put null for CoreSession, only needed for ecm:acl... Won't be
+                // supported for rest API
+                DocumentHelper.setProperties(null, tmp, props);
             } else if ("name".equals(key)) {
                 name = jp.readValueAs(String.class);
             } else if ("type".equals(key)) {
@@ -181,27 +179,19 @@ public class JSONDocumentModelReader implements
 
         CoreSession session = SessionFactory.getSession(request);
 
-        DocumentModel doc = null;
-        if (StringUtils.isNotBlank(id)) {
-            if (session.exists(new IdRef(id))) {
-                doc = session.getDocument(new IdRef(id));
-            } else {
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } else {
-            if (StringUtils.isNotBlank(type)) {
-                doc = DocumentModelFactory.createDocumentModel(type);
-                if (StringUtils.isNotBlank(name)) {
-                    doc.setPathInfo(null, name);
-                }
-            } else {
-                throw new WebApplicationException(Response.Status.BAD_REQUEST);
-            }
-        }
+        DocumentModel doc = getOrCreateDocumentModel(id, type, name, session);
 
-        for (String schema : tmp.getSchemas()) {
-            DataModelImpl dataModel = (DataModelImpl) doc.getDataModel(schema);
-            DataModel fromDataModel = tmp.getDataModel(schema);
+        applyPropertyValues(tmp, doc);
+
+        return doc;
+
+    }
+
+    private static void applyPropertyValues(DocumentModel src, DocumentModel dst)
+            throws ClientException, PropertyException {
+        for (String schema : src.getSchemas()) {
+            DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
+            DataModel fromDataModel = src.getDataModel(schema);
 
             for (String field : fromDataModel.getDirtyFields()) {
                 Serializable data = (Serializable) fromDataModel.getData(field);
@@ -219,145 +209,36 @@ public class JSONDocumentModelReader implements
                 }
             }
         }
-
-        // Get blob from batchId if X-Batch-Id in headers
-        Blob blob = getRequestBlob(request);
-        if (blob != null) {
-            setBlobToDoc(doc, request, blob);
-        }
-
-        return doc;
-
     }
 
-    private static void setBlobToDoc(DocumentModel doc,
-            HttpServletRequest request, Blob blob) throws PropertyException,
-            ClientException, PropertyNotFoundException {
-        String xpath = request.getHeader("X-Blob-Property");
-        if (xpath == null) {
-            if (doc.hasSchema("file")) {
-                xpath = "file:content";
-            } else if (doc.hasSchema("files")) {
-                xpath = "files:files";
+    private static DocumentModel getOrCreateDocumentModel(String id,
+            String type, String name, CoreSession session)
+            throws ClientException {
+        DocumentModel doc = null;
+        if (StringUtils.isNotBlank(id)) {
+            if (session.exists(new IdRef(id))) {
+                doc = session.getDocument(new IdRef(id));
             } else {
-                throw new IllegalArgumentException(
-                        "Missing request parameter named 'property' that specifies "
-                                + "the blob property xpath to fetch");
-            }
-        }
-
-        Property p = doc.getProperty(xpath);
-        if (p.isList()) { // add the file to the list
-            if ("files".equals(p.getSchema().getName())) { // treat the
-                // files schema
-                // separately
-                Map<String, Serializable> map = new HashMap<String, Serializable>();
-                map.put("filename", blob.getFilename());
-                map.put("file", (Serializable) blob);
-                p.addValue(map);
-            } else {
-                p.addValue(blob);
+                throw new WebApplicationException(Response.Status.NOT_FOUND);
             }
         } else {
-            if ("file".equals(p.getSchema().getName())) { // for
-                // compatibility
-                // with deprecated
-                // filename
-                p.getParent().get("filename").setValue(blob.getFilename());
-            }
-            p.setValue(blob);
-        }
-    }
-
-
-    private static Blob getRequestBlob(HttpServletRequest request) {
-        //FIXME: make it work back
-//        String batchId = request.getHeader("X-Batch-Id");
-//        if (StringUtils.isNotBlank(batchId)) {
-//            final BatchManager bm = Framework.getLocalService(BatchManager.class);
-//
-//            request.setAttribute(REQUEST_BATCH_ID, batchId);
-//            RequestContext.getActiveContext(request).addRequestCleanupHandler(
-//                    new RequestCleanupHandler() {
-//                        @Override
-//                        public void cleanup(HttpServletRequest req) {
-//                            String bid = (String) req.getAttribute(REQUEST_BATCH_ID);
-//                            bm.clean(bid);
-//                        }
-//
-//                    });
-//            return bm.getBlob(batchId, "0");
-//        }
-        return null;
-
-    }
-
-    protected static void readProperties(JsonParser jp, DocumentModel doc)
-            throws Exception {
-        JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_OBJECT) {
-            String key = jp.getCurrentName();
-            tok = jp.nextToken();
-            if (tok == JsonToken.START_ARRAY) {
-                doc.setPropertyValue(key, (Serializable) readArrayProperty(jp));
-            } else if (tok == JsonToken.START_OBJECT) {
-                doc.setPropertyValue(key, (Serializable) readObjectProperty(jp));
-            } else if (tok == JsonToken.VALUE_NULL) {
-                doc.setPropertyValue(key, (String) null);
+            if (StringUtils.isNotBlank(type)) {
+                doc = DocumentModelFactory.createDocumentModel(type);
+                if (StringUtils.isNotBlank(name)) {
+                    doc.setPathInfo(null, name);
+                }
             } else {
-                doc.setPropertyValue(key, jp.getText());
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
             }
-            tok = jp.nextToken();
         }
+        return doc;
     }
 
-    protected static Map<String, Serializable> readObjectProperty(JsonParser jp)
+    protected static Properties readProperties(JsonParser jp, DocumentModel doc)
             throws Exception {
-        Map<String, Serializable> map = new HashMap<>();
-        readProperties(jp, map);
-        return map;
-    }
+        JsonNode node = jp.readValueAsTree();
+        return new Properties(node);
 
-    /**
-     * @param jp
-     * @param hashMap
-     * @throws Exception
-     * @since TODO
-     */
-    protected static void readProperties(JsonParser jp,
-            Map<String, Serializable> map) throws Exception {
-        JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_OBJECT) {
-            String key = jp.getCurrentName();
-            tok = jp.nextToken();
-            if (tok == JsonToken.START_ARRAY) {
-                map.put(key, (Serializable) readArrayProperty(jp));
-            } else if (tok == JsonToken.START_OBJECT) {
-                map.put(key, (Serializable) readObjectProperty(jp));
-            } else if (tok == JsonToken.VALUE_NULL) {
-                map.put(key, (String) null);
-            } else {
-                map.put(key, jp.getText());
-            }
-            tok = jp.nextToken();
-        }
-    }
-
-    protected static List<Serializable> readArrayProperty(JsonParser jp)
-            throws Exception {
-        List<Serializable> list = new ArrayList<>();
-        JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_ARRAY) {
-            if (tok == JsonToken.START_ARRAY) {
-                list.add((Serializable) readArrayProperty(jp));
-            } else if (tok == JsonToken.START_OBJECT) {
-                list.add((Serializable) readObjectProperty(jp));
-            } else {
-                list.add(jp.getText());
-            }
-            tok = jp.nextToken();
-        }
-        return list;
     }
 
 }

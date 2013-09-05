@@ -16,8 +16,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.automation.core.Constants;
 
 /**
@@ -45,6 +48,20 @@ public class Properties extends HashMap<String, String> {
     public Properties(String content) throws Exception {
         StringReader reader = new StringReader(content);
         loadProperties(reader, this);
+    }
+
+    /**
+     * Constructs a Properties map based on a Json node
+     * @param node
+     *
+     * @since 5.7.3
+     */
+    public Properties(JsonNode node) {
+        Iterator<Entry<String, JsonNode>> fields = node.getFields();
+        while (fields.hasNext()) {
+            Entry<String, JsonNode> entry = fields.next();
+            put(entry.getKey(), entry.getValue().getTextValue());
+        }
     }
 
     public static Map<String, String> loadProperties(Reader reader)
