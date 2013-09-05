@@ -3735,7 +3735,8 @@
           <property name="searchType">group</property>
           <property name="width">300</property>
           <property name="minChars">3</property>
-          <property name="customFormater">userEntryDefaultFormatter</property>
+          <property name="suggestionFormatter">userEntryDefaultFormatter</property>
+          <property name="selectionFormatter">userEntryDefaultFormatter</property>
         </properties>
       </widget>
 
@@ -3806,7 +3807,8 @@
           <property name="minChars">3</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="customFormater">userEntryDefaultFormatter</property>
+          <property name="suggestionFormatter">userEntryDefaultFormatter</property>
+          <property name="selectionFormatter">userEntryDefaultFormatter</property>
         </properties>
         <widgetModes>
           <mode value="create">edit</mode>
@@ -3847,7 +3849,8 @@
           <property name="minChars">3</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="customFormater">userEntryDefaultFormatter</property>
+          <property name="suggestionFormatter">userEntryDefaultFormatter</property>
+          <property name="selectionFormatter">userEntryDefaultFormatter</property>
         </properties>
         <widgetModes>
           <mode value="create">edit</mode>
