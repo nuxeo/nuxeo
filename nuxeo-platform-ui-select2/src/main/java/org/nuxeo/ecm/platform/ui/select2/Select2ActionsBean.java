@@ -147,6 +147,7 @@ public class Select2ActionsBean implements Serializable {
         Map<String, Serializable> propertySet = widget.getProperties();
         boolean hasPlaceholder = false;
         boolean hasCustomFormatter = false;
+        boolean hasAjaxReRender = false;
 
         for (Entry<String, Serializable> entry : propertySet.entrySet()) {
 
@@ -160,6 +161,8 @@ public class Select2ActionsBean implements Serializable {
                 }
             } else if (entry.getKey().equals(Select2Common.CUSTOM_FORMATTER)) {
                 hasCustomFormatter = true;
+            } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
+                hasAjaxReRender = true;
             }
 
             jg.writeStringField(entry.getKey(), value);
@@ -192,11 +195,14 @@ public class Select2ActionsBean implements Serializable {
             }
         }
 
+        // Are we writing or reading
         boolean readonly = !widget.getMode().equals("edit")
                 && !widget.getMode().equals("create");
-
         jg.writeStringField(Select2Common.READ_ONLY_PARAM,
                 Boolean.toString(readonly));
+        if (hasAjaxReRender) {
+            jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME, widget.getId() + "_reRender");
+        }
 
         jg.writeEndObject();
         jg.flush();
@@ -489,9 +495,13 @@ public class Select2ActionsBean implements Serializable {
     }
 
     protected JSONObject createNotFoundEntry(final String id) {
+        return createEntryWithWarnMessage(id, "entry not found");
+    }
+
+    protected JSONObject createEntryWithWarnMessage(final String label, final String warnMessage) {
         JSONObject obj = new JSONObject();
-        obj.put(Select2Common.LABEL, id);
-        obj.put(Select2Common.WARN_MESSAGE_LABEL, "entry not found");
+        obj.put(Select2Common.LABEL, label);
+        obj.put(Select2Common.WARN_MESSAGE_LABEL, warnMessage);
         return obj;
     }
 
@@ -516,7 +526,7 @@ public class Select2ActionsBean implements Serializable {
             DocumentModel result = session.getEntry(entryId);
             if (result == null) {
                 log.warn("Unable to resolve entry " + storedReference);
-                return null;
+                return createNotFoundEntry(storedReference);
             }
 
             JSONObject obj = new JSONObject();
@@ -533,6 +543,13 @@ public class Select2ActionsBean implements Serializable {
                     obj.element(key, value);
                 }
             }
+
+            // Add a warning message if the entity is obsolete
+            if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
+                    && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
+                obj.element(Select2Common.WARN_MESSAGE_LABEL, messages.get("obsolete"));
+            }
+
             obj.element(Select2Common.COMPUTED_ID, storedReference);
             return obj;
         } catch (ClientException e) {

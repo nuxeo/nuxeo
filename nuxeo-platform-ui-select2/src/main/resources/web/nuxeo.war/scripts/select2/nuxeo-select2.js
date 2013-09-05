@@ -62,6 +62,7 @@ function configureOperationParameters(op, params, query) {
     // build default operation for Document
     op.addParameter("queryParams", query.term + "%");
     op.addParameter("query", params.query);
+    op.addParameter("providerName", params.pageProviderName);
     op.addParameter("page", "0");
     op.addParameter("pageSize", "20");
   }
@@ -111,6 +112,7 @@ function initSelect2Widget(el) {
   params = JSON.parse(paramsHolder.val());
 
   var readonly = params.readonly == 'true';
+  var required = params.required == 'true';
 
   var initId = (elid + "_init").split(":").join("\\:");
   var initHolder = jQuery("#" + initId);
@@ -205,7 +207,7 @@ function initSelect2Widget(el) {
 
   if (params.placeholder && !readonly) {
     select2_params.placeholder = params.placeholder;
-    select2_params.allowClear = true;
+    select2_params.allowClear = !required;
   }
 
   // init select2
@@ -216,52 +218,60 @@ function initSelect2Widget(el) {
     el.select2("readonly", true);
   }
 
-  // Make selected items sortable
-  if (params.multiple == 'true' && params.sortable == 'true') {
-    el.select2("container").find("ul.select2-choices").sortable({
-      containment: 'parent',
-      start: function() { el.select2("onSortStart"); },
-      update: function() { el.select2("onSortEnd"); }
-    });
-  }
+  if (!readonly) {
 
-  // trigger for safeEdit restore
-  el.on("change", function(e) {
-    if (e) {
-      if (e.added) {
-        var newValue;
-        if (select2_params.multiple) {
-          var newObj = JSON.parse(initHolder.val());
-          newObj.push(e.added);
-          var newValue = JSON.stringify(newObj);
-        } else {
-          newValue = JSON.stringify(e.added);
-        }
-        initHolder.val(newValue);
-      }
+    // Make selected items sortable
+    if (params.multiple == 'true' && params.sortable == 'true') {
+      el.select2("container").find("ul.select2-choices").sortable({
+        containment: 'parent',
+        start: function() { el.select2("onSortStart"); },
+        update: function() { el.select2("onSortEnd"); }
+      });
+    }
 
-      if (e.removed) {
-        var removedId = select2_params.id(e.removed);
-        if (select2_params.multiple) {
-          var newValue = '';
-          var tempObj = JSON.parse(initHolder.val());
-          jQuery.each(tempObj, function(index, result) {
-            if (result) {
-              if (select2_params.id(result) == removedId) {
-                tempObj.splice(index, 1);
-              }
-            }
-          });
-          newValue = JSON.stringify(tempObj);
+    // trigger for safeEdit restore
+    el.on("change", function(e) {
+      if (e) {
+        if (e.added) {
+          var newValue;
+          if (select2_params.multiple) {
+            var newObj = JSON.parse(initHolder.val());
+            newObj.push(e.added);
+            var newValue = JSON.stringify(newObj);
+          } else {
+            newValue = JSON.stringify(e.added);
+          }
           initHolder.val(newValue);
-        } else {
-          if (initHolder.val() == removedId) {
-            initHolder.val('');
+        }
+
+        if (e.removed) {
+          var removedId = select2_params.id(e.removed);
+          if (select2_params.multiple) {
+            var newValue = '';
+            var tempObj = JSON.parse(initHolder.val());
+            jQuery.each(tempObj, function(index, result) {
+              if (result) {
+                if (select2_params.id(result) == removedId) {
+                  tempObj.splice(index, 1);
+                }
+              }
+            });
+            newValue = JSON.stringify(tempObj);
+            initHolder.val(newValue);
+          } else {
+            if (initHolder.val() == removedId) {
+              initHolder.val('');
+            }
           }
         }
       }
-    }
-  });
+
+      // ReRender any jsf component if needed.
+      if (params.reRenderFunctionName) {
+        window[params.reRenderFunctionName]();
+      }
+    });
+  }
 }
 
 function initSelect2AjaxWidget(widgetId, index) {

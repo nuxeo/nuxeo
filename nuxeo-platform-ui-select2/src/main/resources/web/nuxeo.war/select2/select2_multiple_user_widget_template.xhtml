@@ -24,12 +24,22 @@
       <c:otherwise>
         <ui:include src="/select2/include/select2_js.xhtml" />
 
+        <a4j:region>
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+          immediate="true" ajaxSingle="true"
           required="#{widgetProperty_required}" var="currentValue">
           <f:converter converterId="select2Converter"></f:converter>
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
             value="#{select2Actions.resolveMultipleUserReference(currentValue, widgetProperty_prefixed)}" />
         </nxu:valueHolder>
+
+          <c:if test="#{not empty widgetProperty_ajaxReRender}">
+            <a4j:jsFunction name="#{widget.id}_reRender"
+              reRender="#{widgetProperty_ajaxReRender}" />
+          </c:if>
+
+        </a4j:region>
+
 
         <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideInstructionLabel}">
           <p class="detail">

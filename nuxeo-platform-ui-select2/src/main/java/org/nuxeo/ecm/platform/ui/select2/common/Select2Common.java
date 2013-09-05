@@ -68,6 +68,10 @@ public class Select2Common {
 
     public static final String READ_ONLY_PARAM = "readonly";
 
+    public static final String RERENDER_JS_FUNCTION_NAME = "reRenderFunctionName";
+
+    public static final String AJAX_RERENDER = "ajaxReRender";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.

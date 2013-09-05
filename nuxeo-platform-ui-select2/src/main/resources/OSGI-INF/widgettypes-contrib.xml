@@ -508,9 +508,6 @@
                   <widget category="widgetTypeConf">initOperationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">query</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">documentSchemas</widget>
                 </row>
                 <row>
@@ -550,7 +547,16 @@
                   <widget category="widgetTypeConf">minChars</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">query</widget>
+                </row>
+                <row>
+                 <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
@@ -607,9 +613,6 @@
                   <widget category="widgetTypeConf">initOperationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">query</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">documentSchemas</widget>
                 </row>
                 <row>
@@ -649,10 +652,19 @@
                   <widget category="widgetTypeConf">minChars</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">query</widget>
+                </row>
+                <row>
+                 <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">sortable</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
@@ -748,6 +760,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
@@ -846,6 +861,9 @@
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -927,6 +945,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
@@ -1012,6 +1033,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
