@@ -183,9 +183,10 @@
             select * from Document where dc:title LIKE ?
           </property>
           <property name="documentSchemas">dublincore,layout_demo_schema,common</property>
-          <property name="customFormater">myformater</property>
+          <property name="suggestionFormatter">myformatter</property>
+          <property name="selectionFormatter">myformatter</property>
           <property name="inlinejs"> <![CDATA[
-  function myformater(doc) {
+  function myformatter(doc) {
    var markup = "<table><tr>";
    markup += "<td style='padding:2px'><img src='/nuxeo" + doc.properties['common:icon'] + "'/></td>";
    markup += "<td style='padding:2px'>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
@@ -241,11 +242,12 @@
           <property name="minChars">0</property>
           <property name="hideInstructionLabel">true</property>
           <property name="directoryName">l10ncoverage</property>
-          <property name="customFormater">dirformater</property>
+          <property name="suggestionFormatter">dirformatter</property>
+          <property name="selectionFormatter">dirformatter</property>
           <property name="keySeparator">/</property>
           <property name="placeholder">Choose a country</property>
           <property name="inlinejs"> <![CDATA[
-  function dirformater(entry) {
+  function dirformatter(entry) {
    return entry.label;
   }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
@@ -273,11 +275,12 @@
           <property name="minChars">0</property>
           <property name="hideInstructionLabel">true</property>
           <property name="directoryName">l10nsubjects</property>
-          <property name="customFormater">dirformater</property>
+          <property name="suggestionFormatter">dirformatter</property>
+          <property name="selectionFormatter">dirformatter</property>
           <property name="keySeparator">/</property>
           <property name="placeholder">Choose one or more topics</property>
           <property name="inlinejs"> <![CDATA[
-  function dirformater(entry) {
+  function dirformatter(entry) {
    return entry.label;
   }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
@@ -304,9 +307,10 @@
           <property name="instructionLabel">Type at least {0} "a" to find a user
           </property>
           <property name="repository">default</property>
-          <property name="customFormater">userformater</property>
+          <property name="suggestionFormatter">userformatter</property>
+          <property name="selectionFormatter">userformatter</property>
           <property name="inlinejs"> <![CDATA[
-  function userformater(entry) {
+  function userformatter(entry) {
    var markup = "<table><tr>";
    markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
    markup += "<td style='padding:2px'>" + entry.label + "</td>";
@@ -335,9 +339,10 @@
           <property name="instructionLabel">Type at least {0} "a" to find a user
           </property>
           <property name="repository">default</property>
-          <property name="customFormater">userformater</property>
+          <property name="suggestionFormatter">userformatter</property>
+          <property name="selectionFormatter">userformatter</property>
           <property name="inlinejs"> <![CDATA[
-  function userformater(entry) {
+  function userformatter(entry) {
    var markup = "<table><tr>";
    markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
    markup += "<td style='padding:2px'>" + entry.label + "</td>";
