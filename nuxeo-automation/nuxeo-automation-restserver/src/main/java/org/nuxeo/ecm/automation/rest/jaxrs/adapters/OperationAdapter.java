@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
 import org.nuxeo.ecm.automation.server.AutomationServer;
-import org.nuxeo.ecm.automation.server.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.webengine.WebException;
@@ -87,8 +86,8 @@ public class OperationAdapter extends DefaultAdapter {
                     getContext().getCoreSession());
 
             return Response.ok(service.run(ctx, oid, xreq.getParams())).build();
-        } catch (Throwable e) {
-            throw ExceptionHandler.newException("Failed to execute operation: "
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to execute operation: "
                     + oid, e);
         }
 
