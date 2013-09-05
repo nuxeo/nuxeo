@@ -872,6 +872,14 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
                 "DocumentRoute", "/document-route-models-root/");
         route.setPropertyValue("dc:coverage", "test");
         route = session.saveDocument(route);
+        // set ACL to test that the ACLs are kept
+        ACP acp = route.getACP();
+        ACL acl = acp.getOrCreateACL("testrouting");
+        acl.add(new ACE("testusername", "Write", true));
+        acp.addACL(acl);
+        route.setACP(acp, true);
+        route = session.saveDocument(route);
+
         assertNotNull(route);
         assertEquals("test", route.getPropertyValue("dc:coverage"));
 
@@ -912,7 +920,11 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         DocumentRoute model = doc.getAdapter(DocumentRoute.class);
 
         assertEquals(route.getId(), model.getDocument().getId());
-        // test that document was overriden
+        // test that document was overriden but the ACLs were kept
+        ACL newAcl = route.getACP().getACL("testrouting");
+        assertNotNull(newAcl);
+        assertEquals(1, newAcl.getACEs().length);
+        assertEquals("testusername", newAcl.getACEs()[0].getUsername());
 
         // Oracle makes no difference between null and blank
         assertTrue(StringUtils.isBlank((String) route.getPropertyValue("dc:coverage")));
