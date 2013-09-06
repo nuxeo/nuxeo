@@ -788,13 +788,6 @@
         <artifactId>nuxeo-dam-theme</artifactId>
         <version>${nuxeo.dam.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.dam</groupId>
-        <artifactId>nuxeo-dam-functional-tests</artifactId>
-        <version>${nuxeo.dam.version}</version>
-        <scope>test</scope>
-      </dependency>
-
 
       <!-- Case Management Framework -->
       <dependency>
