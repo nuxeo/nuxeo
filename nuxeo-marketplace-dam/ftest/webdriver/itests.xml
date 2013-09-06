@@ -6,8 +6,7 @@
            uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
-  <!-- Base distribution (nuxeo-cap, nuxeo-dm, ...) -->
-  <property name="wizard.preset" value="nuxeo-dm" />
+  <property name="wizard.preset" value="nuxeo-dam"/>
 
   <property name="out.dir" value="${maven.project.build.directory}" />
   <unzip dest="${out.dir}/" overwrite="false">
@@ -15,10 +14,8 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <!-- Instruction for installing the MP to be tested -->
   <property name="mp.install"
-            value="file:${out.dir}/marketplace-dam-${nuxeo.distribution.version}.zip" />
-  <!-- Override default prepare-environment target to make it download your MP -->
+            value="${out.dir}/marketplace-dam-${nuxeo.distribution.version}.zip" />
   <target name="prepare-environment"
           depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
     <copy todir="${out.dir}">
