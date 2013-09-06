@@ -19,9 +19,7 @@ package org.nuxeo.ecm.platform.ui.web.binding;
 import java.util.Collection;
 
 import javax.el.ELContext;
-import javax.el.ELException;
 import javax.el.PropertyNotFoundException;
-import javax.el.PropertyNotWritableException;
 import javax.el.ValueExpression;
 
 /**
@@ -58,8 +56,7 @@ public class DefaultValueExpression extends ValueExpression {
     }
 
     @Override
-    public Class<?> getType(ELContext arg0) throws NullPointerException,
-            PropertyNotFoundException, ELException {
+    public Class<?> getType(ELContext arg0) throws PropertyNotFoundException {
         if (originalExpression != null) {
             return originalExpression.getType(arg0);
         } else {
@@ -69,8 +66,7 @@ public class DefaultValueExpression extends ValueExpression {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public Object getValue(ELContext arg0) throws NullPointerException,
-            PropertyNotFoundException, ELException {
+    public Object getValue(ELContext arg0) throws PropertyNotFoundException {
         Object value = null;
         if (originalExpression != null) {
             value = originalExpression.getValue(arg0);
@@ -84,8 +80,7 @@ public class DefaultValueExpression extends ValueExpression {
     }
 
     @Override
-    public boolean isReadOnly(ELContext arg0) throws NullPointerException,
-            PropertyNotFoundException, ELException {
+    public boolean isReadOnly(ELContext arg0) throws PropertyNotFoundException {
         if (originalExpression != null) {
             return originalExpression.isReadOnly(arg0);
         } else {
@@ -95,8 +90,7 @@ public class DefaultValueExpression extends ValueExpression {
 
     @Override
     public void setValue(ELContext arg0, Object arg1)
-            throws NullPointerException, PropertyNotFoundException,
-            PropertyNotWritableException, ELException {
+            throws PropertyNotFoundException {
         if (originalExpression != null) {
             originalExpression.setValue(arg0, arg1);
         }
