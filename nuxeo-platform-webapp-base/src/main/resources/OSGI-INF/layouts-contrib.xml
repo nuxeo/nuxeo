@@ -3509,7 +3509,7 @@
         <property name="cache">true</property>
       </properties>
       <subWidgets>
-        <widget name="select" type="selectOneRadio">
+        <widget name="versioning_options" type="selectOneRadio">
           <fields>
             <field>contextData['default/VersioningOption']</field>
           </fields>
