@@ -84,11 +84,9 @@ public class DocumentRoutingEscalationServiceImpl implements
                 WorkManager.Scheduling.IF_NOT_SCHEDULED);
     }
 
-    class EscalationRuleWork extends AbstractWork {
+    public static class EscalationRuleWork extends AbstractWork {
 
-        protected String repositoryName;
-
-        protected String workerId;
+        private static final long serialVersionUID = 1L;
 
         protected String escalationRuleId;
 
@@ -98,20 +96,16 @@ public class DocumentRoutingEscalationServiceImpl implements
 
         public EscalationRuleWork(String escalationRuleId, String nodeDocId,
                 String repositoryName) {
+            super(repositoryName + ":" + nodeDocId + ":escalationRule:"
+                    + escalationRuleId);
+            this.repositoryName = repositoryName;
             this.escalationRuleId = escalationRuleId;
             this.nodeDocId = nodeDocId;
-            workerId = repositoryName + "_" + nodeDocId + "_"
-                    + escalationRuleId;
-            this.repositoryName = repositoryName;
         }
 
         @Override
         public String getTitle() {
-            return workerId;
-        }
-
-        public String getId() {
-            return workerId;
+            return getId();
         }
 
         @Override
@@ -121,11 +115,11 @@ public class DocumentRoutingEscalationServiceImpl implements
 
         @Override
         public void work() throws Exception {
-            CoreSession session = initSession(repositoryName);
+            initSession();
             DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
             if (node == null) {
-                throw new ClientException("Can't execute worker '" + workerId
+                throw new ClientException("Can't execute worker '" + getId()
                         + "' : the document '" + nodeDocId
                         + "' can not be adapted to a GraphNode");
             }
@@ -138,7 +132,7 @@ public class DocumentRoutingEscalationServiceImpl implements
                 }
             }
             if (rule == null) {
-                throw new ClientException("Can't execute worker '" + workerId
+                throw new ClientException("Can't execute worker '" + getId()
                         + "' : the rule '" + escalationRuleId
                         + "' was not found on the node '" + nodeDocId + "'");
             }
@@ -190,20 +184,6 @@ public class DocumentRoutingEscalationServiceImpl implements
             return false;
         }
 
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj instanceof EscalationRuleWork) {
-                return workerId.equals(((EscalationRuleWork) obj).getId());
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return workerId.hashCode();
-        }
     }
+
 }
