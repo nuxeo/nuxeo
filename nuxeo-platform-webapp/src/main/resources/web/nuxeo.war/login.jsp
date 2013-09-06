@@ -355,7 +355,7 @@ body {
             <table>
              <tr>
                <td colspan="2">
-                 <c:if test="${param.timeout}">
+                 <c:if test="${param.nxtimeout}">
                    <div class="feedbackMessage">
                      <fmt:message bundle="${messages}" key="label.login.timeout" />
                    </div>
