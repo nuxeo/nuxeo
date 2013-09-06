@@ -1147,8 +1147,7 @@ public class NXQLQueryMaker implements QueryMaker {
             String name = node.name;
             if (NXQL.ECM_PATH.equals(name) || //
                     NXQL.ECM_ISPROXY.equals(name) || //
-                    NXQL.ECM_MIXINTYPE.equals(name) || //
-                    NXQL.ECM_ISVERSION.equals(name)) {
+                    NXQL.ECM_MIXINTYPE.equals(name)) {
                 if (inSelect) {
                     throw new QueryMakerException("Cannot select on column: "
                             + name);
@@ -1164,6 +1163,14 @@ public class NXQLQueryMaker implements QueryMaker {
                     NXQL.ECM_PARENTID.equals(name) || //
                     NXQL.ECM_LIFECYCLESTATE.equals(name) || //
                     NXQL.ECM_VERSIONLABEL.equals(name) || //
+                    NXQL.ECM_VERSIONDESCRIPTION.equals(name) || //
+                    NXQL.ECM_VERSIONCREATED.equals(name) || //
+                    NXQL.ECM_VERSION_VERSIONABLEID.equals(name) || //
+                    NXQL.ECM_ISLATESTVERSION.equals(name) || //
+                    NXQL.ECM_ISLATESTMAJORVERSION.equals(name) || //
+                    NXQL.ECM_ISVERSION_OLD.equals(name) || //
+                    NXQL.ECM_ISVERSION.equals(name) || //
+                    NXQL.ECM_ISCHECKEDIN.equals(name) || //
                     NXQL.ECM_LOCK.equals(name) || //
                     NXQL.ECM_LOCK_OWNER.equals(name) || //
                     NXQL.ECM_LOCK_CREATED.equals(name) || //
@@ -1331,9 +1338,13 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (NXQL.ECM_PARENTID.equals(name)) {
                 table = hierTable;
                 fragmentKey = model.HIER_PARENT_KEY;
-            } else if (NXQL.ECM_ISVERSION.equals(name)) {
+            } else if (NXQL.ECM_ISVERSION_OLD.equals(name)
+                    || NXQL.ECM_ISVERSION.equals(name)) {
                 table = hierTable;
                 fragmentKey = model.MAIN_IS_VERSION_KEY;
+            } else if (NXQL.ECM_ISCHECKEDIN.equals(name)) {
+                table = hierTable;
+                fragmentKey = model.MAIN_CHECKED_IN_KEY;
             } else if (NXQL.ECM_PRIMARYTYPE.equals(name)) {
                 table = dataHierTable;
                 fragmentKey = model.MAIN_PRIMARY_TYPE_KEY;
@@ -1345,6 +1356,16 @@ public class NXQLQueryMaker implements QueryMaker {
                 propertyName = model.MISC_LIFECYCLE_STATE_PROP;
             } else if (NXQL.ECM_VERSIONLABEL.equals(name)) {
                 propertyName = model.VERSION_LABEL_PROP;
+            } else if (NXQL.ECM_VERSIONDESCRIPTION.equals(name)) {
+                propertyName = model.VERSION_DESCRIPTION_PROP;
+            } else if (NXQL.ECM_VERSIONCREATED.equals(name)) {
+                propertyName = model.VERSION_CREATED_PROP;
+            } else if (NXQL.ECM_VERSION_VERSIONABLEID.equals(name)) {
+                propertyName = model.VERSION_VERSIONABLE_PROP;
+            } else if (NXQL.ECM_ISLATESTVERSION.equals(name)) {
+                propertyName = model.VERSION_IS_LATEST_PROP;
+            } else if (NXQL.ECM_ISLATESTMAJORVERSION.equals(name)) {
+                propertyName = model.VERSION_IS_LATEST_MAJOR_PROP;
             } else if (NXQL.ECM_LOCK.equals(name)
                     || NXQL.ECM_LOCK_OWNER.equals(name)) {
                 propertyName = model.LOCK_OWNER_PROP;
@@ -1577,8 +1598,11 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionEcmPath(node);
             } else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
-            } else if (NXQL.ECM_ISVERSION.equals(name)) {
-                visitExpressionIsVersion(node);
+            } else if (NXQL.ECM_ISVERSION_OLD.equals(name)
+                    || NXQL.ECM_ISVERSION.equals(name)) {
+                visitExpressionIsVersion(name, node);
+            } else if (NXQL.ECM_ISCHECKEDIN.equals(name)) {
+                visitExpressionIsCheckedIn(node);
             } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 visitExpressionMixinType(node);
             } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
@@ -1789,47 +1813,51 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected void visitExpressionIsProxy(Expression node) {
-            if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(NXQL.ECM_ISPROXY
-                        + " requires = or <> operator");
-            }
-            if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(NXQL.ECM_ISPROXY
-                        + " requires literal 0 or 1 as right argument");
-            }
-            long v = ((IntegerLiteral) node.rvalue).value;
-            if (v != 0 && v != 1) {
-                throw new QueryMakerException(NXQL.ECM_ISPROXY
-                        + " requires literal 0 or 1 as right argument");
-            }
-            boolean bool = node.operator == Operator.EQ ^ v == 0;
+            boolean bool = getBooleanRValue(NXQL.ECM_ISPROXY, node);
             buf.append(isProxies == bool ? "1=1" : "0=1");
         }
 
-        protected void visitExpressionIsVersion(Expression node) {
-            if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-                throw new QueryMakerException(NXQL.ECM_ISVERSION
-                        + " requires = or <> operator");
-            }
-            if (!(node.rvalue instanceof IntegerLiteral)) {
-                throw new QueryMakerException(NXQL.ECM_ISVERSION
-                        + " requires literal 0 or 1 as right argument");
-            }
-            long v = ((IntegerLiteral) node.rvalue).value;
-            if (v != 0 && v != 1) {
-                throw new QueryMakerException(NXQL.ECM_ISVERSION
-                        + " requires literal 0 or 1 as right argument");
-            }
-            boolean bool = node.operator == Operator.EQ ^ v == 0;
-
+        protected void visitExpressionIsVersion(String name, Expression node) {
+            boolean bool = getBooleanRValue(name, node);
             node.lvalue.accept(this);
-            // buf.append(database.getTable(model.VERSION_TABLE_NAME).getColumn(
-            // model.MAIN_KEY).getFullQuotedName());
             if (bool) {
-                buf.append(" = " + dialect.toBooleanValueString(true));
+                buf.append(" = ");
+                buf.append(dialect.toBooleanValueString(true));
             } else {
                 buf.append(" IS NULL");
             }
+        }
+
+        protected void visitExpressionIsCheckedIn(Expression node) {
+            boolean bool = getBooleanRValue(NXQL.ECM_ISCHECKEDIN, node);
+            if (bool) {
+                node.lvalue.accept(this);
+                buf.append(" = ");
+                buf.append(dialect.toBooleanValueString(true));
+            } else {
+                buf.append('(');
+                node.lvalue.accept(this);
+                buf.append(" = ");
+                buf.append(dialect.toBooleanValueString(false));
+                buf.append(" OR ");
+                node.lvalue.accept(this);
+                buf.append(" IS NULL)");
+            }
+        }
+
+        private boolean getBooleanRValue(String name, Expression node) {
+            if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
+                throw new QueryMakerException(name
+                        + " requires = or <> operator");
+            }
+            long v;
+            if (!(node.rvalue instanceof IntegerLiteral)
+                    || ((v = ((IntegerLiteral) node.rvalue).value) != 0 && v != 1)) {
+                throw new QueryMakerException(name
+                        + " requires literal 0 or 1 as right argument");
+            }
+            boolean bool = node.operator == Operator.EQ ^ v == 0;
+            return bool;
         }
 
         /**

@@ -44,10 +44,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
@@ -1505,15 +1507,6 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(9, dml.size());
 
         /*
-         * ecm:versionLabel
-         */
-        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1'");
-        // we can check the version label on a proxy
-        assertIdSet(dml, version.getId(), proxy.getId());
-        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1' AND ecm:isProxy = 0");
-        assertIdSet(dml, version.getId());
-
-        /*
          * ecm:lock (deprecated, uses ecm:lockOwner actually)
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:lock <> '_'");
@@ -1537,6 +1530,120 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(9, dml.size());
 
         // ecm:fulltext tested below
+    }
+
+    @Test
+    public void testQuerySpecialFieldsVersioning() throws Exception {
+        createDocs();
+        DocumentModel doc = session.getDocument(new PathRef(
+                "/testfolder2/testfolder3/testfile4"));
+        DocumentModel proxy = publishDoc(); // testfile4 to testfolder1
+        DocumentModel version = session.getDocument(new IdRef(
+                proxy.getSourceId()));
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        DocumentRef v1 = session.checkIn(file1.getRef(),
+                VersioningOption.MAJOR, "comment1");
+        session.checkOut(file1.getRef());
+        DocumentRef v2 = session.checkIn(file1.getRef(),
+                VersioningOption.MAJOR, "comment2");
+        session.save();
+
+        DocumentModelList dml;
+
+        /*
+         * ecm:isCheckedIn
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedIn = 1");
+        assertIdSet(dml, doc.getId(), file1.getId());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedIn = 0");
+        assertEquals(9, dml.size());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedIn = 0 AND ecm:isProxy = 0");
+        assertEquals(8, dml.size());
+        // checkout and make sure we find it in correct state
+        session.checkOut(file1.getRef());
+        session.save();
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedIn = 1");
+        assertIdSet(dml, doc.getId());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedIn = 0");
+        assertEquals(10, dml.size());
+
+        /*
+         * ecm:isVersion / ecm:isCheckedInVersion
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:isVersion = 1");
+        assertIdSet(dml, version.getId(), v1.toString(), v2.toString());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
+        assertEquals(8, dml.size()); // 7 folder/docs, 1 proxy
+        // old spelling ecm:isCheckedInVersion
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 1");
+        assertIdSet(dml, version.getId(), v1.toString(), v2.toString());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isCheckedInVersion = 0");
+        assertEquals(8, dml.size()); // 7 folder/docs, 1 proxy
+
+        /*
+         * ecm:isLatestVersion
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:isLatestVersion = 1");
+        assertIdSet(dml, version.getId(), v2.toString(), proxy.getId());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isLatestVersion = 1 AND ecm:isProxy = 0");
+        assertIdSet(dml, version.getId(), v2.toString());
+
+        /*
+         * ecm:isLatestMajorVersion
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1");
+        assertIdSet(dml, v2.toString());
+
+        /*
+         * ecm:versionLabel
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1'");
+        // we can check the version label on a proxy
+        assertIdSet(dml, version.getId(), proxy.getId());
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionLabel = '0.1' AND ecm:isProxy = 0");
+        assertIdSet(dml, version.getId());
+
+        /*
+         * ecm:versionDescription
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionDescription = 'comment1'");
+        assertIdSet(dml, v1.toString());
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionDescription = 'comment2'");
+        assertIdSet(dml, v2.toString());
+
+        /*
+         * ecm:versionCreated
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionCreated IS NOT NULL");
+        assertIdSet(dml, version.getId(), v1.toString(), v2.toString(),
+                proxy.getId());
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionCreated IS NOT NULL and ecm:isProxy = 0");
+        assertIdSet(dml, version.getId(), v1.toString(), v2.toString());
+
+        /*
+         * ecm:versionVersionableId
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '"
+                + doc.getId() + "'");
+        assertIdSet(dml, version.getId(), proxy.getId());
+        dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '"
+                + doc.getId() + "' AND ecm:isProxy = 0");
+        assertIdSet(dml, version.getId());
+
+        /*
+         * ecm:proxyTargetId
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:proxyTargetId = '"
+                + version.getId() + "'");
+        assertIdSet(dml, proxy.getId());
+
+        /*
+         * ecm:proxyVersionableId
+         */
+        dml = session.query("SELECT * FROM Document WHERE ecm:proxyVersionableId = '"
+                + doc.getId() + "'");
+        assertIdSet(dml, proxy.getId());
     }
 
     @Test

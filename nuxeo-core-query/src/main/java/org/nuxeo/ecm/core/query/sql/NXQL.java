@@ -44,7 +44,10 @@ public class NXQL {
 
     public static final String ECM_ISPROXY = "ecm:isProxy";
 
-    public static final String ECM_ISVERSION = "ecm:isCheckedInVersion";
+    public static final String ECM_ISVERSION = "ecm:isVersion";
+
+    /** @since 5.7.3 */
+    public static final String ECM_ISVERSION_OLD = "ecm:isCheckedInVersion";
 
     public static final String ECM_LIFECYCLESTATE = "ecm:currentLifeCycleState";
 
@@ -72,6 +75,24 @@ public class NXQL {
 
     /** @since 5.7 */
     public static final String ECM_PROXY_VERSIONABLEID = "ecm:proxyVersionableId";
+
+    /** @since 5.7.3 */
+    public static final String ECM_ISCHECKEDIN = "ecm:isCheckedIn";
+
+    /** @since 5.7.3 */
+    public static final String ECM_ISLATESTVERSION = "ecm:isLatestVersion";
+
+    /** @since 5.7.3 */
+    public static final String ECM_ISLATESTMAJORVERSION = "ecm:isLatestMajorVersion";
+
+    /** @since 5.7.3 */
+    public static final String ECM_VERSIONCREATED = "ecm:versionCreated";
+
+    /** @since 5.7.3 */
+    public static final String ECM_VERSIONDESCRIPTION = "ecm:versionDescription";
+
+    /** @since 5.7.3 */
+    public static final String ECM_VERSION_VERSIONABLEID = "ecm:versionVersionableId";
 
     /**
      * Escapes a string into a single-quoted string for NXQL.
