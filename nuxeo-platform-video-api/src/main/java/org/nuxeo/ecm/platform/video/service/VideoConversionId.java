@@ -26,7 +26,9 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
+ * @deprecated since 5.7.3, use other APIs instead
  */
+@Deprecated
 public class VideoConversionId {
 
     private final DocumentLocation documentLocation;

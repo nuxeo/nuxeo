@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
@@ -41,14 +41,19 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class VideoConversionWork extends AbstractWork {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(VideoConversionWork.class);
 
     public static final String CATEGORY_VIDEO_CONVERSION = "videoConversion";
 
-    protected final VideoConversionId id;
+    protected final String conversionName;
 
-    public VideoConversionWork(VideoConversionId id) {
-        this.id = id;
+    public VideoConversionWork(String repositoryName, String docId,
+            String conversionName) {
+        super(repositoryName + ':' + docId + ":videoconv:" + conversionName);
+        setDocument(repositoryName, docId);
+        this.conversionName = conversionName;
     }
 
     @Override
@@ -58,7 +63,7 @@ public class VideoConversionWork extends AbstractWork {
 
     @Override
     public String getTitle() {
-        return "Video Conversion " + id.getConversionName();
+        return "Video Conversion " + conversionName;
     }
 
     @Override
@@ -73,10 +78,9 @@ public class VideoConversionWork extends AbstractWork {
 
             // Perform the actual conversion
             VideoService service = Framework.getLocalService(VideoService.class);
-            String conversionName = id.getConversionName();
             setStatus("Transcoding");
-            TranscodedVideo transcodedVideo = service.convert(id,
-                    originalVideo, conversionName);
+            TranscodedVideo transcodedVideo = service.convert(originalVideo,
+                    conversionName);
 
             // Reopen a new transaction to save the results back to the
             // repository
@@ -84,17 +88,15 @@ public class VideoConversionWork extends AbstractWork {
             setStatus("Saving");
             saveNewTranscodedVideo(transcodedVideo);
         }
-        setStatus(null);
+        setStatus("Done");
     }
 
     protected Video getVideoToConvert() throws ClientException {
         final Video[] videos = new Video[1];
-        final DocumentRef docRef = id.getDocumentLocation().getDocRef();
-        String repositoryName = id.getDocumentLocation().getServerName();
         new UnrestrictedSessionRunner(repositoryName) {
             @Override
             public void run() throws ClientException {
-                DocumentModel doc = session.getDocument(docRef);
+                DocumentModel doc = session.getDocument(new IdRef(docId));
                 VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
                 Video video = videoDocument.getVideo();
                 videos[0] = video;
@@ -108,12 +110,10 @@ public class VideoConversionWork extends AbstractWork {
 
     protected void saveNewTranscodedVideo(final TranscodedVideo transcodedVideo)
             throws ClientException {
-        final DocumentRef docRef = id.getDocumentLocation().getDocRef();
-        String repositoryName = id.getDocumentLocation().getServerName();
         new UnrestrictedSessionRunner(repositoryName) {
             @Override
             public void run() throws ClientException {
-                DocumentModel doc = session.getDocument(docRef);
+                DocumentModel doc = session.getDocument(new IdRef(docId));
                 @SuppressWarnings("unchecked")
                 List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
                 if (transcodedVideos == null) {
@@ -126,19 +126,6 @@ public class VideoConversionWork extends AbstractWork {
                 session.save();
             }
         }.runUnrestricted();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof VideoConversionWork)) {
-            return false;
-        }
-        return id.equals(((VideoConversionWork) other).id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
     }
 
 }

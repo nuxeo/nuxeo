@@ -86,9 +86,8 @@ public class VideoActions implements Serializable {
 
     public VideoConversionStatus getVideoConversionStatus(DocumentModel doc,
             String conversionName) {
-        VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(
-                doc), conversionName);
-        return videoService.getProgressStatus(id);
+        return videoService.getProgressStatus(doc.getRepositoryName(),
+                doc.getId(), conversionName);
     }
 
     public String getStatusMessageFor(VideoConversionStatus status) {

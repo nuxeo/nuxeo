@@ -30,10 +30,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
@@ -117,9 +117,8 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
         if (workManager == null) {
             throw new RuntimeException("No WorkManager available");
         }
-        VideoConversionId id = new VideoConversionId(new DocumentLocationImpl(
-                doc), conversionName);
-        VideoConversionWork work = new VideoConversionWork(id);
+        VideoConversionWork work = new VideoConversionWork(
+                doc.getRepositoryName(), doc.getId(), conversionName);
         workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
     }
 
@@ -134,13 +133,14 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
-    public TranscodedVideo convert(Video originalVideo, String conversionName) {
-        return convert(null, originalVideo, conversionName);
+    @Deprecated
+    public TranscodedVideo convert(VideoConversionId id, Video originalVideo,
+            String conversionName) {
+        return convert(originalVideo, conversionName);
     }
 
     @Override
-    public TranscodedVideo convert(VideoConversionId id, Video originalVideo,
-            String conversionName) {
+    public TranscodedVideo convert(Video originalVideo, String conversionName) {
         try {
             if (!videoConversions.registry.containsKey(conversionName)) {
                 throw new ClientRuntimeException(String.format(
@@ -165,18 +165,27 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     }
 
     @Override
+    @Deprecated
     public VideoConversionStatus getProgressStatus(VideoConversionId id) {
+        DocumentLocation loc = id.getDocumentLocation();
+        return getProgressStatus(loc.getServerName(), loc.getIdRef().value,
+                id.getConversionName());
+    }
+
+    @Override
+    public VideoConversionStatus getProgressStatus(String repositoryName,
+            String docId, String conversionName) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work work = new VideoConversionWork(id);
-        int[] pos = new int[1];
-        work = workManager.find(work, null, true, pos);
-        if (work == null) {
+        Work work = new VideoConversionWork(repositoryName, docId,
+                conversionName);
+        State state = workManager.getWorkState(work.getId());
+        if (state == null || state == State.COMPLETED) {
             return null;
-        } else if (work.getState() == State.SCHEDULED) {
+        } else if (state == State.SCHEDULED) {
             String queueId = workManager.getCategoryQueueId(VideoConversionWork.CATEGORY_VIDEO_CONVERSION);
-            int queueSize = workManager.listWork(queueId, State.SCHEDULED).size();
+            int queueSize = workManager.getQueueSize(queueId, State.SCHEDULED);
             return new VideoConversionStatus(
-                    VideoConversionStatus.STATUS_CONVERSION_QUEUED, pos[0] + 1,
+                    VideoConversionStatus.STATUS_CONVERSION_QUEUED, 0,
                     queueSize);
         } else { // RUNNING
             return new VideoConversionStatus(
