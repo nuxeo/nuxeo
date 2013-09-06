@@ -973,8 +973,6 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         String baseURL = service.getBaseURL(httpRequest);
 
-        HttpSession session = httpRequest.getSession(false);
-
         // go through plugins to get UserIndentity
         for (String pluginName : service.getAuthChain(httpRequest)) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
