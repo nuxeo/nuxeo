@@ -230,16 +230,16 @@ body {
   color: #b31500
 }
 
+.feedbackMessage {
+  border-bottom: 1px dotted #ccc;
+  color: #a0a0a0;
+  font-size: .7em;
+  margin-bottom: 1em;
+  padding: 0 0 .5em;
+  text-align: center }
+
 .errorMessage {
-  background-color: #ffe467;
-  border: 1px solid #eea800;
-  border-radius: 0 10px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-  color: #000;
-  font-size: 0.9em;
-  padding: 0.4em 1em;
-  text-align: center
-}
+  color: #f40000 }
 
 .welcome {
   background: #fff;
@@ -354,6 +354,35 @@ body {
             <%} %>
             <table>
              <tr>
+               <td colspan="2">
+                 <c:if test="${param.timeout}">
+                   <div class="feedbackMessage">
+                     <fmt:message bundle="${messages}" key="label.login.timeout" />
+                   </div>
+                 </c:if>
+                 <c:if test="${param.connectionFailed}">
+                   <div class="feedbackMessage errorMessage">
+                     <fmt:message bundle="${messages}" key="label.login.connectionFailed" />
+                   </div>
+                 </c:if>
+                 <c:if test="${param.loginFailed == 'true' and param.connectionFailed != 'true'}">
+                   <div class="feedbackMessage errorMessage">
+                     <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
+                   </div>
+                 </c:if>
+                 <c:if test="${param.loginMissing}">
+                   <div class="feedbackMessage errorMessage">
+                     <fmt:message bundle="${messages}" key="label.login.missingUsername" />
+                   </div>
+                 </c:if>
+                 <c:if test="${param.securityError}">
+                   <div class="feedbackMessage errorMessage">
+                     <fmt:message bundle="${messages}" key="label.login.securityError" />
+                   </div>
+                 </c:if>
+               </td>
+             </tr>
+             <tr>
                 <td class="login_label">
                   <label for="username">
                     <fmt:message bundle="${messages}" key="label.login.username" />
@@ -389,30 +418,6 @@ body {
                       id="form_submitted_marker" />
                   <input class="login_button" type="submit" name="Submit"
                     value="<fmt:message bundle="${messages}" key="label.login.logIn" />" />
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  <c:if test="${param.connectionFailed}">
-                    <div class="errorMessage">
-                      <fmt:message bundle="${messages}" key="label.login.connectionFailed" />
-                    </div>
-                  </c:if>
-                  <c:if test="${param.loginFailed == 'true' and param.connectionFailed != 'true'}">
-                    <div class="errorMessage">
-                      <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
-                    </div>
-                  </c:if>
-                  <c:if test="${param.loginMissing}">
-                    <div class="errorMessage">
-                      <fmt:message bundle="${messages}" key="label.login.missingUsername" />
-                    </div>
-                  </c:if>
-                  <c:if test="${param.securityError}">
-                    <div class="errorMessage">
-                      <fmt:message bundle="${messages}" key="label.login.securityError" />
-                    </div>
-                  </c:if>
                 </td>
               </tr>
             </table>
