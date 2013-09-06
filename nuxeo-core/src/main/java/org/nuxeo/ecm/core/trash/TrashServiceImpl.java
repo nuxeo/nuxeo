@@ -169,7 +169,8 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
         @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {
-            return doc1.getPathAsString().compareTo(doc2.getPathAsString());
+            return doc1.getPathAsString().replace("/", "\u0000").compareTo(
+                    doc2.getPathAsString().replace("/", "\u0000"));
         }
 
     }

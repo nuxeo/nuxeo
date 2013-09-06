@@ -31,9 +31,11 @@ public class PathComparator implements Comparator<Document>, Serializable {
 
     @Override
     public int compare(Document o1, Document o2) {
+        // The character "/" should be considered as the highest discriminant to
+        // sort paths. So we replace it with the first unicode character
         try {
-            String path1 = o1.getPath();
-            return path1.compareTo(o2.getPath());
+            String path1 = o1.getPath().replace("/", "\u0000");
+            return path1.compareTo(o2.getPath().replace("/", "\u0000"));
         } catch (DocumentException e) {
             // can't throw again
             log.error("Failed getting a path from a Document instance!");
