@@ -2160,7 +2160,7 @@
       <dependency>
         <groupId>org.artofsolving.jodconverter</groupId>
         <artifactId>jodconverter-core</artifactId>
-        <version>3.0-NX9</version>
+        <version>3.0-NX10</version>
       </dependency>
       <dependency>
         <groupId>net.sf.jodreports</groupId>
