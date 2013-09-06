@@ -173,7 +173,11 @@ public class JSONDocumentModelReader implements
                     throw new WebApplicationException(
                             Response.Status.BAD_REQUEST);
                 }
+            } else {
+                log.debug("Unknown key: " + key);
+                jp.skipChildren();
             }
+
             tok = jp.nextToken();
         }
 
