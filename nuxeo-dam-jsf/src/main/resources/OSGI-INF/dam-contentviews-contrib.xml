@@ -330,6 +330,8 @@
             <property name="dbl10n">true</property>
             <property name="minChars">0</property>
             <property name="hideInstructionLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
           </properties>
         </widget>
         <widget name="dc_coverage" type="select2DirectoryMultiple">
@@ -346,6 +348,8 @@
             <property name="dbl10n">true</property>
             <property name="minChars">0</property>
             <property name="hideInstructionLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
           </properties>
         </widget>
       </subWidgets>
