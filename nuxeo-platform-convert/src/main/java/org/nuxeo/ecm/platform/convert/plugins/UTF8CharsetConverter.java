@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Stephane Lacoin
+ */
+
 package org.nuxeo.ecm.platform.convert.plugins;
 
 import java.io.BufferedInputStream;
@@ -23,7 +40,6 @@ public class UTF8CharsetConverter implements Converter {
 
     @Override
     public void init(ConverterDescriptor descriptor) {
-        ;
     }
 
     @Override
@@ -41,7 +57,8 @@ public class UTF8CharsetConverter implements Converter {
         try {
             transcodedBlob = convert(originalBlob);
         } catch (IOException e) {
-            throw new ConversionException("Cannot transcode " + path + " to UTF-8", e);
+            throw new ConversionException("Cannot transcode " + path
+                    + " to UTF-8", e);
         }
         return new SimpleBlobHolder(transcodedBlob);
     }
@@ -60,17 +77,17 @@ public class UTF8CharsetConverter implements Converter {
         if (encoding == null || encoding.length() == 0) {
             encoding = detectEncoding(in);
         }
+        Blob newBlob;
         if ("UTF-8".equals(encoding)) {
-            blob =  new InputStreamBlob(in);
+            newBlob = new InputStreamBlob(in);
         } else {
-            String content = IOUtils.toString(in,
-                encoding);
-            blob =  new StringBlob(content);
+            String content = IOUtils.toString(in, encoding);
+            newBlob = new StringBlob(content);
         }
-        blob.setMimeType(mimetype);
-        blob.setEncoding("UTF-8");
-        blob.setFilename(filename);
-        return blob;
+        newBlob.setMimeType(mimetype);
+        newBlob.setEncoding("UTF-8");
+        newBlob.setFilename(filename);
+        return newBlob;
     }
 
     protected String detectEncoding(InputStream in) throws IOException {
