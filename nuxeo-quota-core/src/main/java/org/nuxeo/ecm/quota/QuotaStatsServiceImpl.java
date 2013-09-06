@@ -121,13 +121,13 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public String getProgressStatus(String updaterName) {
+    public String getProgressStatus(String updaterName, String repositoryName) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work work = new QuotaStatsInitialWork(updaterName, null);
-        work = workManager.find(work, null, true, null);
-        if (work == null) {
+        Work work = new QuotaStatsInitialWork(updaterName, repositoryName);
+        State state = workManager.getWorkState(work.getId());
+        if (state == null) {
             return null;
-        } else if (work.getState() == State.SCHEDULED) {
+        } else if (state == State.SCHEDULED) {
             return STATUS_INITIAL_COMPUTATION_QUEUED;
         } else { // RUNNING
             return STATUS_INITIAL_COMPUTATION_PENDING;

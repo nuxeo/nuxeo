@@ -59,7 +59,7 @@ public interface QuotaStatsService {
     /**
      * Returns the progress status of {@code updaterName}.
      */
-    String getProgressStatus(String updaterName);
+    String getProgressStatus(String updaterName, String repositoryName);
 
     /**
      * Gets the quota from the first parent where quota has been set. Returns -1

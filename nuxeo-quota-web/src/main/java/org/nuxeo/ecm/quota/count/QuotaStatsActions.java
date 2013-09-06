@@ -111,7 +111,8 @@ public class QuotaStatsActions implements Serializable {
 
     public String getStatus(String updaterName) {
         QuotaStatsService quotaStatsService = Framework.getLocalService(QuotaStatsService.class);
-        return quotaStatsService.getProgressStatus(updaterName);
+        return quotaStatsService.getProgressStatus(updaterName,
+                documentManager.getRepositoryName());
     }
 
     @Factory(value = "currentQuotaDoc", scope = ScopeType.EVENT)
@@ -209,9 +210,9 @@ public class QuotaStatsActions implements Serializable {
 
     public boolean workQueuesInProgess() {
         WorkManager workManager = getWorkManager();
-        List<Work> running = workManager.listWork("quota", State.RUNNING);
-        List<Work> scheduled = workManager.listWork("quota", State.SCHEDULED);
-        return running.size() > 0 || scheduled.size() > 0;
+        int running = workManager.getQueueSize("quota", State.RUNNING);
+        int scheduled = workManager.getQueueSize("quota", State.SCHEDULED);
+        return running + scheduled > 0;
     }
 
     public boolean isQuotaSetOnCurrentDocument() {

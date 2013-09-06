@@ -130,7 +130,7 @@ public class TestQuotaService {
         DocumentModel uw1 = session.getDocument(uwRef1);
         DocumentModel uw2 = session.getDocument(uwRef2);
         workManager.awaitCompletion("quota", 3, TimeUnit.SECONDS);
-        assertEquals(0, workManager.getNonCompletedWorkSize("quota"));
+        assertEquals(0, workManager.getQueueSize("quota", null));
         assertTrue((Long) uw1.getPropertyValue("dss:maxSize") == 100L);
         assertTrue((Long) uw2.getPropertyValue("dss:maxSize") == 100L);
     }

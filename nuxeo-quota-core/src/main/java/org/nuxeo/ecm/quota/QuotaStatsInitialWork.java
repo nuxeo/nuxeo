@@ -18,8 +18,6 @@
 
 package org.nuxeo.ecm.quota;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -29,20 +27,21 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Work doing an initial statistics computation for a defined
  * {@link QuotaStatsUpdater}.
- * 
+ *
  * @since 5.6
  */
 public class QuotaStatsInitialWork extends AbstractWork {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String CATEGORY_QUOTA_INITIAL = "quotaInitialStatistics";
 
     private final String updaterName;
 
-    private final String repositoryName;
-
     public QuotaStatsInitialWork(String updaterName, String repositoryName) {
+        super(repositoryName + ":quotaInitialStatistics:" + updaterName);
+        setDocument(repositoryName, null);
         this.updaterName = updaterName;
-        this.repositoryName = repositoryName;
     }
 
     @Override
@@ -74,21 +73,6 @@ public class QuotaStatsInitialWork extends AbstractWork {
                         currentWorker);
             }
         }.runUnrestricted();
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof QuotaStatsInitialWork)) {
-            return false;
-        }
-        QuotaStatsInitialWork other = (QuotaStatsInitialWork) object;
-        return new EqualsBuilder().append(updaterName, other.updaterName).append(
-                repositoryName, other.repositoryName).isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(updaterName).append(repositoryName).toHashCode();
     }
 
     @Override

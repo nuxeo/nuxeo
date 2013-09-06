@@ -35,19 +35,17 @@ import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
  */
 public class QuotaMaxSizeSetterWork extends AbstractWork {
 
-    long maxSize;
+    private static final long serialVersionUID = 1L;
 
-    List<String> ids;
-
-    String repositoryName;
+    public long maxSize;
 
     public static final String QUOTA_MAX_SIZE_UPDATE_WORK = "quotaMaxSizeSetter";
 
-    public QuotaMaxSizeSetterWork(long maxSize, List<String> ids,
+    public QuotaMaxSizeSetterWork(long maxSize, List<String> docIds,
             String repositoryName) {
+        super(); // random id, for unique job
+        setDocuments(repositoryName, docIds);
         this.maxSize = maxSize;
-        this.ids = ids;
-        this.repositoryName = repositoryName;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
     }
 
     public void notifyProgress(long current) {
-        setProgress(new Progress(current, ids.size()));
+        setProgress(new Progress(current, docIds.size()));
     }
 
     @Override
@@ -70,8 +68,8 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
 
             @Override
             public void run() throws ClientException {
-                for (String id : ids) {
-                    DocumentModel doc = session.getDocument(new IdRef(id));
+                for (String docId : docIds) {
+                    DocumentModel doc = session.getDocument(new IdRef(docId));
                     QuotaAware qa = doc.getAdapter(QuotaAware.class);
                     if (qa == null) {
                         qa = QuotaAwareDocumentFactory.make(doc, true);
