@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.csv;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import org.nuxeo.common.utils.i18n.I18NUtils;
@@ -25,7 +26,9 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class CSVImportLog {
+public class CSVImportLog implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public enum Status {
         SUCCESS, SKIPPED, ERROR
@@ -39,10 +42,10 @@ public class CSVImportLog {
 
     protected final String localizedMessage;
 
-    protected final Object[] params;
+    protected final String[] params;
 
     public CSVImportLog(long line, Status status, String message,
-            String localizedMessage, Object... params) {
+            String localizedMessage, String... params) {
         this.line = line;
         this.status = status;
         this.message = message;

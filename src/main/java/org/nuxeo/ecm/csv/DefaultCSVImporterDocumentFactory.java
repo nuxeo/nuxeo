@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class DefaultCSVImporterDocumentFactory implements
         CSVImporterDocumentFactory {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public void createDocument(CoreSession session, String parentPath,
             String name, String type, Map<String, Serializable> values)

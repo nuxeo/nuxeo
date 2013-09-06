@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public interface CSVImporterDocumentFactory {
+public interface CSVImporterDocumentFactory extends Serializable {
 
     public void createDocument(CoreSession session, String parentPath,
             String name, String type, Map<String, Serializable> values)

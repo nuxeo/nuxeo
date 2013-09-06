@@ -17,28 +17,29 @@
 
 package org.nuxeo.ecm.csv;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
 public class CSVImporterImpl implements CSVImporter {
 
     @Override
-    public CSVImportId launchImport(CoreSession session, String parentPath,
-            Blob csvBlob, CSVImporterOptions options) {
+    public String launchImport(CoreSession session, String parentPath,
+            File csvFile, String csvFileName, CSVImporterOptions options) {
         CSVImporterWork work = new CSVImporterWork(session.getRepositoryName(),
-                parentPath, session.getPrincipal().getName(), csvBlob, options);
+                parentPath, session.getPrincipal().getName(), csvFile,
+                csvFileName, options);
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.schedule(work,
                 WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
@@ -46,45 +47,42 @@ public class CSVImporterImpl implements CSVImporter {
     }
 
     @Override
-    public CSVImportStatus getImportStatus(CSVImportId id) {
+    public CSVImportStatus getImportStatus(String id) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        Work workId = new CSVImporterWork(id);
-        int[] pos = new int[1];
-        Work work = workManager.find(workId, null, true, pos);
-        if (work == null) {
-            // completed?
-            work = workManager.find(workId, Work.State.COMPLETED, true, pos);
-            return work != null ? new CSVImportStatus(
-                    CSVImportStatus.State.COMPLETED) : null;
-        } else if (work.getState() == Work.State.SCHEDULED) {
+        State state = workManager.getWorkState(id);
+        if (state == null) {
+            return null;
+        } else if (state == State.COMPLETED) {
+            return new CSVImportStatus(CSVImportStatus.State.COMPLETED);
+        } else if (state == State.SCHEDULED) {
             String queueId = workManager.getCategoryQueueId(CSVImporterWork.CATEGORY_CSV_IMPORTER);
-            int queueSize = workManager.listWork(queueId, Work.State.SCHEDULED).size();
-            return new CSVImportStatus(CSVImportStatus.State.SCHEDULED,
-                    pos[0] + 1, queueSize);
+            int queueSize = workManager.getQueueSize(queueId, State.SCHEDULED);
+            return new CSVImportStatus(CSVImportStatus.State.SCHEDULED, 0,
+                    queueSize);
         } else { // RUNNING
             return new CSVImportStatus(CSVImportStatus.State.RUNNING);
         }
     }
 
     @Override
-    public List<CSVImportLog> getImportLogs(CSVImportId id) {
+    public List<CSVImportLog> getImportLogs(String id) {
         return getLastImportLogs(id, -1);
     }
 
     @Override
-    public List<CSVImportLog> getImportLogs(CSVImportId id,
+    public List<CSVImportLog> getImportLogs(String id,
             CSVImportLog.Status... status) {
         return getLastImportLogs(id, -1, status);
     }
 
     @Override
-    public List<CSVImportLog> getLastImportLogs(CSVImportId id, int max) {
+    public List<CSVImportLog> getLastImportLogs(String id, int max) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         Work workId = new CSVImporterWork(id);
         int[] pos = new int[1];
         Work work = workManager.find(workId, null, true, pos);
         if (work == null) {
-            work = workManager.find(workId, Work.State.COMPLETED, true, pos);
+            work = workManager.find(workId, State.COMPLETED, true, pos);
             if (work == null) {
                 return Collections.emptyList();
             }
@@ -95,7 +93,7 @@ public class CSVImporterImpl implements CSVImporter {
     }
 
     @Override
-    public List<CSVImportLog> getLastImportLogs(CSVImportId id, int max,
+    public List<CSVImportLog> getLastImportLogs(String id, int max,
             CSVImportLog.Status... status) {
         List<CSVImportLog> importLogs = getLastImportLogs(id, max);
         return status.length == 0 ? importLogs : filterImportLogs(importLogs,
@@ -115,11 +113,11 @@ public class CSVImporterImpl implements CSVImporter {
     }
 
     @Override
-    public CSVImportResult getImportResult(CSVImportId id) {
+    public CSVImportResult getImportResult(String id) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         Work work = new CSVImporterWork(id);
         int[] pos = new int[1];
-        work = workManager.find(work, Work.State.COMPLETED, true, pos);
+        work = workManager.find(work, State.COMPLETED, true, pos);
         if (work == null) {
             return null;
         }

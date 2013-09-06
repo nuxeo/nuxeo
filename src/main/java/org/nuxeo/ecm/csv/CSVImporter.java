@@ -17,12 +17,11 @@
 
 package org.nuxeo.ecm.csv;
 
-import static org.nuxeo.ecm.csv.CSVImportLog.*;
-
+import java.io.File;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.csv.CSVImportLog.Status;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -30,18 +29,18 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface CSVImporter {
 
-    CSVImportId launchImport(CoreSession session, String parentPath,
-            Blob csvBlob, CSVImporterOptions options);
+    String launchImport(CoreSession session, String parentPath, File csvFile,
+            String csvFileName, CSVImporterOptions options);
 
-    CSVImportStatus getImportStatus(CSVImportId id);
+    CSVImportStatus getImportStatus(String id);
 
-    List<CSVImportLog> getImportLogs(CSVImportId id);
+    List<CSVImportLog> getImportLogs(String id);
 
-    List<CSVImportLog> getImportLogs(CSVImportId id, Status... status);
+    List<CSVImportLog> getImportLogs(String id, Status... status);
 
-    List<CSVImportLog> getLastImportLogs(CSVImportId id, int max);
+    List<CSVImportLog> getLastImportLogs(String id, int max);
 
-    List<CSVImportLog> getLastImportLogs(CSVImportId id, int max, Status... status);
+    List<CSVImportLog> getLastImportLogs(String id, int max, Status... status);
 
-    CSVImportResult getImportResult(CSVImportId id);
+    CSVImportResult getImportResult(String id);
 }

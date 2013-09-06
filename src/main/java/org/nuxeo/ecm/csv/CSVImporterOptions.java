@@ -17,11 +17,15 @@
 
 package org.nuxeo.ecm.csv;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class CSVImporterOptions {
+public class CSVImporterOptions implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final CSVImporterOptions DEFAULT_OPTIONS = new Builder().build();
 

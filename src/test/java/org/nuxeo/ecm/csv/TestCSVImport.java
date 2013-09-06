@@ -61,6 +61,10 @@ import com.google.inject.Inject;
 @RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 public class TestCSVImport {
 
+    private static final String DOCS_OK_CSV = "docs_ok.csv";
+
+    private static final String DOCS_NOT_OK_CSV = "docs_not_ok.csv";
+
     @Inject
     protected CoreSession session;
 
@@ -75,11 +79,8 @@ public class TestCSVImport {
         workManager.clearCompletedWork(0);
     }
 
-    private Blob getCSVFile(String name) {
-        File file = new File(FileUtils.getResourcePathFromContext(name));
-        Blob blob = new FileBlob(file);
-        blob.setFilename(file.getName());
-        return blob;
+    private File getCSVFile(String name) {
+        return new File(FileUtils.getResourcePathFromContext(name));
     }
 
     @Test
@@ -88,10 +89,10 @@ public class TestCSVImport {
         CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
         TransactionHelper.commitOrRollbackTransaction();
 
-        CSVImportId importId = csvImporter.launchImport(session, "/",
-                getCSVFile("docs_ok.csv"), options);
+        String importId = csvImporter.launchImport(session, "/",
+                getCSVFile(DOCS_OK_CSV), DOCS_OK_CSV, options);
 
-        workManager.awaitCompletion(10, TimeUnit.SECONDS);
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
@@ -143,8 +144,8 @@ public class TestCSVImport {
 
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
                 false).build();
-        CSVImportId importId = csvImporter.launchImport(session, "/",
-                getCSVFile("docs_ok.csv"), options);
+        String importId = csvImporter.launchImport(session, "/",
+                getCSVFile(DOCS_OK_CSV), DOCS_OK_CSV, options);
 
         workManager.awaitCompletion(10, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
@@ -177,8 +178,8 @@ public class TestCSVImport {
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
                 false).build();
         TransactionHelper.commitOrRollbackTransaction();
-        CSVImportId importId = csvImporter.launchImport(session, "/",
-                getCSVFile("docs_not_ok.csv"), options);
+        String importId = csvImporter.launchImport(session, "/",
+                getCSVFile(DOCS_NOT_OK_CSV), DOCS_NOT_OK_CSV, options);
         workManager.awaitCompletion(10, TimeUnit.SECONDS);
         TransactionHelper.startTransaction();
 

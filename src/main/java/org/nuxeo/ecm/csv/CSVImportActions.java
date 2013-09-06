@@ -19,6 +19,7 @@ package org.nuxeo.ecm.csv;
 
 import static org.nuxeo.ecm.csv.CSVImportLog.Status;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -30,9 +31,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -56,11 +55,13 @@ public class CSVImportActions implements Serializable {
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
 
-    protected Blob csvBlob;
+    protected File csvFile;
+
+    protected String csvFileName;
 
     protected boolean notifyUserByEmail = false;
 
-    protected CSVImportId csvImportId;
+    protected String csvImportId;
 
     public boolean getNotifyUserByEmail() {
         return notifyUserByEmail;
@@ -72,23 +73,23 @@ public class CSVImportActions implements Serializable {
 
     public void uploadListener(UploadEvent event) throws Exception {
         UploadItem item = event.getUploadItem();
-        csvBlob = new FileBlob(item.getFile());
-        csvBlob.setFilename(FilenameUtils.getName(item.getFileName()));
+        csvFile = item.getFile();
+        csvFileName = FilenameUtils.getName(item.getFileName());
     }
 
     public void importCSVFile() {
-        if (csvBlob != null) {
+        if (csvFile != null) {
             CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(
                     notifyUserByEmail).build();
             CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
             csvImportId = csvImporter.launchImport(documentManager,
                     navigationContext.getCurrentDocument().getPathAsString(),
-                    csvBlob, options);
+                    csvFile, csvFileName, options);
         }
     }
 
     public String getImportingCSVFilename() {
-        return csvBlob != null ? csvBlob.getFilename() : "";
+        return csvFileName;
     }
 
     public CSVImportStatus getImportStatus() {
@@ -126,7 +127,8 @@ public class CSVImportActions implements Serializable {
 
     @Observer(EventNames.NAVIGATE_TO_DOCUMENT)
     public void resetState() {
-        csvBlob = null;
+        csvFile = null;
+        csvFileName = null;
         csvImportId = null;
         notifyUserByEmail = false;
     }
