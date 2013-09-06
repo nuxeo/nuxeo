@@ -443,6 +443,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.dam</groupId>
+        <artifactId>nuxeo-dam-functional-tests</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
