@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PAGE_AFTER_SWITCH;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SECURITY_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SESSION_TIMEOUT;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SSO_INITIAL_URL_REQUEST_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SWITCH_USER_KEY;
@@ -62,6 +63,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
@@ -695,15 +697,24 @@ public class NuxeoAuthenticationFilter implements Filter {
     public boolean saveRequestedURLBeforeRedirect(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
-        HttpSession session;
-        if (httpResponse.isCommitted()) {
-            session = httpRequest.getSession(false);
-        } else {
+        final boolean hasRequestedSessionId = !StringUtils.isBlank(httpRequest.getRequestedSessionId());
+
+        HttpSession session = httpRequest.getSession(false);
+        final boolean isTimeout = session == null && hasRequestedSessionId;
+
+        if (!httpResponse.isCommitted()) {
             session = httpRequest.getSession(true);
         }
 
         if (session == null) {
             return false;
+        }
+
+        // add a flag to tell that the Session looks like having timed out
+        if (isTimeout) {
+            session.setAttribute(SESSION_TIMEOUT, Boolean.TRUE);
+        } else {
+            session.removeAttribute(SESSION_TIMEOUT);
         }
 
         String requestPage;
@@ -961,6 +972,8 @@ public class NuxeoAuthenticationFilter implements Filter {
             HttpServletResponse httpResponse) {
 
         String baseURL = service.getBaseURL(httpRequest);
+
+        HttpSession session = httpRequest.getSession(false);
 
         // go through plugins to get UserIndentity
         for (String pluginName : service.getAuthChain(httpRequest)) {

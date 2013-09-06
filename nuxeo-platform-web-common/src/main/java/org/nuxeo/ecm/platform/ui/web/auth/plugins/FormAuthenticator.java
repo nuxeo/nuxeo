@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_FAILED;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_MISSING;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PASSWORD_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.SESSION_TIMEOUT;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERNAME_KEY;
 
@@ -77,8 +78,13 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
             }
             HttpSession session = httpRequest.getSession(false);
             String requestedUrl = null;
+            boolean isTimeout = false;
             if (session != null) {
                 requestedUrl = (String) session.getAttribute(START_PAGE_SAVE_KEY);
+                Object obj = session.getAttribute(SESSION_TIMEOUT);
+                if (obj != null) {
+                    isTimeout = (Boolean) obj;
+                }
             }
             if (requestedUrl != null && !requestedUrl.equals("")) {
                 parameters.put(REQUESTED_URL, requestedUrl);
@@ -94,6 +100,10 @@ public class FormAuthenticator implements NuxeoAuthenticationPlugin {
                     parameters.put(LOGIN_FAILED, "true");
                 }
             }
+            if (isTimeout) {
+                parameters.put(SESSION_TIMEOUT, "true");
+            }
+
             // avoid resending the password in clear !!!
             parameters.remove(passwordKey);
             redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl,

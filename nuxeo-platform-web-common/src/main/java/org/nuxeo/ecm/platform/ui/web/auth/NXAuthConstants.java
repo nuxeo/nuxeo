@@ -43,6 +43,7 @@ public final class NXAuthConstants {
     public static final String SSO_INITIAL_URL_REQUEST_KEY = "sso.initial.url.request";
     public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
     public static final String LANGUAGE_PARAMETER = "language";
+    public static final String SESSION_TIMEOUT = "nxtimeout";
 
     @Deprecated // because of typo.
     public static final String PASSORD_KEY = "user_password";
