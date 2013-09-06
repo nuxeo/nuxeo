@@ -51,6 +51,7 @@ import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.functionaltests.forms.FileWidgetElement;
+import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -79,6 +80,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Clock;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.SystemClock;
 import org.openqa.selenium.support.ui.Wait;
@@ -96,8 +98,7 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
-     * @since 5.7
-     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
      *        doesn't work
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
@@ -448,8 +449,7 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it. FIXME:
-     * should use HarnessRuntime#getClassLoaderFiles that returns the same
-     * thing
+     * should use HarnessRuntime#getClassLoaderFiles that returns the same thing
      *
      * @return
      * @throws Exception
@@ -609,6 +609,21 @@ public abstract class AbstractTest {
         return fillElement(pageClassToProxy, page);
     }
 
+    public static <T extends WebFragment> T getWebFragment(By by,
+            Class<T> webFragmentClass) {
+        WebElement element = findElementWithTimeout(by);
+        return getWebFragment(element, webFragmentClass);
+    }
+
+    public static <T extends WebFragment> T getWebFragment(WebElement element,
+            Class<T> webFragmentClass) {
+        T webFragment = instantiateWebFragment(element, webFragmentClass);
+        webFragment = fillElement(webFragmentClass, webFragment);
+        // fillElement somehow overwrite the 'element' field, reset it.
+        webFragment.setElement(element);
+        return webFragment;
+    }
+
     /**
      * Fills an instantiated page/form/widget attributes
      *
@@ -673,6 +688,23 @@ public abstract class AbstractTest {
                 return constructor.newInstance(driver);
             } catch (NoSuchMethodException e) {
                 return pageClassToProxy.newInstance();
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static <T extends WebFragment> T instantiateWebFragment(
+            WebElement element, Class<T> webFragmentClass) {
+        try {
+            try {
+                Constructor<T> constructor = webFragmentClass.getConstructor(
+                        WebDriver.class, WebElement.class);
+                return constructor.newInstance(driver, element);
+            } catch (NoSuchMethodException e) {
+                return webFragmentClass.newInstance();
             }
         } catch (RuntimeException e) {
             throw e;
@@ -774,7 +806,7 @@ public abstract class AbstractTest {
      *
      * @since 5.7.2
      */
-    public WebElement waitUntilElementPresent(final By locator) {
+    public static WebElement waitUntilElementPresent(final By locator) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
                 LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
                 TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
@@ -784,14 +816,14 @@ public abstract class AbstractTest {
             }
         });
         return elt;
-    };
+    }
 
     /**
      * Fluent wait for an element not to be present, checking every 5 seconds
      *
      * @since 5.7.2
      */
-    public void waitUntilElementNotPresent(final By locator) {
+    public static void waitUntilElementNotPresent(final By locator) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
                 LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
                 TimeUnit.SECONDS);
@@ -806,7 +838,81 @@ public abstract class AbstractTest {
                 return null;
             }
         }));
-    };
+    }
+
+    /**
+     * Fluent wait for text to be present in the element retrieved with the
+     * given method.
+     *
+     * @since 5.7.3
+     */
+    public static void waitForTextPresent(By locator, String text) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
+                TimeUnit.SECONDS);
+        wait.until(ExpectedConditions.textToBePresentInElement(locator, text));
+    }
+
+    /**
+     * Fluent wait for text to be present in the given element.
+     *
+     * @since 5.7.3
+     */
+    public static void waitForTextPresent(final WebElement element,
+            final String text) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
+                TimeUnit.SECONDS);
+        wait.until((new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                try {
+                    return element.getText().contains(text);
+                } catch (StaleElementReferenceException e) {
+                    return null;
+                }
+            }
+        }));
+    }
+
+    /**
+     * Fluent wait for text to be not present in the given element.
+     *
+     * @since 5.7.3
+     */
+    public static void waitForTextNotPresent(final WebElement element,
+            final String text) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(5,
+                TimeUnit.SECONDS);
+        wait.until((new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                try {
+                    return !element.getText().contains(text);
+                } catch (StaleElementReferenceException e) {
+                    return null;
+                }
+            }
+        }));
+    }
+
+    /**
+     * Returns true if {@code text} is present in the element retrieved with the
+     * given method.
+     *
+     * @since 5.7.3
+     */
+    public static boolean isTextPresent(By by, String text) {
+        return isTextPresent(driver.findElement(by), text);
+    }
+
+    /**
+     * Returns true if {@code text} is present in the given element.
+     *
+     * @since 5.7.3
+     */
+    public static boolean isTextPresent(WebElement element, String text) {
+        return element.getText().contains(text);
+    }
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
@@ -860,8 +966,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -918,8 +1024,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds

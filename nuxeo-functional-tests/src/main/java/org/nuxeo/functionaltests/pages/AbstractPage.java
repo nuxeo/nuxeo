@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
@@ -73,6 +74,16 @@ public abstract class AbstractPage {
 
     public <T> T asPage(Class<T> pageClassToProxy) {
         return AbstractTest.asPage(pageClassToProxy);
+    }
+
+    public <T extends WebFragment> T getWebFragment(By by,
+            Class<T> webFragmentClass) {
+        return AbstractTest.getWebFragment(by, webFragmentClass);
+    }
+
+    public <T extends WebFragment> T getWebFragment(WebElement element,
+            Class<T> webFragmentClass) {
+        return AbstractTest.getWebFragment(element, webFragmentClass);
     }
 
     /**

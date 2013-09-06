@@ -47,6 +47,8 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
 
+    private static final String SELECT_ALL_BUTTON_XPATH = "//input[@type=\"checkbox\" and @title=\"Select all / deselect all\"]";
+
     @Required
     @FindBy(id = "document_content")
     WebElement documentContentForm;
@@ -117,7 +119,12 @@ public class ContentTabSubPage extends DocumentBasePage {
                 // next
             }
         }
+        deleteSelectedDocuments();
 
+        return asPage(DocumentBasePage.class);
+    }
+
+    protected void deleteSelectedDocuments() {
         findElementWaitUntilEnabledAndClick(By.xpath(DELETE_BUTTON_XPATH));
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete selected document(s)?", alert.getText());
@@ -130,7 +137,25 @@ public class ContentTabSubPage extends DocumentBasePage {
             // ignore
         }
         alert.accept();
-        return asPage(DocumentBasePage.class);
+    }
+
+    public DocumentBasePage removeAllDocuments() {
+        DocumentBasePage page = asPage(DocumentBasePage.class);
+        By locator = By.xpath(SELECT_ALL_BUTTON_XPATH);
+        if (!hasElement(locator)) {
+            // no document to remove
+            return page;
+        }
+        findElementWaitUntilEnabledAndClick(By.xpath(SELECT_ALL_BUTTON_XPATH));
+        deleteSelectedDocuments();
+
+        try {
+            documentContentForm.findElement(By.tagName("tbody"));
+        } catch (NoSuchElementException e) {
+            // no more document to remove
+            return page;
+        }
+        return removeAllDocuments();
     }
 
     /**
