@@ -117,10 +117,12 @@ public abstract class EntityListWriter<T> implements MessageBodyWriter<List<T>> 
      * @throws JsonGenerationException
      *
      */
-    private void writeList(JsonGenerator jg, List<T> list)
+    protected void writeList(JsonGenerator jg, List<T> list)
             throws ClientException, JsonGenerationException, IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", getEntityType());
+
+        writeHeader(jg, list);
         jg.writeArrayFieldStart("items");
         for (T item : list) {
             writeItem(jg, item);
@@ -129,6 +131,16 @@ public abstract class EntityListWriter<T> implements MessageBodyWriter<List<T>> 
         jg.writeEndArray();
         jg.writeEndObject();
         jg.flush();
+
+    }
+
+    /**
+     * Override this method to write into list header
+     * @param jg
+     * @param list
+     *
+     */
+    protected void writeHeader(JsonGenerator jg, List<T> list) {
 
     }
 

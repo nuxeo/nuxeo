@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
@@ -118,8 +119,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     public void writeDocument(OutputStream out, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters)
             throws Exception {
-        writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc, schemas,
-                contextParameters);
+        writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
+                schemas, contextParameters);
     }
 
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
@@ -131,16 +132,17 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @since 5.6
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters) throws Exception {
-        writeDocument(jg, doc, schemas,contextParameters, null);
+            String[] schemas, Map<String, String> contextParameters)
+            throws Exception {
+        writeDocument(jg, doc, schemas, contextParameters, null);
     }
 
     /**
      * @since 5.7.3
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters, HttpHeaders headers)
-            throws Exception {
+            String[] schemas, Map<String, String> contextParameters,
+            HttpHeaders headers) throws Exception {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "document");
         jg.writeStringField("repository", doc.getRepositoryName());
@@ -204,7 +206,6 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         jg.flush();
     }
 
-
     /**
      * @param jg
      * @param doc
@@ -216,7 +217,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @since 5.7.3
      */
     protected static void writeRestContributions(JsonGenerator jg,
-            DocumentModel doc, HttpHeaders headers) throws JsonGenerationException, IOException, ClientException {
+            DocumentModel doc, HttpHeaders headers)
+            throws JsonGenerationException, IOException, ClientException {
         RestContributorService rcs = Framework.getLocalService(RestContributorService.class);
         RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers);
         rcs.writeContext(jg, ec);
@@ -245,8 +247,9 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * filesBaseUrl is the baseUrl that can be used to locate blob content and
      * is useful to generate blob urls.
      */
-    protected static void writePropertyValue(JsonGenerator jg, Property prop,
-            String filesBaseUrl) throws Exception {
+    public static void writePropertyValue(JsonGenerator jg, Property prop,
+            String filesBaseUrl) throws PropertyException,
+            JsonGenerationException, IOException {
         if (prop.isScalar()) {
             writeScalarPropertyValue(jg, prop);
         } else if (prop.isList()) {
@@ -263,7 +266,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeScalarPropertyValue(JsonGenerator jg,
-            Property prop) throws Exception {
+            Property prop) throws PropertyException, JsonGenerationException,
+            IOException {
         org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
         Object v = prop.getValue();
         if (v == null) {
@@ -274,7 +278,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeListPropertyValue(JsonGenerator jg,
-            Property prop, String filesBaseUrl) throws Exception {
+            Property prop, String filesBaseUrl) throws PropertyException,
+            JsonGenerationException, IOException {
         jg.writeStartArray();
         if (prop instanceof ArrayProperty) {
             Object[] ar = (Object[]) prop.getValue();
@@ -295,7 +300,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeMapPropertyValue(JsonGenerator jg,
-            ComplexProperty prop, String filesBaseUrl) throws Exception {
+            ComplexProperty prop, String filesBaseUrl)
+            throws JsonGenerationException, IOException, PropertyException  {
         jg.writeStartObject();
         for (Property p : prop.getChildren()) {
             jg.writeFieldName(p.getName());
@@ -305,7 +311,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeBlobPropertyValue(JsonGenerator jg,
-            Property prop, String filesBaseUrl) throws Exception {
+            Property prop, String filesBaseUrl) throws PropertyException,
+            JsonGenerationException, IOException {
         Blob blob = (Blob) prop.getValue();
         if (blob == null) {
             jg.writeNull();
