@@ -78,7 +78,8 @@ public class ITSafeEditTest extends AbstractTest {
 
         public String getKeyFromLocalStorage(int key) {
             return (String) js.executeScript(String.format(
-                    "return window.localStorage.key('%s');", key));
+                    "return window.localStorage.key('%s');",
+                    Integer.valueOf(key)));
         }
 
         public Long getLocalStorageLength() {
@@ -167,26 +168,26 @@ public class ITSafeEditTest extends AbstractTest {
     }
 
     private void checkSafeEditResoreProvided() {
-        // We must find the status message asking if we want to restore previous
-        // unchanged data and make sure it is visible
-        boolean isRestoreVisible = false;
+        // We must find the status message asking if we want to restore
+        // previous unchanged data, and make sure it is visible
+        Boolean isRestoreVisible = Boolean.FALSE;
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
                 TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
                 NoSuchElementException.class);
         isRestoreVisible = wait.until((new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
-                return !driver.findElement(By.id(CONFIRM_RESTORE_SPAN_ELT_ID)).getCssValue(
-                        "display").equals("none");
+                return Boolean.valueOf(!driver.findElement(
+                        By.id(CONFIRM_RESTORE_SPAN_ELT_ID)).getCssValue(
+                        "display").equals("none"));
             }
         }));
-        assertTrue(isRestoreVisible);
+        assertTrue(isRestoreVisible.booleanValue());
     }
 
     /**
      * Delete created user and data.
      *
      * @throws UserNotConnectedException
-     *
      * @since 5.7.1
      */
     private void restoreSate() throws Exception {
@@ -200,10 +201,10 @@ public class ITSafeEditTest extends AbstractTest {
     }
 
     /**
-     * Should we run the test. Some too old browser randomly fails the test.
+     * Returns true if detected FF browser version is >= FF 14, to avoid
+     * running the test on browsers that do not support localstorage.
      *
      * @return whether we run the test or not
-     *
      * @since 5.7.2
      */
     private boolean runTestForBrowser() {
@@ -232,7 +233,6 @@ public class ITSafeEditTest extends AbstractTest {
      * restored from the local storage when re-editing the page afterwards.
      *
      * @since 5.7.1
-     *
      */
     @Test
     public void testAutoSaveOnChangeAndRestore() throws Exception {
@@ -294,8 +294,8 @@ public class ITSafeEditTest extends AbstractTest {
             log.debug("4 - " + localStorage.getLocalStorageLength());
         }
 
-        // We leave the page and get back to it. Since we didn't save, the title
-        // must be the initial one.
+        // We leave the page and get back to it. Since we didn't save, the
+        // title must be the initial one.
         documentBasePage.getContentTab();
         documentBasePage.getEditTab();
         localStorage = new LocalStorage(driver);
@@ -330,7 +330,6 @@ public class ITSafeEditTest extends AbstractTest {
      * Check that safeEdit also works on select2. We test is against Coverage.
      *
      * @throws Exception
-     *
      * @since 5.7.3
      */
     @Test
@@ -366,11 +365,12 @@ public class ITSafeEditTest extends AbstractTest {
             wait.until(new Function<WebDriver, Boolean>() {
                 public Boolean apply(WebDriver driver) {
                     WebElement saveFeedback = driver.findElement(By.id("savedFeedback"));
-                    return saveFeedback.isDisplayed();
+                    return Boolean.valueOf(saveFeedback.isDisplayed());
                 }
             });
         } catch (TimeoutException e) {
-            log.warn("Could not see saved message, maybe I was too slow and it has already disappeared. Let's see if I can restore.");
+            log.warn("Could not see saved message, maybe I was too slow and it "
+                    + "has already disappeared. Let's see if I can restore.");
         }
 
         // We leave the page without saving, the safeEdit mechanism should be
