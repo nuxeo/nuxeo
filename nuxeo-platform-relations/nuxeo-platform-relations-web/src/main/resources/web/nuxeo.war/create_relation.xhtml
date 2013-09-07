@@ -139,6 +139,8 @@
             <h:inputHidden id="objectDocumentUid"
               value="#{relationActions.objectDocumentUid}" />
             <nxl:widgetType name="select2Widget" mode="edit"
+              ajaxReRender="objectDocumentUid"
+              pageProviderName="default_document_suggestion"
               value="#{relationActions}" field="objectDocumentUid"
               width="300" translated="true" minChars="3"
               placeholder="label.relation.search.popup.title"
