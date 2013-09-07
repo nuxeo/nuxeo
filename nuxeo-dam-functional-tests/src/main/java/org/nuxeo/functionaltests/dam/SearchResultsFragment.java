@@ -67,9 +67,7 @@ public class SearchResultsFragment extends WebFragmentImpl {
         originalAuthorInput.sendKeys(originalAuthor);
         authoringDateInput.sendKeys(authoringDate);
 
-        fancyBoxFragment.findElement(
-                By.id("nxl_gridDamLayout:nxw_damSearchResultsActions_1_damNewAsset_fancyform:create")).click();
-
+        fancyBoxFragment.findElement(By.xpath("//div[@id='fancybox-content']//input[@value='Create']")).click();
         return damPage.asPage(DAMPage.class);
     }
 
