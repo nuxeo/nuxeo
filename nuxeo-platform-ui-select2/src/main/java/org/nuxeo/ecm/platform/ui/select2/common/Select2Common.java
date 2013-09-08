@@ -74,11 +74,11 @@ public class Select2Common {
 
     public static final String AJAX_RERENDER = "ajaxReRender";
 
-    public static final String USER_DEFAULT_SELECTION_FORMATTER = USER_DEFAULT_SUGGESTION_FORMATTER;
+    public static final String USER_DEFAULT_SELECTION_FORMATTER = "userSelecionDefaultFormatter";
 
-    public static final String DOC_DEFAULT_SELECTION_FORMATTER = DOC_DEFAULT_SUGGESTION_FORMATTER;
+    public static final String DOC_DEFAULT_SELECTION_FORMATTER = "docSelectionDefaultFormatter";
 
-    public static final String DIR_DEFAULT_SELECTION_FORMATTER = DIR_DEFAULT_SUGGESTION_FORMATTER;
+    public static final String DIR_DEFAULT_SELECTION_FORMATTER = "dirSelectionDefaultFormatter";
 
     /**
      * Compute the filed name of the directory that holds the value that we want

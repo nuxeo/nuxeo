@@ -35,6 +35,12 @@
     return markup;
   }
 
+  var userSelecionDefaultFormatter = userEntryDefaultFormatter;
+
+  var docSelectionDefaultFormatter = docEntryDefaultFormatter;
+
+  var dirSelectionDefaultFormatter = dirEntryDefaultFormatter;
+
   function getOperationName(params) {
     var opName = params.operationId;
     if (typeof (opName) == 'undefined' || opName == '') {
