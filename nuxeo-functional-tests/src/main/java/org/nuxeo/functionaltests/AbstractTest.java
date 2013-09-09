@@ -98,7 +98,8 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
-     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+     * @since 5.7
+     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
      *        doesn't work
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
@@ -449,7 +450,8 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it. FIXME:
-     * should use HarnessRuntime#getClassLoaderFiles that returns the same thing
+     * should use HarnessRuntime#getClassLoaderFiles that returns the same
+     * thing
      *
      * @return
      * @throws Exception
@@ -819,7 +821,7 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Fluent wait for an element not to be present, checking every 5 seconds
+     * Fluent wait for an element not to be present, checking every 5 seconds.
      *
      * @since 5.7.2
      */
@@ -896,8 +898,8 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Returns true if {@code text} is present in the element retrieved with the
-     * given method.
+     * Returns true if {@code text} is present in the element retrieved with
+     * the given method.
      *
      * @since 5.7.3
      */
@@ -966,8 +968,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}.
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -1024,8 +1026,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds

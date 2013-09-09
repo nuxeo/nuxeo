@@ -212,8 +212,8 @@ public abstract class AbstractPage {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}.
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -245,8 +245,8 @@ public abstract class AbstractPage {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * {@code findElementTimeout}. Then waits until the element is enabled,
+     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -276,7 +276,7 @@ public abstract class AbstractPage {
 
     /**
      * Waits until the URL is different from the one given in parameter, with a
-     * timeout
+     * timeout.
      *
      * @param url the URL to compare to
      */
@@ -296,7 +296,7 @@ public abstract class AbstractPage {
     }
 
     /**
-     * Selects item in drop down menu
+     * Selects item in drop down menu.
      *
      * @since 5.7
      */
@@ -306,12 +306,13 @@ public abstract class AbstractPage {
     }
 
     /**
-     * @since 5.7
-     * @param id
+     * Switch to given frame id.
+     *
+     * @since 5.7.3
      */
-    public WebDriver loadIFrame(String id) {
-        driver.switchTo().defaultContent(); // you are now outside both
-        // frames
+    public WebDriver switchToFrame(String id) {
+        driver.switchTo().defaultContent();
+        // you are now outside both frames
         return driver.switchTo().frame(id);
     }
 }

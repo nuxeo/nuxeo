@@ -86,9 +86,9 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // check that jdoe has an open task on his dashboard
         UserHomePage homePage = filePage.getUserHome();
 
-        assertTrue(homePage.myTasksGadgetLoaded());
+        assertTrue(homePage.isTaskGadgetLoaded());
 
-        // check that the open task is dispayed on the summary page
+        // check that the open task is displayed on the summary page
         SummaryTabSubPage summaryTabPage = homePage.redirectToTask("Test file");
         assertTrue(summaryTabPage.workflowAlreadyStarted());
         assertTrue(summaryTabPage.openTaskForCurrentUser());
@@ -105,8 +105,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // check that jdoe doesn't have any tasks on his dashboard
         homePage = filePage.getUserHome();
 
-        assertTrue(homePage.myTasksGadgetLoaded());
-        assertTrue(homePage.taskGadgetEmpty());
+        assertTrue(homePage.isTaskGadgetLoaded());
+        assertTrue(homePage.isTaskGadgetEmpty());
 
         // cleanup file doc and user
         logout();

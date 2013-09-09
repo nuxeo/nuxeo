@@ -16,8 +16,11 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
@@ -25,10 +28,13 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * @since 5.7
- *
  */
 public class UserHomePage extends AbstractPage {
 
@@ -40,67 +46,97 @@ public class UserHomePage extends AbstractPage {
         super(driver);
     }
 
-    public WebElement getGadgetsContainer() {
-        try {
-            // force sleep as findElementAndWaitUntilEnabled fails randomly
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-        }
-        return findElementAndWaitUntilEnabled(By.id("gwtContainerDiv"), 5000,
-                5000);
+    public WebElement waitForGadgetsLoad() {
+        return waitForGadgetsLoad("nxDocumentListData,content");
     }
 
-    public boolean myTasksGadgetLoaded() {
-        boolean visible = false;
-        WebElement gtwContainer = getGadgetsContainer();
+    public WebElement waitForGadgetsLoad(final String mandatoryElements) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                5, TimeUnit.SECONDS).ignoring(NoSuchElementException.class);
+        return wait.until(new Function<WebDriver, WebElement>() {
+            public WebElement apply(WebDriver driver) {
+                WebElement container;
+                try {
+                    container = driver.findElement(By.id("gwtContainerDiv"));
+                } catch (NoSuchElementException e) {
+                    return null;
+                }
+                // iterate through all frames, and ensure opensocial ones are
+                // loaded, and expect at least one opensocial frame
+                boolean oneFound = false;
+                List<WebElement> framesList = driver.findElements(By.xpath("//iframe"));
+                if (framesList != null && !framesList.isEmpty()) {
+                    List<String> mandatory = Arrays.asList(mandatoryElements.split(","));
+                    for (WebElement frame : framesList) {
+                        String frameName = frame.getAttribute("name");
+                        if (frameName == null
+                                || !frameName.startsWith("open-social")) {
+                            continue;
+                        }
+                        oneFound = true;
+                        boolean loaded = false;
+                        driver.switchTo().defaultContent();
+                        driver.switchTo().frame(frame);
+                        for (String mand : mandatory) {
+                            try {
+                                driver.findElement(By.id(mand));
+                                loaded = true;
+                                break;
+                            } catch (NoSuchElementException e) {
+                            }
+                        }
+                        if (!loaded) {
+                            driver.switchTo().defaultContent();
+                            break;
+                        }
+                        driver.switchTo().defaultContent();
+                    }
+                }
+                if (oneFound) {
+                    return container;
+                }
+                return null;
+            }
+        });
+    }
+
+    public boolean isGadgetLoaded(String gadgetTitle) {
+        return getGadgetTitleElement(gadgetTitle) != null;
+    }
+
+    public WebElement getGadgetTitleElement(String gadgetTitle) {
+        WebElement gtwContainer = waitForGadgetsLoad();
         List<WebElement> gadgets = gtwContainer.findElements(By.className("dragdrop-draggable"));
         for (WebElement gadget : gadgets) {
             WebElement title = gadget.findElement(By.className("header"));
-            if (title.getText().contains("My Tasks")) {
-                visible = true;
+            if (title.getText().contains(gadgetTitle)) {
+                return title;
             }
         }
-        return visible;
+        throw new NoSuchElementException(gadgetTitle);
+    }
+
+    public boolean isTaskGadgetLoaded() {
+        return isGadgetLoaded("My Tasks");
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
-        boolean visible = false;
-        WebElement gtwContainer = getGadgetsContainer();
-        List<WebElement> gadgets = gtwContainer.findElements(By.className("dragdrop-draggable"));
-        for (WebElement gadget : gadgets) {
-            WebElement title = gadget.findElement(By.className("header"));
-            if (title.getText().contains("My Tasks")) {
-                visible = true;
-            }
-            if (visible) {
-                WebElement parent = title.findElement(By.xpath("parent::*"));
-                WebDriver driver = loadIFrame("open-social-"
-                        + parent.getAttribute("id"));
-                driver.findElement(By.linkText(taskTitle)).click();
-                return new SummaryTabSubPage(driver);
-            }
-        }
-        throw new NoSuchElementException(taskTitle);
+        WebElement title = getGadgetTitleElement("My Tasks");
+        WebElement parent = title.findElement(By.xpath("parent::*"));
+        WebDriver driver = switchToFrame("open-social-"
+                + parent.getAttribute("id"));
+        driver.findElement(By.linkText(taskTitle)).click();
+        return new SummaryTabSubPage(driver);
     }
 
-    public boolean taskGadgetEmpty() {
-        boolean visible = false;
-        WebElement gtwContainer = getGadgetsContainer();
-        List<WebElement> gadgets = gtwContainer.findElements(By.className("dragdrop-draggable"));
-        for (WebElement gadget : gadgets) {
-            WebElement title = gadget.findElement(By.className("header"));
-            if (title.getText().contains("My Tasks")) {
-                visible = true;
-            }
-            if (visible) {
-                WebElement parent = title.findElement(By.xpath("parent::*"));
-                WebDriver driver = loadIFrame("open-social-"
-                        + parent.getAttribute("id"));
-                return driver.findElement(By.id("nxDocumentListData")).getText().contains(
-                        "Your dashboard is empty. There are no tasks that require your intervention.");
-            }
-        }
-        return false;
+    public boolean isTaskGadgetEmpty() {
+        WebElement title = getGadgetTitleElement("My Tasks");
+        WebElement parent = title.findElement(By.xpath("parent::*"));
+        WebDriver driver = switchToFrame("open-social-"
+                + parent.getAttribute("id"));
+        return driver.findElement(By.id("nxDocumentListData")).getText().contains(
+                "Your dashboard is empty. There are no tasks that require your intervention.");
     }
 
 }
