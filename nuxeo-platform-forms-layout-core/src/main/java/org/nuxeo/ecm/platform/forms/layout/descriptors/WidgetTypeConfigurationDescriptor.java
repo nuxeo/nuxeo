@@ -107,6 +107,12 @@ public class WidgetTypeConfigurationDescriptor {
     @XNodeMap(value = "properties/layouts", key = "@mode", type = HashMap.class, componentType = LayoutDescriptors.class)
     Map<String, LayoutDescriptors> propertyLayouts;
 
+    /**
+     * @since 5.7.3
+     */
+    @XNodeMap(value = "properties/defaultValues", key = "@mode", type = HashMap.class, componentType = PropertiesDescriptor.class)
+    Map<String, PropertiesDescriptor> defaultPropertyValues;
+
     Map<String, Serializable> properties;
 
     public List<String> getCategories() {
@@ -234,6 +240,17 @@ public class WidgetTypeConfigurationDescriptor {
         return null;
     }
 
+    public Map<String, Map<String, Serializable>> getDefaultPropertyValues() {
+        if (defaultPropertyValues != null) {
+            Map<String, Map<String, Serializable>> res = new HashMap<String, Map<String, Serializable>>();
+            for (Map.Entry<String, PropertiesDescriptor> entry : defaultPropertyValues.entrySet()) {
+                res.put(entry.getKey(), entry.getValue().getProperties());
+            }
+            return res;
+        }
+        return null;
+    }
+
     public String getSinceVersion() {
         return sinceVersion;
     }
@@ -269,6 +286,7 @@ public class WidgetTypeConfigurationDescriptor {
         res.setDefaultFieldDefinitions(getDefaultFieldDefinitions());
         res.setCategories(getCategories());
         res.setPropertyLayouts(getPropertyLayouts());
+        res.setDefaultPropertyValues(getDefaultPropertyValues());
         return res;
     }
 }

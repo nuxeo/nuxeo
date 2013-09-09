@@ -11,9 +11,11 @@ package org.nuxeo.ecm.platform.forms.layout.api.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
@@ -57,6 +59,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     protected List<String> categories;
 
     protected Map<String, List<LayoutDefinition>> propertyLayouts;
+
+    protected Map<String, Map<String, Serializable>> defaultPropertyValues;
 
     @SuppressWarnings({ "unchecked" })
     public WidgetTypeConfigurationImpl() {
@@ -352,6 +356,40 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
      */
     public void setHandlingLabels(boolean handlingLabels) {
         this.handlingLabels = handlingLabels;
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public Map<String, Map<String, Serializable>> getDefaultPropertyValues() {
+        return defaultPropertyValues;
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public Map<String, Serializable> getDefaultPropertyValues(String mode) {
+        if (defaultPropertyValues != null) {
+            Map<String, Serializable> res = new HashMap<String, Serializable>();
+            Map<String, Serializable> anyProps = defaultPropertyValues.get(BuiltinModes.ANY);
+            if (anyProps != null) {
+                res.putAll(anyProps);
+            }
+            Map<String, Serializable> modeProps = defaultPropertyValues.get(mode);
+            if (modeProps != null) {
+                res.putAll(modeProps);
+            }
+            return res;
+        }
+        return null;
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public void setDefaultPropertyValues(
+            Map<String, Map<String, Serializable>> values) {
+        this.defaultPropertyValues = values;
     }
 
 }

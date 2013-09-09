@@ -110,4 +110,20 @@ public interface WidgetTypeConfiguration extends Serializable {
     List<LayoutDefinition> getPropertyLayouts(String mode, String additionalMode);
 
     Map<String, List<LayoutDefinition>> getPropertyLayouts();
+
+    /**
+     * Returns the default values for the widget type properties, by mode.
+     *
+     * @since 5.7.3
+     */
+    Map<String, Map<String, Serializable>> getDefaultPropertyValues();
+
+    /**
+     * Returns the default values for the widget type properties, for given
+     * mode.
+     *
+     * @since 5.7.3
+     */
+    Map<String, Serializable> getDefaultPropertyValues(String mode);
+
 }
