@@ -17,12 +17,19 @@
 
 package org.nuxeo.functionaltests.fragment;
 
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 
 /**
  * @since 5.7.3
  */
-public interface WebFragment extends WebElement {
+public interface WebFragment {
+
+    // custom API
 
     WebElement getElement();
 
@@ -37,4 +44,42 @@ public interface WebFragment extends WebElement {
     void checkTextToBePresent(String text);
 
     void checkTextToBeNotPresent(String text);
+
+    <T extends WebFragment> T getWebFragment(By by, Class<T> webFragmentClass);
+
+    <T extends WebFragment> T getWebFragment(WebElement element,
+            Class<T> webFragmentClass);
+
+    // WebElement API
+
+    void click();
+
+    void submit();
+
+    void sendKeys(CharSequence... keysToSend);
+
+    void clear();
+
+    String getTagName();
+
+    String getAttribute(String name);
+
+    boolean isSelected();
+
+    boolean isEnabled();
+
+    String getText();
+
+    List<WebElement> findElements(By by);
+
+    WebElement findElement(By by);
+
+    boolean isDisplayed();
+
+    Point getLocation();
+
+    Dimension getSize();
+
+    String getCssValue(String propertyName);
+
 }

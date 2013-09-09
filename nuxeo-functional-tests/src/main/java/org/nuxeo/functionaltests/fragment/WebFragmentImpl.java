@@ -30,8 +30,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Wraps a {@link org.openqa.selenium.WebElement} and delegates all method calls
- * to the underlying {@link org.openqa.selenium.WebElement}.
+ * Wraps a {@link org.openqa.selenium.WebElement} and delegates all method
+ * calls to the underlying {@link org.openqa.selenium.WebElement}.
  *
  * @since 5.7.3
  */
@@ -56,9 +56,10 @@ public class WebFragmentImpl implements WebFragment {
 
     @Override
     public WebElement getElement() {
-        return null;
+        return element;
     }
 
+    @Override
     public void setElement(WebElement element) {
         this.element = element;
     }
@@ -138,20 +139,24 @@ public class WebFragmentImpl implements WebFragment {
         return element.getCssValue(propertyName);
     }
 
+    @Override
     public <T extends WebFragment> T getWebFragment(By by,
             Class<T> webFragmentClass) {
         return AbstractTest.getWebFragment(by, webFragmentClass);
     }
 
+    @Override
     public <T extends WebFragment> T getWebFragment(WebElement element,
             Class<T> webFragmentClass) {
         return AbstractTest.getWebFragment(element, webFragmentClass);
     }
 
+    @Override
     public boolean containsText(String text) {
         return element.getText().contains(text);
     }
 
+    @Override
     public void waitForTextToBePresent(String text) {
         AbstractTest.waitForTextPresent(element, text);
     }
