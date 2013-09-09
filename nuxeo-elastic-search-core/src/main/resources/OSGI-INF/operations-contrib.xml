@@ -7,7 +7,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations">
 
-<!--  -->
+<!-- No operations to contribute for now
     <operation
       class="org.nuxeo.template.automation.RenderWithTemplateOperation" />
        -->
