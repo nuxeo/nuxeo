@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.LayoutException;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutImpl;
@@ -244,7 +247,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             String layoutName) {
         WidgetReference widgetRef = new WidgetReferenceImpl(widgetCategory,
                 widgetName);
-        WidgetDefinition wDef = lookupWidget(null, widgetRef);
+        WidgetDefinition wDef = lookupWidget(widgetRef);
         if (wDef != null) {
             return getWidget(ctx, layoutName, null, wDef, layoutMode,
                     valueName, 0);
@@ -328,11 +331,26 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
 
         boolean required = getBooleanValue(context,
                 wDef.getRequired(layoutMode, wMode)).booleanValue();
+
+        String wType = wDef.getType();
+        // fill default property values from the widget definition
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        WidgetTypeDefinition def = getWidgetTypeDefinition(wType);
+        WidgetTypeConfiguration conf = def != null ? def.getConfiguration()
+                : null;
+        if (conf != null) {
+            Map<String, Serializable> defaultProps = conf.getDefaultPropertyValues(wMode);
+            if (defaultProps != null && !defaultProps.isEmpty()) {
+                props.putAll(defaultProps);
+            }
+        }
+
+        props.putAll(wDef.getProperties(layoutMode, wMode));
+
         WidgetImpl widget = new WidgetImpl(layoutName, wDef.getName(), wMode,
-                wDef.getType(), valueName, wDef.getFieldDefinitions(),
+                wType, valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
-                wDef.isTranslated(), wDef.isHandlingLabels(),
-                wDef.getProperties(layoutMode, wMode), required,
+                wDef.isTranslated(), wDef.isHandlingLabels(), props, required,
                 subWidgets.toArray(new Widget[0]), level,
                 wDef.getSelectOptions(),
                 LayoutFunctions.computeWidgetDefinitionId(wDef),
@@ -477,12 +495,19 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         }
         if (wDef == null) {
             // try in global registry
-            String cat = widgetRef.getCategory();
-            if (StringUtils.isBlank(cat)) {
-                wDef = getWidgetDefinition(widgetName);
-            } else {
-                wDef = getLayoutStore().getWidgetDefinition(cat, widgetName);
-            }
+            wDef = lookupWidget(widgetRef);
+        }
+        return wDef;
+    }
+
+    protected WidgetDefinition lookupWidget(WidgetReference widgetRef) {
+        String widgetName = widgetRef.getName();
+        String cat = widgetRef.getCategory();
+        WidgetDefinition wDef;
+        if (StringUtils.isBlank(cat)) {
+            wDef = getWidgetDefinition(widgetName);
+        } else {
+            wDef = getLayoutStore().getWidgetDefinition(cat, widgetName);
         }
         return wDef;
     }

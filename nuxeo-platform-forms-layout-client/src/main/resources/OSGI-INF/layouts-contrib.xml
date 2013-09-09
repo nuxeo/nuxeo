@@ -1029,6 +1029,9 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="styleClass">errorMessage</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="text_widget_type_properties_view">
               <rows>

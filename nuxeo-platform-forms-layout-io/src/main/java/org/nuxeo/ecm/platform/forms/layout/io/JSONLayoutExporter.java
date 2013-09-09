@@ -247,6 +247,12 @@ public class JSONLayoutExporter {
                 props.element("layouts", layouts);
             }
         }
+        Map<String, Map<String, Serializable>> defaultPropValues = conf.getDefaultPropertyValues();
+        if (defaultPropValues != null && !defaultPropValues.isEmpty()) {
+            json.element("defaultValues",
+                    exportPropsByModeToJson(defaultPropValues));
+        }
+
         if (!props.isEmpty()) {
             json.element("properties", props);
         }
@@ -327,6 +333,7 @@ public class JSONLayoutExporter {
 
         JSONObject props = conf.optJSONObject("properties");
         Map<String, List<LayoutDefinition>> confLayouts = new HashMap<String, List<LayoutDefinition>>();
+        Map<String, Map<String, Serializable>> confDefaultProps = new HashMap<String, Map<String, Serializable>>();
         if (props != null && !props.isNullObject()) {
             JSONObject layouts = props.optJSONObject("layouts");
             if (layouts != null && !layouts.isNullObject()) {
@@ -342,8 +349,11 @@ public class JSONLayoutExporter {
                     confLayouts.put(mode, layoutDefs);
                 }
             }
+            JSONObject defaultProps = props.optJSONObject("defaultValues");
+            confDefaultProps = importPropsByMode(defaultProps);
         }
         res.setPropertyLayouts(confLayouts);
+        res.setDefaultPropertyValues(confDefaultProps);
 
         return res;
     }

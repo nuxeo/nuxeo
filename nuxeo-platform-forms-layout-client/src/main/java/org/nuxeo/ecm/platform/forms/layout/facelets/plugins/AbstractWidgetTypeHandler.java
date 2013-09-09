@@ -38,7 +38,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
 
     private static final long serialVersionUID = -2933485416045771633L;
 
-    Map<String, String> properties;
+    protected Map<String, String> properties;
 
     public abstract FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)

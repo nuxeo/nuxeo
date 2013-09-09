@@ -161,7 +161,10 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("label.test.widget", widget.getLabel());
         assertNull(widget.getHelpLabel());
         Map<String, Serializable> props = widget.getProperties();
-        assertEquals(1, props.size());
+        assertEquals(2, props.size());
+        assertEquals("cssClass", props.get("styleClass"));
+        // prop set by default on type
+        assertEquals("true", props.get("rendered"));
 
         // test widget default label
         widget = rows[1].getWidgets()[0];
@@ -496,6 +499,12 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("foo", fieldDefs[0].getSchemaName());
         assertEquals("bar", fieldDefs[0].getFieldName());
         assertNull(widget.getControl("addForm"));
+
+        Map<String, Serializable> props = widget.getProperties();
+        assertEquals(2, props.size());
+        assertEquals("myPropValue", props.get("myPropName"));
+        // prop set by default on type
+        assertEquals("true", props.get("rendered"));
 
         // exceptions
         widget = service.getWidget(null, "unknownWidget", null,

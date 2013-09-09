@@ -40,6 +40,9 @@
           <category>bar</category>
         </categories>
         <properties>
+          <defaultValues mode="any">
+            <property name="rendered">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout>
               <rows>
