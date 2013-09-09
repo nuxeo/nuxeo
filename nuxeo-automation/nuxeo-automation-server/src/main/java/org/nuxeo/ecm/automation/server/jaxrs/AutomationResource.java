@@ -45,7 +45,6 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Path("automation")
 public class AutomationResource {
 
     protected AutomationService service;
