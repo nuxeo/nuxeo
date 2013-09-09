@@ -7,7 +7,7 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>webdriver</artifactId>
+  <artifactId>nuxeo-distribution-dam-webdriver-tests</artifactId>
   <name>Nuxeo DAM functional tests with WebDriver</name>
   <description>Nuxeo DAM functional tests with WebDriver</description>
 

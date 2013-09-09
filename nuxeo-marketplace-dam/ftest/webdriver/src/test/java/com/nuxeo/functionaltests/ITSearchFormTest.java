@@ -62,14 +62,14 @@ public class ITSearchFormTest extends AbstractDAMTest {
         SearchFormFragment searchFormFragment = damPage.getSearchFormFragment();
         searchFormFragment.fillText("Another");
         searchFormFragment.doSearch();
-        waitForTextNotPresent(searchResultsFragment, "One File");
+        waitForTextNotPresent(searchResultsFragment.getElement(), "One File");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBeNotPresent("One File");
         searchResultsFragment.checkTextToBePresent("Another File");
         searchResultsFragment.checkTextToBeNotPresent("Sample doc");
 
         searchFormFragment.clearSearch();
-        waitForTextPresent(searchResultsFragment, "One File");
+        waitForTextPresent(searchResultsFragment.getElement(), "One File");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBePresent("One File");
         searchResultsFragment.checkTextToBePresent("Another File");
@@ -92,14 +92,16 @@ public class ITSearchFormTest extends AbstractDAMTest {
         SearchFormFragment searchFormFragment = damPage.getSearchFormFragment();
         searchFormFragment.fillText("Document");
         searchFormFragment.doSearch();
-        waitForTextNotPresent(searchResultsFragment, "Sample picture");
+        waitForTextNotPresent(searchResultsFragment.getElement(),
+                "Sample picture");
         searchResultsFragment.getSelectedAsset().containsText("One");
         searchResultsFragment.checkTextToBePresent("One Document");
         searchResultsFragment.checkTextToBePresent("Another Document");
         searchResultsFragment.checkTextToBeNotPresent("Sample picture");
         searchFormFragment.fillOriginalAuthor("Fry");
         searchFormFragment.doSearch();
-        waitForTextNotPresent(searchResultsFragment, "One Document");
+        waitForTextNotPresent(searchResultsFragment.getElement(),
+                "One Document");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBeNotPresent("One Document");
         searchResultsFragment.checkTextToBePresent("Another Document");
@@ -108,7 +110,7 @@ public class ITSearchFormTest extends AbstractDAMTest {
         searchFormFragment.fillAuthoringDate("1/1/2011 3:06 PM",
                 "10/10/2011 3:06 PM");
         searchFormFragment.doSearch();
-        waitForTextPresent(searchResultsFragment,
+        waitForTextPresent(searchResultsFragment.getElement(),
                 "No documents match your search criteria");
     }
 }
