@@ -35,18 +35,19 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Abstract adapter to be used when one want to contribute
- * an adapter base on PageProviders. In order to use it,
- * just override the {@link PaginableAdapter#getPageProviderDefinition()}
- * and {@link PaginableAdapter#getParams()}
+ * Abstract adapter to be used when one want to contribute an adapter base on
+ * PageProviders. In order to use it, just override the
+ * {@link PaginableAdapter#getPageProviderDefinition()} and
+ * {@link PaginableAdapter#getParams()}
  *
  * @since 5.7.2
  */
-public abstract class PaginableAdapter extends DefaultAdapter{
-
+public abstract class PaginableAdapter extends DefaultAdapter {
 
     protected Long page;
+
     protected Long pageSize;
+
     protected String maxResults;
 
     @Override
@@ -74,11 +75,10 @@ public abstract class PaginableAdapter extends DefaultAdapter{
 
     }
 
-
     abstract protected PageProviderDefinition getPageProviderDefinition();
 
     protected Object[] getParams() {
-        return new Object[]{};
+        return new Object[] {};
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +87,7 @@ public abstract class PaginableAdapter extends DefaultAdapter{
 
         PageProviderDefinition ppDefinition = getPageProviderDefinition();
 
-        if(ppDefinition == null) {
+        if (ppDefinition == null) {
             throw new ClientException("Page provider given not found");
         }
 
@@ -98,15 +98,14 @@ public abstract class PaginableAdapter extends DefaultAdapter{
                 (Serializable) ctx.getCoreSession());
 
         return new PaginableDocumentModelListImpl(
-                (PageProvider<DocumentModel>) pps.getPageProvider("", ppDefinition,
-                        null, null, pageSize, page, props, getParams()), "restdocid");
-
+                (PageProvider<DocumentModel>) pps.getPageProvider("",
+                        ppDefinition, null, null, pageSize, page, props,
+                        getParams()), "restdocid");
 
     }
 
-
-    protected Long extractLongParam(HttpServletRequest request, String paramName,
-            Long defaultValue) {
+    protected Long extractLongParam(HttpServletRequest request,
+            String paramName, Long defaultValue) {
         String strParam = request.getParameter(paramName);
         return strParam == null ? defaultValue : Long.parseLong(strParam);
     }
