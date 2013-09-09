@@ -1,6 +1,7 @@
 package org.nuxeo.elasticsearch;
 
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -14,6 +15,7 @@ public interface ElasticSearchService {
 
     Client getClient();
 
-    DocumentModelList query(CoreSession session, String query, int pageSize);
+    DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
+            int pageSize, int pageIdx) throws ClientException;
 
 }

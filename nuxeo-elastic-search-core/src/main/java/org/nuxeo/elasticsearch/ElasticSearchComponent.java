@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
@@ -14,19 +15,27 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.junit.Assert;
 import org.nuxeo.ecm.automation.server.jaxrs.io.writers.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
@@ -175,10 +184,38 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModelList query(CoreSession session, String query,
-            int pageSize) {
-        // TODO Auto-generated method stub
-        return null;
+    public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
+            int pageSize, int pageIdx) throws ClientException {
+
+        DocumentModelList result = new DocumentModelListImpl();
+        boolean completed = false;
+        int fetch = 0;
+
+        while (result.size()<pageSize && ! completed) {
+            int start = (pageIdx+fetch)*pageSize;
+            int end = (pageIdx+fetch+1)*pageSize;
+            SearchResponse searchResponse = getClient().prepareSearch(MAIN_IDX)
+                    .setTypes("doc")
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setQuery(queryBuilder)
+                    .setFrom(start).setSize(end)
+                    .execute()
+                    .actionGet();
+
+            if (searchResponse.getHits().getTotalHits() < pageSize) {
+                completed = true;
+            }
+            Iterator<SearchHit> hits =  searchResponse.getHits().iterator();
+            while (hits.hasNext()) {
+                SearchHit hit = hits.next();
+                IdRef ref = new IdRef(hit.getId());
+                if (session.exists(ref)) {
+                    result.add(session.getDocument(ref));
+                }
+            }
+            fetch+=1;
+        }
+        return result;
     }
 
     @Override
