@@ -64,7 +64,6 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
                     Boolean.TRUE);
             doc.putContextData("disableAuditLogger", Boolean.TRUE);
             session.saveDocument(doc);
-            session.save(); // NXP-
         }
     }
 
