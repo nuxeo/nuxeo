@@ -16,7 +16,13 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * AutomationResourceWrapper.
@@ -29,6 +35,11 @@ public class AutomationResourceWrapper {
     @Path("/")
     public Object getAutomationEndPoint() throws Exception {
         return new AutomationResource();
+    }
+
+    @GET
+    public AutomationInfo getAutomationInfo() throws OperationException {
+        return new AutomationInfo(Framework.getLocalService(AutomationService.class));
     }
 
 }
