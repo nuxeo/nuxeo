@@ -1129,6 +1129,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                                     + routeId + " referenced by the task "
                                     + taskId);
                         }
+                        if (!node.allowTaskReassignment()) {
+                            throw new DocumentRouteException("Task " + taskId
+                                    + " can not be reassigned. Node "
+                                    + node.getId()
+                                    + " doesn't allow reassignment.");
+                        }
                         DocumentModelList docs = routeInstance.getAttachedDocumentModels();
                         // remove permissions on the document following the
                         // workflow for the current assignees

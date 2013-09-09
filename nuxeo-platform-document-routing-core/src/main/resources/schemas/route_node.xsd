@@ -44,6 +44,7 @@
   <xs:element name="taskY" type="xs:string" />
   <xs:element name="escalationRules" type="node:escalation_rules" />
   <xs:element name="tasksInfo" type="node:tasks_info" />
+  <xs:element name="allowTaskReassignment" type="xs:boolean" default="true"/> 
 
   <xs:complexType name="transitions">
     <xs:sequence>

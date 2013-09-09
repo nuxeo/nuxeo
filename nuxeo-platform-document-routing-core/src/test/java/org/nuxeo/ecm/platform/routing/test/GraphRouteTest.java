@@ -1844,6 +1844,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
                 "test_setGlobalvariable");
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_ALLOW_TASK_REASSIGNMENT,
+                Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);

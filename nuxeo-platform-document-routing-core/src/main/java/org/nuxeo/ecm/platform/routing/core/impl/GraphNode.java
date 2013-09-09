@@ -194,6 +194,9 @@ public interface GraphNode {
     // @since 5.7.3
     String PROP_TASK_INFO_TASK_DOC_ID = "taskDocId";
 
+    // @since 5.7.3
+    String PROP_ALLOW_TASK_REASSIGNMENT = "rnode:allowTaskReassignment";
+
     /**
      * The internal state of a node.
      */
@@ -872,4 +875,11 @@ public interface GraphNode {
      * @since 5.7.3
      */
     boolean hasOpenTasks();
+
+    /**
+     * Returns true if tasks created from this node can be reassigned.
+     *
+     * @since 5.7.3
+     */
+    boolean allowTaskReassignment();
 }

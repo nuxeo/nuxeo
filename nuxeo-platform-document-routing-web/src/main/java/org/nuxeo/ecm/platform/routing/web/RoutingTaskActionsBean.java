@@ -125,8 +125,6 @@ public class RoutingTaskActionsBean implements Serializable {
     @In(create = true, required = false)
     protected ContentViewActions contentViewActions;
 
-    protected Task currentTask;
-
     protected Map<String, Serializable> formVariables;
 
     @RequestParameter("button")
@@ -255,49 +253,69 @@ public class RoutingTaskActionsBean implements Serializable {
     }
 
     private void clear() {
-        currentTask = null;
         formVariables = null;
         button = null;
     }
 
-    public Task setCurrentTask(String taskDocId) throws ClientException {
-        Task task = new TaskImpl(documentManager.getDocument(new IdRef(
-                taskDocId)));
-        return setCurrentTask(task);
-    }
-
-    public Task setCurrentTask(Task task) throws ClientException {
-        currentTask = task;
-        // clear form variables and button
-        formVariables = null;
-        button = null;
-        return currentTask;
-    }
 
     public Map<String, Serializable> getFormVariables(Task task)
             throws ClientException {
         return getTaskInfo(task, true).formVariables;
     }
 
-    protected class TaskInfo {
+    public class TaskInfo {
         protected HashMap<String, Serializable> formVariables;
 
         protected String layout;
 
+        protected boolean canBeReassigned;
+
         protected List<Button> buttons;
 
-        protected TaskInfo(HashMap<String, Serializable> formVariables,
-                String layout, List<Button> buttons) {
+        protected List<String> actors;
+
+        protected String comment;
+
+        protected String taskId;
+
+        protected TaskInfo(String taskId, HashMap<String, Serializable> formVariables,
+                String layout, List<Button> buttons, boolean canBeReassigned) {
             this.formVariables = formVariables;
             this.layout = layout;
             this.buttons = buttons;
+            this.canBeReassigned = canBeReassigned;
+            this.taskId = taskId;
+        }
+
+        public List<String> getActors() {
+            return actors;
+        }
+
+        public void setActors(List<String> actors) {
+            this.actors = actors;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
+
+        public boolean isCanBeReassigned() {
+            return canBeReassigned;
+        }
+
+        public String getTaskId(){
+            return taskId;
         }
     }
 
     // we have to be unrestricted to get this info
     // because the current user may not be the one that started the
     // workflow
-    protected TaskInfo getTaskInfo(Task task, final boolean getFormVariables)
+    public TaskInfo getTaskInfo(final Task task, final boolean getFormVariables)
             throws ClientException {
         final String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         final String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
@@ -321,21 +339,11 @@ public class RoutingTaskActionsBean implements Serializable {
                     map.putAll(node.getVariables());
                     map.putAll(route.getVariables());
                 }
-                res[0] = new TaskInfo(map, node.getTaskLayout(),
-                        node.getTaskButtons());
+                res[0] = new TaskInfo(task.getId(), map, node.getTaskLayout(),
+                        node.getTaskButtons(), node.allowTaskReassignment());
             }
         }.runUnrestricted();
         return res[0];
-    }
-
-    public Map<String, Serializable> getFormVariables() throws ClientException {
-        if (formVariables == null) {
-            if (currentTask == null) {
-                throw new ClientException("No current task defined");
-            }
-            formVariables = getFormVariables(currentTask);
-        }
-        return formVariables;
     }
 
     public void setFormVariables(Map<String, Serializable> formVariables) {
@@ -585,5 +593,24 @@ public class RoutingTaskActionsBean implements Serializable {
             contentViewActions.refreshOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
             contentViewActions.resetPageProviderOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         }
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public String reassignTask(TaskInfo taskInfo) {
+        try {
+            Framework.getLocalService(DocumentRoutingService.class).reassignTask(
+                    documentManager, taskInfo.getTaskId(),
+                    taskInfo.getActors(), taskInfo.getComment());
+            // triggers the refresh for the same providers as complete task, task is now
+            // assigned to a different user
+            Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+        } catch (DocumentRouteException e) {
+            log.error(e);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    messages.get("workflow.feedback.error.taskEnded"));
+        }
+        return null;
     }
 }

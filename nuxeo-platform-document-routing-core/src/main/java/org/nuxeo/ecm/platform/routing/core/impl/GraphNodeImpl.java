@@ -1083,6 +1083,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         return processedTasks;
     }
 
+    @Override
+    public boolean allowTaskReassignment() {
+        return getBoolean(PROP_ALLOW_TASK_REASSIGNMENT);
+
+    }
+
     protected void cancelTask(CoreSession session, final String taskId)
             throws DocumentRouteException {
         try {

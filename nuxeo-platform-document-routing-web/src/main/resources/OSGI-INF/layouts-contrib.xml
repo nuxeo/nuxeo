@@ -158,9 +158,12 @@
       <labels>
         <label mode="any"></label>
       </labels>
+      <properties widgetMode="any">
+        <property name="allowTaskReassignment">true</property>
+      </properties>
       <controls mode="any">
-        <control name="requireSurroundingForm">true</control>
         <control name="handleLabels">true</control>
+        <control name="requireSurroundingForm">false</control>
       </controls>
     </widget>
     <widget name="current_route_open_tasks" type="current_route_open_tasks">
@@ -295,6 +298,30 @@
         <field>data.task.dueDate</field>
       </fields>
     </widget>
+    
+    <widget name="task_related_actions" type="currentDocumentActionsWithForms">
+      <properties widgetMode="any">
+        <property name="category">TASK_ADDITIONAL_ACTIONS</property>
+        <property name="styleClass">globalActionBar</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">3</property>
+      </properties>
+    </widget>
+    
+    <widget name="task_related_actions_top" type="summary_current_document_custom_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <properties widgetMode="any">
+        <property name="category">TASK_ADDITIONAL_ACTIONS_TOP</property>
+        <property name="subStyleClass">summaryActions</property>
+      </properties>
+    </widget>
 
   </extension>
 
@@ -408,6 +435,62 @@
         </row>
       </rows>
     </layout>
+  
+    <layout name="task_additional_actions_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+            <property name="nxl_gridStyleClass_1">gridStyle7</property>
+            <property name="nxl_gridStyleClass_2">gridStyle5</property>
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
+          <widget>task_related_actions_top</widget>
+        </row>
+      </rows>
+    </layout>
+      
+    <layout name="workflowTaskReassignmentLayout">
+      <!--applies to a TaskInfo-->
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+       <row>
+         <widget>task_reassignment_actors</widget>
+       </row>
+       <row>
+         <widget>task_reassignment_comment</widget>
+       </row>
+       </rows>
+       <widget name="task_reassignment_actors" type="multiplePrefixedUsersSuggestion">
+        <labels>
+          <label mode="any">label.document.route.content.header.actors</label>
+         </labels>
+         <translated>true</translated>
+         <fields>
+          <field>actors</field>
+         </fields>
+         <properties mode="any">
+          <property name="required">true</property>
+        </properties>
+       </widget>
+      <widget name="task_reassignment_comment" type="text">
+       <labels>
+         <label mode="any">label.content.header.comments</label>
+       </labels>
+       <translated>true</translated>
+       <fields>
+         <field>comment</field>
+       </fields>
+     </widget>
+    </layout>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -454,6 +537,13 @@
         <property name="widgetName">current_route_abandon</property>
       </properties>
       <filter-id>currentUserIsWorkflowInitatior</filter-id>
+    </action>
+    
+    <action id="task_additional_actions" type="widget" order="100">
+      <category>TASK_ADDITIONAL_ACTIONS_TOP</category>
+      <properties>
+        <property name="widgetName">task_related_actions</property>
+      </properties>
     </action>
 
   </extension>

@@ -154,6 +154,20 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
+    
+   <action id="reassignTask" order="100" label="label.workflow.task.reassign"
+      type="fancybox">
+      <category>TASK_ADDITIONAL_ACTIONS</category>
+      <properties>
+        <property name="include">/incl/tasks/task_reassignment_box.xhtml</property>
+        <property name="autoDimensions">false</property>
+        <property name="width">30%</property>
+        <property name="height">30%</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
 
   </extension>
 
@@ -263,5 +277,6 @@
        </condition>
       </rule>
     </filter>
+    
   </extension>
 </component>
