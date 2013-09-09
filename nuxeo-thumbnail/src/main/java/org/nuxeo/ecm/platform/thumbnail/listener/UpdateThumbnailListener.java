@@ -12,17 +12,22 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.thumbnail.AddThumbnailUnrestricted;
+import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 /**
@@ -33,45 +38,61 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
  */
 public class UpdateThumbnailListener implements PostCommitEventListener {
 
-    public void handleEvent(Event event) throws ClientException {
-        EventContext ec = event.getContext();
-        if (ec instanceof DocumentEventContext) {
-            if (event.getName().equals(DocumentEventTypes.DOCUMENT_CREATED)
-                    || event.getName().equals(
-                            ThumbnailConstants.EventNames.afterBlobUpdateCheck.name())) {
-                DocumentEventContext context = (DocumentEventContext) ec;
-                DocumentModel doc = context.getSourceDocument();
-                if (doc instanceof DeletedDocumentModel) {
-                    return;
-                }
-                BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-                if (blobHolder != null && blobHolder.getBlobs() != null
-                        && !blobHolder.getBlobs().isEmpty()) {
-                    try {
-                        AddThumbnailUnrestricted runner = new AddThumbnailUnrestricted(
-                                context.getCoreSession(), doc, blobHolder);
-                        runner.run();
-                        return;
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+    protected void processDoc(CoreSession session, DocumentModel doc) throws ClientException {
+        ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
+        if (thumbnailAdapter == null) {
+            return;
+        }
+        Blob thumbnailBlob = thumbnailAdapter.computeThumbnail(session);
+        if (thumbnailBlob != null) {
+            if (!doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
             }
+            doc.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME,
+                    (Serializable) thumbnailBlob);
+        } else {
+            if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                doc.setPropertyValue(
+                        ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
+                doc.removeFacet(ThumbnailConstants.THUMBNAIL_FACET);
+            }
+        }
+        if (doc.isDirty()) {
+            doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                    Boolean.TRUE);
+            doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER,
+                    Boolean.TRUE);
+            doc.putContextData("disableAuditLogger", Boolean.TRUE);
+            session.saveDocument(doc);
+            session.save(); // NXP-
         }
     }
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        if (!events.containsEventName(DocumentEventTypes.DOCUMENT_CREATED)
-                && !events.containsEventName(ThumbnailConstants.EventNames.afterBlobUpdateCheck.name())) {
+        if (!events.containsEventName(ThumbnailConstants.EventNames.afterBlobUpdateCheck.name())) {
             return;
         }
+        Set<String> processedDocs = new HashSet<String>();
         for (Event event : events) {
-            if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
-                    || ThumbnailConstants.EventNames.afterBlobUpdateCheck.name().equals(
-                            event.getName())) {
-                handleEvent(event);
+            if (!ThumbnailConstants.EventNames.afterBlobUpdateCheck.name().equals(
+                    event.getName())) {
+                continue;
             }
+            DocumentEventContext context = (DocumentEventContext) event.getContext();
+            DocumentModel doc = context.getSourceDocument();
+            if (doc instanceof DeletedDocumentModel) {
+                continue;
+            }
+            if (doc.isProxy() || doc.isVersion()) {
+                continue;
+            }
+            if (processedDocs.contains(doc.getId())) {
+                continue;
+            }
+            CoreSession repo = context.getCoreSession();
+            processDoc(repo, doc);
+            processedDocs.add(doc.getId());
         }
     }
 }
