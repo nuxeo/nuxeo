@@ -37,7 +37,18 @@
 
   var userSelecionDefaultFormatter = userEntryDefaultFormatter;
 
-  var docSelectionDefaultFormatter = docEntryDefaultFormatter;
+  function docSelectionDefaultFormatter(doc) {
+    var markup = "";
+    if (doc.properties['common:icon']) {
+      markup += "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"
+    }
+    markup += getDocLinkElt(doc);
+    if (doc.warn_message) {
+      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+          + doc.warn_message + "'/>"
+    }
+    return markup;
+  }
 
   var dirSelectionDefaultFormatter = dirEntryDefaultFormatter;
 
@@ -51,6 +62,16 @@
       }
     }
     return opName;
+  }
+
+  function getDocLinkElt(doc) {
+    var url = doc.contextParameters.documentURL;
+    var markup = "<a href=" + url + " onclick='if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='" + getUrlWithConversationId(url) + "'}'>" + doc.title + "</a>"
+    return markup;
+  }
+
+  function getUrlWithConversationId(url) {
+    return url + "?conversationId=" + currentConversationId;
   }
 
   function configureOperationParameters(op, params, query) {

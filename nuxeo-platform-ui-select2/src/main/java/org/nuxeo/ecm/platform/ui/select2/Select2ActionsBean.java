@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.select2;
 import java.io.BufferedOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -74,6 +75,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.ui.select2.automation.SuggestUserEntries;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
+import org.nuxeo.ecm.platform.url.DocumentViewImpl;
+import org.nuxeo.ecm.platform.url.codec.DocumentIdCodec;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -839,10 +842,14 @@ public class Select2ActionsBean implements Serializable {
             schemas = schemaNames.split(",");
         }
 
+        DocumentIdCodec documentIdCodec = new DocumentIdCodec();
+        Map<String, String> contextParameters = new HashMap<String, String>();
+        contextParameters.put("documentURL", documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(doc)));
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        JsonDocumentWriter.writeDocument(jg, doc, schemas);
+        JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters);
         jg.flush();
         return new String(baos.toByteArray(), "UTF-8");
 
@@ -851,7 +858,6 @@ public class Select2ActionsBean implements Serializable {
     public String resolveSingleReferenceLabel(final String storedReference,
             final String repo, final String operationName,
             final String idProperty, final String label) throws Exception {
-
         DocumentModel doc = resolveReference(repo, storedReference,
                 operationName, idProperty);
         if (doc == null) {
