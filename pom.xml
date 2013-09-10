@@ -17,6 +17,7 @@
     <module>nuxeo-importer-jaxrs</module>
     <module>nuxeo-importer-scan</module>
     <module>nuxeo-importer-xml-parser</module>
+    <module>nuxeo-importer-scan-xml-parser</module>
   </modules>
 
   <properties>
@@ -30,6 +31,17 @@
         <artifactId>nuxeo-importer-xml-parser</artifactId>
         <version>${nuxeo.importer.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-scan</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-core</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
   

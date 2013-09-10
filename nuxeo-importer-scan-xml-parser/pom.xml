@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-importer</artifactId>
+    <version>5.7.3-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-importer-scan-xml-parser</artifactId>
+  <name>Nuxeo Importer Scan with Advanced XML Parser</name>
+  <description>
+
+  </description>
+
+  <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-xml-parser</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-scan</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-core</artifactId>
+      </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalProjectnatures>
+            <projectnature>org.nuxeo.ide.NuxeoNature</projectnature>
+          </additionalProjectnatures>
+          <classpathContainers>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+            <classpathContainer>org.nuxeo.ide.SDK_CONTAINER</classpathContainer>
+            <classpathContainer>org.nuxeo.ide.SDK_TEST_CONTAINER</classpathContainer>
+          </classpathContainers>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <name>Nuxeo releases</name>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>
