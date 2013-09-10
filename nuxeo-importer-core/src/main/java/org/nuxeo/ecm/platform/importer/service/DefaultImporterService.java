@@ -118,4 +118,10 @@ public interface DefaultImporterService {
 
     void setImporterLogger(ImporterLogger importerLogger);
 
+    @Deprecated
+    Class<? extends SourceNode> getSourceNodeClass();
+
+    @Deprecated
+    Class<? extends DefaultDocumentModelFactory> getDocModelFactoryClass();
+
 }

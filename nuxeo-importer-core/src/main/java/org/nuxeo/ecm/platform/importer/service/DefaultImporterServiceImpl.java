@@ -207,4 +207,20 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.importerLogger = importerLogger;
     }
 
+    /*
+     * @since 5.7.3
+     */
+    @Override
+    public Class<? extends SourceNode> getSourceNodeClass() {
+        return sourceNodeClass;
+    }
+
+    /*
+     * @since 5.7.3
+     */
+    @Override
+    public Class<? extends DefaultDocumentModelFactory> getDocModelFactoryClass() {
+        return docModelFactoryClass;
+    }
+
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.service.test.contrib">
+  <require>org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent</require>
+
+  <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+   <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.scanimporter.processor.XMLFileSourceNode">
+       <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.scanimporter.processor.AdvancedScannedFileFactory" />
+   </importerConfig>
+  </extension>
+</component>

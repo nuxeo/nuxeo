@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.platform.scanimporter.processor;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -27,7 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
+import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.BasicLogger;
+import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
+import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 import org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperService;
 import org.nuxeo.runtime.api.Framework;
@@ -122,18 +129,62 @@ public class ScannedFileImporter {
 
         log.info("Starting import process on path " + config.getTargetPath()
                 + " from source " + folder.getAbsolutePath());
-        ScanedFileSourceNode src = new ScanedFileSourceNode(folder);
+        SourceNode src = initSourceNode(folder);
+
         ScanedFileSourceNode.useXMLMapping = config.useXMLMapping();
         GenericMultiThreadedImporter importer = new GenericMultiThreadedImporter(
-                src, config.getTargetPath(), !config.isCreateInitialFolder(), config.getBatchSize(),
-                config.getNbThreads(), new BasicLogger(log));
-        importer.setFactory(new ScanedFileFactory(config));
+                src, config.getTargetPath(), !config.isCreateInitialFolder(),
+                config.getBatchSize(), config.getNbThreads(), new BasicLogger(
+                        log));
+
+        ImporterDocumentModelFactory factory = initDocumentModelFactory(config);
+        importer.setFactory(factory);
         importer.run();
 
         log.info("Fininish moving files");
         doCleanUp();
 
         log.info("Ending import process");
+    }
+
+    /**
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @since 5.7.3
+     */
+    private ImporterDocumentModelFactory initDocumentModelFactory(
+            ImporterConfig config) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Class<? extends DefaultDocumentModelFactory> factoryClass = Framework.getLocalService(
+                DefaultImporterService.class).getDocModelFactoryClass();
+//        Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
+        Constructor<? extends DefaultDocumentModelFactory> cst = null;
+
+        try {
+            cst = factoryClass.getConstructor(ImporterConfig.class);
+            return cst.newInstance(config);
+        } catch (NoSuchMethodException e) {
+            return factoryClass.newInstance();
+        }
+    }
+
+    /**
+     * @throws Exception
+     * @since 5.7.3
+     */
+    private SourceNode initSourceNode(File file) throws Exception {
+        Class<? extends SourceNode> srcClass = Framework.getLocalService(
+                DefaultImporterService.class).getSourceNodeClass();
+//        Class<? extends SourceNode> srcClass = ScanedFileSourceNode.class;
+        if (!FileSourceNode.class.isAssignableFrom(srcClass)) {
+            throw new Exception(
+                    "Waiting source node extending FileSourceNode for Scan Importer");
+        }
+
+        Constructor<? extends SourceNode> cst = srcClass.getConstructor(File.class);
+
+        return cst.newInstance(file);
     }
 
 }
