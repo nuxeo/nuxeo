@@ -93,5 +93,9 @@ public class AutomationClientOSGiComplianceTest {
         client = factory.getClient(new URL(
                 "http://localhost:8080/nuxeo/site/automation"), 3600);
         Assert.assertNotNull(client);
+        // Check if registerPojoMarshaller feature is accessible
+        client = factory.getClient(new URL(
+                "http://localhost:8080/nuxeo/site/automation"));
+        client.registerPojoMarshaller(acBundle.getClass());
     }
 }
