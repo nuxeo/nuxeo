@@ -972,7 +972,62 @@ LOG.INFO Vacuuming tables used by optimized acls
 EXEC nx_vacuum_read_acls
 
 
-# -- END OF ACLR ------------------------------------------------------------
+# -- END OF ACLR ---------------------------------------------
+
+
+# ------------------------------------------------------------
+# -- MISC INDEXES for perf
+
+#TEST:
+SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'NXP_LOGS')
+       AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'NXP_LOGS_LOG_DOC_UUID_idx');
+
+#IF: ! emptyResult
+CREATE INDEX [NXP_LOGS_LOG_DOC_UUID_idx] ON [dbo].[NXP_LOGS]([LOG_DOC_UUID])
+
+
+#TEST:
+SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'NXP_LOGS')
+       AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'NXP_LOGS_LOG_DATE_idx');
+
+#IF: ! emptyResult
+CREATE INDEX [NXP_LOGS_LOG_DATE_idx] ON [dbo].[NXP_LOGS]([LOG_DATE])
+
+
+#TEST:
+SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'NXP_LOGS')
+       AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'NXP_LOGS_LOG_EVENT_DATE_idx');
+
+#IF: ! emptyResult
+CREATE INDEX [NXP_LOGS_LOG_EVENT_DATE_idx] ON [dbo].[NXP_LOGS]([LOG_EVENT_DATE])
+
+
+#TEST:
+SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'fulltext')
+       AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'fulltext_jobid_idx');
+
+#IF: ! emptyResult
+CREATE INDEX [fulltext_jobid_idx] ON [dbo].[fulltext]([jobid])
+
+
+#TEST:
+SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'dublincore')
+       AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'dublincore_modified_idx');
+
+#IF: ! emptyResult
+CREATE INDEX [dublincore_modified_idx] ON [dbo].[dublincore]([modified])
+
+
+#TEST:
+SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'dublincore')
+       AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'dc_contributors_item_idx');
+
+#IF: ! emptyResult
+CREATE INDEX [dc_contributors_item_idx] ON [dbo].[dc_contributors]([item])
+
+
+# -- END OF INDEX ------------------------------------------
+
 
 ############################################################
 
