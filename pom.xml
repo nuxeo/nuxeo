@@ -16,7 +16,23 @@
     <module>nuxeo-importer-core</module>
     <module>nuxeo-importer-jaxrs</module>
     <module>nuxeo-importer-scan</module>
+    <module>nuxeo-importer-xml-parser</module>
   </modules>
+
+  <properties>
+    <nuxeo.importer.version>5.7.3-SNAPSHOT</nuxeo.importer.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-importer-xml-parser</artifactId>
+        <version>${nuxeo.importer.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
 
   <repositories>
     <repository>

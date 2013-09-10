@@ -1,0 +1,10 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-importer-xml-parser
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.7.3.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: nuxeo-importer-xml-parser
+Nuxeo-Component: OSGI-INF/ImporterMapping-service.xml
