@@ -1161,7 +1161,7 @@ CREATE INDEX [dublincore_modified_idx] ON [dbo].[dublincore]([modified])
 
 
 #TEST:
-SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'dublincore')
+SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'dc_contributors')
        AND NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'dc_contributors_item_idx');
 
 #IF: ! emptyResult
