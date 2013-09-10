@@ -31,20 +31,20 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  * <p>
  * Also allows configuration of the SourceNode implementation; if none is
  * provided the <code>FileSourceNode<code>> it's used by default
- * 
+ *
  */
 public interface DefaultImporterService {
 
     /**
      * Imports documents using a DefaultImporterExecutor and the contributed
      * documentModelFactory and SourceNode implementations;
-     * 
+     *
      * If no documentModelFactory implementation was contributed to the service,
      * <code>DefaultDocumentModelFactory</code> it's used
-     * 
+     *
      * If no SourceNode implementation was contributed to the service,
      * <code>FileSourceNode</code> it's used
-     * 
+     *
      * @param destionationPath
      * @param sourcePath
      * @param skipRootContainerCreation
@@ -56,25 +56,16 @@ public interface DefaultImporterService {
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads) throws ClientException;
 
-    void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass);
-
-    void setDocModelFactoryClass(
-            Class<? extends DefaultDocumentModelFactory> docModelFactoryClass);
-
-    void setLeafDocType(String fileDocType);
-
-    void setFolderishDocType(String folderishDocType);
-
     /***
      * Imports documents using a the given executor and the contributed
      * documentModelFactory and SourceNode implementations;
-     * 
+     *
      * If no documentModelFactory implementation was contributed to the service,
      * <code>DefaultDocumentModelFactory</code> it's used
-     * 
+     *
      * If no SourceNode implementation was contributed to the service,
      * <code>FileSourceNode</code> it's used
-     * 
+     *
      * @param executor
      * @param destinationPath
      * @param sourcePath
@@ -95,13 +86,13 @@ public interface DefaultImporterService {
      * the leaf and folderish types used by the documentModelFactory when
      * importing; if one of them is not specified then the contributed one is
      * used
-     * 
+     *
      * If no documentModelFactory implementation was contributed to the service,
      * <code>DefaultDocumentModelFactory</code> it's used
-     * 
+     *
      * If no SourceNode implementation was contributed to the service,
      * <code>FileSourceNode</code> it's used
-     * 
+     *
      * @param executor
      * @param destinationPath
      * @param sourcePath
@@ -115,6 +106,15 @@ public interface DefaultImporterService {
             String folderishType, String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException;
+
+    void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass);
+
+    void setDocModelFactoryClass(
+            Class<? extends DefaultDocumentModelFactory> docModelFactoryClass);
+
+    void setLeafDocType(String fileDocType);
+
+    void setFolderishDocType(String folderishDocType);
 
     void setImporterLogger(ImporterLogger importerLogger);
 

@@ -177,7 +177,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.documentModelFactory = documentModelFactory;
     }
 
-    protected String getFolderishDocType() {
+    @Override
+    public String getFolderishDocType() {
         return folderishDocType;
     }
 
@@ -186,16 +187,18 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         this.folderishDocType = folderishDocType;
     }
 
-    protected String getLeafDocType() {
+    @Override
+    public String getLeafDocType() {
         return leafDocType;
     }
 
     @Override
     public void setLeafDocType(String fileDocType) {
-        this.leafDocType = fileDocType;
+        leafDocType = fileDocType;
     }
 
-    protected ImporterLogger getImporterLogger() {
+    @Override
+    public ImporterLogger getImporterLogger() {
         return importerLogger;
     }
 

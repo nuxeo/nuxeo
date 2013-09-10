@@ -53,7 +53,7 @@ public class DefaultImporterComponent extends DefaultComponent {
             }
             importerService.setSourceNodeClass(sourceNodeClass);
 
-            Class<? extends DefaultDocumentModelFactory> docFactoryClass = (Class<? extends DefaultDocumentModelFactory>) descriptor.getDocumentModelFactory().getDocumentModelFactoryClass();
+            Class<? extends DefaultDocumentModelFactory> docFactoryClass = descriptor.getDocumentModelFactory().getDocumentModelFactoryClass();
             if (docFactoryClass == null) {
                 docFactoryClass = DefaultDocumentModelFactory.class;
                 log.info("No custom implementation provided for the documentModelFactory, using DefaultDocumentModelFactory");
@@ -74,7 +74,7 @@ public class DefaultImporterComponent extends DefaultComponent {
             }
             importerService.setLeafDocType(leafType);
 
-            Class<? extends ImporterLogger> logClass = (Class<? extends ImporterLogger>) descriptor.getImporterLog();
+            Class<? extends ImporterLogger> logClass = descriptor.getImporterLog();
             if (logClass == null) {
                 log.info("No specific ImporterLogger configured for this importer");
             } else {
