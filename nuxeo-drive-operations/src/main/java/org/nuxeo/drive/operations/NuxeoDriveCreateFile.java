@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import javax.mail.internet.ParseException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
@@ -50,11 +51,24 @@ public class NuxeoDriveCreateFile {
     @Param(name = "parentId")
     protected String parentId;
 
+    /**
+     * @deprecated
+     * @see https://jira.nuxeo.com/browse/NXP-12173
+     */
+    @Deprecated
+    @Param(name = "name", required = false)
+    protected String name;
+
     @OperationMethod
     public Blob run(Blob blob) throws ClientException, ParseException,
             IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
+        // The filename transfered by the multipart encoding is not preserved
+        // correctly if there is non ascii characters in it.
+        if (StringUtils.isNotBlank(name)) {
+            blob.setFilename(name);
+        }
         NuxeoDriveOperationHelper.normalizeMimeTypeAndEncoding(blob);
         FileItem fileItem = fileSystemItemManager.createFile(parentId, blob,
                 ctx.getPrincipal());
