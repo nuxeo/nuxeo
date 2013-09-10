@@ -64,7 +64,7 @@ public class WidgetDescriptor {
     /**
      * @since 5.7.3
      */
-    @XNode("@type")
+    @XNode("@typeCategory")
     String typeCategory;
 
     @XNodeList(value = "fields/field", type = FieldDescriptor[].class, componentType = FieldDescriptor.class)
