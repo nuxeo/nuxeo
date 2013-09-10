@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -112,7 +112,7 @@ public class DocumentHelper {
     }
 
     public static void setProperties(CoreSession session, DocumentModel doc,
-                                     Properties properties) throws Exception {
+                                     Properties properties) throws ClientException, IOException  {
         if (properties instanceof DataModelProperties) {
             DataModelProperties dataModelProperties = (DataModelProperties) properties;
             for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {
@@ -145,7 +145,7 @@ public class DocumentHelper {
     }
 
     public static void setProperty(CoreSession session, DocumentModel doc,
-            String key, String value) throws Exception {
+            String key, String value) throws ClientException, IOException  {
         if ("ecm:acl".equals(key)) {
             setLocalAcl(session, doc, value);
         }
@@ -171,7 +171,7 @@ public class DocumentHelper {
                 p.setValue(val);
                 return;
             }
-            throw new OperationException(
+            throw new ClientException(
                     "Property type is not supported by this operation");
         } else {
             p.setValue(((SimpleType) type).getPrimitiveType().decode(value));

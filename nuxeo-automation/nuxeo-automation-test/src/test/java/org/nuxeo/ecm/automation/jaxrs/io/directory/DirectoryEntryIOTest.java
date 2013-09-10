@@ -50,8 +50,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.automation.io")
-@LocalDeploy("org.nuxeo.ecm.automation.io:test-directory-contrib.xml")
+@Deploy({"org.nuxeo.ecm.automation.io","org.nuxeo.ecm.automation.test"})
+@LocalDeploy("org.nuxeo.ecm.automation.test:test-directory-contrib.xml")
 public class DirectoryEntryIOTest {
 
     /**

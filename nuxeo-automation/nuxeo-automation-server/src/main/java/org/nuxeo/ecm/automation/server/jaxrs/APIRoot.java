@@ -71,13 +71,20 @@ public class APIRoot extends ModuleRoot {
         return new AutomationResource();
     }
 
+    @Path("/directory/{dirName}")
+    public Object doGetDirectory(@PathParam("dirName")
+    String dirName) {
+        return newObject("directory", dirName);
+    }
 
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
-            return Response.status(401).entity("not authorized").type("text/plain").build();
+            return Response.status(401).entity("not authorized").type(
+                    "text/plain").build();
         } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(e.getMessage()).type("text/plain").build();
+            return Response.status(404).entity(e.getMessage()).type(
+                    "text/plain").build();
         } else {
             return super.handleError(e);
         }

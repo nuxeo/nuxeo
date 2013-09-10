@@ -66,7 +66,7 @@ public class OperationBindingTest extends BaseTest {
 
     @Override
     @Before
-    public void doBefore() {
+    public void doBefore() throws Exception {
         super.doBefore();
         // Activate trace mode
         if (!factory.getRecordingState()) {

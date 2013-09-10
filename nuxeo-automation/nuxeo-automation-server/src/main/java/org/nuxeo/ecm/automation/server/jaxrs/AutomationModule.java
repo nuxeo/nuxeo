@@ -20,6 +20,9 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonExceptionWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonLoginInfoWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonRecordSetWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonTreeWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntriesWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryReader;
+import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.BlobsWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterReader;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader;
@@ -80,6 +83,9 @@ public class AutomationModule extends WebEngineModule {
         result.add(new NuxeoGroupListWriter());
         result.add(new NuxeoPrincipalListWriter());
         result.add(new JsonFactoryProvider());
+        result.add(new DirectoryEntriesWriter());
+        result.add(new DirectoryEntryWriter());
+        result.add(new DirectoryEntryReader());
         return result;
     }
 

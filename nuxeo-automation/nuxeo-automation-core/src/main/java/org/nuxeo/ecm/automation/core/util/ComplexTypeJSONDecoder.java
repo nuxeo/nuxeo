@@ -13,6 +13,7 @@
 
 package org.nuxeo.ecm.automation.core.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,8 +53,8 @@ public class ComplexTypeJSONDecoder {
         blobDecoders.add(blobDecoder);
     }
 
-    public static List<Object> decodeList(ListType lt, String json)
-            throws Exception {
+    public static List<Object> decodeList(ListType lt, String json) throws IOException
+            {
         ArrayNode jsonArray = (ArrayNode) mapper.readTree(json);
         return decodeList(lt, jsonArray);
     }
@@ -80,7 +81,7 @@ public class ComplexTypeJSONDecoder {
         return result;
     }
 
-    public static Object decode(ComplexType ct, String json) throws Exception {
+    public static Object decode(ComplexType ct, String json) throws IOException {
         ObjectNode jsonObject = (ObjectNode) mapper.readTree(json);
         return decode(ct, jsonObject);
     }

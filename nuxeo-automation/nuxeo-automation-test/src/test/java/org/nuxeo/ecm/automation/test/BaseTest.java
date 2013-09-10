@@ -19,6 +19,7 @@ package org.nuxeo.ecm.automation.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -30,8 +31,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -62,7 +65,7 @@ public class BaseTest {
     protected WebResource service;
 
     @Before
-    public void doBefore() {
+    public void doBefore() throws Exception {
         service = getServiceFor("Administrator", "Administrator");
 
         mapper = new ObjectMapper();
@@ -131,6 +134,13 @@ public class BaseTest {
         default:
             throw new RuntimeException();
         }
+    }
+
+    protected JsonNode getResponseAsJson(RequestType responseType, String url)
+            throws IOException, JsonProcessingException {
+        ClientResponse response = getResponse(responseType, url);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        return mapper.readTree(response.getEntityInputStream());
     }
 
     protected void dispose(CoreSession session) throws Exception {
