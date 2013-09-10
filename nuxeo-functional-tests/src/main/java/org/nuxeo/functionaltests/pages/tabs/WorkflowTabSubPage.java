@@ -39,7 +39,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void addWorkflowReviewer() {
-        Select2WidgetElement particpants = new Select2WidgetElement(driver, By.xpath("//*[contains(@id, 'nxl_Task38e_taskLayout:nxw_participants_select2')]"), true);
+        Select2WidgetElement particpants = new Select2WidgetElement(driver, By.xpath("//div[contains(@id, 'nxw_participants_select2')]"), true);
         particpants.selectValue("jdoe");
         selectItemInDropDownMenu(reviewSelector, "Simple review");
     }
