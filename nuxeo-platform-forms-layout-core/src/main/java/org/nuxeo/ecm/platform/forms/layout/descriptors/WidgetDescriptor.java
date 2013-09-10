@@ -61,6 +61,12 @@ public class WidgetDescriptor {
     @XNode("@type")
     String type;
 
+    /**
+     * @since 5.7.3
+     */
+    @XNode("@type")
+    String typeCategory;
+
     @XNodeList(value = "fields/field", type = FieldDescriptor[].class, componentType = FieldDescriptor.class)
     FieldDescriptor[] fields = new FieldDescriptor[0];
 
@@ -387,6 +393,7 @@ public class WidgetDescriptor {
         clone.setSubWidgetReferences(csubwidgetRefs);
         clone.setHandlingLabels(handlingLabels);
         clone.setControls(getControls());
+        clone.setTypeCategory(typeCategory);
         return clone;
     }
 }

@@ -49,6 +49,8 @@ public class WidgetImpl implements Widget {
 
     protected String type;
 
+    protected String typeCategory;
+
     protected FieldDefinition[] fields;
 
     protected String helpLabel;
@@ -205,6 +207,14 @@ public class WidgetImpl implements Widget {
 
     public String getType() {
         return type;
+    }
+
+    public String getTypeCategory() {
+        return typeCategory;
+    }
+
+    public void setTypeCategory(String typeCategory) {
+        this.typeCategory = typeCategory;
     }
 
     public String getLabel() {

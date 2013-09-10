@@ -67,6 +67,13 @@ public interface Widget extends Serializable {
     String getType();
 
     /**
+     * Returns the widget type category.
+     *
+     * @since 5.7.3
+     */
+    String getTypeCategory();
+
+    /**
      * Gets the value name used to compute tag attributes.
      */
     String getValueName();
