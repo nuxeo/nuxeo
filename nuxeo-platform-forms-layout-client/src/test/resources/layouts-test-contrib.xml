@@ -80,6 +80,28 @@
         </properties>
       </configuration>
     </widgetType>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgettypes">
+
+    <!-- widget type in another category -->
+    <widgetType name="test">
+      <categories>
+        <category>testTypeCategory</category>
+      </categories>
+      <handler-class>
+        org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler
+      </handler-class>
+      <configuration>
+        <title>Test widget type for a custom type category</title>
+        <properties>
+          <defaultValues mode="any">
+            <property name="foo">bar</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+    </widgetType>
 
   </extension>
 
@@ -93,6 +115,19 @@
       <fields>
         <field schema="foo">bar</field>
       </fields>
+    </widget>
+
+    <widget name="globalTestWidgetWithTypeCategory" type="test"
+      typeCategory="testTypeCategory">
+      <categories>
+        <category>testCategory</category>
+      </categories>
+      <fields>
+        <field schema="foo">bar</field>
+      </fields>
+      <properties mode="any">
+        <property name="styleClass">cssClass</property>
+      </properties>
     </widget>
 
   </extension>

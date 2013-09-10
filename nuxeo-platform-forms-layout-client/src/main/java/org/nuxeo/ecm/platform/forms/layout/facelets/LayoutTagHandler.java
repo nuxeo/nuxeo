@@ -460,7 +460,7 @@ public class LayoutTagHandler extends TagHandler {
             String value;
             Serializable valueInstance = prop.getValue();
             if (!layoutService.referencePropertyAsExpression(key,
-                    valueInstance, null, null, null)) {
+                    valueInstance, null, null, null, null)) {
                 // FIXME: this will not be updated correctly using ajax
                 value = (String) valueInstance;
             } else {

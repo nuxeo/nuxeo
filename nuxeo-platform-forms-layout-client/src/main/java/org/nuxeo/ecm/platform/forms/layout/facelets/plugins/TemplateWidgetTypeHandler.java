@@ -173,7 +173,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             String value;
             Serializable valueInstance = prop.getValue();
             if (!layoutService.referencePropertyAsExpression(key,
-                    valueInstance, widget.getType(), widget.getMode(), template)) {
+                    valueInstance, widget.getType(), widget.getTypeCategory(),
+                    widget.getMode(), template)) {
                 // FIXME: this will not be updated correctly using ajax
                 value = (String) valueInstance;
             } else {

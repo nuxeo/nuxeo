@@ -3085,15 +3085,19 @@
       in EL expressions.
     </documentation>
 
-    <disabledPropertyRef name="converter" />
-    <disabledPropertyRef name="validator" />
+    <disabledPropertyRef name="converter"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="validator"
+      widgetTypeCategory="jsf" />
 
     <!-- avoid bad interactions with JBoss-el size EL resolver... -->
-    <disabledPropertyRef name="size" />
+    <disabledPropertyRef name="size" widgetTypeCategory="jsf" />
 
     <!-- rich:calendar does not resolve some attributes as EL expressions -->
-    <disabledPropertyRef name="showApplyButton" widgetType="datetime" />
-    <disabledPropertyRef name="defaultTime" widgetType="datetime" />
+    <disabledPropertyRef name="showApplyButton" widgetType="datetime"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="defaultTime" widgetType="datetime"
+      widgetTypeCategory="jsf" />
 
   </extension>
 

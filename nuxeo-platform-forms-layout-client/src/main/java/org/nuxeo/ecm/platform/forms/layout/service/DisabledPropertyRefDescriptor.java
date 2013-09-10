@@ -39,6 +39,12 @@ public class DisabledPropertyRefDescriptor implements Serializable {
     @XNode("@widgetType")
     protected String widgetType;
 
+    /**
+     * @since 5.7.3
+     */
+    @XNode("@widgetTypeCategory")
+    protected String widgetTypeCategory;
+
     @XNode("@widgetMode")
     protected String widgetMode;
 
@@ -49,8 +55,8 @@ public class DisabledPropertyRefDescriptor implements Serializable {
     protected Boolean enabled = Boolean.TRUE;
 
     public String getId() {
-        return String.format("%s/%s/%s/%s", name, widgetType, widgetMode,
-                template);
+        return String.format("%s/%s/%s/%s/%s", name, widgetType,
+                widgetTypeCategory, widgetMode, template);
     }
 
     public String getName() {
@@ -67,6 +73,14 @@ public class DisabledPropertyRefDescriptor implements Serializable {
 
     public void setWidgetType(String widgetType) {
         this.widgetType = widgetType;
+    }
+
+    public String getWidgetTypeCategory() {
+        return widgetTypeCategory;
+    }
+
+    public void setWidgetTypeCategory(String widgetTypeCategory) {
+        this.widgetTypeCategory = widgetTypeCategory;
     }
 
     public String getWidgetMode() {
@@ -93,13 +107,15 @@ public class DisabledPropertyRefDescriptor implements Serializable {
         this.enabled = enabled;
     }
 
-    public boolean matches(String name, String widgetType, String widgetMode,
-            String template) {
+    public boolean matches(String name, String widgetType,
+            String widgetTypeCategory, String widgetMode, String template) {
         if (name != null && name.equals(this.name)) {
             if (matches(this.widgetType, widgetType)) {
-                if (matches(this.widgetMode, widgetMode)) {
-                    if (matches(this.template, template)) {
-                        return true;
+                if (matches(this.widgetTypeCategory, widgetTypeCategory)) {
+                    if (matches(this.widgetMode, widgetMode)) {
+                        if (matches(this.template, template)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -108,6 +124,9 @@ public class DisabledPropertyRefDescriptor implements Serializable {
     }
 
     protected boolean matches(String value1, String value2) {
+        if ("*".equals(value1)) {
+            return true;
+        }
         if ((value1 == null && value2 == null) || (value1 == null)
                 || (value1 != null && value1.equals(value2))
                 || (value2 != null && value2.equals(value1))) {
@@ -124,8 +143,10 @@ public class DisabledPropertyRefDescriptor implements Serializable {
         buf.append(" {");
         buf.append("name=");
         buf.append(name);
-        buf.append(" widgetType=");
+        buf.append(", widgetType=");
         buf.append(widgetType);
+        buf.append(", widgetTypeCategory=");
+        buf.append(widgetTypeCategory);
         buf.append(", widgetMode=");
         buf.append(widgetMode);
         buf.append(", template=");
@@ -145,6 +166,7 @@ public class DisabledPropertyRefDescriptor implements Serializable {
         clone.setTemplate(template);
         clone.setWidgetMode(widgetMode);
         clone.setWidgetType(widgetType);
+        clone.setWidgetTypeCategory(widgetTypeCategory);
         return clone;
     }
 

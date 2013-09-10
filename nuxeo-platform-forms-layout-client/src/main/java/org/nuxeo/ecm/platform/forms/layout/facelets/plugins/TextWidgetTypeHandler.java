@@ -139,7 +139,7 @@ public class TextWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         List<TagAttribute> propertyAttrs = helper.getTagAttributes(
                 widgetPropsClone, null, true, widget.getType(),
-                widget.getMode());
+                widget.getTypeCategory(), widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
         }

@@ -152,6 +152,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("testWidget", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         assertTrue(widget.isTranslated());
         assertTrue(widget.isHandlingLabels());
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
@@ -171,6 +172,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("testWidgetWithoutLabel", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         assertEquals("label.widget.testLayout.testWidgetWithoutLabel",
                 widget.getLabel());
         assertTrue(widget.isTranslated());
@@ -180,18 +182,21 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("globalTestWidget", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
 
         // test widget defined globally on another category
         widget = rows[3].getWidgets()[0];
         assertNotNull(widget);
         assertEquals("globalTestWidgetWithTestCategory", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
 
         // test widget with selection options
         widget = rows[4].getWidgets()[0];
         assertNotNull(widget);
         assertEquals("widgetWithSelectOptions", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         WidgetSelectOption[] options = widget.getSelectOptions();
         assertNotNull(options);
         assertEquals(5, options.length);
@@ -218,27 +223,32 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("testWidgetWithSubWidgets", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         Widget[] subWidgets = widget.getSubWidgets();
         assertNotNull(subWidgets);
         assertEquals(1, subWidgets.length);
         Widget subWidget = subWidgets[0];
         assertEquals("subwidget", subWidget.getName());
         assertEquals("text", subWidget.getType());
+        assertEquals("jsf", subWidget.getTypeCategory());
 
         // test widget with subbwidget refs
         widget = rows[6].getWidgets()[0];
         assertNotNull(widget);
         assertEquals("testWidgetWithSubWidgetRefs", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         subWidgets = widget.getSubWidgets();
         assertNotNull(subWidgets);
         assertEquals(2, subWidgets.length);
         subWidget = subWidgets[0];
         assertEquals("globalSubWidget", subWidget.getName());
         assertEquals("test", subWidget.getType());
+        assertEquals("jsf", subWidget.getTypeCategory());
         subWidget = subWidgets[1];
         assertEquals("testLocalSubwidget", subWidget.getName());
         assertEquals("test", subWidget.getType());
+        assertEquals("jsf", subWidget.getTypeCategory());
     }
 
     protected void checkCommonSelectOption(WidgetSelectOption option,
@@ -332,6 +342,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("testWidgetMode", editWidget.getName());
         assertEquals(BuiltinWidgetModes.EDIT, editWidget.getMode());
         assertEquals("layout", editWidget.getType());
+        assertEquals("jsf", editWidget.getTypeCategory());
         Map<String, Serializable> editProps = editWidget.getProperties();
         assertNotNull(editProps);
         assertEquals(2, editProps.size());
@@ -358,121 +369,121 @@ public class TestLayoutService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-props-contrib.xml");
         assertTrue(service.referencePropertyAsExpression("foo", null, null,
-                null, null));
+                "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", null,
-                null, null));
+                "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
-                null, null));
+                "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
-                "bar", null));
+                "jsf", "bar", null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
-                "bar", "bar"));
+                "jsf", "bar", "bar"));
 
         assertFalse(service.referencePropertyAsExpression("validator", null,
-                null, null, null));
+                null, "jsf", null, null));
         assertFalse(service.referencePropertyAsExpression("validator", "bar",
-                null, null, null));
+                null, "jsf", null, null));
         assertFalse(service.referencePropertyAsExpression("validator", "bar",
-                "bar", null, null));
+                "bar", "jsf", null, null));
         assertFalse(service.referencePropertyAsExpression("validator", "bar",
-                "bar", "bar", null));
+                "bar", "jsf", "bar", null));
         assertFalse(service.referencePropertyAsExpression("validator", "bar",
-                "bar", "bar", "bar"));
+                "bar", "jsf", "bar", "bar"));
 
         assertTrue(service.referencePropertyAsExpression("defaultTime", null,
-                null, null, null));
+                null, null, "jsf", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                null, null, null));
+                null, null, "jsf", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "bar", null, null));
+                "bar", null, "jsf", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "bar", "bar", null));
+                "bar", "bar", "jsf", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "bar", "bar", "bar"));
+                "bar", "bar", "jsf", "bar"));
 
         assertTrue(service.referencePropertyAsExpression("defaultTime", null,
-                null, null, null));
+                null, null, "jsf", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                null, null, null));
+                null, null, "jsf", null));
         assertFalse(service.referencePropertyAsExpression("defaultTime", "bar",
-                "datetime", null, null));
+                "datetime", null, "jsf", null));
         assertFalse(service.referencePropertyAsExpression("defaultTime", "bar",
-                "datetime", "bar", null));
+                "datetime", "jsf", "bar", null));
         assertFalse(service.referencePropertyAsExpression("defaultTime", "bar",
-                "datetime", "bar", "bar"));
+                "datetime", "jsf", "bar", "bar"));
+
+        assertFalse(service.referencePropertyAsExpression("disabled", null,
+                null, "jsf", null, null));
+        assertFalse(service.referencePropertyAsExpression("disabled", "bar",
+                null, "jsf", null, null));
+        assertFalse(service.referencePropertyAsExpression("disabled", "bar",
+                "bar", "jsf", null, null));
+        assertFalse(service.referencePropertyAsExpression("disabled", "bar",
+                "bar", "jsf", "bar", null));
+        assertFalse(service.referencePropertyAsExpression("disabled", "bar",
+                "bar", "jsf", "bar", "bar"));
 
         // override to check merge
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-props-contrib-override.xml");
 
         assertTrue(service.referencePropertyAsExpression("foo", null, null,
-                null, null));
+                "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", null,
-                null, null));
+                "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
-                null, null));
+                "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
-                "bar", null));
+                "jsf", "bar", null));
         assertTrue(service.referencePropertyAsExpression("foo", "bar", "bar",
-                "bar", "bar"));
+                "jsf", "bar", "bar"));
 
         assertTrue(service.referencePropertyAsExpression("validator", null,
-                null, null, null));
+                null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("validator", "bar",
-                null, null, null));
+                null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("validator", "bar",
-                "bar", null, null));
+                "bar", "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("validator", "bar",
-                "bar", "bar", null));
+                "bar", "jsf", "bar", null));
         assertTrue(service.referencePropertyAsExpression("validator", "bar",
-                "bar", "bar", "bar"));
+                "bar", "jsf", "bar", "bar"));
 
         assertTrue(service.referencePropertyAsExpression("defaultTime", null,
-                null, null, null));
+                null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                null, null, null));
+                null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "bar", null, null));
+                "bar", "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "bar", "bar", null));
+                "bar", "jsf", "bar", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "bar", "bar", "bar"));
+                "bar", "jsf", "bar", "bar"));
 
         assertTrue(service.referencePropertyAsExpression("defaultTime", null,
-                null, null, null));
+                null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                null, null, null));
+                null, "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "datetime", null, null));
+                "datetime", "jsf", null, null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "datetime", "bar", null));
+                "datetime", "jsf", "bar", null));
         assertTrue(service.referencePropertyAsExpression("defaultTime", "bar",
-                "datetime", "bar", "bar"));
+                "datetime", "jsf", "bar", "bar"));
     }
 
     @Test
     public void testWidget() throws Exception {
         deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
                 "layouts-test-contrib.xml");
-        Widget widget = service.getWidget(null,
-                "globalTestWidgetWithTestCategory", "testCategory",
-                BuiltinModes.VIEW, null, "pseudoLayout");
-        assertNotNull(widget);
-        assertEquals("globalTestWidgetWithTestCategory", widget.getName());
-        assertEquals("test", widget.getType());
-        assertEquals("pseudoLayout", widget.getLayoutName());
-        FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
-        assertEquals(1, fieldDefs.length);
-        assertEquals("foo", fieldDefs[0].getSchemaName());
-        assertEquals("bar", fieldDefs[0].getFieldName());
-
-        widget = service.getWidget(null, "globalTestWidget", null,
+        Widget widget = service.getWidget(null, "globalTestWidget", null,
                 BuiltinModes.VIEW, null, "pseudoLayout");
         assertNotNull(widget);
         assertEquals("globalTestWidget", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         assertEquals("pseudoLayout", widget.getLayoutName());
-        fieldDefs = widget.getFieldDefinitions();
+        FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
         assertEquals(1, fieldDefs.length);
         assertEquals("foo", fieldDefs[0].getSchemaName());
         assertEquals("bar", fieldDefs[0].getFieldName());
@@ -485,11 +496,13 @@ public class TestLayoutService extends NXRuntimeTestCase {
                 "testDynamicWidget", "test", "my.widget.label",
                 "my.widget.help.label", true, null, fieldDefinitions,
                 properties, null);
+
         widget = service.getWidget(null, widgetDef, BuiltinModes.VIEW, null,
                 "pseudoLayout");
         assertNotNull(widget);
         assertEquals("testDynamicWidget", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         assertEquals("my.widget.label", widget.getLabel());
         assertEquals("my.widget.help.label", widget.getHelpLabel());
         assertTrue(widget.isTranslated());
@@ -505,9 +518,36 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("myPropValue", props.get("myPropName"));
         // prop set by default on type
         assertEquals("true", props.get("rendered"));
+    }
 
-        // exceptions
-        widget = service.getWidget(null, "unknownWidget", null,
+    @Test
+    public void testWidgetWithTypeCategory() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        Widget widget = service.getWidget(null,
+                "globalTestWidgetWithTypeCategory", "testCategory",
+                BuiltinModes.VIEW, null, "pseudoLayout");
+        assertNotNull(widget);
+        assertEquals("globalTestWidgetWithTypeCategory", widget.getName());
+        assertEquals("test", widget.getType());
+        assertEquals("testTypeCategory", widget.getTypeCategory());
+        assertEquals("pseudoLayout", widget.getLayoutName());
+        FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
+        assertEquals(1, fieldDefs.length);
+        assertEquals("foo", fieldDefs[0].getSchemaName());
+        assertEquals("bar", fieldDefs[0].getFieldName());
+        Map<String, Serializable> props = widget.getProperties();
+        assertEquals(2, props.size());
+        assertEquals("cssClass", props.get("styleClass"));
+        // prop set by default on type
+        assertEquals("bar", props.get("foo"));
+    }
+
+    @Test
+    public void testWidgetExceptions() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        Widget widget = service.getWidget(null, "unknownWidget", null,
                 BuiltinModes.VIEW, null, "pseudoLayout");
         assertNull(widget);
         widget = service.getWidget(null, null, BuiltinModes.VIEW, null,
@@ -524,6 +564,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertNotNull(widget);
         assertEquals("widgetWithControls", widget.getName());
         assertEquals("test", widget.getType());
+        assertEquals("jsf", widget.getTypeCategory());
         assertEquals("pseudoLayout", widget.getLayoutName());
         assertEquals("true", widget.getControl("requireSurroundingForm"));
         assertEquals("true", widget.getControl("useAjaxForm"));

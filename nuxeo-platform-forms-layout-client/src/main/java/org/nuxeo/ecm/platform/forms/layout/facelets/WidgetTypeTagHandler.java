@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
@@ -67,6 +68,8 @@ public class WidgetTypeTagHandler extends TagHandler {
     protected final TagConfig config;
 
     protected final TagAttribute name;
+
+    protected final TagAttribute category;
 
     protected final TagAttribute mode;
 
@@ -107,8 +110,8 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name", "mode",
-            "value", "type", "field", "fields", "widgetName", "label",
+    protected final String[] reservedVarsArray = { "id", "name", "category",
+            "mode", "value", "type", "field", "fields", "widgetName", "label",
             "helpLabel", "translated", "properties", "ignoreTemplateProperty",
             "subWidgets", "resolveOnly" };
 
@@ -116,6 +119,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         super(config);
         this.config = config;
         name = getRequiredAttribute("name");
+        category = getAttribute("category");
         mode = getRequiredAttribute("mode");
         value = getAttribute("value");
         field = getAttribute("field");
@@ -185,12 +189,19 @@ public class WidgetTypeTagHandler extends TagHandler {
         // do not propagate value the value attribute to the widget
         // properties if field definitions should be taken into account
         // instead
+        String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name()
+                + "_";
         boolean includeValueInProps = fieldsValue.isEmpty();
         for (TagAttribute var : vars) {
             String localName = var.getLocalName();
             if ((!reservedVars.contains(localName))
                     || ("value".equals(localName) && includeValueInProps)) {
-                widgetProps.put(localName, var.getValue());
+                String varName = localName;
+                if (localName != null
+                        && localName.startsWith(widgetPropertyMarker)) {
+                    varName = localName.substring(widgetPropertyMarker.length());
+                }
+                widgetProps.put(varName, var.getValue());
             }
         }
 
@@ -203,6 +214,10 @@ public class WidgetTypeTagHandler extends TagHandler {
         }
 
         String typeValue = name.getValue(ctx);
+        String categoryValue = null;
+        if (category != null) {
+            categoryValue = category.getValue(ctx);
+        }
         String modeValue = mode.getValue(ctx);
         String valueName = null;
         if (value != null) {
@@ -234,9 +249,13 @@ public class WidgetTypeTagHandler extends TagHandler {
                     Widget[].class);
         }
 
-        Widget widget = layoutService.createWidget(ctx, typeValue, modeValue,
-                valueName, fieldsValue, widgetNameValue, labelValue,
-                helpLabelValue, translatedValue, widgetProps, subWidgetsValue);
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(widgetNameValue,
+                typeValue, labelValue, helpLabelValue,
+                translatedValue.booleanValue(), null, fieldsValue, widgetProps,
+                null);
+        wDef.setTypeCategory(categoryValue);
+        Widget widget = layoutService.createWidget(ctx, wDef, modeValue,
+                valueName, subWidgetsValue);
 
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();

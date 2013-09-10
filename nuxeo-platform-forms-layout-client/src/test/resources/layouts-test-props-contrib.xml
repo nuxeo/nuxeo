@@ -6,8 +6,12 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="disabledPropertyRefs">
 
-    <disabledPropertyRef name="validator" />
-    <disabledPropertyRef name="defaultTime" widgetType="datetime" />
+    <disabledPropertyRef name="validator"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="defaultTime" widgetType="datetime"
+      widgetTypeCategory="jsf" />
+    <disabledPropertyRef name="disabled" widgetType="*"
+      widgetTypeCategory="jsf" />
 
   </extension>
 

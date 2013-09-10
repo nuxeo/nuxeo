@@ -58,6 +58,17 @@ public interface WebLayoutManager extends LayoutManager {
             throws WidgetException;
 
     /**
+     * Returns the widget type handler for the registered widget type with this
+     * type name and type category.
+     * <p>
+     * If the no widget type is found with this name, return null.
+     *
+     * @since 5.7.3
+     */
+    WidgetTypeHandler getWidgetTypeHandler(String typeCategory, String typeName)
+            throws WidgetException;
+
+    /**
      * Returns the computed layout for this name and mode in given context, or
      * null if no layout with this name is found.
      * <p>
@@ -222,6 +233,7 @@ public interface WebLayoutManager extends LayoutManager {
      * @see #createWidget(FaceletContext, String, String, String, List, String,
      *      String, Boolean, Map, Widget[])
      */
+    @Deprecated
     Widget createWidget(FaceletContext ctx, String type, String mode,
             String valueName, Map<String, Serializable> properties,
             Widget[] subWidgets);
@@ -233,6 +245,7 @@ public interface WebLayoutManager extends LayoutManager {
      *            context is null, no expressions can be resolved during
      *            computing.
      * @param type the widget type name.
+     * @param category the widget type category.
      * @param mode the mode.
      * @param valueName the value name to use when computing tag attributes.
      * @param fieldDefinitions
@@ -248,7 +261,7 @@ public interface WebLayoutManager extends LayoutManager {
             String valueName, List<FieldDefinition> fieldDefinitions,
             String label, String helpLabel, Boolean translated,
             Map<String, Serializable> properties, Widget[] subWidgets);
-    
+
     /**
      * Returns a widget computed from given information.
      *
@@ -256,6 +269,7 @@ public interface WebLayoutManager extends LayoutManager {
      *            context is null, no expressions can be resolved during
      *            computing.
      * @param type the widget type name.
+     * @param category the widget type category.
      * @param mode the mode.
      * @param valueName the value name to use when computing tag attributes.
      * @param fieldDefinitions
@@ -266,12 +280,28 @@ public interface WebLayoutManager extends LayoutManager {
      * @param properties optional properties to use when computing the widget.
      * @param subWidgets optional sub widgets for this widget.
      * @return a widget computed in this context.
-     * @since 5.7
+     * @since 5.7.3
      */
-    Widget createWidget(FaceletContext ctx, String type, String mode,
-            String valueName, List<FieldDefinition> fieldDefinitions,
-            String widgetName, String label, String helpLabel, Boolean translated,
-            Map<String, Serializable> properties, Widget[] subWidgets);
+    Widget createWidget(FaceletContext ctx, WidgetDefinition widgetDef,
+            String mode, String valueName, Widget[] subWidgets);
+
+    /**
+     * Returns true if property with given name and value should be referenced
+     * as a value expression.
+     * <p>
+     * Assumes the widget type is in category #JSF_CATEGORY for backward
+     * compatibility.
+     *
+     * @see #referencePropertyAsExpression(String, Serializable, String,
+     *      String, String)
+     * @since 5.6
+     * @deprecated since 5.7.3, use
+     *             {@link #referencePropertyAsExpression(String, Serializable, String, String, String, String)}
+     *             instead
+     */
+    @Deprecated
+    boolean referencePropertyAsExpression(String name, Serializable value,
+            String widgetType, String mode, String template);
 
     /**
      * Returns true if property with given name and value should be referenced
@@ -292,14 +322,16 @@ public interface WebLayoutManager extends LayoutManager {
      * criterion is ignored, and this looks up any matching (and enabled)
      * contribution.
      *
-     * @since 5.6
+     * @since 5.7.3
      * @param name the property name
      * @param value the property value
      * @param widgetType the widget type if any
+     * @param widgetTypeCategory the widget type category if any
      * @param mode the widget mode if any
      * @param template the widget template if any
      */
     boolean referencePropertyAsExpression(String name, Serializable value,
-            String widgetType, String mode, String template);
+            String widgetType, String widgetTypeCategory, String mode,
+            String template);
 
 }

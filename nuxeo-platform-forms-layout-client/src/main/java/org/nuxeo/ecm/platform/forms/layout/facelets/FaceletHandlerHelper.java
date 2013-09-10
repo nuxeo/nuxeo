@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
+import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
@@ -360,7 +361,7 @@ public final class FaceletHandlerHelper {
         // fill with widget properties
         List<TagAttribute> propertyAttrs = getTagAttributes(
                 widget.getProperties(), null, true, widget.getType(),
-                widget.getMode());
+                widget.getTypeCategory(), widget.getMode());
         if (propertyAttrs != null) {
             attrs.addAll(propertyAttrs);
         }
@@ -374,7 +375,7 @@ public final class FaceletHandlerHelper {
     public List<TagAttribute> getTagAttributes(
             Map<String, Serializable> properties,
             List<String> excludedProperties, boolean useReferenceProperties,
-            String widgetType, String widgetMode) {
+            String widgetType, String widgetTypeCategory, String widgetMode) {
         WebLayoutManager service = null;
         try {
             service = Framework.getService(WebLayoutManager.class);
@@ -396,7 +397,8 @@ public final class FaceletHandlerHelper {
                 Serializable valueInstance = prop.getValue();
                 if (!useReferenceProperties
                         || !service.referencePropertyAsExpression(key,
-                                valueInstance, widgetType, widgetMode, null)) {
+                                valueInstance, widgetType, widgetTypeCategory,
+                                widgetMode, null)) {
                     if (valueInstance == null
                             || valueInstance instanceof String) {
                         // FIXME: this will not be updated correctly using ajax
@@ -405,9 +407,9 @@ public final class FaceletHandlerHelper {
                         attr = createAttribute(key, valueInstance.toString());
                     }
                 } else {
-                    // create a reference so that it's a real expression and
-                    // it's not kept (cached) in a component value on ajax
-                    // refresh
+                    // create a reference so that it's a real expression
+                    // and it's not kept (cached) in a component value on
+                    // ajax refresh
                     attr = createAttribute(key, String.format(
                             "#{%s.properties.%s}",
                             RenderVariables.widgetVariables.widget.name(), key));
@@ -418,22 +420,10 @@ public final class FaceletHandlerHelper {
         return attrs;
     }
 
-    /**
-     * @deprecated since 5.6: use
-     *             {@link #getTagAttributes(Map, List, boolean, String, String)}
-     *             instead
-     */
-    @Deprecated
-    public List<TagAttribute> getTagAttributes(
-            Map<String, Serializable> properties, boolean useReferenceProperties) {
-        return getTagAttributes(properties, null, useReferenceProperties, null,
-                null);
-    }
-
     public TagAttributes getTagAttributes(WidgetSelectOption selectOption) {
         Map<String, Serializable> props = getSelectOptionProperties(selectOption);
         List<TagAttribute> attrs = getTagAttributes(props, null, false, null,
-                null);
+                null, null);
         if (attrs == null) {
             attrs = Collections.emptyList();
         }
@@ -618,28 +608,6 @@ public final class FaceletHandlerHelper {
                 tagConfig, tagConfigId, attributes, new LeafFaceletHandler(),
                 HtmlMessage.COMPONENT_TYPE, null);
         return new ComponentHandler(config);
-    }
-
-    /**
-     * @deprecated since 5.4.2, use
-     *             {@link FaceletHandlerHelper#getAliasTagHandler(String, Map, List, FaceletHandler)
-     *             instead.
-     */
-    @Deprecated
-    public FaceletHandler getAliasTagHandler(
-            Map<String, ValueExpression> variables, FaceletHandler nextHandler) {
-        return getAliasTagHandler(null, variables, nextHandler);
-    }
-
-    /**
-     * @since 5.4.2
-     * @deprecated since 5.6, use
-     *             {@link #getAliasTagHandler(String, Map, List, FaceletHandler)}
-     */
-    @Deprecated
-    public FaceletHandler getAliasTagHandler(String tagConfigId,
-            Map<String, ValueExpression> variables, FaceletHandler nextHandler) {
-        return getAliasTagHandler(tagConfigId, variables, null, nextHandler);
     }
 
     /**

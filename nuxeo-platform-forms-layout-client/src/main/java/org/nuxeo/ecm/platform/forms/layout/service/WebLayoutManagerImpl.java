@@ -150,10 +150,26 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         return JSF_CATEGORY;
     }
 
+    protected String getStoreCategory(String cat) {
+        if (cat == null) {
+            return getDefaultStoreCategory();
+        }
+        return cat;
+    }
+
     @Override
     public WidgetTypeHandler getWidgetTypeHandler(String typeName)
             throws WidgetException {
-        WidgetType type = getWidgetType(typeName);
+        return getWidgetTypeHandler(getDefaultStoreCategory(), typeName);
+    }
+
+    @Override
+    public WidgetTypeHandler getWidgetTypeHandler(String typeCategory,
+            String typeName) throws WidgetException {
+        if (StringUtils.isBlank(typeCategory)) {
+            typeCategory = getDefaultStoreCategory();
+        }
+        WidgetType type = getLayoutStore().getWidgetType(typeCategory, typeName);
         if (type == null) {
             return null;
         }
@@ -333,9 +349,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 wDef.getRequired(layoutMode, wMode)).booleanValue();
 
         String wType = wDef.getType();
+        String wTypeCat = wDef.getTypeCategory();
         // fill default property values from the widget definition
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-        WidgetTypeDefinition def = getWidgetTypeDefinition(wType);
+        WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
+                getStoreCategory(wTypeCat), wType);
+
         WidgetTypeConfiguration conf = def != null ? def.getConfiguration()
                 : null;
         if (conf != null) {
@@ -361,6 +380,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                 widget.setControl(control.getKey(), control.getValue());
             }
         }
+        widget.setTypeCategory(getStoreCategory(wTypeCat));
         return widget;
     }
 
@@ -443,6 +463,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                     continue;
                 }
                 WidgetDefinition wDef = lookupWidget(layoutDef, widgetRef);
+                wDef.getTypeCategory();
                 if (wDef == null) {
                     log.error(String.format(
                             "Widget '%s' not found in layout %s", widgetName,
@@ -522,11 +543,14 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     public FaceletHandler getFaceletHandler(FaceletContext ctx,
             TagConfig config, Widget widget, FaceletHandler nextHandler) {
         String widgetTypeName = widget.getType();
-        WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeName);
+        String widgetTypeCategory = widget.getTypeCategory();
+        WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeCategory,
+                widgetTypeName);
         if (handler == null) {
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
             String message = String.format(
-                    "No widget handler found for type '%s'", widgetTypeName);
+                    "No widget handler found for type '%s' in category '%s'",
+                    widgetTypeName, widgetTypeCategory);
             log.error(message);
             ComponentHandler output = helper.getErrorComponentHandler(null,
                     message);
@@ -564,9 +588,19 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     @Override
     public Widget createWidget(FaceletContext ctx, String type, String mode,
             String valueName, List<FieldDefinition> fieldDefinitions,
-            String widgetName, String label, String helpLabel,
-            Boolean translated, Map<String, Serializable> properties,
-            Widget[] subWidgets) {
+            String label, String helpLabel, Boolean translated,
+            Map<String, Serializable> properties, Widget[] subWidgets) {
+        return createWidget(
+                ctx,
+                createWidgetDefinition(ctx, type, null, mode, valueName,
+                        fieldDefinitions, null, label, helpLabel, translated,
+                        properties, subWidgets), mode, valueName, subWidgets);
+    }
+
+    @Override
+    public Widget createWidget(FaceletContext ctx, WidgetDefinition wDef,
+            String mode, String valueName, Widget[] subWidgets) {
+        Map<String, Serializable> properties = wDef.getProperties(mode, mode);
         Serializable requiredProp = properties.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
         boolean required = false;
         if (requiredProp != null) {
@@ -580,27 +614,28 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                         WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
             }
         }
-        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(type, type, label,
-                helpLabel, Boolean.TRUE.equals(translated), null,
-                fieldDefinitions, properties, null);
-        if (StringUtils.isEmpty(widgetName)) {
-            widgetName = wDef.getName();
-        }
-        Widget widget = new WidgetImpl("layout", widgetName, mode,
-                wDef.getType(), valueName, wDef.getFieldDefinitions(), label,
-                helpLabel, wDef.isTranslated(), properties, required,
-                subWidgets, 0, null,
+        WidgetImpl widget = new WidgetImpl("layout", wDef.getName(), mode,
+                wDef.getType(), valueName, wDef.getFieldDefinitions(),
+                wDef.getLabel(mode), wDef.getHelpLabel(mode),
+                wDef.isTranslated(), properties, required, subWidgets, 0, null,
                 LayoutFunctions.computeWidgetDefinitionId(wDef));
+        widget.setTypeCategory(wDef.getTypeCategory());
         return widget;
     }
 
-    @Override
-    public Widget createWidget(FaceletContext ctx, String type, String mode,
-            String valueName, List<FieldDefinition> fieldDefinitions,
+    protected WidgetDefinition createWidgetDefinition(FaceletContext ctx,
+            String type, String category, String mode, String valueName,
+            List<FieldDefinition> fieldDefinitions, String widgetName,
             String label, String helpLabel, Boolean translated,
             Map<String, Serializable> properties, Widget[] subWidgets) {
-        return createWidget(ctx, type, mode, valueName, fieldDefinitions, null,
-                label, helpLabel, translated, properties, subWidgets);
+        String wName = widgetName;
+        if (StringUtils.isBlank(widgetName)) {
+            wName = type;
+        }
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(wName, type,
+                label, helpLabel, Boolean.TRUE.equals(translated), null,
+                fieldDefinitions, properties, null);
+        return wDef;
     }
 
     /**
@@ -629,13 +664,25 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     public boolean referencePropertyAsExpression(String name,
             Serializable value, String widgetType, String widgetMode,
             String template) {
+        return referencePropertyAsExpression(name, value, widgetType, null,
+                widgetMode, template);
+    }
+
+    @Override
+    public boolean referencePropertyAsExpression(String name,
+            Serializable value, String widgetType, String widgetTypeCategory,
+            String widgetMode, String template) {
         if ((value instanceof String)
                 && (ComponentTagUtils.isValueReference((String) value))) {
             return false;
         }
+        String cat = widgetTypeCategory;
+        if (widgetTypeCategory == null) {
+            cat = WebLayoutManager.JSF_CATEGORY;
+        }
         for (DisabledPropertyRefDescriptor desc : disabledPropertyRefsReg.getDisabledPropertyRefs()) {
             if (Boolean.TRUE.equals(desc.getEnabled())
-                    && desc.matches(name, widgetType, widgetMode, template)) {
+                    && desc.matches(name, widgetType, cat, widgetMode, template)) {
                 return false;
             }
         }

@@ -7,9 +7,10 @@
     point="disabledPropertyRefs">
 
     <!-- disable contribs -->
-    <disabledPropertyRef name="validator" enabled="false" />
+    <disabledPropertyRef name="validator"
+      widgetTypeCategory="jsf" enabled="false" />
     <disabledPropertyRef name="defaultTime" widgetType="datetime"
-      enabled="false" />
+      widgetTypeCategory="jsf" enabled="false" />
 
   </extension>
 
