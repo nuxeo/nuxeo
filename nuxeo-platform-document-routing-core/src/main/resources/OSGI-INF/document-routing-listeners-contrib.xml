@@ -29,6 +29,7 @@
       class="org.nuxeo.ecm.platform.routing.core.listener.RoutingTaskSecurityUpdaterListener"
       priority="250">
       <event>workflowTaskAssigned</event>
+      <event>workflowTaskReassigned</event>
     </listener>
     
     <listener name="triggerEsclationRules" async="true"

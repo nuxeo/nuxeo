@@ -1859,6 +1859,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node2 = session.saveDocument(node2);
 
         DocumentRoute route = instantiateAndRun(session);
+        session.save();
         // check that the user1 has one task assigned
         List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
         assertNotNull(tasks);
