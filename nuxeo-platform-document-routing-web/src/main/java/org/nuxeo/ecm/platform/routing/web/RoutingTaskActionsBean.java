@@ -125,12 +125,12 @@ public class RoutingTaskActionsBean implements Serializable {
     @In(create = true, required = false)
     protected ContentViewActions contentViewActions;
 
-    protected Map<String, Serializable> formVariables;
-
     @RequestParameter("button")
     protected String button;
 
     protected ActionManager actionService;
+
+    protected Map<String, TaskInfo> tasksInfoCache = new HashMap<String, TaskInfo>();
 
     public void validateTaskDueDate(FacesContext context,
             UIComponent component, Object value) {
@@ -217,9 +217,10 @@ public class RoutingTaskActionsBean implements Serializable {
     public String endTask(Task task) throws ClientException {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
-        if (formVariables != null) {
-            data.put("WorkflowVariables", formVariables);
-            data.put("NodeVariables", formVariables);
+        Map<String, Serializable> formVariables = getFormVariables(task);
+        if (getFormVariables(task) != null) {
+            data.put("WorkflowVariables", getFormVariables(task));
+            data.put("NodeVariables", getFormVariables(task));
             // if there is a comment on the submitted form, pass it to be
             // logged
             // by audit
@@ -241,7 +242,7 @@ public class RoutingTaskActionsBean implements Serializable {
                     messages.get("workflow.feedback.error.taskEnded"));
         }
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
-        clear();
+        clear(task.getId());
         if (documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
                 SecurityConstants.READ)) {
@@ -252,11 +253,12 @@ public class RoutingTaskActionsBean implements Serializable {
         return navigationContext.goHome();
     }
 
-    private void clear() {
-        formVariables = null;
+    private void clear(String taskId) {
         button = null;
+        if (tasksInfoCache.containsKey(taskId)) {
+            tasksInfoCache.remove(taskId);
+        }
     }
-
 
     public Map<String, Serializable> getFormVariables(Task task)
             throws ClientException {
@@ -317,6 +319,9 @@ public class RoutingTaskActionsBean implements Serializable {
     // workflow
     public TaskInfo getTaskInfo(final Task task, final boolean getFormVariables)
             throws ClientException {
+        if (tasksInfoCache.containsKey(task.getId())) {
+            return tasksInfoCache.get(task.getId());
+        }
         final String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         final String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         if (routeDocId == null) {
@@ -343,12 +348,10 @@ public class RoutingTaskActionsBean implements Serializable {
                         node.getTaskButtons(), node.allowTaskReassignment());
             }
         }.runUnrestricted();
+        tasksInfoCache.put(task.getId(), res[0]);
         return res[0];
     }
 
-    public void setFormVariables(Map<String, Serializable> formVariables) {
-        this.formVariables = formVariables;
-    }
 
     /**
      * @since 5.6

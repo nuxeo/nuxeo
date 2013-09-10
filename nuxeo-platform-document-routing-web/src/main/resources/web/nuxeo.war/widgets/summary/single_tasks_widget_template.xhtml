@@ -53,7 +53,7 @@
                   mode="edit" value="#{taskInfo}" />
               </c:if>
               <c:if test="#{widgetProperty_allowTaskReassignment}">
-                <h:form enctype="multipart/form-data" id="#{widget.id}_nxl_current_route_layout_current_route_user_tasks_form">
+                <h:form enctype="multipart/form-data" id="#{widget.id}#{status.index}_nxl_current_route_layout_current_route_user_tasks_form">
                   <ui:include
                     src="/incl/tasks/workflow_task_template.xhtml">
                     <ui:param name="dashboardItem"
