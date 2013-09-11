@@ -38,7 +38,7 @@ public class ResumeNodeOperation {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "workflowInstanceId")
+    @Param(name = "workflowInstanceId", required = false)
     protected String workflowInstanceId;
 
     @Param(name = "nodeId", required = false)
@@ -49,14 +49,17 @@ public class ResumeNodeOperation {
 
     @OperationMethod
     public void resumeWorkflow() throws ClientException {
+        if (workflowInstanceId == null) {
+            workflowInstanceId = (String) ctx.get("workflowInstanceId");
+        }
         if (nodeId == null) {
             nodeId = (String) ctx.get("nodeId");
         }
-        if (nodeId == null) {
+        if (workflowInstanceId == null) {
             throw new ClientException(
                     "Can not resume workflow instance with id "
                             + workflowInstanceId
-                            + ". No current node in the context");
+                            + ". No current instance in the context");
         }
         documentRoutingService.resumeInstance(workflowInstanceId, nodeId, null,
                 null, session);
