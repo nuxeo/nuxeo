@@ -28,7 +28,7 @@
 
     <widgetType name="link">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -67,7 +67,7 @@
 
     <widgetType name="bare_link">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -92,7 +92,7 @@
 
     <widgetType name="fancybox">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -114,7 +114,7 @@
 
     <widgetType name="widget">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -136,7 +136,7 @@
 
     <widgetType name="rest_document_link">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -159,7 +159,7 @@
 
     <widgetType name="template">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -181,7 +181,7 @@
 
     <widgetType name="main_tab">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -203,7 +203,7 @@
 
     <widgetType name="widget">
       <categories>
-        <category>jsf_action</category>
+        <category>jsfAction</category>
       </categories>
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>

@@ -19,7 +19,7 @@ Parameters:
 
 <nxu:set var="actionWidgetName" value="#{idPrefix}#{action.id}" cache="true">
 
-  <nxl:widgetType category="jsf_action"
+  <nxl:widgetType category="jsfAction"
     name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
     mode="#{mode}"
     widgetName="#{actionWidgetName}"
