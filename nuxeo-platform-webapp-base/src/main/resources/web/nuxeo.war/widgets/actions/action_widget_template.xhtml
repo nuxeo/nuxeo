@@ -14,10 +14,13 @@
         cache="true">
       <nxu:set var="idPrefix" value="#{widget.id}_"
         cache="true">
-        <nxu:valueHolder id="#{idPrefix}clickedActionIdHolder"
+      <nxu:set var="clickedActionIdHolder" value="#{idPrefix}clickedActionIdHolder"
+        cache="true">
+        <nxu:valueHolder id="#{clickedActionIdHolder}"
           var="clickedActionId">
 
           <ui:decorate template="/widgets/incl/form_template.xhtml">
+            <!-- TODO: filter addForm on action widget type default properties (?) -->
             <ui:param name="addForm" value="#{widgetProperty_addForm}" />
             <ui:param name="formId" value="#{widget.id}_form" />
             <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
@@ -34,9 +37,12 @@
             </ui:define>
           </ui:decorate>
 
-          <ui:include src="/incl/action/generic_after_action_template.xhtml" />
+          <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+            <ui:param name="mode" value="after_button_form" />
+          </ui:include>
 
         </nxu:valueHolder>
+      </nxu:set>
       </nxu:set>
       </nxu:set>
 

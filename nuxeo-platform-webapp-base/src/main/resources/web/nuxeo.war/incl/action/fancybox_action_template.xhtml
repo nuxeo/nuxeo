@@ -8,36 +8,40 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
 <nxu:set var="fancyboxId"
-  value="#{idPrefix}#{action.id}"
+  value="#{widget.name}"
   cache="true">
 
 <nxu:set var="iframe"
   value="#{action.properties.iframe}"
   resolveTwice="true" cache="true">
 
+<c:if test="#{widget.mode == 'view'}">
+
   <f:subview id="#{fancyboxId}_subview">
 
     <c:if test="#{empty iframe}">
 
-      <c:if test="#{not useButton}">
+      <c:if test="#{not widgetProperty_useButton}">
         <a4j:commandLink id="#{fancyboxId}_link"
           ajaxSingle="true"
           ignoreDupResponses="true" requestDelay="100"
-          onclick="#{actionConfirmMessageJs}#{action.confirm};"
-          oncomplete="#{action.properties.onclick};return false;"
-          styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+          onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};"
+          styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
           reRender="#{fancyboxId}_ajax_panel">
-          <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_addForm,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
           <f:setPropertyActionListener value="#{action.id}"
             target="#{selectionActions.selectedValue}" />
           <f:setPropertyActionListener
-            value="#{idPrefix}clickedActionIdHolder"
+            value="#{widgetProperty_clickedActionIdHolder}"
             target="#{selectionActions.selectedValueHolder}" />
           <nxu:actionListenerMethod
             value="#{selectionActions.onClick}" />
-          <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+          <ui:include src="/incl/action/action_icon_label_template.xhtml">
+            <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
+            <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
+          </ui:include>
           <ui:insert name="inside_action" />
         </a4j:commandLink>
       </c:if>
@@ -46,22 +50,22 @@
         <a4j:commandButton id="#{fancyboxId}_link"
           ajaxSingle="true"
           ignoreDupResponses="true" requestDelay="100"
-          onclick="#{actionConfirmMessageJs}#{action.confirm};"
-          oncomplete="#{action.properties.onclick};return false;"
+          onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};"
           value="#{messages[action.label]}"
-          styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+          styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
           reRender="#{fancyboxId}_ajax_panel">
-          <f:setPropertyActionListener value="#{nxu:test(addForm,'2','1')}"
+          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_addForm,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
           <f:setPropertyActionListener value="#{action.id}"
             target="#{selectionActions.selectedValue}" />
           <f:setPropertyActionListener
-            value="#{idPrefix}clickedActionIdHolder"
+            value="#{widgetProperty_clickedActionIdHolder}"
             target="#{selectionActions.selectedValueHolder}" />
           <nxu:actionListenerMethod
             value="#{selectionActions.onClick}" />
           <ui:include src="/incl/action/action_icon_label_template.xhtml">
+            <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
             <ui:param name="hideLabel" value="true" />
           </ui:include>
           <ui:insert name="inside_action" />
@@ -74,6 +78,7 @@
 
       <ui:decorate template="fancybox_properties_template.xhtml">
         <ui:define name="fancybox_properties_include">
+
           <nxu:set var="fancyboxJs"
             value="openFancyBox('#{iframe}', {
                     width: '#{fancy_width}',
@@ -86,28 +91,33 @@
                     enableEscapeButton: #{fancy_enableEscapeButton}
                   });"
             cache="true">
-            <c:if test="#{not useButton}">
+
+            <c:if test="#{not widgetProperty_useButton}">
               <a4j:commandLink id="#{fancyboxId}_link"
                 ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
-                onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};#{fancyboxJs}"
                 disabled="#{!action.available}"
-                styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
-                <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+                styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}">
+                <ui:include src="/incl/action/action_icon_label_template.xhtml">
+                  <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
+                  <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
+                </ui:include>
                 <ui:insert name="inside_action" />
               </a4j:commandLink>
             </c:if>
 
-            <c:if test="#{useButton}">
+            <c:if test="#{widgetProperty_useButton}">
               <a4j:commandButton id="#{fancyboxId}_link"
                 ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
-                onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};#{fancyboxJs}"
                 value="#{messages[action.label]}"
                 disabled="#{!action.available}"
-                styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
+                styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}">
                 <ui:include src="/incl/action/action_icon_label_template.xhtml">
-                  <ui:param name="hideLabel" value="true" />
+                  <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
+                  <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
                 </ui:include>
                 <ui:insert name="inside_action" />
               </a4j:commandButton>
@@ -120,6 +130,39 @@
     </c:if>
 
   </f:subview>
+</c:if>
+
+<c:if test="#{widget.mode == 'after_button_form'}">
+
+  <a4j:outputPanel id="#{fancyboxId}_ajax_panel">
+
+    <nxu:set var="fancyboxFormId"
+      value="#{fancyboxId}_fancyform"
+      cache="true">
+    <nxu:set
+      var="actionClicked"
+      value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
+      cache="true">
+
+      <c:if test="#{actionClicked}">
+        <script>
+          jQuery(document).ready(function() {
+            openFancyBox('##{fancyboxId}_box');
+          });
+        </script>
+        <div style="display:none">
+          <div id="#{fancyboxId}_box">
+            <ui:include src="#{action.properties.include}" />
+          </div>
+        </div>
+      </c:if>
+
+    </nxu:set>
+    </nxu:set>
+
+  </a4j:outputPanel>
+
+</c:if>
 
 </nxu:set>
 

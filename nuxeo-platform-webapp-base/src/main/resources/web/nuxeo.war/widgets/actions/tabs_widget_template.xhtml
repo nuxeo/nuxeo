@@ -39,7 +39,9 @@
     </ul>
 
     <nxu:repeat var="action" items="#{widgetProperty_actions}">
-      <ui:include src="/incl/action/generic_after_action_template.xhtml" />
+      <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+        <ui:param name="mode" value="after_view" />
+      </ui:include>
     </nxu:repeat>
 
   </div>
@@ -48,8 +50,12 @@
   <div class="tabsContent">
 
     <ui:insert name="tab_content">
-      <c:if test="#{not empty widgetProperty_currentTabAction.link}">
-        <ui:include src="#{widgetProperty_currentTabAction.link}"/>
+      <c:if test="#{not empty widgetProperty_currentTabAction}">
+        <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
+          <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+            <ui:param name="mode" value="tab_content" />
+          </ui:include>
+        </nxu:set>
       </c:if>
     </ui:insert>
 

@@ -1,4 +1,4 @@
-<ui:composition
+<c:if test="#{widget.mode == 'view'}"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -17,4 +17,4 @@
       <ui:insert name="inside_action" />
     </h:outputLink>
   </nxu:set>
-</ui:composition>
+</c:if>

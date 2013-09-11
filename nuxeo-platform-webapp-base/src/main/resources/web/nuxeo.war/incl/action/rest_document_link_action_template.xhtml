@@ -9,6 +9,8 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+<c:if test="#{widget.mode == 'view'}">
+
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
@@ -69,6 +71,13 @@
   </nxu:set>
   </nxu:set>
 
+</c:if>
+</c:if>
+
+<c:if test="#{widget.mode == 'tab_content'}">
+  <c:if test="#{not empty action.link}">
+    <ui:include src="#{action.link}" />
+  </ui>
 </c:if>
 
 </ui:composition>

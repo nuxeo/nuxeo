@@ -6,3 +6,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.actions.jsf;singleton:=true
 Bundle-Localization: bundle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/action-widget-types-contrib.xml

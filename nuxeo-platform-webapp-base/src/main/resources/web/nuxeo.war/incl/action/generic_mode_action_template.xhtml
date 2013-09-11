@@ -1,0 +1,38 @@
+<c:if test="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<c:if test="false">
+Template displaying additional rendering for an action.
+
+Parameters:
+- action: the action instance (mandatory)
+- mode: the action rendering mode (mandatory), for instance 'tab_content'
+  or 'after_button_form'
+- idPrefix: a String prefix to put before the action id (optional)
+- actionType (optional): type to use if not set on action or needs to be
+  used by default if not set on action
+
+</c:if>
+
+<nxu:set var="actionWidgetName" value="#{idPrefix}#{action.id}" cache="true">
+
+  <nxl:widgetType category="jsf_action"
+    name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
+    mode="#{mode}"
+    widgetName="#{actionWidgetName}"
+    hideIcon="#{hideIcon}"
+    hideLabel="#{hideLabel}"
+    useButton="#{useButton}"
+    useAjaxForm="#{useAjaxForm}"
+    ajaxReRender="#{ajaxReRender}"
+    addForm="#{addForm}"
+    actionStyleClass="#{actionStyleClass}"
+    clickedActionIdHolder="#{clickedActionIdHolder}"
+    value="#{fieldOrValue}" />
+
+</nxu:set>
+
+</c:if>
