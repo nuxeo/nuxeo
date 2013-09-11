@@ -62,8 +62,8 @@ public class SQLContentProperty extends SQLComplexProperty {
         String mimeType = (String) map.get(MIME_TYPE);
         String encoding = (String) map.get(ENCODING);
         String digest = (String) map.get(DIGEST);
-        // length computed from actual binary
-        return new SQLBlob(binary, filename, mimeType, encoding, digest);
+        Long length = (Long)map.get(LENGTH);
+        return new SQLBlob(binary, filename, mimeType, encoding, digest, length.longValue());
     }
 
     @Override
@@ -85,8 +85,11 @@ public class SQLContentProperty extends SQLComplexProperty {
             }
             String encoding = blob.getEncoding();
             String digest = blob.getDigest();
+            Long length = blob.getLength();
             // length computed from actual binary
-            Long length = Long.valueOf(binary.getLength());
+            if (length == null || length == -1) {
+                length = binary.getLength();
+            }
             map.put(BINARY, binary);
             map.put(FILE_NAME, filename);
             map.put(MIME_TYPE, mimeType);
