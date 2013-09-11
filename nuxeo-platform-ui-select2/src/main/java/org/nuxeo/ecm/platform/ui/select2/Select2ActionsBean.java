@@ -416,14 +416,14 @@ public class Select2ActionsBean implements Serializable {
             DocumentModel user = null;
             DocumentModel group = null;
             if (prefixed) {
-                String[] split = storedReference.split(":");
-                if (split == null || split.length != 2) {
-                    return obj;
-                }
-                if (split[0].equals(NuxeoPrincipal.PREFIX)) {
-                    user = userManager.getUserModel(split[1]);
-                } else if (split[0].equals(NuxeoGroup.PREFIX)) {
-                    group = userManager.getGroupModel(split[1]);
+                if (storedReference.startsWith(NuxeoPrincipal.PREFIX)) {
+                    user = userManager.getUserModel(storedReference.substring(NuxeoPrincipal.PREFIX.length()));
+                } else if (storedReference.startsWith(NuxeoGroup.PREFIX)) {
+                    group = userManager.getGroupModel(storedReference.substring(NuxeoGroup.PREFIX.length()));
+                } else {
+                    log.warn("User reference is prefixed but prefix was not found on reference: "
+                            + storedReference);
+                    return null;
                 }
             } else {
                 user = userManager.getUserModel(storedReference);
@@ -478,9 +478,13 @@ public class Select2ActionsBean implements Serializable {
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
                 obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX
                         + groupId);
+            } else {
+                log.warn("Could not resolve user or group reference: "
+                        + storedReference);
+                return null;
             }
         } catch (ClientException e) {
-            log.error("An error occured while retrievin user/group reference"
+            log.error("An error occured while retrieving user or group reference: "
                     + storedReference);
             return null;
         }
