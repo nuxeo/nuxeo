@@ -128,7 +128,8 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>#{nxu:joinCollection(layoutValue.configuration.categories, ',')}</field>
+          <field>#{nxu:joinCollection(layoutValue.configuration.categories,
+            ',')}</field>
         </fields>
       </widget>
     </layout>

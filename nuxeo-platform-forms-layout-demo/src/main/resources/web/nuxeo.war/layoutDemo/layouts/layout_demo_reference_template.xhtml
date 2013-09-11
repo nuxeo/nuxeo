@@ -8,15 +8,13 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   id="#{layout.id}">
 
-  <div class="foldableBox">
-
-    <h3 class="unfolded">
-      <a class="foldableHeaderLink" href="#nogo" onclick="return toggleBox(this)">
+  <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
+    <ui:param name="foldable" value="true" />
+    <ui:param name="foldedByDefault" value="#{layout.properties.foldedByDefault}" />
+    <ui:define name="foldable_box_header_content">
         <h:outputText value="#{layoutProperty_title}" />
-      </a>
-    </h3>
-
-    <div class="boxBody">
+    </ui:define>
+    <ui:define name="foldable_box_content">
       <table class="dataOutput">
         <tbody>
           <nxl:layoutRow>
@@ -59,8 +57,7 @@
           </nxl:layoutRow>
         </tbody>
       </table>
-    </div>
-
-  </div>
+    </ui:define>
+  </ui:decorate>
 
 </f:subview>

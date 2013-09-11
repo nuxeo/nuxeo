@@ -47,6 +47,9 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     @XNode("category")
     protected String category;
 
+    @XNode("widgetTypeCategory")
+    protected String widgetTypeCategory;
+
     @XNode("preview@enabled")
     protected Boolean previewEnabled = Boolean.FALSE;
 
@@ -73,6 +76,13 @@ public class DemoWidgetTypeDescriptor implements Serializable {
 
     public String getCategory() {
         return category;
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public String getWidgetTypeCategory() {
+        return widgetTypeCategory;
     }
 
     public Boolean getPreviewEnabled() {

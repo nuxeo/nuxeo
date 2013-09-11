@@ -37,6 +37,8 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     protected String category;
 
+    protected String widgetTypeCategory;
+
     protected Boolean previewEnabled;
 
     protected List<String> fields;
@@ -46,14 +48,15 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
     protected List<DemoLayout> demoLayouts;
 
     public DemoWidgetTypeImpl(String name, String label, String viewId,
-            String category, Boolean previewEnabled, List<String> fields,
-            Map<String, Serializable> defaultProperties,
+            String category, String widgetTypeCategory, Boolean previewEnabled,
+            List<String> fields, Map<String, Serializable> defaultProperties,
             List<DemoLayout> demoLayouts) {
         super();
         this.name = name;
         this.label = label;
         this.viewId = viewId;
         this.category = category;
+        this.widgetTypeCategory = widgetTypeCategory;
         this.previewEnabled = previewEnabled;
         this.fields = fields;
         this.defaultProperties = defaultProperties;
@@ -78,6 +81,11 @@ public class DemoWidgetTypeImpl implements DemoWidgetType {
 
     public String getCategory() {
         return category;
+    }
+
+    @Override
+    public String getWidgetTypeCategory() {
+        return widgetTypeCategory;
     }
 
     public Boolean getPreviewEnabled() {

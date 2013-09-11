@@ -219,6 +219,58 @@
       <redirect />
     </navigation-case>
 
+    <!-- action widget types navigation cases -->
+    <navigation-case>
+      <from-outcome>linkAction</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoActions/linkAction.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>bare_linkAction</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoActions/bare_linkAction.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>fancyboxAction</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoActions/fancyboxAction.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>rest_document_linkAction</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoActions/rest_document_linkAction.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>main_tabAction</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoActions/main_tabAction.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>widgetAction</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoActions/widgetAction.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>templateAction</from-outcome>
+      <to-view-id>
+        /layoutDemo/demoActions/templateAction.xhtml
+      </to-view-id>
+      <redirect />
+    </navigation-case>
+
+
   </extension>
 
   <extension target="web#STD-AUTH-FILTER">

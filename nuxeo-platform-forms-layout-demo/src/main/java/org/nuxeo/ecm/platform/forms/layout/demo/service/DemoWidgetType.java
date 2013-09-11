@@ -35,6 +35,11 @@ public interface DemoWidgetType extends Serializable {
 
     String getCategory();
 
+    /**
+     * @since 5.7.3
+     */
+    String getWidgetTypeCategory();
+
     Boolean getPreviewEnabled();
 
     List<String> getFields();

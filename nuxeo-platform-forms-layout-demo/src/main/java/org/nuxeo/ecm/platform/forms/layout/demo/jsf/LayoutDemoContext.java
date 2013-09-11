@@ -124,6 +124,11 @@ public class LayoutDemoContext implements Serializable {
         return layoutDemoManager.getWidgetTypes("custom");
     }
 
+    @Factory(value = "actionWidgetTypes", scope = SESSION)
+    public List<DemoWidgetType> getActionWidgetTypes() {
+        return layoutDemoManager.getWidgetTypes("action");
+    }
+
     protected DocumentModel generateBareDemoDocument() throws ClientException {
         try {
             return demoCoreSession.createDocumentModel(DEMO_DOCUMENT_TYPE);

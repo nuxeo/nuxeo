@@ -36,10 +36,12 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.DemoWidgetType;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component providing a document model for layout demo and testing, and
@@ -129,7 +131,9 @@ public class LayoutDemoActions implements Serializable {
     public WidgetTypeDefinition getCurrentWidgetTypeDefinition() {
         if (currentWidgetType != null) {
             String type = currentWidgetType.getName();
-            return webLayoutManager.getWidgetTypeDefinition(type);
+            LayoutStore lm = Framework.getLocalService(LayoutStore.class);
+            return lm.getWidgetTypeDefinition(
+                    currentWidgetType.getWidgetTypeCategory(), type);
         }
         return null;
     }
@@ -159,7 +163,9 @@ public class LayoutDemoActions implements Serializable {
                 widgetType.getDefaultProperties());
 
         String type = widgetType.getName();
-        WidgetTypeDefinition wtDef = webLayoutManager.getWidgetTypeDefinition(type);
+        LayoutStore lm = Framework.getLocalService(LayoutStore.class);
+        WidgetTypeDefinition wtDef = lm.getWidgetTypeDefinition(
+                widgetType.getWidgetTypeCategory(), type);
         if (def != null) {
             WidgetTypeConfiguration wtConf = wtDef.getConfiguration();
             if (wtConf.isAcceptingSubWidgets()) {

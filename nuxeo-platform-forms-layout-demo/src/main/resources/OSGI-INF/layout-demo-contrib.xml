@@ -565,6 +565,55 @@
       </layouts>
     </widgetType>
 
+    <widgetType name="link">
+      <label>Link</label>
+      <viewId>linkAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="bare_link">
+      <label>Bare link</label>
+      <viewId>bare_linkAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="fancybox">
+      <label>Fancybox</label>
+      <viewId>fancyboxAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="rest_document_link">
+      <label>Rest document link</label>
+      <viewId>rest_document_linkAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="main_tab">
+      <label>Main tab link</label>
+      <viewId>main_tabAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="widget">
+      <label>Widget</label>
+      <viewId>widgetAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
+    <widgetType name="template">
+      <label>Template</label>
+      <viewId>templateAction</viewId>
+      <category>action</category>
+      <widgetTypeCategory>jsfAction</widgetTypeCategory>
+    </widgetType>
+
   </extension>
 
 </component>

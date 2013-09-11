@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.demo.descriptors.DemoWidgetTypeDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -72,13 +73,17 @@ public class LayoutDemoService extends DefaultComponent implements
             widgetTypeRegistry.remove(name);
         }
         String category = desc.getCategory();
+        String wtCat = desc.getWidgetTypeCategory();
+        if (wtCat == null) {
+            wtCat = WebLayoutManager.JSF_CATEGORY;
+        }
         String viewId = desc.getViewId();
         // TODO: query the layout service to get more information about this
         // widget type and use it in the demo
         DemoWidgetType widgetType = new DemoWidgetTypeImpl(name,
-                desc.getLabel(), viewId, category, desc.getPreviewEnabled(),
-                desc.getFields(), desc.getDefaultProperties(),
-                desc.getDemoLayouts());
+                desc.getLabel(), viewId, category, wtCat,
+                desc.getPreviewEnabled(), desc.getFields(),
+                desc.getDefaultProperties(), desc.getDemoLayouts());
         widgetTypeRegistry.put(name, widgetType);
         if (category != null) {
             List<String> byCat = widgetTypesByCategory.get(category);
