@@ -625,6 +625,7 @@ public class DialectOracle extends Dialect {
         }
         switch (err.intValue()) {
         case 17002: // ORA-17002 IO Exception
+        case 17008: // ORA-17008 Closed Connection
         case 17410: // ORA-17410 No more data to read from socket
             return true;
         }
