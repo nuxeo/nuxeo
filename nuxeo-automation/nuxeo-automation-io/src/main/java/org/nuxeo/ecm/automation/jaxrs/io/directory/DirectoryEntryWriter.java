@@ -22,11 +22,13 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
@@ -49,6 +51,9 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.7.3
  */
+@Provider
+@Produces({ MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_JSON + "+nxentity" })
 public class DirectoryEntryWriter implements MessageBodyWriter<DirectoryEntry> {
 
     @Context

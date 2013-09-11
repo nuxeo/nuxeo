@@ -24,12 +24,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -59,6 +61,9 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.7.3
  */
+@Provider
+@Consumes({ MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_JSON + "+nxentity" })
 public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
 
     protected static final Log log = LogFactory.getLog(DirectoryEntryReader.class);
