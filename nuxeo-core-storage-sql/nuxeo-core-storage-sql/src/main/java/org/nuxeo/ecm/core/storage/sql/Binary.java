@@ -40,22 +40,35 @@ public class Binary implements Serializable {
     protected long length;
 
     public Binary(File file, String digest) {
-        this.file = file;
-        this.digest = digest;
-        length = file.length();
-        this.repoName = null;
+        this(file, digest, null);
+    }
+
+    protected Binary(String digest, String reponame) {
+        this(null, digest, reponame);
     }
 
     public Binary(File file, String digest, String repoName) {
         this.file = file;
         this.digest = digest;
-        length = file.length();
         this.repoName = repoName;
+        length = -1;
     }
 
-    protected Binary(String digest, String reponame) {
-        this.digest = digest;
-        this.repoName = reponame;
+    /**
+     * Compute length on demand, default implementation only works if
+     * the file referenced contains the binary original content. If you're contributing
+     * a binary type, you should adapt this in case you're encoding the content.
+     *
+     * This method is only used when users make a direct access to the binary.
+     * Persisted blobs don't use that API.
+     *
+     * @since 5.7.3
+     */
+    protected long computeLength() {
+        if (file == null) {
+            return -1;
+        }
+        return file.length();
     }
 
     /**
@@ -64,6 +77,9 @@ public class Binary implements Serializable {
      * @return the length of the binary
      */
     public long getLength() {
+        if (length == -1) {
+            length = computeLength();
+        }
         return length;
     }
 
