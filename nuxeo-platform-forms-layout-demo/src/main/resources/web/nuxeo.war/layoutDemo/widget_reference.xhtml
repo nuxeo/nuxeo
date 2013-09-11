@@ -19,7 +19,8 @@
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
         showLayoutDefinition="true"
-        title="#{messages['label.layoutDemo.reference.anyProperties']}" />
+        title="#{messages['label.layoutDemo.reference.anyProperties']}"
+        defaultPropertyValues="#{currentWidgetTypeDef.configuration.getDefaultPropertyValues('any')}" />
     </c:forEach>
   </div>
 
@@ -29,7 +30,8 @@
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
         showLayoutDefinition="true"
-        title="#{messages['label.layoutDemo.reference.viewProperties']}" />
+        title="#{messages['label.layoutDemo.reference.viewProperties']}"
+        defaultPropertyValues="#{currentWidgetTypeDef.configuration.getDefaultPropertyValues('view')}" />
     </c:forEach>
   </div>
 
@@ -39,7 +41,8 @@
         value="#{viewPreviewLayoutDef.properties}"
         template="/layoutDemo/layouts/layout_demo_reference_template.xhtml"
         showLayoutDefinition="true"
-        title="#{messages['label.layoutDemo.reference.editProperties']}" />
+        title="#{messages['label.layoutDemo.reference.editProperties']}"
+        defaultPropertyValues="#{currentWidgetTypeDef.configuration.getDefaultPropertyValues('edit')}" />
     </c:forEach>
   </div>
 

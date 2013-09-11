@@ -21,6 +21,9 @@
         <tbody>
           <nxl:layoutRow>
             <nxl:layoutRowWidget>
+              <nxu:set var="widgetPropFieldName"
+                value="#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}"
+                cache="true">
               <tr class="#{nxu:test(layoutRowIndex%2 ==0, 'dataRowEven', 'dataRowOdd')}">
                 <td class="labelColumn">
                   <ui:include src="/widgets/incl/widget_label_template.xhtml">
@@ -30,7 +33,16 @@
                 </td>
                 <c:if test="#{layout.properties.showLayoutDefinition}">
                   <td class="fieldColumn">
-                    <h:outputText value="#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
+                    <h:outputText value="#{widgetPropFieldName}" />
+                  </td>
+                  <td class="fieldColumn">
+                    <c:if test="#{layout.properties.defaultPropertyValues.containsKey(widgetPropFieldName)}">
+                      <nxu:set var="defaultValue"
+                        value="#{layout.properties.defaultPropertyValues[widgetPropFieldName]}"
+                        cache="true">
+                        <h:outputText value="#{messages['label.layoutDemo.reference.defaultValue']} #{defaultValue}" />
+                      </nxu:set>
+                    </c:if>
                   </td>
                   <td class="fieldColumn">
                     <h:outputText value="#{widget.helpLabel}" />
@@ -42,6 +54,7 @@
                   </td>
                 </c:if>
               </tr>
+              </nxu:set>
             </nxl:layoutRowWidget>
           </nxl:layoutRow>
         </tbody>
