@@ -38,6 +38,12 @@ public class TestImport extends ImportTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
+        deployContrib("org.nuxeo.ecm.platform.importer.core",
+                "OSGI-INF/default-importer-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter",
+                "OSGI-INF/default-scan-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
+                "needed-contribution-for-factory-deployment.xml");
         deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
                 "OSGI-INF/core-type-test-contrib.xml");
         openSession();

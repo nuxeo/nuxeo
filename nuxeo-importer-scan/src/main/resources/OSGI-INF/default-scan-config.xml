@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.scanimporter.default.parser.contrib">
+
+  <require>org.nuxeo.ecm.platform.importer.service.jaxrs.contrib</require>
+
+  <documentation>
+    This contribution deploy the default importer core configuration for Scan importer
+    using the simple XML Parser implementation. See nuxeo-importer-xml-parser to deploy
+    The advanced XML Parser implementation instead.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+   <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.scanimporter.processor.ScanedFileSourceNode">
+       <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.scanimporter.processor.ScanedFileFactory" />
+   </importerConfig>
+  </extension>
+
+
+</component>
