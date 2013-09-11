@@ -212,7 +212,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         if (parentFsItem == null) {
             throw new ClientException(
                     String.format(
-                            "Cannot create a file in file system item with id %s because it doen't exist.",
+                            "Cannot create a file in file system item with id %s because it doesn't exist.",
                             parentId));
         }
         if (!(parentFsItem instanceof FolderItem)) {
