@@ -257,8 +257,21 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.linkParams = linkParams;
     }
 
+    /**
+     * Returns the confirm javascript for this element.
+     * <p>
+     * Since 5.7.3, fallbacks on properties when link is not set and retrieve
+     * it using key "confirm".
+     */
     public String getConfirm() {
         if (confirm == null) {
+            Map<String, Serializable> props = getProperties();
+            if (props != null && props.containsKey("link")) {
+                Object linkObj = props.get("link");
+                if (linkObj instanceof String) {
+                    return (String) props.get("link");
+                }
+            }
             return "";
         } else {
             return confirm;
