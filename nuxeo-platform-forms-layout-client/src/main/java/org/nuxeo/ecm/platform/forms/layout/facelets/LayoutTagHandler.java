@@ -180,7 +180,7 @@ public class LayoutTagHandler extends TagHandler {
             if (!reservedVars.contains(localName)) {
                 // resolve value as there's no alias value expression exposed
                 // for layout properties
-                additionalProps.put(localName, var.getValue(ctx));
+                additionalProps.put(localName, (Serializable) var.getObject(ctx));
             }
         }
 

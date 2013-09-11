@@ -209,7 +209,8 @@ public class WidgetTagHandler extends MetaTagHandler {
             for (TagAttribute var : vars) {
                 String localName = var.getLocalName();
                 if (!reservedVars.contains(localName)) {
-                    widgetInstance.setProperty(localName, var.getValue());
+                    widgetInstance.setProperty(localName,
+                            (Serializable) var.getObject(ctx));
                 }
             }
 
