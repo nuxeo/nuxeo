@@ -120,7 +120,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             String[] schemas, Map<String, String> contextParameters)
             throws Exception {
         writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
-                schemas, contextParameters);
+                schemas, contextParameters, headers);
     }
 
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
