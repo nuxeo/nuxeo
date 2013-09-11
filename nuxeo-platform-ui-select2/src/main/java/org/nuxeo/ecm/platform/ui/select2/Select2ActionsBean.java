@@ -440,6 +440,9 @@ public class Select2ActionsBean implements Serializable {
                     QName fieldName = field.getName();
                     String key = fieldName.getLocalName();
                     Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
+                    if (key.equals("password")) {
+                        continue;
+                    }
                     obj.element(key, value);
                     if (key.equals("username")) {
                         username = (String) value;

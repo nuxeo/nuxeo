@@ -90,6 +90,7 @@
     } else if (params.operationId == 'UserGroup.Suggestion') {
       op.addParameter("prefix", query.term);
       op.addParameter("searchType", params.searchType);
+      op.addParameter("groupRestriction", params.groupRestriction);
     } else {
       // build default operation for Document
       op.addParameter("queryParams", query.term + "%");

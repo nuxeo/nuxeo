@@ -454,6 +454,24 @@
       </selectOptions>
     </widget>
 
+    <widget name="groupRestriction" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Group id restriction</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Enter the id of a group to suggest only user from this
+          group.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>groupRestriction</field>
+      </fields>
+    </widget>
+
     <widget name="containerCssClass" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -990,6 +1008,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">groupRestriction</widget>
                 </row>
               </rows>
             </layout>
