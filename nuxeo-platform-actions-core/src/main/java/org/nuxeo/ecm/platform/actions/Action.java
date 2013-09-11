@@ -152,7 +152,22 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.icon = icon;
     }
 
+    /**
+     * Returns the link for this action.
+     * <p>
+     * Since 5.7.3, fallbacks on properties when link is not set and retrieve
+     * it using key "link".
+     */
     public String getLink() {
+        if (link == null) {
+            Map<String, Serializable> props = getProperties();
+            if (props != null && props.containsKey("link")) {
+                Object linkObj = props.get("link");
+                if (linkObj instanceof String) {
+                    return (String) props.get("link");
+                }
+            }
+        }
         return link;
     }
 
