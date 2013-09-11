@@ -596,6 +596,7 @@ public class RoutingTaskActionsBean implements Serializable {
             contentViewActions.refreshOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
             contentViewActions.resetPageProviderOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         }
+        tasksInfoCache.clear();
     }
 
     /**
