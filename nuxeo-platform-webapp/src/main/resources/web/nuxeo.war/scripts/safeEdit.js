@@ -1,8 +1,13 @@
 (function() {
 
+  var waitPeriod = 100;
+
   var blockAutoSave = false;
   var lastSavedJSONData = null;
   var dirtyPage = false;
+
+  var waitFunctions = [];
+  var postRestoreFunctions = [];
 
   function getInputValue(domInput) {
     if (domInput.tagName == "INPUT") {
@@ -60,13 +65,9 @@
   }
 
   function getFormItems(formSelector) {
-    return jQuery(formSelector).find(
-        "input:not(.select2-input),select,textarea,td.mceIframeContainer>iframe");
-  }
-
-  function getFormItemsForSecondPass(formSelector) {
-    return jQuery(formSelector).find(
-        "textarea.mceEditor,td.mceIframeContainer>iframe");
+    return jQuery(formSelector)
+        .find(
+            "input:not(.select2-input),select,textarea,td.mceIframeContainer>iframe");
   }
 
   function collectFormData(formSelector) {
@@ -108,6 +109,18 @@
     localStorage.removeItem(key);
   }
 
+  window.processRestore = function processRestore(elts, data) {
+    elts.each(function() {
+      if (!mustSkipField(this)) {
+        var k = this.id;
+        if (!k) {
+          k = this.name;
+        }
+        setInputValue(this, data[k]);
+      }
+    });
+  }
+
   function restoreDraftFormData(key, formSelector, loadCB, savePeriod, saveCB) {
     var dataStr = localStorage.getItem(key);
     if (dataStr) { // there is some saved data
@@ -130,30 +143,10 @@
         if (confirmLoad) {
           // restore !
           var data = JSON.parse(dataStr);
-          getFormItems(formSelector).each(function() {
-            if (!mustSkipField(this)) {
-              var k = this.id;
-              if (!k) {
-                k = this.name;
-              }
-              setInputValue(this, data[k]);
-            }
-          });
-          // We may have to restore again some components (i.e. tiny mce editor)
-          // after a first pass
-          getFormItemsForSecondPass(formSelector).each(function() {
-            if (!mustSkipField(this)) {
-              var k = this.id;
-              if (!k) {
-                k = this.name;
-              }
-              setInputValue(this, data[k]);
-            }
-          });
-          // If select2 widget present on the pagee, then reinitialize them
-          if (typeof initSelect2Widgets == 'function') {
-            initSelect2Widgets();
-          }
+          processRestore(getFormItems(formSelector), data);
+
+          // Any post restore actions?
+          processPostRestore(formSelector, data);
         } else {
           // drop saved data !
           cleanupSavedData(key);
@@ -206,7 +199,14 @@
     })
   }
 
-  function initSafeEdit(key, formSelector, savePeriod, saveCB, loadCB, message) {
+  function processPostRestore(formSelector, data) {
+    for ( var i = 0, len = registerPostRestoreCallBacks.length; i < len; i++) {
+      postRestoreFunctions[i](formSelector, data);
+    }
+  }
+
+  function doInitSafeEdit(key, formSelector, savePeriod, saveCB, loadCB,
+      message) {
     var loaded = restoreDraftFormData(key, formSelector, loadCB, savePeriod,
         saveCB);
     bindOnChange(formSelector, function(event) {
@@ -233,6 +233,40 @@
     })
   }
 
-  window.initSafeEdit = initSafeEdit;
+  function initWhenPageReady(key, formSelector, savePeriod, saveCB, loadCB,
+      message, waitFunctionIndex) {
+    if (waitFunctionIndex > waitFunctions.length - 1) {
+      // Nothing to wait, lets' go!
+      doInitSafeEdit(key, formSelector, savePeriod, saveCB, loadCB, message);
+    } else {
+      var stillWaiting = !(waitFunctions[waitFunctionIndex]());
+      if (stillWaiting) {
+        // Something is still loading, let's give it more time (i.e. waitPeriod)
+        //console.debug('waiting ... ');
+        window.setTimeout(function() {
+          initWhenPageReady(key, formSelector, savePeriod, saveCB, loadCB,
+              message, waitFunctionIndex);
+        }, waitPeriod);
+      } else {
+        // The thing we were waiting for has finished to load, let's wait for the next one
+        initWhenPageReady(key, formSelector, savePeriod, saveCB, loadCB,
+            message, waitFunctionIndex + 1);
+      }
+    }
+  }
+
+  window.registerSafeEditWait = function registerSafeEditWait(waitFct) {
+    waitFunctions.push(waitFct);
+  }
+
+  window.registerPostRestoreCallBacks = function registerPostRestoreCallBacks(
+      postRestoreFct) {
+    postRestoreFunctions.push(postRestoreFct);
+  }
+
+  window.initSafeEdit = function initSafeEdit(key, formSelector, savePeriod,
+      saveCB, loadCB, message) {
+    initWhenPageReady(key, formSelector, savePeriod, saveCB, loadCB, message, 0);
+  }
 
 })();

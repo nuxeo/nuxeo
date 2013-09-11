@@ -39,7 +39,7 @@
        <c:if test="#{safeEdit_mode == 'create'}">
        formKey ='create-' + formKey + '-#{changeableDocument.type}';
        </c:if>
-       setTimeout(function() {initSafeEditOnForm('#{safeEdit_form}', formKey, '#{messages[safeEdit_message]}')}, 200);
+       initSafeEditOnForm('#{safeEdit_form}', formKey, '#{messages[safeEdit_message]}');
     });
 </script>
 
