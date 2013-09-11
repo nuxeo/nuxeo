@@ -51,7 +51,6 @@ public class AutomationModule extends WebEngineModule {
     public Set<Class<?>> getClasses() {
 
         Set<Class<?>> result = super.getClasses();
-        result.add(AutomationResource.class);
         // need to be stateless since it needs the request member to be
         // injected
         result.add(MultiPartRequestReader.class);
