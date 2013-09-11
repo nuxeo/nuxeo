@@ -7,14 +7,18 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
   <nxu:set var="actionLink" value="#{action.getLink()}" resolveTwice="true" >
+  <nxu:set var="onclick"
+    value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
+    cache="true">
     <h:outputLink value="#{actionLink}"
       target="#{action.properties.target}"
-      onclick="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};"
+      onclick="#{onclick}"
       immediate="#{action.immediate}"
       disabled="#{!action.available}"
       styleClass="#{useButton ? 'button' : 'actionLink'} #{actionStyleClass} #{action.properties.styleClass}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </h:outputLink>
+  </nxu:set>
   </nxu:set>
 </c:if>

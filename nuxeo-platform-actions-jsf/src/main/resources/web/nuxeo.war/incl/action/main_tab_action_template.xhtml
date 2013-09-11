@@ -7,12 +7,18 @@
 
   <nxu:set var="requireDocument" value="#{action.properties.requireDocument}"
     cache="true">
+  <nxu:set var="onclick"
+    value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
+    cache="true">
+
     <c:if test="#{not empty requireDocument}">
       <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(action.id)}"
         view="#{mainTabsActions.getViewFor(action)}"
         pattern="#{mainTabsActions.getPatternFor(action)}"
         addTabInfo="false"
-        tabs="MAIN_TABS:#{action.id}">
+        target="#{action.properties.target}"
+        tabs="MAIN_TABS:#{action.id}"
+        onclick="#{onclick}">
         <h:outputText value="#{messages[action.label]}" />
       </nxd:restDocumentLink>
     </c:if>
@@ -22,10 +28,14 @@
         view="#{mainTabsActions.getViewFor(action)}"
         pattern="#{mainTabsActions.getPatternFor(action)}"
         addTabInfo="false"
-        tabs="MAIN_TABS:#{action.id}">
+        target="#{action.properties.target}"
+        tabs="MAIN_TABS:#{action.id}"
+        onclick="#{onclick}">
         <h:outputText value="#{messages[action.label]}" />
       </nxd:restDocumentLink>
     </c:if>
+
+  </nxu:set>
   </nxu:set>
 
 </c:if>

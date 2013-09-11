@@ -26,7 +26,7 @@
       name="#{action.properties.widgetName}"
       mode="#{resolvedMode}"
       category="#{empty action.properties.widgetCategory ? '': action.properties.widgetCategory}"
-      layoutName="#{idPrefix}#{action.id}"
+      layoutName="#{widget.name}"
       value="#{fieldOrValue}"
       resolveOnly="true">
       <ui:decorate template="/widgets/incl/form_template.xhtml">

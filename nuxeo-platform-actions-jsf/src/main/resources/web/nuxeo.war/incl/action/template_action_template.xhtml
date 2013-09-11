@@ -7,14 +7,18 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
+<nxu:set var="otherTemplate"
+  value="template_#{widget.mode}"
+  cache="true">
 <nxu:set var="actionTemplate"
-  value="#{nxu:test(widget.mode == 'view', action.properties.template, nxu:test(widget.mode == 'after_view', action.properties.afterTemplate, ''))}"
+  value="#{nxu:test(widget.mode == 'view', action.properties.template, action.properties[otherTemplate])}"
   resolveTwice="true">
   <c:if test="#{not empty actionTemplate}">
     <ui:include src="#{actionTemplate}">
       <ui:insert name="inside_action" />
     </ui:include>
   </c:if>
+</nxu:set>
 </nxu:set>
 
 </ui:composition>

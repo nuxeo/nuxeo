@@ -4,21 +4,106 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
-    <widget name="userSuggestionSearchType" type="selectOneListbox">
+    <widget name="ajaxReRender" type="text">
       <categories>
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Search type</label>
+        <label mode="any">Ajax reRender</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Ajax rerender ids, separated by commas.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>ajaxReRender</field>
+      </fields>
+    </widget>
+
+    <widget name="styleClass" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
       </labels>
       <fields>
-        <field>userSuggestionSearchType</field>
+        <field>styleClass</field>
       </fields>
-      <selectOptions>
-        <option itemLabel="Users and Groups" itemValue="" />
-        <option itemLabel="Users" itemValue="USER_TYPE" />
-        <option itemLabel="Groups" itemValue="GROUP_TYPE" />
-      </selectOptions>
+    </widget>
+
+    <widget name="target" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Target</label>
+      </labels>
+      <fields>
+        <field>target</field>
+      </fields>
+    </widget>
+
+    <widget name="onclick" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Onclick</label>
+      </labels>
+      <fields>
+        <field>onclick</field>
+      </fields>
+    </widget>
+
+    <widget name="confirm" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Style class</label>
+      </labels>
+      <fields>
+        <field>confirm</field>
+      </fields>
+    </widget>
+
+    <widget name="confirmMessage" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Confirm message</label>
+      </labels>
+      <fields>
+        <field>confirmMessage</field>
+      </fields>
+    </widget>
+
+    <widget name="confirmMessageArgs" type="list">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Confirm message arguments</label>
+      </labels>
+      <fields>
+        <field>confirmMessageArgs</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="messageArg" type="text">
+          <fields>
+            <field></field>
+          </fields>
+          <labels>
+            <label mode="any"></label>
+          </labels>
+        </widget>
+      </subWidgets>
     </widget>
 
   </extension>
@@ -47,12 +132,41 @@
             <layout name="link_action_widget_type_properties_view">
               <rows>
                 <row>
-                  <widget category="actionWidgetTypeConf">documentSuggestion_tab</widget>
+                  <widget>link</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
                 </row>
               </rows>
+              <widget name="link" type="text">
+                <labels>
+                  <label mode="any">Link</label>
+                </labels>
+                <fields>
+                  <field>link</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
             </layout>
           </layouts>
         </properties>
@@ -81,6 +195,46 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="bare_link_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>link</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="link" type="text">
+                <labels>
+                  <label mode="any">Link</label>
+                </labels>
+                <fields>
+                  <field>link</field>
+                </fields>
+                <properties widgetMode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -103,34 +257,57 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="fancybox_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>include</widget>
+                </row>
+                <row>
+                  <widget>iframe</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="include" type="text">
+                <labels>
+                  <label mode="any">Include</label>
+                </labels>
+                <fields>
+                  <field>include</field>
+                </fields>
+              </widget>
+              <widget name="iframe" type="text">
+                <labels>
+                  <label mode="any">Iframe</label>
+                </labels>
+                <fields>
+                  <field>iframe</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
         /incl/action/fancybox_action_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="widget">
-      <categories>
-        <category>jsfAction</category>
-      </categories>
-      <configuration>
-        <sinceVersion>5.7.3</sinceVersion>
-        <title>Widget</title>
-        <categories>
-          <category>action</category>
-        </categories>
-        <supportedModes>
-          <mode>view</mode>
-        </supportedModes>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /incl/action/widget_action_template.xhtml
       </property>
     </widgetType>
 
@@ -147,35 +324,35 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="rest_document_link_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
         /incl/action/rest_document_link_action_template.xhtml
-      </property>
-    </widgetType>
-
-
-    <widgetType name="template">
-      <categories>
-        <category>jsfAction</category>
-      </categories>
-      <configuration>
-        <sinceVersion>5.7.3</sinceVersion>
-        <title>Template</title>
-        <categories>
-          <category>action</category>
-        </categories>
-        <supportedModes>
-          <mode>view</mode>
-        </supportedModes>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /incl/action/template_action_template.xhtml
       </property>
     </widgetType>
 
@@ -192,6 +369,40 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="main_tab_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>requireDocument</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="requireDocument" type="checkbox">
+                <labels>
+                  <label mode="any">Require document</label>
+                </labels>
+                <fields>
+                  <field>requireDocument</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
@@ -214,12 +425,140 @@
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="widget_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>widgetName</widget>
+                </row>
+                <row>
+                  <widget>widgetCategory</widget>
+                </row>
+                <row>
+                  <widget>widgetMode</widget>
+                </row>
+                <row>
+                  <widget>displayActionLabel</widget>
+                </row>
+                <row>
+                  <widget>displayWidgetLabel</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+              </rows>
+              <widget name="widgetName" type="text">
+                <labels>
+                  <label mode="any">Widget name</label>
+                </labels>
+                <fields>
+                  <field>widgetName</field>
+                </fields>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="widgetCategory" type="text">
+                <labels>
+                  <label mode="any">Widget category</label>
+                </labels>
+                <fields>
+                  <field>widgetCategory</field>
+                </fields>
+              </widget>
+              <widget name="widgetMode" type="text">
+                <labels>
+                  <label mode="any">Widget mode</label>
+                </labels>
+                <fields>
+                  <field>widgetMode</field>
+                </fields>
+              </widget>
+              <widget name="displayActionLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Require document</label>
+                </labels>
+                <fields>
+                  <field>displayActionLabel</field>
+                </fields>
+              </widget>
+              <widget name="displayWidgetLabel" type="checkbox">
+                <labels>
+                  <label mode="any">Display widget label</label>
+                </labels>
+                <fields>
+                  <field>displayWidgetLabel</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
         /incl/action/widget_action_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="template">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Template</title>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="view">
+            <layout name="template_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget>template</widget>
+                </row>
+              </rows>
+              <widget name="template" type="text">
+                <labels>
+                  <label mode="any">Template</label>
+                </labels>
+                <fields>
+                  <field>template</field>
+                </fields>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/template_action_template.xhtml
       </property>
     </widgetType>
 

@@ -11,13 +11,19 @@
 
 <c:if test="#{widget.mode == 'view'}">
 
+<nxu:set var="onclick"
+  value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
+  cache="true">
+
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
     tabs="#{fullCategory}:#{action.id}"
     addTabInfo="false"
     accesskey="#{action.accessKey}"
-    id="#{idPrefix}#{action.id}_restLink">
+    id="#{widget.id}"
+    target="#{action.properties.target}"
+    onclick="#{onclick}">
     <ui:include src="/incl/action/action_icon_label_template.xhtml" />
     <ui:insert name="inside_action" />
   </nxd:restDocumentLink>
@@ -37,16 +43,17 @@
       tabs="#{fullCategory}:#{action.id}"
       addTabInfo="false"
       accesskey="#{action.accessKey}"
-      id="#{idPrefix}#{action.id}_restLink"
+      id="#{widget.id}_restLink"
       resolveOnly="true"
       var="docUrl">
 
       <c:if test="#{empty elementsToReRender}">
         <a4j:commandLink
-          id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+          id="#{widget.id}"
           action="#{webActions.setCurrentTabAction(action.id)}"
           accesskey="#{action.accessKey}"
           onbeforedomupdate="history.pushState(null, '#{action.id}', '#{nxu:javaScriptEscape(docUrl)}');"
+          onclick="#{onclick}"
           ignoreDupResponses="true">
           <ui:include src="/incl/action/action_icon_label_template.xhtml" />
           <ui:insert name="inside_action" />
@@ -55,11 +62,12 @@
 
       <c:if test="#{not empty elementsToReRender}">
         <a4j:commandLink
-          id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+          id="#{widget.id}"
           action="#{webActions.setCurrentTabAction(action.id)}"
           accesskey="#{action.accessKey}"
           reRender="#{elementsToReRender}"
           onbeforedomupdate="history.pushState(null, '#{action.id}', '#{nxu:javaScriptEscape(docUrl)}');"
+          onclick="#{onclick}"
           ignoreDupResponses="true">
           <ui:include src="/incl/action/action_icon_label_template.xhtml" />
           <ui:insert name="inside_action" />
@@ -72,6 +80,9 @@
   </nxu:set>
 
 </c:if>
+
+</nxu:set>
+
 </c:if>
 
 <c:if test="#{widget.mode == 'tab_content'}">

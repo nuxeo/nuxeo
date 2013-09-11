@@ -18,6 +18,9 @@
 <c:if test="#{widget.mode == 'view'}">
 
   <f:subview id="#{fancyboxId}_subview">
+  <nxu:set var="onclick"
+    value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
+    cache="true">
 
     <c:if test="#{empty iframe}">
 
@@ -25,7 +28,7 @@
         <a4j:commandLink id="#{fancyboxId}_link"
           ajaxSingle="true"
           ignoreDupResponses="true" requestDelay="100"
-          onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};"
+          onclick="#{onclick}"
           styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
           reRender="#{fancyboxId}_ajax_panel">
@@ -50,7 +53,7 @@
         <a4j:commandButton id="#{fancyboxId}_link"
           ajaxSingle="true"
           ignoreDupResponses="true" requestDelay="100"
-          onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};"
+          onclick="#{onclick}"
           value="#{messages[action.label]}"
           styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
@@ -96,7 +99,7 @@
               <a4j:commandLink id="#{fancyboxId}_link"
                 ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
-                onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                onclick="#{onclick};#{fancyboxJs}"
                 disabled="#{!action.available}"
                 styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}">
                 <ui:include src="/incl/action/action_icon_label_template.xhtml">
@@ -111,7 +114,7 @@
               <a4j:commandButton id="#{fancyboxId}_link"
                 ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
-                onclick="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.properties.confirm};#{action.properties.onclick};#{fancyboxJs}"
+                onclick="#{onclick};#{fancyboxJs}"
                 value="#{messages[action.label]}"
                 disabled="#{!action.available}"
                 styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}">
@@ -129,7 +132,9 @@
 
     </c:if>
 
+  </nxu:set>
   </f:subview>
+
 </c:if>
 
 <c:if test="#{widget.mode == 'after_button_form'}">

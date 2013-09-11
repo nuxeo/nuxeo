@@ -15,14 +15,14 @@
   value="#{nxl:joinReRender(ajaxReRender, actionReRender)}"
   cache="true">
 <nxu:set var="onclick"
-  value="#{actionConfirmMessageJs}#{action.confirm};#{action.properties.onclick};"
+  value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
   cache="true">
 
 <c:if test="#{useButton}">
 
   <c:if test="#{not useAjaxForm}">
     <nxh:commandButton action="#{action.getLink()}"
-      id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+      id="#{widget.id}"
       onclick="#{onclick}"
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
@@ -38,7 +38,7 @@
   <c:if test="#{useAjaxForm}">
     <c:if test="#{empty elementsToReRender}">
       <a4j:commandButton
-        id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+        id="#{widget.id}"
         onclick="#{onclick}"
         ajaxSingle="#{action.immediate}"
         value="#{messages[action.label]}"
@@ -55,7 +55,7 @@
     </c:if>
     <c:if test="#{not empty elementsToReRender}">
       <a4j:commandButton
-        id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+        id="#{widget.id}"
         onclick="#{onclick}"
         ajaxSingle="#{action.immediate}"
         value="#{messages[action.label]}"
@@ -80,7 +80,7 @@
 
   <c:if test="#{not useAjaxForm}">
     <nxh:commandLink action="#{action.getLink()}"
-      id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+      id="#{widget.id}"
       onclick="#{onclick}"
       immediate="#{action.immediate}"
       target="#{action.properties.target}"
@@ -94,7 +94,7 @@
   <c:if test="#{useAjaxForm}">
     <c:if test="#{empty elementsToReRender}">
       <a4j:commandLink
-        id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+        id="#{widget.id}"
         onclick="#{onclick}"
         ajaxSingle="#{action.immediate}"
         disabled="#{!action.available}"
@@ -108,7 +108,7 @@
     </c:if>
     <c:if test="#{not empty elementsToReRender}">
       <a4j:commandLink
-        id="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}"
+        id="#{widget.id}"
         onclick="#{onclick}"
         ajaxSingle="#{action.immediate}"
         disabled="#{!action.available}"
