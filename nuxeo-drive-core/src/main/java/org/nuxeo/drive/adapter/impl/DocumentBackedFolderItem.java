@@ -125,14 +125,17 @@ public class DocumentBackedFolderItem extends
             return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(
                     folder, this);
         } catch (Exception e) {
-            throw ClientException.wrap(e);
+            throw new ClientException(
+                    String.format(
+                            "Error while trying to create folder %s as a child of doc %s",
+                            name, docPath), e);
         }
     }
 
     @Override
     public FileItem createFile(Blob blob) throws ClientException {
+        String fileName = blob.getFilename();
         try {
-            String fileName = blob.getFilename();
             // TODO: manage conflict (overwrite should not necessarily be true)
             DocumentModel file = getFileManager().createDocumentFromBlob(
                     getSession(), blob, docPath, true, fileName);
@@ -145,7 +148,10 @@ public class DocumentBackedFolderItem extends
             return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(
                     file, this);
         } catch (Exception e) {
-            throw ClientException.wrap(e);
+            throw new ClientException(
+                    String.format(
+                            "Error while trying to create file %s as a child of doc %s",
+                            fileName, docPath), e);
         }
     }
 
