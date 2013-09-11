@@ -99,7 +99,8 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled() throws Exception {
+    public void shouldCreateContainerTwiceAfterTwoImportationsAsUpdateDisabled()
+            throws Exception {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
@@ -133,7 +134,8 @@ public class TestImport extends ImportTestCase {
     }
 
     @Test
-    public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled() throws Exception {
+    public void shouldCreateContainerOnceAfterTwoImportationsAsUpdateEnabled()
+            throws Exception {
         String testPath = deployTestFiles("test3");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());
@@ -231,7 +233,7 @@ public class TestImport extends ImportTestCase {
 
     @Test
     public void shouldImportWithNoBlobMapping() throws Exception {
-    	// Exact same test than above but without blob mapping.
+        // Exact same test than above but without blob mapping.
         String testPath = deployTestFiles("test4");
         File xmlFile = new File(testPath + "/descriptor.xml");
         assertTrue(xmlFile.exists());

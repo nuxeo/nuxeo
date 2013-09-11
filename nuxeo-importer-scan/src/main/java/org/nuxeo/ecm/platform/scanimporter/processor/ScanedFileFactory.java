@@ -15,7 +15,9 @@
  *     Nuxeo - initial API and implementation
  *
  * $Id$
- */package org.nuxeo.ecm.platform.scanimporter.processor;
+ */
+package org.nuxeo.ecm.platform.scanimporter.processor;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -133,6 +135,7 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
         return doc;
     }
 
+    @Override
     protected DocumentModel defaultCreateLeafNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
 
@@ -163,7 +166,6 @@ public class ScanedFileFactory extends DefaultDocumentModelFactory implements
         }
 
         doc = setDocumentProperties(session, bh.getProperties(), doc);
-
 
         return doc;
     }
