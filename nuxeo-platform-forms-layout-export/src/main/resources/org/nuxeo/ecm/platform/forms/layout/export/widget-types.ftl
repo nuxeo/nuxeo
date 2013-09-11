@@ -92,7 +92,7 @@ pre {
   <table width="100%" class="main_table">
     <tr>
       <td colspan="2" align="right">
-        <a href="${baseURL}../">Top</a> - <a href="${baseURL}?">Index</a> - <a href="${baseURL}wiki/">Wiki export</a>
+        <a href="${baseURL}../">Top</a> - <a href="${baseURL}?widgetTypeCategory=${widgetTypeCategory}">Index</a> - <a href="${baseURL}wiki/?widgetTypeCategory=${widgetTypeCategory}">Wiki export</a>
       </td>
     </tr>
     <tr valign="top">
@@ -102,15 +102,15 @@ pre {
           <#list categories?keys as cat>
             <div class="category">${cat}</div>
             <div class="export_link">
-              <a href="${baseURL}widgetTypes/${cat}?all=true">JSON definitions</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.5&all=true">5.5</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.6&all=true">5.6</a>
-              <a href="${baseURL}widgetTypes/${cat}?version=5.7&all=true">5.7</a>
+              <a href="${baseURL}widgetTypes/${cat}?all=true&widgetTypeCategory=${widgetTypeCategory}">JSON definitions</a>
+              <#list nuxeoVersions as nxv>
+                <a href="${baseURL}widgetTypes/${cat}?version=${nxv}&all=true&widgetTypeCategory=${widgetTypeCategory}">${nxv}</a>
+              </#list>
             </div>
             <div class="category_content">
               <#list categories["${cat}"] as widgetType>
                 <div class="item">
-                  <a href="${baseURL}?widgetType=${widgetType.name}">
+                  <a href="${baseURL}?widgetType=${widgetType.name}&widgetTypeCategory=${widgetTypeCategory}">
                     ${This.getWidgetTypeLabel(widgetType)}
                   </a>
                 </div>
@@ -118,10 +118,10 @@ pre {
             </div>
           </#list>
           <div class="export_link">
-            <a href="${baseURL}widgetTypes?all=true">All JSON definitions</a>
-            <a href="${baseURL}widgetTypes?version=5.5&all=true">5.5</a>
-            <a href="${baseURL}widgetTypes?version=5.6&all=true">5.6</a>
-            <a href="${baseURL}widgetTypes?version=5.7&all=true">5.7</a>
+            <a href="${baseURL}widgetTypes?all=true&widgetTypeCategory=${widgetTypeCategory}">All JSON definitions</a>
+              <#list nuxeoVersions as nxv>
+                <a href="${baseURL}widgetTypes?version=${nxv}&all=true&widgetTypeCategory=${widgetTypeCategory}">${nxv}</a>
+              </#list>
           </div>
         </div>
       </td>
@@ -143,13 +143,13 @@ pre {
             </div>
             <h2>Links</h2>
             <div>
-              <a href="${baseURL}widgetType/${widgetType.name}">JSON definition</a>
+              <a href="${baseURL}widgetType/${widgetType.name}?widgetTypeCategory=${widgetTypeCategory}">JSON definition</a>
             </div>
           <#else>
             <h1>Index</h1>
             <#list widgetTypes as widgetType>
               <div class="index_item">
-                <a href="${baseURL}?widgetType=${widgetType.name}">${This.getWidgetTypeLabel(widgetType)}</a>
+                <a href="${baseURL}?widgetType=${widgetType.name}&widgetTypeCategory=${widgetTypeCategory}">${This.getWidgetTypeLabel(widgetType)}</a>
               </div>
             </#list>
           </#if>

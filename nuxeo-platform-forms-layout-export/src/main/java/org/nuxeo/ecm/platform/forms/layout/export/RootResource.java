@@ -2,9 +2,11 @@ package org.nuxeo.ecm.platform.forms.layout.export;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.webengine.model.view.TemplateView;
 import org.nuxeo.runtime.api.Framework;
@@ -39,9 +41,12 @@ public class RootResource {
     }
 
     @Path("widget-types")
-    public Object getWidgets() throws Exception {
-        // XXX: use hard coded "jsf" category for now
-        return new WidgetTypeResource("jsf");
+    public Object getWidgets(@QueryParam("widgetTypeCategory")
+    String widgetTypeCategory) throws Exception {
+        if (StringUtils.isBlank(widgetTypeCategory)) {
+            widgetTypeCategory = "jsf";
+        }
+        return new WidgetTypeResource(widgetTypeCategory);
     }
 
 }

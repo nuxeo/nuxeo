@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.forms.layout.export;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -219,13 +220,27 @@ public class WidgetTypeResource {
         return getTemplate("widget-types-wiki.ftl", uriInfo);
     }
 
+    protected List<String> getNuxeoVersions() {
+        if ("jsf".equals(category)) {
+            return Arrays.asList("5.6", "5.7.3");
+        } else if ("jsf_action".equals(category)) {
+            return Arrays.asList("5.7.3");
+        }
+        return Collections.emptyList();
+    }
+
     protected TemplateView getTemplate(String name, UriInfo uriInfo) {
         String baseURL = uriInfo.getAbsolutePath().toString();
         if (!baseURL.endsWith("/")) {
             baseURL += "/";
         }
-        return new TemplateView(this, name).arg("categories", widgetTypesByCat).arg(
-                "widgetTypes", widgetTypes).arg("baseURL", baseURL);
+        TemplateView tv = new TemplateView(this, name);
+        tv.arg("categories", widgetTypesByCat);
+        tv.arg("nuxeoVersions", getNuxeoVersions());
+        tv.arg("widgetTypeCategory", category);
+        tv.arg("widgetTypes", widgetTypes);
+        tv.arg("baseURL", baseURL);
+        return tv;
     }
 
     @GET
