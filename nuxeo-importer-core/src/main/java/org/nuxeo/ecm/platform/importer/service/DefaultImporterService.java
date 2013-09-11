@@ -118,9 +118,17 @@ public interface DefaultImporterService {
 
     void setImporterLogger(ImporterLogger importerLogger);
 
+    /**
+     * Added waiting the importer refactoring. Only used by Scan Importer.
+     * @since 5.7.3
+     */
     @Deprecated
     Class<? extends SourceNode> getSourceNodeClass();
 
+    /**
+     * Added waiting the importer refactoring. Only used by Scan Importer.
+     * @since 5.7.3
+     */
     @Deprecated
     Class<? extends DefaultDocumentModelFactory> getDocModelFactoryClass();
 

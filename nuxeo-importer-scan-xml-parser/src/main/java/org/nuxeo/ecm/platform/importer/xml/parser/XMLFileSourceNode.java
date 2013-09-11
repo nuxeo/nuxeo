@@ -26,6 +26,8 @@ import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
 /**
+ * Source Node filtering only Folder, XML and ZIP files.
+ *
  * @since 5.7.3
  *
  */

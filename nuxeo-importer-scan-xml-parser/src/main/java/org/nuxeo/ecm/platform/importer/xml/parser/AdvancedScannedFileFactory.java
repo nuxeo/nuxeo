@@ -33,9 +33,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  *
- * Custom implementation of the {@link ImporterDocumentModelFactory}. Provides :
- * - container doc type configuration from service - leaf doc type configuration
- * given by the XML Parser service.
+ * Replace default XML Parser used into the Scan Importer service by the
+ * advanced one implemented into nuxeo-importer-xml-parser
  *
  * @author Benjamin JALON
  *
