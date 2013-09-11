@@ -8,7 +8,7 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
 <nxu:set var="actionTemplate"
-  value="#{nx:test(widget.mode == 'view', action.properties.template, nxu:test(widget.mode == 'after_view', action.properties.afterTemplate, '')))}"
+  value="#{nxu:test(widget.mode == 'view', action.properties.template, nxu:test(widget.mode == 'after_view', action.properties.afterTemplate, ''))}"
   resolveTwice="true">
   <c:if test="#{not empty actionTemplate}">
     <ui:include src="#{actionTemplate}">
