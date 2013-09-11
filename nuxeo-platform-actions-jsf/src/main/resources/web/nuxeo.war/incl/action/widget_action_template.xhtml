@@ -1,4 +1,4 @@
-<c:if test="true"
+<c:if test="#{widget.mode == 'view'}"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -6,9 +6,18 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <nxu:set var="resolvedMode"
-    value="#{nxu:test(empty action.properties.widgetMode, empty widget.mode?'view':widget.mode, action.properties.widgetMode)}">
+    value="#{nxu:test(empty action.properties.widgetMode, widget.mode, action.properties.widgetMode)}">
+  <nxu:set var="displayActionLabel"
+    value="#{action.properties.displayActionLabel}"
+    cache="true">
+  <nxu:set var="displayWidgetLabel"
+    value="#{action.properties.displayWidgetLabel}"
+    cache="true">
+  <nxu:set var="widgetId"
+    value="#{widget.id}"
+    cache="true">
 
-    <c:if test="#{action.properties.displayActionLabel}">
+    <c:if test="#{displayActionLabel}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <h:outputText value=" " />
     </c:if>
