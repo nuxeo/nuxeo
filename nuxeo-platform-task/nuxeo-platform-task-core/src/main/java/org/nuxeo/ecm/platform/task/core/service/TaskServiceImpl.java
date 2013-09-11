@@ -165,7 +165,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             // notify
             notifyEvent(coreSession, task, document,
                     TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventInfo, comment,
-                    principal, actorIds);
+                    principal, task.getActors());
         }
         return tasks;
     }
@@ -551,13 +551,6 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
         ArrayList<String> notificationRecipients = new ArrayList<String>();
         notificationRecipients.addAll(actorIds);
-        if (principal != null) {
-            if (!notificationRecipients.contains(NuxeoPrincipal.PREFIX
-                    + principal.getName())) {
-                notificationRecipients.add(NuxeoPrincipal.PREFIX
-                        + principal.getName());
-            }
-        }
         eventProperties.put(
                 NotificationConstants.RECIPIENTS_KEY,
                 notificationRecipients.toArray(new String[notificationRecipients.size()]));
