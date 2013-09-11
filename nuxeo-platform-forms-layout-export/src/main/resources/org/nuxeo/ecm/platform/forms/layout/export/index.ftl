@@ -93,7 +93,7 @@ pre {
 
     <h2> <A href="${baseURL}layouts"> View Layout definitions (${nbLayouts}) </A></h2>
     <h2> <A href="${baseURL}widget-types"> View Widget type definitions (${nbWidgets}) </A></h2>
-    <h2> <A href="${baseURL}widget-types?widgetTypeCategory=jsf_action"> View Action Widget type definitions (${nbWidgets}) </A></h2>
+    <h2> <A href="${baseURL}widget-types?widgetTypeCategory=jsfAction"> View Action Widget type definitions (${nbWidgets}) </A></h2>
 
 </body>
 
