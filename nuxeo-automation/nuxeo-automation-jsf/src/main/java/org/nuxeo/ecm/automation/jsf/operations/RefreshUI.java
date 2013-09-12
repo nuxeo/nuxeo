@@ -11,6 +11,8 @@
 
 package org.nuxeo.ecm.automation.jsf.operations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -37,6 +39,8 @@ public class RefreshUI {
 
     public static final String ID = "Seam.Refresh";
 
+    protected static final Log log = LogFactory.getLog(RefreshUI.class);
+
     /**
      * Additional list of seam event names to raise
      *
@@ -47,18 +51,22 @@ public class RefreshUI {
 
     @OperationMethod
     public void run() {
-        OperationHelper.getContentViewActions().resetAllContent();
-        NavigationContext context = OperationHelper.getNavigationContext();
-        DocumentModel dm = context.getCurrentDocument();
-        if (dm != null) {
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, dm);
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    dm);
-        }
-        if (additionalSeamEvents != null) {
-            for (String event : additionalSeamEvents) {
-                Events.instance().raiseEvent(event);
+        if (OperationHelper.isSeamContextAvailable()) {
+            OperationHelper.getContentViewActions().resetAllContent();
+            NavigationContext context = OperationHelper.getNavigationContext();
+            DocumentModel dm = context.getCurrentDocument();
+            if (dm != null) {
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, dm);
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                        dm);
             }
+            if (additionalSeamEvents != null) {
+                for (String event : additionalSeamEvents) {
+                    Events.instance().raiseEvent(event);
+                }
+            }
+        } else {
+            log.debug("Skip Seam.Refresh operation since Seam context has not been initialized");
         }
     }
 
