@@ -38,6 +38,12 @@
     </nxu:set>
   </p>
 
+  <script>
+    jQuery(document).ready(function() {
+       initSafeEditOnForm('document_edit', '#{currentDocument.id}', '#{messages[safeEdit_message]}');
+    });
+</script>
+
 </h:form>
 
 </div>

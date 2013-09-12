@@ -5,17 +5,9 @@
 
 <c:if test="false">
   Parameters:
-  - safeEdit_form: id of the form to make save
-  - safeEdit_mode: mode of the for create/edit
   - safeEdit_message: warning message
 </c:if>
 
-<c:if test="#{safeEdit_form==null}">
-  <c:set var="safeEdit_form" value="document_edit" />
-</c:if>
-<c:if test="#{safeEdit_mode==null}">
-  <c:set var="safeEdit_mode" value="edit" />
-</c:if>
 <c:if test="#{safeEdit_message==null}">
   <c:set var="safeEdit_message" value="safeedit.page.has.unsaved.changes" />
 </c:if>
@@ -31,16 +23,5 @@
 <span id="savedFeedback" style="display:none;" class="facesStatusMessage infoMessage">
  <h:outputText value="#{messages['safeedit.saved']}"/>
 </span>
-
-<script>
-    jQuery(document).ready(function() {
-       // define  the formKey
-       var formKey ='#{currentDocument.id}';
-       <c:if test="#{safeEdit_mode == 'create'}">
-       formKey ='create-' + formKey + '-#{changeableDocument.type}';
-       </c:if>
-       initSafeEditOnForm('#{safeEdit_form}', formKey, '#{messages[safeEdit_message]}');
-    });
-</script>
 
 </div>
