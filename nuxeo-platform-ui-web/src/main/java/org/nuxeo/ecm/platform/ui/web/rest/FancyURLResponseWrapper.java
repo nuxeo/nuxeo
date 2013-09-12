@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -111,6 +113,11 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
                     if (docView != null) {
                         url = rewriteUrl(url, docView, pservice);
                     }
+                } else {
+                    URL serverURL = new URL(
+                            VirtualHostHelper.getServerURL(request));
+                    URL rewrittenURL = new URL(serverURL, url);
+                    url = rewrittenURL.toString();
                 }
             } catch (Exception e) {
                 log.error("Could not redirect", e);
