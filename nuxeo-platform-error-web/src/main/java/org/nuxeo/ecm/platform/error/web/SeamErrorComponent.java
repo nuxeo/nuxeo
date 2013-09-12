@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.RecoverableClientException;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Seam component performing errors
@@ -122,4 +124,17 @@ public class SeamErrorComponent implements Serializable {
         throw new DocumentSecurityException("Security error on action");
     }
 
+    public String performRecoverableClientException() throws RecoverableClientException {
+        throw new RecoverableClientException("Application validation failed, rollingback", "Application validation failed, rollingback", null);
+    }
+
+    public String performPureRollback(){
+        TransactionHelper.setTransactionRollbackOnly();
+        return null;
+    }
+
+    public String performConcurrentRequestTimeoutException() throws Exception {
+        Thread.sleep(15*1000);
+        return null;
+    }
 }

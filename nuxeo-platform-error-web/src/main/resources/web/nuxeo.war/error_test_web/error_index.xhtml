@@ -5,6 +5,8 @@
 
 <h3>Test errors in nuxeo jsf</h3>
 
+<h:messages globalOnly="true"/>
+
 <h:form>
   <ul>
     <li><h:commandLink action="error_invalid_html"
@@ -43,6 +45,15 @@
     <li><h:commandLink
       action="#{errorSeamComponent.performSecurityError}"
       value="Seam action security error" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performRecoverableClientException}"
+      value="Seam action Rollback via RecoverableClientException" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performPureRollback}"
+      value="Seam action simple Rollback" /></li>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performConcurrentRequestTimeoutException}"
+      value="Seam ConcurrentRequestTimeoutException" /></li>
   </ul>
 </h:form>
 
