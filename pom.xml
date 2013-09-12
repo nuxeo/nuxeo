@@ -4594,6 +4594,7 @@
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
+                  <exclude>org.jboss.seam:*</exclude>
                 </excludes>
               </requireReleaseDeps>
               <requireMavenVersion>
