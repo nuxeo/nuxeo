@@ -23,15 +23,14 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
- * Restores the input document to the given version.
+ * Restores a document to the input version document.
  *
  * @since 5.7.3
  * @author Antoine Taillefer
  */
-@Operation(id = RestoreVersion.ID, category = Constants.CAT_DOCUMENT, label = "Restore Version", description = "Restores the input document to the given version (path or UUID). The restored document is automatically saved if the 'save' parameter is true, else you need to save it later using the Save operation. Returns the restored document.")
+@Operation(id = RestoreVersion.ID, category = Constants.CAT_DOCUMENT, label = "Restore Version", description = "Restores a document to the input version document. The restored document is automatically saved if the 'save' parameter is true, else you need to save it later using the Save operation. Returns the restored document.")
 public class RestoreVersion {
 
     public static final String ID = "Document.RestoreVersion";
@@ -39,16 +38,14 @@ public class RestoreVersion {
     @Context
     protected CoreSession session;
 
-    @Param(name = "version")
-    protected DocumentRef version; // path or UUID
-
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws Exception {
-        DocumentModel restoredDoc = session.restoreToVersion(doc.getRef(),
-                version);
+    public DocumentModel run(DocumentModel version) throws Exception {
+        DocumentModel liveDoc = session.getSourceDocument(version.getRef());
+        DocumentModel restoredDoc = session.restoreToVersion(liveDoc.getRef(),
+                version.getRef());
         if (save) {
             restoredDoc = session.saveDocument(restoredDoc);
         }
