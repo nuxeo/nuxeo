@@ -201,7 +201,7 @@ public class WidgetTypeTagHandler extends TagHandler {
                         && localName.startsWith(widgetPropertyMarker)) {
                     varName = localName.substring(widgetPropertyMarker.length());
                 }
-                widgetProps.put(varName, (Serializable) var.getObject(ctx));
+                widgetProps.put(varName, var.getValue());
             }
         }
 
