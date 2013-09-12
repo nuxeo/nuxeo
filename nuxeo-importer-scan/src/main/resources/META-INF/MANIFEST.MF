@@ -3,5 +3,5 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Scan importer Sample
 Bundle-SymbolicName: org.nuxeo.ecm.platform.scanimporter;singleton:=true
 Require-Bundle: org.nuxeo.ecm.webapp.core
-Nuxeo-Component: OSGI-INF/importerservice-framework.xml,
- OSGI-INF/listener-contrib.xml,OSGI-INF/scan-importer-service-contrib.xml
+Nuxeo-Component: OSGI-INF/importerservice-framework.xml,OSGI-INF/liste
+ ner-contrib.xml

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.importer.scanimporter.advanced.xmlparser.factory.contrib">
 
-  <require>org.nuxeo.ecm.platform.importer.service.jaxrs.contrib</require>
+  <require>org.nuxeo.ecm.platform.importer.scanimporter.default.parser.contrib</require>
 
   <documentation>
     This contribution replace the default Scan importer logic for XML parsing by powerful XML parser
@@ -9,8 +9,8 @@
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
-   <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.scanimporter.processor.XMLFileSourceNode">
-       <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.scanimporter.processor.AdvancedScannedFileFactory" />
+   <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.importer.xml.parser.XMLFileSourceNode">
+       <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory" />
    </importerConfig>
   </extension>
 
