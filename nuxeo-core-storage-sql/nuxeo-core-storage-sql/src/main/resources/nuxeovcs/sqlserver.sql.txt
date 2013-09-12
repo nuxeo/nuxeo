@@ -177,6 +177,7 @@ IF OBJECT_ID('dbo.NX_CLUSTER_INVAL', 'P') IS NOT NULL
 CREATE PROCEDURE NX_CLUSTER_INVAL(@i ${idType}, @f VARCHAR(8000), @k TINYINT)
 AS
 BEGIN
+  SET NOCOUNT ON;
   DECLARE @nid SMALLINT;
   DECLARE @cur CURSOR;
   SET @cur = CURSOR FAST_FORWARD FOR
@@ -208,6 +209,7 @@ IF OBJECT_ID('dbo.NX_UPGRADE_TAGS', 'P') IS NOT NULL
 CREATE PROCEDURE NX_UPGRADE_TAGS
 AS
 BEGIN
+  SET NOCOUNT ON;
   -- make tags placeless
   UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
   -- make tagging hierarchy
@@ -858,12 +860,13 @@ IF OBJECT_ID('dbo.nx_prepare_user_read_acls', 'P') IS NOT NULL
 CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(4000) AS
   -- prepare the read aclr for the user
 BEGIN
-    DECLARE @user_md5 CHAR(32);
-    SET @user_md5 = dbo.nx_md5(@users);
-    IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
-      INSERT INTO aclr_user VALUES (@user_md5, @users);
-      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
-    END;
+  SET NOCOUNT ON;
+  DECLARE @user_md5 CHAR(32);
+  SET @user_md5 = dbo.nx_md5(@users);
+  IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
+    INSERT INTO aclr_user VALUES (@user_md5, @users);
+    INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
+  END;
 END;
 
 
@@ -875,6 +878,7 @@ CREATE PROCEDURE nx_rebuild_read_acls
   -- Rebuild the read acls tables
 AS
 BEGIN
+  SET NOCOUNT ON;
   TRUNCATE TABLE aclr;
   TRUNCATE TABLE aclr_user;
   TRUNCATE TABLE aclr_user_map;
@@ -894,6 +898,7 @@ CREATE PROCEDURE nx_vacuum_read_acls
   -- Remove unused read acls entries
 AS
 BEGIN
+  SET NOCOUNT ON;
   DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr r
     LEFT JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
     WHERE h.acl_id IS NULL);
@@ -1043,6 +1048,7 @@ IF OBJECT_ID('dbo.NX_UPGRADE_VERSIONS', 'P') IS NOT NULL
 CREATE PROCEDURE NX_UPGRADE_VERSIONS
 AS
 BEGIN
+  SET NOCOUNT ON;
   DECLARE @series ${idType};
   DECLARE @latest TINYINT;
   DECLARE @latestmajor TINYINT;
