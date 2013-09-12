@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.Text;
@@ -157,6 +158,8 @@ public class XMLImporterServiceImpl {
         try {
             doc = new SAXReader().read(file);
             workingDirectory = file.getParentFile();
+        } catch (DocumentException e) {
+            throw e;
         } catch (Exception e) {
             File tmp = new File(System.getProperty("java.io.tmpdir"));
             File directory = new File(tmp, file.getName()
@@ -169,7 +172,7 @@ public class XMLImporterServiceImpl {
                 }
             }
             throw new ClientException(
-                    "Can not find XML file inside the zip archive");
+                    "Can not find XML file inside the zip archive", e);
         }
         return parse(doc);
     }
