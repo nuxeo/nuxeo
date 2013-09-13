@@ -17,6 +17,7 @@
 
 package com.nuxeo.functionaltests;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.dam.AssetViewFragment;
 import org.nuxeo.functionaltests.dam.DAMPage;
@@ -29,6 +30,7 @@ import org.openqa.selenium.WebElement;
 /**
  * @since 5.7.3
  */
+@Ignore
 public class ITAssetViewTest extends AbstractDAMTest {
 
     @Test
