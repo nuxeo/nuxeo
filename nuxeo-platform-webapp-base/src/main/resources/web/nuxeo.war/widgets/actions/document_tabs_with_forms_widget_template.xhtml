@@ -10,7 +10,7 @@
   cache="true">
   <a4j:outputPanel id="#{ajaxReRender}" layout="block">
     <nxu:set var="actions"
-      value="#{webActions.getActionsList(widgetProperty_category, fieldOrValue, not widgetProperty_disableFiltered)}"
+      value="#{webActions.getActionsListForDocument(widgetProperty_category, fieldOrValue, not widgetProperty_disableFiltered)}"
       cache="true">
     <nxu:set var="currentAction"
       value="#{webActions.getCurrentTabAction(widgetProperty_category)}"

@@ -123,8 +123,8 @@ public interface WebActions {
      *
      * @since 5.7.3
      */
-    List<Action> getActionsList(String category, DocumentModel document,
-            boolean hideUnavailableAction);
+    List<Action> getActionsListForDocument(String category,
+            DocumentModel document, boolean hideUnavailableAction);
 
     /**
      * Returns all filtered actions for a given category and given resolution
@@ -364,7 +364,7 @@ public interface WebActions {
      * @since 5.7.3
      * @see ActionManager#getAction(String, ActionContext, boolean)
      */
-    Action getAction(String actionId, DocumentModel document,
+    Action getActionForDocument(String actionId, DocumentModel document,
             boolean hideUnavailableAction);
 
     /**
