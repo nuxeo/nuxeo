@@ -88,6 +88,15 @@ public class XMLImporterServiceImpl {
 
     public XMLImporterServiceImpl(DocumentModel rootDoc,
             ParserConfigRegistry registry) {
+        this(rootDoc, registry, null);
+    }
+
+    public XMLImporterServiceImpl(DocumentModel rootDoc,
+            ParserConfigRegistry registry, Map<String, Object> mvelContext) {
+        if (mvelContext != null) {
+            mvelCtx.putAll(mvelContext);
+        }
+
         session = rootDoc.getCoreSession();
         this.rootDoc = rootDoc;
         docsStack = new Stack<DocumentModel>();
@@ -147,12 +156,16 @@ public class XMLImporterServiceImpl {
     protected File workingDirectory;
 
     public List<DocumentModel> parse(InputStream is) throws Exception {
+        mvelCtx.put("source", is);
+
         Document doc = new SAXReader().read(is);
         workingDirectory = null;
         return parse(doc);
     }
 
     public List<DocumentModel> parse(File file) throws Exception {
+
+        mvelCtx.put("source", file);
 
         Document doc = null;
         try {

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -69,16 +70,29 @@ public class XMLImporterComponent extends DefaultComponent implements
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile)
             throws Exception {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root,
-                getRegistry());
-        return importer.parse(xmlFile);
+        return importDocuments(root, xmlFile, null);
     }
 
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root,
             InputStream xmlStream) throws Exception {
+        return importDocuments(root, xmlStream, null);
+    }
+
+    @Override
+    public List<DocumentModel> importDocuments(DocumentModel root, File source,
+            Map<String, Object> mvelContext) throws Exception {
         XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root,
-                getRegistry());
+                getRegistry(), mvelContext);
+        return importer.parse(source);
+    }
+
+    @Override
+    public List<DocumentModel> importDocuments(DocumentModel root,
+            InputStream xmlStream, Map<String, Object> mvelContext)
+            throws Exception {
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root,
+                getRegistry(), mvelContext);
         return importer.parse(xmlStream);
     }
 

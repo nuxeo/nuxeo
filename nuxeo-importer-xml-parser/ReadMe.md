@@ -14,6 +14,7 @@ Document importer using XML as source and  Xpath  + MVEL to configure mappings
  - `docs` : list of imported DocumentModels
  - `session` : CoreSession
  - `Fn` : utility functions
+ - `source` : source file (File object) or source input stream (InputStream object) being parsed.
 
 
 
