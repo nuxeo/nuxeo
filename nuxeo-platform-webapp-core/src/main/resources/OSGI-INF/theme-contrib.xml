@@ -60,6 +60,8 @@
       <resource>hideableAdminMessage.js</resource>
       <resource>accessKey.js</resource>
       <resource>doubleClick_shield.js</resource>
+      <resource>jquery.ambiance.js</resource>
+      <resource>jquery.ambiance.css</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -208,6 +210,14 @@
     <!-- doubleClick_shield.js -->
     <resource name="doubleClick_shield.js">
       <path>scripts/doubleClick_shield.js</path>
+    </resource>
+    <!-- jQuery Ambiance -->
+    <resource name="jquery.ambiance.js">
+      <path>scripts/jquery/jquery.ambiance.js</path>
+      <require>jquery.js</require>
+    </resource>
+    <resource name="jquery.ambiance.css">
+      <path>css/jquery.ambiance.css</path>
     </resource>
   </extension>
 
