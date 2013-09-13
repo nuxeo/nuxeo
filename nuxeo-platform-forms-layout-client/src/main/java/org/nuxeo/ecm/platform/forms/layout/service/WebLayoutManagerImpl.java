@@ -463,7 +463,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                     continue;
                 }
                 WidgetDefinition wDef = lookupWidget(layoutDef, widgetRef);
-                wDef.getTypeCategory();
                 if (wDef == null) {
                     log.error(String.format(
                             "Widget '%s' not found in layout %s", widgetName,
