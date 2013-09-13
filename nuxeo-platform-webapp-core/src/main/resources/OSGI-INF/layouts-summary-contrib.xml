@@ -717,7 +717,7 @@
       </controls>
     </widget>
 
-    <widget name="summary_current_document_indicators" type="currentDocumentActions">
+    <widget name="summary_current_document_indicators" type="documentActions">
       <properties widgetMode="view">
         <property name="category">SUMMARY_INDICATORS</property>
         <property name="overallDisplay">horizontal_block</property>
