@@ -21,11 +21,14 @@ Display options:
 - useButton: use a command button instead of a command link. Defaults to false.
   This behaviour is only supported by actions with type 'link'.
 - addForm: boolean expresion stating if a form is added around the action, to
-  handle lookup level when retrieving the nxu:valueHolder component
+  handle lookup level when retrieving the nxu:valueHolder component, and to
+  generate simple ids when the form id is unique anyway, ignoring the idPrefix
+  parameter
 - useAjaxForm: boolean expression if the action is done in an ajax form:
   the action will be executed via an action listener to prevent any
   navigation that would remove the ajax behaviour, defaults to false.
   This behaviour is only supported by actions with type 'link' or 'button'.
+- formStyleClass: additional style class to put on the form
 - ajaxReRender: reRender ids if useAjaxForm is true. Available since 5.7.
 - actionStyleClass: additional style class to put on link.
 - clickedActionIdHolder: id of the nxu:valueHolder component holding the
@@ -40,7 +43,9 @@ Templating zones that can be filled when useAjaxForm is set to true:
 
 </c:if>
 
-<nxu:set var="actionWidgetName" value="#{idPrefix}#{action.id}" cache="true">
+<nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}">
+<nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, nxu:jsfTagIdEscape(action.id), defActionWidgetName)}">
+<nxu:set var="strippedWidgetName" value="#{nxu:test(actionWidgetName.startsWith('nxw_'), actionWidgetName.substring(4), actionWidgetName)}">
 
   <c:if test="#{not empty action.properties.confirmMessage}">
     <script type="text/javascript">
@@ -57,17 +62,32 @@ Templating zones that can be filled when useAjaxForm is set to true:
   <nxl:widgetType category="jsfAction"
     name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
     mode="view"
-    widgetName="#{actionWidgetName}"
+    widgetName="#{strippedWidgetName}"
     hideIcon="#{hideIcon}"
     hideLabel="#{hideLabel}"
     useButton="#{useButton}"
     useAjaxForm="#{useAjaxForm}"
     ajaxReRender="#{ajaxReRender}"
-    addForm="#{addForm}"
+    formAdded="#{formAdded}"
     actionStyleClass="#{actionStyleClass}"
     clickedActionIdHolder="#{clickedActionIdHolder}"
-    value="#{fieldOrValue}" />
+    value="#{fieldOrValue}"
+    resolveOnly="true">
+    <nxu:set var="discardForm" value="#{widget.properties.discardSurroundingForm}">
+      <ui:decorate template="/widgets/incl/form_template.xhtml">
+        <ui:param name="addForm" value="#{addForm and (!discardForm or useAjaxForm)}" />
+        <ui:param name="formId" value="#{widget.id}_form" />
+        <ui:param name="useAjaxForm" value="#{useAjaxForm}" />
+        <ui:param name="formStyleClass" value="#{formStyleClass}" />
+        <ui:define name="form_template_content">
+          <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+        </ui:define>
+      </ui:decorate>
+    </nxu:set>
+  </nxl:widgetType>
 
+</nxu:set>
+</nxu:set>
 </nxu:set>
 
 </c:if>

@@ -196,6 +196,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="bare_link_action_widget_type_properties_view">
               <rows>
@@ -298,6 +301,7 @@
                 <fields>
                   <field>iframe</field>
                 </fields>
+                <!-- TODO: add fancybox options as properties -->
               </widget>
             </layout>
           </layouts>
@@ -325,6 +329,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="rest_document_link_action_widget_type_properties_view">
               <rows>
@@ -370,6 +377,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="main_tab_action_widget_type_properties_view">
               <rows>

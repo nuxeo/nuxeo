@@ -46,9 +46,12 @@
     <nxu:set var="showEditOptions"
       value="#{nxu:test(empty widgetProperty_showEditOptions, false, widgetProperty_showEditOptions)}"
       cache="true">
+    <nxu:set var="modeValueHolderId"
+      value="#{widget.id}_modeValueHolder"
+      cache="true">
 
     <nxu:valueHolder
-      id="#{widget.id}_modeValueHolder"
+      id="#{modeValueHolderId}"
       var="layoutWidgetMode"
       defaultValue="#{initialMode}"
       submitChanges="false">
@@ -103,7 +106,7 @@
                 styleClass="button smallButton action #{widgetProperty_actionStyleClass}"
                 value="#{cancelActionLabel}">
                 <f:param name="valueHolderId"
-                  value="#{widget.id}_modeValueHolder" />
+                  value="#{modeValueHolderId}" />
                 <f:setPropertyActionListener
                   value="#{initialMode}"
                   target="#{selectionActions.selectedValue}" />
@@ -176,7 +179,7 @@
                             <ui:param name="useAjaxForm" value="true" />
                             <ui:define name="after_action_trigger">
                               <f:setPropertyActionListener
-                                value="#{widget.id}_modeValueHolder"
+                                value="#{modeValueHolderId}"
                                 target="#{selectionActions.selectedValueHolder}" />
                               <f:setPropertyActionListener
                                 value="#{initialMode}"
@@ -198,7 +201,7 @@
                             <ui:param name="useAjaxForm" value="true" />
                             <ui:define name="after_action_trigger">
                               <f:setPropertyActionListener
-                                value="#{widget.id}_modeValueHolder"
+                                value="#{modeValueHolderId}"
                                 target="#{selectionActions.selectedValueHolder}" />
                               <f:setPropertyActionListener
                                 value="#{initialMode}"
@@ -293,6 +296,7 @@
     </nxu:set>
     </nxu:valueHolder>
 
+    </nxu:set>
     </nxu:set>
     </nxu:set>
     </nxu:set>

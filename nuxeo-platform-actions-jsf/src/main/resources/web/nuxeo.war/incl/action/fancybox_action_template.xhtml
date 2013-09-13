@@ -7,9 +7,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
-<nxu:set var="fancyboxId"
-  value="#{widget.name}"
-  cache="true">
+<nxu:set var="fancyboxIdPrefix" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_">
 
 <nxu:set var="iframe"
   value="#{action.properties.iframe}"
@@ -17,7 +15,7 @@
 
 <c:if test="#{widget.mode == 'view'}">
 
-  <f:subview id="#{fancyboxId}_subview">
+  <f:subview id="#{fancyboxIdPrefix}subview">
   <nxu:set var="onclick"
     value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
     cache="true">
@@ -25,14 +23,14 @@
     <c:if test="#{empty iframe}">
 
       <c:if test="#{not widgetProperty_useButton}">
-        <a4j:commandLink id="#{fancyboxId}_link"
+        <a4j:commandLink id="#{fancyboxIdPrefix}link"
           ajaxSingle="true"
           ignoreDupResponses="true" requestDelay="100"
           onclick="#{onclick}"
           styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
-          reRender="#{fancyboxId}_ajax_panel">
-          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_addForm,'2','1')}"
+          reRender="#{fancyboxIdPrefix}ajax_panel">
+          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_formAdded,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
           <f:setPropertyActionListener value="#{action.id}"
             target="#{selectionActions.selectedValue}" />
@@ -50,15 +48,15 @@
       </c:if>
 
       <c:if test="#{useButton}">
-        <a4j:commandButton id="#{fancyboxId}_link"
+        <a4j:commandButton id="#{fancyboxIdPrefix}link"
           ajaxSingle="true"
           ignoreDupResponses="true" requestDelay="100"
           onclick="#{onclick}"
           value="#{messages[action.label]}"
           styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
-          reRender="#{fancyboxId}_ajax_panel">
-          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_addForm,'2','1')}"
+          reRender="#{fancyboxIdPrefix}ajax_panel">
+          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_formAdded,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
           <f:setPropertyActionListener value="#{action.id}"
             target="#{selectionActions.selectedValue}" />
@@ -82,6 +80,14 @@
       <ui:decorate template="fancybox_properties_template.xhtml">
         <ui:define name="fancybox_properties_include">
 
+          <a4j:jsFunction name="#{fancyboxIdPrefix}onclose"
+            action="#{selectionActions.onClick}">
+            <a4j:actionparam name=""
+              assignTo="#{selectionActions.selectedValue}"/>
+            <a4j:actionparam name="#{widgetProperty_clickedActionIdHolder}"
+              assignTo="#{selectionActions.selectedValueHolder}"/>
+          </a4j:jsFunction>
+
           <nxu:set var="fancyboxJs"
             value="openFancyBox('#{iframe}', {
                     width: '#{fancy_width}',
@@ -91,12 +97,12 @@
                     autoDimensions: #{fancy_autoDimensions},
                     modal: #{fancy_modal},
                     centerOnScroll: #{fancy_centerOnScroll},
-                    enableEscapeButton: #{fancy_enableEscapeButton}
-                  });"
-            cache="true">
+                    enableEscapeButton: #{fancy_enableEscapeButton},
+                    onclose: #{fancyboxIdPrefix}onclose
+                  });">
 
             <c:if test="#{not widgetProperty_useButton}">
-              <a4j:commandLink id="#{fancyboxId}_link"
+              <a4j:commandLink id="#{fancyboxIdPrefix}link"
                 ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
                 onclick="#{onclick};#{fancyboxJs}"
@@ -111,7 +117,7 @@
             </c:if>
 
             <c:if test="#{widgetProperty_useButton}">
-              <a4j:commandButton id="#{fancyboxId}_link"
+              <a4j:commandButton id="#{fancyboxIdPrefix}link"
                 ajaxSingle="true"
                 ignoreDupResponses="true" requestDelay="100"
                 onclick="#{onclick};#{fancyboxJs}"
@@ -137,35 +143,89 @@
 
 </c:if>
 
-<c:if test="#{widget.mode == 'after_button_form'}">
+<c:if test="#{widget.mode == 'after_view' and empty iframe}">
 
-  <a4j:outputPanel id="#{fancyboxId}_ajax_panel">
+  <ui:decorate template="fancybox_properties_template.xhtml">
+    <ui:define name="fancybox_properties_include">
 
-    <nxu:set var="fancyboxFormId"
-      value="#{fancyboxId}_fancyform"
-      cache="true">
-    <nxu:set
-      var="actionClicked"
-      value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
-      cache="true">
+      <a4j:outputPanel id="#{fancyboxIdPrefix}ajax_panel" layout="block">
 
-      <c:if test="#{actionClicked}">
-        <script>
-          jQuery(document).ready(function() {
-            openFancyBox('##{fancyboxId}_box');
-          });
-        </script>
-        <div style="display:none">
-          <div id="#{fancyboxId}_box">
-            <ui:include src="#{action.properties.include}" />
-          </div>
-        </div>
-      </c:if>
+        <nxu:set var="include"
+          value="#{action.properties.include}"
+          resolveTwice="true" cache="true">
+        <nxu:set var="fancyboxFormId"
+          value="#{fancyboxIdPrefix}fancyform"
+          cache="true">
+        <nxu:set
+          var="actionClicked"
+          value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
+          cache="true">
 
-    </nxu:set>
-    </nxu:set>
+          <c:if test="#{actionClicked}">
 
-  </a4j:outputPanel>
+            <a4j:form>
+              <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox">
+                <f:setPropertyActionListener value=""
+                  target="#{selectionActions.selectedValue}" />
+                <f:setPropertyActionListener
+                  value="#{widgetProperty_clickedActionIdHolder}"
+                  target="#{selectionActions.selectedValueHolder}" />
+                <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
+              </a4j:jsFunction>
+            </a4j:form>
+
+            <script>
+              jQuery(document).ready(function() {
+                openFancyBox('##{fancyboxIdPrefix}box', {
+                  width: '#{fancy_width}',
+                  height: '#{fancy_height}',
+                  scrolling: '#{fancy_scrolling}',
+                  autoScale: #{fancy_autoScale},
+                  autoDimensions: #{fancy_autoDimensions},
+                  modal: #{fancy_modal},
+                  centerOnScroll: #{fancy_centerOnScroll},
+                  enableEscapeButton: #{fancy_enableEscapeButton},
+                  onClosed: #{fancyboxIdPrefix}closeFancybox
+                });
+              });
+            </script>
+            <div style="display:none">
+              <div id="#{fancyboxIdPrefix}box">
+                <c:if test="#{not empty include}">
+                  <ui:include src="#{include}" />
+                </c:if>
+              </div>
+
+              <script type="text/javascript">
+                (function() {
+                  jQuery(document).ready(function() {
+                    var content = jQuery('#fancybox-content .content'),
+                      computedHeight = jQuery('#fancybox-content').height() || 0
+
+                    if (content !== null) {
+                      computedHeight -= jQuery('#fancybox-content h3').outerHeight(true) || 0
+                      computedHeight -= jQuery('#fancybox-content .buttonsGadget').outerHeight(true) || 0
+                      computedHeight -= parseInt(content.css('padding-top'), 10)
+                      computedHeight -= parseInt(content.css('padding-bottom'), 10)
+                      computedHeight -= parseInt(content.css('margin-top'), 10)
+                      computedHeight -= parseInt(content.css('margin-bottom'), 10)
+                      content.height(computedHeight)
+                    }
+                  })
+                })()
+              </script>
+            </div>
+          </c:if>
+
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
+
+      </a4j:outputPanel>
+
+    </ui:define>
+  </ui:decorate>
 
 </c:if>
 

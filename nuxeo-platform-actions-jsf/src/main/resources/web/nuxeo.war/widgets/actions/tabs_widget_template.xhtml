@@ -21,18 +21,13 @@
     <ul>
       <nxu:repeat var="action" items="#{widgetProperty_actions}">
         <li class="#{nxu:test(widgetProperty_currentTabAction.id == action.id, 'selected', '')}">
-          <ui:decorate template="/widgets/incl/form_template.xhtml">
+          <ui:decorate template="/incl/action/action_template.xhtml">
+            <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+            <ui:param name="fullCategory" value="#{widgetProperty_fullCategory}" />
+            <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
             <ui:param name="addForm" value="#{widgetProperty_addForm}" />
-            <ui:param name="formId" value="#{nxu:jsfTagIdEscape(widget.id)}_#{nxu:jsfTagIdEscape(action.id)}_form" />
             <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm and action.properties.ajaxSupport}" />
             <ui:param name="formStyleClass" value="subWidgetForm" />
-            <ui:define name="form_template_content">
-              <ui:decorate template="/incl/action/action_template.xhtml">
-                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-                <ui:param name="fullCategory" value="#{widgetProperty_fullCategory}" />
-                <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
-              </ui:decorate>
-            </ui:define>
           </ui:decorate>
         </li>
       </nxu:repeat>
