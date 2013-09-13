@@ -66,7 +66,7 @@ Templating zones that can be filled when useAjaxForm is set to true:
     hideIcon="#{hideIcon}"
     hideLabel="#{hideLabel}"
     useButton="#{useButton}"
-    useAjaxForm="#{useAjaxForm}"
+    useAjaxForm="#{useAjaxForm and action.properties.ajaxSupport}"
     ajaxReRender="#{ajaxReRender}"
     formAdded="#{formAdded}"
     actionStyleClass="#{actionStyleClass}"
@@ -77,7 +77,7 @@ Templating zones that can be filled when useAjaxForm is set to true:
       <ui:decorate template="/widgets/incl/form_template.xhtml">
         <ui:param name="addForm" value="#{addForm and (!discardForm or useAjaxForm)}" />
         <ui:param name="formId" value="#{widget.id}_form" />
-        <ui:param name="useAjaxForm" value="#{useAjaxForm}" />
+        <ui:param name="useAjaxForm" value="#{useAjaxForm and action.properties.ajaxSupport}" />
         <ui:param name="formStyleClass" value="#{formStyleClass}" />
         <ui:define name="form_template_content">
           <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />

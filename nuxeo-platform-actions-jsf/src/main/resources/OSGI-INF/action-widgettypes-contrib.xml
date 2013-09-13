@@ -4,6 +4,54 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
+    <widget name="label" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">label</label>
+      </labels>
+      <fields>
+        <field>label</field>
+      </fields>
+    </widget>
+
+    <widget name="icon" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">icon</label>
+      </labels>
+      <fields>
+        <field>icon</field>
+      </fields>
+    </widget>
+
+    <widget name="help" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">help</label>
+      </labels>
+      <fields>
+        <field>help</field>
+      </fields>
+    </widget>
+
+    <widget name="accessKey" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">accessKey</label>
+      </labels>
+      <fields>
+        <field>accessKey</field>
+      </fields>
+    </widget>
+
     <widget name="ajaxReRender" type="text">
       <categories>
         <category>actionWidgetTypeConf</category>
@@ -14,6 +62,25 @@
       <helpLabels>
         <label mode="any">
           Ajax rerender ids, separated by commas.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>ajaxReRender</field>
+      </fields>
+    </widget>
+
+    <widget name="ajaxSupport" type="checkbox">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Ajax support</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean stating if the action supports ajax. Mandatory
+          for this action to be ajaxified when caller asks for an ajax form to
+          be used.
         </label>
       </helpLabels>
       <fields>
@@ -106,6 +173,126 @@
       </subWidgets>
     </widget>
 
+    <widget name="fancybox_include" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Include</label>
+      </labels>
+      <fields>
+        <field>include</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_iframe" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Iframe</label>
+      </labels>
+      <fields>
+        <field>iframe</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_width" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">width</label>
+      </labels>
+      <fields>
+        <field>width</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_height" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">height</label>
+      </labels>
+      <fields>
+        <field>height</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_scrolling" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">scrolling</label>
+      </labels>
+      <fields>
+        <field>scrolling</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_autoScale" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">autoScale</label>
+      </labels>
+      <fields>
+        <field>autoScale</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_autoDimensions" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">autoDimensions</label>
+      </labels>
+      <fields>
+        <field>autoDimensions</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_modal" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">modal</label>
+      </labels>
+      <fields>
+        <field>modal</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_centerOnScroll" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">centerOnScroll</label>
+      </labels>
+      <fields>
+        <field>centerOnScroll</field>
+      </fields>
+    </widget>
+
+    <widget name="fancybox_enableEscapeButton" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">enableEscapeButton</label>
+      </labels>
+      <fields>
+        <field>enableEscapeButton</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
@@ -133,6 +320,21 @@
               <rows>
                 <row>
                   <widget>link</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">help</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">accessKey</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">styleClass</widget>
@@ -203,7 +405,22 @@
             <layout name="bare_link_action_widget_type_properties_view">
               <rows>
                 <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
                   <widget>link</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">help</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">accessKey</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">styleClass</widget>
@@ -265,10 +482,22 @@
             <layout name="fancybox_action_widget_type_properties_view">
               <rows>
                 <row>
-                  <widget>include</widget>
+                  <widget category="actionWidgetTypeConf">label</widget>
                 </row>
                 <row>
-                  <widget>iframe</widget>
+                  <widget category="actionWidgetTypeConf">fancybox_include</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_iframe</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">help</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">accessKey</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">styleClass</widget>
@@ -285,24 +514,31 @@
                 <row>
                   <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
                 </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_width</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_height</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_scrolling</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_autoScale</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_autoDimensions</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_modal</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_centerOnScroll</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">fancybox_enableEscapeButton</widget>
+                </row>
               </rows>
-              <widget name="include" type="text">
-                <labels>
-                  <label mode="any">Include</label>
-                </labels>
-                <fields>
-                  <field>include</field>
-                </fields>
-              </widget>
-              <widget name="iframe" type="text">
-                <labels>
-                  <label mode="any">Iframe</label>
-                </labels>
-                <fields>
-                  <field>iframe</field>
-                </fields>
-                <!-- TODO: add fancybox options as properties -->
-              </widget>
             </layout>
           </layouts>
         </properties>
@@ -335,6 +571,21 @@
           <layouts mode="view">
             <layout name="rest_document_link_action_widget_type_properties_view">
               <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">help</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">accessKey</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
+                </row>
                 <row>
                   <widget category="actionWidgetTypeConf">onclick</widget>
                 </row>
@@ -384,7 +635,22 @@
             <layout name="main_tab_action_widget_type_properties_view">
               <rows>
                 <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">help</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">accessKey</widget>
+                </row>
+                <row>
                   <widget>requireDocument</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">onclick</widget>
