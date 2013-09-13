@@ -617,4 +617,20 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         return null;
     }
+
+    /**
+     * @since 5.7.3
+     */
+    public String getWorkflowTitle(String instanceId) {
+        String workflowTitle = "";
+
+        try {
+            DocumentModel routeInstance = documentManager.getDocument(new IdRef(
+                    instanceId));
+            workflowTitle = routeInstance.getTitle();
+        } catch (ClientException e) {
+            log.error("Can not fetch route instance with id " + instanceId, e);
+        }
+        return workflowTitle;
+    }
 }

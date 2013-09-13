@@ -28,6 +28,23 @@
       label="action.view.workflow.tasks" order="10" enabled="false">
       <category>WORKFLOW_DASHBOARD</category>
     </action>
+    
+    <!--since 5.7.3  -->    
+    <action id="WorkflowHome" link="user_center_fragment.xhtml"
+      label="tab.admin.workflow" order="20">
+      <properties>
+        <property name="alwaysDisplaySubTabs">true</property>
+      </properties>
+      <category>USER_CENTER</category>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+    
+    <!--since 5.7.3  --> 
+     <action id="UsersTasks" label="title.dashboard.userTasks" 
+      link="/incl/home/user_open_tasks.xhtml" order="10">
+      <category>WorkflowHome_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+     </action>
 
   </extension>
 

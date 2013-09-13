@@ -12,6 +12,15 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
+    
+    <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ALL_ROUTE_INSTANCES">
+      <pattern>
+        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState =
+        'running' AND dc:title LIKE ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
 
     <coreQueryPageProvider name="CURRENT_DOC_ROUTING_SEARCH_ATTACHED_DOC">
       <pattern>

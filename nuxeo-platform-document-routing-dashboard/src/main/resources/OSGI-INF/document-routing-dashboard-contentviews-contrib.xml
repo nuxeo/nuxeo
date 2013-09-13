@@ -30,6 +30,47 @@
       <selectionList>CURRENT_SELECTION</selectionList>
 
     </contentView>
+        
+    <contentView name="user_open_tasks">
+     <showTitle>false</showTitle>
+     <coreQueryPageProvider>
+       <property name="coreSession">#{documentManager}</property>
+       <parameter>#{currentUser.name}</parameter>
+       <whereClause docType="user_open_tasks_cv">
+          <predicate parameter="nt:processId" operator="LIKE">
+            <field schema="user_open_tasks_cv" name="task_processId"/>
+          </predicate>
+          <predicate parameter="nt:name" operator="LIKE">
+            <field schema="user_open_tasks_cv" name="task_name"/>
+          </predicate>
+          <predicate parameter="nt:dueDate" operator="BETWEEN">
+            <field schema="user_open_tasks_cv" name="task_dueDate_min"/>
+            <field schema="user_open_tasks_cv" name="task_dueDate_max"/>
+          </predicate>
+         <fixedPart>
+           ecm:currentLifeCycleState = 'opened' AND
+           nt:actors IN (?)
+         </fixedPart>
+       </whereClause>
+       <pageSize>10</pageSize>
+     </coreQueryPageProvider>
+     <showFilterForm>true</showFilterForm>
+     <showPageSizeSelector>false</showPageSizeSelector>
+     <useGlobalPageSize>false</useGlobalPageSize>
+     <refresh>
+       <event>documentCreated</event>
+       <event>workflowTaskCompleted</event>
+     </refresh>
+     <cacheSize>10</cacheSize>
+     <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
+     </cacheKey>
+     <searchLayout name="routing_user_open_task_search_layout"/>
+     <resultLayouts>
+       <layout name="routing_user_open_task_listing" title=""
+         translateTitle="" iconPath="" showCSVExport="false"
+         showPDFExport="false" />
+     </resultLayouts>
+   </contentView>
 
   </extension>
 

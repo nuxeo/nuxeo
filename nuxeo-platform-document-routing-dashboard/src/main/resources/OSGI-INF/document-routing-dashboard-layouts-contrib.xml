@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.routing.dashboard.layouts">
 
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="user_open_tasks_cv" prefix="user_open_tasks_cv" src="schemas/user_open_tasks_cv.xsd"/>
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="user_open_tasks_cv" extends="Document">
+      <facet name="ContentViewDisplay"/>
+      <schema name="user_open_tasks_cv"/>
+    </doctype>
+   </extension>
+  
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
@@ -104,6 +115,19 @@
         </widget>
       </subWidgets>
     </widget>
+    
+    <widget name="routing_task_workflow_name" type="singleDocumentSuggestion">
+      <labels>
+        <label mode="any">label.dashboard.queue.process.task</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.nt.processId</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+    </widget>
 
   </extension>
 
@@ -183,6 +207,135 @@
         </column>
       </columns>
     </layout>
+    
+    <layout name="routing_user_open_task_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+        <property name="display">table</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:name</property>
+          </properties>
+          <widget>routing_task_workflow_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_target_document</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:directive</property>
+          </properties>
+          <widget>routing_task_directive</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">nt:dueDate</property>
+          </properties>
+          <widget>routing_task_duedate</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>routing_task_actors</widget>
+        </column>
+      </columns>
+    </layout>
+    
+    <layout name="routing_user_open_task_search_layout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>task_processId</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>task_name</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+            <property name="nxl_colspan_1">1</property>
+          </properties>
+          <widget>task_dueDate_min</widget>
+          <widget>task_dueDate_max</widget>
+        </row>
+      </rows>
+      <widget name="task_processId" type="singleDocumentSuggestion">
+        <labels>
+          <label mode="any">label.dashboard.queue.process.task</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>user_open_tasks_cv:task_processId</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="minChars">1</property>
+          <property name="pageProviderName">DOC_ROUTING_SEARCH_ALL_ROUTE_INSTANCES</property>
+        </properties>
+      </widget>
+      <widget name="task_name" type="text">
+        <labels>
+          <label mode="any">label.document.route.content.header.type</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>user_open_tasks_cv:task_name</field>
+        </fields>
+      </widget>
+      <widget name="task_dueDate_min" type="datetime">
+        <labels>
+          <label mode="any">label.widget.task_step.dueDate</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>user_open_tasks_cv:task_dueDate_min</field>
+        </fields>
+      </widget>
+      <widget name="task_dueDate_max" type="datetime">
+        <labels>
+          <label mode="any">label.search.and</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>user_open_tasks_cv:task_dueDate_max</field>
+        </fields>
+      </widget>
+    </layout>
+    
 
   </extension>
 
