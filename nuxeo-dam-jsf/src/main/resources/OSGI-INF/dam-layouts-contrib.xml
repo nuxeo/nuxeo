@@ -159,13 +159,13 @@
     </widget>
 
     <!-- Main actions widgets -->
-    <widget name="damSearchForm" type="currentDocumentActions">
+    <widget name="damSearchForm" type="documentActions">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_LEFT</property>
       </properties>
     </widget>
 
-    <widget name="damSearchResults" type="currentDocumentActions">
+    <widget name="damSearchResults" type="documentActions">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_CENTER</property>
       </properties>
@@ -174,7 +174,7 @@
       </controls>
     </widget>
 
-    <widget name="damAssetView" type="currentDocumentActions">
+    <widget name="damAssetView" type="documentActions">
       <properties widgetMode="view">
         <property name="category">DAM_PANEL_RIGHT</property>
       </properties>
@@ -183,7 +183,7 @@
       </controls>
     </widget>
 
-    <widget name="damSingleAssetPanelLeft" type="currentDocumentActions">
+    <widget name="damSingleAssetPanelLeft" type="documentActions">
       <properties widgetMode="view">
         <property name="category">DAM_SINGLE_ASSET_PANEL_LEFT</property>
       </properties>
@@ -192,7 +192,7 @@
       </controls>
     </widget>
 
-    <widget name="damSingleAssetPanelRight" type="currentDocumentActions">
+    <widget name="damSingleAssetPanelRight" type="documentActions">
       <properties widgetMode="view">
         <property name="category">DAM_SINGLE_ASSET_PANEL_RIGHT</property>
       </properties>
@@ -267,7 +267,7 @@
       </properties>
     </widget>
 
-    <widget name="damSearchActions" type="currentDocumentActions">
+    <widget name="damSearchActions" type="documentActions">
       <properties widgetMode="any">
         <property name="category">DAM_SEARCH_FILTER_ACTIONS</property>
         <property name="actionsDisplay">buttons</property>
@@ -279,7 +279,7 @@
     </widget>
 
     <!-- Search results -->
-    <widget name="damSearchResultsActions" type="currentDocumentActionsWithForms">
+    <widget name="damSearchResultsActions" type="documentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">DAM_SEARCH_RESULTS_ACTIONS</property>
         <property name="styleClass">globalActionBar</property>
@@ -317,7 +317,7 @@
     <!-- Asset view -->
     <widget name="damAssetViewNoDocument" type="damAssetViewNoDocument" />
 
-    <widget name="damAssetViewActions" type="currentDocumentActionsWithForms">
+    <widget name="damAssetViewActions" type="documentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">DAM_ASSET_VIEW_ACTIONS</property>
         <property name="styleClass">globalActionBar textAlignR</property>
@@ -412,7 +412,7 @@
       </properties>
     </widget>
 
-    <widget name="damAssetViewIndicators" type="currentDocumentActions">
+    <widget name="damAssetViewIndicators" type="documentActions">
       <properties widgetMode="view">
         <property name="category">DAM_ASSET_VIEW_INDICATORS</property>
         <property name="overallDisplay">horizontal_block</property>
@@ -625,7 +625,7 @@
       </properties>
     </widget>
 
-    <widget name="damSingleAssetActions" type="currentDocumentActionsWithForms">
+    <widget name="damSingleAssetActions" type="documentActionsWithForms">
       <properties widgetMode="view">
         <property name="category">DAM_SINGLE_ASSET_ACTIONS</property>
         <property name="styleClass">globalActionBar textAlignL</property>
