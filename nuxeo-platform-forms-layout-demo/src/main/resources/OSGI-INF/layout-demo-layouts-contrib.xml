@@ -103,19 +103,14 @@
           <field>handlerClassName</field>
         </fields>
       </widget>
-      <widget name="properties" type="template">
+      <widget name="properties" type="text">
         <labels>
           <label mode="any">label.layoutDemo.reference.properties</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>properties</field>
+          <field>#{layoutValue.properties.toString()}</field>
         </fields>
-        <properties mode="any">
-          <property name="template">
-            /layoutDemo/widgets/properties_map_widget_template.xhtml
-          </property>
-        </properties>
         <widgetModes>
           <mode value="any">
             #{empty layoutValue.properties?'hidden':mode}
