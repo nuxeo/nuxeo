@@ -24,9 +24,9 @@ class Multiconversation(NuxeoTestCase):
             description="Get workspaces with conversation 0NXMAIN")
 
         self.post(server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionSubviewUpperList_1_newWorkspace_form', 'nxw_documentActionSubviewUpperList_1_newWorkspace_form'],
+            ['nxw_newWorkspace_form', 'nxw_newWorkspace_form'],
             ['javax.faces.ViewState', self.getLastJsfState()],
-            ['nxw_documentActionSubviewUpperList_1_newWorkspace_form:nxw_documentActionSubviewUpperList_1_newWorkspace', 'nxw_documentActionSubviewUpperList_1_newWorkspace_form:nxw_documentActionSubviewUpperList_1_newWorkspace']],
+            ['nxw_newWorkspace_form:nxw_newWorkspace', 'nxw_newWorkspace_form:nxw_newWorkspace']],
             description="Get workspace creation page")
 
         self.post(server_url + "/create_workspace.faces", params=[
@@ -78,7 +78,7 @@ class Multiconversation(NuxeoTestCase):
         # check that page is restored correctly (non regression test for NXP-11967)
         self.assert_("An error occurred" not in self.getBody())
 
-        # remove created documents
+        # remove created document
         self.get(server_url + "/nxpath/default/default-domain/workspaces@view_documents?tabIds=%3A&conversationId=0NXMAIN",
             description="Get /nxpath/defau...aces@view_documents")
         self.post(server_url + "/view_documents.faces", params=[
@@ -89,12 +89,13 @@ class Multiconversation(NuxeoTestCase):
             ['ajaxSingle', 'document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document'],
             ['document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document_ajax_onclick', 'document_content:nxl_document_listing_ajax:nxw_listing_ajax_selection_box_with_current_document_ajax_onclick'],
             ['AJAX:EVENTS_COUNT', '1']],
-            description="Select documents to delete")
+            description="Select document to delete")
+
         self.post(server_url + "/view_documents.faces", params=[
-            ['document_content_buttons:nxw_cvButton_CURRENT_SELECTION_TRASH_form', 'document_content_buttons:nxw_cvButton_CURRENT_SELECTION_TRASH_form'],
-            ['document_content_buttons:nxw_cvButton_CURRENT_SELECTION_TRASH_form:nxw_cvButton_CURRENT_SELECTION_TRASH', 'Delete'],
+            ['document_content_buttons:nxw_CURRENT_SELECTION_TRASH_form', 'document_content_buttons:nxw_CURRENT_SELECTION_TRASH_form'],
+            ['document_content_buttons:nxw_CURRENT_SELECTION_TRASH_form:nxw_CURRENT_SELECTION_TRASH', 'Delete'],
             ['javax.faces.ViewState', self.getLastJsfState()]],
-            description="Delete created documents")
+            description="Delete created document")
 
         self.get(server_url + "/logout",
             description="Logout")

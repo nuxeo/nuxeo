@@ -18,6 +18,7 @@
 package org.nuxeo.functionaltests.dam;
 
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.WidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -30,31 +31,35 @@ import org.openqa.selenium.support.ui.Select;
 public class SearchFormFragment extends WebFragmentImpl {
 
     @Required
-    @FindBy(id = "nxl_gridDamLayout:nxl_gridDamLayout_damSearchesSelector_form:nxw_damSearchesSelector")
+    @FindBy(id = "nxl_gridDamLayout:nxw_damSearchesSelector_form:nxw_damSearchesSelector")
     public WebElement searchSelector;
 
+    public static final String FORM_ID = "nxl_gridDamLayout:nxw_damSearchLayout_form:";
+
+    public static final String LAYOUT_ID = FORM_ID + "nxl_dam_search_layout:";
+
     @Required
-    @FindBy(id = "nxl_gridDamLayout:nxl_gridDamLayout_damSearchLayout_form:nxw_damSearchActions_2_damSubmitSearch")
+    @FindBy(id = FORM_ID + "nxw_doc_damSearchActions_damSubmitSearch")
     public WebElement filterButton;
 
     @Required
-    @FindBy(id = "nxl_gridDamLayout:nxl_gridDamLayout_damSearchLayout_form:nxw_damSearchActions_2_damClearSearch")
+    @FindBy(id = FORM_ID + "nxw_doc_damSearchActions_damClearSearch")
     public WebElement clearButton;
 
     @Required
-    @FindBy(id = "nxl_gridDamLayout:nxl_gridDamLayout_damSearchLayout_form:nxl_dam_search_layout:nxw_ecm_fulltext")
+    @FindBy(id = LAYOUT_ID + "nxw_ecm_fulltext")
     public WebElement textInput;
 
     @Required
-    @FindBy(id = "nxl_gridDamLayout:nxl_gridDamLayout_damSearchLayout_form:nxl_dam_search_layout:nxw_damc_author")
+    @FindBy(id = LAYOUT_ID + "nxw_damc_author")
     public WebElement originalAuthorInput;
 
     @Required
-    @FindBy(id = "nxl_gridDamLayout:nxl_gridDamLayout_damSearchLayout_form:nxl_dam_search_layout:nxw_damc_authoringDate_startInputDate")
+    @FindBy(id = LAYOUT_ID + "nxw_damc_authoringDate_startInputDate")
     public WebElement authoringDateFromInput;
 
     @Required
-    @FindBy(id = "nxl_gridDamLayout:nxl_gridDamLayout_damSearchLayout_form:nxl_dam_search_layout:nxw_damc_authoringDate_endInputDate")
+    @FindBy(id = LAYOUT_ID + "nxw_damc_authoringDate_endInputDate")
     public WebElement authoringDateToInput;
 
     public SearchFormFragment(WebDriver driver, WebElement element) {
@@ -79,14 +84,11 @@ public class SearchFormFragment extends WebFragmentImpl {
     }
 
     public void fillOriginalAuthor(String author) {
-        originalAuthorInput.clear();
-        originalAuthorInput.sendKeys(author);
+        new WidgetElement(driver, originalAuthorInput).setInputValue(author);
     }
 
     public void fillAuthoringDate(String from, String to) {
-        authoringDateFromInput.clear();
-        authoringDateFromInput.sendKeys(from);
-        authoringDateToInput.clear();
-        authoringDateToInput.sendKeys(to);
+        new WidgetElement(driver, authoringDateFromInput).setInputValue(from);
+        new WidgetElement(driver, authoringDateToInput).setInputValue(to);
     }
 }

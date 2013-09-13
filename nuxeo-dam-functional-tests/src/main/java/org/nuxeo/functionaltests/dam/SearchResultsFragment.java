@@ -22,6 +22,7 @@ import static org.nuxeo.functionaltests.AbstractTest.findElementAndWaitUntilEnab
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
@@ -36,7 +37,7 @@ import org.openqa.selenium.support.ui.Select;
  */
 public class SearchResultsFragment extends WebFragmentImpl {
 
-    @FindBy(id = "nxl_gridDamLayout:nxw_damSearchResultsActions_1_damNewAsset_form:nxw_damSearchResultsActions_1_damNewAsset_subview:nxw_damSearchResultsActions_1_damNewAsset_link")
+    @FindBy(id = "nxl_gridDamLayout:nxw_damNewAsset_form:nxw_doc_damSearchResultsActions_damNewAsset_subview:nxw_doc_damSearchResultsActions_damNewAsset_link")
     public WebElement newAssetButton;
 
     @FindBy(id = "nxl_gridDamLayout:dam_search_nxw_searchResults:nxl_dam_box_listing_ajax:damPanelLeft_header")
@@ -50,24 +51,25 @@ public class SearchResultsFragment extends WebFragmentImpl {
             String description, String originalAuthor, String authoringDate) {
         newAssetButton.click();
         AssetCreationFancyBoxFragment fancyBoxFragment = showAssetCreation(damPage);
-
+        LayoutElement layout = new LayoutElement(driver,
+                "nxl_gridDamLayout:nxw_doc_damSearchResultsActions_damNewAsset_fancyform");
         Select select = new Select(
-                fancyBoxFragment.findElement(By.id("nxl_gridDamLayout:nxw_damSearchResultsActions_1_damNewAsset_fancyform:nxw_damSearchResultsActions_1_select")));
+                layout.getSubElement("nxw_damNewAsset_after_view_select"));
         select.selectByValue(type);
 
         AbstractTest.waitForTextPresent(By.id("fancybox-content"),
                 "You can upload files of any format");
 
-        WebElement titleInput = fancyBoxFragment.findElement(By.id("nxl_gridDamLayout:nxw_damSearchResultsActions_1_damNewAsset_fancyform:nxl_heading:nxw_title"));
-        WebElement descriptionInput = fancyBoxFragment.findElement(By.id("nxl_gridDamLayout:nxw_damSearchResultsActions_1_damNewAsset_fancyform:nxl_heading:nxw_description"));
-        WebElement originalAuthorInput = fancyBoxFragment.findElement(By.id("nxl_gridDamLayout:nxw_damSearchResultsActions_1_damNewAsset_fancyform:nxl_dam_common:nxw_damc_author_1"));
-        WebElement authoringDateInput = fancyBoxFragment.findElement(By.id("nxl_gridDamLayout:nxw_damSearchResultsActions_1_damNewAsset_fancyform:nxl_dam_common:nxw_damc_authoringDate_1InputDate"));
-        titleInput.sendKeys(title);
-        descriptionInput.sendKeys(description);
-        originalAuthorInput.sendKeys(originalAuthor);
-        authoringDateInput.sendKeys(authoringDate);
+        layout.getWidget("nxl_heading:nxw_title").setInputValue(title);
+        layout.getWidget("nxl_heading:nxw_description").setInputValue(
+                description);
+        layout.getWidget("nxl_dam_common:nxw_damc_author_1").setInputValue(
+                originalAuthor);
+        layout.getWidget("nxl_dam_common:nxw_damc_authoringDate_1InputDate").setInputValue(
+                authoringDate);
 
-        fancyBoxFragment.findElement(By.xpath("//div[@id='fancybox-content']//input[@value='Create']")).click();
+        fancyBoxFragment.findElement(
+                By.xpath("//div[@id='fancybox-content']//input[@value='Create']")).click();
         return damPage.asPage(DAMPage.class);
     }
 
@@ -112,7 +114,7 @@ public class SearchResultsFragment extends WebFragmentImpl {
     }
 
     public BulkEditFancyBoxFragment showBulkEdit(DAMPage currentPage) {
-        WebElement bulkEditButton = findElementAndWaitUntilEnabled(By.id("nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_cvButton_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link"));
+        WebElement bulkEditButton = findElementAndWaitUntilEnabled(By.id("nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link"));
         bulkEditButton.click();
         WebElement element = currentPage.getFancyBoxContent();
         return getWebFragment(element, BulkEditFancyBoxFragment.class);

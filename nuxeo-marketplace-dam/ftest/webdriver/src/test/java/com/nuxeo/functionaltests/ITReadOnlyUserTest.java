@@ -17,16 +17,14 @@
 
 package com.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
-import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.dam.AssetCreationFancyBoxFragment;
-import org.nuxeo.functionaltests.dam.AssetViewFragment;
 import org.nuxeo.functionaltests.dam.DAMPage;
 import org.nuxeo.functionaltests.dam.SearchResultsFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.junit.Assert.assertFalse;
 
 /**
  * @since 5.7.3
@@ -41,20 +39,22 @@ public class ITReadOnlyUserTest extends AbstractDAMTest {
                 "One File description", "Leela", "1/1/2012");
         damPage = damPage.createAsset("File", "Another Document",
                 "Another File description", "Fry", "1/1/2012");
-        damPage.createAsset("File", "Sample picture",
-                "This is a sample doc", "Bender", "1/2/2012");
+        damPage.createAsset("File", "Sample picture", "This is a sample doc",
+                "Bender", "1/2/2012");
         logout();
 
         login("bender", "test");
         damPage = getDAMPage();
         SearchResultsFragment searchResultsFragment = damPage.getSearchResultsFragment();
-        // Asset Library is not selected as the user does not have Write right on it
+        // Asset Library is not selected as the user does not have Write right
+        // on it
         AssetCreationFancyBoxFragment assetCreation = searchResultsFragment.showAssetCreation(damPage);
         assetCreation.checkTextToBeNotPresent("Asset Library");
 
         // cannot bulk edit
         searchResultsFragment.selectAll();
-        WebElement bulkEditButton = driver.findElement(By.id("nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_cvButton_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link"));
+        String buttonId = "nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link";
+        WebElement bulkEditButton = driver.findElement(By.id(buttonId));
         assertFalse(bulkEditButton.isEnabled());
 
         // cannot edit any metadata on the asset view

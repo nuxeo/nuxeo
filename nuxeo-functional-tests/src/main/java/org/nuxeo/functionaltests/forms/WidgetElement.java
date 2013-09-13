@@ -31,6 +31,10 @@ public class WidgetElement extends AbstractWidgetElement {
         super(driver, id);
     }
 
+    public WidgetElement(WebDriver driver, WebElement element) {
+        super(driver, element.getAttribute("id"));
+    }
+
     public WebElement getInputElement() {
         return getElement(id);
     }

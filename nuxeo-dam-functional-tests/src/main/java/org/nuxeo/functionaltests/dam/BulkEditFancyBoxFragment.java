@@ -17,6 +17,7 @@
 
 package org.nuxeo.functionaltests.dam;
 
+import org.nuxeo.functionaltests.forms.WidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -52,15 +53,11 @@ public class BulkEditFancyBoxFragment extends WebFragmentImpl {
     }
 
     public void fillOriginalAuthor(String author) {
-        originalAuthorInput.click();
-        originalAuthorInput.clear();
-        originalAuthorInput.sendKeys(author);
+        new WidgetElement(driver, originalAuthorInput).setInputValue(author);
     }
 
     public void fillAuthoringDate(String date) {
-        authoringDateInput.click();
-        authoringDateInput.clear();
-        authoringDateInput.sendKeys(date);
+        new WidgetElement(driver, authoringDateInput).setInputValue(date);
     }
 
 }

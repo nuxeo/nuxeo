@@ -24,7 +24,6 @@ import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class SummaryTabSubPage extends AbstractPage {
 
@@ -34,7 +33,7 @@ public class SummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//select[contains(@id, 'nxw_start_route_widget')]")
     public WebElement workflowSelector;
 
-    @FindBy(xpath = "//form[contains(@id, 'nxl_grid_summary_layout_summary_current_document_single_tasks_form')]")
+    @FindBy(xpath = "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks_form')]")
     public WebElement workflowTasksForm;
 
     public SummaryTabSubPage(WebDriver driver) {
@@ -48,13 +47,13 @@ public class SummaryTabSubPage extends AbstractPage {
 
     public boolean workflowAlreadyStarted() {
         return findElementWithTimeout(
-                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout_summary_document_route_form')]")).getText().contains(
+                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_document_route_form')]")).getText().contains(
                 "Serial document review has been started by");
     }
 
     public boolean openTaskForCurrentUser() {
         return findElementWithTimeout(
-                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout_summary_current_document_single_tasks_form')]")).getText().contains(
+                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks_form')]")).getText().contains(
                 "Please accept or reject the document");
     }
 
@@ -65,7 +64,7 @@ public class SummaryTabSubPage extends AbstractPage {
 
     public boolean cantStartWorkflow() {
         return findElementWithTimeout(
-                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout_summary_document_route_form')]")).getText().contains(
+                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_document_route_form')]")).getText().contains(
                 "No workflow process can be started on this document.");
     }
 }

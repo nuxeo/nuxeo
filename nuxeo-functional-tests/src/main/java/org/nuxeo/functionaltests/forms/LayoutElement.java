@@ -143,6 +143,7 @@ public class LayoutElement extends AbstractPage {
      * Clears the given input element and sets the given value if not null.
      */
     public void setInput(WebElement elt, String value) {
+        elt.click();
         elt.clear();
         if (value != null) {
             elt.sendKeys(value);
