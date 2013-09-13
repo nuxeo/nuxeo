@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @since 5.7.3
  * @author Antoine Taillefer
  */
-@Operation(id = RestoreVersion.ID, category = Constants.CAT_DOCUMENT, label = "Restore Version", description = "Restores a document to the input version document. The restored document is automatically saved if the 'save' parameter is true, else you need to save it later using the Save operation. Returns the restored document.")
+@Operation(id = RestoreVersion.ID, category = Constants.CAT_DOCUMENT, label = "Restore Version", description = "Restores a document to the input version document. If createVersion is true, a version of the live document will be created before restoring it to the input version. If checkout is true, a checkout will be processed after restoring the document, visible in the UI by the '+' symbol beside the version number. Returns the restored document.")
 public class RestoreVersion {
 
     public static final String ID = "Document.RestoreVersion";
@@ -38,18 +38,17 @@ public class RestoreVersion {
     @Context
     protected CoreSession session;
 
-    @Param(name = "save", required = false, values = "true")
-    protected boolean save = true;
+    @Param(name = "createVersion", required = false, values = "false")
+    protected boolean createVersion = false;
+
+    @Param(name = "checkout", required = false, values = "false")
+    protected boolean checkout = false;
 
     @OperationMethod
     public DocumentModel run(DocumentModel version) throws Exception {
         DocumentModel liveDoc = session.getSourceDocument(version.getRef());
-        DocumentModel restoredDoc = session.restoreToVersion(liveDoc.getRef(),
-                version.getRef());
-        if (save) {
-            restoredDoc = session.saveDocument(restoredDoc);
-        }
-        return restoredDoc;
+        return session.restoreToVersion(liveDoc.getRef(), version.getRef(),
+                !createVersion, !checkout);
     }
 
 }
