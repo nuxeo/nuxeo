@@ -16,8 +16,6 @@ author: lkemen@nuxeo.com
 .nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)"; opacity: 0.75; text-decoration: none }
 .nxHeader a:hover, .nxHeader a:active { opacity: 1 }
 .nxHeader .logo a:link, .nxHeader .logo a:hover, .nxHeader .logo a:visited { opacity: 1 }
-/* Admin message */
-.nxHeader .header_admin_messages a, .nxHeader .header_admin_messages a:link, .nxHeader .header_admin_messages a:visited, .nxHeader .header_admin_messages a:hover, .nxHeader .header_admin_messages a:active { color: "default (__FLAVOR__ color)" }
 
 .nxHeader .actionsWidgetPanel {
   padding: 0 }

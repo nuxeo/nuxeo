@@ -6,6 +6,15 @@
   <ui:insert name="header_admin_message">
     <div class="header_admin_messages">
 
+    <c:if test="#{adminMessageActivated}">
+      <div class="adminMessage">
+        <a class="close">
+          <f:verbatim>&amp;times;</f:verbatim>
+        </a>
+        <h:outputText value="#{adminMessage}"/>
+      </div>
+    </c:if>
+
       <c:if test="#{adminMessageActivated}">
         <div style="adminMessage">
           <h:outputText value="#{adminMessage}"/>

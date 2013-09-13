@@ -90,6 +90,31 @@ author: lkemen@nuxeo.com
 .running { background-image: url("${basePath}/img/standart_waiter.gif") }
 .scheduled { background-image: url("${basePath}/icons/clock.png") }
 
+.adminMessage {
+  background-color: rgba(0, 0, 0, 0.8);
+  bottom: 0;
+  color: #fff;
+  font-size: 1.3em;
+  left: 0;
+  line-height: 160%;
+  padding: 1.5em 3em;
+  position: fixed;
+  right: 0;
+  z-index: 1000 }
+
+.adminMessage .close {
+  color: #fff;
+  display: block;
+  float: right;
+  font-family: Arial,sans-serif;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-left: 1.5em;
+  position: relative;
+  right: 0;
+  text-decoration: none;
+  top: -2px }
+
 .label,
 .chip {
   background-color: "neutral.stronger (__FLAVOR__ background)";
