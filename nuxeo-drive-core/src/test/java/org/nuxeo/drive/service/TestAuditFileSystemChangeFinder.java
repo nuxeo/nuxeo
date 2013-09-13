@@ -41,11 +41,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -134,6 +136,7 @@ public class TestAuditFileSystemChangeFinder {
         DocumentModel doc3;
         DocumentModel docToCopy;
         DocumentModel copiedDoc;
+        DocumentModel docToVersion;
 
         TransactionHelper.startTransaction();
         try {
@@ -356,6 +359,48 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals("test", change.getRepositoryId());
             assertEquals("deleted", change.getEventId());
             assertEquals(copiedDoc.getId(), change.getDocUuid());
+
+            // Create a doc, create a version of it, update doc and restore the
+            // version
+            docToVersion = session.createDocumentModel("/folder1",
+                    "docToVersion", "File");
+            docToVersion.setPropertyValue("file:content", new StringBlob(
+                    "The content of file to version."));
+            docToVersion = session.createDocument(docToVersion);
+            docToVersion.putContextData(VersioningService.VERSIONING_OPTION,
+                    VersioningOption.MAJOR);
+            session.saveDocument(docToVersion);
+            docToVersion.setPropertyValue("file:content", new StringBlob(
+                    "Updated content of the versioned file."));
+            session.saveDocument(docToVersion);
+            List<DocumentModel> versions = session.getVersions(docToVersion.getRef());
+            assertEquals(1, versions.size());
+            DocumentModel version = versions.get(0);
+            session.restoreToVersion(docToVersion.getRef(), version.getRef());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(4, changes.size());
+
+            change = changes.get(0);
+            assertEquals("documentRestored", change.getEventId());
+            assertEquals(docToVersion.getId(), change.getDocUuid());
+
+            change = changes.get(1);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(docToVersion.getId(), change.getDocUuid());
+
+            change = changes.get(2);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(docToVersion.getId(), change.getDocUuid());
+
+            change = changes.get(3);
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(docToVersion.getId(), change.getDocUuid());
 
             // Too many changes
             session.followTransition(doc1.getRef(), "delete");
