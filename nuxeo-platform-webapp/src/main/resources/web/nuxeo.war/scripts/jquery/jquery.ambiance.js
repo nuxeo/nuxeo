@@ -9,10 +9,10 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
  */
- 
+
 (function($) {
   $.fn.ambiance = function(options) {
-  
+
     var defaults = {
       title: "",
       message: "",
@@ -22,7 +22,7 @@
       fade: true,
       width: 300
     };
-    
+
     var options = $.extend(defaults, options);
     var note_area = $("#ambiance-notification");
 
@@ -30,10 +30,10 @@
     var note = $(window.document.createElement('div'))
                 .addClass("ambiance")
                 .addClass("ambiance-" + options['type']);
-                
+
     note.css({width: options['width']});
 
-    
+
     // Deal with adding the close feature or not.
     if (!options['permanent']) {
       note.prepend($(window.document.createElement('a'))
@@ -41,20 +41,20 @@
                     .attr("href", "#_")
                     .html("&times;"));
     }
-    
+
     // Deal with adding the title if given.
     if (options['title'] !== "") {
       note.append($(window.document.createElement('div'))
                    .addClass("ambiance-title")
                    .append(options['title']));
     }
-    
+
     // Append the message (this can also be HTML or even an object!).
     note.append(options['message']);
-    
+
     // Add the notification to the notification area.
     note_area.append(note);
-    
+
     // Deal with non-permanent note.
     if (!options['permanent']) {
       if (options['timeout'] != 0) {
@@ -66,22 +66,22 @@
               .queue(function() { $(this).remove(); });
         }
       }
-    }  
+    }
   };
   $.ambiance = $.fn.ambiance; // Rename for easier calling.
 })(jQuery);
 
-$(document).ready(function() { 
+jQuery(document).ready(function() {
   // Deal with adding the notification area to the page.
-  if ($("#ambiance-notification").length == 0) {
-    var note_area = $(window.document.createElement('div'))
+  if (jQuery("#ambiance-notification").length == 0) {
+    var note_area = jQuery(window.document.createElement('div'))
                      .attr("id", "ambiance-notification");
-    $('body').append(note_area);
+      jQuery('body').append(note_area);
   }
 });
 
 // Deal with close event on a note.
-$(document).on("click", ".ambiance-close", function () {
-  $(this).parent().remove();
+jQuery(document).on("click", ".ambiance-close", function () {
+    jQuery(this).parent().remove();
   return false;
 });
