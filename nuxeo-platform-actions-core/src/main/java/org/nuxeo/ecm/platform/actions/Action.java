@@ -136,7 +136,21 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.enabled = enabled;
     }
 
+    protected String getStringProperty(String prop) {
+        Map<String, Serializable> props = getProperties();
+        if (props != null && props.containsKey(prop)) {
+            Object linkObj = props.get(prop);
+            if (linkObj instanceof String) {
+                return (String) props.get(prop);
+            }
+        }
+        return null;
+    }
+
     public String getLabel() {
+        if (label == null) {
+            return getStringProperty("label");
+        }
         return label;
     }
 
@@ -145,6 +159,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public String getIcon() {
+        if (icon == null) {
+            return getStringProperty("icon");
+        }
         return icon;
     }
 
@@ -160,13 +177,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      */
     public String getLink() {
         if (link == null) {
-            Map<String, Serializable> props = getProperties();
-            if (props != null && props.containsKey("link")) {
-                Object linkObj = props.get("link");
-                if (linkObj instanceof String) {
-                    return (String) props.get("link");
-                }
-            }
+            return getStringProperty("link");
         }
         return link;
     }
@@ -265,14 +276,11 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      */
     public String getConfirm() {
         if (confirm == null) {
-            Map<String, Serializable> props = getProperties();
-            if (props != null && props.containsKey("link")) {
-                Object linkObj = props.get("link");
-                if (linkObj instanceof String) {
-                    return (String) props.get("link");
-                }
+            String conf = getStringProperty("confirm");
+            if (conf == null) {
+                conf = "";
             }
-            return "";
+            return conf;
         } else {
             return confirm;
         }
@@ -280,26 +288,6 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     public void setConfirm(String confirm) {
         this.confirm = confirm;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (other == null) {
-            return false;
-        }
-        if (!(other instanceof Action)) {
-            return false;
-        }
-        Action otherAction = (Action) other;
-        return id == null ? otherAction.id == null : id.equals(otherAction.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id == null ? 0 : id.hashCode();
     }
 
     public boolean getAvailable() {
@@ -312,7 +300,11 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
 
     public String getHelp() {
         if (help == null) {
-            return "";
+            String conf = getStringProperty("help");
+            if (conf == null) {
+                conf = "";
+            }
+            return conf;
         } else {
             return help;
         }
@@ -323,47 +315,15 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public boolean isImmediate() {
+        if (help == null) {
+            String conf = getStringProperty("help");
+            return Boolean.valueOf(conf).booleanValue();
+        }
         return immediate;
     }
 
     public void setImmediate(boolean immediate) {
         this.immediate = immediate;
-    }
-
-    @Override
-    public Action clone() {
-        Action clone = new Action();
-        clone.id = id;
-        clone.link = link;
-        if (linkParams != null) {
-            clone.linkParams = linkParams.clone();
-        }
-        clone.enabled = enabled;
-        clone.label = label;
-        clone.icon = icon;
-        clone.confirm = confirm;
-        clone.help = help;
-        clone.immediate = immediate;
-        clone.accessKey = accessKey;
-        clone.type = type;
-        if (properties != null) {
-            clone.properties = properties.clone();
-        }
-        clone.available = available;
-        clone.order = order;
-        if (categories != null) {
-            clone.categories = categories.clone();
-        }
-        if (filterIds != null) {
-            clone.filterIds = new ArrayList<String>(filterIds);
-        }
-        if (filters != null) {
-            clone.filters = new ActionFilter[filters.length];
-            for (int i = 0; i < filters.length; i++) {
-                clone.filters[i] = filters[i].clone();
-            }
-        }
-        return clone;
     }
 
     /**
@@ -435,7 +395,66 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
      * @since 5.6
      */
     public String getAccessKey() {
+        if (accessKey == null) {
+            return getStringProperty("accessKey");
+        }
         return accessKey;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (!(other instanceof Action)) {
+            return false;
+        }
+        Action otherAction = (Action) other;
+        return id == null ? otherAction.id == null : id.equals(otherAction.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id == null ? 0 : id.hashCode();
+    }
+
+    @Override
+    public Action clone() {
+        Action clone = new Action();
+        clone.id = id;
+        clone.link = link;
+        if (linkParams != null) {
+            clone.linkParams = linkParams.clone();
+        }
+        clone.enabled = enabled;
+        clone.label = label;
+        clone.icon = icon;
+        clone.confirm = confirm;
+        clone.help = help;
+        clone.immediate = immediate;
+        clone.accessKey = accessKey;
+        clone.type = type;
+        if (properties != null) {
+            clone.properties = properties.clone();
+        }
+        clone.available = available;
+        clone.order = order;
+        if (categories != null) {
+            clone.categories = categories.clone();
+        }
+        if (filterIds != null) {
+            clone.filterIds = new ArrayList<String>(filterIds);
+        }
+        if (filters != null) {
+            clone.filters = new ActionFilter[filters.length];
+            for (int i = 0; i < filters.length; i++) {
+                clone.filters[i] = filters[i].clone();
+            }
+        }
+        return clone;
     }
 
 }
