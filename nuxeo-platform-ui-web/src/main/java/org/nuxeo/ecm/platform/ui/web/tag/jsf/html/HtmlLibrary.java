@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.jsf.html;
 
+import org.nuxeo.ecm.platform.ui.web.component.message.NXMessagesRenderer;
 import org.nuxeo.ecm.platform.ui.web.renderer.NXCheckboxRenderer;
 import org.nuxeo.ecm.platform.ui.web.renderer.NXImageRenderer;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
@@ -76,7 +77,7 @@ public class HtmlLibrary extends AbstractHtmlLibrary {
                 "javax.faces.Message");
 
         this.addHtmlComponent("messages", "javax.faces.HtmlMessages",
-                "javax.faces.Messages");
+                NXMessagesRenderer.RENDERER_TYPE);
 
         this.addHtmlComponent("outputFormat", "javax.faces.HtmlOutputFormat",
                 "javax.faces.Format");
