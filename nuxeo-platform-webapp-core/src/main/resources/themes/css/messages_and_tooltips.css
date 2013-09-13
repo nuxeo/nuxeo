@@ -91,7 +91,8 @@ author: lkemen@nuxeo.com
 .scheduled { background-image: url("${basePath}/icons/clock.png") }
 
 .adminMessage {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.85);
   bottom: 0;
   color: #fff;
   font-size: 1.3em;
