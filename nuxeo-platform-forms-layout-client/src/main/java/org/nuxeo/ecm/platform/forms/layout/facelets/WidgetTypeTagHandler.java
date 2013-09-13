@@ -33,6 +33,7 @@ import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -249,6 +250,9 @@ public class WidgetTypeTagHandler extends TagHandler {
                     Widget[].class);
         }
 
+        if (StringUtils.isBlank(widgetNameValue)) {
+            widgetNameValue = typeValue;
+        }
         WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(widgetNameValue,
                 typeValue, labelValue, helpLabelValue,
                 translatedValue.booleanValue(), null, fieldsValue, widgetProps,
