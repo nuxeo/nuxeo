@@ -600,26 +600,46 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
     @Override
     public Widget createWidget(FaceletContext ctx, WidgetDefinition wDef,
             String mode, String valueName, Widget[] subWidgets) {
-        Map<String, Serializable> properties = wDef.getProperties(mode, mode);
-        Serializable requiredProp = properties.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
+
+        String wType = wDef.getType();
+        String wTypeCat = wDef.getTypeCategory();
+        // fill default property values from the widget definition
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        WidgetTypeDefinition def = getLayoutStore().getWidgetTypeDefinition(
+                getStoreCategory(wTypeCat), wType);
+
         boolean required = false;
-        if (requiredProp != null) {
-            if (requiredProp instanceof Boolean) {
-                required = ((Boolean) requiredProp).booleanValue();
-            } else if (requiredProp instanceof String) {
-                required = getBooleanValue(ctx, (String) requiredProp).booleanValue();
-            } else {
-                log.error(String.format(
-                        "Invalid property '%s' on widget: '%s'",
-                        WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
+        WidgetTypeConfiguration conf = def != null ? def.getConfiguration()
+                : null;
+        if (conf != null) {
+            Map<String, Serializable> defaultProps = conf.getDefaultPropertyValues(mode);
+            if (defaultProps != null && !defaultProps.isEmpty()) {
+                props.putAll(defaultProps);
+            }
+        }
+        Map<String, Serializable> modeProps = wDef.getProperties(mode, mode);
+        if (modeProps != null) {
+            props.putAll(modeProps);
+            Serializable requiredProp = props.get(WidgetDefinition.REQUIRED_PROPERTY_NAME);
+            if (requiredProp != null) {
+                if (requiredProp instanceof Boolean) {
+                    required = ((Boolean) requiredProp).booleanValue();
+                } else if (requiredProp instanceof String) {
+                    required = getBooleanValue(ctx, (String) requiredProp).booleanValue();
+                } else {
+                    log.error(String.format(
+                            "Invalid property '%s' on widget: '%s'",
+                            WidgetDefinition.REQUIRED_PROPERTY_NAME,
+                            requiredProp));
+                }
             }
         }
         WidgetImpl widget = new WidgetImpl("layout", wDef.getName(), mode,
-                wDef.getType(), valueName, wDef.getFieldDefinitions(),
+                wType, valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(mode), wDef.getHelpLabel(mode),
-                wDef.isTranslated(), properties, required, subWidgets, 0, null,
+                wDef.isTranslated(), props, required, subWidgets, 0, null,
                 LayoutFunctions.computeWidgetDefinitionId(wDef));
-        widget.setTypeCategory(wDef.getTypeCategory());
+        widget.setTypeCategory(wTypeCat);
         return widget;
     }
 
