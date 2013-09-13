@@ -1063,24 +1063,20 @@ CREATE PROCEDURE nx_update_read_acls
 AS
 BEGIN
   SET NOCOUNT ON;
-  -- Get the range of modified
-  DECLARE @last INT;
-  SET @last = (SELECT COALESCE(MAX(id), 0) FROM aclr_modified WHERE is_new = 2);
-  DECLARE @top INT;
-  INSERT INTO aclr_modified VALUES (NULL, 2);
-  SET @top = @@IDENTITY
   --
   -- 1/ New documents, no new ACL
   INSERT INTO hierarchy_read_acl
     SELECT id, dbo.nx_get_read_acl_id(id)
     FROM (SELECT DISTINCT(hierarchy_id) AS id
         FROM aclr_modified
-        WHERE is_new = 1 AND id BETWEEN @last AND @top AND
+        WHERE is_new = 1 AND
             EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id)) AS uids;
+  DELETE FROM aclr_modified WHERE is_new = 1;
   --
   -- 2/ Handles new ACLs, marking read acl with a NULL marker
   UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
-    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM aclr_modified WHERE is_new = 0 AND id BETWEEN @last AND @top);
+    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM aclr_modified WHERE is_new = 0);
+  DELETE FROM aclr_modified WHERE is_new = 0;
   --
   -- 3/ Mark all children with the NULL marker
   WHILE @@rowcount > 0 BEGIN
