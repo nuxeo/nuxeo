@@ -950,7 +950,9 @@ AFTER UPDATE AS
 BEGIN
   SET NOCOUNT ON;
   INSERT INTO aclr_modified (hierarchy_id, is_new)
-    SELECT DISTINCT(id), 0 FROM inserted;
+    SELECT DISTINCT(OLD.id), 0 FROM deleted OLD
+      JOIN [inserted] NEW ON OLD.id = NEW.id
+      WHERE NEW.isproperty = 0 AND OLD.parentid <> NEW.parentid;
 END;
 
 #IF: ! aclOptimizationsEnabled
