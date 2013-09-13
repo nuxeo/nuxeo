@@ -14,11 +14,10 @@
 
 package org.nuxeo.ecm.platform.dublincore.listener;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
 
 import java.io.Serializable;
@@ -35,7 +34,6 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.dublincore.NXDublinCore;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 
@@ -68,8 +66,7 @@ public class DublinCoreListener implements EventListener {
         }
         String eventId = event.getName();
 
-        if (!eventId.equals(DOCUMENT_UPDATED)
-                && !eventId.equals(DOCUMENT_CREATED)
+        if (!eventId.equals(DOCUMENT_CREATED)
                 && !eventId.equals(BEFORE_DOC_UPDATE)
                 && !eventId.equals(TRANSITION_EVENT)
                 && !eventId.equals(DOCUMENT_PUBLISHED)) {
@@ -82,7 +79,8 @@ public class DublinCoreListener implements EventListener {
             return;
         }
 
-        Boolean block = (Boolean) event.getContext().getProperty(DISABLE_DUBLINCORE_LISTENER);
+        Boolean block = (Boolean) event.getContext().getProperty(
+                DISABLE_DUBLINCORE_LISTENER);
         if (block != null && block) {
             // ignore the event - we are blocked by the caller
             return;
