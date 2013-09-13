@@ -14,6 +14,8 @@ Parameters:
 - idPrefix: a String prefix to put before the action id (optional)
 - actionType (optional): type to use if not set on action or needs to be
   used by default if not set on action
+- mode: the rendering mode for potential widgets created via actions (optional):
+  defaults to 'view'.
 
 Display options:
 - hideIcon: hide the icon associated to the action if any. Defaults to false.
@@ -61,7 +63,7 @@ Templating zones that can be filled when useAjaxForm is set to true:
 
   <nxl:widgetType category="jsfAction"
     name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
-    mode="view"
+    mode="#{empty mode?'view':mode}"
     widgetName="#{strippedWidgetName}"
     hideIcon="#{hideIcon}"
     hideLabel="#{hideLabel}"
