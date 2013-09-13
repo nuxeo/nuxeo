@@ -2442,12 +2442,13 @@
       </property>
     </widgetType>
 
-    <widgetType name="currentDocumentActions">
+    <widgetType name="documentActions">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Form actions</title>
         <description>
-          <p>This widget displays actions filtered on the current document.</p>
+          <p>This widget displays actions filtered on the document given as
+            field mapping.</p>
           <p>
             It will display actions in the category given in the 'category'
             property. The widget label and help label will be displayed above
@@ -2458,6 +2459,71 @@
             fancybox actions for instance, their popup content cannot contain
             another form.
           </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>false</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="documentActions_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/document_actions_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentActions">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <deprecatedVersion>5.7.3</deprecatedVersion>
+        <title>Form actions</title>
+        <description>
+          <p>This widget displays actions filtered on the current document.</p>
+          <p>Since 5.7.3, use "documentActions" instead.</p>
         </description>
         <categories>
           <category>tab_designer</category>
@@ -2511,17 +2577,17 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/actions/current_document_actions_widget_template.xhtml
+        /widgets/actions/document_actions_widget_template.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="currentDocumentActionsWithForms">
+    <widgetType name="documentActionsWithForms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Toolbar actions</title>
         <description>
-          <p>This widget displays actions filtered on the current document, and
-            surrounds them by a form.</p>
+          <p>This widget displays actions filtered on the document given as
+            field mapping, and surrounds them by a form.</p>
           <p>
             It will display actions in the category given in the 'category'
             property. The widget label and help label will be displayed above
@@ -2532,6 +2598,72 @@
             possible to use fancybox actions for instance, whose popup content
             would use a different form.
           </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="documentActionsWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_category</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_maxActionsNumber</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_moreMenuLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/document_actions_with_forms_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentActionsWithForms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <deprecatedVersion>5.7.3</deprecatedVersion>
+        <title>Toolbar actions</title>
+        <description>
+          <p>This widget displays actions filtered on the current document, and
+            surrounds them by a form.</p>
+          <p>Since 5.7.3, use "documentActionsWithForms" instead.</p>
         </description>
         <categories>
           <category>tab_designer</category>
@@ -2585,16 +2717,17 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/actions/current_document_actions_with_forms_widget_template.xhtml
+        /widgets/actions/document_actions_with_forms_widget_template.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="currentDocumentAction">
+    <widgetType name="documentAction">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Form action</title>
         <description>
-          <p>This widget displays an action filtered on current document context</p>
+          <p>This widget displays an action filtered on context using document
+            given as field mapping.</p>
           <p>
             It needs the action id as property "actionId".
             <br />
@@ -2605,6 +2738,65 @@
             fancybox actions for instance, their popup content cannot contain
             another form.
           </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>false</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="documentAction_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_actionId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/document_action_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentAction">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <deprecatedVersion>5.7.3</deprecatedVersion>
+        <title>Form action</title>
+        <description>
+          <p>This widget displays an action filtered on current document context</p>
+          <p>Since 5.7.3, use "documentAction" instead.</p>
         </description>
         <categories>
           <category>tab_designer</category>
@@ -2652,11 +2844,11 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/actions/current_document_action_widget_template.xhtml
+        /widgets/actions/document_action_widget_template.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="currentDocumentActionWithForms">
+    <widgetType name="documentActionWithForms">
       <configuration>
         <sinceVersion>5.7</sinceVersion>
         <title>Toolbar action</title>
@@ -2672,6 +2864,65 @@
             possible to use fancybox actions for instance, whose popup content
             would use a different form.
           </p>
+        </description>
+        <categories>
+          <category>tab_designer</category>
+        </categories>
+        <fields>
+          <defaultConfiguration>
+            <field></field>
+          </defaultConfiguration>
+        </fields>
+        <containingForm>true</containingForm>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <layouts mode="any">
+            <layout name="documentActionWithForms_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">actions_actionId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actionsDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_addForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_useAjaxForm</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">actions_disableFiltered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/actions/document_action_with_forms_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="currentDocumentActionWithForms">
+      <configuration>
+        <sinceVersion>5.7</sinceVersion>
+        <deprecatedVersion>5.7.3</deprecatedVersion>
+        <title>Toolbar action</title>
+        <description>
+          <p>This widget displays an action filtered on current document context</p>
+          <p>Since 5.7.3, use "documentActionWithForms" instead.</p>
         </description>
         <categories>
           <category>tab_designer</category>
@@ -2719,13 +2970,13 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/actions/current_document_action_with_forms_widget_template.xhtml
+        /widgets/actions/document_action_with_forms_widget_template.xhtml
       </property>
     </widgetType>
 
-    <widgetType name="currentDocumentTabsWithForms">
+    <widgetType name="documentTabsWithForms">
       <configuration>
-        <sinceVersion>5.7</sinceVersion>
+        <sinceVersion>5.7.3</sinceVersion>
         <title>Document tabs</title>
         <description>
           <p>This widget displays tabs filtered on current document context</p>
@@ -2754,7 +3005,7 @@
         </supportedModes>
         <properties>
           <layouts mode="any">
-            <layout name="currentDocumentTabsWithForms_widget_type_properties_any">
+            <layout name="documentTabsWithForms_widget_type_properties_any">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">actions_category</widget>
@@ -2780,7 +3031,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /widgets/actions/current_document_tabs_with_forms_widget_template.xhtml
+        /widgets/actions/document_tabs_with_forms_widget_template.xhtml
       </property>
     </widgetType>
 

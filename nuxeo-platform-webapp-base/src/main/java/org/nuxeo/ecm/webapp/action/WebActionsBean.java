@@ -116,6 +116,13 @@ public class WebActionsBean implements WebActions, Serializable {
         return getActionsList(category, context, true);
     }
 
+    @Override
+    public List<Action> getActionsList(String category, DocumentModel document,
+            boolean hideUnavailableAction) {
+        return getActionsList(category, createActionContext(document),
+                hideUnavailableAction);
+    }
+
     public List<Action> getActionsList(String category) {
         return getActionsList(category, createActionContext());
     }
@@ -137,9 +144,20 @@ public class WebActionsBean implements WebActions, Serializable {
         return actionContextProvider.createActionContext();
     }
 
+    protected ActionContext createActionContext(DocumentModel document) {
+        return actionContextProvider.createActionContext(document);
+    }
+
     @Override
     public Action getAction(String actionId, boolean hideUnavailableAction) {
         return actionManager.getAction(actionId, createActionContext(),
+                hideUnavailableAction);
+    }
+
+    @Override
+    public Action getAction(String actionId, DocumentModel document,
+            boolean hideUnavailableAction) {
+        return getAction(actionId, createActionContext(document),
                 hideUnavailableAction);
     }
 

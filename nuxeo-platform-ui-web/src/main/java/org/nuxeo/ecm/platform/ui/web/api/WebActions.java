@@ -114,6 +114,19 @@ public interface WebActions {
     List<Action> getActionsList(String category, Boolean hideUnavailableAction);
 
     /**
+     * Returns all filtered actions for a given category and a context built
+     * with given current document context, creating a new context for the
+     * filters resolution.
+     * <p>
+     * Actions are filtered according to filters set on the actions
+     * definitions.
+     *
+     * @since 5.7.3
+     */
+    List<Action> getActionsList(String category, DocumentModel document,
+            boolean hideUnavailableAction);
+
+    /**
      * Returns all filtered actions for a given category and given resolution
      * context.
      * <p>
@@ -344,6 +357,15 @@ public interface WebActions {
      * @see ActionManager#getAction(String, ActionContext, boolean)
      */
     Action getAction(String actionId, boolean hideUnavailableAction);
+
+    /**
+     * Return action with given id, with context filled with given document.
+     *
+     * @since 5.7.3
+     * @see ActionManager#getAction(String, ActionContext, boolean)
+     */
+    Action getAction(String actionId, DocumentModel document,
+            boolean hideUnavailableAction);
 
     /**
      * @since 5.6

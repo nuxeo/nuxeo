@@ -31,6 +31,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
@@ -57,12 +58,22 @@ public class ActionContextProvider implements Serializable {
     // WebActionsBean#setCurrentTabAndNavigate hack for instance.
     @Factory(value = "currentActionContext", scope = EVENT)
     public ActionContext createActionContext() {
+        return createActionContext(navigationContext.getCurrentDocument());
+    }
+
+    /**
+     * Returns an action context computed from current core session and current
+     * user, and document given as parameter.
+     *
+     * @since 5.7.3
+     */
+    public ActionContext createActionContext(DocumentModel document) {
         FacesContext faces = FacesContext.getCurrentInstance();
         if (faces == null) {
             throw new IllegalArgumentException("Faces context is null");
         }
         ActionContext ctx = new JSFActionContext(faces);
-        ctx.setCurrentDocument(navigationContext.getCurrentDocument());
+        ctx.setCurrentDocument(document);
         ctx.setDocumentManager(documentManager);
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
         ctx.putLocalVariable("SeamContext", new SeamContextHelper());
