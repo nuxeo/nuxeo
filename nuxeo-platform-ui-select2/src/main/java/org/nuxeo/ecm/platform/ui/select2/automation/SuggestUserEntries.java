@@ -156,6 +156,10 @@ public class SuggestUserEntries {
                     }
                 }
                 String groupId = group.getId();
+                // If the group hasn't an label, let's put the groupid
+                if (StringUtils.isBlank(obj.getString(Select2Common.LABEL))) {
+                    obj.element(Select2Common.LABEL, groupId);
+                }
                 obj.put(Select2Common.ID, groupId);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
                 obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX
