@@ -38,6 +38,8 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -47,6 +49,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Main implementation class for delivering the Import logic
@@ -153,6 +156,8 @@ public class XMLImporterServiceImpl {
     }
 
     protected File workingDirectory;
+
+    private AutomationService automationService;
 
     public List<DocumentModel> parse(InputStream is) throws Exception {
         mvelCtx.put("source", is);
@@ -489,10 +494,29 @@ public class XMLImporterServiceImpl {
             doc.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
             doc = session.saveDocument(doc);
             docsStack.push(doc);
+
+            if (createConf != null) {
+                String chain = createConf.getAutomationChain();
+                if (chain != null && !"".equals(chain.trim())) {
+                    OperationContext ctx = new OperationContext(session,
+                            mvelCtx);
+                    ctx.setInput(doc);
+                    getAutomationService().run(ctx, chain);
+                }
+            }
+
         }
         for (Object e : el.elements()) {
             process((Element) e);
         }
+    }
+
+    private AutomationService getAutomationService() {
+        if (automationService == null) {
+            automationService = Framework.getLocalService(AutomationService.class);
+        }
+        return automationService;
+
     }
 
 }

@@ -43,6 +43,9 @@ public class DocConfigDescriptor {
     @XNode("name")
     protected String name;
 
+    @XNode("postCreationAutomationChain")
+    protected String automationChain;
+
     public DocConfigDescriptor() {
     }
 
@@ -67,6 +70,11 @@ public class DocConfigDescriptor {
 
     public String getName() {
         return name;
+    }
+
+    public String getAutomationChain() {
+        return automationChain;
+
     }
 
     @Override
