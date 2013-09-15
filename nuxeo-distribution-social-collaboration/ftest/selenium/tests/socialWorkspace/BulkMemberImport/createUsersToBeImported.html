@@ -453,82 +453,52 @@ ll<?xml version="1.0" encoding="UTF-8"?>
 	<td>//*[@id=&quot;createGroupView:createGroup:nxl_group:nxw_group_name&quot;]</td>
 	<td>AnotherGroup</td>
 </tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_group_members_select2'] input</td>
+    <td>memberOfAnotherGroup1</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
-	<td>memberOfAnotherGroup1</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_group_members_select2'] input</td>
+    <td>memberOfAnotherGroup1</td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
-	<td>memberOfAnotherGroup1</td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
+</tr>
+<!--  -->
+<!-- Since 5.7.3 group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
+<tr>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_group_members_select2'] input</td>
+    <td>memberOfAnotherGroup2</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_group_members_select2'] input</td>
+    <td>memberOfAnotherGroup2</td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>6000</td>
-	<td></td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
-	<td></td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>typeKeys</td>
-	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
-	<td></td>
-</tr>
-
-<tr>
-	<td>typeKeys</td>
-	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
-	<td>memberOfAnotherGroup2</td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
-	<td>memberOfAnotherGroup2</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>6000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr/x:td[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>6000</td>
-	<td></td>
-</tr>
+<!--  -->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>memberOfAnotherGroup1</td>

@@ -257,51 +257,29 @@
 	<td>link=Membership management</td>
 	<td></td>
 </tr>
+<!-- Since 5.7.3 user_group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>id=editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggest</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_social_workspace_group_members_1_select2'] input</td>
+    <td>SocialWorkspaceMember</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>id=editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggest</td>
-	<td>SocialWorkspaceMember</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_social_workspace_group_members_1_select2'] input</td>
+    <td>SocialWorkspaceMember</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggestionBox:suggest']/tbody/tr/td[2]</td>
-	<td></td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//*[@id='editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggestionBox:suggest']/tbody/tr/td[2]</td>
-	<td>SocialWorkspaceMember</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//table[@id='editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggestionBox:suggest']/tbody/tr/td[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
+<!--  -->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>SocialWorkspaceMember</td>
@@ -332,51 +310,52 @@
 	<td>link=Membership management</td>
 	<td></td>
 </tr>
+<!-- Since 5.7.3 user_group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>type</td>
-	<td>id=editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggest</td>
-	<td></td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_social_workspace_group_members_1_select2'] input</td>
+    <td>SocialWorkspaceMember</td>
 </tr>
 <tr>
-	<td>typeKeys</td>
-	<td>id=editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggest</td>
-	<td>SocialWorkspaceMember</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_social_workspace_group_members_1_select2'] input</td>
+    <td>SocialWorkspaceMember</td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//*[@id='editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggestionBox:suggest']/tbody/tr/td[2]</td>
-	<td></td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
+</tr>
+<!--  -->
+<!-- Since 5.7.3 user_group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
+<tr>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_social_workspace_group_members_1_select2'] input</td>
+    <td>SocialWorkspaceMember</td>
 </tr>
 <tr>
-	<td>verifyElementPresent</td>
-	<td>//*[@id='editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggestionBox:suggest']/tbody/tr/td[2]</td>
-	<td>SocialWorkspaceMember</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_social_workspace_group_members_1_select2'] input</td>
+    <td>SocialWorkspaceMember</td>
 </tr>
 <tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>watchA4jRequests</td>
-	<td></td>
-	<td></td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<tr>
-	<td>click</td>
-	<td>//table[@id='editSocialWorkspaceGroups:nxl_social_workspace_group_1:nxw_social_workspace_group_members_1_suggestionBox:suggest']/tbody/tr/td[2]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>3000</td>
-	<td></td>
-</tr>
+<!--  -->
 <tr>
 	<td>verifyTextPresent</td>
 	<td>SocialWorkspaceMember</td>

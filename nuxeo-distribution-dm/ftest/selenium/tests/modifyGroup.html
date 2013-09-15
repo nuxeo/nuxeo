@@ -126,29 +126,39 @@
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_list:0:nxw_group_members_2_listItem']</td>
+	<td>//*[@id='s2id_viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][1]/div</td>
 	<td>Bree Van de Kaamp</td>
 </tr>
-
+<!-- don't be too fast for select2 -->
+<tr>
+    <td>setSpeed</td>
+    <td>300</td>
+    <td></td>
+</tr>
 <tr>
 	<td>click</td>
-	<td>viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_list:0:nxw_group_members_2_delete</td>
+	<td>//*[@id='s2id_viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][1]/a[@class='select2-search-choice-close']</td>
 	<td></td>
 </tr>
-<!-- wait for table item to disappear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_list:2:nxw_group_members_2_listItem') == null</td>
-	<td>10000</td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
+    <td>setSpeed</td>
+    <td>0</td>
+    <td></td>
+</tr>
+<!--  -->
+<tr>
 	<td>verifyText</td>
-	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_list:0:nxw_group_members_2_listItem']</td>
+	<td>//*[@id='s2id_viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][1]/div</td>
 	<td>John Doe</td>
 </tr>
 <tr>
 	<td>verifyText</td>
-	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_list:1:nxw_group_members_2_listItem']</td>
+	<td>//*[@id='s2id_viewGroupView:editGroup:nxl_group_2:nxw_group_members_2_select2']/ul[@class='select2-choices']/li[@class='select2-search-choice'][2]/div</td>
 	<td>John Smith</td>
 </tr>
 <tr>
