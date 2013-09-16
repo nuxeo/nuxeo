@@ -75,9 +75,7 @@
               </h:inputTextarea>
               <h:message for="#{widget.id}_smartQueryPart" class="errorMessage" />
             </a4j:outputPanel>
-          </td>
-          <td valign="bottom">
-            <a4j:outputPanel id="#{widget.id}_smartQueryUndoPanel" layout="block">
+            <a4j:outputPanel id="#{widget.id}_smartQueryUndoPanel" layout="inline">
               <a4j:commandButton value="#{messages['label.smart.query.undoChanges']}"
                 actionListener="#{smartNXQLQueryActions.undoQueryPartChanges}"
                 reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
@@ -88,7 +86,6 @@
                 <a4j:actionparam name="updateQueryPart"
                   value="#{widgetProperty_updateQueryPart}" />
               </a4j:commandButton>
-              <br /><br />
               <a4j:commandButton value="#{messages['label.smart.query.redoChanges']}"
                 actionListener="#{smartNXQLQueryActions.redoQueryPartChanges}"
                 reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
@@ -99,7 +96,6 @@
                 <a4j:actionparam name="updateQueryPart"
                   value="#{widgetProperty_updateQueryPart}" />
               </a4j:commandButton>
-              <br /><br />
             </a4j:outputPanel>
             <a4j:commandButton value="#{messages['label.smart.query.clearQuery']}"
               actionListener="#{smartNXQLQueryActions.clearQueryPart}"
