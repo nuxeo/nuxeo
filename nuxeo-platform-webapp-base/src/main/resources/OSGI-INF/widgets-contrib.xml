@@ -30,19 +30,21 @@
           <br />
           A standard definition could be:
           <div class="pre">
-            &lt;widget name="life_cycle_transitions" type="life_cycle_transitions"&gt;
-              &lt;labels&gt;
-                &lt;label mode="any"&gt;&lt;/label&gt;
-              &lt;/labels&gt;
-              &lt;fields&gt;
-                &lt;field&gt;contextData['request/lifeCycleTransition']&lt;/field&gt;
-              &lt;/fields&gt;
-              &lt;properties widgetMode="edit"&gt;
-                &lt;property name="currentLifeCycleState"&gt;#{layoutValue.currentLifeCycleState}&lt;/property&gt;
-                &lt;property name="lifeCycleName"&gt;#{layoutValue.lifeCyclePolicy}&lt;/property&gt;
-              &lt;/properties&gt;
-            &lt;/widget&gt;
-          </div>
+            &lt;widget name="life_cycle_transitions"
+            type="life_cycle_transitions"&gt;
+            &lt;labels&gt;
+            &lt;label mode="any"&gt;&lt;/label&gt;
+            &lt;/labels&gt;
+            &lt;fields&gt;
+            &lt;field&gt;contextData['request/lifeCycleTransition']&lt;/field&gt;
+            &lt;/fields&gt;
+            &lt;properties widgetMode="edit"&gt;
+            &lt;property
+            name="currentLifeCycleState"&gt;#{layoutValue.currentLifeCycleState}&lt;/property&gt;
+            &lt;property
+            name="lifeCycleName"&gt;#{layoutValue.lifeCyclePolicy}&lt;/property&gt;
+            &lt;/properties&gt;
+            &lt;/widget&gt; </div>
         </description>
         <categories>
           <category>document</category>
@@ -185,7 +187,9 @@
                 <helpLabels>
                   <label mode="any">
                     A comma separated list of supported file
-                    extensions. Default value: '.jpg, .jpeg, .png, .gif, .tif, .tiff, .psd, .raw, .ai, .svg, .ps, .eps, .epsi, .epsf, .xcf, .bmp'.
+                    extensions. Default value: '.jpg, .jpeg, .png, .gif, .tif,
+                    .tiff, .psd, .raw, .ai, .svg, .ps, .eps, .epsi, .epsf, .xcf,
+                    .bmp'.
                   </label>
                 </helpLabels>
                 <fields>
@@ -289,6 +293,10 @@
           /widgets/user_suggestion_widget_template.xhtml
         </property>
         <property name="userSuggestionSearchType">USER_TYPE</property>
+        <property name="operationId">UserGroup.Suggestion</property>
+        <property name="hideInstructionLabel">true</property>
+        <property name="suggestionFormatter">userEntryDefaultFormatter</property>
+        <property name="selectionFormatter">userEntryDefaultFormatter</property>
       </properties>
     </widget>
     <widget name="group_subgroups" type="template">
@@ -304,6 +312,10 @@
           /widgets/user_suggestion_widget_template.xhtml
         </property>
         <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        <property name="operationId">UserGroup.Suggestion</property>
+        <property name="hideInstructionLabel">true</property>
+        <property name="suggestionFormatter">userEntryDefaultFormatter</property>
+        <property name="selectionFormatter">userEntryDefaultFormatter</property>
       </properties>
     </widget>
   </extension>

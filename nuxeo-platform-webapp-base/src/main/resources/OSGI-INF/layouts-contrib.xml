@@ -21,6 +21,41 @@
       </selectOptions>
     </widget>
 
+    <widget name="userSuggestion_groupRestriction" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Group id restriction</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Enter the id of a group to suggest only user from this
+          group.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>groupRestriction</field>
+      </fields>
+    </widget>
+
+    <widget name="userSuggestion_prefixed" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Use prefixed reference</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this box if you want the references prefixed with "user:" or "group:".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>prefixed</field>
+      </fields>
+    </widget>
+
     <widget name="userSuggestion_firstLabelField" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -264,6 +299,126 @@
       </fields>
     </widget>
 
+    <widget name="suggestion_helpLabel" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Help Label</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The help label is displayed below the
+          widget.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>helpLabel</field>
+      </fields>
+    </widget>
+
+    <widget name="suggestion_containerCssClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Container css class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Css class of the selection container
+        </label>
+      </helpLabels>
+      <fields>
+        <field>containerCssClass</field>
+      </fields>
+    </widget>
+
+    <widget name="suggestion_dropdownCssClass" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Dropdown css class</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Css class of the dropdown suggestion
+        </label>
+      </helpLabels>
+      <fields>
+        <field>dropdownCssClass</field>
+      </fields>
+    </widget>
+
+    <widget name="suggestion_suggestionFormatter" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Suggestion Formatter</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the JavaScript function name that
+          will be
+          called by select2 to do the formating of the
+          suggestion entries.
+          The
+          target function should take as input
+          the javascript Document as
+          returned by Automation and should
+          return some Html.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>suggestionFormatter</field>
+      </fields>
+    </widget>
+
+    <widget name="suggestion_selectionFormatter" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Selection Formater</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the JavaScript function name that
+          will be
+          called by select2 to do the formating of the
+          selected entries.
+          The
+          target function should take as input
+          the javascript Document as
+          returned by Automation and should
+          return some Html.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>selectionFormatter</field>
+      </fields>
+    </widget>
+
+    <widget name="suggestion_inlinejs" type="textarea">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Inline Javascript</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Javascript to be injected in the page with
+          the Widget. You can define here customs formatter.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>inlinejs</field>
+      </fields>
+    </widget>
+
     <widget name="documentSuggestion_tab" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -448,7 +603,7 @@
       </fields>
     </widget>
 
-    <widget name="userSuggestion_hideHelpLabel" type="checkbox">
+    <widget name="suggestion_hideHelpLabel" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -646,22 +801,43 @@
                   <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">userSuggestion_groupRestriction</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_prefixed</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">userSuggestion_width</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
@@ -728,11 +904,17 @@
           <layouts mode="edit">
             <layout name="multipleUsersSuggestion_widget_type_properties_edit">
               <rows>
-                <row>
+                                <row>
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestionSearchType</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_groupRestriction</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_prefixed</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
@@ -741,28 +923,34 @@
                   <widget category="widgetTypeConf">userSuggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_frequency</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">userSuggestion_width</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop</widget>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_hideHelpLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText</widget>
+                  <widget category="widgetTypeConf">suggestion_suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
@@ -777,10 +965,12 @@
       </property>
     </widgetType>
 
+    <!-- deprecated since 5.7.3, use a multipleUsersSuggestion with "prefixed" property = true now -->
     <widgetType name="multiplePrefixedUsersSuggestion">
       <configuration>
         <title>Multiple prefixed users/groups suggestion</title>
         <sinceVersion>5.4.2</sinceVersion>
+        <deprecatedVersion>5.7.3</deprecatedVersion>
         <supportedModes>
           <mode>view</mode>
           <mode>edit</mode>
@@ -828,7 +1018,7 @@
                   <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_hideHelpLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText</widget>
@@ -3478,7 +3668,7 @@
           </property>
         </properties>
       </widget>
-      <widget name="groups" type="template">
+      <widget name="groups" type="multipleUsersSuggestion">
         <labels>
           <label mode="any">label.userManager.userGroups</label>
         </labels>
@@ -3494,22 +3684,8 @@
           <mode value="editPassword">hidden</mode>
         </widgetModes>
         <properties widgetMode="any">
-          <property name="template">
-            /widgets/user_suggestion_widget_template.xhtml
-          </property>
           <property name="hideVirtualGroups">true</property>
           <property name="userSuggestionSearchType">GROUP_TYPE</property>
-        </properties>
-        <properties widgetMode="edit">
-          <property name="template">
-            /select2/select2_multiple_user_widget_template.xhtml
-          </property>
-          <property name="operationId">UserGroup.Suggestion</property>
-          <property name="searchType">group</property>
-          <property name="width">300</property>
-          <property name="minChars">3</property>
-          <property name="suggestionFormatter">userEntryDefaultFormatter</property>
-          <property name="selectionFormatter">userEntryDefaultFormatter</property>
         </properties>
       </widget>
 
@@ -3558,7 +3734,7 @@
           <widget>selection</widget>
         </row>
       </rows>
-      <widget name="selection" type="template">
+      <widget name="selection" type="multipleUsersSuggestion">
         <!-- add empty field to map layout value directly -->
         <fields>
           <field></field>
@@ -3566,22 +3742,9 @@
         <labels>
           <label mode="any">label.security.usersOrGroups</label>
         </labels>
-        <properties mode="any">
-          <property name="template">
-            /widgets/user_suggestion_widget_template.xhtml
-          </property>
-        </properties>
         <properties widgetMode="edit">
-          <property name="template">
-            /select2/select2_multiple_user_widget_template.xhtml
-          </property>
-          <property name="operationId">UserGroup.Suggestion</property>
-          <property name="width">300</property>
-          <property name="minChars">3</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="suggestionFormatter">userEntryDefaultFormatter</property>
-          <property name="selectionFormatter">userEntryDefaultFormatter</property>
         </properties>
         <widgetModes>
           <mode value="create">edit</mode>
@@ -3599,7 +3762,7 @@
           <widget>selection</widget>
         </row>
       </rows>
-      <widget name="selection" type="template">
+      <widget name="selection" type="multipleUsersSuggestion">
         <!-- add empty field to map layout value directly -->
         <fields>
           <field></field>
@@ -3607,23 +3770,10 @@
         <labels>
           <label mode="any">label.security.usersOrGroups</label>
         </labels>
-        <properties mode="any">
-          <property name="template">
-            /widgets/user_prefixed_suggestion_widget_template.xhtml
-          </property>
-        </properties>
         <properties widgetMode="edit">
-          <property name="template">
-            /select2/select2_multiple_user_widget_template.xhtml
-          </property>
-          <property name="operationId">UserGroup.Suggestion</property>
           <property name="prefixed">true</property>
-          <property name="width">300</property>
-          <property name="minChars">3</property>
           <property name="hideInstructionLabel">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="suggestionFormatter">userEntryDefaultFormatter</property>
-          <property name="selectionFormatter">userEntryDefaultFormatter</property>
         </properties>
         <widgetModes>
           <mode value="create">edit</mode>
