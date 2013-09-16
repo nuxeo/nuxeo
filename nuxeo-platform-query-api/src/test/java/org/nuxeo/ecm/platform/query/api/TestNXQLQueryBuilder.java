@@ -60,7 +60,8 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
                 "AdvancedSearch");
         model.setPropertyValue("search:title", "bar");
 
-        String query = NXQLQueryBuilder.getQuery(model, whereClause, params, sortInfos);
+        String query = NXQLQueryBuilder.getQuery(model, whereClause, params,
+                sortInfos);
         assertEquals(
                 "SELECT * FROM Document WHERE dc:title LIKE 'bar' AND (ecm:parentId = 'foo') ORDER BY dc:title",
                 query);
@@ -116,8 +117,7 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         Integer[] array1 = new Integer[] { 1, 2, 3 };
         model.setPropertyValue("search:integerlist", array1);
         String query = NXQLQueryBuilder.getQuery(model, whereClause, null);
-        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)",
-                query);
+        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)", query);
 
         @SuppressWarnings("boxing")
         Integer[] array2 = new Integer[] { 1 };
@@ -136,16 +136,14 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         Long[] array4 = new Long[] { 1L, 2L, 3L };
         model.setPropertyValue("search:integerlist", array4);
         query = NXQLQueryBuilder.getQuery(model, whereClause, null);
-        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)",
-                query);
+        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)", query);
 
         // lists work too
         @SuppressWarnings("boxing")
         List<Long> list = Arrays.asList(1L, 2L, 3L);
         model.setPropertyValue("search:integerlist", (Serializable) list);
         query = NXQLQueryBuilder.getQuery(model, whereClause, null);
-        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)",
-                query);
+        assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)", query);
     }
 
 }
