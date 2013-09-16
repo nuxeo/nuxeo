@@ -44,8 +44,8 @@ author: lkemen@nuxeo.com
 .note_content_block ol ol, .note_content_block ol ol ol ol ol { list-style: lower-alpha outside none }
 .note_content_block ol ol ol, .note_content_block ol ol ol ol ol { list-style: lower-roman outside none }
 
-.note_content_block pre, .note_content_block code { background-color: #F7F7F7; border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 3px; font-family: "Lucida Console","Monaco","Courier",monospace; font-size: 90%;	line-height: normal; overflow: auto; padding: 0 .2em }
-.note_content_block pre { border-color: "neutral.light (__FLAVOR__ border)"; margin: 0 0 1em; padding: .4em }
+.note_content_block pre, .note_content_block code { background-color: #F7F7F7; border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; border-radius: 3px; font-family: "Lucida Console","Monaco","Courier",monospace; font-size: 90%;	line-height: normal; overflow: auto; padding: 0 .2em; max-width: 60em }
+.note_content_block pre { border-color: "neutral.light (__FLAVOR__ border)"; margin: 0 auto 1em; padding: .4em }
 .note_content_block pre code { border: none; font-size: 100% }
 
 .lockFile_block, .restoreFile_block { padding: 0 0 1em }
