@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.convert.cache;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +43,9 @@ public class ConversionCacheHolder {
     private static final Log log = LogFactory.getLog(ConversionCacheHolder.class);
 
     public static int nbSubPathPart = 5;
+
     public static int subPathPartSize = 2;
+
     public static long cacheHits = 0;
 
     // Utility class.
@@ -171,7 +174,12 @@ public class ConversionCacheHolder {
     }
 
     public static Set<String> getCacheKeys() {
-        return cache.keySet();
+        cacheLock.readLock().lock();
+        try {
+            return new HashSet<String>(cache.keySet());
+        } finally {
+            cacheLock.readLock().unlock();
+        }
     }
 
 }

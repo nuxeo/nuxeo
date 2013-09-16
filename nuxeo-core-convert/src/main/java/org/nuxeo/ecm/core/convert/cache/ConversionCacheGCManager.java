@@ -34,11 +34,13 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 public class ConversionCacheGCManager {
 
     public static final String MAX_DISK_SPACE_USAGE_KEY = "MaxDiskSpaceUsageForCache";
+
     public static final long MAX_DISK_SPACE_USAGE_KB = 1000;
 
     private static final Log log = LogFactory.getLog(ConversionCacheGCManager.class);
 
     private static int gcRuns = 0;
+
     private static int gcCalls = 0;
 
     // Utility class.
@@ -63,7 +65,9 @@ public class ConversionCacheGCManager {
 
         for (String key : cacheKeys) {
             ConversionCacheEntry cacheEntry = ConversionCacheHolder.getCacheEntry(key);
-            totalSize += cacheEntry.getDiskSpaceUsageInKB();
+            if (cacheEntry != null) {
+                totalSize += cacheEntry.getDiskSpaceUsageInKB();
+            }
         }
         return totalSize;
     }
@@ -97,7 +101,9 @@ public class ConversionCacheGCManager {
 
         for (String key : cacheKeys) {
             ConversionCacheEntry cacheEntry = ConversionCacheHolder.getCacheEntry(key);
-            sortingMap.put(cacheEntry.getLastAccessedTime(), key);
+            if (key != null) {
+                sortingMap.put(cacheEntry.getLastAccessedTime(), key);
+            }
         }
 
         List<Date> accessTimeList = new ArrayList<Date>();
