@@ -188,7 +188,9 @@ public class EditorImageActionsBean extends InputController implements
     @Override
     public boolean getInCreationMode() {
         DocumentModel doc = navigationContext.getChangeableDocument();
-        if (doc == null) {
+        if (doc == null || doc.getRef() != null) {
+            // if changeableDocument is null or has an existing ref, assume we
+            // are not in creation and use the currentDocument instead
             doc = navigationContext.getCurrentDocument();
         }
         if (doc == null) {
