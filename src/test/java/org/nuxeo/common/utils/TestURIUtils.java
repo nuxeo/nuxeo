@@ -138,11 +138,6 @@ public class TestURIUtils {
                 q("http://foo/bar/@adapter", true, false));
         assertEquals("http%3A//foo/bar/@adapter",
                 q("http://foo/bar/@adapter", false, false));
-        // NXP-11194
-        assertEquals("http%3A//foo/bar/Syst%C3%A8me%20d%27Information",
-                q("http://foo/bar/Système d'Information", false, false));
-        assertEquals("http%3A//foo/bar/%22Double%20quoted%22",
-                q("http://foo/bar/\"Double quoted\"", false, false));
     }
 
     private static String uq(String s) {
@@ -157,11 +152,6 @@ public class TestURIUtils {
         assertEquals("a/b/c", uq("a/b/c"));
         // NXP-2480
         assertEquals("[foo] bar?", uq("%5Bfoo%5D%20bar%3F"));
-        // NXP-11194
-        assertEquals("http://foo/bar/Système d'Information",
-                uq("http%3A//foo/bar/Syst%C3%A8me%20d%27Information"));
-        assertEquals("http://foo/bar/\"Double quoted\"",
-                uq("http%3A//foo/bar/%22Double%20quoted%22"));
     }
 
 }
