@@ -251,7 +251,7 @@ public class DamImportActions implements Serializable {
         for (String schema : importDocumentModel.getSchemas()) {
             dms.add(importDocumentModel.getDataModel(schema));
         }
-        DataModelProperties properties = new DataModelProperties(dms);
+        DataModelProperties properties = new DataModelProperties(dms, true);
 
         Map<String, Object> contextParams = new HashMap<>();
         contextParams.put("docMetaData", properties);
