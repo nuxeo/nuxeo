@@ -263,11 +263,22 @@ public class GroupsSubscriptionsAction extends InputController implements
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) currentUser;
 
+        List<String> resgisteredNotifications = null;
+        if (subscribe) {
+            resgisteredNotifications = getSubscribedUsersForNotification(selectedNotification);
+        }
+
         for (String selectedEntry : selectedEntries) {
             if (subscribe) {
-                notificationManager.addSubscription(selectedEntry,
-                        selectedNotification, currentDoc, true,
-                        currentPrincipal, notificationName);
+                if (resgisteredNotifications == null || !resgisteredNotifications.contains(selectedEntry)) {
+                    notificationManager.addSubscription(selectedEntry,
+                            selectedNotification, currentDoc, true,
+                            currentPrincipal, notificationName);
+                } else {
+                    facesMessages.add(StatusMessage.Severity.WARN,
+                            resourcesAccessor.getMessages().get(
+                                    "label.notifications.alreadyRegistered"), selectedEntry);
+                }
             } else {
                 notificationManager.removeSubscription(selectedEntry,
                         selectedNotification, currentDoc.getId());
