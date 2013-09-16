@@ -205,16 +205,16 @@
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>select2_user_widget</from-outcome>
+      <from-outcome>singleUserSuggestion</from-outcome>
       <to-view-id>
-        /layoutDemo/demoWidgets/select2UserWidget.xhtml
+        /layoutDemo/demoWidgets/singleUserSuggestion.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>select2_user_multiple_widget</from-outcome>
+      <from-outcome>multipleUsersSuggestion</from-outcome>
       <to-view-id>
-        /layoutDemo/demoWidgets/select2UserMultipleWidget.xhtml
+        /layoutDemo/demoWidgets/multipleUsersSuggestion.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>

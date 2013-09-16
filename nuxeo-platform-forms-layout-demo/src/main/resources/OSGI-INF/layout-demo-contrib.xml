@@ -182,7 +182,8 @@
           <property name="query">
             select * from Document where dc:title LIKE ?
           </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema,common</property>
+          <property name="documentSchemas">dublincore,layout_demo_schema,common
+          </property>
           <property name="suggestionFormatter">myformatter</property>
           <property name="selectionFormatter">myformatter</property>
           <property name="inlinejs"> <![CDATA[
@@ -251,7 +252,6 @@
    return entry.label;
   }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
-          <property name="repository">default</property>
         </defaultProperties>
       </preview>
       <layouts>
@@ -284,7 +284,6 @@
    return entry.label;
   }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
-          <property name="repository">default</property>
         </defaultProperties>
       </preview>
       <layouts>
@@ -293,9 +292,9 @@
       </layouts>
     </widgetType>
 
-    <widgetType name="select2User">
-      <label>Select2User</label>
-      <viewId>select2_user_widget</viewId>
+    <widgetType name="singleUserSuggestion">
+      <label>Single user</label>
+      <viewId>singleUserSuggestion</viewId>
       <category>standard</category>
       <preview enabled="true">
         <fields>
@@ -303,31 +302,34 @@
         </fields>
         <defaultProperties>
           <property name="width">200</property>
-          <property name="minChars">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to find a user
+          <property name="minChars">3</property>
+          <property name="helpLabel">Type at least "Adm" to trigger suggestion
           </property>
-          <property name="repository">default</property>
           <property name="suggestionFormatter">userformatter</property>
           <property name="selectionFormatter">userformatter</property>
           <property name="inlinejs"> <![CDATA[
-  function userformatter(entry) {
-   var markup = "<table><tr>";
-   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
-   markup += "<td style='padding:2px'>" + entry.label + "</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
+   function userformatter(entry) {
+    var icon = "user.png";
+    if (entry.type == "GROUP_TYPE") {
+      icon = "group.png";
+    }
+     var markup = "<table><tr>";
+     markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + icon + "'/></td>";
+     markup += "<td style='padding:2px'>" + entry.label + "</td>";
+     markup += "</tr></table>";
+     return markup;
+    }]]></property>
         </defaultProperties>
       </preview>
       <layouts>
-        <layout name="select2UserWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+        <layout name="singleUserSuggestionLayout"
+          src="sources/OSGI-INF/demo/layout-demo-singleUserSuggestion-widget.xml" />
       </layouts>
     </widgetType>
 
-    <widgetType name="select2UserMultiple">
-      <label>Select2UserMultiple</label>
-      <viewId>select2_user_multiple_widget</viewId>
+    <widgetType name="multipleUsersSuggestion">
+      <label>Multiple user</label>
+      <viewId>multipleUsersSuggestion</viewId>
       <category>standard</category>
       <preview enabled="true">
         <fields>
@@ -335,16 +337,20 @@
         </fields>
         <defaultProperties>
           <property name="width">200</property>
-          <property name="minChars">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to find a user
+          <property name="minChars">3</property>
+          <property name="instructionLabel">Type at least "Adm" to trigger suggestion
           </property>
           <property name="repository">default</property>
           <property name="suggestionFormatter">userformatter</property>
           <property name="selectionFormatter">userformatter</property>
           <property name="inlinejs"> <![CDATA[
   function userformatter(entry) {
+  var icon = "user.png";
+  if (entry.type == "GROUP_TYPE") {
+    icon = "group.png";
+  }
    var markup = "<table><tr>";
-   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + entry.type + ".png'/></td>";
+   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + icon + "'/></td>";
    markup += "<td style='padding:2px'>" + entry.label + "</td>";
    markup += "</tr></table>";
    return markup;
@@ -352,8 +358,8 @@
         </defaultProperties>
       </preview>
       <layouts>
-        <layout name="select2UserMultipleWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+        <layout name="multipleUsersSuggestionLayout"
+          src="sources/OSGI-INF/demo/layout-demo-multipleUsersSuggestion-widget.xml" />
       </layouts>
     </widgetType>
 
