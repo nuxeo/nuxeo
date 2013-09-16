@@ -186,10 +186,6 @@ public final class URIUtils {
         r = r.replace("?", "%3F");
         r = r.replace("[", "%5B");
         r = r.replace("]", "%5D");
-        // replace single (') and double (") quotes
-        // see https://jira.nuxeo.com/browse/NXP-11194
-        r = r.replace("'", "%27");
-        r = r.replace("\"", "%22");
         if (quoteAt) {
             r = r.replace("@", "%40");
         }
