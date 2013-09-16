@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -358,8 +358,17 @@ public class UpdateManager {
     }
 
     public String getServerRelativePath(File someFile) {
-        String path = someFile.getAbsolutePath();
-        String serverPath = serverRoot.getAbsolutePath();
+        String path;
+        String serverPath;
+        try {
+            path = someFile.getCanonicalPath();
+            serverPath = serverRoot.getCanonicalPath();
+        } catch (IOException e) {
+            log.error("Failed to get a canonical path. "
+                    + "Fall back to absolute paths...", e);
+            path = someFile.getAbsolutePath();
+            serverPath = serverRoot.getAbsolutePath();
+        }
         if (!serverPath.endsWith(File.separator)) {
             serverPath = serverPath.concat(File.separator);
         }
