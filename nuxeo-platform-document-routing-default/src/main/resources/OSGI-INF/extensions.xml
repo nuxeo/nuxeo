@@ -150,7 +150,7 @@ NodeVariables["comment"]= null;}</param>
           <widget>comment</widget>
         </row>
       </rows>
-      <widget name="participants" type="select2UserMultiple">
+      <widget name="participants" type="multipleUsersSuggestion">
         <labels>
           <label mode="any">wf.serialDocumentReview.ParticipantsOnTheReview</label>
         </labels>
@@ -158,12 +158,12 @@ NodeVariables["comment"]= null;}</param>
         <fields>
           <field>['participants']</field>
         </fields>
-        <properties widgetMode="any">
+        <properties widgetMode="edit">
           <property name="prefixed">true</property>
           <property name="width">300</property>
           <property name="minChars">3</property>
-          <property name="instructionLabel">wf.serialDocumentReview.ParticipantsOnTheReview.order</property>
-          <property name="sortable">true</property>
+          <property name="helpLabel">wf.serialDocumentReview.ParticipantsOnTheReview.order</property>
+          <property name="orderable">true</property>
           <property name="placeholder">label.security.search</property>
           <property name="required">#{request.getParameter('button') == 'start_review'}</property>
         </properties>
