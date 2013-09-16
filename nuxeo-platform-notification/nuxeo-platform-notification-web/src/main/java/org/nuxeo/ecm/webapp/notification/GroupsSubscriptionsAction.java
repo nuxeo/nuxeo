@@ -263,14 +263,14 @@ public class GroupsSubscriptionsAction extends InputController implements
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal currentPrincipal = (NuxeoPrincipal) currentUser;
 
-        List<String> resgisteredNotifications = null;
+        List<String> registeredNotifications = null;
         if (subscribe) {
-            resgisteredNotifications = getSubscribedUsersForNotification(selectedNotification);
+            registeredNotifications = getSubscribedUsersForNotification(selectedNotification);
         }
 
         for (String selectedEntry : selectedEntries) {
             if (subscribe) {
-                if (resgisteredNotifications == null || !resgisteredNotifications.contains(selectedEntry)) {
+                if (registeredNotifications == null || !registeredNotifications.contains(selectedEntry)) {
                     notificationManager.addSubscription(selectedEntry,
                             selectedNotification, currentDoc, true,
                             currentPrincipal, notificationName);
