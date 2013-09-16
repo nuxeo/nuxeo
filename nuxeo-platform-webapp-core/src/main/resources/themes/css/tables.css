@@ -144,7 +144,7 @@ table.smallTable td {
 .dataInput .button,
 .dataTableNoBorder .button,
 .buttonsGadgetNoForm .button {
-  margin: 0 1em 0 0;
+  margin: 0 1em .4em 0;
   vertical-align: top }
 
 .dataOutput .button {

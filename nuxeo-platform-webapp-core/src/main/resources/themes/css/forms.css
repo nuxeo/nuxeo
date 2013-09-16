@@ -40,6 +40,12 @@ select,
   margin-bottom: .3em;
   padding: .3em }
 
+select {
+  margin: 0 .5em .5em 0 }
+
+label {
+  padding-right: .4em }
+
 .dataInputText {
   vertical-align: top }
 
