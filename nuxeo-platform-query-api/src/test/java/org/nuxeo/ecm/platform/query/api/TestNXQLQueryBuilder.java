@@ -85,7 +85,7 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testBuidInQuery() throws Exception {
+    public void testBuildInQuery() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
                 "TEST_IN").getWhereClause();
@@ -106,7 +106,7 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testBuidInIntegersQuery() throws Exception {
+    public void testBuildInIntegersQuery() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
                 "TEST_IN_INTEGERS").getWhereClause();
@@ -146,4 +146,18 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)", query);
     }
 
+    @Test
+    public void testBuildInIntegersEmptyQuery() throws Exception {
+        String pattern = "SELECT * FROM Document WHERE ecm:parentId = ? and ecm:currentLifeCycleState IN (?)";
+        Object[] params = new Object[] { "docId", "" };
+        String query = NXQLQueryBuilder.getQuery(pattern, params, true, true);
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('')",
+                query);
+        params = new Object[] { "docId", new String[] { "foo", "bar" } };
+        query = NXQLQueryBuilder.getQuery(pattern, params, true, true);
+        assertEquals(
+                "SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('foo', 'bar')",
+                query);
+    }
 }

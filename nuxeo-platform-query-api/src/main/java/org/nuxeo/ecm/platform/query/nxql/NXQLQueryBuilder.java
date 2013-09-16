@@ -199,14 +199,20 @@ public class NXQLQueryBuilder {
 
     public static void appendStringList(StringBuilder queryBuilder,
             List<?> listParam, boolean quoteParameters, boolean escape) {
-        queryBuilder.append('(');
+        // avoid appending parentheses if the query builder ends with one
+        boolean addParentheses = !queryBuilder.toString().endsWith("(");
+        if (addParentheses) {
+            queryBuilder.append('(');
+        }
         List<String> result = new ArrayList<String>(listParam.size());
         for (Object param : listParam) {
             result.add(prepareStringLiteral(param.toString(), quoteParameters,
                     escape));
         }
         queryBuilder.append(StringUtils.join(result, ", "));
-        queryBuilder.append(')');
+        if (addParentheses) {
+            queryBuilder.append(')');
+        }
     }
 
     /**
