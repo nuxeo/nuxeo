@@ -1,3 +1,19 @@
+/*
+s * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Olivier Grisel
+ */
 package org.nuxeo.ecm.platform.suggestbox.utils;
 
 import static org.junit.Assert.assertEquals;
@@ -160,6 +176,12 @@ public class TestDateMatcher {
                 dateYearMonthDay.getDateSuggestion().get(
                         Calendar.DAY_OF_MONTH));
 
+    }
+
+    @Test
+    public void canParseLongInteger() {
+        DateMatcher matcher = DateMatcher.fromInput("0123456769012345678901234567");
+        assertNull("should not match", matcher.getDateSuggestion());
     }
 
 }
