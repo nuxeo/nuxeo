@@ -281,15 +281,15 @@
       </labels>
       <translated>true</translated>
       <subWidgets>
-        <widget name="dc_creator" type="select2UserMultiple">
+        <widget name="dc_creator" type="multipleUsersSuggestion">
           <labels>
             <label mode="any">label.dublincore.creator</label>
           </labels>
           <fields>
             <field>dams:dc_creator</field>
           </fields>
-          <properties widgetMode="any">
-            <property name="searchType">user</property>
+          <properties widgetMode="edit">
+            <property name="searchType">USER_TYPE</property>
             <property name="width">200</property>
             <property name="minChars">3</property>
             <property name="hideInstructionLabel">true</property>
