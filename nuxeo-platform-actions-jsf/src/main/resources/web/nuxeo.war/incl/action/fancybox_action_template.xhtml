@@ -81,7 +81,7 @@
         <ui:define name="fancybox_properties_include">
 
           <nxu:set var="fancyboxJs"
-            value="openFancyBox('#{iframe}', {
+            value="openFancyBox('#{nxu:javaScriptEscape(iframe)}', {
                     width: '#{fancy_width}',
                     height: '#{fancy_height}',
                     scrolling: '#{fancy_scrolling}',
