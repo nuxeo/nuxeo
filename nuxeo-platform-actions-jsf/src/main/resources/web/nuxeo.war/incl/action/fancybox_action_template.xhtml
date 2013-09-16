@@ -80,14 +80,6 @@
       <ui:decorate template="fancybox_properties_template.xhtml">
         <ui:define name="fancybox_properties_include">
 
-          <a4j:jsFunction name="#{fancyboxIdPrefix}onclose"
-            action="#{selectionActions.onClick}">
-            <a4j:actionparam name=""
-              assignTo="#{selectionActions.selectedValue}"/>
-            <a4j:actionparam name="#{widgetProperty_clickedActionIdHolder}"
-              assignTo="#{selectionActions.selectedValueHolder}"/>
-          </a4j:jsFunction>
-
           <nxu:set var="fancyboxJs"
             value="openFancyBox('#{iframe}', {
                     width: '#{fancy_width}',
@@ -97,8 +89,7 @@
                     autoDimensions: #{fancy_autoDimensions},
                     modal: #{fancy_modal},
                     centerOnScroll: #{fancy_centerOnScroll},
-                    enableEscapeButton: #{fancy_enableEscapeButton},
-                    onclose: #{fancyboxIdPrefix}onclose
+                    enableEscapeButton: #{fancy_enableEscapeButton}
                   });">
 
             <c:if test="#{not widgetProperty_useButton}">
