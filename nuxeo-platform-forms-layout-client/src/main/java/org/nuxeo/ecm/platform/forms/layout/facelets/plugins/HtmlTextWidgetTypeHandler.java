@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.util.Arrays;
+
 import javax.faces.component.html.HtmlOutputText;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -60,7 +63,14 @@ public class HtmlTextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             // use attributes without id
             attributes = helper.getTagAttributes(widget);
         } else {
-            attributes = helper.getTagAttributes(widgetId, widget);
+            if (BuiltinWidgetModes.EDIT.equals(mode)) {
+                // exclude styleClass, it needs a specific css class also, see
+                // below
+                attributes = helper.getTagAttributes(widget,
+                        Arrays.asList("styleClass"), true);
+            } else {
+                attributes = helper.getTagAttributes(widgetId, widget);
+            }
         }
         FaceletHandler leaf = null;
         if (subHandlers != null) {
@@ -82,6 +92,12 @@ public class HtmlTextWidgetTypeHandler extends AbstractWidgetTypeHandler {
             TagAttribute escape = helper.createAttribute("escape", "false");
             attributes = FaceletHandlerHelper.addTagAttribute(attributes,
                     escape);
+            String styleClass = (String) widget.getProperty("styleClass");
+            TagAttribute styleClassAttr = helper.createAttribute("styleClass",
+                    StringUtils.isBlank(styleClass) ? "textBlock"
+                            : "textBlock " + styleClass);
+            attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                    styleClassAttr);
             ComponentHandler output = helper.getHtmlComponentHandler(
                     widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
