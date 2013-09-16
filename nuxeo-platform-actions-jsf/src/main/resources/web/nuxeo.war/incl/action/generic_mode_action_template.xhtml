@@ -20,12 +20,11 @@ Parameters:
 <nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
 <nxu:set var="simpleActionWidgetName" value="#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
 <nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, simpleActionWidgetName, defActionWidgetName)}">
-<nxu:set var="strippedWidgetName" value="#{nxu:test(actionWidgetName.startsWith('nxw_'), actionWidgetName.substring(4), actionWidgetName)}">
 
   <nxl:widgetType category="jsfAction"
     name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
     mode="#{mode}"
-    widgetName="#{strippedWidgetName}"
+    widgetName="#{actionWidgetName}"
     hideIcon="#{hideIcon}"
     hideLabel="#{hideLabel}"
     useButton="#{useButton}"
@@ -36,7 +35,6 @@ Parameters:
     clickedActionIdHolder="#{clickedActionIdHolder}"
     value="#{fieldOrValue}" />
 
-</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

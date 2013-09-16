@@ -250,6 +250,11 @@ public class WidgetTypeTagHandler extends TagHandler {
                     Widget[].class);
         }
 
+        // avoid double markers
+        if (widgetNameValue != null
+                && widgetNameValue.startsWith(FaceletHandlerHelper.WIDGET_ID_PREFIX)) {
+            widgetNameValue = widgetNameValue.substring(FaceletHandlerHelper.WIDGET_ID_PREFIX.length());
+        }
         if (StringUtils.isBlank(widgetNameValue)) {
             widgetNameValue = typeValue;
         }

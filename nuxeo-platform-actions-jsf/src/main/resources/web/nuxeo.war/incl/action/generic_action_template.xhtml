@@ -47,7 +47,6 @@ Templating zones that can be filled when useAjaxForm is set to true:
 
 <nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}">
 <nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, nxu:jsfTagIdEscape(action.id), defActionWidgetName)}">
-<nxu:set var="strippedWidgetName" value="#{nxu:test(actionWidgetName.startsWith('nxw_'), actionWidgetName.substring(4), actionWidgetName)}">
 
   <c:if test="#{not empty action.properties.confirmMessage}">
     <script type="text/javascript">
@@ -64,7 +63,7 @@ Templating zones that can be filled when useAjaxForm is set to true:
   <nxl:widgetType category="jsfAction"
     name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
     mode="#{empty mode?'view':mode}"
-    widgetName="#{strippedWidgetName}"
+    widgetName="#{actionWidgetName}"
     hideIcon="#{hideIcon}"
     hideLabel="#{hideLabel}"
     useButton="#{useButton}"
@@ -88,7 +87,6 @@ Templating zones that can be filled when useAjaxForm is set to true:
     </nxu:set>
   </nxl:widgetType>
 
-</nxu:set>
 </nxu:set>
 </nxu:set>
 
