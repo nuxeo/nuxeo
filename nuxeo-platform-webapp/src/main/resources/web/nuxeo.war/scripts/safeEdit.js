@@ -1,6 +1,10 @@
 (function() {
 
   var waitPeriod = 100;
+  // How long are we gonna wait for widgets to load
+  // Here is 40 x 100ms = 4sec
+  var maxWaitingIteration = 30;
+  var currentWaitingIteration = 0
 
   var blockAutoSave = false;
   var lastSavedJSONData = null;
@@ -235,7 +239,7 @@
 
   function initWhenPageReady(key, formSelector, savePeriod, saveCB, loadCB,
       message, waitFunctionIndex) {
-    if (waitFunctionIndex > waitFunctions.length - 1) {
+    if (waitFunctionIndex > waitFunctions.length - 1 || currentWaitingIteration > maxWaitingIteration) {
       // Nothing to wait, lets' go!
       doInitSafeEdit(key, formSelector, savePeriod, saveCB, loadCB, message);
     } else {
@@ -243,6 +247,7 @@
       if (stillWaiting) {
         // Something is still loading, let's give it more time (i.e. waitPeriod)
         //console.debug('waiting ... ');
+        currentWaitingIteration++;
         window.setTimeout(function() {
           initWhenPageReady(key, formSelector, savePeriod, saveCB, loadCB,
               message, waitFunctionIndex);
