@@ -97,7 +97,7 @@
             <a4j:commandLink id="#{idPrefix}#{action.id}_link"
               ajaxSingle="true"
               ignoreDupResponses="true" requestDelay="100"
-              onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
+              onclick="javascript:showFancyBox('#{nxu:javaScriptEscape(iframe)}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
               styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
               <ui:include src="/incl/action/action_icon_label_template.xhtml" />
               <ui:insert name="inside_action" />
@@ -108,7 +108,7 @@
             <a4j:commandButton id="#{idPrefix}#{action.id}_link"
               ajaxSingle="true"
               ignoreDupResponses="true" requestDelay="100"
-              onclick="javascript:showFancyBox('#{iframe}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
+              onclick="javascript:showFancyBox('#{nxu:javaScriptEscape(iframe)}', '#{iframe_width}', '#{iframe_height}', '#{iframe_scrolling}');"
               value="#{messages[action.label]}"
               styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
               <ui:include src="/incl/action/action_icon_label_template.xhtml">
