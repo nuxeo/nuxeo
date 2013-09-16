@@ -8,11 +8,11 @@
 
  <div class="genericBox">
 
-    <h1> Uninstall of ${pkg.title} (${pkg.id}) </h1>
+    <h1> ${Context.getMessage('label.uninstall.uninstallOf')} ${pkg.title} (${pkg.id}) </h1>
 
     <#if status.hasWarnings()>
         <div class="installWarningsTitle">
-        <p>Some warnings were found when checking the package:</p>
+        <p>${Context.getMessage('label.startInstall.message.haswarning')}:</p>
           <ul class="installWarnings">
               <#list status.getWarnings() as warning>
               <li> ${warning} </li>
@@ -23,14 +23,14 @@
 
     <#if uninstallTask.isRestartRequired()>
       <div>
-       After installation, you will need to restart your server.
+       ${Context.getMessage('label.simpleListing.titles.restartlink')}
       </div>
     </#if>
 
     <br/>
-    Click the start link to start the uninstall process. <br/><br/><br/>
-    <a href="${This.path}/run/${pkg.id}?source=${source}" class="button installButton"> Start </a>
-      &nbsp; <a href="${Root.path}/packages/${source}" class="button installButton"> Cancel </a>
+    ${Context.getMessage('label.uninstall.start')} <br/><br/><br/>
+    <a href="${This.path}/run/${pkg.id}?source=${source}" class="button installButton"> ${Context.getMessage('label.startInstall.buttons.start')} </a>
+      &nbsp; <a href="${Root.path}/packages/${source}" class="button installButton"> ${Context.getMessage('label.startInstall.buttons.cancel')} </a>
   </div>
 
 </@block>
