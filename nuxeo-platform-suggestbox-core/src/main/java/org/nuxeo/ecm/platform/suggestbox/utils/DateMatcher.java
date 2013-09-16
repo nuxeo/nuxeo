@@ -59,7 +59,7 @@ public class DateMatcher {
     }
 
     public void setWitDay(boolean witDay) {
-        this.withDay = witDay;
+        withDay = witDay;
     }
 
     public Calendar getDateSuggestion() {
@@ -75,6 +75,14 @@ public class DateMatcher {
     }
 
     public static DateMatcher fromInput(String input) {
+        try {
+            return doFromInput(input);
+        } catch (NumberFormatException e) {
+            return new DateMatcher(false, false, false, null);
+        }
+    }
+
+    public static DateMatcher doFromInput(String input) {
         Matcher matcher = parsingDate(YEAR_ONLY_MATCHER, input);
 
         if (matcher.find()) {

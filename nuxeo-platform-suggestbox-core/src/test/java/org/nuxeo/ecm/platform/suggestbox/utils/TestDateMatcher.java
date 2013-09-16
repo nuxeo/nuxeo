@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+s * (C) Copyright 2010-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -155,6 +155,12 @@ public class TestDateMatcher {
         assertEquals(30,
                 dateYearMonthDay.getDateSuggestion().get(Calendar.DAY_OF_MONTH));
 
+    }
+
+    @Test
+    public void canParseLongInteger() {
+        DateMatcher matcher = DateMatcher.fromInput("0123456769012345678901234567");
+        assertNull("should not match", matcher.getDateSuggestion());
     }
 
 }
