@@ -17,6 +17,7 @@
 package org.nuxeo.runtime.reload;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -143,8 +145,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         return deployBundle(file, false);
     }
 
+    @Override
     public String deployBundle(File file, boolean reloadResourceClasspath)
-            throws Exception {
+            throws MalformedURLException, BundleException {
         String name = getOSGIBundleName(file);
         if (name == null) {
             log.error(String.format(
@@ -173,8 +176,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         newBundle.start();
 
         log.info(String.format("Deploy done for bundle with name '%s'.\n"
-                + "%s", newBundle == null ? null : newBundle.getSymbolicName(),
-                getRuntimeStatus()));
+                + "%s", newBundle.getSymbolicName(), getRuntimeStatus()));
 
         return newBundle.getSymbolicName();
     }
@@ -267,8 +269,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
      * Rebuild the framework resource class loader and add to it the given file
      * paths.
      * <p>
-     * The already added paths are removed from the class loader. FIXME: is
-     * this an issue for hot-reloading of multiple jars?
+     * The already added paths are removed from the class loader. FIXME: is this
+     * an issue for hot-reloading of multiple jars?
      */
     protected static void reloadResourceClassPath(Collection<String> files)
             throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,12 +9,12 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.api;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -44,9 +44,8 @@ import org.nuxeo.runtime.api.login.LoginService;
  * <p>
  * There are two type of services:
  * <ul>
- * <li>Global Services - these services are uniquely defined by a service
- * class, and there is an unique instance of the service in the system per
- * class.
+ * <li>Global Services - these services are uniquely defined by a service class,
+ * and there is an unique instance of the service in the system per class.
  * <li>Local Services - these services are defined by a class and an URI. This
  * type of service allows multiple service instances for the same class of
  * services. Each instance is uniquely defined in the system by an URI.
@@ -96,12 +95,11 @@ public final class Framework {
     /**
      * A class loader used to share resources between all bundles.
      * <p>
-     * This is useful to put resources outside any bundle (in a directory on
-     * the file system) and then refer them from XML contributions.
+     * This is useful to put resources outside any bundle (in a directory on the
+     * file system) and then refer them from XML contributions.
      * <p>
-     * The resource directory used by this loader is
-     * ${nuxeo_data_dir}/resources whee ${nuxeo_data_dir} is usually
-     * ${nuxeo_home}/data
+     * The resource directory used by this loader is ${nuxeo_data_dir}/resources
+     * whee ${nuxeo_data_dir} is usually ${nuxeo_home}/data
      */
     protected static SharedResourceLoader resourceLoader;
 
@@ -140,11 +138,13 @@ public final class Framework {
      * <p>
      * Useful for hot reload of jars.
      *
+     * @throws MalformedURLException
+     *
      * @since 5.6
      * @throws Exception
      */
     public static void reloadResourceLoader(List<URL> urlsToAdd,
-            List<URL> urlsToRemove) throws Exception {
+            List<URL> urlsToRemove) throws MalformedURLException {
         File rs = new File(Environment.getDefault().getData(), "resources");
         rs.mkdirs();
         URL[] existing = null;
@@ -458,7 +458,7 @@ public final class Framework {
     /**
      * Since 5.6, this method stops the application if property
      * {@link #NUXEO_STRICT_RUNTIME_SYSTEM_PROP} is set to true, and one of the
-     * following errors occured during startup.
+     * following errors occurred during startup.
      * <ul>
      * <li>Component XML parse error.
      * <li>Contribution to an unknown extension point.
@@ -466,7 +466,7 @@ public final class Framework {
      * entry exists in the XML descriptor but cannot be resolved to a class).
      * <li>Uncatched exception on extension registration / unregistration
      * (either in framework or user component code)
-     * <li>Uncatched exception on component activation / desactivation (either
+     * <li>Uncatched exception on component activation / deactivation (either
      * in framework or user component code)
      * <li>Broken Nuxeo-Component MANIFEST entry. (i.e. the entry cannot be
      * resolved to a resource)
