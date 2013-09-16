@@ -51,7 +51,7 @@ function searchContrib(text) {
 </script>
 
 
-  <ul>
+  <ul id="highlight-plugin">
     <#list nxItem.extensions as contrib>
     <li>
       <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">
