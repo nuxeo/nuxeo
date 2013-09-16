@@ -17,12 +17,12 @@
 
 package com.nuxeo.functionaltests;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.dam.AssetViewFragment;
 import org.nuxeo.functionaltests.dam.DAMPage;
 import org.nuxeo.functionaltests.dam.FoldableBoxFragment;
 import org.nuxeo.functionaltests.dam.SearchResultsFragment;
+import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -30,7 +30,6 @@ import org.openqa.selenium.WebElement;
 /**
  * @since 5.7.3
  */
-@Ignore
 public class ITAssetViewTest extends AbstractDAMTest {
 
     @Test
@@ -79,18 +78,15 @@ public class ITAssetViewTest extends AbstractDAMTest {
         metadataBox.checkTextToBeNotPresent("New description");
         metadataBox.edit();
 
-        WebElement titleInput = driver.findElement(By.id("nxl_gridDamLayout:nxw_damAssetViewMetadata_toggledForm:nxl_heading:nxw_title"));
-        WebElement descriptionInput = driver.findElement(By.id("nxl_gridDamLayout:nxw_damAssetViewMetadata_toggledForm:nxl_heading:nxw_description"));
-        WebElement originalAuthorInput = driver.findElement(By.id("nxl_gridDamLayout:nxw_damAssetViewMetadata_toggledForm:nxl_dam_common_2:nxw_damc_author_3"));
-        WebElement authoringDateInput = driver.findElement(By.id("nxl_gridDamLayout:nxw_damAssetViewMetadata_toggledForm:nxl_dam_common_2:nxw_damc_authoringDate_3InputDate"));
-        titleInput.clear();
-        titleInput.sendKeys("New title");
-        descriptionInput.clear();
-        descriptionInput.sendKeys("New description");
-        originalAuthorInput.clear();
-        originalAuthorInput.sendKeys("New author");
-        authoringDateInput.clear();
-        authoringDateInput.sendKeys("10/10/2010");
+        LayoutElement layout = new LayoutElement(driver,
+                "nxl_gridDamLayout:nxw_damAssetViewMetadata_toggledForm");
+        layout.getWidget("nxl_heading:nxw_title").setInputValue("New title");
+        layout.getWidget("nxl_heading:nxw_description").setInputValue(
+                "New description");
+        layout.getWidget("nxl_dam_common_2:nxw_damc_author_3").setInputValue(
+                "New author");
+        layout.getWidget("nxl_dam_common_2:nxw_damc_authoringDate_3InputDate").setInputValue(
+                "10/10/2010");
         metadataBox.save();
 
         damPage = asPage(DAMPage.class);
