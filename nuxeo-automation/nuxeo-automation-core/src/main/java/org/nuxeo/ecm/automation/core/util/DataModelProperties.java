@@ -35,30 +35,46 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
  */
 public class DataModelProperties extends Properties {
 
-    protected boolean loaded = false;
+    protected boolean onlyDirtyProperties = false;
 
     protected Map<String, Serializable> properties = new HashMap<>();
 
     public DataModelProperties() {
     }
 
-    public DataModelProperties(DataModel dm) throws PropertyException {
+    public DataModelProperties(DataModel dm, boolean onlyDirtyProperties)
+            throws PropertyException {
+        this.onlyDirtyProperties = onlyDirtyProperties;
         addDataModel(dm);
+
     }
 
-    public DataModelProperties(List<DataModel> dms) throws PropertyException {
+    public DataModelProperties(List<DataModel> dms, boolean onlyDirtyProperties)
+            throws PropertyException {
+        this.onlyDirtyProperties = onlyDirtyProperties;
         for (DataModel dm : dms) {
             addDataModel(dm);
         }
     }
 
+    public DataModelProperties(DataModel dm) throws PropertyException {
+        this(dm, false);
+    }
+
+    public DataModelProperties(List<DataModel> dms) throws PropertyException {
+        this(dms, false);
+    }
+
     public void addDataModel(DataModel dm) throws PropertyException {
         for (Map.Entry<String, Object> entry : dm.getMap().entrySet()) {
             String key = entry.getKey();
-            if (!key.contains(":")) {
-                key = dm.getSchema() + ":" + key;
+            if ((onlyDirtyProperties && dm.isDirty(key))
+                    || !onlyDirtyProperties) {
+                if (!key.contains(":")) {
+                    key = dm.getSchema() + ":" + key;
+                }
+                properties.put(key, (Serializable) entry.getValue());
             }
-            properties.put(key, (Serializable) entry.getValue());
         }
     }
 
