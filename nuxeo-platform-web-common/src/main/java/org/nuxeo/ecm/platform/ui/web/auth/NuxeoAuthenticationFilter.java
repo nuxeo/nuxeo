@@ -710,13 +710,6 @@ public class NuxeoAuthenticationFilter implements Filter {
             return false;
         }
 
-        // add a flag to tell that the Session looks like having timed out
-        if (isTimeout) {
-            session.setAttribute(SESSION_TIMEOUT, Boolean.TRUE);
-        } else {
-            session.removeAttribute(SESSION_TIMEOUT);
-        }
-
         String requestPage;
         boolean requestPageInParams = false;
         if (httpRequest.getParameter(REQUESTED_URL) != null) {
@@ -729,6 +722,14 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (requestPage == null) {
             return false;
         }
+
+        // add a flag to tell that the Session looks like having timed out
+        if (isTimeout && !requestPage.equals(DEFAULT_START_PAGE)) {
+            session.setAttribute(SESSION_TIMEOUT, Boolean.TRUE);
+        } else {
+            session.removeAttribute(SESSION_TIMEOUT);
+        }
+
 
         // avoid redirect if not useful
         if (requestPage.startsWith(DEFAULT_START_PAGE)) {
