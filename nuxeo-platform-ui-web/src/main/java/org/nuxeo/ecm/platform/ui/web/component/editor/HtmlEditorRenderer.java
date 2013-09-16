@@ -78,16 +78,17 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
         writer.startElement("script", editorComp);
         writer.writeAttribute("type", "text/javascript", null);
+
+        String clientId = editorComp.getClientId(context);
         String scriptContent = String.format(
                 "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
-                editorComp.getWidth(), editorComp.getHeight(), editorSelector,
+                editorComp.getWidth(), editorComp.getHeight(), clientId,
                 pluginsOptions.get("plugins"), locale.getLanguage(),
                 toolbarPluginsOptions.get("toolbar"));
         writer.writeText(scriptContent, null);
         writer.endElement("script");
 
         // input text area
-        String clientId = editorComp.getClientId(context);
         writer.startElement("textarea", editorComp);
         writer.writeAttribute("id", clientId, null);
         writer.writeAttribute("name", clientId, null);

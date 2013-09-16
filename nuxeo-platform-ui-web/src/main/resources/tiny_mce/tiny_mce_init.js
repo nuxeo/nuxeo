@@ -1,6 +1,6 @@
 var nbTinyMceEditor = 0;
 
-function initTinyMCE(width, height, editorSelector, plugins, lang, toolbar) {
+function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
   // force English by default since there are no translations for other
   // languages than en and fr
   if (lang != 'en' && lang != 'fr'){
@@ -30,9 +30,9 @@ function initTinyMCE(width, height, editorSelector, plugins, lang, toolbar) {
   tinyMCE.init({
     width : width,
     height : height,
-    mode : "specific_textareas",
+    mode : "exact",
     theme : "advanced",
-    editor_selector : editorSelector,
+    elements : eltId,
     editor_deselector : "disableMCEInit",
     plugins : plugins,
     language : lang,
