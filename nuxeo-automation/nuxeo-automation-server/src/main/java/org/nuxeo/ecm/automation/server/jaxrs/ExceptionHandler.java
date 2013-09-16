@@ -75,7 +75,7 @@ public class ExceptionHandler {
     }
 
     public static boolean isSecurityError(Throwable t) {
-        return getStatus(t) == HttpServletResponse.SC_UNAUTHORIZED;
+        return getStatus(t) == HttpServletResponse.SC_FORBIDDEN;
     }
 
     public static int getStatus(Throwable cause, int depth) {
