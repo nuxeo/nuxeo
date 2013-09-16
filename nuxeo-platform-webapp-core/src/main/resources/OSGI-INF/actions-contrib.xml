@@ -563,17 +563,26 @@
     <action id="CANCEL_DOCUMENT_CREATION" link="#{navigationContext.goBack()}"
       order="50" label="command.cancel" immediate="true">
       <category>CREATE_DOCUMENT_FORM</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="EDIT_CURRENT_DOCUMENT" link="#{documentActions.updateCurrentDocument}"
       order="0" label="command.save">
       <category>EDIT_DOCUMENT_FORM</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <action id="EDIT_CURRENT_DOCUMENT_AND_STAY" enabled="false"
       link="#{documentActions.updateDocument(currentDocument, true)}" order="10"
       label="command.save.and.stay">
       <category>EDIT_DOCUMENT_FORM</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
 
     <!-- end of actions on document create and edit pages -->
