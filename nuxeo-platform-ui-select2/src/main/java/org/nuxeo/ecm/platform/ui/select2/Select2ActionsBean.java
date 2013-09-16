@@ -147,7 +147,12 @@ public class Select2ActionsBean implements Serializable {
         jg.writeStringField("translateLabels", "" + isTranslated);
 
         Map<String, Serializable> propertySet = widget.getProperties();
-        boolean hasPlaceholder = false, hasSuggestionFormatter = false, hasSelectionFormatter = false, hasAjaxReRender = false;
+        boolean hasPlaceholder = false;
+        boolean hasSuggestionFormatter = false;
+        boolean hasSelectionFormatter = false;
+        boolean hasAjaxReRender = false;
+        boolean hasWidth = false;
+        boolean hasMinChars = false;
 
         for (Entry<String, Serializable> entry : propertySet.entrySet()) {
 
@@ -165,6 +170,10 @@ public class Select2ActionsBean implements Serializable {
                 hasSelectionFormatter = true;
             } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
                 hasAjaxReRender = true;
+            } else if (entry.getKey().equals(Select2Common.WIDTH)) {
+                hasWidth = true;
+            } else if (entry.getKey().equals(Select2Common.MIN_CHARS)) {
+                hasMinChars = true;
             }
 
             jg.writeStringField(entry.getKey(), value);
@@ -178,9 +187,10 @@ public class Select2ActionsBean implements Serializable {
                     messages.get("label.vocabulary.selectValue"));
         }
 
-        // Had default selection and suggestion formatter if needed.
-        if (widget.getType().startsWith(Select2Common.USER_SUGGESTION_SELECT2)) {
+        // Specifc stuff for widget type
+        if (Select2Common.SELECT2_USER_WIDGET_TYPE_LIST.contains(widget.getType())) {
             jg.writeStringField("operationId", SuggestUserEntries.ID);
+            // add default selection and suggestion formatter if needed.
             if (!hasSuggestionFormatter) {
                 jg.writeStringField(Select2Common.SUGGESTION_FORMATTER,
                         Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER);
@@ -208,6 +218,16 @@ public class Select2ActionsBean implements Serializable {
                 jg.writeStringField(Select2Common.SELECTION_FORMATTER,
                         Select2Common.DIR_DEFAULT_SELECTION_FORMATTER);
             }
+        }
+
+        //
+        if (!hasWidth) {
+            jg.writeStringField(Select2Common.WIDTH,
+                    Select2Common.DEFAULT_WIDTH);
+        }
+
+        if (!hasMinChars) {
+            jg.writeNumberField(Select2Common.MIN_CHARS, Select2Common.DEFAULT_MIN_CHARS);
         }
 
         // Are we writing or reading

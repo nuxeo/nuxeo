@@ -285,41 +285,6 @@
       </fields>
     </widget>
 
-    <widget name="hideInstructionLabel" type="checkbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Hide instructionLabel</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Boolean to hide the instruction label.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>hideInstructionLabel</field>
-      </fields>
-    </widget>
-
-    <widget name="instructionLabel" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Instruction Label</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          The Instruction label is displayed below the
-          widget.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>instructionLabel</field>
-      </fields>
-    </widget>
-
     <widget name="directoryName" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -338,23 +303,6 @@
       <properties widgetMode="any">
         <property name="required">true</property>
       </properties>
-    </widget>
-
-    <widget name="sortable" type="checkbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Enable sorting on selected entries</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Boolean enable sorting on selected entries.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>sortable</field>
-      </fields>
     </widget>
 
     <widget name="dbl10n" type="checkbox">
@@ -581,10 +529,10 @@
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">instructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">minChars</widget>
@@ -690,10 +638,10 @@
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">instructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">minChars</widget>
@@ -706,7 +654,7 @@
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">sortable</widget>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
@@ -792,10 +740,10 @@
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">instructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">minChars</widget>
@@ -892,10 +840,10 @@
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">instructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">minChars</widget>
@@ -910,7 +858,7 @@
                   <widget category="widgetTypeConf">obsolete</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">sortable</widget>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">dropdownCssClass</widget>
@@ -931,188 +879,6 @@
       </handler-class>
       <property name="template">
         /select2/select2_multiple_directory_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="select2User">
-      <configuration>
-        <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2User</title>
-        <description>
-          <p>User Suggestion Widget based on Select2 JS library. Nuxeo
-            Automation is used to manage Select2 data binding.
-          </p>
-        </description>
-        <categories>
-          <category>document</category>
-        </categories>
-        <supportedModes>
-          <mode>view</mode>
-          <mode>edit</mode>
-        </supportedModes>
-        <fields>
-          <list>false</list>
-          <complex>false</complex>
-          <supportedTypes>
-            <type>string</type>
-          </supportedTypes>
-        </fields>
-        <properties>
-          <layouts mode="any">
-            <layout name="select2User_widget_type_properties_any">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">width</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">labelProperty</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">searchType</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">selectionFormatter</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">inlinejs</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">containerCssClass</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-          <layouts mode="edit">
-            <layout name="select2User_widget_type_properties_edit">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">required</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">placeholder</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">instructionLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">minChars</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">dropdownCssClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">ajaxReRender</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestionFormatter</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">groupRestriction</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-        </properties>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /select2/select2_user_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="select2UserMultiple">
-      <configuration>
-        <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2UserMultiple</title>
-        <description>
-          <p>User Multiple Suggestion Widget based on Select2 JS library. Nuxeo
-            Automation is used to manage Select2 data binding.
-          </p>
-        </description>
-        <categories>
-          <category>document</category>
-        </categories>
-        <supportedModes>
-          <mode>view</mode>
-          <mode>edit</mode>
-        </supportedModes>
-        <fields>
-          <list>true</list>
-          <complex>false</complex>
-          <supportedTypes>
-            <type>string</type>
-          </supportedTypes>
-        </fields>
-        <properties>
-          <layouts mode="any">
-            <layout name="select2UserMultiple_widget_type_properties_any">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">width</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">labelProperty</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">searchType</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">selectionFormatter</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">inlinejs</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">containerCssClass</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-          <layouts mode="edit">
-            <layout name="select2UserMultiple_widget_type_properties_edit">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">required</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">placeholder</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">instructionLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">hideInstructionLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">minChars</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">sortable</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">dropdownCssClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">ajaxReRender</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestionFormatter</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-        </properties>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /select2/select2_multiple_user_widget_template.xhtml
       </property>
     </widgetType>
 

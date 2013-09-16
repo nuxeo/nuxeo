@@ -76,6 +76,9 @@ public class SuggestUserEntries {
     @Param(name = "groupRestriction", required = false)
     protected String groupRestriction;
 
+    @Param(name = "userSuggestionMaxSearchResults", required = false)
+    protected Integer userSuggestionMaxSearchResults;
+
     @Context
     protected UserManager userManager;
 
@@ -97,9 +100,11 @@ public class SuggestUserEntries {
             }
         }
         try {
+            DocumentModelList userList = null;
+            DocumentModelList groupList = null;
             if (!groupOnly) {
                 Schema schema = schemaManager.getSchema("user");
-                DocumentModelList userList = userManager.searchUsers(prefix);
+                userList = userManager.searchUsers(prefix);
                 for (DocumentModel user : userList) {
                     JSONObject obj = new JSONObject();
                     String username = null;
@@ -152,7 +157,7 @@ public class SuggestUserEntries {
             }
             if (!userOnly) {
                 Schema schema = schemaManager.getSchema("group");
-                DocumentModelList groupList = userManager.searchGroups(prefix);
+                groupList = userManager.searchGroups(prefix);
                 for (DocumentModel group : groupList) {
                     JSONObject obj = new JSONObject();
                     boolean hasGroupLabel = false;
@@ -181,6 +186,20 @@ public class SuggestUserEntries {
                     result.add(obj);
                 }
             }
+
+            // Limit size results.
+            int userSize = userList != null ? userList.size() : 0;
+            int groupSize = groupList != null ? groupList.size() : 0;
+            int totalSize = userSize + groupSize;
+            if (userSuggestionMaxSearchResults != null
+                    && userSuggestionMaxSearchResults > 0) {
+                if (userSize > userSuggestionMaxSearchResults
+                        || groupSize > userSuggestionMaxSearchResults
+                        || totalSize > userSuggestionMaxSearchResults) {
+                    throw new SizeLimitExceededException();
+                }
+            }
+
         } catch (SizeLimitExceededException e) {
             return searchOverflowMessage();
         }

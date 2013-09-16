@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.ui.select2.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.nuxeo.ecm.core.schema.types.Schema;
 
 /**
@@ -42,13 +46,14 @@ public class Select2Common {
 
     public static final String OBSOLETE_FIELD_ID = "obsolete";
 
-    public static final String USER_SUGGESTION_SELECT2 = "select2User";
+    public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<String>(
+            Arrays.asList("singleUserSuggestion", "multipleUsersSuggestion"));
 
     public static final String SUGGESTION_SELECT2 = "select2Widget";
 
-    public static final String USER_TYPE = "user";
+    public static final String USER_TYPE = "USER_TYPE";
 
-    public static final String GROUP_TYPE = "group";
+    public static final String GROUP_TYPE = "GROUP_TYPE";
 
     public static final String TYPE_KEY_NAME = "type";
 
@@ -79,6 +84,14 @@ public class Select2Common {
     public static final String DOC_DEFAULT_SELECTION_FORMATTER = "docSelectionDefaultFormatter";
 
     public static final String DIR_DEFAULT_SELECTION_FORMATTER = "dirSelectionDefaultFormatter";
+
+    public static final String WIDTH = "width";
+
+    public static final String DEFAULT_WIDTH = "300";
+
+    public static final String MIN_CHARS = "minChars";
+
+    public static final int DEFAULT_MIN_CHARS = 3;
 
     /**
      * Compute the filed name of the directory that holds the value that we want

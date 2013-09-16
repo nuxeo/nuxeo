@@ -3,7 +3,11 @@
   function userEntryDefaultFormatter(entry) {
     var markup = "";
     if (entry.type) {
-      markup += "<img src='/nuxeo/icons/" + entry.type + ".png'/>";
+      if (entry.type == "USER_TYPE") {
+        markup += "<img src='/nuxeo/icons/user.png'/>";
+      } else if (entry.type == "GROUP_TYPE") {
+        markup += "<img src='/nuxeo/icons/group.png'/>";
+      }
     }
     markup += entry.label;
     if (entry.warn_message) {
@@ -89,8 +93,9 @@
       op.addParameter("obsolete", params.obsolete);
     } else if (params.operationId == 'UserGroup.Suggestion') {
       op.addParameter("prefix", query.term);
-      op.addParameter("searchType", params.searchType);
+      op.addParameter("searchType", params.userSuggestionSearchType);
       op.addParameter("groupRestriction", params.groupRestriction);
+      op.addParameter("userSuggestionMaxSearchResults", params.userSuggestionMaxSearchResults);
     } else {
       // build default operation for Document
       op.addParameter("queryParams", query.term + "%");
@@ -154,7 +159,7 @@
     try {
       initDoc = JSON.parse(initHolder.val());
     } catch (err) {
-      console.log("Unable to parse initvalue", err, initHolder.val())
+      //console.log("Unable to parse initvalue", err, initHolder.val())
     }
 
     // set style on select
@@ -264,7 +269,7 @@
     if (!readonly) {
 
       // Make selected items sortable
-      if (params.multiple == 'true' && params.sortable == 'true') {
+      if (params.multiple == 'true' && params.orderable == 'true') {
         el.select2("container").find("ul.select2-choices").sortable({
           containment : 'parent',
           start : function() {
