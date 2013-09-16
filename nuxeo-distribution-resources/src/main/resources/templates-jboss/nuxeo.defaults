@@ -42,7 +42,7 @@ mail.transport.host=localhost
 # Mail server port
 mail.transport.port=25
 mail.transport.auth=false
-mail.transport.username=anonymous
+mail.transport.user=anonymous
 mail.transport.password=password
 # The address mail will be from
 mail.from=noreply@nuxeo.com
