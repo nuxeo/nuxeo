@@ -1,4 +1,7 @@
 function InputContextKeeper(containerId) {
+    if (containerId === undefined) {
+        throw new Error("InputContextKeeper needs a 'containerId' to initialize itself.");
+    }
     var _this = this;
     var fileInputContextKeeper = null;
 
