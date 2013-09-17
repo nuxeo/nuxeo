@@ -18,8 +18,11 @@ package org.nuxeo.functionaltests.forms;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -33,6 +36,8 @@ import com.google.common.base.Function;
  * @since 5.7.3
  */
 public class Select2WidgetElement {
+
+    private static final Log log = LogFactory.getLog(Select2WidgetElement.class);
 
     private final static String S2_SINGLE_INPUT_XPATH = "//*[@id='select2-drop']/div/input";
 
@@ -113,9 +118,9 @@ public class Select2WidgetElement {
         }
         select2Field.click();
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(SELECT2_LOADING_TIMEOUT,
-                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                SELECT2_LOADING_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
 
         WebElement suggestInput = null;
         if (mutliple) {
@@ -124,10 +129,20 @@ public class Select2WidgetElement {
             suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
         }
 
+        boolean hasFailedOnce = false;
         for (char c : value.toCharArray()) {
             suggestInput.sendKeys(c + "");
-            wait.until(mutliple ? s2MultipleWaitFunction
-                    : s2SingleWaitFunction);
+            try {
+                wait.until(mutliple ? s2MultipleWaitFunction
+                        : s2SingleWaitFunction);
+            } catch (TimeoutException e) {
+                if (hasFailedOnce) {
+                    log.error("Suggestion timed out again with letter : " + c);
+                    throw e;
+                }
+                log.warn("Suggestion timed out with letter : " + c);
+                hasFailedOnce = true;
+            }
         }
 
         WebElement suggestion = driver.findElement(By.xpath(S2_SUGGEST_RESULT_XPATH));
