@@ -30,7 +30,9 @@ import java.util.Map;
  *
  * @author DM
  * @deprecated since 5.6: this is useless and does not play well with hot
- *             reload enabled
+ *             reload enabled because component has scope "Application". Just
+ *             inject the component named "messages" in components needing
+ *             translation features, instead of making them extend this class.
  */
 @Deprecated
 public interface ResourcesAccessor {
