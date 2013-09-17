@@ -4,43 +4,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
-    <widget name="query" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">NXQL Query</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          NXQL Query to fetch the suggestions
-        </label>
-      </helpLabels>
-      <fields>
-        <field>query</field>
-      </fields>
-    </widget>
-
-    <widget name="documentSchemas" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Document Schemas</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Document Schemas that should be fetched and
-          sent to the
-          JS client side.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>documentSchemas</field>
-      </fields>
-    </widget>
-
-    <widget name="idProperty" type="text">
+    <widget name="select2_idProperty" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -62,7 +26,7 @@
       </fields>
     </widget>
 
-    <widget name="labelProperty" type="text">
+    <widget name="select2_labelProperty" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -86,27 +50,7 @@
     </widget>
 
 
-    <widget name="repository" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">target Repository</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Id of the Nuxeo repositry that should be
-          accessed.
-          If
-          unsed, the default repository will be used.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>repository</field>
-      </fields>
-    </widget>
-
-    <widget name="operationId" type="text">
+    <widget name="select2_operationId" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -127,7 +71,7 @@
       </fields>
     </widget>
 
-    <widget name="initOperationId" type="text">
+    <widget name="select2_initOperationId" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -147,8 +91,6 @@
         <field>initOperationId</field>
       </fields>
     </widget>
-
-
 
   </extension>
 
@@ -186,25 +128,26 @@
                   <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">repository</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">operationId</widget>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">initOperationId</widget>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSchemas</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">idProperty</widget>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">labelProperty</widget>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
@@ -231,10 +174,10 @@
                   <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minChars</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">query</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
@@ -262,7 +205,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /select2/select2_widget_template.xhtml
+        /widgets/select2_widget_template.xhtml
       </property>
     </widgetType>
 
@@ -296,25 +239,26 @@
             <layout name="select2Multiple_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">width</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">repository</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">operationId</widget>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">initOperationId</widget>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSchemas</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">idProperty</widget>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">labelProperty</widget>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
@@ -344,10 +288,10 @@
                   <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">minChars</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">query</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
@@ -378,7 +322,7 @@
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
       <property name="template">
-        /select2/select2_multiple_widget_template.xhtml
+        /widgets/select2_multiple_widget_template.xhtml
       </property>
     </widgetType>
 
