@@ -8,8 +8,11 @@
   value="#{widget.id}_panel"
   cache="true">
   <a4j:outputPanel id="#{ajaxReRender}" layout="block">
+    <nxu:set var="actionContextDocument"
+      value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
+      cache="true">
     <nxu:set var="actions"
-      value="#{webActions.getActionsListForDocument(widgetProperty_category, fieldOrValue, not widgetProperty_disableFiltered)}"
+      value="#{webActions.getActionsListForDocument(widgetProperty_category, actionContextDocument, not widgetProperty_disableFiltered)}"
       cache="true">
       <nxl:widgetType name="actions"
         mode="#{widget.mode}"
@@ -22,6 +25,7 @@
         ignoreTemplateProperty="true"
         subWidgets="#{widget.subWidgets}"
         addForm="true" />
+    </nxu:set>
     </nxu:set>
   </a4j:outputPanel>
 </nxu:set>
