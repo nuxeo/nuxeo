@@ -191,16 +191,16 @@
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>select2_directory_widget</from-outcome>
+      <from-outcome>suggest_one_directory_widget</from-outcome>
       <to-view-id>
-        /layoutDemo/demoWidgets/select2DirectoryWidget.xhtml
+        /layoutDemo/demoWidgets/suggestOneDirectoryWidget.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>select2_directory_multiple_widget</from-outcome>
+      <from-outcome>suggest_one_directory_multiple_widget</from-outcome>
       <to-view-id>
-        /layoutDemo/demoWidgets/select2DirectoryMultipleWidget.xhtml
+        /layoutDemo/demoWidgets/suggestManyDirectoryWidget.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>

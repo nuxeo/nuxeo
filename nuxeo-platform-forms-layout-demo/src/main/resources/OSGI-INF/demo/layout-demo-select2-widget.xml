@@ -73,7 +73,7 @@
       </widget>
     </layout>
 
-    <layout name="select2DirectoryWidgetLayout">
+    <layout name="suggestOneDirectoryWidgetLayout">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml
         </template>
@@ -84,7 +84,7 @@
         </row>
       </rows>
 
-      <widget name="l10ncoverage" type="select2Directory">
+      <widget name="l10ncoverage" type="suggestOneDirectory">
         <labels>
           <label mode="any">l10ncoverage</label>
         </labels>
@@ -107,7 +107,7 @@
       </widget>
     </layout>
 
-    <layout name="select2DirectoryMultipleWidgetLayout">
+    <layout name="suggestManyDirectoryWidgetLayout">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml
         </template>
@@ -118,7 +118,7 @@
         </row>
       </rows>
 
-      <widget name="l10nsubjects" type="select2DirectoryMultiple">
+      <widget name="l10nsubjects" type="suggestManyDirectory">
         <labels>
           <label mode="any">l10ncoverage</label>
         </labels>

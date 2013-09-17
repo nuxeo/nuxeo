@@ -228,9 +228,9 @@
       </layouts>
     </widgetType>
 
-    <widgetType name="select2Directory">
-      <label>Select2Directory</label>
-      <viewId>select2_directory_widget</viewId>
+    <widgetType name="suggestOneDirectory">
+      <label>Vocabulary suggestion</label>
+      <viewId>suggest_one_directory_widget</viewId>
       <category>standard</category>
       <preview enabled="true">
         <fields>
@@ -249,20 +249,25 @@
           <property name="placeholder">Choose a country</property>
           <property name="inlinejs"> <![CDATA[
   function dirformatter(entry) {
-   return entry.label;
+    var markup = entry.label;
+    if (entry.warn_message) {
+      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+          + entry.warn_message + "'/>"
+    }
+    return markup;
   }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
         </defaultProperties>
       </preview>
       <layouts>
-        <layout name="select2DirectoryWidgetLayout"
+        <layout name="suggestOneDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
       </layouts>
     </widgetType>
 
-    <widgetType name="select2DirectoryMultiple">
-      <label>Select2DirectoryMultiple</label>
-      <viewId>select2_directory_multiple_widget</viewId>
+    <widgetType name="suggestManyDirectory">
+      <label>Multiple vocabulary suggestion</label>
+      <viewId>suggest_one_directory_multiple_widget</viewId>
       <category>standard</category>
       <preview enabled="true">
         <fields>
@@ -281,13 +286,18 @@
           <property name="placeholder">Choose one or more topics</property>
           <property name="inlinejs"> <![CDATA[
   function dirformatter(entry) {
-   return entry.label;
+    var markup = entry.label;
+    if (entry.warn_message) {
+      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+          + entry.warn_message + "'/>"
+    }
+    return markup;
   }]]></property>
           <property name="documentSchemas">dublincore,layout_demo_schema</property>
         </defaultProperties>
       </preview>
       <layouts>
-        <layout name="select2DirectoryMultipleWidgetLayout"
+        <layout name="suggestManyDirectoryWidgetLayout"
           src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
       </layouts>
     </widgetType>
