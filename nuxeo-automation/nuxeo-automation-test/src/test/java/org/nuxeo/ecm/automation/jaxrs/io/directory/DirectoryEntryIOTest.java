@@ -50,7 +50,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({"org.nuxeo.ecm.automation.io","org.nuxeo.ecm.automation.test"})
+@Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.test" })
 @LocalDeploy("org.nuxeo.ecm.automation.test:test-directory-contrib.xml")
 public class DirectoryEntryIOTest {
 
@@ -88,13 +88,15 @@ public class DirectoryEntryIOTest {
         // When i write it
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        DirectoryEntryWriter.writeTo(jg, entry);
+        DirectoryEntryWriter dew = new DirectoryEntryWriter();
+        dew.writeEntity(jg, entry);
 
         // I can parse it in Json
         ObjectMapper mapper = new ObjectMapper();
+
         JsonNode node = mapper.readTree(out.toString());
 
-        assertEquals("directory-entry",
+        assertEquals(DirectoryEntryWriter.ENTITY_TYPE,
                 node.get("entity-type").getValueAsText());
         assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
@@ -114,20 +116,17 @@ public class DirectoryEntryIOTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
 
-
         DirectoryEntriesWriter writer = new DirectoryEntriesWriter();
-
-        writer.writeTo(jg, entries);
+        writer.writeEntity(jg, entries);
 
         // I can parse it in Json
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(out.toString());
 
-        assertEquals("directory-entries",
+        assertEquals(DirectoryEntriesWriter.ENTITY_TYPE,
                 node.get("entity-type").getValueAsText());
         ArrayNode jsonEntries = (ArrayNode) node.get("items");
         assertEquals(entries.size(), jsonEntries.size());
-
 
     }
 }

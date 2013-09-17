@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntriesWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntry;
 import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryWriter;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -98,7 +99,7 @@ public class DirectoryTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/"
                 + TESTDIRNAME + "/test1");
 
-        assertEquals("directory-entry",
+        assertEquals(DirectoryEntryWriter.ENTITY_TYPE,
                 node.get("entity-type").getValueAsText());
         assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
@@ -116,7 +117,7 @@ public class DirectoryTest extends BaseTest {
                 + TESTDIRNAME);
 
         // Then i receive the response as json
-        assertEquals("directory-entries",
+        assertEquals(DirectoryEntriesWriter.ENTITY_TYPE,
                 node.get("entity-type").getValueAsText());
         ArrayNode jsonEntries = (ArrayNode) node.get("items");
         assertEquals(entries.size(), jsonEntries.size());
@@ -277,7 +278,8 @@ public class DirectoryTest extends BaseTest {
             JsonGenerationException, ClientException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        DirectoryEntryWriter.writeTo(jg, new DirectoryEntry(dirName, dirEntry));
+        DirectoryEntryWriter dew = new DirectoryEntryWriter();
+        dew.writeEntity(jg, new DirectoryEntry(dirName, dirEntry));
         return out.toString();
     }
 

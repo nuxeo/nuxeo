@@ -17,23 +17,12 @@
 package org.nuxeo.ecm.automation.jaxrs.io.directory;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -43,7 +32,6 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -54,54 +42,19 @@ import org.nuxeo.runtime.api.Framework;
 @Provider
 @Produces({ MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_JSON + "+nxentity" })
-public class DirectoryEntryWriter implements MessageBodyWriter<DirectoryEntry> {
+public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
 
-    @Context
-    JsonFactory jg;
-
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return DirectoryEntry.class.isAssignableFrom(type);
-    }
-
-    @Override
-    public long getSize(DirectoryEntry t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return -1L;
-    }
-
-    @Override
-    public void writeTo(DirectoryEntry directoryEntry, Class<?> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        JsonGenerator jg = JsonHelper.createJsonGenerator(entityStream);
-        try {
-            writeTo(jg, directoryEntry);
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
-        }
-    }
 
     /**
-     * @param jg
-     * @param directoryEntry
-     * @throws IOException
-     * @throws JsonGenerationException
-     * @throws ClientException
-     * @throws Exception
+     *
      */
-    public static void writeTo(JsonGenerator jg, DirectoryEntry directoryEntry)
-            throws JsonGenerationException, IOException, ClientException {
+    public static final String ENTITY_TYPE = "directoryEntry";
 
-        boolean translateLabels = false;
-
+    @Override
+    protected void writeEntityBody(JsonGenerator jg, DirectoryEntry directoryEntry)
+            throws IOException, ClientException {
         String directoryName = directoryEntry.getDirectoryName();
 
-        jg.writeStartObject();
-        jg.writeStringField("entity-type", "directory-entry");
         jg.writeStringField("directoryName", directoryName);
         jg.writeObjectFieldStart("properties");
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
@@ -115,32 +68,22 @@ public class DirectoryEntryWriter implements MessageBodyWriter<DirectoryEntry> {
         for (Field field : schema.getFields()) {
             QName fieldName = field.getName();
             String key = fieldName.getLocalName();
-            Serializable value = entry.getPropertyValue(fieldName.getPrefixedName());
-            if (translateLabels && "label".equals(key)) {
-                value = translate((String) value);
-            }
 
             jg.writeFieldName(key);
             JsonDocumentWriter.writePropertyValue(jg,
                     entry.getProperty(fieldName.getPrefixedName()), "");
 
         }
-
         jg.writeEndObject();
 
-        jg.writeEndObject();
-        jg.flush();
     }
 
-    /**
-     * @param value
-     * @return
-     *
-     */
-    private static Serializable translate(String value) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+    @Override
+    protected String getEntityType() {
+        return ENTITY_TYPE;
     }
+
+
+
 
 }

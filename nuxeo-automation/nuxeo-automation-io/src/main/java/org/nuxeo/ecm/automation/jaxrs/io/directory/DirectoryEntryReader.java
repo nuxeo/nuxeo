@@ -147,7 +147,7 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
                 propertiesNode = jp.readValueAsTree();
             } else if ("entity-type".equals(key)) {
                 String entityType = jp.readValueAs(String.class);
-                if (!"directory-entry".equals(entityType)) {
+                if (!DirectoryEntryWriter.ENTITY_TYPE.equals(entityType)) {
                     throw new WebApplicationException(
                             Response.Status.BAD_REQUEST);
                 }
