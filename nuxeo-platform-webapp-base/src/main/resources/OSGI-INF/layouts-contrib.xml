@@ -607,75 +607,59 @@
       </fields>
     </widget>
 
-    <widget name="documentSuggestion_minChars" type="int">
+    <widget name="documentSuggestion_query" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Minimum characters</label>
+        <label mode="any">NXQL Query</label>
       </labels>
       <helpLabels>
         <label mode="any">
-          The minimal number of characters to type for the
-          suggestion to be active. Defaults to 3.
+          NXQL Query to fetch the suggestions
         </label>
       </helpLabels>
       <fields>
-        <field>minChars</field>
+        <field>query</field>
       </fields>
     </widget>
 
-    <widget name="documentSuggestion_frequency" type="int">
+    <widget name="documentSuggestion_documentSchemas" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Frequency</label>
+        <label mode="any">Document Schemas</label>
       </labels>
       <helpLabels>
         <label mode="any">
-          Delay (in seconds) before activating the suggestion
-          pop-up. Default value is 0.
+          Document Schemas that should be fetched and
+          sent to the
+          JS client side.
         </label>
       </helpLabels>
       <fields>
-        <field>frequency</field>
+        <field>documentSchemas</field>
       </fields>
     </widget>
 
-    <widget name="documentSuggestion_requestDelay" type="int">
+    <widget name="documentSuggestion_repository" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Request delay</label>
+        <label mode="any">target Repository</label>
       </labels>
       <helpLabels>
         <label mode="any">
-          The requestDelay attribute specifies an amount of time
-          in milliseconds for the request to wait in the queue before being sent
-          to the server. If a similar request is added to the queue before the
-          delay is over, the original request is removed from the queue and not
-          sent.
+          Id of the Nuxeo repositry that should be
+          accessed.
+          If
+          unsed, the default repository will be used.
         </label>
       </helpLabels>
       <fields>
-        <field>requestDelay</field>
-      </fields>
-    </widget>
-
-    <widget name="documentSuggestion_width" type="int">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Width</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">The suggestion width.</label>
-      </helpLabels>
-      <fields>
-        <field>width</field>
+        <field>repository</field>
       </fields>
     </widget>
 
@@ -1432,27 +1416,52 @@
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_minChars</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_requestDelay
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_width</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_orderable</widget>
@@ -1508,27 +1517,52 @@
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_tab</widget>
+                  <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_minChars</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_requestDelay
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_width</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
               </rows>
             </layout>
