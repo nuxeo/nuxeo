@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -125,7 +125,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     protected static Set<String> sectionTypes;
 
-    protected Map<String, String> publicationParameters = new HashMap<String, String>();
+    protected Map<String, String> publicationParameters = new HashMap<>();
 
     protected String treeSID;
 
@@ -153,7 +153,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
     protected Map<String, String> filterEmptyTrees(Map<String, String> trees)
             throws PublicationTreeNotAvailable, ClientException {
 
-        Map<String, String> filteredTrees = new HashMap<String, String>();
+        Map<String, String> filteredTrees = new HashMap<>();
 
         List<String> prefilteredTrees = filterEmptyTrees(trees.keySet());
 
@@ -166,7 +166,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
 
     protected List<String> filterEmptyTrees(Collection<String> trees)
             throws PublicationTreeNotAvailable, ClientException {
-        List<String> filteredTrees = new ArrayList<String>();
+        List<String> filteredTrees = new ArrayList<>();
 
         for (String tree : trees) {
             try {
@@ -199,7 +199,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         Map<String, String> trees = publisherService.getAvailablePublicationTrees();
         // remove empty trees
         trees = filterEmptyTrees(trees);
-        List<PublicationTreeInformation> treesInformation = new ArrayList<PublicationTreeInformation>();
+        List<PublicationTreeInformation> treesInformation = new ArrayList<>();
         for (Map.Entry<String, String> entry : trees.entrySet()) {
             treesInformation.add(new PublicationTreeInformation(entry.getKey(),
                     entry.getValue()));
@@ -228,7 +228,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         } catch (PublisherException e) {
             log.error(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(e.getMessage()));
+                    messages.get(e.getMessage()));
             return null;
         }
 
@@ -242,12 +242,9 @@ public class PublishActionsBean extends AbstractPublishActions implements
                     null, comment, null, currentDocument);
             Events.instance().raiseEvent(
                     EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION);
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "document_submitted_for_publication"),
-                    resourcesAccessor.getMessages().get(
-                            currentDocument.getType()));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get("document_submitted_for_publication"),
+                    messages.get(currentDocument.getType()));
         } else {
             String comment = ComponentUtils.translate(context,
                     "publishing.done", publicationNode.getPath(),
@@ -258,11 +255,9 @@ public class PublishActionsBean extends AbstractPublishActions implements
             Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLISHED);
             // publish may checkin the document -> change
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get("document_published"),
-                    resourcesAccessor.getMessages().get(
-                            currentDocument.getType()));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get("document_published"),
+                    messages.get(currentDocument.getType()));
         }
         currentPublicationTree = null;
         return null;
@@ -282,7 +277,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public String getCurrentPublicationTreeNameForPublishing()
             throws ClientException {
         if (currentPublicationTreeNameForPublishing == null) {
-            List<String> publicationTrees = new ArrayList<String>(
+            List<String> publicationTrees = new ArrayList<>(
                     publisherService.getAvailablePublicationTree());
             publicationTrees = filterEmptyTrees(publicationTrees);
             if (!publicationTrees.isEmpty()) {
@@ -295,8 +290,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public PublicationTree getCurrentPublicationTreeForPublishing()
             throws ClientException {
         if (currentPublicationTree == null) {
-            String currentPublicationTreeNameForPublishing = getCurrentPublicationTreeNameForPublishing();
-            if (currentPublicationTreeNameForPublishing == null) {
+            if (getCurrentPublicationTreeNameForPublishing() == null) {
                 return currentPublicationTree;
             }
             try {
@@ -375,10 +369,8 @@ public class PublishActionsBean extends AbstractPublishActions implements
                 }
             }
         }
-        facesMessages.add(
-                StatusMessage.Severity.ERROR,
-                resourcesAccessor.getMessages().get(
-                        "error.document_republished"));
+        facesMessages.add(StatusMessage.Severity.ERROR,
+                messages.get("error.document_republished"));
         return null;
     }
 
@@ -536,8 +528,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
             facesMessages.addToControl(
                     "publishingComment",
                     StatusMessage.Severity.ERROR,
-                    resourcesAccessor.getMessages().get(
-                            "label.publishing.reject.user.comment.mandatory"));
+                    messages.get("label.publishing.reject.user.comment.mandatory"));
             return null;
         }
 
@@ -594,8 +585,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         // remove from the current selection list
         documentsListsManager.resetWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
         facesMessages.add(StatusMessage.Severity.INFO,
-                resourcesAccessor.getMessages().get("n_unpublished_docs"),
-                params);
+                messages.get("n_unpublished_docs"), params);
     }
 
     public boolean isRemotePublishedDocument(PublishedDocument publishedDocument) {
@@ -682,15 +672,12 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
 
         Object[] params = { nbPublishedDocs };
-        facesMessages.add(StatusMessage.Severity.INFO, "#0 "
-                + resourcesAccessor.getMessages().get("n_published_docs"),
-                params);
+        facesMessages.add(StatusMessage.Severity.INFO,
+                "#0 " + messages.get("n_published_docs"), params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
-            facesMessages.add(
-                    StatusMessage.Severity.WARN,
-                    resourcesAccessor.getMessages().get(
-                            "selection_contains_non_publishable_docs"));
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    messages.get("selection_contains_non_publishable_docs"));
         }
 
         EventManager.raiseEventsOnDocumentChildrenChange(target);
@@ -701,7 +688,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         if (sectionTypes == null) {
             sectionTypes = getTypeNamesForFacet(FacetNames.PUBLISH_SPACE);
             if (sectionTypes == null) {
-                sectionTypes = new HashSet<String>();
+                sectionTypes = new HashSet<>();
             }
         }
         return sectionTypes;
@@ -743,7 +730,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
 
         if (properties == null) {
-            properties = new HashMap<String, Serializable>();
+            properties = new HashMap<>();
         }
 
         properties.put(CoreEventConstants.REPOSITORY_NAME,

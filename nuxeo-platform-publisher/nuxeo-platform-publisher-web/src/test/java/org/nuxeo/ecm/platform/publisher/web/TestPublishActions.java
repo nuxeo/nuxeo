@@ -35,7 +35,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-@SuppressWarnings("deprecation")
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.publisher.web")
@@ -49,27 +48,36 @@ public class TestPublishActions {
     @Inject
     private ResourcesAccessorBean resourcesAccessor;
 
-    @Test(timeout = 3000) // In case an infinite loop occurs
+    @Test(timeout = 3000)
+    // In case an infinite loop occurs
     public void testGetPathFragments() throws ClientException {
         // Create file in standard domain
-        DocumentModel fileModel = documentManager.createDocumentModel("/default-domain/workspaces/", "myfile", "File");
+        DocumentModel fileModel = documentManager.createDocumentModel(
+                "/default-domain/workspaces/", "myfile", "File");
         fileModel = documentManager.createDocument(fileModel);
 
         // Create file in custom domain with specific type
-        DocumentModel customDomainModel = documentManager.createDocumentModel("/", "mydomain", "CustomDomain");
+        DocumentModel customDomainModel = documentManager.createDocumentModel(
+                "/", "mydomain", "CustomDomain");
         customDomainModel = documentManager.createDocument(customDomainModel);
-        DocumentModel file2Model = documentManager.createDocumentModel(customDomainModel.getPathAsString(), "myfile2", "File");
+        DocumentModel file2Model = documentManager.createDocumentModel(
+                customDomainModel.getPathAsString(), "myfile2", "File");
         file2Model = documentManager.createDocument(file2Model);
 
         // Create file directly below the root
-        DocumentModel file3Model = documentManager.createDocumentModel("/", "myfile3", "File");
+        DocumentModel file3Model = documentManager.createDocumentModel("/",
+                "myfile3", "File");
         file3Model = documentManager.createDocument(file3Model);
 
         // Test paths (every fragment is null because the message map is empty)
-        DummyPublishActions publishActions = new DummyPublishActions(documentManager, resourcesAccessor);
-        Assert.assertEquals("null>null>null", publishActions.getFormattedPath(fileModel));
-        Assert.assertEquals("null>null", publishActions.getFormattedPath(file2Model));
-        Assert.assertEquals("null>null", publishActions.getFormattedPath(file3Model));
+        DummyPublishActions publishActions = new DummyPublishActions(
+                documentManager, resourcesAccessor);
+        Assert.assertEquals("null>null>null",
+                publishActions.getFormattedPath(fileModel));
+        Assert.assertEquals("null>null",
+                publishActions.getFormattedPath(file2Model));
+        Assert.assertEquals("null>null",
+                publishActions.getFormattedPath(file3Model));
     }
 
 }

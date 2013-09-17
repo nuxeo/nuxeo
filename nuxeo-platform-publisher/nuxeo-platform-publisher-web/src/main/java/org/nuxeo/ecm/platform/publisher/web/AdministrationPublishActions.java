@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2009-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.platform.publisher.web;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -172,13 +171,6 @@ public class AdministrationPublishActions extends AbstractPublishActions
         return null;
     }
 
-    public String getFormattedPath(DocumentModel documentModel)
-            throws ClientException {
-        List<String> pathFragments = new ArrayList<String>();
-        getPathFragments(documentModel, pathFragments);
-        return formatPathFragments(pathFragments);
-    }
-
     protected static String formatPathFragments(List<String> pathFragments) {
         String fullPath = "";
         for (String aFragment : pathFragments) {
@@ -190,24 +182,15 @@ public class AdministrationPublishActions extends AbstractPublishActions
         return fullPath;
     }
 
-    protected void getPathFragments(DocumentModel documentModel,
-            List<String> pathFragments) throws ClientException {
-        String pathElementName = documentModel.getTitle();
-        String translatedPathElement = resourcesAccessor.getMessages().get(
-                pathElementName);
-        pathFragments.add(translatedPathElement);
-        if ("Domain".equals(documentModel.getType())) {
-            return;
-        }
-
-        DocumentModel parentDocument;
+    @Override
+    protected DocumentModel getParentDocument(DocumentModel documentModel)
+            throws ClientException {
         try {
-            parentDocument = documentManager.getDocument(documentModel.getParentRef());
+            return documentManager.getDocument(documentModel.getParentRef());
         } catch (Exception e) {
             log.error("Error building path", e);
-            return;
         }
-        getPathFragments(parentDocument, pathFragments);
+        return null;
     }
 
 }
