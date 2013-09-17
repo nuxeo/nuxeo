@@ -39,7 +39,7 @@
     return markup;
   }
 
-  var userSelecionDefaultFormatter = userEntryDefaultFormatter;
+  var userSelectionDefaultFormatter = userEntryDefaultFormatter;
 
   function docSelectionDefaultFormatter(doc) {
     var markup = "";

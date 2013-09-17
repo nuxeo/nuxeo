@@ -49,7 +49,8 @@ public class Select2Common {
     public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<String>(
             Arrays.asList("singleUserSuggestion", "multipleUsersSuggestion"));
 
-    public static final String SUGGESTION_SELECT2 = "select2Widget";
+    public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<String>(
+            Arrays.asList("singleDocumentSuggestion", "multipleDocumentsSuggestion"));
 
     public static final String USER_TYPE = "USER_TYPE";
 
@@ -80,7 +81,7 @@ public class Select2Common {
 
     public static final String AJAX_RERENDER = "ajaxReRender";
 
-    public static final String USER_DEFAULT_SELECTION_FORMATTER = "userSelecionDefaultFormatter";
+    public static final String USER_DEFAULT_SELECTION_FORMATTER = "userSelectionDefaultFormatter";
 
     public static final String DOC_DEFAULT_SELECTION_FORMATTER = "docSelectionDefaultFormatter";
 
