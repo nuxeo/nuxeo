@@ -4,42 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
-    <widget name="width" type="int">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Width</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Width in pixels of the Select2 ComboBox
-        </label>
-      </helpLabels>
-      <fields>
-        <field>width</field>
-      </fields>
-    </widget>
-
-    <widget name="minChars" type="int">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Minimum number of characters</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Minimal number of characters before calling
-          the server
-          to fetch the suggestions
-        </label>
-      </helpLabels>
-      <fields>
-        <field>minChars</field>
-      </fields>
-    </widget>
-
     <widget name="query" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -73,56 +37,6 @@
       </helpLabels>
       <fields>
         <field>documentSchemas</field>
-      </fields>
-    </widget>
-
-    <widget name="suggestionFormatter" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Suggestion Formatter</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Name of the JavaScript function name that
-          will be
-          called by select2 to do the formating of the
-          suggestion entries.
-          The
-          target function should take as input
-          the javascript Document as
-          returned by Automation and should
-          return some Html.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>suggestionFormatter</field>
-      </fields>
-    </widget>
-
-    <widget name="selectionFormatter" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Selection Formater</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Name of the JavaScript function name that
-          will be
-          called by select2 to do the formating of the
-          selected entries.
-          The
-          target function should take as input
-          the javascript Document as
-          returned by Automation and should
-          return some Html.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>selectionFormatter</field>
       </fields>
     </widget>
 
@@ -171,57 +85,6 @@
       </fields>
     </widget>
 
-    <widget name="labelFieldName" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Label field name</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Name of the Directory field that should be
-          used to
-          define the Label of entry.
-          If unset 'label'
-          will be
-          used. In case of
-          localization with a directory field for
-          each supported language (see
-          dbl10n option), by default
-          fields named like 'label_en', 'label_fr' or
-          'label_de' will
-          be searched. You can customize looked up fields by
-          specifing
-          a pattern like
-          'label_{lang}' where the part {lang} will be
-          replaced with
-          the current locale.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>labelFieldName</field>
-      </fields>
-    </widget>
-
-
-    <widget name="inlinejs" type="textarea">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">inline js</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Javascript to be injected in the page with
-          the Widget.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>inlinejs</field>
-      </fields>
-    </widget>
 
     <widget name="repository" type="text">
       <categories>
@@ -285,174 +148,7 @@
       </fields>
     </widget>
 
-    <widget name="directoryName" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Directory Name</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Name of the directory
-        </label>
-      </helpLabels>
-      <fields>
-        <field>directory</field>
-      </fields>
-      <properties widgetMode="any">
-        <property name="required">true</property>
-      </properties>
-    </widget>
 
-    <widget name="dbl10n" type="checkbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Activate dbl10n</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Check this option means that the labels are
-          localized
-          with translations provided in the directory itself
-          (i.e. in fields).
-          Otherwise labels are translated as usual
-          picking values in
-          messages*.properties files.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>dbl10n</field>
-      </fields>
-    </widget>
-
-    <widget name="canSelectParent" type="checkbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Can select parent</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Check this option to allow selection of
-          intermediate
-          groups.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>canSelectParent</field>
-      </fields>
-    </widget>
-
-    <widget name="filterParent" type="checkbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Filter parent</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Check this option to apply filter on
-          intermediate
-          groups.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>filterParent</field>
-      </fields>
-    </widget>
-
-    <widget name="obsolete" type="checkbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Display obsolete entry</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Check this option if you want obsolete
-          entries to be
-          selectable.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>obsolete</field>
-      </fields>
-    </widget>
-
-    <widget name="searchType" type="selectOneListbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Search type</label>
-      </labels>
-      <fields>
-        <field>searchType</field>
-      </fields>
-      <selectOptions>
-        <option itemLabel="Users and Groups" itemValue="" />
-        <option itemLabel="Users" itemValue="user" />
-        <option itemLabel="Groups" itemValue="group" />
-      </selectOptions>
-    </widget>
-
-    <widget name="groupRestriction" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Group id restriction</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Enter the id of a group to suggest only user from this
-          group.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>groupRestriction</field>
-      </fields>
-    </widget>
-
-    <widget name="containerCssClass" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Container css class</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Css class of the selection container
-        </label>
-      </helpLabels>
-      <fields>
-        <field>containerCssClass</field>
-      </fields>
-    </widget>
-
-    <widget name="dropdownCssClass" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Dropdown css class</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Css class of the dropdown suggestion
-        </label>
-      </helpLabels>
-      <fields>
-        <field>dropdownCssClass</field>
-      </fields>
-    </widget>
 
   </extension>
 
@@ -487,7 +183,7 @@
             <layout name="select2_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">width</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">repository</widget>
@@ -508,13 +204,13 @@
                   <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">selectionFormatter</widget>
+                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">inlinejs</widget>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">containerCssClass</widget>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
                 </row>
               </rows>
             </layout>
@@ -545,13 +241,17 @@
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">dropdownCssClass</widget>
+                  <widget category="widgetTypeConf">suggestion_dropdownCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
                 </row>
               </rows>
             </layout>
@@ -617,13 +317,13 @@
                   <widget category="widgetTypeConf">labelProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">inlinejs</widget>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">containerCssClass</widget>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
                 </row>
               </rows>
             </layout>
@@ -657,13 +357,17 @@
                   <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">dropdownCssClass</widget>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
                 </row>
               </rows>
             </layout>
@@ -675,210 +379,6 @@
       </handler-class>
       <property name="template">
         /select2/select2_multiple_widget_template.xhtml
-      </property>
-    </widgetType>
-
-
-    <widgetType name="select2Directory">
-      <configuration>
-        <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2Directory</title>
-        <description>
-          <p>Uses Select2 JS library to render a selection / suggestion widget
-            where suggestions are loaded from a given directory.
-          </p>
-        </description>
-        <categories>
-          <category>document</category>
-        </categories>
-        <supportedModes>
-          <mode>view</mode>
-          <mode>edit</mode>
-        </supportedModes>
-        <fields>
-          <list>false</list>
-          <complex>false</complex>
-          <supportedTypes>
-            <type>string</type>
-          </supportedTypes>
-        </fields>
-        <properties>
-          <layouts mode="any">
-            <layout name="select2Directory_type_properties_any">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">width</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directoryName</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">dbl10n</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">labelFieldName</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">selectionFormatter</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">inlinejs</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">containerCssClass</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-          <layouts mode="edit">
-            <layout name="select2Directory_type_properties_edit">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">required</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">placeholder</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">minChars</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">canSelectParent</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">filterParent</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">obsolete</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">dropdownCssClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">ajaxReRender</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestionFormatter</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-        </properties>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /select2/select2_directory_widget_template.xhtml
-      </property>
-    </widgetType>
-
-    <widgetType name="select2DirectoryMultiple">
-      <configuration>
-        <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2</title>
-        <description>
-          <p>Uses Select2 JS library to render a selection / suggestion widget
-            where suggestions are loaded from a given directory.
-          </p>
-        </description>
-        <categories>
-          <category>document</category>
-        </categories>
-        <supportedModes>
-          <mode>view</mode>
-          <mode>edit</mode>
-        </supportedModes>
-        <fields>
-          <list>true</list>
-          <complex>false</complex>
-          <supportedTypes>
-            <type>string</type>
-          </supportedTypes>
-        </fields>
-        <properties>
-          <layouts mode="any">
-            <layout name="select2DirectoryMultiple_widget_type_properties_any">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">width</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">directoryName</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">dbl10n</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">labelFieldName</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">selectionFormatter</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">inlinejs</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">containerCssClass</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-          <layouts mode="edit">
-            <layout name="select2DirectoryMultiple_widget_type_properties_edit">
-              <rows>
-                <row>
-                  <widget category="widgetTypeConf">required</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">placeholder</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">minChars</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">canSelectParent</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">filterParent</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">obsolete</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestion_orderable</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">dropdownCssClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">ajaxReRender</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestionFormatter</widget>
-                </row>
-              </rows>
-            </layout>
-          </layouts>
-        </properties>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /select2/select2_multiple_directory_widget_template.xhtml
       </property>
     </widgetType>
 
