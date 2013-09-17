@@ -126,7 +126,9 @@ public class BatchResource {
         InputStream is = null;
 
         // fall back to multipart
-        if (fileName==null && request.getHeader("Content-Type").contains("multipart")) {
+        String contentType = request.getHeader("Content-Type");
+        if (fileName == null && contentType != null
+                && contentType.contains("multipart")) {
             useIFrame = true;
             FormData formData = new FormData(request);
             batchId = formData.getString("batchId");
