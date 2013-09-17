@@ -204,7 +204,7 @@
   }
 
   function processPostRestore(formSelector, data) {
-    for ( var i = 0, len = registerPostRestoreCallBacks.length; i < len; i++) {
+    for ( var i = 0, len = postRestoreFunctions.length; i < len; i++) {
       postRestoreFunctions[i](formSelector, data);
     }
   }
