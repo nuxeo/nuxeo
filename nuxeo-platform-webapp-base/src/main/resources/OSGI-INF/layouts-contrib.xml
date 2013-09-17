@@ -4,6 +4,135 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
+    <widget name="displayObsoleteEntries" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Display obsolete entries</label>
+      </labels>
+      <fields>
+        <field>displayObsoleteEntries</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_directory_name" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Directory Name</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the directory
+        </label>
+      </helpLabels>
+      <fields>
+        <field>directory</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="select2_dbl10n" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Activate dbl10n</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option means that the labels are
+          localized
+          with translations provided in the directory itself
+          (i.e. in fields).
+          Otherwise labels are translated as usual
+          picking values in
+          messages*.properties files.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>dbl10n</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_canSelectParent" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Can select parent</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option to allow selection of
+          intermediate
+          groups.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>canSelectParent</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_filterParent" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Filter parent</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option to apply filter on
+          intermediate
+          groups.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>filterParent</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_directory_labelFieldName" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Label field name</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the Directory field that should be
+          used to
+          define the Label of entry.
+          If not set 'label'
+          will be
+          used. In case of
+          localization with a directory field for
+          each supported language (see
+          dbl10n option), by default
+          fields with pattern like 'label_en',
+          'label_fr' or
+          'label_de' will
+          be searched. You can customize looked up
+          fields by
+          specifying
+          a pattern like
+          'label_{lang}' where the part {lang}
+          will be
+          replaced with
+          the current locale.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>labelFieldName</field>
+      </fields>
+    </widget>
+
     <widget name="userSuggestionSearchType" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -48,7 +177,8 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          Check this box if you want the references prefixed with "user:" or "group:".
+          Check this box if you want the references prefixed
+          with "user:" or "group:".
         </label>
       </helpLabels>
       <fields>
@@ -226,7 +356,7 @@
       </fields>
     </widget>
 
-    <widget name="userSuggestion_minChars" type="int">
+    <widget name="suggestion_minChars" type="int">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -284,7 +414,7 @@
       </fields>
     </widget>
 
-    <widget name="userSuggestion_width" type="int">
+    <widget name="suggestion_width" type="int">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -317,7 +447,7 @@
       </fields>
     </widget>
 
-    <widget name="suggestion_containerCssClass" type="text">
+    <widget name="select2_containerCssClass" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -326,7 +456,7 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          Css class of the selection container
+          Css class of the Select2 selection container
         </label>
       </helpLabels>
       <fields>
@@ -334,7 +464,7 @@
       </fields>
     </widget>
 
-    <widget name="suggestion_dropdownCssClass" type="text">
+    <widget name="suggestiselect2_dropdownCssClasstext">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -343,7 +473,7 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          Css class of the dropdown suggestion
+          Css class of the Select2 dropdown suggestion
         </label>
       </helpLabels>
       <fields>
@@ -351,7 +481,7 @@
       </fields>
     </widget>
 
-    <widget name="suggestion_suggestionFormatter" type="text">
+    <widget name="select2_suggestionFormatter" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -401,7 +531,7 @@
       </fields>
     </widget>
 
-    <widget name="suggestion_inlinejs" type="textarea">
+    <widget name="select2_inlinejs" type="textarea">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -411,7 +541,8 @@
       <helpLabels>
         <label mode="any">
           Javascript to be injected in the page with
-          the Widget. You can define here customs formatter.
+          the Widget.
+          You can define here customs formatter.
         </label>
       </helpLabels>
       <fields>
@@ -765,19 +896,23 @@
             <layout name="singleUserSuggestion_widget_type_properties_view">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_firstLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_firstLabelField
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_secondLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_secondLabelField
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_hideFirstLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_hideThirdLabel</widget>
@@ -786,7 +921,8 @@
                   <widget category="widgetTypeConf">userSuggestion_displayAction</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion
+                  </widget>
                 </row>
               </rows>
             </layout>
@@ -801,19 +937,21 @@
                   <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_groupRestriction</widget>
+                  <widget category="widgetTypeConf">userSuggestion_groupRestriction
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_prefixed</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_width</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
@@ -825,16 +963,17 @@
                   <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_suggestionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_inlinejs</widget>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_containerCssClass</widget>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_dropdownCssClass</widget>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
@@ -878,25 +1017,30 @@
                   <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_firstLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_firstLabelField
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_secondLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_secondLabelField
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField</widget>
+                  <widget category="widgetTypeConf">userSuggestion_thirdLabelField
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_hideFirstLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideSecondLabel
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_hideThirdLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion
+                  </widget>
                 </row>
               </rows>
             </layout>
@@ -904,26 +1048,28 @@
           <layouts mode="edit">
             <layout name="multipleUsersSuggestion_widget_type_properties_edit">
               <rows>
-                                <row>
+                <row>
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_groupRestriction</widget>
+                  <widget category="widgetTypeConf">userSuggestion_groupRestriction
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_prefixed</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_width</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_orderable</widget>
@@ -938,16 +1084,17 @@
                   <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_suggestionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_inlinejs</widget>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_containerCssClass</widget>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_dropdownCssClass</widget>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
@@ -965,7 +1112,215 @@
       </property>
     </widgetType>
 
-    <!-- deprecated since 5.7.3, use a multipleUsersSuggestion with "prefixed" property = true now -->
+    <widgetType name="suggestOneDirectory">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Select2Directory</title>
+        <description>
+          <p>Uses Select2 JS library to render a selection / suggestion widget
+            where suggestions are loaded from a given directory.
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="suggestOneDirectory_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directory_name</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dbl10n</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directory_labelFieldName
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="suggestOneDirectory_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">>suggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_canSelectParent</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_filterParent</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/suggest_one_directory_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="suggestManyDirectory">
+      <configuration>
+        <sinceVersion>5.7.3</sinceVersion>
+        <title>Select2</title>
+        <description>
+          <p>Uses Select2 JS library to render a selection / suggestion widget
+            where suggestions are loaded from a given directory.
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+          <mode>edit</mode>
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+        <properties>
+          <layouts mode="any">
+            <layout name="suggestManyDirectory_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directory_name</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dbl10n</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directory_labelFieldName
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="suggestManyDirectory_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">placeholder</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_canSelectParent</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_filterParent</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">displayObsoleteEntries</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  </widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/suggest_many_directory_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <!-- deprecated since 5.7.3, use a multipleUsersSuggestion with "prefixed" property
+      = true now -->
     <widgetType name="multiplePrefixedUsersSuggestion">
       <configuration>
         <title>Multiple prefixed users/groups suggestion</title>
@@ -997,10 +1352,11 @@
                   <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults</widget>
+                  <widget category="widgetTypeConf">userSuggestionMaxSearchResults
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_minChars</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestion_frequency</widget>
@@ -1009,19 +1365,21 @@
                   <widget category="widgetTypeConf">userSuggestion_requestDelay</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_width</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop</widget>
+                  <widget category="widgetTypeConf">userSuggestion_displaySuggestionOnTop
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText</widget>
+                  <widget category="widgetTypeConf">userSuggestion_hideSearchTypeText
+                  </widget>
                 </row>
               </rows>
             </layout>
@@ -1074,7 +1432,8 @@
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_tab</widget>
@@ -1089,7 +1448,8 @@
                   <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_requestDelay</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_requestDelay
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_width</widget>
@@ -1154,7 +1514,8 @@
                   <widget category="widgetTypeConf">documentSuggestion_subTab</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_minChars</widget>
@@ -1163,7 +1524,8 @@
                   <widget category="widgetTypeConf">documentSuggestion_frequency</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_requestDelay</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_requestDelay
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">documentSuggestion_width</widget>
@@ -1364,7 +1726,7 @@
                   <widget>multiSelect</widget>
                 </row>
                 <row>
-                  <widget>displayObsoleteEntries</widget>
+                  <widget category="widgetTypeConf">displayObsoleteEntries</widget>
                 </row>
                 <row>
                   <widget>ordering</widget>
@@ -1376,14 +1738,6 @@
                 </labels>
                 <fields>
                   <field>multiSelect</field>
-                </fields>
-              </widget>
-              <widget name="displayObsoleteEntries" type="checkbox">
-                <labels>
-                  <label mode="any">Display obsolete entries</label>
-                </labels>
-                <fields>
-                  <field>displayObsoleteEntries</field>
                 </fields>
               </widget>
               <widget name="ordering" type="selectOneListbox">
@@ -1494,11 +1848,7 @@
                   <widget>contentViewIconPath</widget>
                 </row>
                 <!-- not sure this is a good idea: there are other forms in the template -->
-                <!--
-                  <row>
-                  <widget>removeForm</widget>
-                  </row>
-                -->
+                <!-- <row> <widget>removeForm</widget> </row> -->
               </rows>
               <widget name="contentViewName" type="selectOneResource">
                 <labels>
@@ -1945,12 +2295,14 @@
         <title>Save box</title>
         <description>
           <p>This widget displays a save box with one input for the title and
-            one button to save.</p>
+            one button to save.
+          </p>
 
           <p>The input is mapped to the field of the widget.</p>
 
           <p>It needs the action id as property "actionId" for
-            the "save" button.</p>
+            the "save" button.
+          </p>
         </description>
         <categories>
           <category>tab_designer</category>
@@ -2638,7 +2990,8 @@
         <title>Form actions</title>
         <description>
           <p>This widget displays actions filtered on the document given as
-            field mapping.</p>
+            field mapping.
+          </p>
           <p>
             It will display actions in the category given in the 'category'
             property. The widget label and help label will be displayed above
@@ -2777,7 +3130,8 @@
         <title>Toolbar actions</title>
         <description>
           <p>This widget displays actions filtered on the document given as
-            field mapping, and surrounds them by a form.</p>
+            field mapping, and surrounds them by a form.
+          </p>
           <p>
             It will display actions in the category given in the 'category'
             property. The widget label and help label will be displayed above
@@ -2852,7 +3206,8 @@
         <title>Toolbar actions</title>
         <description>
           <p>This widget displays actions filtered on the current document, and
-            surrounds them by a form.</p>
+            surrounds them by a form.
+          </p>
           <p>Since 5.7.3, use "documentActionsWithForms" instead.</p>
         </description>
         <categories>
@@ -2917,7 +3272,8 @@
         <title>Form action</title>
         <description>
           <p>This widget displays an action filtered on context using document
-            given as field mapping.</p>
+            given as field mapping.
+          </p>
           <p>
             It needs the action id as property "actionId".
             <br />
@@ -2985,7 +3341,8 @@
         <deprecatedVersion>5.7.3</deprecatedVersion>
         <title>Form action</title>
         <description>
-          <p>This widget displays an action filtered on current document context</p>
+          <p>This widget displays an action filtered on current document context
+          </p>
           <p>Since 5.7.3, use "documentAction" instead.</p>
         </description>
         <categories>
@@ -3043,7 +3400,8 @@
         <sinceVersion>5.7</sinceVersion>
         <title>Toolbar action</title>
         <description>
-          <p>This widget displays an action filtered on current document context</p>
+          <p>This widget displays an action filtered on current document context
+          </p>
           <p>
             It needs the action id as property "actionId".
             <br />
@@ -3111,7 +3469,8 @@
         <deprecatedVersion>5.7.3</deprecatedVersion>
         <title>Toolbar action</title>
         <description>
-          <p>This widget displays an action filtered on current document context</p>
+          <p>This widget displays an action filtered on current document context
+          </p>
           <p>Since 5.7.3, use "documentActionWithForms" instead.</p>
         </description>
         <categories>
@@ -3502,7 +3861,8 @@
 
     <layout name="user">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -3706,7 +4066,8 @@
 
     <layout name="group">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -3783,7 +4144,8 @@
 
     <layout name="document_content_filter">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -3798,7 +4160,8 @@
 
     <layout name="document_edit_form_options">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
