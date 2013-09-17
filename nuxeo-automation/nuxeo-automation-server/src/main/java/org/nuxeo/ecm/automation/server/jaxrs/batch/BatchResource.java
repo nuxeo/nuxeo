@@ -86,7 +86,8 @@ public class BatchResource {
         return buildFromMap(map, false);
     }
 
-    protected Response buildFromMap(Map<String, String> map, boolean html) throws Exception {
+    protected Response buildFromMap(Map<String, String> map, boolean html)
+            throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         ByteArrayOutputStream out = new ByteArrayOutputStream(128);
         mapper.writeValue(out, map);
@@ -132,23 +133,22 @@ public class BatchResource {
         if (contentType != null && contentType.contains("multipart")) {
             useIFrame = true;
             FormData formData = new FormData(request);
-            if (formData.getString("batchId")!=null) {
+            if (formData.getString("batchId") != null) {
                 batchId = formData.getString("batchId");
             }
-            if (formData.getString("fileIdx")!=null) {
+            if (formData.getString("fileIdx") != null) {
                 idx = formData.getString("fileIdx");
             }
-            if (idx==null || "".equals(idx.trim())) {
+            if (idx == null || "".equals(idx.trim())) {
                 idx = "0";
             }
             Blob blob = formData.getFirstBlob();
-            if (blob!=null) {
+            if (blob != null) {
                 is = blob.getStream();
                 fileName = blob.getFilename();
                 mimeType = blob.getMimeType();
             }
-        }
-        else {
+        } else {
             fileName = URLDecoder.decode(fileName, "UTF-8");
             is = request.getInputStream();
         }
