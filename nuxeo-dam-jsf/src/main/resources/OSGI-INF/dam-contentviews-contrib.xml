@@ -316,7 +316,7 @@
       <properties widgetMode="any">
       </properties>
       <subWidgets>
-        <widget name="dc_subjects" type="select2DirectoryMultiple">
+        <widget name="dc_subjects" type="suggestManyDirectory">
           <labels>
             <label mode="any">label.dublincore.subject</label>
           </labels>
@@ -334,7 +334,7 @@
             <property name="canSelectParent">true</property>
           </properties>
         </widget>
-        <widget name="dc_coverage" type="select2DirectoryMultiple">
+        <widget name="dc_coverage" type="suggestManyDirectory">
           <labels>
             <label mode="any">label.dublincore.coverage</label>
           </labels>
