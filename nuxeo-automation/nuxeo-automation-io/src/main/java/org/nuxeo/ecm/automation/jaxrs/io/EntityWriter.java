@@ -30,7 +30,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.webengine.WebException;
@@ -50,7 +49,7 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         if (genericType instanceof ParameterizedType) {
-            //See EntityListWriter to write Writer of parameterized class
+            // See EntityListWriter to write Writer of parameterized class
             return false;
         } else {
             ParameterizedType ptype = (ParameterizedType) this.getClass().getGenericSuperclass();
@@ -87,7 +86,6 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
      * @param item
      * @throws IOException
      * @throws ClientException
-     * @throws JsonGenerationException
      *
      */
     public void writeEntity(JsonGenerator jg, T item) throws IOException,
@@ -102,18 +100,23 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     }
 
     /**
+     * Write the body of the entity. The object has already been opened and it
+     * entity-type rendered.
+     *
      * @param jg
      * @param item
      * @throws IOException
      * @throws ClientException
-     * @throws JsonGenerationException
      *
      */
     abstract protected void writeEntityBody(JsonGenerator jg, T item)
             throws IOException, ClientException;
 
     /**
-     * @return
+     * get the Entity type of the current entity type. It MUST follow camelCase
+     * notation
+     *
+     * @return the string representing the entity-type.
      *
      */
     abstract protected String getEntityType();
