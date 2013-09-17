@@ -443,6 +443,7 @@ public class XMLImporterServiceImpl {
     protected void createNewDocument(Element el, DocConfigDescriptor conf)
             throws Exception {
         DocumentModel doc = session.createDocumentModel(conf.getDocType());
+        mvelCtx.put("changeableDocument", doc);
 
         String path = resolvePath(el, conf.getParent());
         Object nameOb = resolveName(el, conf.getName());
