@@ -16,46 +16,47 @@
  */
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @since 5.7.3
  *
  */
-public class TestDeployment extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({
+        "org.nuxeo.ecm.core.api",
+        "org.nuxeo.ecm.core",
+        "org.nuxeo.ecm.core.schema",
+        "org.nuxeo.ecm.platform.importer.core:OSGI-INF/default-importer-service.xml",
+        "nuxeo-importer-scan-xml-parser-test:OSGI-INF/xml-importer-scan-config-without-requires.xml" })
+public class TestDeployment {
 
     private static final Log log = LogFactory.getLog(TestDeployment.class);
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.platform.importer.core",
-                "OSGI-INF/default-importer-service.xml");
-        deployContrib("org.nuxeo.ecm.platform.scanimporter.test",
-                "needed-contribution-for-factory-deployment.xml");
-        deployContrib("nuxeo-importer-scan-xml-parser",
-                "OSGI-INF/xml-importer-scan-config.xml");
-
-    }
 
     @Test
     public void testImport() throws Exception {
         DefaultImporterService service = Framework.getLocalService(DefaultImporterService.class);
         assertNotNull(service);
 
-        assertEquals("org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory", service.getDocModelFactoryClass().getName());
-        assertEquals("", service.getSourceNodeClass().getName());
+        assertEquals(
+                "org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory",
+                service.getDocModelFactoryClass().getName());
+        assertEquals(
+                "org.nuxeo.ecm.platform.importer.xml.parser.XMLFileSourceNode",
+                service.getSourceNodeClass().getName());
 
     }
 }

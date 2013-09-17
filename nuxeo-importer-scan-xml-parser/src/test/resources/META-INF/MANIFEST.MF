@@ -1,0 +1,10 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Name: nuxeo-importer-scan-xml-parser-test
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Nuxeo
+Bundle-Version: 5.7.3.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: nuxeo-importer-scan-xml-parser-test
+Nuxeo-Component: OSGI-INF/xml-importer-scan-config.xml

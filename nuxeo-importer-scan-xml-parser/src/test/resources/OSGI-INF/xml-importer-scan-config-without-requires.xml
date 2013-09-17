@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.importer.scanimporter.advanced.xmlparser.factory.contrib">
+
+  <documentation>
+    This is the same as src/main/resources/OSGI-INF but without the require instruction.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
+   <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.importer.xml.parser.XMLFileSourceNode">
+       <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.importer.xml.parser.AdvancedScannedFileFactory" />
+   </importerConfig>
+  </extension>
+
+
+</component>
