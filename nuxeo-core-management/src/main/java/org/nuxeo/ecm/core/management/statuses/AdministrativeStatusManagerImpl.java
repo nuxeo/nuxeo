@@ -12,17 +12,21 @@
 
 package org.nuxeo.ecm.core.management.statuses;
 
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.ACTIVE;
+import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
+
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.core.management.CoreManagementService;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
-
-import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.ACTIVE;
-import static org.nuxeo.ecm.core.management.api.AdministrativeStatus.PASSIVE;
 
 /**
  * Implementation class for the {@link AdministrativeStatusManager} service.
@@ -40,6 +44,13 @@ public class AdministrativeStatusManagerImpl implements
 
     protected final String serverInstanceName;
 
+    protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "Nuxeo-Administrative-Statuses-Notify-Scheduler");
+        }
+    });
+
     protected final Notifier[] notifiers = { new CoreEventNotifier(),
             new RuntimeEventNotifier() };
 
@@ -48,7 +59,7 @@ public class AdministrativeStatusManagerImpl implements
             AdministrativeStatusPersister persister) {
         this.globalManager = globalManager;
         this.persister = persister;
-        this.serverInstanceName = NuxeoInstanceIdentifierHelper.getServerInstanceName();
+        serverInstanceName = NuxeoInstanceIdentifierHelper.getServerInstanceName();
     }
 
     public AdministrativeStatusManagerImpl(
@@ -56,7 +67,7 @@ public class AdministrativeStatusManagerImpl implements
             AdministrativeStatusPersister persister, String instanceIdentifier) {
         this.globalManager = globalManager;
         this.persister = persister;
-        this.serverInstanceName = instanceIdentifier;
+        serverInstanceName = instanceIdentifier;
     }
 
     protected String getServerInstanceName() {
@@ -94,14 +105,21 @@ public class AdministrativeStatusManagerImpl implements
             }
         }
 
-        savedStatuses = persister.getAllStatuses(serverInstanceName);
-        for (AdministrativeStatus status : savedStatuses) {
-            notifyOnStatus(status);
+        scheduler.scheduleAtFixedRate(new NotifyStatusesHandler(), 0, 5, TimeUnit.MINUTES);
+    }
+
+
+    public class NotifyStatusesHandler implements Runnable {
+        @Override
+        public void run() {
+            for (AdministrativeStatus status : persister.getAllStatuses(serverInstanceName)) {
+                notifyOnStatus(status);
+            }
         }
     }
 
     public void onNuxeoServerShutdown() {
-
+        scheduler.shutdown();
     }
 
     protected void notifyOnStatus(AdministrativeStatus status) {
