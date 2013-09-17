@@ -18,7 +18,17 @@
 
   <xs:element name="selectVocabularyField" type="xs:string" />
 
-  <xs:element name="selectSelect2DirectoryField" type="xs:string" />
+  <xs:element name="select_coverage_field" type="xs:string" />
+
+  <xs:element name="select_subjects_multi_fields" type="nxs:stringArrayType" />
+
+  <xs:element name="select_user_field" type="xs:string" />
+
+  <xs:element name="select_users_multi_fields" type="nxs:stringArrayType" />
+
+  <xs:element name="select_doc_field" type="xs:string" />
+
+  <xs:element name="select_docs_multi_fields" type="nxs:stringArrayType" />
 
   <xs:element name="dateField" type="xs:date" />
 
@@ -30,7 +40,6 @@
 
   <xs:element name="stringArrayField" type="nxs:stringArrayType" />
   <xs:element name="selectMultiVocabularyField" type="nxs:stringArrayType" />
-  <xs:element name="selectSelect2DirectoryMultiField" type="nxs:stringArrayType" />
   <xs:simpleType name="stringArrayType">
     <xs:list itemType="xs:string" />
   </xs:simpleType>

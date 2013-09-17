@@ -23,7 +23,7 @@
           <label mode="any">User or Group</label>
         </labels>
         <fields>
-          <field>lds:anotherTextField</field>
+          <field>lds:select_user_field</field>
         </fields>
         <properties mode="any">
           <property name="width">300</property>

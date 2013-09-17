@@ -177,16 +177,16 @@
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>select2_widget</from-outcome>
+      <from-outcome>single_document_suggestion</from-outcome>
       <to-view-id>
-        /layoutDemo/demoWidgets/select2Widget.xhtml
+        /layoutDemo/demoWidgets/singleDocumentSuggestion.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>select2_widget_multiple</from-outcome>
+      <from-outcome>multiple_documents_suggestion</from-outcome>
       <to-view-id>
-        /layoutDemo/demoWidgets/select2MultipleWidget.xhtml
+        /layoutDemo/demoWidgets/multipleDocumentsSuggestion.xhtml
       </to-view-id>
       <redirect />
     </navigation-case>

@@ -192,9 +192,15 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:selectVocabularyField", "cartman");
             doc.setPropertyValue("lds:selectMultiVocabularyField",
                     new String[] { "cartman", "marsh" });
-            doc.setPropertyValue("selectSelect2DirectoryField", "africa/Botswana");
-            doc.setPropertyValue("lds:selectSelect2DirectoryMultiField",
+            doc.setPropertyValue("lds:select_coverage_field", "africa/Botswana");
+            doc.setPropertyValue("lds:select_subjects_multi_fields",
                     new String[] { "art/art history","art/culture","sciences/logic" });
+            doc.setPropertyValue("lds:select_user_field", "administrator");
+            doc.setPropertyValue("lds:select_users_multi_fields",
+                    new String[] { "administrator" });
+            doc.setPropertyValue("lds:select_doc_field", "");
+            doc.setPropertyValue("lds:select_docs_multi_fields",
+                    new String[] {});
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
             doc.setPropertyValue("lds:intField", new Integer(666));
             doc.setPropertyValue("lds:booleanField", Boolean.FALSE);
@@ -236,8 +242,8 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:selectVocabularyField", "marsh");
             doc.setPropertyValue("lds:selectMultiVocabularyField",
                     new String[] { "cartman" });
-            doc.setPropertyValue("selectSelect2DirectoryField", "africa/Botswana");
-            doc.setPropertyValue("lds:selectSelect2DirectoryMultiField",
+            doc.setPropertyValue("select_coverage_field", "africa/Botswana");
+            doc.setPropertyValue("lds:select_subjects_multi_fields",
                     new String[] { "art/art history","art/culture","sciences/logic" });
             doc.setPropertyValue("lds:dateField", Calendar.getInstance());
             doc.setPropertyValue("lds:intField", new Integer(667));

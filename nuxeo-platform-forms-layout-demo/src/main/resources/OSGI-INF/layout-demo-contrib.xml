@@ -165,83 +165,20 @@
       </layouts>
     </widgetType>
 
-    <widgetType name="select2Widget">
-      <label>Select2</label>
-      <viewId>select2_widget</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:anotherTextField</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">200</property>
-          <property name="minChars">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to display suggestion
-          </property>
-          <property name="repository">layoutDemo</property>
-          <property name="query">
-            select * from Document where dc:title LIKE ?
-          </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema,common
-          </property>
-          <property name="suggestionFormatter">myformatter</property>
-          <property name="selectionFormatter">myformatter</property>
-          <property name="inlinejs"> <![CDATA[
-  function myformatter(doc) {
-   var markup = "<table><tr>";
-   markup += "<td style='padding:2px'><img src='/nuxeo" + doc.properties['common:icon'] + "'/></td>";
-   markup += "<td style='padding:2px'>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
-   markup += "</tr></table>";
-   return markup;
-  }]]></property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2WidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
-      </layouts>
-    </widgetType>
-
-    <widgetType name="select2WidgetMultiple">
-      <label>Select2Multiple</label>
-      <viewId>select2_widget_multiple</viewId>
-      <category>standard</category>
-      <preview enabled="true">
-        <fields>
-          <field>lds:stringList</field>
-        </fields>
-        <defaultProperties>
-          <property name="width">200</property>
-          <property name="minChars">2</property>
-          <property name="instructionLabel">Type at least {0} "a" to display suggestion
-          </property>
-          <property name="repository">layoutDemo</property>
-          <property name="query">
-            select * from Document where dc:title LIKE ?
-          </property>
-          <property name="documentSchemas">dublincore,layout_demo_schema</property>
-        </defaultProperties>
-      </preview>
-      <layouts>
-        <layout name="select2WidgetMultipleLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
-      </layouts>
-    </widgetType>
-
     <widgetType name="suggestOneDirectory">
       <label>Vocabulary suggestion</label>
       <viewId>suggest_one_directory_widget</viewId>
       <category>standard</category>
       <preview enabled="true">
         <fields>
-          <field>lds:selectSelect2DirectoryField</field>
+          <field>lds:select_coverage_field</field>
         </fields>
         <defaultProperties>
           <property name="width">300</property>
           <property name="labelFieldName">label_{lang}</property>
           <property name="dbl10n">true</property>
           <property name="minChars">0</property>
-          <property name="hideInstructionLabel">true</property>
+          <property name="hideHelpLabel">true</property>
           <property name="directoryName">l10ncoverage</property>
           <property name="suggestionFormatter">dirformatter</property>
           <property name="selectionFormatter">dirformatter</property>
@@ -261,7 +198,7 @@
       </preview>
       <layouts>
         <layout name="suggestOneDirectoryWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+          src="sources/OSGI-INF/demo/layout-demo-suggestOneDirectory-widget.xml" />
       </layouts>
     </widgetType>
 
@@ -271,14 +208,14 @@
       <category>standard</category>
       <preview enabled="true">
         <fields>
-          <field>lds:selectSelect2DirectoryMultiField</field>
+          <field>lds:select_subjects_multi_fields</field>
         </fields>
         <defaultProperties>
           <property name="width">300</property>
           <property name="labelFieldName">label_{lang}</property>
           <property name="dbl10n">true</property>
           <property name="minChars">0</property>
-          <property name="hideInstructionLabel">true</property>
+          <property name="hideHelpLabel">true</property>
           <property name="directoryName">l10nsubjects</property>
           <property name="suggestionFormatter">dirformatter</property>
           <property name="selectionFormatter">dirformatter</property>
@@ -298,7 +235,7 @@
       </preview>
       <layouts>
         <layout name="suggestManyDirectoryWidgetLayout"
-          src="sources/OSGI-INF/demo/layout-demo-select2-widget.xml" />
+          src="sources/OSGI-INF/demo/layout-demo-suggestManyDirectory-widget.xml" />
       </layouts>
     </widgetType>
 
@@ -308,7 +245,7 @@
       <category>standard</category>
       <preview enabled="true">
         <fields>
-          <field>lds:anotherTextField</field>
+          <field>lds:select_user_field</field>
         </fields>
         <defaultProperties>
           <property name="width">200</property>
@@ -343,12 +280,12 @@
       <category>standard</category>
       <preview enabled="true">
         <fields>
-          <field>lds:stringList</field>
+          <field>lds:select_users_multi_fields</field>
         </fields>
         <defaultProperties>
           <property name="width">200</property>
           <property name="minChars">3</property>
-          <property name="instructionLabel">Type at least "Adm" to trigger suggestion
+          <property name="helpLabel">Type at least "Adm" to trigger suggestion
           </property>
           <property name="repository">default</property>
           <property name="suggestionFormatter">userformatter</property>
@@ -372,6 +309,69 @@
           src="sources/OSGI-INF/demo/layout-demo-multipleUsersSuggestion-widget.xml" />
       </layouts>
     </widgetType>
+
+    <!-- widgetType name="singleDocumentSuggestion">
+      <label>Document suggestion</label>
+      <viewId>single_document_suggestion</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:select_doc_field</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minChars">2</property>
+          <property name="helpLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">layoutDemo</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema,common
+          </property>
+          <property name="suggestionFormatter">myformatter</property>
+          <property name="selectionFormatter">myformatter</property>
+          <property name="inlinejs"> <![CDATA[
+  function myformatter(doc) {
+   var markup = "<table><tr>";
+   markup += "<td style='padding:2px'><img src='/nuxeo" + doc.properties['common:icon'] + "'/></td>";
+   markup += "<td style='padding:2px'>" + doc.title + " (" + doc.properties['dc:creator'] + ")</td>";
+   markup += "</tr></table>";
+   return markup;
+  }]]></property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="singleDocumentSuggestionLayout"
+          src="sources/OSGI-INF/demo/layout-demo-singleDocumentSuggestion-widget.xml" />
+      </layouts>
+    </widgetType>
+
+    <widgetType name="multipleDocumentsSuggestion">
+      <label>Multiple documents suggestion</label>
+      <viewId>multiple_documents_suggestion</viewId>
+      <category>standard</category>
+      <preview enabled="true">
+        <fields>
+          <field>lds:select_docs_multi_fields</field>
+        </fields>
+        <defaultProperties>
+          <property name="width">200</property>
+          <property name="minChars">2</property>
+          <property name="helpLabel">Type at least {0} "a" to display suggestion
+          </property>
+          <property name="repository">layoutDemo</property>
+          <property name="query">
+            select * from Document where dc:title LIKE ?
+          </property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+        </defaultProperties>
+      </preview>
+      <layouts>
+        <layout name="multipleDocumentsSuggestionLayout"
+          src="sources/OSGI-INF/demo/layout-demo-multipleDocumentsSuggestion-widget.xml" />
+      </layouts>
+    </widgetType-->
 
     <widgetType name="checkbox">
       <label>Checkbox</label>

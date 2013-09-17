@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.forms.layoutDemo.select2Widget.contrib">
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.suggestManyDirectory.contrib">
 
   <require>org.nuxeo.ecm.platform.forms.layoutDemo.contrib</require>
 
@@ -20,11 +20,11 @@
 
       <widget name="l10nsubjects" type="suggestManyDirectory">
         <labels>
-          <label mode="any">l10ncoverage</label>
+          <label mode="any">Subjects :</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>lds:selectSelect2DirectoryMultiField</field>
+          <field>lds:select_subjects_multi_fields</field>
         </fields>
         <properties mode="any">
           <property name="width">300</property>

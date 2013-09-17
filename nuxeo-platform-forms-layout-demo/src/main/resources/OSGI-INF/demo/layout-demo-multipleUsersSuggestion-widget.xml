@@ -14,16 +14,16 @@
       </templates>
       <rows>
         <row>
-          <widget>user</widget>
+          <widget>users</widget>
         </row>
       </rows>
 
-      <widget name="user" type="multipleUsersSuggestion">
+      <widget name="users" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">User or Group</label>
+          <label mode="any">Users or Groups</label>
         </labels>
         <fields>
-          <field>lds:stringList</field>
+          <field>lds:select_users_multi_fields</field>
         </fields>
         <properties mode="any">
           <property name="minChars">3</property>
