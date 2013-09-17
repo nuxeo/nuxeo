@@ -51,11 +51,16 @@ public class ITReadOnlyUserTest extends AbstractDAMTest {
         AssetCreationFancyBoxFragment assetCreation = searchResultsFragment.showAssetCreation(damPage);
         assetCreation.checkTextToBeNotPresent("Asset Library");
 
-        // cannot bulk edit
+        // cannot bulk edit, but can add to worklist
+        String bEditButtonId = "nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link";
+        String addToWLButtonId = "nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_CURRENT_SELECTION_ADDTOLIST_form:nxw_CURRENT_SELECTION_ADDTOLIST";
+
         searchResultsFragment.selectAll();
-        String buttonId = "nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link";
-        WebElement bulkEditButton = driver.findElement(By.id(buttonId));
+        WebElement bulkEditButton = driver.findElement(By.id(bEditButtonId));
         assertFalse(bulkEditButton.isEnabled());
+
+        // make sure ajax request is done, otherwise we might get stack traces
+        findElementAndWaitUntilEnabled(By.id(addToWLButtonId));
 
         // cannot edit any metadata on the asset view
         assertFalse(damPage.hasElement(By.xpath("//div[contains(@class, 'foldableBox')]//a[text()='Edit']")));
