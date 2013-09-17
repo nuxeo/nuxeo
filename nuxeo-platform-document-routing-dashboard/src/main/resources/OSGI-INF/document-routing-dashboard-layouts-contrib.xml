@@ -11,13 +11,50 @@
       <schema name="user_open_tasks_cv"/>
     </doctype>
    </extension>
+ 
+ <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+      point="widgettypes">
+  
+   <widgetType name="listing_process_task">
+    <configuration>
+     <title>Listing process task link</title>
+     <documentation>
+      Two fields are required:
+      <ul>
+       <li>A field to map the task</li>
+       <li>A field to map the targetDocumentId on the task</li>
+      </ul>
+     </documentation>
+     <sinceVersion>5.7.3</sinceVersion>
+     <categories>
+      <category>routing</category>
+     </categories>
+     <supportedModes>
+      <mode>view</mode>
+     </supportedModes>
+     <fields>
+      <list>false</list>
+      <complex>false</complex>
+      <supportedTypes>
+       <type>string</type>
+      </supportedTypes>
+     </fields>
+    </configuration>
+    <handler-class>
+     org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+    </handler-class>
+    <property name="template">
+     /widgets/listing/listing_process_task_widget_template.xhtml
+    </property>
+   </widgetType>
+  </extension>
   
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
     <widget name="routing_task_name" type="text">
       <labels>
-        <label mode="any">label.document.route.content.header.type</label>
+        <label mode="any">label.workflow.task.name</label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -118,7 +155,7 @@
     
     <widget name="routing_task_workflow_name" type="singleDocumentSuggestion">
       <labels>
-        <label mode="any">label.dashboard.queue.process.task</label>
+        <label mode="any">label.review.type</label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -127,6 +164,26 @@
       <widgetModes>
         <mode value="any">view</mode>
       </widgetModes>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+    
+    <widget name="routing_task_process_btn" type="listing_process_task">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+        <field>data.nt.targetDocumentId</field>
+      </fields>
+      <widgetModes>
+        <mode value="any">view</mode>
+      </widgetModes>
+      <properties mode="any">
+        <property name="tab">TAB_ROUTE_WORKFLOW</property>
+      </properties>
     </widget>
 
   </extension>
@@ -265,6 +322,12 @@
           </properties>
           <widget>routing_task_actors</widget>
         </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+          </properties>
+          <widget>routing_task_process_btn</widget>
+        </column>
       </columns>
     </layout>
     
@@ -273,12 +336,6 @@
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
-        <row>
-          <properties mode="any">
-            <property name="nxl_colspan_0">1</property>
-          </properties>
-          <widget>task_processId</widget>
-        </row>
         <row>
           <properties mode="any">
             <property name="nxl_colspan_0">1</property>
@@ -294,22 +351,9 @@
           <widget>task_dueDate_max</widget>
         </row>
       </rows>
-      <widget name="task_processId" type="singleDocumentSuggestion">
-        <labels>
-          <label mode="any">label.dashboard.queue.process.task</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>user_open_tasks_cv:task_processId</field>
-        </fields>
-        <properties widgetMode="edit">
-          <property name="minChars">1</property>
-          <property name="pageProviderName">DOC_ROUTING_SEARCH_ALL_ROUTE_INSTANCES</property>
-        </properties>
-      </widget>
       <widget name="task_name" type="text">
         <labels>
-          <label mode="any">label.document.route.content.header.type</label>
+          <label mode="any">label.workflow.task.name</label>
         </labels>
         <translated>true</translated>
         <fields>
