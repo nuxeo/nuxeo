@@ -17,22 +17,13 @@
 package org.nuxeo.ecm.automation.jaxrs.io.usermanager;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 
@@ -43,35 +34,13 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
  */
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
-public class NuxeoGroupWriter implements MessageBodyWriter<NuxeoGroup> {
+public class NuxeoGroupWriter extends EntityWriter<NuxeoGroup> {
 
-    @Context
-    JsonFactory factory;
 
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return NuxeoGroup.class.isAssignableFrom(type);
-    }
-
-    @Override
-    public long getSize(NuxeoGroup t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return -1L;
-    }
-
-    @Override
-    public void writeTo(NuxeoGroup group, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        try {
-            writeGroup(factory.createJsonGenerator(entityStream, JsonEncoding.UTF8), group);
-        } catch (ClientException e) {
-            throw new WebApplicationException(e);
-        }
-    }
+    /**
+     *
+     */
+    public static final String ENTITY_TYPE = "group";
 
     /**
      * @param createGenerator
@@ -81,9 +50,8 @@ public class NuxeoGroupWriter implements MessageBodyWriter<NuxeoGroup> {
      * @throws JsonGenerationException
      *
      */
-    public static void writeGroup(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException, IOException{
-        jg.writeStartObject();
-        jg.writeStringField("entity-type", "group");
+    @Override
+    public void writeEntityBody(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException, IOException{
         jg.writeStringField("groupname", group.getName());
 
         jg.writeStringField("grouplabel", group.getLabel());
@@ -102,9 +70,11 @@ public class NuxeoGroupWriter implements MessageBodyWriter<NuxeoGroup> {
 
 
 
-        jg.writeEndObject();
+    }
 
-        jg.flush();
+    @Override
+    protected String getEntityType() {
+        return ENTITY_TYPE;
     }
 
 }

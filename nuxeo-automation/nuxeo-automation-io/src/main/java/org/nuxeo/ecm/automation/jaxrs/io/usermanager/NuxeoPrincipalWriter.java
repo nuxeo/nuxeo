@@ -17,33 +17,23 @@
 package org.nuxeo.ecm.automation.jaxrs.io.usermanager;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
-import org.nuxeo.ecm.core.api.model.impl.ListProperty;
-import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -54,37 +44,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
-public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
+public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
 
+    /**
+     *
+     */
+    public static final String ENTITY_TYPE = "user";
     @Context
     JsonFactory factory;
-
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-
-        return NuxeoPrincipal.class.isAssignableFrom(type);
-    }
-
-    @Override
-    public long getSize(NuxeoPrincipal t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return -1L;
-    }
-
-    @Override
-    public void writeTo(NuxeoPrincipal principal, Class<?> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
-
-        try {
-            writePrincipal(factory.createJsonGenerator(entityStream, JsonEncoding.UTF8), principal);
-        } catch (ClientException e) {
-            throw new WebApplicationException(e);
-        }
-    }
 
     /**
      * @param createGenerator
@@ -94,11 +61,10 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
      *
      * @since 5.7.3
      */
-    public static void writePrincipal(JsonGenerator jg, NuxeoPrincipal principal)
+    @Override
+    public void writeEntityBody(JsonGenerator jg, NuxeoPrincipal principal)
             throws JsonGenerationException, IOException, ClientException {
 
-        jg.writeStartObject();
-        jg.writeStringField("entity-type", "user");
         jg.writeStringField("id", principal.getName());
 
         writeProperties(jg, principal.getModel());
@@ -106,10 +72,6 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
 
         jg.writeBooleanField("isAdministrator", principal.isAdministrator());
         jg.writeBooleanField("isAnonymous", principal.isAnonymous());
-
-        jg.writeEndObject();
-
-        jg.flush();
 
     }
 
@@ -135,62 +97,10 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
 
         for (Property p : part.getChildren()) {
             jg.writeFieldName(p.getField().getName().getLocalName());
-
-            writePropertyValue(jg, p);
+            JsonDocumentWriter.writePropertyValue(jg, p, "");
         }
         jg.writeEndObject();
 
-    }
-
-    /**
-     * Converts the value of the given core property to JSON format. The given
-     * filesBaseUrl is the baseUrl that can be used to locate blob content and
-     * is useful to generate blob urls.
-     *
-     * @throws IOException
-     * @throws PropertyException
-     * @throws JsonGenerationException
-     */
-    protected static void writePropertyValue(JsonGenerator jg, Property prop)
-            throws JsonGenerationException, PropertyException, IOException {
-        if (prop.isScalar()) {
-            writeScalarPropertyValue(jg, prop);
-        } else if (prop.isList()) {
-            writeListPropertyValue(jg, prop);
-        }
-    }
-
-    protected static void writeScalarPropertyValue(JsonGenerator jg,
-            Property prop) throws JsonGenerationException, IOException,
-            PropertyException {
-        org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
-        Object v = prop.getValue();
-        if (v == null) {
-            jg.writeNull();
-        } else {
-            jg.writeString(type.encode(v));
-        }
-    }
-
-    protected static void writeListPropertyValue(JsonGenerator jg, Property prop)
-            throws JsonGenerationException, PropertyException, IOException {
-        jg.writeStartArray();
-        if (prop instanceof ArrayProperty) {
-            Object[] ar = (Object[]) prop.getValue();
-            if (ar == null) {
-                return;
-            }
-            org.nuxeo.ecm.core.schema.types.Type type = ((ListType) prop.getType()).getFieldType();
-            for (Object o : ar) {
-                jg.writeString(type.encode(o));
-            }
-        } else {
-            ListProperty listp = (ListProperty) prop;
-            for (Property p : listp.getChildren()) {
-                writePropertyValue(jg, p);
-            }
-        }
-        jg.writeEndArray();
     }
 
     /**
@@ -205,8 +115,9 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
      *
      * @since 5.7.3
      */
-    static private void writeExtendedGroups(JsonGenerator jg, List<String> allGroups)
-            throws JsonGenerationException, IOException, ClientException {
+    static private void writeExtendedGroups(JsonGenerator jg,
+            List<String> allGroups) throws JsonGenerationException,
+            IOException, ClientException {
         UserManager um = Framework.getLocalService(UserManager.class);
 
         jg.writeArrayFieldStart("extendedGroups");
@@ -220,6 +131,11 @@ public class NuxeoPrincipalWriter implements MessageBodyWriter<NuxeoPrincipal> {
             jg.writeEndObject();
         }
         jg.writeEndArray();
+    }
+
+    @Override
+    protected String getEntityType() {
+        return ENTITY_TYPE;
     }
 
 }

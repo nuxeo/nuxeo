@@ -54,7 +54,8 @@ public class BaseUserTest extends BaseTest {
     protected String getGroupAsJson(NuxeoGroup group) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
-        NuxeoGroupWriter.writeGroup(jg, group);
+        NuxeoGroupWriter ngw = new NuxeoGroupWriter();
+        ngw.writeEntity(jg, group);
         return out.toString();
     }
 
@@ -85,7 +86,8 @@ public class BaseUserTest extends BaseTest {
     protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException, ClientException {
         OutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
-        NuxeoPrincipalWriter.writePrincipal(jg, user);
+        NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
+        npw.writeEntity(jg, user);
         String userJson = out.toString();
         return userJson;
     }

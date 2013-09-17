@@ -35,15 +35,21 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 @Produces({ "application/json+nxentity", "application/json" })
 public class NuxeoGroupListWriter extends EntityListWriter<NuxeoGroup> {
 
+    /**
+     *
+     */
+    public static final String ENTITY_TYPE = "groups";
+
     @Override
     protected String getEntityType() {
-        return "groups";
+        return ENTITY_TYPE;
     }
 
     @Override
     protected void writeItem(JsonGenerator jg, NuxeoGroup item)
             throws ClientException, IOException {
-        NuxeoGroupWriter.writeGroup(jg, item);
+        NuxeoGroupWriter ngw = new NuxeoGroupWriter();
+        ngw.writeEntity(jg, item);
     }
 
 }

@@ -144,7 +144,7 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
                 group.setMemberGroups(groups);
             } else if ("entity-type".equals(key)) {
                 String entityType = jp.readValueAs(String.class);
-                if (!"group".equals(entityType)) {
+                if (!NuxeoGroupWriter.ENTITY_TYPE.equals(entityType)) {
                     throw new WebApplicationException(
                             Response.Status.BAD_REQUEST);
                 }

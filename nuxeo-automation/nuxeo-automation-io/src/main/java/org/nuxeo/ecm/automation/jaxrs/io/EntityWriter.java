@@ -45,13 +45,18 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     @Context
     protected JsonFactory factory;
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        if(genericType instanceof ParameterizedType) {
+        if (genericType instanceof ParameterizedType) {
+            //See EntityListWriter to write Writer of parameterized class
             return false;
         } else {
-            return ((Class)genericType).isAssignableFrom(type);
+            ParameterizedType ptype = (ParameterizedType) this.getClass().getGenericSuperclass();
+            Type ts[] = ptype.getActualTypeArguments();
+            Class c = (Class) ts[0];
+            return c.isAssignableFrom(type);
         }
     }
 

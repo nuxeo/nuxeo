@@ -35,20 +35,22 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 @Produces({ "application/json+nxentity", "application/json" })
 public class NuxeoPrincipalListWriter extends EntityListWriter<NuxeoPrincipal> {
 
+    /**
+     *
+     */
+    public static final String ENTITY_TYPE = "users";
+
     @Override
     protected String getEntityType() {
-        return "users";
+        return ENTITY_TYPE;
     }
 
     @Override
     protected void writeItem(JsonGenerator jg, NuxeoPrincipal item)
             throws ClientException, IOException {
-        NuxeoPrincipalWriter.writePrincipal(jg, item);
+
+        NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
+        npw.writeEntity(jg, item);
     }
-//
-//    @Override
-//    protected Class<?> getItemClass() {
-//        return NuxeoPrincipal.class;
-//    }
 
 }
