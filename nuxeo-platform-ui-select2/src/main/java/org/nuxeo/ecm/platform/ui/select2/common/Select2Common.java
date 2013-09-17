@@ -69,7 +69,8 @@ public class Select2Common {
 
     public static final String WARN_MESSAGE_LABEL = "warn_message";
 
-    public static final String DIR_SUGGESTION_SELECT2 = "select2Directory";
+    public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<String>(
+            Arrays.asList("suggestOneDirectory", "suggestManyDirectory"));
 
     public static final String DIR_DEFAULT_SUGGESTION_FORMATTER = "dirEntryDefaultFormatter";
 
