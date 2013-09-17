@@ -15,7 +15,7 @@
     <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
       <format-type>widget</format-type>
       <resource>automation.js</resource>
-      <resource>jquery.jsPlumb-1.3.9-all-min.js</resource>
+      <resource>jquery.jsPlumb-1.5.1-min.js</resource>
       <resource>documentRoutingGraph.js</resource>
       <resource>documentRoutingGraph.css</resource>
     </view>
@@ -28,13 +28,13 @@
       <path>scripts/automation.js</path>
       <require>jquery.js</require>
     </resource>
-    <resource name="jquery.jsPlumb-1.3.9-all-min.js">
-      <path>scripts/jquery.jsPlumb-1.3.9-all-min.js</path>
+    <resource name="jquery.jsPlumb-1.5.1-min.js">
+      <path>scripts/jquery.jsPlumb-1.5.1-min.js</path>
       <require>jquery.js</require>
     </resource>
     <resource name="documentRoutingGraph.js">
       <path>scripts/documentRoutingGraph.js</path>
-      <require>jquery.jsPlumb-1.3.9-all-min.js</require>
+      <require>jquery.jsPlumb-1.5.1-min.js</require>
       <require>automation.js</require>
     </resource>
     <resource name="documentRoutingGraph.css">

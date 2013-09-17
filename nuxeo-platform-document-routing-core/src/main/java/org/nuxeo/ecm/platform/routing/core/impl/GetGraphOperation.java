@@ -92,7 +92,8 @@ public class GetGraphOperation {
                     GraphNode targetNode = route.getNode(transition.getTarget());
                     tranViews.put(transition.getId(),
                             new TransitionView(node.getId(),
-                                    targetNode.getId(), transition.getLabel()));
+                                    targetNode.getId(), transition.getLabel(),
+                                    locale));
                 }
             }
             graph.put("nodes", nodeViews);
@@ -134,6 +135,13 @@ public class GetGraphOperation {
             return json;
         }
     }
+
+    public static String getI18nLabel(String label, Locale locale) {
+        if (label == null) {
+            label = "";
+        }
+        return I18NUtils.getMessageString("messages", label, null, locale);
+    }
 }
 
 class NodeView {
@@ -143,13 +151,16 @@ class NodeView {
                 GraphNode.PROP_NODE_X_COORDINATE));
         this.y = Integer.parseInt((String) node.getDocument().getPropertyValue(
                 GraphNode.PROP_NODE_Y_COORDINATE));
-        this.isEndNode = node.isStart();
+        this.isStartNode = node.isStart();
         this.isEndNode = node.isStop();
         this.id = node.getId();
         String titleProp = (String) node.getDocument().getPropertyValue(
                 GraphNode.PROP_TITLE);
-        this.title = getI18nLabel(titleProp, locale);
+        this.title = GetGraphOperation.getI18nLabel(titleProp, locale);
         this.state = node.getDocument().getCurrentLifeCycleState();
+        this.isMerge = node.isMerge();
+        this.isMultiTask = node.hasMultipleTasks();
+        this.hasSubWorkflow = node.hasSubRoute();
     }
 
     public int x;
@@ -165,6 +176,12 @@ class NodeView {
     public String title;
 
     public String state;
+
+    public boolean isMerge;
+
+    public boolean isMultiTask;
+
+    public boolean hasSubWorkflow;
 
     public int getX() {
         return x;
@@ -193,21 +210,15 @@ class NodeView {
     public String getState() {
         return state;
     }
-
-    protected String getI18nLabel(String label, Locale locale) {
-        if (label == null) {
-            label = "";
-        }
-        return I18NUtils.getMessageString("messages", label, null, locale);
-    }
 }
 
 class TransitionView {
 
-    public TransitionView(String nodeSourceId, String nodeTargetId, String label) {
+    public TransitionView(String nodeSourceId, String nodeTargetId,
+            String label, Locale locale) {
         this.nodeSourceId = nodeSourceId;
         this.nodeTargetId = nodeTargetId;
-        this.label = label;
+        this.label = GetGraphOperation.getI18nLabel(label, locale);
     }
 
     public String nodeSourceId;
@@ -227,4 +238,5 @@ class TransitionView {
     public String getLabel() {
         return label;
     }
+
 }

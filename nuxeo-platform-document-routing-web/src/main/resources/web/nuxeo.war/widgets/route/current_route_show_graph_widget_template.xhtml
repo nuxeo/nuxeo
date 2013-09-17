@@ -11,13 +11,14 @@
     <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
     <h:outputText value="var divContainerTargetId='#{widget.id}_target';"/>
     function showGraph() {
+      jQuery('##{widget.id}_target').empty();
       loadGraph(routeDocId, currentLang, divContainerTargetId);
       openFancyBox('##{widget.id}_graphView_box', {
-        'autoScale': true,
+        'autoScale': false,
         'autoDimensions': false,
         'type': 'inline',
-        'width': '90%',
-        'height': '90%',
+        'width': '880',
+        'height': '720',
         'transitionIn': 'none',
         'transitionOut': 'none',
         'enableEscapeButton': true,

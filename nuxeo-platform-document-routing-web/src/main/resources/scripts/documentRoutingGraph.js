@@ -1,77 +1,134 @@
 //jsPlumb options
-var arrowCommon = {
-	foldback : 0.7,
-	fillStyle : "#F78181",
-	width : 8
+var dynamicAnchors = [ [ 0.5, 1, 0, 1 ], [ 0.33, 1, 0, 1 ], [ 0.66, 1, 0, 1 ],
+		[ 0, 1, 0, 1 ], [ 1, 1, 0, 1 ], [ 0.2, 1, 0, 1 ], [ 0.8, 1, 0, 1 ],
+		[ 0.1, 1, 0, 1 ], [ 0.9, 1, 0, 1 ] ];
+
+var connectionColors = [ "#F78181", "#F7BE81", "#BDBDBD", "#5882FA", "#E1F5A9",
+		"#FA5858", "#FFFF00", "#FF0000", "#D8F781" ];
+
+var sourceEndpointOptions = {
+	connector : [ "Flowchart" ],
+	paintStyle : {
+		fillStyle : '#F78181'
+	},
+	isSource : true,
+	isTarget : false,
+	uniqueEndpoint : true,
+	maxConnections : 1,
 };
 
-var overlays = [ [ "Arrow", {
-	location : 0.7
-}, arrowCommon ] ];
-
-function getConnectionOverlayLabel() {
-	return {
-		connector : [ "Flowchart", {
-			stub : 20
-		} ],
-		overlays : overlays,
-		anchors : [ "TopCenter" ]
-	};
-};
-
-function sourceEndpointOptions() {
-	return {
-		isSource : true,
-		connectorStyle : {
-			strokeStyle : "#F78181"
-		},
-		anchor : [ 0.5, 1, 0, 1 ],
-		connector : [ "StateMachine", {
-			curviness:20,
-			proximityLimit:200,
-			margin:10,
-			loopbackRadius: 40
-		} ],
-		isTarget : false,
-		uniqueEndpoint : true
-	};
+var targetEndpointOptions = {
+	paintStyle : {
+		fillStyle : '#B23838'
+	},
+	isSource : false,
+	isTarget : true,
+	reattach : true,
+	// without specifying this the targetEndpoint doesn't accept multiple
+	// connections
+	maxConnections : -1
 };
 
 function jsPlumbInitializeDefault() {
 	jsPlumb.importDefaults({
-		PaintStyle : {
-			strokeStyle : "#F78181",
-			lineWidth : 2
+		DragOptions : {
+			cursor : "pointer",
+			zIndex : 2000
 		},
 		Endpoint : [ "Dot", {
-			radius : 4
-		} ]
+			radius : 6
+		} ],
+		HoverPaintStyle : {
+			strokeStyle : "#ec9f2e"
+		},
+		EndpointHoverStyle : {
+			fillStyle : "#ec9f2e"
+		},
+		ConnectionOverlays : [ [ "Arrow", {
+			location : 0.8
+		}, {
+			foldback : 0.9,
+			fillStyle : "#F78181",
+			width : 14
+		} ], ]
 	});
 };
+function getConnectionOverlayLabel(colour, condition) {
+	return [ [ "Arrow", {
+		location : 0.8
+	}, {
+		foldback : 0.9,
+		fillStyle : colour,
+		width : 14
+	} ], [ "Label", {
+		label : "<span title=\"" + condition + "\">" + condition + "</span>",
+		cssClass : "node_connection_label",
+		location : 0.6
+	} ] ];
+}
 // --> end jsPlumbOptions
 // display graph
+function countElement(item, array) {
+	var count = 0;
+	jQuery.each(array, function(i, v) {
+		if (v === item)
+			count++;
+	});
+	return count;
+};
 function displayGraph(data, divContainerTargetId) {
 	jQuery.each(data['nodes'], function() {
 		var node = '<div class="node" id="' + this.id + '">' + this.title
 				+ '</div>';
-		var x = (this.x - 100)<=10?this.x:(this.x - 100);
-		jQuery(node).appendTo('#' + divContainerTargetId).css('left', x).css('top',
-				this.y).addClass('node_' + this.state);
-		jsPlumb.makeSource(this.id, sourceEndpointOptions());
+		var el = jQuery(node).appendTo('#' + divContainerTargetId).css('left',
+				this.x).css('top', this.y);
+		if (this.isStartNode) {
+			el.addClass('start_node');
+		} else if (this.isEndNode) {
+			el.addClass('end_node');
+		} else if (this.isMerge) {
+			el.addClass('merge_node');
+		} else if (this.isMultiTask) {
+			el.addClass('multiple_task');
+		} else if (this.hasSubWorkflow) {
+			el.addClass('subworkflow_task');
+		} else {
+			el.addClass('node_' + this.state);
+		}
 	});
-
+	// initialize connection source points
+	var nodes = [];
+	// use fixed dynamic anchors, only 9 items supported, after this everything
+	// is displayed on the center
 	jQuery.each(data['transitions'], function() {
+		var anchorIndex = countElement(this.nodeSourceId, nodes);
+		if (anchorIndex > 9) {
+			anchorIndex = 0;
+		}
+		;
+		nodes.push(this.nodeSourceId);
+		// increase index
+		var endPointSource = jsPlumb.addEndpoint(this.nodeSourceId, {
+			anchor : dynamicAnchors[anchorIndex],
+		}, sourceEndpointOptions);
+		var endPointTarget = jsPlumb.addEndpoint(this.nodeTargetId, {
+			anchor : "TopCenter"
+		}, targetEndpointOptions);
 		jsPlumb.connect({
-			source : this.nodeSourceId,
-			target : this.nodeTargetId
-		}, getConnectionOverlayLabel());
+			source : endPointSource,
+			target : endPointTarget,
+			overlays : getConnectionOverlayLabel(connectionColors[anchorIndex],
+					this.label),
+			paintStyle : {
+				lineWidth : 1,
+				strokeStyle : connectionColors[anchorIndex]
+			},
+		});
 	});
 };
 
 function invokeGetGraphOp(routeId, currentLang, divContainerTargetId) {
-	var ctx = {
-	};
-
+	var ctx = {};
 	var getGraphNodesExec = jQuery().automation('Document.Routing.GetGraph');
 	getGraphNodesExec.setContext(ctx);
 	getGraphNodesExec.addParameter("routeDocId", routeId);
@@ -79,7 +136,8 @@ function invokeGetGraphOp(routeId, currentLang, divContainerTargetId) {
 	getGraphNodesExec.executeGetBlob(function(data, status, xhr) {
 		displayGraph(data, divContainerTargetId);
 	}, function(xhr, status, errorMessage) {
-		jQuery('<div>Can not load graph </div>').appendTo('#' + divContainerTargetId);
+		jQuery('<div>Can not load graph </div>').appendTo(
+				'#' + divContainerTargetId);
 	}, true);
 };
 

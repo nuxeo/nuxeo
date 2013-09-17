@@ -1,16 +1,65 @@
-.node {
-	border: 1px dotted gray;
-	height: 50px;
-	width: 50px;
-	position: absolute;
-	z-index: 200;
-	color: gray;
-	font-family: serif;
-	font-style: italic;
-	padding-top: 0.9em;
-	font-size: 0.9em;
-	text-align: center;
+.node,
+multiple_task {
+  border: 3px solid #549CFB;
+  height: 60px;
+  width: 60px;
+  position: relative;
+  z-index: 100;
+  color: gray;
+  font-family: serif;
+  font-style: italic;
+  padding-top: .9em;
+  font-size: .9em;
+  text-align: center;
+  background-color: white;;
 }
+
+.multiple_task { 
+	border: 5px double #8FBFFF; }
+
+.start_node,
+.end_node {
+  width: 40px;
+  height: 40px;
+  -moz-border-radius: 40px;
+  -webkit-border-radius: 40px;
+  border-radius: 40px;
+  position: relative;
+  z-index: 100;
+  line-height: 200%;
+  font-family: serif;
+  font-style: italic;
+  font-size: .9em;
+  text-align: center;
+  background: #92c938; }
+  
+.end_node {
+  background: #f04545; }
+
+.fork_node,
+.merge_node {
+  width: 0;
+  height: 0;
+  border-bottom: 40px solid #dededd;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  position: relative;
+  z-index: 100;
+  line-height: 100%;
+  font-family: serif;
+  font-style: italic;
+  font-size: .9em;
+  text-align: center }
+
+.merge_node {
+  border-top: 40px solid #dededd;
+  border-bottom: 0;
+  line-height: 0 }
+
+.subworkflow_task {
+  border-color: #004FB9;
+  background: url("../icons/subworkflow_bg_node.png") no-repeat scroll right bottom white 
+  }
 
 .node_draft {
 	background-color: white;
@@ -43,7 +92,24 @@
 .node_canceled {
 	background-color: #FF3300;
 }
+.node_connection_label {
+  background-color: white;
+  padding: .1em .2em;
+  font: 12px sans-serif;
+  color: #444;
+  z-index: 120;
+  border: 1px dotted gray;
+  opacity: 0.8;
+  filter: alpha(opacity = 80);
+  max-width: 170px;
+  word-wrap: break-word }
 
 .targetDiv {
 	position: relative;
+	width: 880px;
+    height: 720px;
+}
+._jsPlumb_endpoint { z-index: 110
+}
+._jsPlumb_overlay { z-index: 6
 }
