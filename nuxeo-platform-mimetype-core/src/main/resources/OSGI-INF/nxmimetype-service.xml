@@ -284,6 +284,7 @@
       <extensions>
         <extension>xml</extension>
         <extension>graffle</extension>
+        <extension>twb</extension>
       </extensions>
     </mimetype>
 
