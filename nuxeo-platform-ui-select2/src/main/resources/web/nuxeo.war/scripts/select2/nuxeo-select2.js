@@ -90,7 +90,7 @@
       op.addParameter("filterParent", params.filterParent);
       op.addParameter("canSelectParent", params.canSelectParent);
       op.addParameter("separator", params.separator);
-      op.addParameter("obsolete", params.obsolete);
+      op.addParameter("displayObsoleteEntries", params.displayObsoleteEntries);
     } else if (params.operationId == 'UserGroup.Suggestion') {
       op.addParameter("prefix", query.term);
       op.addParameter("searchType", params.userSuggestionSearchType);

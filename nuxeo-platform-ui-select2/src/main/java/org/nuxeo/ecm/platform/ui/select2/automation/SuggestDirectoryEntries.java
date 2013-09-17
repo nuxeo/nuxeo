@@ -109,7 +109,7 @@ public class SuggestDirectoryEntries {
                     obj.element(key, value);
                 }
             }
-            if (obsolete) {
+            if (displayObsoleteEntries) {
                 if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
                         && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
                     obj.element(Select2Common.WARN_MESSAGE_LABEL,
@@ -301,8 +301,8 @@ public class SuggestDirectoryEntries {
     @Param(name = "keySeparator", required = false)
     protected String keySeparator = Select2Common.DEFAULT_KEY_SEPARATOR;
 
-    @Param(name = "obsolete", required = false)
-    protected boolean obsolete = false;
+    @Param(name = "displayObsoleteEntries", required = false)
+    protected boolean displayObsoleteEntries = false;
 
     private String label = null;
 
@@ -361,7 +361,7 @@ public class SuggestDirectoryEntries {
                     labelFieldName, getLang());
 
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
-            if (!obsolete) {
+            if (!displayObsoleteEntries) {
                 filter.put(Select2Common.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }
             Set<String> fullText = new TreeSet<String>();
