@@ -105,16 +105,21 @@ public class AdministrativeStatusManagerImpl implements
             }
         }
 
-        scheduler.scheduleAtFixedRate(new NotifyStatusesHandler(), 0, 5, TimeUnit.MINUTES);
+        doNotifyAllStatuses();
+
+        scheduler.scheduleAtFixedRate(new NotifyStatusesHandler(), 5, 5, TimeUnit.MINUTES);
     }
 
+    protected void doNotifyAllStatuses() {
+        for (AdministrativeStatus status : persister.getAllStatuses(serverInstanceName)) {
+            notifyOnStatus(status);
+        }
+    }
 
     public class NotifyStatusesHandler implements Runnable {
         @Override
         public void run() {
-            for (AdministrativeStatus status : persister.getAllStatuses(serverInstanceName)) {
-                notifyOnStatus(status);
-            }
+            doNotifyAllStatuses();
         }
     }
 
