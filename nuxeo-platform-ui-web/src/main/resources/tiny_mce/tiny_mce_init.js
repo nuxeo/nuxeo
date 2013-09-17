@@ -7,11 +7,9 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
     lang = 'en';
   }
 
-  nbTinyMceEditor++;
-
   // if SafeEdit present
   if (typeof registerSafeEditWait == 'function') {
-    // tell him to wait until all eleditors are loaded
+    // tell him to wait until all editors are loaded
     registerSafeEditWait(function() {
       return nbTinyMceEditor <= 0;
     });
@@ -19,13 +17,19 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
 
   // if SafeEdit present
   if (typeof registerPostRestoreCallBacks == 'function') {
-     // tell him to run a restore again the following elts
-     registerPostRestoreCallBacks(function(formSelector, data) {
+    // tell him to run a restore again on the following elts
+    if (nbTinyMceEditor == 0) {
+      // The post restore is common for all editors of the page, so just
+      // register once
+      registerPostRestoreCallBacks(function(formSelector, data) {
         processRestore(jQuery(formSelector).find(
-        "textarea.mceEditor,td.mceIframeContainer>iframe"), data);
-     }
-      );
+            "textarea.mceEditor,td.mceIframeContainer>iframe"), data);
+      });
+    }
   }
+
+  nbTinyMceEditor++;
+
 
   tinyMCE.init({
     width : width,
