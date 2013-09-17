@@ -5,7 +5,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="nature" type="select2Directory">
+    <widget name="nature" type="suggestOneDirectory">
       <labels>
         <label mode="any">label.dublincore.nature</label>
       </labels>
@@ -24,7 +24,7 @@
       </properties>
     </widget>
 
-    <widget name="subjects" type="select2DirectoryMultiple">
+    <widget name="subjects" type="suggestManyDirectory">
       <labels>
         <label mode="any">label.dublincore.subject</label>
       </labels>
@@ -79,7 +79,7 @@
       </properties>
     </widget>
 
-    <widget name="coverage" type="select2Directory">
+    <widget name="coverage" type="suggestOneDirectory">
       <labels>
         <label mode="any">label.dublincore.coverage</label>
       </labels>
