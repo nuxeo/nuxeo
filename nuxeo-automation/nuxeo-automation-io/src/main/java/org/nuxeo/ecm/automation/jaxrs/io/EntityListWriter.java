@@ -50,7 +50,6 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
 
     /**
      * Writes the item in a JsonGenerator.
-     *
      */
     abstract protected void writeItem(JsonGenerator jg, T item)
             throws ClientException, IOException;
@@ -58,7 +57,6 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-
         if (!List.class.isAssignableFrom(type)) {
             return false;
         }
@@ -68,8 +66,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
             ParameterizedType paramType = (ParameterizedType) genericType;
             Type actualTypeArguments = paramType.getActualTypeArguments()[0];
             if (type == null) {
-                throw new RuntimeException("Invalid class parameter type. "
-                        + type);
+                throw new RuntimeException("Invalid class parameter type.");
             }
             return ((Class<?>) actualTypeArguments).isAssignableFrom(getItemClass());
 
@@ -88,25 +85,21 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     }
 
     @Override
-    public void writeTo(List<T> list, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        try {
-            writeList(
-                    factory.createJsonGenerator(entityStream, JsonEncoding.UTF8),
-                    list);
-        } catch (ClientException e) {
-            throw new WebApplicationException(e);
+    protected void writeEntityBody(JsonGenerator jg, List<T> list)
+            throws IOException, ClientException {
+        writePaginableHeader(jg, list);
+        writeHeader(jg, list);
+        jg.writeArrayFieldStart("entries");
+        for (T item : list) {
+            writeItem(jg, item);
         }
+        jg.writeEndArray();
+        jg.writeEndObject();
+        jg.flush();
     }
 
-    protected void writeList(JsonGenerator jg, List<T> list)
-            throws ClientException, IOException {
-        jg.writeStartObject();
-        jg.writeStringField("entity-type", getEntityType());
-
+    protected void writePaginableHeader(JsonGenerator jg, List<T> list)
+            throws IOException {
         if (list instanceof Paginable) {
             Paginable paginable = (Paginable) list;
             jg.writeBooleanField("isPaginable", true);
@@ -128,21 +121,13 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
             jg.writeBooleanField("hasError", paginable.hasError());
             jg.writeStringField("errorMessage", paginable.getErrorMessage());
         }
-        writeAdditionalHeader(jg, list);
-
-        jg.writeArrayFieldStart("entries");
-        for (T item : list) {
-            writeItem(jg, item);
-        }
-        jg.writeEndArray();
-        jg.writeEndObject();
-        jg.flush();
     }
 
     /**
      * Override this method to write into list header
      */
-    protected void writeAdditionalHeader(JsonGenerator jg, List<T> list) {
+    protected void writeHeader(JsonGenerator jg, List<T> list)
+            throws IOException {
     }
 
 }

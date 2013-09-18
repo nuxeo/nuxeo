@@ -221,7 +221,8 @@ public class RestServiceTest {
         JsonGenerator jg = getJsonGenerator(out);
 
         // When it is written as Json
-        LogEntryWriter.writeLogEntry(jg, entry);
+        LogEntryWriter logEntryWriter = new LogEntryWriter();
+        logEntryWriter.writeEntity(jg, entry);
         jg.flush();
 
         // Then it contains

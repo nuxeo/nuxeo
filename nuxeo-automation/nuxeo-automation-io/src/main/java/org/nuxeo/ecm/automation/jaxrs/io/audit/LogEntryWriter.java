@@ -17,23 +17,14 @@
 package org.nuxeo.ecm.automation.jaxrs.io.audit;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.codehaus.jackson.JsonEncoding;
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
@@ -42,41 +33,18 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
  */
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
-public class LogEntryWriter implements MessageBodyWriter<LogEntry> {
+public class LogEntryWriter extends EntityWriter<LogEntry> {
 
-    @Context
-    JsonFactory factory;
+    public static final String ENTITY_TYPE = "logEntry";
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return LogEntry.class.isAssignableFrom(type);
+    protected String getEntityType() {
+        return ENTITY_TYPE;
     }
 
     @Override
-    public long getSize(LogEntry logEntry, Class<?> aClass, Type type,
-            Annotation[] annotations, MediaType mediaType) {
-        return -1L;
-    }
-
-    @Override
-    public void writeTo(LogEntry logEntry, Class<?> aClass, Type type,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> stringObjectMultivaluedMap,
-            OutputStream outputStream) throws IOException,
-            WebApplicationException {
-        try {
-            writeLogEntry(
-                    factory.createJsonGenerator(outputStream, JsonEncoding.UTF8),
-                    logEntry);
-        } catch (ClientException e) {
-            throw new WebApplicationException(e);
-        }
-    }
-
-    public static void writeLogEntry(JsonGenerator jg, LogEntry logEntry)
-            throws ClientException, IOException {
-        jg.writeStartObject();
+    protected void writeEntityBody(JsonGenerator jg, LogEntry logEntry)
+            throws IOException, ClientException {
         jg.writeStringField("entity-type", "logEntry");
         jg.writeStringField("category", logEntry.getCategory());
         jg.writeStringField("principalName", logEntry.getPrincipalName());
@@ -96,8 +64,6 @@ public class LogEntryWriter implements MessageBodyWriter<LogEntry> {
                 "logDate",
                 ISODateTimeFormat.dateTime().print(
                         new DateTime(logEntry.getLogDate())));
-        jg.writeEndObject();
-        jg.flush();
     }
 
 }
