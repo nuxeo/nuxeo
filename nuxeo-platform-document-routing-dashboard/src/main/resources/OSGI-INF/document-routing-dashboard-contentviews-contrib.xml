@@ -64,7 +64,7 @@
      <cacheSize>10</cacheSize>
      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
      </cacheKey>
-     <searchLayout name="routing_user_open_task_search_layout"/>
+     <searchLayout name="routing_user_open_task_search_layout" filterUnfolded="true"/>
      <resultLayouts>
        <layout name="routing_user_open_task_listing" title=""
          translateTitle="" iconPath="" showCSVExport="false"

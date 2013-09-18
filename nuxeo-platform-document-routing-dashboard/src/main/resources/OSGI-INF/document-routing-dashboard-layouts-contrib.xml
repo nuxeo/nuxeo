@@ -47,7 +47,41 @@
      /widgets/listing/listing_process_task_widget_template.xhtml
     </property>
    </widgetType>
+
+ <widgetType name="listing_workflow_name_task">
+  <configuration>
+   <title>Listing the name of the workflow that created the task</title>
+   <documentation>
+    A field is required:
+    <ul>
+     <li>A field to map the processId on the task</li>
+    </ul>
+   </documentation>
+   <sinceVersion>5.7.3</sinceVersion>
+   <categories>
+    <category>routing</category>
+   </categories>
+   <supportedModes>
+    <mode>view</mode>
+   </supportedModes>
+   <fields>
+    <list>false</list>
+    <complex>false</complex>
+    <supportedTypes>
+     <type>string</type>
+    </supportedTypes>
+   </fields>
+  </configuration>
+  <handler-class>
+   org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+  </handler-class>
+  <property name="template">
+   /widgets/listing/listing_workflow_name_task_widget_template.xhtml
+  </property>
+ </widgetType>
   </extension>
+  
+  
   
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
@@ -153,7 +187,7 @@
       </subWidgets>
     </widget>
     
-    <widget name="routing_task_workflow_name" type="singleDocumentSuggestion">
+    <widget name="routing_task_workflow_name" type="listing_workflow_name_task">
       <labels>
         <label mode="any">label.review.type</label>
       </labels>
