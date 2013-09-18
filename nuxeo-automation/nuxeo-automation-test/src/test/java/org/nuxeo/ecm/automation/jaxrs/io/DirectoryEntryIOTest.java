@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.jaxrs.io.directory;
+package org.nuxeo.ecm.automation.jaxrs.io;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,6 +32,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
+import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntriesWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntry;
+import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
