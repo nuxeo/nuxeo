@@ -16,11 +16,22 @@
  */
 package org.nuxeo.ecm.platform.actions.seam;
 
+import javax.el.ArrayELResolver;
+import javax.el.BeanELResolver;
+import javax.el.CompositeELResolver;
 import javax.el.ELContext;
+import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
+import javax.el.ListELResolver;
+import javax.el.MapELResolver;
+import javax.el.ResourceBundleELResolver;
 
 import org.jboss.el.ExpressionFactoryImpl;
+import org.jboss.el.lang.FunctionMapperImpl;
+import org.jboss.seam.el.EL;
+import org.jboss.seam.el.SeamELResolver;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
+import org.nuxeo.ecm.platform.el.DocumentModelResolver;
 
 /**
  * Sample Seam action context, resolving components in Seam context (but not
@@ -32,8 +43,25 @@ public class SeamActionContext extends ELActionContext {
 
     private static final long serialVersionUID = 1L;
 
+    public static final ELResolver EL_RESOLVER = createELResolver();
+
+    public static ELResolver createELResolver() {
+        CompositeELResolver resolver = new CompositeELResolver();
+        resolver.add(new DocumentModelResolver());
+        resolver.add(new SeamELResolver());
+        resolver.add(new MapELResolver());
+        resolver.add(new ListELResolver());
+        resolver.add(new ArrayELResolver());
+        resolver.add(new ResourceBundleELResolver());
+        resolver.add(new BeanELResolver());
+        return resolver;
+    }
+
+    public static final ExpressionFactory EXPRESSION_FACTORY = new ExpressionFactoryImpl();
+
     public SeamActionContext() {
-        super(new SeamExpressionContext(), new ExpressionFactoryImpl());
+        super(EL.createELContext(EL_RESOLVER, new FunctionMapperImpl()),
+                EXPRESSION_FACTORY);
     }
 
     public SeamActionContext(ELContext originalContext,
