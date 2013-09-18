@@ -70,14 +70,20 @@ author: lkemen@nuxeo.com
 
 /* =Simple boxes */
 .simpleBox {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "default (__FLAVOR__ color)";
   display: inline-block;
-  margin: .1em .5em .5em;
+  margin: .1em .5em .5em 0;
   width: 350px;
   padding: .5em;
   text-align: left }
+
+.widgetTable .simpleBox {
+  margin: .1em auto .5em }
 
 /* =Bubble boxes */
 .bubbleBox { border-width: 1px; border-style: solid;
