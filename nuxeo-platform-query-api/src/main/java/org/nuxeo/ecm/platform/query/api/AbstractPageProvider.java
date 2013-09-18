@@ -163,11 +163,16 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         }
     }
 
-    public List<T> setCurrentPage(long page) {
+    @Override
+    public void setCurrentPageIndex(long currentPageIndex) {
         long pageSize = getPageSize();
-        long offset = page * pageSize;
+        long offset = currentPageIndex * pageSize;
         setCurrentPageOffset(offset);
         pageChanged();
+    }
+
+    public List<T> setCurrentPage(long page) {
+        setCurrentPageIndex(page);
         return getCurrentPage();
     }
 

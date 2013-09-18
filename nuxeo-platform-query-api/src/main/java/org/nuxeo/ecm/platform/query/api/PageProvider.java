@@ -192,6 +192,14 @@ public interface PageProvider<T> extends Serializable {
     public void setCurrentPageOffset(long offset);
 
     /**
+     * Sets the current page of results to the required one.
+     *
+     * @param currentPageIndex the page index, starting from 0
+     * @since 5.7.3
+     */
+    void setCurrentPageIndex(long currentPageIndex);
+
+    /**
      * Sets the current page of results to the required one and return it.
      *
      * @param page the page index, starting from 0
