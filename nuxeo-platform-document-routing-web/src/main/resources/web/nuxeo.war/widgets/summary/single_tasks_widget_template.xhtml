@@ -47,6 +47,7 @@
              <nxu:set var="taskInfo"
               value="#{routingTaskActions.getTaskInfo(dashboardItem.task, false)}"
               cache="true">
+              <div class="simpleBox fullWidth focusColumn">
               <c:if
                 test="#{taskInfo.isCanBeReassigned() and widgetProperty_allowTaskReassignment}">
                 <nxl:layout name="task_additional_actions_layout"
@@ -70,6 +71,7 @@
                     <ui:param name="task" value="#{dashboardItem.task}" />
                   </ui:include>
               </c:if>
+              </div>
               </nxu:set>
           </c:forEach>
 
