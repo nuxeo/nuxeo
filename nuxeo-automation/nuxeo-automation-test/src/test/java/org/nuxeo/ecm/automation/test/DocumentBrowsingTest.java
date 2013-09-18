@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.automation.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
@@ -27,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.ACPWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -195,9 +195,28 @@ public class DocumentBrowsingTest extends BaseTest {
         response = getResponse(RequestType.GET, "repo/nonexistentrepo/path"
                 + note.getPathAsString());
 
-        // Then i reveive a 404
+        // Then i receive a 404
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(),
                 response.getStatus());
+
+    }
+
+    @Test
+    public void iCanGetTheACLsOnADocument() throws Exception {
+        // Given an existing document
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        // When i do a GET Request on the note repository
+        ClientResponse response = getResponse(
+                RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path"
+                        + note.getPathAsString() + "/@acl");
+
+        // Then i get a the ACL
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(ACPWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+
 
     }
 

@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io;
 
-import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
@@ -62,13 +61,13 @@ public class ACPWriterTest {
         // Then the json reflects the acp properties
         assertEquals(ACPWriter.ENTITY_TYPE,
                 node.get("entity-type").getValueAsText());
-        ArrayNode aclsNode = (ArrayNode) node.get("local");
-        assertNotNull(aclsNode);
+        JsonNode aclNode = node.get("acl").get(0);
+        assertEquals("local", aclNode.get("name").getValueAsText());
 
-        assertEquals(acp.getACL("local").size(), aclsNode.size());
+        ArrayNode aceNode = (ArrayNode) aclNode.get("ace");
+
+        assertEquals(acp.getACL("local").size(), aceNode.size());
     }
-
-
 
     /**
      * Return a parsed Json representation of an ACP.

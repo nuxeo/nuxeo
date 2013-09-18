@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonTreeWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntriesWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryReader;
 import org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.ACPWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.BlobsWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterReader;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader;
@@ -85,6 +86,7 @@ public class AutomationModule extends WebEngineModule {
         result.add(new DirectoryEntriesWriter());
         result.add(new DirectoryEntryWriter());
         result.add(new DirectoryEntryReader());
+        result.add(new ACPWriter());
         return result;
     }
 

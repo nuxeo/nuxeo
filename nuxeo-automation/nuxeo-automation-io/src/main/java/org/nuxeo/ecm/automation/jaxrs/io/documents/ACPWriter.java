@@ -45,8 +45,13 @@ public class ACPWriter extends EntityWriter<ACP> {
     @Override
     protected void writeEntityBody(JsonGenerator jg, ACP item)
             throws IOException, ClientException {
+
+        jg.writeArrayFieldStart("acl");
         for (ACL acl : item.getACLs()) {
-            jg.writeArrayFieldStart(acl.getName());
+            jg.writeStartObject();
+            jg.writeStringField("name", acl.getName());
+
+            jg.writeArrayFieldStart("ace");
 
             for (ACE ace : acl.getACEs()) {
                 jg.writeStartObject();
@@ -57,7 +62,9 @@ public class ACPWriter extends EntityWriter<ACP> {
             }
 
             jg.writeEndArray();
+            jg.writeEndObject();
         }
+        jg.writeEndArray();
     }
 
     @Override
