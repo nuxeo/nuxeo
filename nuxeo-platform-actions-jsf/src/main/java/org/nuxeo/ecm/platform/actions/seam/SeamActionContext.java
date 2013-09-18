@@ -36,6 +36,9 @@ import org.nuxeo.ecm.platform.el.DocumentModelResolver;
 /**
  * Sample Seam action context, resolving components in Seam context (but not
  * relying on faces context to do so)
+ * <p>
+ * Adds the {@link DocumentModelResolver} at the top of the list of default
+ * Seam resolvers.
  *
  * @since 5.7.3
  */
