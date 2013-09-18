@@ -68,6 +68,8 @@ public class HtmlTextWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 // below
                 attributes = helper.getTagAttributes(widget,
                         Arrays.asList("styleClass"), true);
+                attributes = FaceletHandlerHelper.addTagAttribute(attributes,
+                        helper.createAttribute("id", widgetId));
             } else {
                 attributes = helper.getTagAttributes(widgetId, widget);
             }
