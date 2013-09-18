@@ -8,11 +8,9 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <h3>
-<h:outputText value="#{messages['']}" /></h3>
+  <h3><h:outputText value="#{messages[layoutValue.name]}" /></h3>
   
    <h:form>
-
     <div class="content">
       <a4j:outputPanel>
          <nxl:layout name="workflowTaskReassignmentLayout" mode="edit" value="#{layoutValue}" />

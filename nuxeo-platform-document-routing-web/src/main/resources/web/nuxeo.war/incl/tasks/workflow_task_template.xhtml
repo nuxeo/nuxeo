@@ -44,10 +44,11 @@ Displays a 'task' or a 'dashboardItem' object if the task was not created by the
 
       <f:subview id="#{idPrefix}_subview">
 
-        <table class="dataTableNoBorder">
+        <table class="dataTable">
           <tbody>
             <tr>
-              <td class="labelColumn">Workflow step</td>
+              <td class="labelColumn"><h:outputText
+                  value="#{messages['label.route.task.workflowStep']}" /></td>
               <td class="fieldColumn"><h:outputText
                   value="#{messages[routingActions.getRouteInstanceFor(task).title]} - #{messages[task.name]}" />
               </td>

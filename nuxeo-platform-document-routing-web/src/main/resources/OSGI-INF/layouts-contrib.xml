@@ -470,7 +470,7 @@
        </rows>
        <widget name="task_reassignment_actors" type="multiplePrefixedUsersSuggestion">
         <labels>
-          <label mode="any">label.document.route.content.header.actors</label>
+          <label mode="any">label.workflow.task.actors</label>
          </labels>
          <translated>true</translated>
          <fields>
@@ -480,9 +480,9 @@
           <property name="required">true</property>
         </properties>
        </widget>
-      <widget name="task_reassignment_comment" type="text">
+      <widget name="task_reassignment_comment" type="textarea">
        <labels>
-         <label mode="any">label.content.header.comments</label>
+         <label mode="any">label.workflow.task.comment</label>
        </labels>
        <translated>true</translated>
        <fields>

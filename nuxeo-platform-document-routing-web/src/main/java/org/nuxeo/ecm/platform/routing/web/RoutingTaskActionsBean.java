@@ -280,13 +280,16 @@ public class RoutingTaskActionsBean implements Serializable {
 
         protected String taskId;
 
+        protected String name;
+
         protected TaskInfo(String taskId, HashMap<String, Serializable> formVariables,
-                String layout, List<Button> buttons, boolean canBeReassigned) {
+                String layout, List<Button> buttons, boolean canBeReassigned, String name) {
             this.formVariables = formVariables;
             this.layout = layout;
             this.buttons = buttons;
             this.canBeReassigned = canBeReassigned;
             this.taskId = taskId;
+            this.name = name;
         }
 
         public List<String> getActors() {
@@ -311,6 +314,10 @@ public class RoutingTaskActionsBean implements Serializable {
 
         public String getTaskId(){
             return taskId;
+        }
+
+        public String getName(){
+            return name;
         }
     }
 
@@ -345,7 +352,8 @@ public class RoutingTaskActionsBean implements Serializable {
                     map.putAll(route.getVariables());
                 }
                 res[0] = new TaskInfo(task.getId(), map, node.getTaskLayout(),
-                        node.getTaskButtons(), node.allowTaskReassignment());
+                        node.getTaskButtons(), node.allowTaskReassignment(),
+                        task.getName());
             }
         }.runUnrestricted();
         tasksInfoCache.put(task.getId(), res[0]);
