@@ -162,8 +162,10 @@ public class SuggestUserEntries {
                         Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
                         obj.element(key, value);
                         if (key.equals("grouplabel")) {
-                            hasGroupLabel = true;
-                            obj.element(Select2Common.LABEL, value);
+                            if (value != null && value.toString().length() > 0) {
+                                hasGroupLabel = true;
+                                obj.element(Select2Common.LABEL, value);
+                            }
                         }
                     }
                     String groupId = group.getId();
