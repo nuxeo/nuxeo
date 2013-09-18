@@ -13,19 +13,19 @@ package org.nuxeo.ecm.automation.client.model;
 
 import java.util.List;
 
-
-
 /**
  * @author matic
- *
  */
 public class PaginableDocuments extends Documents {
 
     private static final long serialVersionUID = 1L;
 
     protected int totalSize;
+
     protected int pageSize;
+
     protected int pageCount;
+
     protected int pageIndex;
 
     public PaginableDocuments() {
@@ -34,8 +34,9 @@ public class PaginableDocuments extends Documents {
     /**
      * @param size
      */
-    public PaginableDocuments(List<Document> docs, int totalSize, int pageSize, int pageCount, int pageIndex) {
-        super (docs);
+    public PaginableDocuments(List<Document> docs, int totalSize, int pageSize,
+            int pageCount, int pageIndex) {
+        super(docs);
         this.totalSize = totalSize;
         this.pageSize = pageSize;
         this.pageCount = pageCount;
@@ -49,7 +50,6 @@ public class PaginableDocuments extends Documents {
     public int getPageSize() {
         return pageSize;
     }
-
 
     public int getPageCount() {
         return pageCount;
