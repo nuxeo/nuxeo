@@ -102,7 +102,7 @@ public class XMLImporterServiceImpl {
         session = rootDoc.getCoreSession();
         this.rootDoc = rootDoc;
         docsStack = new Stack<DocumentModel>();
-        docsStack.add(rootDoc);
+        pushInStack(rootDoc);
         mvelCtx.put("root", rootDoc);
         mvelCtx.put("docs", docsStack);
         mvelCtx.put("session", session);
@@ -320,7 +320,8 @@ public class XMLImporterServiceImpl {
     protected Map<String, Object> getMVELContext(Element el) {
         mvelCtx.put("currentDocument", docsStack.peek());
         mvelCtx.put("currentElement", el);
-        mvelCtx.put("Fn", new MVELImporterFunction(session, docsStack, elToDoc, el));
+        mvelCtx.put("Fn", new MVELImporterFunction(session, docsStack, elToDoc,
+                el));
         return mvelCtx;
     }
 
@@ -443,7 +444,6 @@ public class XMLImporterServiceImpl {
     protected void createNewDocument(Element el, DocConfigDescriptor conf)
             throws Exception {
         DocumentModel doc = session.createDocumentModel(conf.getDocType());
-        mvelCtx.put("changeableDocument", doc);
 
         String path = resolvePath(el, conf.getParent());
         Object nameOb = resolveName(el, conf.getName());
@@ -476,7 +476,7 @@ public class XMLImporterServiceImpl {
             throw new Exception(String.format(MSG_CREATION, path, name,
                     el.getUniquePath(), conf.toString()), e);
         }
-        docsStack.push(doc);
+        pushInStack(doc);
         elToDoc.put(el, doc);
     }
 
@@ -491,10 +491,10 @@ public class XMLImporterServiceImpl {
             for (AttributeConfigDescriptor config : configs) {
                 processDocAttributes(docsStack.peek(), el, config);
             }
-            DocumentModel doc = docsStack.pop();
+            DocumentModel doc = popStack();
             doc.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
             doc = session.saveDocument(doc);
-            docsStack.push(doc);
+            pushInStack(doc);
 
             if (createConf != null) {
                 String chain = createConf.getAutomationChain();
@@ -520,4 +520,14 @@ public class XMLImporterServiceImpl {
 
     }
 
+    private void pushInStack(DocumentModel doc) {
+        mvelCtx.put("changeableDocument", doc);
+        docsStack.push(doc);
+    }
+
+    private DocumentModel popStack() {
+        DocumentModel doc = docsStack.pop();
+        mvelCtx.put("changeableDocument", doc);
+        return doc;
+    }
 }

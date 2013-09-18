@@ -7,11 +7,11 @@ Document importer using XML as source and  Xpath  + MVEL to configure mappings
 
 This service let you define a XML parsing logic to create documents according information contained.
 
-General approach of this service is to parse from the start to the end the XML File you give. Here is the parser computation execution logic, for each element parser into the XML:
+General approach of this service is to parse from the start to the end the XML File you give. Here is the parser computation execution logic, for each element parsed into the XML:
 
-* service get the first *document creation activator* (see description bellow) and executed the document creation as configured, without metadata set. The created document is pushed into a stack. If no *document creation activator* match this element, then no document is created and the stack is not changed. Then move to the next **step**.
-* on the same element, for each *metadata injection activator* (see description bellow) matching the element, service execute the *metadata injection activator* logic on the last element into the stack.Then move to the next **step**.
-* if a *document creation activator* has been activated on current element, the postCreationAutomationChain configured is executed. Then move to the next **item** in the XML file.
+* service get the first *document creation activator* matching the element (see description bellow) and executed the document creation as configured, without metadata set. The created document is pushed into a stack. If no *document creation activator* match this element, then no document is created and the stack is not changed. Then move to the next **step**.
+* on the same element, for each *metadata injection activator* (see description bellow) matching the element, service execute the *metadata injection activator* logic on the last element into the stack. Then move to the next **step**.
+* if a *document creation activator* has been activated on current element, the postCreationAutomationChain configured is executed. Then move to the next **item** in the XML file and go to the first step.
 
 So the service exposes 2 extensions points: 
 
@@ -22,7 +22,7 @@ So the service exposes 2 extensions points:
 
 ## Extension points 
 
-As explained into the description chapter the configuration of the parsing is based on 2 extension points: *document creation activator* and the *metadata injection activator*. This section gives you an overview of these 2 extension points.
+As explained into the description chapter, the configuration of the parsing is based on 2 extension points: *document creation activator* and the *metadata injection activator*. This section gives you an overview of these 2 extension points.
 
 The component exposing these extension points is:
 
@@ -46,16 +46,16 @@ Here is a typical contribution of this documentMapping extension point:
   
 You can see that :
 
-* You have to define the xpath selector activator (*tagName*)
-* You have to define the document type associated to the activator (*docType*)
-* You have to define the target path calculation (*parent*)
-* You can define the name calculation based on the context (*name*)
-* And you can define the Automation Chain Post Creation execution (*postCreationAutomationChain*)
+* You have to define the xpath selector activator (`tagName`)
+* You have to define the document type associated to the activator (`docType`)
+* You have to define the target path calculation (`parent`)
+* You can define the name calculation based on the context (`name`)
+* And you can define the Automation Chain Post Creation execution (`postCreationAutomationChain`)
 
 
 **XPath Selector Activator (tagName)**
 
-First you must express on which context the activator must be activated. The activation logic is base on XPath syntax given into the *tagName* attribute. Service parse the XML File and for each item, the service check if the XPath expression of the activator match the current item, and **the first document creation activator matched** is executed (see introduction for general logic and bellow for the creation information).
+First you must express on which context the activator must be activated. The activation logic is base on XPath Selector syntax given into the `tagName` attribute. The service checks all  XPath Selector of the activator list. For **the first document creation activator matching** the current XML item, his creation logic is executed.
 
 For more information about XPath syntax you can look in the end of this documentation or [here](http://www.xpathtester.com)
 
@@ -69,16 +69,16 @@ Then you must express the document type that will be create each time your confi
 
 Here you must return the path of the parent. The path can be:
 
-* relative to the previous document create. For instance ".." set will create into the parent of the previous document create - that is the last document into the stack
-* absolute. For instance "/default-domain/workspaces/my-workspace" will create the document into the document with this path.
-* or any result of an MVEL expression. See the section about MVEL expression for more detail.
+* `relative` to the previous document created. For instance `..` set, it will create into the parent of the previous document created - meaning the last document into the stack
+* `absolute`. For instance `/default-domain/workspaces/my-workspace` will create the document into the document with this path.
+* or any result of an `MVEL expression`. See the section about MVEL expression for more detail. Result accepted are String evaluated as target path (relative or abolute), DocumentModel and maybe DocRef (needed to be tested). MVEL expression is introduced by `${…}`.
 
 **Document Name (name)**
 
-In this parameter you must give the name of the document to create. If no name is given, then the name set will be the document type name with minus and a number (ex: MyDocType-1). But you can set:
+In this parameter, you must give the name of the document to create. If no name is given, then the name set will be the document type name with minus and a number (ex: MyDocType-1). You can set:
 
 * a static string into the name item that will be used as name
-* or a result of a complex MVEL expression. See the section about MVEL expression for more detail.
+* or a result of a complex MVEL expression. See the section about MVEL expression for more detail. MVEL expression is introduced by `${…}`.
 
 
 ### Metadata injection activator
@@ -102,21 +102,21 @@ As explained in the introduction of this documentation, metadata injection activ
 * a configuration that let you define an activator - based on an XPath Selector expression - on item into the XML parsed. 
 * associated to this activator you define:
 	* the metadata you fill into the document on the top of the stack,
-	* and the computation to execute to fill it.
+	* and the computation to fill it.
 
 Here is details about these configuration items:
 
 **XPath Selector Activator (tagName)**
 
-First you must express on which context the activator must be activated. The activation logic is base on XPath selector syntax given into the *tagName* attribute. Service parse the XML File and for each item, the service check if the xpath selector expression of the activator match the current item, and **for each** matched activator the target metadata is filled into the top document in the stack.
+First, you must express on which context the activator must be activated. The activation logic is based on XPath selector syntax given into the `tagName` attribute. Service parse the XML File and for each item, the service check if the xpath selector expression of the activator match the current item. **For each** matched activator the target metadata is filled into the top document in the stack.
 
 For more information about XPath syntax you can look in the end of this documentation or [here](http://www.xpathtester.com)
 
-The next configuration points (docProperty, xmkPath, mapping) are used to which and how to fill the metadata.
+The next configuration points (`docProperty`, `xmlPath`, `mapping`) are used to express which and how to fill the metadata.
 
 **Target field to fill (docProperty)**
 
-In this attribute you set the metadata you want to fill. As everywhere in Nuxeo the metadata description is based on the schema prefix where is defined the metadata and the xpath of metadata into the schema
+In this attribute you set the metadata you want to fill. As everywhere in Nuxeo the metadata description is based on the schema prefix where is defined the metadata and the xpath of metadata into the schema (ex: dc:title)
 
 **Computation to fill the metadata (xmlPath)**
 
@@ -124,7 +124,7 @@ Here you defined how to fill the metadata when the activator match an element.
 
 The computation can be a:
 
-* simple XPath selector (ex: text() for the content of the XML item)
+* text() selector fill the content of an XML item or the attribute selected into the `tagName`
 * or a relative XPath selector based on the XML item that has activated this configuration (ex: ../@contentId)
 * or a result of a complex MVEL expression. See the section about MVEL expression for more detail.
 
@@ -134,18 +134,18 @@ The computation can be a:
 
 ## XPath Selector basics
 
-XPath, the XML Path Language, is a query language for selecting nodes from an XML document (src: Wikipedia). We used this syntax for the activation logic. 
+XPath, the XML Path Language, is a query language for selecting nodes into an XML document (src: Wikipedia). We used this syntax for the activation logic. 
 
 Here is some basics:
 
 XPath selector | XML selection (bold element) | Comment
-:-------------:|:------------------------------:|:---------:
+:-------------:|------------------------------|:---------:
 test2 | …<br>\<test1><div style="margin-left: 10px;">**\<test2>**<div style="margin-left: 10px;">\<test3><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item,<br> use the name of the item
 @test| …<br>\<test1><div style="margin-left: 10px;">\<test2 **test**='toto'><div style="margin-left: 10px;">\<test3><div style="margin-left: 10px;">...</div></div></div> | Selecting an attribute, <br>use the name of the attribute<br> preceded by @
-test1/test2| …<br>\<test1><div style="margin-left: 10px;">**\<test2>**<div style="margin-left: 10px;">\<test2><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item that as<br> a specified XML item as<br> parent, put the parent and then<br> the XML item to select<br> (second test2 item is not<br> selected as parent is test2)
-test2[test] | …<br>\<test1><div style="margin-left: 10px;">**\<test2 test='value'>**<div style="margin-left: 10px;">\<test2 tutu='titi'><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item,<br> use the name of the item<br>(second test2 item is not <br>selected as has not test<br> attribute)
-test2[test='value1'] | …<br>\<test1><div style="margin-left: 10px;">**\<test2 test='value1'>**<div style="margin-left: 10px;">\<test2 test='value2'><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item,<br> use the name of the item<br>(second test2 item is not <br>selected as has value2 as<br> value for test)
-test2/@test | …<br>\<test1><div style="margin-left: 10px;">\<test2 **test='value1'**><div style="margin-left: 10px;">\<test3><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item,<br> use the name of the item<br>(second test2 item is not <br>selected as has value2 as<br> value for test)
+test1/test2| …<br>\<test1><div style="margin-left: 10px;">**\<test2>**<div style="margin-left: 10px;">\<test2><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item that as<br> a specified XML item as<br> parent<br> (second test2 item is not<br> selected as parent is test2)
+test2[test] | …<br>\<test1><div style="margin-left: 10px;">**\<test2 test='value'>**<div style="margin-left: 10px;">\<test2 tutu='titi'><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item <br> with a given attribute<br>(second test2 item is not <br>selected as has not test<br> attribute)
+test2[test='value1'] | …<br>\<test1><div style="margin-left: 10px;">**\<test2 test='value1'>**<div style="margin-left: 10px;">\<test2 test='value2'><div style="margin-left: 10px;">…</div></div></div> | Selecting an XML item with a given<br> attribute and a given value for<br> this attribute (second test2 item is not <br>selected as has value2 as<br> value for test)
+test2/@test | …<br>\<test1><div style="margin-left: 10px;">\<test2 **test='value1'**><div style="margin-left: 10px;">\<test3><div style="margin-left: 10px;">…</div></div></div> | Selecting an attribute contained<br> into a given item<br>
 
 
 ## MVEL expression Basics
@@ -160,7 +160,7 @@ You can also call standard static method for instance (semicolon is optional)
 
 	System.out.println("Hello world!")
 
-You have also access to some element into your code that let you interact with the parser and the context of the evaluation. Here is the list of objects available into the context:
+You have also access to some elements into your code that lets you interact with the parser and the context of the evaluation. Here is the list of objects available into the context:
 
  - `currentDocument` : last created DocumentModel
  - `changeableDocument` : document being created
