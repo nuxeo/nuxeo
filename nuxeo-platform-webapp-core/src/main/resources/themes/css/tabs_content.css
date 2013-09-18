@@ -51,17 +51,18 @@ author: lkemen@nuxeo.com
   border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
   color: "black (__FLAVOR__ color)";
+  display: block;
   font-size: 115%;
   margin: 0 0 1.4em;
   padding: 1.4em 1.7em;
   text-align: justify }
 
 /* override styles for a beautiful formatted Note */
-
 .textBlock {
   background-color: #fff;
   border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
+  display: block;
   margin: 0 0 1.4em;
   padding: 1.4em 1.7em }
 
