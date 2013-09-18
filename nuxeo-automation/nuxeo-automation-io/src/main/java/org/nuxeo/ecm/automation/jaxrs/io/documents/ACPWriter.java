@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
         MediaType.APPLICATION_JSON + "+nxentity" })
 public class ACPWriter extends EntityWriter<ACP> {
 
-    public static final String ENTITY_TYPE = "acl";
+    public static final String ENTITY_TYPE = "acls";
 
     @Override
     protected void writeEntityBody(JsonGenerator jg, ACP item)
