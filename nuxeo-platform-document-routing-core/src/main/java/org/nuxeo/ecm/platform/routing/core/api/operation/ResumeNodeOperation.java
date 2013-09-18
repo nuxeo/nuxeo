@@ -28,7 +28,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
  * @since 5.7.2
  *
  */
-@Operation(id = ResumeNodeOperation.ID, category = Constants.CAT_WORKFLOW, label = "Resume workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Resumes a route instance on a give node.")
+@Operation(id = ResumeNodeOperation.ID, category = Constants.CAT_WORKFLOW, label = "Resume workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Resumes a route instance on a given node. "
+        + "When a parameter is not specified, it will be fetched from the current context if the operation is executed in the context of a running workflow (it applies to the current workflow and to the current node).")
 public class ResumeNodeOperation {
     public static final String ID = "Workflow.ResumeNodeOperation";
 
