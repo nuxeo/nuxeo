@@ -155,18 +155,20 @@ public class SuggestUserEntries {
                 DocumentModelList groupList = userManager.searchGroups(prefix);
                 for (DocumentModel group : groupList) {
                     JSONObject obj = new JSONObject();
+                    boolean hasGroupLabel = false;
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();
                         Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
                         obj.element(key, value);
                         if (key.equals("grouplabel")) {
+                            hasGroupLabel = true;
                             obj.element(Select2Common.LABEL, value);
                         }
                     }
                     String groupId = group.getId();
                     // If the group hasn't an label, let's put the groupid
-                    if (StringUtils.isBlank(obj.getString(Select2Common.LABEL))) {
+                    if (!hasGroupLabel) {
                         obj.element(Select2Common.LABEL, groupId);
                     }
                     obj.put(Select2Common.ID, groupId);

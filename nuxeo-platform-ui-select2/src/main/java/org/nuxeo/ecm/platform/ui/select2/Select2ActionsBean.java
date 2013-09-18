@@ -91,7 +91,6 @@ public class Select2ActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(Select2ActionsBean.class);
 
     protected static final String SELECT2_RESOURCES_MARKER = "SELECT2_RESOURCES_MARKER";
@@ -597,7 +596,6 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     public List<String> resolveMultipleDirectoryEntryLabels(final Object value,
             final String directoryName, final boolean translateLabels,
             final String keySeparator, final boolean dbl10n,
@@ -832,7 +830,7 @@ public class Select2ActionsBean implements Serializable {
         if (obj == null) {
             return "";
         }
-        return obj.getString(Select2Common.LABEL);
+        return obj.optString(Select2Common.LABEL);
     }
 
     public String resolveSingleReference(final String storedReference,
@@ -898,7 +896,7 @@ public class Select2ActionsBean implements Serializable {
         if (obj == null) {
             return "";
         }
-        return obj.getString(Select2Common.LABEL);
+        return obj.optString(Select2Common.LABEL);
     }
 
 }

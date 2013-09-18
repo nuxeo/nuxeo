@@ -112,7 +112,8 @@ public class SuggestDirectoryEntries {
             if (obsolete) {
                 if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
                         && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
-                    obj.element(Select2Common.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
+                    obj.element(Select2Common.WARN_MESSAGE_LABEL,
+                            getObsoleteWarningMessage());
                 }
             }
         }
@@ -137,15 +138,15 @@ public class SuggestDirectoryEntries {
         }
 
         public String getComputedId() {
-            return isRoot ? null : (String) obj.get(Select2Common.COMPUTED_ID);
+            return isRoot ? null : obj.optString(Select2Common.COMPUTED_ID);
         }
 
         public String getId() {
-            return isRoot ? null : (String) obj.get(Select2Common.ID);
+            return isRoot ? null : obj.optString(Select2Common.ID);
         }
 
         public String getLabel() {
-            return isRoot ? null : (String) obj.get(Select2Common.LABEL);
+            return isRoot ? null : obj.optString(Select2Common.LABEL);
         }
 
         public JSONObject getObj() {
@@ -153,8 +154,7 @@ public class SuggestDirectoryEntries {
         }
 
         public String getParentId() {
-            return isRoot ? null
-                    : (String) obj.get(Select2Common.PARENT_FIELD_ID);
+            return isRoot ? null : obj.optString(Select2Common.PARENT_FIELD_ID);
         }
 
         /**
@@ -190,7 +190,7 @@ public class SuggestDirectoryEntries {
 
         public boolean isObsolete() {
             return isRoot ? false
-                    : obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0;
+                    : obj.optInt(Select2Common.OBSOLETE_FIELD_ID) > 0;
         }
 
         private void mergeJsonAdapter(JSONAdapter branch) {
