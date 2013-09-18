@@ -128,7 +128,7 @@ public class DirectoryEntryIOTest {
 
         assertEquals(DirectoryEntriesWriter.ENTITY_TYPE,
                 node.get("entity-type").getValueAsText());
-        ArrayNode jsonEntries = (ArrayNode) node.get("items");
+        ArrayNode jsonEntries = (ArrayNode) node.get("entries");
         assertEquals(entries.size(), jsonEntries.size());
 
     }

@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.adapters;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -24,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -38,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebAdapter(name = PageProviderAdapter.NAME, type = "PageProviderService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
-public class PageProviderAdapter extends PaginableAdapter {
+public class PageProviderAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "pp";
 
@@ -57,10 +58,10 @@ public class PageProviderAdapter extends PaginableAdapter {
 
     @GET
     @Path("{pageProviderName}")
-    public DocumentModelList getProviderDocs(@PathParam("pageProviderName")
+    public List<DocumentModel> getProviderDocs(@PathParam("pageProviderName")
     String providerName) throws ClientException {
         pageProviderName = providerName;
-        return getDocs();
+        return super.getEntries();
     }
 
 }

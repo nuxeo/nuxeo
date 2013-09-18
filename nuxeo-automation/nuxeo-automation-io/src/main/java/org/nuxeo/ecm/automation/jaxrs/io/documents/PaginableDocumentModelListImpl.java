@@ -11,10 +11,9 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
-
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
+import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
@@ -22,12 +21,11 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-public class PaginableDocumentModelListImpl extends DocumentModelListImpl
-        implements PaginableDocumentModelList {
+public class PaginableDocumentModelListImpl extends
+        PaginablePageProvider<DocumentModel> implements
+        PaginableDocumentModelList {
 
     private static final long serialVersionUID = 1L;
-
-    protected final PageProvider<DocumentModel> provider;
 
     protected String documentLinkBuilder;
 
@@ -45,29 +43,12 @@ public class PaginableDocumentModelListImpl extends DocumentModelListImpl
      */
     public PaginableDocumentModelListImpl(PageProvider<DocumentModel> provider,
             String documentLinkBuilder) {
-        super(provider.getCurrentPage());
-        this.provider = provider;
-        totalSize = provider.getResultsCount();
+        super(provider);
         this.documentLinkBuilder = documentLinkBuilder;
     }
 
     public PageProvider<DocumentModel> getProvider() {
-        return provider;
-    }
-
-    @Override
-    public long getCurrentPageIndex() {
-        return provider.getCurrentPageIndex();
-    }
-
-    @Override
-    public long getNumberOfPages() {
-        return provider.getNumberOfPages();
-    }
-
-    @Override
-    public long getPageSize() {
-        return provider.getPageSize();
+        return pageProvider;
     }
 
     @Override
@@ -75,4 +56,8 @@ public class PaginableDocumentModelListImpl extends DocumentModelListImpl
         return documentLinkBuilder;
     }
 
+    @Override
+    public long totalSize() {
+        return pageProvider.getResultsCount();
+    }
 }

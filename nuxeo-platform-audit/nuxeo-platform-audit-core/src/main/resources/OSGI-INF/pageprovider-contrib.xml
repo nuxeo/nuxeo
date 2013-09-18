@@ -36,8 +36,11 @@
         <predicate parameter="log.category" operator="IN">
           <field schema="basicauditsearch" name="eventCategories" />
         </predicate>
-        <predicate parameter="log.eventId" operator="=">
-          <field schema="basicauditsearch" name="eventId" />
+        <predicate parameter="log.eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="log.principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
         </predicate>
       </whereClause>
       <sort column="log.eventDate" ascending="true" />

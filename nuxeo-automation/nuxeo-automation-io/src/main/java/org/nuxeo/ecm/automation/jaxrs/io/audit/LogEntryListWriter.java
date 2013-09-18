@@ -35,7 +35,7 @@ public class LogEntryListWriter extends EntityListWriter<LogEntry> {
 
     @Override
     protected String getEntityType() {
-        return "logentries";
+        return "logEntries";
     }
 
     @Override

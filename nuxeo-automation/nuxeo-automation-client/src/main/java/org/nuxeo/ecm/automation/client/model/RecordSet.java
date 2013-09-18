@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * RecordSet object returned by QueryAndFetch
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
@@ -28,23 +28,23 @@ public class RecordSet extends ArrayList<Map<String, Serializable>> {
 
     protected int pageSize = -1;
 
-    protected int pageCount = -1;
+    protected int currentPageIndex = -1;
 
-    protected int pageIndex = -1;
+    protected int numberOfPages = -1;
 
     public RecordSet() {
         super();
     }
 
-    public RecordSet(int pageIndex, int pageSize, int pageCount) {
+    public RecordSet(int currentPageIndex, int pageSize, int numberOfPages) {
         super();
-        this.pageIndex = pageIndex;
+        this.currentPageIndex = currentPageIndex;
         this.pageSize = pageSize;
-        this.pageCount = pageCount;
+        this.numberOfPages = numberOfPages;
     }
 
     public boolean isPaginable() {
-        return pageIndex >= 0;
+        return currentPageIndex >= 0;
     }
 
     public int getPageSize() {
@@ -55,20 +55,19 @@ public class RecordSet extends ArrayList<Map<String, Serializable>> {
         this.pageSize = pageSize;
     }
 
-    public int getPageCount() {
-        return pageCount;
+    public int getCurrentPageIndex() {
+        return currentPageIndex;
     }
 
-    public void setPageCount(int pageCount) {
-        this.pageCount = pageCount;
+    public void setCurrentPageIndex(int currentPageIndex) {
+        this.currentPageIndex = currentPageIndex;
     }
 
-    public int getPageIndex() {
-        return pageIndex;
+    public int getNumberOfPages() {
+        return numberOfPages;
     }
 
-    public void setPageIndex(int pageIndex) {
-        this.pageIndex = pageIndex;
+    public void setNumberOfPages(int numberOfPages) {
+        this.numberOfPages = numberOfPages;
     }
-
 }

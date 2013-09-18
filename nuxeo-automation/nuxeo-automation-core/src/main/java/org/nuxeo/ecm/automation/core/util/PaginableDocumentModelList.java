@@ -17,13 +17,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface PaginableDocumentModelList extends DocumentModelList {
-
-    long getCurrentPageIndex();
-
-    long getPageSize();
-
-    long getNumberOfPages();
+public interface PaginableDocumentModelList extends DocumentModelList,
+        Paginable {
 
     /**
      * Returns the name of what will be used to compute the document URLs,

@@ -83,7 +83,7 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
         JsonGenerator jg = factory.createJsonGenerator(out, JsonEncoding.UTF8);
 
         jg.writeStartObject();
-        jg.writeStringField("entity-type", "recordset");
+        jg.writeStringField("entity-type", "recordSet");
 
         if (records instanceof PaginableRecordSet) {
             PaginableRecordSet pRecord = (PaginableRecordSet) records;

@@ -30,7 +30,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
 
     @Override
     public String getType() {
-        return "recordset";
+        return "recordSet";
     }
 
     @Override
@@ -61,10 +61,10 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
             jp.nextToken();
             if ("pageSize".equals(key)) {
                 record.setPageSize(jp.getIntValue());
-            } else if ("pageCount".equals(key)) {
-                record.setPageCount(jp.getIntValue());
-            } else if ("pageIndex".equals(key)) {
-                record.setPageIndex(jp.getIntValue());
+            } else if ("numberOfPages".equals(key)) {
+                record.setNumberOfPages(jp.getIntValue());
+            } else if ("currentPageIndex".equals(key)) {
+                record.setCurrentPageIndex(jp.getIntValue());
             } else if ("entries".equals(key)) {
                 readRecordEntries(jp, record);
             }

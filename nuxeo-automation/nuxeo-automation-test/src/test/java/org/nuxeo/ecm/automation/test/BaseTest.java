@@ -27,10 +27,9 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
@@ -93,7 +92,7 @@ public class BaseTest {
     }
 
     protected ClientResponse getResponse(RequestType requestType, String path,
-            Map<String, String> queryParams) {
+            MultivaluedMap<String, String> queryParams) {
         return getResponse(requestType, path, null, queryParams);
     }
 
@@ -103,12 +102,10 @@ public class BaseTest {
     }
 
     protected ClientResponse getResponse(RequestType requestType, String path,
-            String data, Map<String, String> queryParams) {
+            String data, MultivaluedMap<String, String> queryParams) {
         WebResource wr = service.path(path);
         if (queryParams != null && !queryParams.isEmpty()) {
-            for (Entry<String, String> entry : queryParams.entrySet()) {
-                wr = wr.queryParam(entry.getKey(), entry.getValue());
-            }
+            wr = wr.queryParams(queryParams);
         }
 
         Builder builder = wr.accept(MediaType.APPLICATION_JSON) //
@@ -168,7 +165,7 @@ public class BaseTest {
         assertEquals(note.getTitle(), node.get("title").getValueAsText());
     }
 
-    protected List<JsonNode> getEntries(JsonNode node) {
+    protected List<JsonNode> getLogEntries(JsonNode node) {
         assertEquals("documents", node.get("entity-type").getValueAsText());
         assertTrue(node.get("entries").isArray());
         List<JsonNode> result = new ArrayList<>();

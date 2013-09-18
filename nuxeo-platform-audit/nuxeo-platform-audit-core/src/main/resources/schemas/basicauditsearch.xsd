@@ -14,10 +14,15 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
 
+  <xs:simpleType name="principalNameList">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
   <xs:element name="startDate" type="xs:date"/>
   <xs:element name="endDate" type="xs:date"/>
 
   <xs:element name="principalName" type="xs:string"/>
+  <xs:element name="principalNames" type="nxs:principalNameList"/>
 
   <xs:element name="eventId" type="xs:string"/>
   <xs:element name="eventIds" type="nxs:eventIdList"/>

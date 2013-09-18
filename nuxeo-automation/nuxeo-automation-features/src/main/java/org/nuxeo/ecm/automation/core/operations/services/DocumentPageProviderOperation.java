@@ -73,7 +73,11 @@ public class DocumentPageProviderOperation {
     protected String lang = NXQL.NXQL;
 
     @Param(name = "page", required = false)
+    @Deprecated
     protected Integer page;
+
+    @Param(name = "currentPageIndex", required = false)
+    protected Integer currentPageIndex;
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
@@ -143,6 +147,9 @@ public class DocumentPageProviderOperation {
         Long targetPage = null;
         if (page != null) {
             targetPage = Long.valueOf(page.longValue());
+        }
+        if (currentPageIndex != null) {
+            targetPage = currentPageIndex.longValue();
         }
         Long targetPageSize = null;
         if (pageSize != null) {

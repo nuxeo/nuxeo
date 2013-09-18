@@ -31,7 +31,6 @@ import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -76,9 +75,9 @@ public class LogEntryWriter implements MessageBodyWriter<LogEntry> {
     }
 
     public static void writeLogEntry(JsonGenerator jg, LogEntry logEntry)
-            throws ClientException, JsonGenerationException, IOException {
+            throws ClientException, IOException {
         jg.writeStartObject();
-        jg.writeStringField("entity-type", "logentry");
+        jg.writeStringField("entity-type", "logEntry");
         jg.writeStringField("category", logEntry.getCategory());
         jg.writeStringField("principalName", logEntry.getPrincipalName());
         jg.writeStringField("comment", logEntry.getComment());

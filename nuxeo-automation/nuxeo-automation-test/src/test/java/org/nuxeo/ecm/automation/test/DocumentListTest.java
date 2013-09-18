@@ -19,9 +19,7 @@ package org.nuxeo.ecm.automation.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
@@ -41,7 +39,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.common.base.Joiner;
 import com.sun.jersey.api.client.ClientResponse;
-
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
@@ -69,7 +67,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(session.getChildren(folder.getRef()).size(),
-                getEntries(node).size());
+                getLogEntries(node).size());
     }
 
     @Test
@@ -83,15 +81,15 @@ public class DocumentListTest extends BaseTest {
         session.save();
 
         // When I search for "nuxeo"
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("fullText", "nuxeo");
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fullText", "nuxeo");
         ClientResponse response = getResponse(RequestType.GET, "path/@"
                 + SearchAdapter.NAME, queryParams);
 
         // Then I get the document in the result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, getEntries(node).size());
+        assertEquals(1, getLogEntries(node).size());
 
     }
 
@@ -108,7 +106,7 @@ public class DocumentListTest extends BaseTest {
         // Then I get the two document in the result
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(2, getEntries(node).size());
+        assertEquals(2, getLogEntries(node).size());
 
     }
 
