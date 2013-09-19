@@ -129,19 +129,19 @@ public class Select2WidgetElement {
             suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
         }
 
-        boolean hasFailedOnce = false;
-        for (char c : value.toCharArray()) {
+        char c;
+        for (int i = 0; i <  value.length(); i++) {
+            c = value.charAt(i);
             suggestInput.sendKeys(c + "");
             try {
                 wait.until(mutliple ? s2MultipleWaitFunction
                         : s2SingleWaitFunction);
             } catch (TimeoutException e) {
-                if (hasFailedOnce) {
-                    log.error("Suggestion timed out again with letter : " + c);
+                if (i == (value.length() - 1)) {
+                    log.error("Suggestion definitly timed out with last letter : " + c + ". There is something wrong with select2");
                     throw e;
                 }
-                log.warn("Suggestion timed out with letter : " + c);
-                hasFailedOnce = true;
+                log.warn("Suggestion timed out with letter : " + c + ". Let's try with next letter.");
             }
         }
 
