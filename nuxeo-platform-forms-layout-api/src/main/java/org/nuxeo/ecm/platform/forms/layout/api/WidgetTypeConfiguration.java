@@ -112,6 +112,27 @@ public interface WidgetTypeConfiguration extends Serializable {
     Map<String, List<LayoutDefinition>> getPropertyLayouts();
 
     /**
+     * Returns the list of layouts for given mode and additional modes.
+     * <p>
+     * These layouts are used to document accepted fields on the widget type,
+     * depending on the rendering mode.
+     *
+     * @since 5.7.3
+     * @param mode the mode to retrieve layouts for.
+     * @param additionalMode additional mode to take into account, typically
+     *            {@link BuiltinModes#ANY}
+     */
+    List<LayoutDefinition> getFieldLayouts(String mode, String additionalMode);
+
+    /**
+     * Returns the map of field layouts per mode.
+     *
+     * @since 5.7.3
+     * @see #getFieldLayouts(String, String)
+     */
+    Map<String, List<LayoutDefinition>> getFieldLayouts();
+
+    /**
      * Returns the default values for the widget type properties, by mode.
      *
      * @since 5.7.3

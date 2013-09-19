@@ -19,14 +19,17 @@
 
 package org.nuxeo.ecm.platform.layout.core.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -78,6 +81,11 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
         assertEquals("<p>This is a test widget type</p>", conf.getDescription());
         assertEquals("test", conf.getDemoId());
         assertTrue(conf.isDemoPreviewEnabled());
+        Map<String, List<LayoutDefinition>> fieldLayouts = conf.getFieldLayouts();
+        assertNotNull(fieldLayouts);
+        assertEquals(1, fieldLayouts.size());
+        assertEquals(1, fieldLayouts.get(BuiltinModes.ANY).size());
+        assertEquals(1, fieldLayouts.get(BuiltinModes.ANY).get(0).getColumns());
 
         Map<String, Serializable> confProps = conf.getConfProperties();
         assertNotNull(confProps);

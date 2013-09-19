@@ -62,6 +62,8 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected Map<String, Map<String, Serializable>> defaultPropertyValues;
 
+    protected Map<String, List<LayoutDefinition>> fieldLayouts;
+
     @SuppressWarnings({ "unchecked" })
     public WidgetTypeConfigurationImpl() {
         this(null, null, null, null, false, Collections.EMPTY_MAP,
@@ -204,23 +206,29 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
         return propertyLayouts;
     }
 
-    public List<LayoutDefinition> getPropertyLayouts(String mode,
+    public List<LayoutDefinition> getLayouts(
+            Map<String, List<LayoutDefinition>> allLayouts, String mode,
             String additionalMode) {
-        if (propertyLayouts != null) {
+        if (allLayouts != null) {
             List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
             if (additionalMode != null) {
-                List<LayoutDefinition> defaultLayouts = propertyLayouts.get(additionalMode);
+                List<LayoutDefinition> defaultLayouts = allLayouts.get(additionalMode);
                 if (defaultLayouts != null) {
                     res.addAll(defaultLayouts);
                 }
             }
-            List<LayoutDefinition> modeLayouts = propertyLayouts.get(mode);
+            List<LayoutDefinition> modeLayouts = allLayouts.get(mode);
             if (modeLayouts != null) {
                 res.addAll(modeLayouts);
             }
             return res;
         }
         return null;
+    }
+
+    public List<LayoutDefinition> getPropertyLayouts(String mode,
+            String additionalMode) {
+        return getLayouts(propertyLayouts, mode, additionalMode);
     }
 
     /**
@@ -390,6 +398,24 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
     public void setDefaultPropertyValues(
             Map<String, Map<String, Serializable>> values) {
         this.defaultPropertyValues = values;
+    }
+
+    @Override
+    public Map<String, List<LayoutDefinition>> getFieldLayouts() {
+        return fieldLayouts;
+    }
+
+    @Override
+    public List<LayoutDefinition> getFieldLayouts(String mode,
+            String additionalMode) {
+        return getLayouts(fieldLayouts, mode, additionalMode);
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public void setFieldLayouts(Map<String, List<LayoutDefinition>> fieldLayouts) {
+        this.fieldLayouts = fieldLayouts;
     }
 
 }

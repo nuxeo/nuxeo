@@ -101,6 +101,14 @@ public class WidgetTypeConfigurationDescriptor {
     @XNodeList(value = "fields/defaultConfiguration/field", type = ArrayList.class, componentType = FieldDescriptor.class)
     List<FieldDescriptor> defaultFieldDefinitions;
 
+    /**
+     * Layouts for accepted field mappings.
+     *
+     * @since 5.7.3
+     */
+    @XNodeMap(value = "fields/layouts", key = "@mode", type = HashMap.class, componentType = LayoutDescriptors.class)
+    Map<String, LayoutDescriptors> fieldLayouts;
+
     @XNodeList(value = "categories/category", type = ArrayList.class, componentType = String.class)
     List<String> categories;
 
@@ -204,12 +212,13 @@ public class WidgetTypeConfigurationDescriptor {
         properties = propsDesc.getProperties();
     }
 
-    public List<LayoutDefinition> getPropertyLayouts(String mode,
+    protected List<LayoutDefinition> getLayouts(
+            Map<String, LayoutDescriptors> descs, String mode,
             String additionalMode) {
-        if (propertyLayouts != null) {
+        if (descs != null) {
             List<LayoutDefinition> res = new ArrayList<LayoutDefinition>();
             if (additionalMode != null) {
-                LayoutDescriptors defaultLayouts = propertyLayouts.get(additionalMode);
+                LayoutDescriptors defaultLayouts = descs.get(additionalMode);
                 if (defaultLayouts != null) {
                     List<LayoutDefinition> defaultLayoutsList = defaultLayouts.getLayouts();
                     if (defaultLayoutsList != null) {
@@ -217,7 +226,7 @@ public class WidgetTypeConfigurationDescriptor {
                     }
                 }
             }
-            LayoutDescriptors modeLayouts = propertyLayouts.get(mode);
+            LayoutDescriptors modeLayouts = descs.get(mode);
             if (modeLayouts != null) {
                 List<LayoutDefinition> modeLayoutsList = modeLayouts.getLayouts();
                 if (modeLayoutsList != null) {
@@ -229,15 +238,34 @@ public class WidgetTypeConfigurationDescriptor {
         return null;
     }
 
-    public Map<String, List<LayoutDefinition>> getPropertyLayouts() {
-        if (propertyLayouts != null) {
+    protected Map<String, List<LayoutDefinition>> getLayouts(
+            Map<String, LayoutDescriptors> descs) {
+        if (descs != null) {
             Map<String, List<LayoutDefinition>> res = new HashMap<String, List<LayoutDefinition>>();
-            for (Map.Entry<String, LayoutDescriptors> entry : propertyLayouts.entrySet()) {
+            for (Map.Entry<String, LayoutDescriptors> entry : descs.entrySet()) {
                 res.put(entry.getKey(), entry.getValue().getLayouts());
             }
             return res;
         }
         return null;
+    }
+
+    public List<LayoutDefinition> getPropertyLayouts(String mode,
+            String additionalMode) {
+        return getLayouts(propertyLayouts, mode, additionalMode);
+    }
+
+    public Map<String, List<LayoutDefinition>> getPropertyLayouts() {
+        return getLayouts(propertyLayouts);
+    }
+
+    public List<LayoutDefinition> getFieldLayouts(String mode,
+            String additionalMode) {
+        return getLayouts(fieldLayouts, mode, additionalMode);
+    }
+
+    public Map<String, List<LayoutDefinition>> getFieldLayouts() {
+        return getLayouts(fieldLayouts);
     }
 
     public Map<String, Map<String, Serializable>> getDefaultPropertyValues() {
@@ -287,6 +315,7 @@ public class WidgetTypeConfigurationDescriptor {
         res.setCategories(getCategories());
         res.setPropertyLayouts(getPropertyLayouts());
         res.setDefaultPropertyValues(getDefaultPropertyValues());
+        res.setFieldLayouts(getFieldLayouts());
         return res;
     }
 }
