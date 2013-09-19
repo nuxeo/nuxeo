@@ -706,6 +706,14 @@
       </renderer-class>
     </renderer>
 
+    <render-kit>
+        <renderer>
+            <component-family>javax.faces.Form</component-family>
+            <renderer-type>javax.faces.Form</renderer-type>
+            <renderer-class>org.nuxeo.ecm.platformui.web.form.NxFormRenderer</renderer-class>
+        </renderer>
+    </render-kit>
+
   </extension>
 
   <!-- uncomment that to enable filter based auth
