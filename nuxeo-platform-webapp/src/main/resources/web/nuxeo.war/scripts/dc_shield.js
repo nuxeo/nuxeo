@@ -22,7 +22,3 @@ jQuery.fn.preventDoubleSubmission = function() {
   // Keep chainability
   return this;
 };
-
-jQuery(document).ready(function() {
-  jQuery('form').preventDoubleSubmission();
-});

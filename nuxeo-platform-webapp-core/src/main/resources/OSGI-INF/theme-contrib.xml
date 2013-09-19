@@ -63,6 +63,7 @@
       <resource>static-styles.css</resource>
       <resource>hideableAdminMessage.js</resource>
       <resource>accessKey.js</resource>
+      <resource>dc_shield.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -207,6 +208,10 @@
       <require>jquery.ui.core.js</require>
       <require>jquery.ui.widget.js</require>
       <require>jquery.ui.mouse.js</require>
+    </resource>
+    <!-- dc_shield.js -->
+    <resource name="dc_shield.js">
+      <path>scripts/dc_shield.js</path>
     </resource>
   </extension>
 
