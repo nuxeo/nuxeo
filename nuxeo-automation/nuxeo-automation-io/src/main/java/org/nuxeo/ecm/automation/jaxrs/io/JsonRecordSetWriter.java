@@ -88,9 +88,22 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
         if (records instanceof PaginableRecordSet) {
             PaginableRecordSet pRecord = (PaginableRecordSet) records;
             jg.writeBooleanField("isPaginable", true);
-            jg.writeNumberField("pageIndex", pRecord.getCurrentPageIndex());
+            jg.writeNumberField("resultsCount", pRecord.getResultsCount());
             jg.writeNumberField("pageSize", pRecord.getPageSize());
-            jg.writeNumberField("pageCount", pRecord.getNumberOfPages());
+            jg.writeNumberField("maxPageSize", pRecord.getMaxPageSize());
+            jg.writeNumberField("currentPageSize", pRecord.getCurrentPageSize());
+            jg.writeNumberField("currentPageIndex",
+                    pRecord.getCurrentPageIndex());
+            jg.writeNumberField("numberOfPages", pRecord.getNumberOfPages());
+            jg.writeBooleanField("isPreviousPageAvailable",
+                    pRecord.isPreviousPageAvailable());
+            jg.writeBooleanField("isNextPageAvailable",
+                    pRecord.isNextPageAvailable());
+            jg.writeBooleanField("isLasPageAvailable",
+                    pRecord.isLastPageAvailable());
+            jg.writeBooleanField("isSortable", pRecord.isSortable());
+            jg.writeBooleanField("hasError", pRecord.hasError());
+            jg.writeStringField("errorMessage", pRecord.getErrorMessage());
         }
 
         jg.writeArrayFieldStart("entries");
