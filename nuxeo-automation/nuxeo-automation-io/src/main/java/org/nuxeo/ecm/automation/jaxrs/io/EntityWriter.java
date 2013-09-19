@@ -53,7 +53,7 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
             return false;
         } else {
             ParameterizedType ptype = (ParameterizedType) this.getClass().getGenericSuperclass();
-            Type ts[] = ptype.getActualTypeArguments();
+            Type[] ts = ptype.getActualTypeArguments();
             Class c = (Class) ts[0];
             return c.isAssignableFrom(type);
         }
