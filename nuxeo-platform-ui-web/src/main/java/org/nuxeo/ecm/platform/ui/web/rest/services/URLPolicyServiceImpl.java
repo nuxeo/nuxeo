@@ -379,7 +379,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             docViewParameters = docView.getParameters();
         }
         ValueBindingDescriptor[] bindings = pattern.getValueBindings();
-        if (bindings != null) {
+        if (bindings != null && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY)==null) {
             for (ValueBindingDescriptor binding : bindings) {
                 if (!binding.getCallSetter()) {
                     continue;
@@ -537,7 +537,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         ExpressionFactory ef = facesContext.getApplication().getExpressionFactory();
         ELContext context = facesContext.getELContext();
         String actionBinding = pattern.getActionBinding();
-        if (actionBinding != null && !"".equals(actionBinding)) {
+
+        if (actionBinding != null && !"".equals(actionBinding) && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY)==null) {
             MethodExpression action = ef.createMethodExpression(context,
                     actionBinding, String.class,
                     new Class[] { DocumentView.class });

@@ -32,6 +32,7 @@ import org.jboss.seam.core.ConversationEntry;
 import org.jboss.seam.international.StatusMessage.Severity;
 import org.jboss.seam.jsf.concurrency.AbstractResolver;
 import org.jboss.seam.jsf.concurrency.ConcurrentRequestResolver;
+import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
@@ -55,8 +56,8 @@ public class NuxeoConcurrentRequestResolver extends AbstractResolver implements
             HttpServletResponse response) {
 
         if (request.getMethod().equalsIgnoreCase("get")) {
-            // should flag request to skip apply method bindings
-            // XXX
+            // flag request to skip apply method bindings
+            request.setAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY, true);
             // let's try to continue
             addTransientMessage(Severity.WARN, "org.nuxeo.seam.concurrent.unsaferun", "This page may be not up to date, an other concurrent requests is still running");
             return true;

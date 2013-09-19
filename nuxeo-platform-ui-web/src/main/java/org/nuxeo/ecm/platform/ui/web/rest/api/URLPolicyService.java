@@ -46,6 +46,8 @@ public interface URLPolicyService {
 
     String DOCUMENT_VIEW_REQUEST_KEY = "DocumentView";
 
+    String DISABLE_ACTION_BINDING_KEY = "DisableActionBinding";
+
     /**
      * @deprecated: use {@link NXAuthConstants#DISABLE_REDIRECT_REQUEST_KEY}
      *              instead
