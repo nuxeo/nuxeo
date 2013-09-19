@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
- * Json writer for ACP
+ * Json writer for ACP.
  *
  *
  * @since 5.7.3
