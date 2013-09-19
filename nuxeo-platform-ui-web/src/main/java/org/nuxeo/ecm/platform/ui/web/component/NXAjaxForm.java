@@ -54,6 +54,7 @@ public class NXAjaxForm extends AjaxForm {
                 parent = parent.getParent();
             }
         }
+        super.encodeBegin(context);
         super.processDecodes(context);
     }
 

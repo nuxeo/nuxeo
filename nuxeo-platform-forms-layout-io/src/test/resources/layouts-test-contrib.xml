@@ -64,6 +64,25 @@
             <field>dc:title</field>
             <field>data.ref</field>
           </defaultConfiguration>
+          <!-- this is just a test layout, configuration should match default values
+            for fields -->
+          <layouts mode="any">
+            <layout>
+              <rows>
+                <row>
+                  <widget>field_0</widget>
+                </row>
+              </rows>
+              <widget name="field_0" type="selectOneResource">
+                <labels>
+                  <label mode="any">The widget field binding</label>
+                </labels>
+                <properties mode="any">
+                  <property name="resourceName">fields</property>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
         </fields>
         <categories>
           <category>foo</category>

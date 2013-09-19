@@ -40,7 +40,18 @@
           "fieldName": "data.ref",
           "propertyName": "data.ref"
         }
-      ]
+      ],
+      "layouts": {"any": [      {
+        "rows": [{"widgets": [{"name": "field_0"}]}],
+        "widgets": [        {
+          "name": "field_0",
+          "type": "selectOneResource",
+          "labels": {"any": "The widget field binding"},
+          "translated": true,
+          "handlingLabels": false,
+          "properties": {"any": {"resourceName": "fields"}}
+        }]
+      }]}
     },
     "categories":     [
       "foo",

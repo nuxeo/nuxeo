@@ -93,6 +93,11 @@ public class TestLayoutService extends NXRuntimeTestCase {
         assertEquals("<p>This is a test widget type</p>", conf.getDescription());
         assertEquals("test", conf.getDemoId());
         assertTrue(conf.isDemoPreviewEnabled());
+        Map<String, List<LayoutDefinition>> fieldLayouts = conf.getFieldLayouts();
+        assertNotNull(fieldLayouts);
+        assertEquals(1, fieldLayouts.size());
+        assertEquals(1, fieldLayouts.get(BuiltinModes.ANY).size());
+        assertEquals(1, fieldLayouts.get(BuiltinModes.ANY).get(0).getColumns());
 
         Map<String, Serializable> confProps = conf.getConfProperties();
         assertNotNull(confProps);

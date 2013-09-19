@@ -218,6 +218,24 @@ public class JSONLayoutExporter {
             fields.element("defaultConfiguration", defaultFieldDefs);
         }
 
+        Map<String, List<LayoutDefinition>> fieldLayouts = conf.getFieldLayouts();
+        if (fieldLayouts != null) {
+            List<String> modes = new ArrayList<String>(fieldLayouts.keySet());
+            // sort so that order is deterministic
+            Collections.sort(modes);
+            JSONObject layouts = new JSONObject();
+            for (String mode : modes) {
+                JSONArray modeLayouts = new JSONArray();
+                for (LayoutDefinition layoutDef : fieldLayouts.get(mode)) {
+                    modeLayouts.add(exportToJson(null, layoutDef));
+                }
+                layouts.element(mode, modeLayouts);
+            }
+            if (!layouts.isEmpty()) {
+                fields.element("layouts", layouts);
+            }
+        }
+
         json.element("fields", fields);
 
         JSONArray cats = new JSONArray();
@@ -300,6 +318,7 @@ public class JSONLayoutExporter {
         List<String> confSupportedTypes = new ArrayList<String>();
         List<String> confDefaultTypes = new ArrayList<String>();
         List<FieldDefinition> defaultFieldDefinitions = new ArrayList<FieldDefinition>();
+        Map<String, List<LayoutDefinition>> fieldLayouts = new HashMap<String, List<LayoutDefinition>>();
         if (fields != null && !fields.isNullObject()) {
             list = fields.optBoolean("list", false);
             complex = fields.optBoolean("complex", false);
@@ -317,12 +336,27 @@ public class JSONLayoutExporter {
                     defaultFieldDefinitions.add(importFieldDefinition((JSONObject) item));
                 }
             }
+            JSONObject layouts = fields.optJSONObject("layouts");
+            if (layouts != null && !layouts.isNullObject()) {
+                for (Object item : layouts.keySet()) {
+                    String mode = (String) item;
+                    List<LayoutDefinition> layoutDefs = new ArrayList<LayoutDefinition>();
+                    JSONArray modeLayouts = layouts.getJSONArray(mode);
+                    if (modeLayouts != null && !mode.isEmpty()) {
+                        for (Object subitem : modeLayouts) {
+                            layoutDefs.add(importLayoutDefinition((JSONObject) subitem));
+                        }
+                    }
+                    fieldLayouts.put(mode, layoutDefs);
+                }
+            }
         }
         res.setList(list);
         res.setComplex(complex);
         res.setSupportedFieldTypes(confSupportedTypes);
         res.setDefaultFieldTypes(confDefaultTypes);
         res.setDefaultFieldDefinitions(defaultFieldDefinitions);
+        res.setFieldLayouts(fieldLayouts);
 
         JSONArray cats = conf.optJSONArray("categories");
         List<String> confCats = new ArrayList<String>();

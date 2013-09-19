@@ -223,6 +223,14 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertEquals(1, anyRowWidgets.length);
         assertEquals("required_property", anyRowWidgets[0]);
 
+        Map<String, List<LayoutDefinition>> fieldLayouts = conf.getFieldLayouts();
+        assertNotNull(fieldLayouts);
+        assertEquals(1, fieldLayouts.size());
+        assertEquals(1, fieldLayouts.get(BuiltinModes.ANY).size());
+        assertEquals(1, fieldLayouts.get(BuiltinModes.ANY).get(0).getColumns());
+        // don't test layout extensively: io code is shared with property
+        // layouts
+
         WidgetDefinition requiredWidget = anyLayout.getWidgetDefinition("required_property");
         assertNotNull(requiredWidget);
         assertEquals("required_property", requiredWidget.getName());
@@ -303,7 +311,9 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         } else {
             assertNotNull(controls.get(BuiltinModes.ANY));
             assertEquals(1, controls.get(BuiltinModes.ANY).size());
-            assertEquals("true", controls.get(BuiltinModes.ANY).get("requireSurroundingForm"));
+            assertEquals(
+                    "true",
+                    controls.get(BuiltinModes.ANY).get("requireSurroundingForm"));
         }
         assertEquals(0, renderedWidget.getSelectOptions().length);
         assertEquals(1, renderedWidget.getSubWidgetDefinitions().length);
