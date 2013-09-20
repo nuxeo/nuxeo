@@ -37,7 +37,6 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ui.component.UIFileUpload;
-import org.nuxeo.ecm.platform.ui.web.component.holder.UIValueHolder;
 import org.nuxeo.ecm.platform.ui.web.directory.ChainSelect;
 
 /**
@@ -183,9 +182,6 @@ final class StampState implements Externalizable {
         } else if (stamp instanceof UIEditableList) {
             // TODO: don't save the whole state, it may be costly
             innerSelfState[0] = stamp.saveState(context);
-        } else if (stamp instanceof UIValueHolder) {
-            // don't do anything
-            String truc = null;
         }
         selfState[0] = innerSelfState;
 
@@ -279,9 +275,6 @@ final class StampState implements Externalizable {
             fileUpload.setLocalInputStream((InputStream) innerSelfState[4]);
         } else if (stamp instanceof UIEditableList) {
             stamp.restoreState(context, innerSelfState[0]);
-        } else if (stamp instanceof UIValueHolder) {
-            // don't do anything
-            String truc = null;
         }
 
         // editable value holder standard values saving
