@@ -3591,7 +3591,7 @@
             <layout name="documentTabsWithForms_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget category="widgetTypeConf">actions_category</widget>
+                  <widget category="widgetTypeConf">tabs_category</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>

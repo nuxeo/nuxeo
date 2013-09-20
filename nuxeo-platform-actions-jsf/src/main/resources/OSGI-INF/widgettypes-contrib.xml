@@ -167,6 +167,32 @@
       </properties>
     </widget>
 
+    <widget name="tabs_category" type="selectOneResource">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Category</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The category of tabs to use.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>category</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+      <properties mode="any">
+        <property name="resourceName">tabCategories</property>
+      </properties>
+    </widget>
+
     <widget name="actions_actionId" type="selectOneResource">
       <categories>
         <category>widgetTypeConf</category>
