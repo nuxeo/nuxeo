@@ -3,8 +3,13 @@
  xmlns:ui="http://java.sun.com/jsf/facelets"
  xmlns:c="http://java.sun.com/jstl/core">
 
-<span id="doubleClickMsg" style="display:none;" class="facesStatusMessage infoMessage">
- <h:outputText value="#{messages['doubleClick_shield.already.submitting']}"/>
-</span>
+  <script type="text/javascript">
+    var nuxeo = (function(nuxeo) {
+      nuxeo.doubleClickShield = {
+        message: "#{messages['dc_shield.already.submitting']}"
+      };
+      return nuxeo;
+    })(nuxeo || {});
+  </script>
 
 </div>

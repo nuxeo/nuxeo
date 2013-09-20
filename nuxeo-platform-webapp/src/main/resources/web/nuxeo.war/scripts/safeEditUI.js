@@ -1,35 +1,39 @@
-function formSavedCallback(data) {
-  jQuery("#savedFeedback").css({
-    "display" : "inline"
+function formSavedCallback() {
+  jQuery.ambiance({
+    title: nuxeo.safeEdit.feedbackMessage,
+    cssClass: "infoFeedback",
+    timeout: 1.5
   });
-  window.setTimeout(function() {
-    jQuery("#savedFeedback").css({
-      "display" : "none"
-    });
-  }, 1500);
 }
 
 function restoreDataCallbackPrompt(doLoadCB, formId, key) {
-  jQuery("#confirmRestoreYes").click(function() {
+  var confirm = jQuery('<a class="button">' + nuxeo.safeEdit.restorePrompt.confirmMessage + '</a>');
+  confirm.click(function() {
     doLoadCB(true), jQuery("#confirmRestore").css({
       "display" : "none"
     });
+    jQuery(this).parent(".ambiance").remove();
     return false;
   });
-  jQuery("#confirmRestoreNo").click(function() {
+  var discard = jQuery('<a class="button">' + nuxeo.safeEdit.restorePrompt.discardMessage + '</a>');
+  discard.click(function() {
     doLoadCB(false), jQuery("#confirmRestore").css({
       "display" : "none"
     });
     initSafeEditOnForm(formId, key);
+    jQuery(this).parent(".ambiance").remove();
     return false;
   });
-  jQuery("#confirmRestore").css({
-    "display" : "block"
+
+  jQuery.ambiance({
+    title: nuxeo.safeEdit.restorePrompt.message,
+    message: confirm.add(discard),
+    cssClass: "neutralFeedback",
+    permanent: true
   });
 }
 
 function initSafeEditOnForm(formId, key, message) {
-
   if (!formId.startsWith('#')) {
     formId = "#" + formId;
   }

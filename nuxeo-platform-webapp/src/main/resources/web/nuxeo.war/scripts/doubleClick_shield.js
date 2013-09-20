@@ -11,14 +11,11 @@ jQuery.fn.preventDoubleSubmission = function() {
       if ($form.data('submitted') === true) {
         // Previously submitted - don't submit again
         e.preventDefault();
-        jQuery("#doubleClickMsg").css({
-          "display" : "inline"
+        jQuery.ambiance({
+          title: nuxeo.doubleClickShield.message,
+          cssClass: "infoFeedback",
+          timeout: 1.5
         });
-        window.setTimeout(function() {
-          jQuery("#doubleClickMsg").css({
-            "display" : "none"
-          });
-        }, 1500);
       } else {
         // Mark it so that the next submit can be ignored
         $form.data('submitted', true);
