@@ -21,16 +21,17 @@
             #{messages['label.dam.bulk.import.assets.select.location']}
           </td>
           <td class="fieldColumn">
-            <nxl:widgetType name="damSingleDocumentSuggestion" mode="edit"
+            <nxl:widgetType name="singleDocumentSuggestion" mode="edit"
               value="#{damImportActions}"
               field="selectedImportFolderId"
               required="true"
+              width="300"
+              translated="true"
+              minChars="3"
+              placeholder="label.dam.bulk.import.assets.select.location.placeholder"
+              ajaxReRender="#{fancyboxFormId}_newAssetPanel"
               pageProviderName="damImportFolders"
-              placeholder="#{messages['label.dam.bulk.import.assets.select.location.placeholder']}"
-              prefixSearch="true"
-              immediate="true"
-              ajaxSingle="true"
-              ajaxReRender="#{fancyboxFormId}_newAssetPanel">
+              documentSchemas = "dublincore,common">
             </nxl:widgetType>
           </td>
         </tr>
