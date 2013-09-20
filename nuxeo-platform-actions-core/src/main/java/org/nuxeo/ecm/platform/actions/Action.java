@@ -67,7 +67,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     protected String help;
 
     @XNode("@immediate")
-    protected boolean immediate = false;
+    protected Boolean immediate;
 
     @XNode("@accessKey")
     protected String accessKey;
@@ -139,9 +139,9 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     protected String getStringProperty(String prop) {
         Map<String, Serializable> props = getProperties();
         if (props != null && props.containsKey(prop)) {
-            Object linkObj = props.get(prop);
-            if (linkObj instanceof String) {
-                return (String) props.get(prop);
+            Object obj = props.get(prop);
+            if (obj instanceof String) {
+                return (String) obj;
             }
         }
         return null;
@@ -315,15 +315,23 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     }
 
     public boolean isImmediate() {
-        if (help == null) {
-            String conf = getStringProperty("help");
-            return Boolean.valueOf(conf).booleanValue();
+        if (immediate == null) {
+            Map<String, Serializable> props = getProperties();
+            if (props != null && props.containsKey("immediate")) {
+                Object obj = props.get("immediate");
+                if (obj instanceof String) {
+                    return Boolean.valueOf((String) obj).booleanValue();
+                } else if (obj instanceof Boolean) {
+                    return ((Boolean) obj).booleanValue();
+                }
+            }
+            return false;
         }
-        return immediate;
+        return immediate.booleanValue();
     }
 
     public void setImmediate(boolean immediate) {
-        this.immediate = immediate;
+        this.immediate = Boolean.valueOf(immediate);
     }
 
     /**
