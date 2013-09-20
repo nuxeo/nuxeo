@@ -179,32 +179,29 @@
 	<td>//input[@id='createGroupView:createGroup:nxl_group:nxw_group_name']</td>
 	<td>sub-admins</td>
 </tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
 	<td>typeKeys</td>
-	<td>//input[@name='createGroupView:createGroup:nxl_group:nxw_group_members_suggest']</td>
-	<td>sus</td>
+	<td>css=div[id$='nxw_group_members_select2'] input</td>
+	<td>susan</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox').style.display != 'none'</td>
+	<td>typeKeys</td>
+	<td>css=div[id$='nxw_group_members_select2'] input</td>
+	<td>susan</td>
+</tr>
+<tr>
+	<td>waitForJSQueries</td>
 	<td>10000</td>
-</tr>
-<tr>
-	<td>verifyText</td>
-	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>Susan Myers</td>
-</tr>
-<tr>
-	<td>click</td>
-	<td>//*[@id='createGroupView:createGroup:nxl_group:nxw_group_members_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
 	<td></td>
 </tr>
-<!-- wait for table to appear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('createGroupView:createGroup:nxl_group:nxw_group_members_list:0:nxw_group_members_listItem') != null</td>
-	<td>10000</td>
+	<td>clickAt</td>
+	<td>css=.select2-result-label</td>
+	<td></td>
 </tr>
+<!--  -->
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
@@ -362,32 +359,29 @@
 	<td>10000</td>
 	<td></td>
 </tr>
+<!-- Since 5.7.3 group is a select2 widget-->
+<!-- The 2 following instructions are a workaround to make select2 display suggestions. Only the second typeKeys call triggers the suggestion display!!! -->
 <tr>
-	<td>typeKeys</td>
-	<td>//input[@name='viewGroupView:editGroup:nxl_group_2:nxw_group_subgroups_2_suggest']</td>
-	<td>sub</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_group_subgroups_2_select2'] input</td>
+    <td>sub-admins</td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('viewGroupView:editGroup:nxl_group_2:nxw_group_subgroups_2_suggestionBox').style.display != 'none'</td>
-	<td>10000</td>
+    <td>typeKeys</td>
+    <td>css=div[id$='nxw_group_subgroups_2_select2'] input</td>
+    <td>sub-admins</td>
 </tr>
 <tr>
-	<td>verifyText</td>
-	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_group_subgroups_2_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td>sub-admins</td>
+    <td>waitForJSQueries</td>
+    <td>10000</td>
+    <td></td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//*[@id='viewGroupView:editGroup:nxl_group_2:nxw_group_subgroups_2_suggestionBox:suggest']/x:tbody/x:tr[1]/x:td[2]</td>
-	<td></td>
+    <td>clickAt</td>
+    <td>css=.select2-result-label</td>
+    <td></td>
 </tr>
-<!-- wait for table to appear -->
-<tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('viewGroupView:editGroup:nxl_group_2:nxw_group_subgroups_2_list:0:nxw_group_subgroups_2_listItem') != null</td>
-	<td>10000</td>
-</tr>
+<!--  -->
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
