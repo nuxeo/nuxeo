@@ -4,18 +4,16 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:insert name="header_admin_message">
-    <div class="header_admin_messages">
 
     <c:if test="#{adminMessageActivated}">
-      <div class="adminMessage">
-        <a class="close">
+      <div class="adminMessage displayN" data-timestamp="#{adminMessageModificationDate.timeInMillis}">
+        <a class="close" href="#">
           <f:verbatim>&amp;times;</f:verbatim>
         </a>
         <h:outputText value="#{adminMessage}"/>
       </div>
     </c:if>
 
-    </div>
   </ui:insert>
 
   <div class="userServicesBlock">
