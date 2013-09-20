@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  *
  * Provide simple extension to Seam injection system to be able to inject Nuxeo
- * Services and Nuxe Components inside Seam Beans
+ * Services and Nuxeo Components inside Seam Beans
  *
  * @since 5.7.3
  *
@@ -55,9 +55,9 @@ public class NuxeoRuntimeServiceProvider implements ServiceProvider {
     private static final Log log = LogFactory.getLog(NuxeoRuntimeServiceProvider.class);
 
     @SuppressWarnings("rawtypes")
-    protected Map<String, Class> name2ServiceClassCache = new HashMap<String, Class>();
+    protected static Map<String, Class> name2ServiceClassCache = new HashMap<String, Class>();
 
-    protected ReentrantLock name2ServiceClassLock = new ReentrantLock();
+    protected static ReentrantLock name2ServiceClassLock = new ReentrantLock();
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
