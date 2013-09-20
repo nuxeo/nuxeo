@@ -87,7 +87,10 @@ public class AdministrativeStatusListener implements EventListener {
             if (eventId.equals(PASSIVATED_EVENT)) {
                 AdminStatusHelper.adminMessageActivated = false;
             }
-            AdminStatusHelper.adminMessage = asm.getStatus(ADM_MESSAGE_SERVICE).getMessage();
+            AdministrativeStatus status = asm.getStatus(ADM_MESSAGE_SERVICE);
+            AdminStatusHelper.adminMessage = status.getMessage();
+            AdminStatusHelper.adminMessageModificationDate = status.getModificationDate();
+
         }
     }
 

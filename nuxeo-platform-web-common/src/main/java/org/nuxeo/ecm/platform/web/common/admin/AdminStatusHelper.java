@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.web.common.admin;
 
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 
+import java.util.Calendar;
+
 /**
  * Simple Helper class to hold {@link AdministrativeStatus} flags used by the Web Layer.
  *
@@ -31,6 +33,8 @@ public class AdminStatusHelper {
 
     static String adminMessage;
 
+    static Calendar adminMessageModificationDate;
+
     static boolean instanceInMaintenanceMode;
 
     static String maintenanceMessage;
@@ -41,6 +45,13 @@ public class AdminStatusHelper {
 
     public static String getAdminMessage() {
         return adminMessage;
+    }
+
+    /**
+     * @since 5.7.3
+     */
+    public static Calendar getAdminMessageModificationDate() {
+        return adminMessageModificationDate;
     }
 
     public static boolean isInstanceInMaintenanceMode() {
