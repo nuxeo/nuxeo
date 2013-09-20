@@ -82,7 +82,8 @@ public class NuxeoRuntimeServiceProvider implements ServiceProvider {
         // fallback on component lookup
         if (result == null && name != null) {
             if (!name.startsWith("org.jboss")) {
-                result = Framework.getRuntime().getComponent(name);
+                // remove lookup by component name
+                //result = Framework.getRuntime().getComponent(name);
                 // lookup service by short name
                 if (result == null) {
                     result = findServiceByShortCut(name);
