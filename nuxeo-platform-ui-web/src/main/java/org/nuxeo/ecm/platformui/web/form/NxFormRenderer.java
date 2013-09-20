@@ -45,7 +45,6 @@ public class NxFormRenderer extends FormRenderer {
             writer.writeAttribute("type", "text/javascript", null);
 
             String clientId = component.getClientId(context);
-            clientId.replace(":", "\\\\:");
             String scriptContent = String.format(
                     "jQuery(\"#%s\").preventDoubleSubmission();", clientId.replace(":", "\\\\:"));
             writer.writeText(scriptContent, null);
