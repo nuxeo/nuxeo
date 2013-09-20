@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.webapp.admin;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
@@ -49,6 +50,11 @@ public class AdminMessageActionBean implements Serializable {
     @Factory(value="adminMessage", scope=ScopeType.EVENT)
     public String getAdminMessage() {
         return AdminStatusHelper.getAdminMessage();
+    }
+
+    @Factory(value="adminMessageModificationDate", scope=ScopeType.EVENT)
+    public Calendar getAdminMessageModificationDate() {
+        return AdminStatusHelper.getAdminMessageModificationDate();
     }
 
 }
