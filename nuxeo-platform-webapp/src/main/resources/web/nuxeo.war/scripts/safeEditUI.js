@@ -7,7 +7,8 @@ function formSavedCallback() {
 }
 
 function restoreDataCallbackPrompt(doLoadCB, formId, key) {
-  var confirm = jQuery('<a class="button">' + nuxeo.safeEdit.restorePrompt.confirmMessage + '</a>');
+  var confirm = jQuery('<a class="button smallButton" href="#">'
+    + nuxeo.safeEdit.restorePrompt.confirmMessage + '</a>');
   confirm.click(function() {
     doLoadCB(true), jQuery("#confirmRestore").css({
       "display" : "none"
@@ -15,7 +16,7 @@ function restoreDataCallbackPrompt(doLoadCB, formId, key) {
     jQuery(this).parent(".ambiance").remove();
     return false;
   });
-  var discard = jQuery('<a class="button">' + nuxeo.safeEdit.restorePrompt.discardMessage + '</a>');
+  var discard = jQuery('<a href="#">' + nuxeo.safeEdit.restorePrompt.discardMessage + '</a>');
   discard.click(function() {
     doLoadCB(false), jQuery("#confirmRestore").css({
       "display" : "none"
