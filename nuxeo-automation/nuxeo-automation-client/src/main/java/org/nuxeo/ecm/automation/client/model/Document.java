@@ -51,8 +51,6 @@ public class Document extends DocRef {
 
     protected final String versionLabel;
 
-    protected final String isCheckedOut;
-
     protected final PropertyMap properties;
 
     protected final transient PropertyMapSetter propertiesSetter;
@@ -65,7 +63,7 @@ public class Document extends DocRef {
 
     @Deprecated
     /**
-     * Deprecated now use with the constructor with versionLabel and isCheckedOut
+     * Deprecated now use with the constructor with versionLabel
      *
      */
     public Document(String id, String type, PropertyList facets,
@@ -73,35 +71,20 @@ public class Document extends DocRef {
             String lockCreated, String repository, PropertyMap properties,
             PropertyMap contextParameters) {
         this(id, type, facets, changeToken, path, state, lockOwner,
-                lockCreated, repository, null, null, properties,
-                contextParameters);
-    }
-
-    @Deprecated
-    /**
-     * Deprecated now use with the constructor with isCheckedOut
-     *
-     */
-    public Document(String id, String type, PropertyList facets,
-            String changeToken, String path, String state, String lockOwner,
-            String lockCreated, String repository, String versionLabel,
-            PropertyMap properties, PropertyMap contextParameters) {
-        this(id, type, facets, changeToken, path, state, lockOwner,
-                lockCreated, repository, versionLabel, null, properties,
-                contextParameters);
+                lockCreated, repository, null, properties, contextParameters);
     }
 
     /**
      * Reserved to framework. Should be only called by client framework when
      * unmarshalling documents.
      *
-     * @since 5.7.3
+     * @since 5.7
+     * @since 5.6-HF17
      */
     public Document(String id, String type, PropertyList facets,
             String changeToken, String path, String state, String lockOwner,
             String lockCreated, String repository, String versionLabel,
-            String isCheckedOut, PropertyMap properties,
-            PropertyMap contextParameters) {
+            PropertyMap properties, PropertyMap contextParameters) {
         super(id);
         this.changeToken = changeToken;
         this.facets = facets;
@@ -112,7 +95,6 @@ public class Document extends DocRef {
         this.lockCreated = lockCreated;
         this.repository = repository;
         this.versionLabel = versionLabel;
-        this.isCheckedOut = isCheckedOut;
         this.properties = properties == null ? new PropertyMap() : properties;
         this.contextParameters = contextParameters == null ? new PropertyMap()
                 : contextParameters;
@@ -129,18 +111,17 @@ public class Document extends DocRef {
     public Document(String id, String type) {
         super(id);
         this.type = type;
-        propertiesSetter = new PropertyMapSetter(new PropertyMap());
-        changeToken = null;
-        facets = null;
-        path = null;
-        state = null;
-        lockOwner = null;
-        lockCreated = null;
-        repository = null;
-        versionLabel = null;
-        isCheckedOut = null;
-        properties = new PropertyMap();
-        contextParameters = new PropertyMap();
+        this.propertiesSetter = new PropertyMapSetter(new PropertyMap());
+        this.changeToken = null;
+        this.facets = null;
+        this.path = null;
+        this.state = null;
+        this.lockOwner = null;
+        this.lockCreated = null;
+        this.repository = null;
+        this.versionLabel = null;
+        this.properties = new PropertyMap();
+        this.contextParameters = new PropertyMap();
     }
 
     public String getRepository() {
@@ -189,11 +170,6 @@ public class Document extends DocRef {
 
     public String getVersionLabel() {
         return versionLabel;
-    }
-
-    public Boolean isCheckedOut() {
-        return (isCheckedOut == null) ? null
-                : Boolean.parseBoolean(isCheckedOut);
     }
 
     public Date getLastModified() {
@@ -292,7 +268,6 @@ public class Document extends DocRef {
     /**
      * This method fetch the dirty properties of the document (which have been
      * updated during the session)
-     *
      * @since 5.7
      */
     public PropertyMap getDirties() {
