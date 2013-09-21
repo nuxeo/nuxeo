@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -50,7 +51,7 @@ import com.google.inject.Inject;
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class})
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail",
         "org.nuxeo.ecm.platform.commandline.executor",
@@ -70,6 +71,8 @@ public class TestThumbnailStorage {
     }
 
     @Test
+    // NXP-12573: disabled because randomly failing
+    @Ignore
     public void testCreation() throws ClientException, IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
@@ -92,7 +95,6 @@ public class TestThumbnailStorage {
         Assert.assertNotNull(sameFile.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME));
         Assert.assertEquals(1, UpdateThumbnailCounter.count);
     }
-
 
     @Test
     public void testUpdate() throws ClientException, IOException {
