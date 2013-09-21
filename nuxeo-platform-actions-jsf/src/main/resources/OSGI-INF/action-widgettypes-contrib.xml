@@ -9,8 +9,13 @@
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">label</label>
+        <label mode="any">Label</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The action label.
+        </label>
+      </helpLabels>
       <fields>
         <field>label</field>
       </fields>
@@ -23,11 +28,18 @@
       <labels>
         <label mode="any">icon</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The action icon path. Example:
+          "/icons/contextual_menu/share.png".
+        </label>
+      </helpLabels>
       <fields>
         <field>icon</field>
       </fields>
     </widget>
 
+    <!-- not used as of 5.7.3 -->
     <widget name="help" type="text">
       <categories>
         <category>actionWidgetTypeConf</category>
@@ -35,11 +47,17 @@
       <labels>
         <label mode="any">help</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The action help, displayed in a tooltip.
+        </label>
+      </helpLabels>
       <fields>
         <field>help</field>
       </fields>
     </widget>
 
+    <!-- not used as of 5.7.3 -->
     <widget name="accessKey" type="text">
       <categories>
         <category>actionWidgetTypeConf</category>
@@ -47,8 +65,33 @@
       <labels>
         <label mode="any">accessKey</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The action access key.
+        </label>
+      </helpLabels>
       <fields>
         <field>accessKey</field>
+      </fields>
+    </widget>
+
+    <widget name="immediate" type="checkbox">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Immediate</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean stating if the action is immediate (called
+          during JSF "apply request value" phase instead of the "process
+          validations" phase), useful for "cancel" buttons that should not issue
+          a validation error for required fields.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>immediate</field>
       </fields>
     </widget>
 
@@ -61,7 +104,8 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          Ajax rerender ids, separated by commas.
+          Ajax rerender ids, separated by commas, used in
+          combination with the "ajaxSupport" property.
         </label>
       </helpLabels>
       <fields>
@@ -95,6 +139,11 @@
       <labels>
         <label mode="any">Style class</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The action style class.
+        </label>
+      </helpLabels>
       <fields>
         <field>styleClass</field>
       </fields>
@@ -107,6 +156,11 @@
       <labels>
         <label mode="any">Target</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The action target, for instance "_blank".
+        </label>
+      </helpLabels>
       <fields>
         <field>target</field>
       </fields>
@@ -119,6 +173,11 @@
       <labels>
         <label mode="any">Onclick</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          Javascript code to call when clicking on the action.
+        </label>
+      </helpLabels>
       <fields>
         <field>onclick</field>
       </fields>
@@ -129,8 +188,14 @@
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Style class</label>
+        <label mode="any">Confirm</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          Javascript confirmation code, called when clicking on
+          the action.
+        </label>
+      </helpLabels>
       <fields>
         <field>confirm</field>
       </fields>
@@ -143,6 +208,12 @@
       <labels>
         <label mode="any">Confirm message</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          Alternative to the "confirm" property, only stating
+          the confirmation message, that can be a message to translate.
+        </label>
+      </helpLabels>
       <fields>
         <field>confirmMessage</field>
       </fields>
@@ -158,6 +229,12 @@
       <fields>
         <field>confirmMessageArgs</field>
       </fields>
+      <helpLabels>
+        <label mode="any">
+          Confirm message arguments, referenced by the confirm
+          message translation in messages.properties files.
+        </label>
+      </helpLabels>
       <properties widgetMode="any">
         <property name="hideSubLabels">true</property>
       </properties>
@@ -180,6 +257,15 @@
       <labels>
         <label mode="any">Include</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The template path to show as the fancybox content
+          (ignored if property "iframe" is filled). If this template holds a
+          form, it should be using the variable "fancyboxFormId" as its form id
+          for the fancybox to be reopened on validation error. Example:
+          "/incl/bulk_edit_box.xhtml"
+        </label>
+      </helpLabels>
       <fields>
         <field>include</field>
       </fields>
@@ -192,6 +278,12 @@
       <labels>
         <label mode="any">Iframe</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          URL to display as the fancybox content. Example:
+          "#{previewActions.getCurrentDocumentPreviewPopupURL()}"
+        </label>
+      </helpLabels>
       <fields>
         <field>iframe</field>
       </fields>
@@ -202,8 +294,13 @@
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">width</label>
+        <label mode="any">Width</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The fancybox width, defaults to "90%".
+        </label>
+      </helpLabels>
       <fields>
         <field>width</field>
       </fields>
@@ -214,23 +311,39 @@
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">height</label>
+        <label mode="any">Height</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The fancybox height, defaults to "90%".
+        </label>
+      </helpLabels>
       <fields>
         <field>height</field>
       </fields>
     </widget>
 
-    <widget name="fancybox_scrolling" type="text">
+    <widget name="fancybox_scrolling" type="selectOneListbox">
       <categories>
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">scrolling</label>
+        <label mode="any">Scrolling</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The fancybox scrolling behaviour, used to create or
+          hide scrollbars. Defaults to "auto", also accepts 'yes' or 'no'.
+        </label>
+      </helpLabels>
       <fields>
         <field>scrolling</field>
       </fields>
+      <selectOptions>
+        <option itemLabel="Auto (default)" itemValue="" />
+        <option itemLabel="Yes" itemValue="yes" />
+        <option itemLabel="No" itemValue="no" />
+      </selectOptions>
     </widget>
 
     <widget name="fancybox_autoScale" type="text">
@@ -238,8 +351,14 @@
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">autoScale</label>
+        <label mode="any">Auto scale</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is scaled to
+          fit in viewport. Defaults to "true".
+        </label>
+      </helpLabels>
       <fields>
         <field>autoScale</field>
       </fields>
@@ -250,23 +369,38 @@
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">autoDimensions</label>
+        <label mode="any">Auto dimensions</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is resized
+          when the view is changed by ajax actions for instance. Defaults to
+          "true". The fancybox should have dimensions for this to work properly.
+        </label>
+      </helpLabels>
       <fields>
         <field>autoDimensions</field>
       </fields>
     </widget>
 
-    <widget name="fancybox_modal" type="text">
+    <widget name="fancybox_modal" type="checkbox">
       <categories>
         <category>actionWidgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">modal</label>
+        <label mode="any">Modal</label>
       </labels>
       <fields>
         <field>modal</field>
       </fields>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is modal and
+          cannot be closed when using the escape button, for instance.
+          Defaults
+          to "false".
+        </label>
+      </helpLabels>
     </widget>
 
     <widget name="fancybox_centerOnScroll" type="text">
@@ -276,6 +410,12 @@
       <labels>
         <label mode="any">centerOnScroll</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is centered
+          while scrolling the page. Defaults to "true".
+        </label>
+      </helpLabels>
       <fields>
         <field>centerOnScroll</field>
       </fields>
@@ -288,6 +428,12 @@
       <labels>
         <label mode="any">enableEscapeButton</label>
       </labels>
+      <helpLabels>
+        <label mode="any">
+          The boolean value stating if the fancybox is closed
+          when pressing the escape key. Defaults to "true".
+        </label>
+      </helpLabels>
       <fields>
         <field>enableEscapeButton</field>
       </fields>
@@ -328,10 +474,7 @@
                   <widget category="actionWidgetTypeConf">label</widget>
                 </row>
                 <row>
-                  <widget category="actionWidgetTypeConf">help</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">accessKey</widget>
+                  <widget category="actionWidgetTypeConf">immediate</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">ajaxSupport</widget>
@@ -362,6 +505,12 @@
                 <labels>
                   <label mode="any">Link</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The action link, that can be a navigation
+                    view or a Seam action, for instance.
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>link</field>
                 </fields>
@@ -414,10 +563,7 @@
                   <widget category="actionWidgetTypeConf">icon</widget>
                 </row>
                 <row>
-                  <widget category="actionWidgetTypeConf">help</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">accessKey</widget>
+                  <widget category="actionWidgetTypeConf">immediate</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">ajaxSupport</widget>
@@ -448,6 +594,11 @@
                 <fields>
                   <field>link</field>
                 </fields>
+                <helpLabels>
+                  <label mode="any">
+                    The action link URL.
+                  </label>
+                </helpLabels>
                 <properties widgetMode="any">
                   <property name="required">true</property>
                 </properties>
@@ -471,6 +622,9 @@
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
         <title>Fancybox</title>
+        <description>
+          Widget displaying a button that will open a fancybox.
+        </description>
         <categories>
           <category>action</category>
         </categories>
@@ -492,12 +646,6 @@
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">icon</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">help</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">accessKey</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">styleClass</widget>
@@ -558,6 +706,10 @@
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
         <title>Document Rest Link</title>
+        <description>
+          Widget displaying a restful document link for an action
+          (typically a tab link).
+        </description>
         <categories>
           <category>action</category>
         </categories>
@@ -577,12 +729,6 @@
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">icon</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">help</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">accessKey</widget>
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">ajaxSupport</widget>
@@ -622,6 +768,11 @@
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
         <title>Main tab</title>
+        <description>
+          Widget displaying a restful link for an action used to
+          switch between different views of the application (typically a link to
+          the Document Management view, to the Admin Center view, etc...).
+        </description>
         <categories>
           <category>action</category>
         </categories>
@@ -640,12 +791,6 @@
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">icon</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">help</widget>
-                </row>
-                <row>
-                  <widget category="actionWidgetTypeConf">accessKey</widget>
                 </row>
                 <row>
                   <widget>requireDocument</widget>
@@ -673,6 +818,13 @@
                 <labels>
                   <label mode="any">Require document</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean value stating if the rest
+                    document link needs a document to show a restful link.
+                    Defaults to "false".
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>requireDocument</field>
                 </fields>
@@ -696,6 +848,11 @@
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
         <title>Widget</title>
+        <description>
+          Widget displaying a widget for this action, useful for
+          building incremental layouts using actions filtering and ordering
+          features (typically generic document summary views).
+        </description>
         <categories>
           <category>action</category>
         </categories>
@@ -747,6 +904,11 @@
                 <fields>
                   <field>widgetName</field>
                 </fields>
+                <helpLabels>
+                  <label mode="any">
+                    The widget name.
+                  </label>
+                </helpLabels>
                 <properties mode="any">
                   <property name="required">true</property>
                 </properties>
@@ -755,6 +917,11 @@
                 <labels>
                   <label mode="any">Widget category</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The widget category.
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>widgetCategory</field>
                 </fields>
@@ -763,14 +930,25 @@
                 <labels>
                   <label mode="any">Widget mode</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The widget mode, defaults to "view".
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>widgetMode</field>
                 </fields>
               </widget>
               <widget name="displayActionLabel" type="checkbox">
                 <labels>
-                  <label mode="any">Require document</label>
+                  <label mode="any">Display action label</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean value stating if the action
+                    label should be displayed. Defaults to "false".
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>displayActionLabel</field>
                 </fields>
@@ -779,6 +957,12 @@
                 <labels>
                   <label mode="any">Display widget label</label>
                 </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The boolean value stating if the widget
+                    label should be displayed. Defaults to "false".
+                  </label>
+                </helpLabels>
                 <fields>
                   <field>displayWidgetLabel</field>
                 </fields>
@@ -802,6 +986,10 @@
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
         <title>Template</title>
+        <description>
+          Widget displaying a template for an action, useful for
+          custom action rendering.
+        </description>
         <categories>
           <category>action</category>
         </categories>
@@ -823,6 +1011,11 @@
                 <fields>
                   <field>template</field>
                 </fields>
+                <helpLabels>
+                  <label mode="any">
+                    The template path.
+                  </label>
+                </helpLabels>
                 <properties mode="any">
                   <property name="required">true</property>
                 </properties>
