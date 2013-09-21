@@ -567,6 +567,7 @@
         <properties>
           <defaultValues mode="any">
             <property name="discardSurroundingForm">true</property>
+            <property name="supportAjax">#{useAjaxTabs}</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="rest_document_link_action_widget_type_properties_view">
