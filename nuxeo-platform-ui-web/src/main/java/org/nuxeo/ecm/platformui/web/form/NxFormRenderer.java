@@ -22,14 +22,26 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.nuxeo.runtime.api.Framework;
+
 import com.sun.faces.renderkit.html_basic.FormRenderer;
 
 /**
- * Nuxeo h:form renderer.
+ * Nuxeo h:form tag renderer override, to include javascript code preventing
+ * multiple submissions of the form.
  *
  * @since 5.7.3
  */
 public class NxFormRenderer extends FormRenderer {
+
+    public static final String ENABLE_DOUBLE_CLICK_SHIELD = "nuxeo.jsf.enableDoubleClickShield";
+
+    public static final String ENABLE_DOUBLE_CLICK_ON_ELEMENT = "disableDoubleClickShield";
+
+    protected static boolean isDoubleShieldEnabled() {
+        return Boolean.TRUE.equals(Boolean.valueOf(Framework.getProperty(
+                ENABLE_DOUBLE_CLICK_SHIELD, "false")));
+    }
 
     @Override
     public void encodeBegin(FacesContext context, UIComponent component)
@@ -37,16 +49,25 @@ public class NxFormRenderer extends FormRenderer {
 
         super.encodeBegin(context, component);
 
-        if (component.isRendered()) {
+        if (component.isRendered() && isDoubleShieldEnabled()) {
+            String dcDisabledOnElement = (String) component.getAttributes().get(
+                    ENABLE_DOUBLE_CLICK_ON_ELEMENT);
+            if (dcDisabledOnElement != null
+                    && Boolean.TRUE.equals(Boolean.valueOf(dcDisabledOnElement))) {
+                return;
+            }
+
             ResponseWriter writer = context.getResponseWriter();
 
-            // The purpose of this code is to prevent user from  double submit a form.
+            // The purpose of this code is to prevent user from double submit a
+            // form.
             writer.startElement("script", component);
             writer.writeAttribute("type", "text/javascript", null);
 
             String clientId = component.getClientId(context);
             String scriptContent = String.format(
-                    "jQuery(\"#%s\").preventDoubleSubmission();", clientId.replace(":", "\\\\:"));
+                    "jQuery(\"#%s\").preventDoubleSubmission();",
+                    clientId.replace(":", "\\\\:"));
             writer.writeText(scriptContent, null);
             writer.endElement("script");
         }
