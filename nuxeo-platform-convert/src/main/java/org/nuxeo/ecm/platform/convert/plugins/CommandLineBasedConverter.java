@@ -142,7 +142,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             Map<String, Blob> blobParameters, Map<String, String> parameters)
             throws ConversionException {
         CmdParameters params = new CmdParameters();
-        List<String> filesToDelete = new ArrayList<>();
+        List<String> filesToDelete = new ArrayList<String>();
 
         try {
             if (blobParameters != null) {
@@ -174,7 +174,10 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
         } catch (CommandNotAvailable e) {
             // XXX bubble installation instructions
             throw new ConversionException("Unable to find targetCommand", e);
-        } catch (IOException | CommandException e) {
+        } catch (IOException e) {
+            throw new ConversionException(
+                    "Error while converting via CommandLineService", e);
+        } catch (CommandException e) {
             throw new ConversionException(
                     "Error while converting via CommandLineService", e);
         } finally {
@@ -188,7 +191,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
     public void init(ConverterDescriptor descriptor) {
         initParameters = descriptor.getParameters();
         if (initParameters == null) {
-            initParameters = new HashMap<>();
+            initParameters = new HashMap<String, String>();
         }
         getCommandLineService();
     }
