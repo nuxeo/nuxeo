@@ -21,7 +21,6 @@ import java.io.Serializable;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -71,8 +70,6 @@ public class TestThumbnailStorage {
     }
 
     @Test
-    // NXP-12573: disabled because randomly failing
-    @Ignore
     public void testCreation() throws ClientException, IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(),
@@ -85,14 +82,14 @@ public class TestThumbnailStorage {
         file = session.createDocument(file);
         TransactionHelper.commitOrRollbackTransaction();
 
-        Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
 
         eventService.waitForAsyncCompletion(); // wait for thumbnail update
 
         TransactionHelper.startTransaction();
 
-        DocumentModel sameFile = session.getDocument(file.getRef());
-        Assert.assertNotNull(sameFile.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME));
+        file = session.getDocument(file.getRef());
+        Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
+        Assert.assertNotNull(file.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME));
         Assert.assertEquals(1, UpdateThumbnailCounter.count);
     }
 
@@ -103,13 +100,11 @@ public class TestThumbnailStorage {
                 "File", "File");
         file = session.createDocument(file);
 
-        Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
-
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion(); // wait for thumbnail update
         TransactionHelper.startTransaction();
 
-        Assert.assertNull(file.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME));
+        Assert.assertFalse(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
 
         // Attach a blob
         Blob blob = new InputStreamBlob(TestThumbnailStorage.class.getResource(
@@ -122,8 +117,9 @@ public class TestThumbnailStorage {
         eventService.waitForAsyncCompletion(); // wait for thumbnail update
         TransactionHelper.startTransaction();
 
-        Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
+        file = session.getDocument(file.getRef());
 
+        Assert.assertTrue(file.hasFacet(ThumbnailConstants.THUMBNAIL_FACET));
         Assert.assertNotNull(file.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME));
         Assert.assertEquals(1, UpdateThumbnailCounter.count);
     }

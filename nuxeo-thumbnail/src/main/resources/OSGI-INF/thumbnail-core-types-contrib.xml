@@ -14,9 +14,5 @@
     <facet name="Thumbnail">
       <schema name="thumbnail" />
     </facet>
-    <!-- Add new thumbnail facet to doctype File -->
-    <doctype name="File" append="true">
-      <facet name="Thumbnail" />
-    </doctype>
   </extension>
 </component>
