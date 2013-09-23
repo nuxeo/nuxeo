@@ -82,8 +82,11 @@ body {
   background: <%=bodyBackgroundStyle%>;
   color: #343434;
   margin: 0;
-  text-align: center
-}
+  text-align: center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover; }
 
 .leftColumn {
   width: 400px
