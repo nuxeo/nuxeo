@@ -195,9 +195,9 @@ public class LayoutDemoContext implements Serializable {
             doc.setPropertyValue("lds:select_coverage_field", "africa/Botswana");
             doc.setPropertyValue("lds:select_subjects_multi_fields",
                     new String[] { "art/art history","art/culture","sciences/logic" });
-            doc.setPropertyValue("lds:select_user_field", "administrator");
+            doc.setPropertyValue("lds:select_user_field", "Administrator");
             doc.setPropertyValue("lds:select_users_multi_fields",
-                    new String[] { "administrator" });
+                    new String[] { "Administrator" });
             doc.setPropertyValue("lds:select_doc_field", "");
             doc.setPropertyValue("lds:select_docs_multi_fields",
                     new String[] {});
