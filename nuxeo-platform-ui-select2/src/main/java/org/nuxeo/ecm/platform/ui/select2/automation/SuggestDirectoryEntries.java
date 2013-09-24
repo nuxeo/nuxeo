@@ -161,7 +161,6 @@ public class SuggestDirectoryEntries {
          * Does the associated vocabulary / directory entry have child entries.
          *
          * @return true if it has children
-         *
          * @since 5.7.2
          */
         public boolean isLeaf() {
@@ -222,7 +221,8 @@ public class SuggestDirectoryEntries {
                     mergeJsonAdapter(newEntry);
                     return this;
                 } else {
-                    // I am not the parent, let's check if I could be the parent
+                    // I am not the parent, let's check if I could be the
+                    // parent
                     // of one the ancestor.
                     DocumentModel parent = session.getEntry(newEntry.getParentId());
                     return push(new JSONAdapter(session, schema, parent).push(newEntry));
@@ -240,7 +240,8 @@ public class SuggestDirectoryEntries {
                 return getObj();
             } else {
                 // This entry has sub entries in the directory.
-                // Ruled by Select2: an optionGroup is selectable or not whether
+                // Ruled by Select2: an optionGroup is selectable or not
+                // whether
                 // we provide an Id or not in the JSON object.
                 if (canSelectParent) {
                     // Make it selectable, keep as it is
@@ -314,7 +315,7 @@ public class SuggestDirectoryEntries {
         if (lang == null) {
             lang = (String) ctx.get("lang");
             if (lang == null) {
-                lang = "en";
+                lang = Select2Common.DEFAULT_LANG;
             }
         }
         return lang;

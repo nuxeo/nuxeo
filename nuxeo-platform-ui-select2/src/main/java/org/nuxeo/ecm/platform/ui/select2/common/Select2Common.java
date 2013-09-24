@@ -32,11 +32,13 @@ public class Select2Common {
 
     public static final String LANG_TOKEN = "{lang}";
 
+    public static final String DEFAULT_LANG = "en";
+
+    public static final String ID = "id";
+
     public static final String LABEL = "label";
 
     public static final String PARENT_FIELD_ID = "parent";
-
-    public static final String ID = "id";
 
     public static final String PLACEHOLDER = "placeholder";
 
@@ -50,7 +52,8 @@ public class Select2Common {
             Arrays.asList("singleUserSuggestion", "multipleUsersSuggestion"));
 
     public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<String>(
-            Arrays.asList("singleDocumentSuggestion", "multipleDocumentsSuggestion"));
+            Arrays.asList("singleDocumentSuggestion",
+                    "multipleDocumentsSuggestion"));
 
     public static final String USER_TYPE = "USER_TYPE";
 
@@ -58,7 +61,7 @@ public class Select2Common {
 
     public static final String TYPE_KEY_NAME = "type";
 
-    public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
+    public static final String PREFIXED_ID_KEY_NAME = "prefixedId";
 
     public static final String SUGGESTION_FORMATTER = "suggestionFormatter";
 
@@ -96,15 +99,14 @@ public class Select2Common {
     public static final int DEFAULT_MIN_CHARS = 3;
 
     /**
-     * Compute the filed name of the directory that holds the value that we want
-     * to display.
+     * Compute the filed name of the directory that holds the value that we
+     * want to display.
      *
      * @param schema the directory schema
      * @param dbl10n are translations carried by directory fields
      * @param labelFieldName the name or pattern of the fields that held values
      * @param lang the current language
      * @return the final field name where we pick up the value
-     *
      * @since 5.7.3
      */
     public static String getLabelFieldName(final Schema schema, boolean dbl10n,
@@ -116,7 +118,8 @@ public class Select2Common {
         if (dbl10n) {
             int i = labelFieldName.indexOf(LANG_TOKEN);
             if (i >= 0) {
-                // a pattern is provided, let's compute the field name according
+                // a pattern is provided, let's compute the field name
+                // according
                 // to the current lang
                 StringBuffer buf = new StringBuffer();
                 buf.append(labelFieldName.substring(0, i));
@@ -130,7 +133,7 @@ public class Select2Common {
                     // english by default
                     buf = new StringBuffer();
                     buf.append(labelFieldName.substring(0, i));
-                    buf.append("en");
+                    buf.append(DEFAULT_LANG);
                     buf.append(labelFieldName.substring(i + LANG_TOKEN.length()));
                     return buf.toString();
                 }

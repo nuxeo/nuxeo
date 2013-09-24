@@ -77,6 +77,7 @@ import org.nuxeo.ecm.platform.ui.select2.automation.SuggestUserEntries;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.codec.DocumentIdCodec;
+import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -127,7 +128,6 @@ public class Select2ActionsBean implements Serializable {
      * @param widget the widget
      * @return encoded
      * @throws Exception
-     *
      * @since 5.7.3
      */
     public String encodeParameters(final Widget widget) throws Exception {
@@ -187,7 +187,8 @@ public class Select2ActionsBean implements Serializable {
                     messages.get("label.vocabulary.selectValue"));
         }
 
-        // Specifc stuff for widget type
+        // Specific stuff for widget type
+        // TODO: move this to the widget type configuration
         if (Select2Common.SELECT2_USER_WIDGET_TYPE_LIST.contains(widget.getType())) {
             jg.writeStringField("operationId", SuggestUserEntries.ID);
             // add default selection and suggestion formatter if needed.
@@ -219,14 +220,14 @@ public class Select2ActionsBean implements Serializable {
             }
         }
 
-        //
         if (!hasWidth) {
             jg.writeStringField(Select2Common.WIDTH,
                     Select2Common.DEFAULT_WIDTH);
         }
 
         if (!hasMinChars) {
-            jg.writeNumberField(Select2Common.MIN_CHARS, Select2Common.DEFAULT_MIN_CHARS);
+            jg.writeNumberField(Select2Common.MIN_CHARS,
+                    Select2Common.DEFAULT_MIN_CHARS);
         }
 
         // Are we writing or reading
@@ -258,6 +259,7 @@ public class Select2ActionsBean implements Serializable {
         return layoutStore;
     }
 
+    @SuppressWarnings("rawtypes")
     protected JSONArray getMultipleDirectoryEntries(final Object value,
             final String directoryName, final boolean translateLabels,
             String keySeparator, final boolean dbl10n,
@@ -319,6 +321,7 @@ public class Select2ActionsBean implements Serializable {
 
     }
 
+    @SuppressWarnings("rawtypes")
     protected JSONArray getMultipleUserReference(final Object value,
             final boolean prefixed) {
         if (value == null) {
@@ -426,6 +429,7 @@ public class Select2ActionsBean implements Serializable {
             final boolean prefixed) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
         JSONObject obj = new JSONObject();
         if (storedReference == null || storedReference.isEmpty()) {
             return null;
@@ -433,6 +437,7 @@ public class Select2ActionsBean implements Serializable {
         try {
             DocumentModel user = null;
             DocumentModel group = null;
+            Directory userDir = dirService.getDirectory(userManager.getUserDirectoryName());
             if (prefixed) {
                 if (storedReference.startsWith(NuxeoPrincipal.PREFIX)) {
                     user = userManager.getUserModel(storedReference.substring(NuxeoPrincipal.PREFIX.length()));
@@ -450,7 +455,7 @@ public class Select2ActionsBean implements Serializable {
                 }
             }
             if (user != null) {
-                Schema schema = schemaManager.getSchema("user");
+                Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
                 String username = null;
                 String firstname = null;
                 String lastname = null;
@@ -458,15 +463,15 @@ public class Select2ActionsBean implements Serializable {
                     QName fieldName = field.getName();
                     String key = fieldName.getLocalName();
                     Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
-                    if (key.equals("password")) {
+                    if (key.equals(userDir.getPasswordField())) {
                         continue;
                     }
                     obj.element(key, value);
-                    if (key.equals("username")) {
+                    if (key.equals(userManager.getUserIdField())) {
                         username = (String) value;
-                    } else if (key.equals("firstName")) {
+                    } else if (key.equals(UserConfig.FIRSTNAME_COLUMN)) {
                         firstname = (String) value;
-                    } else if (key.equals("lastName")) {
+                    } else if (key.equals(UserConfig.LASTNAME_COLUMN)) {
                         lastname = (String) value;
                     }
                 }
@@ -484,13 +489,13 @@ public class Select2ActionsBean implements Serializable {
                 obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
                         NuxeoPrincipal.PREFIX + userId);
             } else if (group != null) {
-                Schema schema = schemaManager.getSchema("group");
+                Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
                 for (Field field : schema.getFields()) {
                     QName fieldName = field.getName();
                     String key = fieldName.getLocalName();
                     Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
                     obj.element(key, value);
-                    if (key.equals("grouplabel")) {
+                    if (key.equals(userManager.getGroupLabelField())) {
                         obj.element(Select2Common.LABEL, value);
                     }
                 }
@@ -514,7 +519,7 @@ public class Select2ActionsBean implements Serializable {
 
     public boolean isMultiSelection(final Widget widget) {
         WidgetTypeDefinition widgetTypeDefinition = getLayoutStore().getWidgetTypeDefinition(
-                "jsf", widget.getType());
+                widget.getTypeCategory(), widget.getType());
         return widgetTypeDefinition.getConfiguration().isList();
     }
 
@@ -591,7 +596,7 @@ public class Select2ActionsBean implements Serializable {
             if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
                     && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
                 obj.element(Select2Common.WARN_MESSAGE_LABEL,
-                        messages.get("obsolete"));
+                        messages.get("label.vocabulary.entry.obsolete"));
             }
 
             obj.element(Select2Common.COMPUTED_ID, storedReference);
@@ -708,6 +713,7 @@ public class Select2ActionsBean implements Serializable {
 
         if (!json.endsWith("]")) {
             // XXX !!!
+            // AT: what's this for?
             json = json + "]";
         }
 
@@ -868,7 +874,9 @@ public class Select2ActionsBean implements Serializable {
 
         DocumentIdCodec documentIdCodec = new DocumentIdCodec();
         Map<String, String> contextParameters = new HashMap<String, String>();
-        contextParameters.put("documentURL", documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(doc)));
+        contextParameters.put(
+                "documentURL",
+                documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(doc)));
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);

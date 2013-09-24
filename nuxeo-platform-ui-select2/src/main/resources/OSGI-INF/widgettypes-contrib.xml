@@ -137,7 +137,8 @@
                   <widget category="widgetTypeConf">select2_initOperationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  <widget category="widgetTypeConf">
+                    documentSuggestion_documentSchemas
                   </widget>
                 </row>
                 <row>
@@ -180,7 +181,8 @@
                   <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  <widget category="widgetTypeConf">
+                    documentSuggestion_pageProviderName
                   </widget>
                 </row>
                 <row>
@@ -251,7 +253,8 @@
                   <widget category="widgetTypeConf">select2_initOperationId</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  <widget category="widgetTypeConf">
+                    documentSuggestion_documentSchemas
                   </widget>
                 </row>
                 <row>
@@ -294,7 +297,8 @@
                   <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
+                  <widget category="widgetTypeConf">
+                    documentSuggestion_pageProviderName
                   </widget>
                 </row>
                 <row>
@@ -310,7 +314,8 @@
                   <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_suggestionFormatter
+                  <widget category="widgetTypeConf">
+                    select2_suggestionFormatter
                   </widget>
                 </row>
               </rows>

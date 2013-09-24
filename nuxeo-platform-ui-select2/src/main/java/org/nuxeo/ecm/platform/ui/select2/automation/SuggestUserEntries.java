@@ -44,9 +44,12 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
+import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -57,6 +60,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 @Operation(id = SuggestUserEntries.ID, category = Constants.CAT_SERVICES, label = "Get user/group suggestion", description = "Get the user/group list of the running instance. This is returning a blob containing a serialized JSON array..")
 public class SuggestUserEntries {
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(SuggestUserEntries.class);
 
     public static final String ID = "UserGroup.Suggestion";
@@ -82,6 +86,9 @@ public class SuggestUserEntries {
     @Context
     protected UserManager userManager;
 
+    @Context
+    protected DirectoryService directoryService;
+
     @Param(name = "lang", required = false)
     protected String lang;
 
@@ -103,8 +110,9 @@ public class SuggestUserEntries {
             DocumentModelList userList = null;
             DocumentModelList groupList = null;
             if (!groupOnly) {
-                Schema schema = schemaManager.getSchema("user");
+                Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
                 userList = userManager.searchUsers(prefix);
+                Directory userDir = directoryService.getDirectory(userManager.getUserDirectoryName());
                 for (DocumentModel user : userList) {
                     JSONObject obj = new JSONObject();
                     String username = null;
@@ -114,15 +122,15 @@ public class SuggestUserEntries {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();
                         Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
-                        if (key.equals("password")) {
+                        if (key.equals(userDir.getPasswordField())) {
                             continue;
                         }
                         obj.element(key, value);
-                        if (key.equals("username")) {
+                        if (key.equals(userManager.getUserIdField())) {
                             username = (String) value;
-                        } else if (key.equals("firstName")) {
+                        } else if (key.equals(UserConfig.FIRSTNAME_COLUMN)) {
                             firstname = (String) value;
-                        } else if (key.equals("lastName")) {
+                        } else if (key.equals(UserConfig.LASTNAME_COLUMN)) {
                             lastname = (String) value;
                         }
                     }
@@ -156,7 +164,7 @@ public class SuggestUserEntries {
                 }
             }
             if (!userOnly) {
-                Schema schema = schemaManager.getSchema("group");
+                Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
                 groupList = userManager.searchGroups(prefix);
                 for (DocumentModel group : groupList) {
                     JSONObject obj = new JSONObject();
@@ -166,7 +174,7 @@ public class SuggestUserEntries {
                         String key = fieldName.getLocalName();
                         Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
                         obj.element(key, value);
-                        if (key.equals("grouplabel")) {
+                        if (key.equals(userManager.getGroupLabelField())) {
                             if (value != null && value.toString().length() > 0) {
                                 hasGroupLabel = true;
                                 obj.element(Select2Common.LABEL, value);
@@ -209,7 +217,6 @@ public class SuggestUserEntries {
 
     /**
      * @return searchOverflowMessage
-     *
      * @since 5.7.3
      */
     private Blob searchOverflowMessage() {
@@ -225,7 +232,7 @@ public class SuggestUserEntries {
         if (lang == null) {
             lang = (String) ctx.get("lang");
             if (lang == null) {
-                lang = "en";
+                lang = Select2Common.DEFAULT_LANG;
             }
         }
         return lang;
