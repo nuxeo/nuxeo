@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +35,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 
 import com.google.inject.Binder;
 import com.google.inject.Guice;
@@ -70,9 +73,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
         super(classToRun);
+
         try {
+            InlineURLFactory.install();
             loadFeatures(getTestClass().getJavaClass());
             initialize();
+
         } catch (Throwable t) {
             throw new InitializationError(Collections.singletonList(t));
         }
@@ -189,6 +195,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         for (RunnerFeature feature : features) {
             feature.beforeRun(this);
         }
+
     }
 
     protected void beforeMethodRun(FrameworkMethod method, Object test)
@@ -304,6 +311,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     public Object createTest() throws Exception {
         // Return a Guice injected test class
         Object test = injector.getInstance(getTestClass().getJavaClass());
+        // Init mockito
+        initMocks(test);
         // let features adapt the test object if needed
         try {
             testCreated(test);
