@@ -1,8 +1,8 @@
-<c:if test="true" xmlns:f="http://java.sun.com/jsf/core"
+<c:if test="true"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
@@ -31,7 +31,7 @@
           <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
             immediate="true" ajaxSingle="true"
             required="#{widgetProperty_required}" var="currentValue">
-            <f:converter converterId="select2Converter"></f:converter>
+            <f:converter converterId="select2Converter" />
             <h:inputHidden readonly="true"
               id="#{widget.id}_select2_init"
               value="#{select2Actions.resolveMultipleReferences(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty, widgetProperty_documentSchemas)}" />
@@ -41,11 +41,9 @@
             <a4j:jsFunction name="#{widget.id}_reRender"
               reRender="#{widgetProperty_ajaxReRender}" />
           </c:if>
-
         </a4j:region>
 
-        <c:if
-          test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
+        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
           <p class="detail">
             <h:outputFormat value="#{helpLabel}">
               <f:param value="#{widgetProperty_minChars}" />
