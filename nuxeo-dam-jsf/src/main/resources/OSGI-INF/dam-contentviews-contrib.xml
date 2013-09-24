@@ -292,7 +292,7 @@
             <property name="searchType">USER_TYPE</property>
             <property name="width">200</property>
             <property name="minChars">3</property>
-            <property name="hideInstructionLabel">true</property>
+            <property name="hideHelpLabel">true</property>
           </properties>
         </widget>
         <widget name="damc_author" type="text">
@@ -329,7 +329,7 @@
             <property name="width">200</property>
             <property name="dbl10n">true</property>
             <property name="minChars">0</property>
-            <property name="hideInstructionLabel">true</property>
+            <property name="hideHelpLabel">true</property>
             <property name="filterParent">true</property>
             <property name="canSelectParent">true</property>
           </properties>
@@ -347,7 +347,7 @@
             <property name="width">200</property>
             <property name="dbl10n">true</property>
             <property name="minChars">0</property>
-            <property name="hideInstructionLabel">true</property>
+            <property name="hideHelpLabel">true</property>
             <property name="filterParent">true</property>
             <property name="canSelectParent">true</property>
           </properties>
