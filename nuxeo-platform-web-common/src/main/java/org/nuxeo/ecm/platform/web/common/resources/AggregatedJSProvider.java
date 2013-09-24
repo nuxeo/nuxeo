@@ -128,7 +128,9 @@ public class AggregatedJSProvider extends HttpServlet {
                 buf.append("\n");
             }
         }
-        if (minimize) {
+
+        // do not minimize the script when Dev mode is enabled
+        if (minimize && !Framework.isDevModeSet()) {
             return minimize(buf.toString());
         } else {
             return buf.toString();
