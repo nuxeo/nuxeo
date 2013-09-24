@@ -31,7 +31,7 @@
           <property name="labelFieldName">label_{lang}</property>
           <property name="dbl10n">true</property>
           <property name="minChars">0</property>
-          <property name="hideInstructionLabel">true</property>
+          <property name="hideHelpLabel">true</property>
           <property name="directoryName">l10ncoverage</property>
           <property name="keySeparator">/</property>
           <property name="placeholder">Choose a country</property>

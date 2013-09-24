@@ -27,7 +27,7 @@
         </fields>
         <properties mode="any">
           <property name="minChars">3</property>
-          <property name="hideInstructionLabel">true</property>
+          <property name="hideHelpLabel">true</property>
           <property name="placeholder">Choose one or more user/group</property>
         </properties>
       </widget>
