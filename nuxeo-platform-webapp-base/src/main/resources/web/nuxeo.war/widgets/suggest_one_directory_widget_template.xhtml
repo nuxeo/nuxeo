@@ -22,7 +22,7 @@
       </c:when>
 
       <c:otherwise>
-          <ui:include src="/incl/select2_js.xhtml" />
+        <ui:include src="/incl/select2_js.xhtml" />
 
         <a4j:region>
           <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
@@ -37,28 +37,24 @@
             <a4j:jsFunction name="#{widget.id}_reRender"
               reRender="#{widgetProperty_ajaxReRender}" />
           </c:if>
-
         </a4j:region>
 
+        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
+          <p class="detail">
+            <h:outputFormat value="#{helpLabel}">
+              <f:param value="#{widgetProperty_minChars}" />
+            </h:outputFormat>
+          </p>
+        </c:if>
 
-          <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
-            <p class="detail">
-              <h:outputFormat value="#{helpLabel}">
-                <f:param value="#{widgetProperty_minChars}" />
-              </h:outputFormat>
-            </p>
-          </c:if>
-
-          <h:inputHidden readonly="true"
-            id="#{widget.id}_select2_params"
-            value="#{select2Actions.encodeParameters(widget)}" />
-          <h:message for="#{widget.id}_select2"
-            styleClass="errorMessage" />
+        <h:inputHidden readonly="true"
+          id="#{widget.id}_select2_params"
+          value="#{select2Actions.encodeParameters(widget)}" />
+        <h:message for="#{widget.id}_select2"
+          styleClass="errorMessage" />
       </c:otherwise>
 
     </c:choose>
-
-
 
   </nxu:set>
 
