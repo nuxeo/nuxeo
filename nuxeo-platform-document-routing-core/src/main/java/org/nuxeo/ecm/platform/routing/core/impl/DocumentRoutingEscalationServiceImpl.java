@@ -78,7 +78,9 @@ public class DocumentRoutingEscalationServiceImpl implements
     public void scheduleExecution(EscalationRule rule, CoreSession session) {
         WorkManager manager = Framework.getLocalService(WorkManager.class);
         manager.schedule(
-                new EscalationRuleWork(rule, session.getRepositoryName()),
+                new EscalationRuleWork(rule.getId(),
+                        rule.getNode().getDocument().getId(),
+                        session.getRepositoryName()),
                 WorkManager.Scheduling.IF_NOT_SCHEDULED);
     }
 
@@ -88,18 +90,27 @@ public class DocumentRoutingEscalationServiceImpl implements
 
         protected String workerId;
 
-        protected EscalationRule rule;
+        protected String escalationRuleId;
+
+        protected String nodeDocId;
 
         public static final String CATEGORY = "routingEscalation";
 
-        public EscalationRuleWork(EscalationRule rule, String repositoryName) {
-            this.rule = rule;
-            workerId = rule.getNode().getId() + "_" + rule.getId();
+        public EscalationRuleWork(String escalationRuleId, String nodeDocId,
+                String repositoryName) {
+            this.escalationRuleId = escalationRuleId;
+            this.nodeDocId = nodeDocId;
+            workerId = repositoryName + "_" + nodeDocId + "_"
+                    + escalationRuleId;
             this.repositoryName = repositoryName;
         }
 
         @Override
         public String getTitle() {
+            return workerId;
+        }
+
+        public String getId() {
             return workerId;
         }
 
@@ -111,13 +122,32 @@ public class DocumentRoutingEscalationServiceImpl implements
         @Override
         public void work() throws Exception {
             CoreSession session = initSession(repositoryName);
-            GraphNode node = rule.getNode();
+            DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
+            GraphNode node = nodeDoc.getAdapter(GraphNode.class);
+            if (node == null) {
+                throw new ClientException("Can't execute worker '" + workerId
+                        + "' : the document '" + nodeDocId
+                        + "' can not be adapted to a GraphNode");
+            }
+            List<EscalationRule> rules = node.getEscalationRules();
+            EscalationRule rule = null;
+            for (EscalationRule escalationRule : rules) {
+                if (escalationRuleId.equals(escalationRule.getId())) {
+                    rule = escalationRule;
+                    break;
+                }
+            }
+            if (rule == null) {
+                throw new ClientException("Can't execute worker '" + workerId
+                        + "' : the rule '" + escalationRuleId
+                        + "' was not found on the node '" + nodeDocId + "'");
+            }
             OperationContext context = new OperationContext(session);
             context.putAll(node.getWorkflowContextualInfo(session, true));
             context.setInput(context.get("documents"));
             try {
                 // check to see if the rule wasn't executed meanwhile
-                boolean alreadyExecuted = getExecutionStatus(session);
+                boolean alreadyExecuted = getExecutionStatus(rule, session);
                 if (alreadyExecuted && !rule.isMultipleExecution()) {
                     log.trace("Rule " + rule.getId() + "on node "
                             + node.getId() + " already executed");
@@ -146,8 +176,8 @@ public class DocumentRoutingEscalationServiceImpl implements
          * @param session
          * @throws ClientException
          */
-        public boolean getExecutionStatus(CoreSession session)
-                throws ClientException {
+        public boolean getExecutionStatus(EscalationRule rule,
+                CoreSession session) throws ClientException {
             DocumentModel nodeDoc = session.getDocument(new IdRef(
                     rule.getNode().getDocument().getId()));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
@@ -156,6 +186,20 @@ public class DocumentRoutingEscalationServiceImpl implements
                 if (rule.compareTo(escalationRule) == 0) {
                     return escalationRule.isExecuted();
                 }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (obj instanceof EscalationRuleWork) {
+                return workerId.equals(((EscalationRuleWork) obj).getId());
             }
             return false;
         }
