@@ -26,10 +26,17 @@ public class UserConfig {
 
     public static final UserConfig DEFAULT = new UserConfig();
 
-    /*
-     * The default key names
+    /**
+     * The default key name for user id, configurable on the UserManager
+     * service
      */
     public static final String USERNAME_COLUMN = "username";
+
+    /**
+     * The default key name for user email, configurable on the UserManager
+     * service
+     */
+    public static final String EMAIL_COLUMN = "email";
 
     public static final String FIRSTNAME_COLUMN = "firstName";
 
@@ -38,8 +45,6 @@ public class UserConfig {
     public static final String COMPANY_COLUMN = "company";
 
     public static final String PASSWORD_COLUMN = "password";
-
-    public static final String EMAIL_COLUMN = "email";
 
     public static final String GROUPS_COLUMN = "groups";
 
