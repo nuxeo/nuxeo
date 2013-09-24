@@ -40,29 +40,37 @@
     <rnode:canceled/>
     <rnode:taskLayout/>
     <rnode:taskButtons/>
-    <rnode:button/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
     <rnode:stop><![CDATA[true]]></rnode:stop>
+    <rnode:button/>
     <rnode:taskDocType/>
-    <rnode:startDate/>
     <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:startDate/>
     <rnode:taskNotificationTemplate/>
     <rnode:transitions/>
     <rnode:nodeId><![CDATA[Task5c1]]></rnode:nodeId>
+    <rnode:hasMultipleTasks/>
     <rnode:outputChain/>
     <rnode:merge/>
+    <rnode:subRouteVariables/>
     <rnode:taskAssignees/>
     <rnode:taskAssigneesExpr/>
     <rnode:taskY><![CDATA[561]]></rnode:taskY>
     <rnode:count/>
     <rnode:taskX><![CDATA[442]]></rnode:taskX>
     <rnode:taskAssigneesPermission/>
+    <rnode:subRouteInstanceId/>
     <rnode:taskDueDateExpr/>
     <rnode:variablesFacet><![CDATA[facet-var_Task5c1]]></rnode:variablesFacet>
+    <rnode:tasksInfo/>
     <rnode:endDate/>
+    <rnode:allowTaskReassignment/>
     <rnode:taskDueDate/>
     <rnode:inputChain/>
     <rnode:taskDescription/>
     <rnode:hasTask><![CDATA[false]]></rnode:hasTask>
     <rnode:taskDirective/>
+    <rnode:subRouteModelExpr/>
+    <rnode:escalationRules/>
   </schema>
 </document>

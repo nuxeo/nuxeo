@@ -60,6 +60,7 @@ done
 find . -name '*~' | xargs rm
 rm $ZIP
 zip -r $ZIP .
+cp -r . $RES/data/SerialDocumentReview/
 cd $BUNDLE
 rm -rf $ZIP.dir
 

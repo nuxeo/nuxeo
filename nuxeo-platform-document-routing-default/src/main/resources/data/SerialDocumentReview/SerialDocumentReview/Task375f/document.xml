@@ -39,11 +39,12 @@
     <rnode:canceled/>
     <rnode:taskLayout/>
     <rnode:taskButtons/>
-    <rnode:button/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
     <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:button/>
     <rnode:taskDocType/>
-    <rnode:startDate/>
     <rnode:start><![CDATA[true]]></rnode:start>
+    <rnode:startDate/>
     <rnode:taskNotificationTemplate/>
     <rnode:transitions>
       <transition>
@@ -55,22 +56,29 @@
       </transition>
     </rnode:transitions>
     <rnode:nodeId><![CDATA[Task375f]]></rnode:nodeId>
+    <rnode:hasMultipleTasks/>
     <rnode:outputChain><![CDATA[]]></rnode:outputChain>
     <rnode:merge/>
+    <rnode:subRouteVariables/>
     <rnode:taskAssignees/>
     <rnode:taskAssigneesExpr/>
     <rnode:taskY><![CDATA[49]]></rnode:taskY>
     <rnode:count/>
     <rnode:taskX><![CDATA[415]]></rnode:taskX>
     <rnode:taskAssigneesPermission/>
+    <rnode:subRouteInstanceId/>
     <rnode:taskDueDateExpr/>
     <rnode:variablesFacet><![CDATA[facet-var_Task375f]]></rnode:variablesFacet>
+    <rnode:tasksInfo/>
     <rnode:endDate/>
+    <rnode:allowTaskReassignment/>
     <rnode:taskDueDate/>
     <rnode:inputChain><![CDATA[]]></rnode:inputChain>
     <rnode:taskDescription/>
     <rnode:hasTask><![CDATA[false]]></rnode:hasTask>
     <rnode:taskDirective/>
+    <rnode:subRouteModelExpr/>
+    <rnode:escalationRules/>
   </schema>
   <schema xmlns:var_Task375f="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task375f" name="var_Task375f"></schema>
 </document>

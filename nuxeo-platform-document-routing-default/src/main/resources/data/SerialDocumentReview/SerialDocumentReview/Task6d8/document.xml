@@ -53,11 +53,12 @@
         <filter><![CDATA[]]></filter>
       </button>
     </rnode:taskButtons>
-    <rnode:button/>
+    <rnode:executeOnlyFirstTransition><![CDATA[false]]></rnode:executeOnlyFirstTransition>
     <rnode:stop><![CDATA[false]]></rnode:stop>
+    <rnode:button/>
     <rnode:taskDocType><![CDATA[TaskDoc]]></rnode:taskDocType>
-    <rnode:startDate/>
     <rnode:start><![CDATA[false]]></rnode:start>
+    <rnode:startDate/>
     <rnode:taskNotificationTemplate><![CDATA[workflowTaskAssigned]]></rnode:taskNotificationTemplate>
     <rnode:transitions>
       <transition>
@@ -90,21 +91,28 @@
       </transition>
     </rnode:transitions>
     <rnode:nodeId><![CDATA[Task6d8]]></rnode:nodeId>
+    <rnode:hasMultipleTasks><![CDATA[false]]></rnode:hasMultipleTasks>
     <rnode:outputChain><![CDATA[nextAssignee]]></rnode:outputChain>
     <rnode:merge/>
+    <rnode:subRouteVariables/>
     <rnode:taskAssignees/>
     <rnode:taskAssigneesExpr><![CDATA[WorkflowVariables["participants"][(int)WorkflowVariables.index]]]></rnode:taskAssigneesExpr>
     <rnode:taskY><![CDATA[299]]></rnode:taskY>
     <rnode:count/>
     <rnode:taskX><![CDATA[324]]></rnode:taskX>
     <rnode:taskAssigneesPermission><![CDATA[ReadWrite]]></rnode:taskAssigneesPermission>
+    <rnode:subRouteInstanceId/>
     <rnode:taskDueDateExpr><![CDATA[CurrentDate.days(5)]]></rnode:taskDueDateExpr>
     <rnode:variablesFacet><![CDATA[facet-var_Task6d8]]></rnode:variablesFacet>
+    <rnode:tasksInfo/>
     <rnode:endDate/>
+    <rnode:allowTaskReassignment><![CDATA[false]]></rnode:allowTaskReassignment>
     <rnode:taskDueDate/>
     <rnode:inputChain><![CDATA[reinitAssigneeComment]]></rnode:inputChain>
     <rnode:taskDescription/>
     <rnode:hasTask><![CDATA[true]]></rnode:hasTask>
     <rnode:taskDirective><![CDATA[wf.serialDocumentReview.AcceptReject]]></rnode:taskDirective>
+    <rnode:subRouteModelExpr/>
+    <rnode:escalationRules/>
   </schema>
 </document>
