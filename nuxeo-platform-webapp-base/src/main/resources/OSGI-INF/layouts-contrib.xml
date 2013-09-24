@@ -28,6 +28,9 @@
           Name of the directory
         </label>
       </helpLabels>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
       <fields>
         <field>directory</field>
       </fields>
@@ -464,7 +467,7 @@
       </fields>
     </widget>
 
-    <widget name="suggestiselect2_dropdownCssClasstext">
+    <widget name="select2_dropdownCssClass" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -1164,7 +1167,7 @@
                   <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">>suggestion_minChars</widget>
+                  <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_canSelectParent</widget>
@@ -4138,7 +4141,7 @@
           <label mode="any">label.security.usersOrGroups</label>
         </labels>
         <properties widgetMode="edit">
-          <property name="hideInstructionLabel">true</property>
+          <property name="hideHelpLabel">true</property>
           <property name="placeholder">label.security.search</property>
         </properties>
         <widgetModes>
@@ -4167,7 +4170,7 @@
         </labels>
         <properties widgetMode="edit">
           <property name="prefixed">true</property>
-          <property name="hideInstructionLabel">true</property>
+          <property name="hideHelpLabel">true</property>
           <property name="placeholder">label.security.search</property>
         </properties>
         <widgetModes>

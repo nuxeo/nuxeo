@@ -9,8 +9,8 @@
 
   <c:set var="namespace" value="#{widgetProperty_namespace}" />
 
-  <nxu:set var="instructionLabel"
-    value="#{nxu:test(empty widgetProperty_instructionLabel, messages['label.suggestion.help.minChars'], nxu:test(widget.translated, messages[widgetProperty_instructionLabel], widgetProperty_instructionLabel))}"
+  <nxu:set var="helpLabel"
+    value="#{nxu:test(empty widgetProperty_helpLabel, messages['label.suggestion.help.minChars'], nxu:test(widget.translated, messages[widgetProperty_helpLabel], widgetProperty_helpLabel))}"
     cache="true">
 
     <c:choose>
@@ -44,9 +44,9 @@
         </a4j:region>
 
 
-        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideInstructionLabel}">
+        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
           <p class="detail">
-            <h:outputFormat value="#{instructionLabel}">
+            <h:outputFormat value="#{helpLabel}">
               <f:param value="#{widgetProperty_minChars}" />
             </h:outputFormat>
           </p>

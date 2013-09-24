@@ -96,9 +96,9 @@
         </a4j:region>
 
 
-        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideInstructionLabel}">
+        <c:if test="#{widget.mode == 'edit' and !widgetProperty_hideHelpLabel}">
           <p class="detail">
-            <h:outputFormat value="#{instructionLabel}">
+            <h:outputFormat value="#{helpLabel}">
               <f:param value="#{widgetProperty_minChars}" />
             </h:outputFormat>
           </p>

@@ -294,7 +294,7 @@
         </property>
         <property name="userSuggestionSearchType">USER_TYPE</property>
         <property name="operationId">UserGroup.Suggestion</property>
-        <property name="hideInstructionLabel">true</property>
+        <property name="hideHelpLabel">true</property>
         <property name="suggestionFormatter">userEntryDefaultFormatter</property>
         <property name="selectionFormatter">userEntryDefaultFormatter</property>
       </properties>
@@ -313,7 +313,7 @@
         </property>
         <property name="userSuggestionSearchType">GROUP_TYPE</property>
         <property name="operationId">UserGroup.Suggestion</property>
-        <property name="hideInstructionLabel">true</property>
+        <property name="hideHelpLabel">true</property>
         <property name="suggestionFormatter">userEntryDefaultFormatter</property>
         <property name="selectionFormatter">userEntryDefaultFormatter</property>
       </properties>
