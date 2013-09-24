@@ -154,7 +154,8 @@ public final class Resources extends HttpServlet implements Serializable {
                 source = out.toString();
 
                 if (resourceName.endsWith(".js")) {
-                    if (resource.isShrinkable()) {
+                    // do not shrink the script when Dev mode is enabled
+                    if (resource.isShrinkable() && !Framework.isDevModeSet()) {
                         try {
                             source = JSUtils.compressSource(source);
                         } catch (ThemeException e) {
@@ -181,7 +182,9 @@ public final class Resources extends HttpServlet implements Serializable {
                             "\\$\\{org.nuxeo.ecm.contextPath\\}",
                             Matcher.quoteReplacement(basePath));
 
-                    if (resource.isShrinkable()) {
+
+                    // do not shrink the CSS when Dev mode is enabled
+                    if (resource.isShrinkable() && !Framework.isDevModeSet()) {
                         try {
                             source = CSSUtils.compressSource(source);
                         } catch (ThemeException e) {
@@ -190,6 +193,7 @@ public final class Resources extends HttpServlet implements Serializable {
                         }
                     }
                 }
+                // do not cache the resource when Dev mode is enabled
                 if (!Framework.isDevModeSet()) {
                     themeManager.setResource(resourceName, source);
                 }
