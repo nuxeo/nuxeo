@@ -15,7 +15,7 @@
 
     <h3>${gadget.getTitle(This.context.locale)}</h3>
     <p class="author">${gadget.author}</p>
-    <p class="description">${gadget.description}</p>
+    <p class="description">${gadget.getDescription(This.context.locale)}</p>
     <p class="specUrl"><a href="${gadget.getPublicGadgetDefinition()}">${Context.getMessage('label.gadget.url')}</a></p>
     <div style="clear:both"></div>
   </div>

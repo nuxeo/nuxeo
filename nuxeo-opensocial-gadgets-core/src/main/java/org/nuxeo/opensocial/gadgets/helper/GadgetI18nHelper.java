@@ -21,11 +21,16 @@ import java.util.Locale;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 
 /**
- * Helper class to generate i18n titles for gadgets.
+ * Helper class to generate i18n titles/description for gadgets.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
 public class GadgetI18nHelper {
+
+    /**
+     *
+     */
+    private static final String LABEL_KEY_DESCRIPTION_SUFFIX = ".description";
 
     public static final String LABEL_KEY_PREFIX = "label.gadget.";
 
@@ -38,6 +43,28 @@ public class GadgetI18nHelper {
             locale = new Locale("en");
         }
         String labelKey = LABEL_KEY_PREFIX + gadgetName;
+        String i18nTitle = I18NUtils.getMessageString("messages", labelKey,
+                null, locale);
+        return !i18nTitle.equals(labelKey) ? i18nTitle : gadgetName;
+    }
+
+    /**
+     * Returns the localized description of a gadget. If it does not exists, it
+     * returns the name of the gadget
+     *
+     * @param gadgetName name of the gadget
+     * @param locale the locale to localize (if null then "en")
+     * @return
+     *
+     * @since 5.8
+     */
+    public static String getI18nGadgetDescription(String gadgetName,
+            Locale locale) {
+        if (locale == null) {
+            locale = new Locale("en");
+        }
+        String labelKey = LABEL_KEY_PREFIX + gadgetName
+                + LABEL_KEY_DESCRIPTION_SUFFIX;
         String i18nTitle = I18NUtils.getMessageString("messages", labelKey,
                 null, locale);
         return !i18nTitle.equals(labelKey) ? i18nTitle : gadgetName;

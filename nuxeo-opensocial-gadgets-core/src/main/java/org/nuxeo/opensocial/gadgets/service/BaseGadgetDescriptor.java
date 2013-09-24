@@ -22,6 +22,7 @@ public abstract class BaseGadgetDescriptor implements Serializable,
 
     protected GadgetSpec cachedSpec = null;
 
+    @Override
     public GadgetSpec getGadgetSpec() {
         if (cachedSpec != null) {
             return cachedSpec;
@@ -44,6 +45,7 @@ public abstract class BaseGadgetDescriptor implements Serializable,
         return getGadgetSpec().getModulePrefs().getDescription();
     }
 
+    @Override
     public String getTitle() {
         if (getGadgetSpec() == null) {
             return getName();
@@ -51,6 +53,7 @@ public abstract class BaseGadgetDescriptor implements Serializable,
         return getGadgetSpec().getModulePrefs().getTitle();
     }
 
+    @Override
     public String getTitle(Locale locale) {
         String name = getName();
         String title = GadgetI18nHelper.getI18nGadgetTitle(name, locale);
@@ -60,6 +63,17 @@ public abstract class BaseGadgetDescriptor implements Serializable,
         return title;
     }
 
+    @Override
+    public String getDescription(Locale locale) {
+        String name = getName();
+        String description = GadgetI18nHelper.getI18nGadgetDescription(name, locale);
+        if(description.equals(name)) {
+            return getDescription();
+        }
+        return description;
+    }
+
+    @Override
     public String getAuthor() {
         if (getGadgetSpec() == null) {
             if (!isExternal()) {
@@ -70,6 +84,7 @@ public abstract class BaseGadgetDescriptor implements Serializable,
         return getGadgetSpec().getModulePrefs().getAuthor();
     }
 
+    @Override
     public String getScreenshot() {
         if (getGadgetSpec() == null) {
             return null;
@@ -82,6 +97,7 @@ public abstract class BaseGadgetDescriptor implements Serializable,
         }
     }
 
+    @Override
     public String getThumbnail() {
         if (getGadgetSpec() == null) {
             return null;
