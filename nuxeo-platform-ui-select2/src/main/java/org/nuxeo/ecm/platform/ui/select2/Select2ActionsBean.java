@@ -71,6 +71,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.ui.select2.automation.SuggestUserEntries;
@@ -518,9 +519,19 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public boolean isMultiSelection(final Widget widget) {
-        WidgetTypeDefinition widgetTypeDefinition = getLayoutStore().getWidgetTypeDefinition(
-                widget.getTypeCategory(), widget.getType());
-        return widgetTypeDefinition.getConfiguration().isList();
+        String wtCat = widget.getTypeCategory();
+        if (wtCat == null) {
+            wtCat = "jsf";
+        }
+        WidgetTypeDefinition wtDef = getLayoutStore().getWidgetTypeDefinition(
+                wtCat, widget.getType());
+        if (wtDef != null) {
+            WidgetTypeConfiguration conf = wtDef.getConfiguration();
+            if (conf != null) {
+                return conf.isList();
+            }
+        }
+        return false;
     }
 
     public boolean mustIncludeResources() {
