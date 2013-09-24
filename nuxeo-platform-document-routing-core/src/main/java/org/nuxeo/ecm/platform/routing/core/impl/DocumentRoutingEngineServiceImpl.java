@@ -23,6 +23,8 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -46,18 +48,26 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
     }
 
     @Override
-    public void cancel(final DocumentRoute routeInstance, CoreSession session) {
+    public void cancel(DocumentRoute routeInstance, CoreSession session) {
+        final String routeDocId = routeInstance.getDocument().getId();
+
         try {
             new UnrestrictedSessionRunner(session) {
                 @Override
                 public void run() throws ClientException {
+                    DocumentModel routeDoc = session.getDocument(new IdRef(
+                            routeDocId));
+                    DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+                    if (routeInstance == null) {
+                        throw new ClientException("Document " + routeDoc
+                                + " can not be adapted to a DocumentRoute");
+                    }
                     routeInstance.cancel(session);
                 }
             }.runUnrestricted();
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
-
         EventFirer.fireEvent(session,
                 routeInstance.getAttachedDocuments(session), null,
                 DocumentRoutingConstants.Events.workflowCanceled.name());

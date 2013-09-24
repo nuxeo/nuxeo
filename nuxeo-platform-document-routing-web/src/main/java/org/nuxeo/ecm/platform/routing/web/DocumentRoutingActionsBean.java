@@ -249,9 +249,17 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
     }
 
+    /**
+     * Cancels the first workflow found on the current document
+     *
+     */
     public String cancelRoute() throws ClientException {
-        DocumentModel doc = relatedRoutes.get(0);
-        DocumentRoute route = doc.getAdapter(DocumentRoute.class);
+        List<DocumentRoute> routes = getRelatedRoutes();
+        if (routes.size() == 0) {
+            log.error("No workflow to cancel");
+            return null;
+        }
+        DocumentRoute route = routes.get(0);
         Framework.getLocalService(DocumentRoutingEngineService.class).cancel(
                 route, documentManager);
         // force computing of tabs
