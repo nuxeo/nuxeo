@@ -25,7 +25,6 @@
     <module>nuxeo-webengine-features</module>
     <module>nuxeo-platform-annotations</module>
     <module>nuxeo-platform-imaging-tiling</module>
-    <module>nuxeo-platform-syndication</module>
     <module>nuxeo-platform-lang</module>
     <module>nuxeo-platform-mail</module>
     <module>nuxeo-platform-notification</module>
