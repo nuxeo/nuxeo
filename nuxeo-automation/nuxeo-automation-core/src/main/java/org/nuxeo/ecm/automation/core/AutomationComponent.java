@@ -70,6 +70,7 @@ import org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation
 import org.nuxeo.ecm.automation.core.operations.business.BusinessFetchOperation;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessUpdateOperation;
 import org.nuxeo.ecm.automation.core.operations.document.AddEntryToMultiValuedProperty;
+import org.nuxeo.ecm.automation.core.operations.document.AddPermission;
 import org.nuxeo.ecm.automation.core.operations.document.CheckInDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CheckOutDocument;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
@@ -94,6 +95,7 @@ import org.nuxeo.ecm.automation.core.operations.document.ReloadDocument;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentACL;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveEntryOfMultiValuedProperty;
+import org.nuxeo.ecm.automation.core.operations.document.RemovePermission;
 import org.nuxeo.ecm.automation.core.operations.document.RemoveProperty;
 import org.nuxeo.ecm.automation.core.operations.document.RestoreVersion;
 import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
@@ -212,6 +214,8 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(SaveSession.class);
         service.putOperation(SetDocumentLifeCycle.class);
         service.putOperation(SetDocumentACE.class);
+        service.putOperation(AddPermission.class);
+        service.putOperation(RemovePermission.class);
         service.putOperation(RemoveDocumentACL.class);
         service.putOperation(SetDocumentProperty.class);
         service.putOperation(RemoveProperty.class);
