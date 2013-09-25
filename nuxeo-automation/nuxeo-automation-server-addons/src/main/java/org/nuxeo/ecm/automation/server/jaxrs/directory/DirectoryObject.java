@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.7.3
  */
-@WebObject(type = "directory")
+@WebObject(type = "directoryObject")
 public class DirectoryObject extends DefaultObject {
 
     private Directory directory;

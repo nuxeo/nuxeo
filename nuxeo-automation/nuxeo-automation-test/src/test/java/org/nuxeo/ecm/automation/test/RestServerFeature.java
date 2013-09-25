@@ -26,10 +26,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 5.7.2
  */
 @Features({ RuntimeFeature.class, EmbeddedAutomationServerFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.test",
-        "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core",
-        "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.automation.io" })
+@Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.platform.url.api",
+        "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api",
+        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server.addons" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.test:adapter-contrib.xml" })
 public class RestServerFeature extends SimpleFeature {
 

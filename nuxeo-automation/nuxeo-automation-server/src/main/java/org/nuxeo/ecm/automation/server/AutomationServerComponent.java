@@ -14,10 +14,14 @@
 package org.nuxeo.ecm.automation.server;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.codehaus.jackson.JsonFactory;
 import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
@@ -43,14 +47,21 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     protected static final String XP_BINDINGS = "bindings";
 
+    private static final String XP_MARSHALLER = "marshallers";
+
     protected Map<String, RestBinding> bindings;
 
     protected volatile Map<String, RestBinding> lookup;
+
+    protected List<Class<? extends MessageBodyWriter<?>>> writers;
+    protected List<Class<? extends MessageBodyReader<?>>> readers;
 
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         bindings = new HashMap<String, RestBinding>();
+        writers = new ArrayList<>();
+        readers = new ArrayList<>();
         me = this;
     }
 
@@ -67,6 +78,10 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             addBinding(binding);
+        } else if (XP_MARSHALLER.equals(extensionPoint)) {
+            MarshallerDescriptor marshaller = (MarshallerDescriptor) contribution;
+            writers.addAll(marshaller.getWriters());
+            readers.addAll(marshaller.getReaders());
         }
     }
 
@@ -183,6 +198,16 @@ public class AutomationServerComponent extends DefaultComponent implements
             }
         }
         return _lookup;
+    }
+
+    @Override
+    public List<Class<? extends MessageBodyWriter<?>>> getWriters() {
+        return writers;
+    }
+
+    @Override
+    public List<Class<? extends MessageBodyReader<?>>> getReaders() {
+        return readers;
     }
 
 }

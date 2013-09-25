@@ -18,6 +18,7 @@
     <module>nuxeo-automation-jsf</module>
     <!--module>nuxeo-automation-client-common</module-->
     <module>nuxeo-automation-server</module>
+    <module>nuxeo-automation-server-addons</module>
     <module>nuxeo-automation-client</module>
     <module>nuxeo-automation-test</module>
     <module>nuxeo-automation-io</module>

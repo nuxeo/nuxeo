@@ -1,0 +1,17 @@
+<component name="org.nuxeo.ecm.automation.server.addons.marshallers">
+
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="marshallers">
+
+    <marshaller>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntriesWriter
+      </writer>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryWriter
+      </writer>
+      <reader>org.nuxeo.ecm.automation.jaxrs.io.directory.DirectoryEntryReader
+      </reader>
+
+    </marshaller>
+  </extension>
+
+</component>

@@ -71,10 +71,9 @@ public class APIRoot extends ModuleRoot {
         return new AutomationResource();
     }
 
-    @Path("/directory/{dirName}")
-    public Object doGetDirectory(@PathParam("dirName")
-    String dirName) {
-        return newObject("directory", dirName);
+    @Path("/directory")
+    public Object doGetDirectory() {
+        return newObject("directory");
     }
 
     @Override

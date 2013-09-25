@@ -11,7 +11,11 @@
  */
 package org.nuxeo.ecm.automation.server;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 /**
  * A registry of REST bindings. Provides methods for checking if a given
@@ -61,5 +65,21 @@ public interface AutomationServer {
      * Checks if the given operation name is allowed in a REST call.
      */
     boolean accept(String name, boolean isChain, HttpServletRequest req);
+
+    /**
+     * Returns all the registered writers
+     * @return
+     *
+     * @since 5.8
+     */
+    List<Class<? extends MessageBodyWriter<?>>> getWriters();
+
+    /**
+     *
+     * @return all the registered readers
+     *
+     * @since 5.8
+     */
+    List<Class<? extends MessageBodyReader<?>>> getReaders();
 
 }

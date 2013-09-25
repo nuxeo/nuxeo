@@ -1,20 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Version: 5.4.2.qualifier
-Bundle-Name: Nuxeo Automation Server
-Bundle-SymbolicName: org.nuxeo.ecm.automation.server;singleton:=true
+Bundle-Name: Nuxeo Automation Server Addons
+Bundle-SymbolicName: org.nuxeo.ecm.automation.server.addons;singleton:=true
 Bundle-Vendor: Nuxeo
 Export-Package: org.nuxeo.ecm.automation.server
 Bundle-ActivationPolicy: lazy
-Nuxeo-WebModule: org.nuxeo.ecm.automation.server.jaxrs.AutomationModule;name=api;extends=base;package=org/nuxeo/ecm/automation/server/jaxrs
-Nuxeo-Component: OSGI-INF/AutomationServer.xml,
- OSGI-INF/auth-contrib.xml,
- OSGI-INF/batchmanager-framework.xml,
- OSGI-INF/binding-contrib.xml,
- OSGI-INF/pageprovider-contrib.xml,
- OSGI-INF/docviewurl-service-contrib.xml,
- OSGI-INF/marshaller-contrib.xml
-Nuxeo-AllowOverride: true
+Nuxeo-Component: OSGI-INF/marshaller-contrib.xml
+Fragment-Host: org.nuxeo.ecm.automation.server
 Import-Package: javax.mail,
  javax.mail.internet,
  javax.mail.util,
@@ -52,4 +45,4 @@ Import-Package: javax.mail,
  org.nuxeo.runtime.model,
  org.osgi.framework;version="1.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.nuxeo.ecm.automation.core
+Require-Bundle: org.nuxeo.ecm.automation.server
