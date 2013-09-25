@@ -32,7 +32,8 @@
     </a4j:commandButton>
 
     <h:panelGroup styleClass="currentPageStatus">
-      <h:outputText value="#{provider.currentPageStatus}"/>
+        <h:outputText
+         value="#{(provider.resultsCount ge 0 or provider.currentPageIndex ge provider.pageLimit) ? provider.currentPageStatus : nxu:translate('command.navigation.status.unknownPageAmount', provider.currentPageIndex + 1, provider.pageLimit)}" />
     </h:panelGroup>
 
     <a4j:commandButton action="#{provider.next}"
