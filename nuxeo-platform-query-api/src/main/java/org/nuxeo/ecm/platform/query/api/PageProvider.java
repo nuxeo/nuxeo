@@ -61,7 +61,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * Page limit unknown.
      *
-     * @since 5.7.3
+     * @since 5.8
      */
     public static final long PAGE_LIMIT_UNKNOWN = -1;
 

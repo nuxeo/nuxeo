@@ -276,7 +276,7 @@ public class CoreQueryDocumentPageProvider extends
      * Returns the page limit. The n first page we know they exist. We don't
      * compute the number of page beyond this limit.
      *
-     * @since 5.7.3
+     * @since 5.8
      */
     @Override
     public long getPageLimit() {

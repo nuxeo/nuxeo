@@ -702,7 +702,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * Returns the page limit. The n first page we know they exist.
      *
-     * @since 5.7.3
+     * @since 5.8
      */
     public long getPageLimit() {
         return PAGE_LIMIT_UNKNOWN;
