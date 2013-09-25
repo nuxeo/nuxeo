@@ -37,6 +37,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -51,6 +52,9 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
     private static final long serialVersionUID = -3281363416111697725L;
 
     private static final Log log = LogFactory.getLog(PictureBookManagerBean.class);
+
+    @In(create = true)
+    protected CoreSession documentManager;
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -168,11 +172,15 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
     protected List<DocumentModel> getChildren() {
         try {
             if (children == null) {
-                children = navigationContext.getCurrentDocumentChildren();
+                DocumentModel currentDoc = navigationContext.getCurrentDocument();
+                if (currentDoc != null) {
+                    children = documentManager.getChildren(currentDoc.getRef());
+                } else {
+                    children = Collections.emptyList();
+                }
             }
         } catch (ClientException e) {
             log.error(e, e);
-            children = Collections.emptyList();
         }
         return children;
     }

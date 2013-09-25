@@ -128,7 +128,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
             }
 
             documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter,
-                    null, sorter, null);
+                    sorter);
         }
 
         return documentTreeNode;

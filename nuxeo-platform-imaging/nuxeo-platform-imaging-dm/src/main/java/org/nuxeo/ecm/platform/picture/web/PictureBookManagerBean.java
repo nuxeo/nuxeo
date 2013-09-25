@@ -212,8 +212,12 @@ public class PictureBookManagerBean extends InputController implements
 
     @Override
     public String downloadAll() throws ClientException, IOException {
-        List<DocumentModel> list = navigationContext.getCurrentDocumentChildren();
-        return createZip(list);
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (currentDoc != null) {
+            List<DocumentModel> list = documentManager.getChildren(currentDoc.getRef());
+            return createZip(list);
+        }
+        return null;
     }
 
     protected boolean isEmptyFolder(DocumentModel doc) throws ClientException {
