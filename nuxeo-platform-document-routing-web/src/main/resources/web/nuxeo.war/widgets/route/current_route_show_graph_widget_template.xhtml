@@ -7,7 +7,7 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
   <script type="text/javascript">
-    <h:outputText  value="var routeDocId='#{value.document.id}';" />
+    <h:outputText  value="var routeDocId='#{layoutValue.document.id}';" />
     <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
     <h:outputText value="var divContainerTargetId='#{widget.id}_target';"/>
     function showGraph() {
