@@ -26,9 +26,15 @@ import java.net.URL;
 import org.nuxeo.runtime.model.StreamRef;
 import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 
+/**
+ * InlineRef allows to create stream ref on the fly, using only a String.
+ *
+ * @since 5.8
+ */
 public class InlineRef implements StreamRef {
 
     protected final String id;
+
     protected final String content;
 
     public InlineRef(String id, String content) {
@@ -50,7 +56,7 @@ public class InlineRef implements StreamRef {
     public URL asURL() {
         try {
             return InlineURLFactory.newURL(content);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException("Cannot encode inline:... URL", e);
         }
     }
