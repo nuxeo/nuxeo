@@ -23,7 +23,6 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,34 +38,25 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -79,7 +69,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -108,9 +97,6 @@ public class DocumentActionsBean extends InputController implements
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
-
-    @In(create = true)
-    protected transient ResultsProvidersCache resultsProvidersCache;
 
     @RequestParameter
     protected String fileFieldFullName;
@@ -453,48 +439,6 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    // SelectModel to use in interface
-    // GR: for now the factory contexts don't play well with
-    // resultsProviderCache
-    // SelectDataModel building should be cheap anyway
-    // @Factory(value = "documentActions_childrenSelectModel", scope = EVENT)
-    @Deprecated
-    @Override
-    @Factory(value = "currentChildrenSelectModel", scope = EVENT)
-    public SelectDataModel getChildrenSelectModel() throws ClientException {
-        // XXX : this proves that this method is called too many times
-        // log.debug("Getter children select model");
-        DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
-        SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
-                documents, selectedDocuments);
-        model.addSelectModelListener(this);
-        // XXX AT: see if cache is useful
-        // cacheUpdateNotifier.addCacheListener(model);
-        return model;
-    }
-
-    // SelectModel to use in interface
-    // GR: for now the factory contexts don't play well with
-    // resultsProviderCache
-    // SelectDataModel building should be cheap anyway
-    // @Factory(value = "documentActions_childrenSelectModel", scope = EVENT)
-    @Deprecated
-    @Override
-    public SelectDataModel getSectionChildrenSelectModel()
-            throws ClientException {
-        // XXX : this proves that this method is called too many times
-        // log.debug("Getter children select model");
-        DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
-        SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
-                documents, selectedDocuments);
-        model.addSelectModelListener(this);
-        // XXX AT: see if cache is useful
-        // cacheUpdateNotifier.addCacheListener(model);
-        return model;
-    }
-
     // SelectModelListener interface
     @Override
     public void processSelectRowEvent(SelectDataModelRowEvent event) {
@@ -516,108 +460,6 @@ public class DocumentActionsBean extends InputController implements
     private String handleError(String errorMessage) {
         log.error(errorMessage);
         return "ERROR: " + errorMessage;
-    }
-
-    @Deprecated
-    @Override
-    @WebRemote
-    public String checkCurrentDocAndProcessSelectRow(String docRef,
-            String providerName, String listName, Boolean selection,
-            String currentDocRef) throws ClientException {
-        DocumentRef currentDocumentRef = new IdRef(currentDocRef);
-        if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
-            navigationContext.navigateToRef(currentDocumentRef);
-        }
-        return processSelectRow(docRef, providerName, listName, selection);
-    }
-
-    @Deprecated
-    @Override
-    @WebRemote
-    public String processSelectRow(String docRef, String providerName,
-            String listName, Boolean selection) {
-        PagedDocumentsProvider provider;
-        try {
-            provider = resultsProvidersCache.get(providerName);
-        } catch (ClientException e) {
-            return handleError(e.getMessage());
-        }
-        DocumentModel doc = null;
-        for (DocumentModel pagedDoc : provider.getCurrentPage()) {
-            if (pagedDoc.getRef().toString().equals(docRef)) {
-                doc = pagedDoc;
-                break;
-            }
-        }
-        if (doc == null) {
-            return handleError(String.format(
-                    "could not find doc '%s' in the current page of provider '%s'",
-                    docRef, providerName));
-        }
-        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                : listName;
-        if (Boolean.TRUE.equals(selection)) {
-            documentsListsManager.addToWorkingList(lName, doc);
-        } else {
-            documentsListsManager.removeFromWorkingList(lName, doc);
-        }
-        return computeSelectionActions(lName);
-    }
-
-    @Deprecated
-    @Override
-    @WebRemote
-    public String checkCurrentDocAndProcessSelectPage(String providerName,
-            String listName, Boolean selection, String currentDocRef)
-            throws ClientException {
-        DocumentRef currentDocumentRef = new IdRef(currentDocRef);
-        if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
-            navigationContext.navigateToRef(currentDocumentRef);
-        }
-        return processSelectPage(providerName, listName, selection);
-    }
-
-    @Deprecated
-    @Override
-    @WebRemote
-    public String processSelectPage(String providerName, String listName,
-            Boolean selection) {
-        PagedDocumentsProvider provider;
-        try {
-            provider = resultsProvidersCache.get(providerName);
-        } catch (ClientException e) {
-            return handleError(e.getMessage());
-        }
-        DocumentModelList documents = provider.getCurrentPage();
-        String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
-                : listName;
-        if (Boolean.TRUE.equals(selection)) {
-            documentsListsManager.addToWorkingList(lName, documents);
-        } else {
-            documentsListsManager.removeFromWorkingList(lName, documents);
-        }
-        return computeSelectionActions(lName);
-    }
-
-    private String computeSelectionActions(String listName) {
-        List<Action> availableActions = webActions.getUnfiltredActionsList(listName
-                + "_LIST");
-
-        // add Orderable actions
-        availableActions.addAll(webActions.getUnfiltredActionsList("ORDERABLE_"
-                + listName + "_LIST"));
-
-        List<String> availableActionIds = new ArrayList<String>();
-        for (Action a : availableActions) {
-            if (a.getAvailable()) {
-                availableActionIds.add(a.getId());
-            }
-        }
-        String res = "";
-        if (!availableActionIds.isEmpty()) {
-            res = StringUtils.join(availableActionIds.toArray(), "|");
-        }
-        return res;
     }
 
     @Override

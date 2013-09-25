@@ -26,8 +26,6 @@ import javax.annotation.security.PermitAll;
 import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 
 public interface DeleteActions {
 
@@ -84,30 +82,18 @@ public interface DeleteActions {
 
     boolean getCanPurge() throws ClientException;
 
-    SelectDataModel getDeletedChildrenSelectModel() throws ClientException;
-
-    DocumentModelList getCurrentDocumentDeletedChildrenPage()
-            throws ClientException;
-
     boolean isTrashManagementEnabled();
 
     boolean checkDeletePermOnParents(List<DocumentModel> docsToDelete);
 
     @Destroy
-    //@Remove
     @PermitAll
     void destroy();
 
-    //@Create
     void create();
 
-    Boolean getSearchDeletedDocuments();
-
-    void setSearchDeletedDocuments(Boolean searchDeletedDocuments) throws ClientException;
-
     /**
-     * Undeletes the current document and its children
-     * and his deleted parents.
+     * Undeletes the current document and its children and his deleted parents.
      */
     void restoreCurrentDocument() throws ClientException;
 

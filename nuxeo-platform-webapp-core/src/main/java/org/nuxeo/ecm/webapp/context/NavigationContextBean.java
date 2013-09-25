@@ -54,13 +54,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -75,13 +73,10 @@ import org.nuxeo.ecm.platform.ui.web.util.DocumentLocator;
 import org.nuxeo.ecm.platform.ui.web.util.DocumentsListsUtils;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.action.TypesTool;
-import org.nuxeo.ecm.webapp.contentbrowser.DocumentChildrenStdFarm;
 import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.helpers.ApplicationControllerHelper;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -176,8 +171,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
             return;
         }
 
-        invalidateChildrenProvider();
-
         currentSuperSpace = null;
         currentDocument = documentModel;
         // update all depending variables
@@ -227,54 +220,9 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return currentSuperSpace;
     }
 
-    @Deprecated
-    public DocumentModelList getCurrentDocumentChildren()
-            throws ClientException {
-        final String logPrefix = "<getCurrentDocumentChildren> ";
-
-        if (documentManager == null) {
-            log.error(logPrefix + "documentManager not initialized");
-            return new DocumentModelListImpl();
-        }
-
-        QueryModelActions queryModelActions = (QueryModelActions) Component.getInstance("queryModelActions");
-        QueryModelDescriptor queryDescriptor = queryModelActions.get(
-                DocumentChildrenStdFarm.CHILDREN_BY_COREAPI).getDescriptor();
-        String query = queryDescriptor.getQuery(new Object[] { currentDocument.getId() });
-
-        currentDocumentChildren = documentManager.query(query);
-        return currentDocumentChildren;
-    }
-
-    public void invalidateChildrenProvider() {
-        ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
-        resultsProvidersCache.invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
-    }
-
     public void invalidateCurrentDocument() throws ClientException {
         currentDocument = documentManager.getDocument(currentDocument.getRef());
         updateContextVariables();
-    }
-
-    @Deprecated
-    public DocumentModelList getCurrentDocumentChildrenPage()
-            throws ClientException {
-        final String logPrefix = "<getCurrentDocumentChildrenPage> ";
-
-        if (documentManager == null) {
-            log.error(logPrefix + "documentManager not initialized");
-            return new DocumentModelListImpl();
-        }
-
-        try {
-            ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
-            PagedDocumentsProvider resultsProvider = resultsProvidersCache.get(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
-
-            currentDocumentChildren = resultsProvider.getCurrentPage();
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-        return currentDocumentChildren;
     }
 
     @BypassInterceptors
@@ -477,12 +425,6 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         return getCurrentServerLocation();
     }
 
-    @Factory(value = "currentDocumentChildren", scope = EVENT)
-    public DocumentModelList factoryCurrentDocumentChildren()
-            throws ClientException {
-        return getCurrentDocumentChildren();
-    }
-
     @Factory(value = "currentSuperSpace", scope = EVENT)
     public DocumentModel factoryCurrentSuperSpace() throws ClientException {
         return getCurrentSuperSpace();
@@ -528,7 +470,8 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         Contexts.getEventContext().set("currentDocument", currentDocument);
 
         // Don't flush changeable document with a null id (NXP-10732)
-        if ((getChangeableDocument() != null) && (getChangeableDocument().getId() != null)) {
+        if ((getChangeableDocument() != null)
+                && (getChangeableDocument().getId() != null)) {
             setChangeableDocument(null);
         }
 

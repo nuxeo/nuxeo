@@ -18,12 +18,10 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.nuxeo.ecm.webapp.contentbrowser.DocumentActions.CHILDREN_DOCUMENT_LIST;
 import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
 import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
 import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
 import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
-import static org.nuxeo.ecm.webapp.helpers.EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -34,15 +32,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -50,28 +44,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
-import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
-import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
-import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
-import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
-import org.nuxeo.ecm.webapp.search.SearchActions;
 import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -79,16 +61,11 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.EVENT)
 @Install(precedence = Install.FRAMEWORK)
 public class DeleteActionsBean extends InputController implements
-        DeleteActions, Serializable, SelectDataModelListener,
-        ResultsProviderFarm {
+        DeleteActions, Serializable, SelectDataModelListener {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DeleteActionsBean.class);
-
-    public static final String DELETED_CHILDREN_BY_COREAPI = "CURRENT_DOC_DELETED_CHILDREN";
-
-    public static final String BOARD_USER_DELETED = "USER_DELETED_DOCUMENTS";
 
     public static final String DELETE_OUTCOME = "after_delete";
 
@@ -109,16 +86,6 @@ public class DeleteActionsBean extends InputController implements
 
     @In(create = true)
     protected transient WebActions webActions;
-
-    @In(create = true)
-    protected transient QueryModelActions queryModelActions;
-
-    @In(create = true)
-    protected transient SearchActions searchActions;
-
-    @Out(required = false)
-    @Deprecated
-    protected PagedDocumentsProvider resultsProvider;
 
     protected DocumentModelList currentDocumentChildren;
 
@@ -319,36 +286,6 @@ public class DeleteActionsBean extends InputController implements
         return trashManager.isTrashManagementEnabled();
     }
 
-    public SelectDataModel getDeletedChildrenSelectModel()
-            throws ClientException {
-        DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
-        SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
-                documents, selectedDocuments);
-        model.addSelectModelListener(this);
-        // XXX AT: see if cache is useful
-        // cacheUpdateNotifier.addCacheListener(model);
-        return model;
-    }
-
-    public DocumentModelList getCurrentDocumentDeletedChildrenPage()
-            throws ClientException {
-
-        if (documentManager == null) {
-            log.error("documentManager not initialized");
-            return new DocumentModelListImpl();
-        }
-
-        try {
-            ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
-            resultsProvider = resultsProvidersCache.get(DELETED_CHILDREN_BY_COREAPI);
-            currentDocumentChildren = resultsProvider.getCurrentPage();
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
-        return currentDocumentChildren;
-    }
-
     /**
      * Listener method - not used for now because the binding is not used but
      * might be used after the refactoring.
@@ -370,105 +307,10 @@ public class DeleteActionsBean extends InputController implements
                 + "_LIST");
     }
 
-    // @Create
     public void create() {
     }
 
-    // @Destroy
-    // @Remove
     public void destroy() {
-    }
-
-    public PagedDocumentsProvider getResultsProvider(String name)
-            throws ClientException, ResultsProviderFarmUserException {
-        return getResultsProvider(name, null);
-    }
-
-    public PagedDocumentsProvider getResultsProvider(String name,
-            SortInfo sortInfo) throws ClientException,
-            ResultsProviderFarmUserException {
-        PagedDocumentsProvider provider = null;
-
-        if (BOARD_USER_DELETED.equals(name)) {
-            Object[] params = { currentUser.getName() };
-            try {
-                provider = getQmDocuments(name, params, sortInfo);
-            } catch (Exception e) {
-                log.error("sorted query failed");
-                log.debug(e);
-                log.error("retrying without sort parameters");
-                provider = getQmDocuments(name, params, null);
-            }
-        } else if (DELETED_CHILDREN_BY_COREAPI.equals(name)) {
-            provider = getResultsProviderForDeletedDocs(name, sortInfo);
-        }
-        provider.setName(name);
-        return provider;
-    }
-
-    protected PagedDocumentsProvider getResultsProviderForDeletedDocs(
-            String name, SortInfo sortInfo) throws ClientException {
-        final DocumentModel currentDoc = navigationContext.getCurrentDocument();
-
-        if (DELETED_CHILDREN_BY_COREAPI.equals(name)) {
-            PagedDocumentsProvider provider = getChildrenResultsProviderQMPattern(
-                    name, currentDoc, sortInfo);
-            provider.setName(name);
-            return provider;
-        } else {
-            throw new ClientException("Unknown provider: " + name);
-        }
-    }
-
-    protected PagedDocumentsProvider getQmDocuments(String qmName,
-            Object[] params, SortInfo sortInfo) throws ClientException {
-        return queryModelActions.get(qmName).getResultsProvider(
-                documentManager, params, sortInfo);
-    }
-
-    /**
-     * Usable with a queryModel that defines a pattern NXQL.
-     */
-    protected PagedDocumentsProvider getChildrenResultsProviderQMPattern(
-            String queryModelName, DocumentModel parent, SortInfo sortInfo)
-            throws ClientException {
-
-        final String parentId = parent.getId();
-        Object[] params = { parentId };
-        return getResultsProvider(queryModelName, params, sortInfo);
-    }
-
-    protected PagedDocumentsProvider getResultsProvider(String qmName,
-            Object[] params, SortInfo sortInfo) throws ClientException {
-        QueryModel qm = queryModelActions.get(qmName);
-        return qm.getResultsProvider(documentManager, params, sortInfo);
-    }
-
-    /**
-     * @return the searchDeletedDocuments.
-     */
-    public Boolean getSearchDeletedDocuments() {
-        return searchDeletedDocuments;
-    }
-
-    /**
-     * @param searchDeletedDocuments the searchDeletedDocuments to set.
-     * @throws ClientException
-     */
-    public void setSearchDeletedDocuments(Boolean searchDeletedDocuments)
-            throws ClientException {
-        this.searchDeletedDocuments = searchDeletedDocuments;
-
-        // check if it should search for deleted documents
-        String[] states = null;
-        if (searchDeletedDocuments) {
-            states = new String[] { "project", "approved", "obsolete",
-                    LifeCycleConstants.DELETED_STATE };
-        } else {
-            states = new String[] { "project", "approved", "obsolete" };
-        }
-        searchActions.getDocumentModel().setProperty("advanced_search",
-                "currentLifeCycleStates", states);
     }
 
     public void restoreCurrentDocument() throws ClientException {
@@ -493,13 +335,6 @@ public class DeleteActionsBean extends InputController implements
             return false;
         }
 
-    }
-
-    @Observer(value = { FOLDERISHDOCUMENT_SELECTION_CHANGED })
-    @BypassInterceptors
-    public void resetProviderCache() {
-        ResultsProvidersCache resultsProvidersCache = (ResultsProvidersCache) Component.getInstance("resultsProvidersCache");
-        resultsProvidersCache.invalidate(DELETED_CHILDREN_BY_COREAPI);
     }
 
     public boolean restoreActionDisplay() throws ClientException {

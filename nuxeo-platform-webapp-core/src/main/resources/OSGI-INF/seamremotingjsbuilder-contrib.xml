@@ -7,10 +7,8 @@
       <remotableSeamBeans>
           <beans>
                  <bean>FileManageActions</bean>
-                 <bean>domainActions</bean>
                  <bean>workspaceActions</bean>
                  <bean>documentActions</bean>
-                 <bean>searchActions</bean>
                  <bean>popupHelper</bean>
           </beans>
       </remotableSeamBeans>

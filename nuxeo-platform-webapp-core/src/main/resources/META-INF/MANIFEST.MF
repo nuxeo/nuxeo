@@ -6,18 +6,13 @@ Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
 Nuxeo-Component: OSGI-INF/theme-contrib.xml,
-  OSGI-INF/querymodel-contrib.xml,
-  OSGI-INF/resultsprovider-contrib.xml,
   OSGI-INF/actions-contrib.xml,
   OSGI-INF/importOptions-actions-contrib.xml,
-  OSGI-INF/nxsearchui-framework.xml,
-  OSGI-INF/nxsearchui-contrib.xml,
   OSGI-INF/documentslists-contrib.xml,
   OSGI-INF/trashManagement-framework.xml,
   OSGI-INF/trashManagement-contrib.xml,
   OSGI-INF/uiPermissionService-framework.xml,
   OSGI-INF/urlservice-contrib.xml,
-  OSGI-INF/search-types-contrib.xml,
   OSGI-INF/layouts-contrib.xml,
   OSGI-INF/layouts-summary-contrib.xml,
   OSGI-INF/exceptionhandling-contrib.xml,
