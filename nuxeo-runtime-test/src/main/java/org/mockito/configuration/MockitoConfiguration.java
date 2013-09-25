@@ -16,7 +16,6 @@
  */
 package org.mockito.configuration;
 
-import org.mockito.configuration.DefaultMockitoConfiguration;
 
 /**
  *

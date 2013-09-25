@@ -28,7 +28,6 @@ import org.mockito.exceptions.Reporter;
 import org.mockito.internal.configuration.CaptorAnnotationProcessor;
 import org.mockito.internal.configuration.DefaultAnnotationEngine;
 import org.mockito.internal.configuration.FieldAnnotationProcessor;
-import org.mockito.internal.configuration.MockAnnotationProcessor;
 import org.mockito.internal.configuration.MockitoAnnotationsMockAnnotationProcessor;
 
 /**
@@ -43,9 +42,12 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
     private final Map<Class<? extends Annotation>, FieldAnnotationProcessor<?>> annotationProcessorMap = new HashMap<Class<? extends Annotation>, FieldAnnotationProcessor<?>>();
 
     public NuxeoDefaultAnnotationEngine() {
-        registerAnnotationProcessor(Mock.class, new NuxeoServiceMockAnnotationProcessor());
-        registerAnnotationProcessor(MockitoAnnotations.Mock.class, new MockitoAnnotationsMockAnnotationProcessor());
-        registerAnnotationProcessor(Captor.class, new CaptorAnnotationProcessor());
+        registerAnnotationProcessor(Mock.class,
+                new NuxeoServiceMockAnnotationProcessor());
+        registerAnnotationProcessor(MockitoAnnotations.Mock.class,
+                new MockitoAnnotationsMockAnnotationProcessor());
+        registerAnnotationProcessor(Captor.class,
+                new CaptorAnnotationProcessor());
 
     }
 

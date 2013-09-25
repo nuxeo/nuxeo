@@ -38,12 +38,11 @@ public class NuxeoServiceMockAnnotationProcessor implements
 
         Object mock = Mockito.mock(field.getType(), field.getName());
 
-        for(Annotation ann : field.getAnnotations()) {
-            if(ann.annotationType().equals(RuntimeService.class)) {
+        for (Annotation ann : field.getAnnotations()) {
+            if (ann.annotationType().equals(RuntimeService.class)) {
                 bindMockAsNuxeoService(field, mock);
             }
         }
-
 
         return mock;
     }
@@ -68,6 +67,12 @@ public class NuxeoServiceMockAnnotationProcessor implements
 
         try {
             Framework.getRuntime().getContext().deploy(stream);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("interrupted", e);
+        } catch (RuntimeException e) {
+            throw e; // avoid wrapping a RuntimeException in another
+                     // RuntimeException
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
