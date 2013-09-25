@@ -32,9 +32,6 @@ import org.nuxeo.ecm.core.api.tree.DefaultDocumentTreeFilter;
 import org.nuxeo.ecm.core.api.tree.DefaultDocumentTreeSorter;
 import org.nuxeo.ecm.core.api.tree.DocumentTreeFilter;
 import org.nuxeo.ecm.core.api.tree.DocumentTreeSorter;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -64,18 +61,6 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     protected Map<String, String> pageProviderNames;
 
-    /**
-     * @deprecated use {@link #pageProviderNames}
-     */
-    @Deprecated
-    protected Map<String, String> queryModelNames;
-
-    /**
-     * @deprecated use {@link #pageProviderNames}
-     */
-    @Deprecated
-    protected Map<String, String> orderableQueryModelNames;
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
@@ -92,8 +77,6 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         leafFilters = new HashMap<String, Filter>();
         sorters = new HashMap<String, Sorter>();
         pageProviderNames = new HashMap<String, String>();
-        queryModelNames = new HashMap<String, String>();
-        orderableQueryModelNames = new HashMap<String, String>();
     }
 
     @Override
@@ -102,8 +85,6 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         leafFilters = null;
         sorters = null;
         pageProviderNames = null;
-        queryModelNames = null;
-        orderableQueryModelNames = null;
         super.deactivate(context);
     }
 
@@ -147,24 +128,6 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             }
             log.info("Registering page provider for plugin " + name);
             pageProviderNames.put(name, plugin.getPageProvider());
-
-            // query model
-            if (queryModelNames.containsKey(name)) {
-                // FIXME handle merge?
-                log.info("Overriding query model for plugin " + name);
-                queryModelNames.remove(name);
-            }
-            log.info("Registering query model for plugin " + name);
-            queryModelNames.put(name, plugin.getQueryModelName());
-            // Orederable query model
-            if (orderableQueryModelNames.containsKey(name)) {
-                // FIXME handle merge?
-                log.info("Overriding Orderable query model for plugin " + name);
-                orderableQueryModelNames.remove(name);
-            }
-            log.info("Registering Orderable query model for plugin " + name);
-            orderableQueryModelNames.put(name,
-                    plugin.getOrderableQueryModelName());
         }
     }
 
@@ -194,17 +157,6 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
             if (pageProviderNames.containsKey(name)) {
                 log.info("Unregistering page provider for plugin " + name);
                 pageProviderNames.remove(name);
-            }
-            // query model
-            if (queryModelNames.containsKey(name)) {
-                log.info("Unregistering query model for plugin " + name);
-                queryModelNames.remove(name);
-            }
-            // Orderable query model
-            if (orderableQueryModelNames.containsKey(name)) {
-                log.info("Unregistering Orderable query model for plugin "
-                        + name);
-                orderableQueryModelNames.remove(name);
             }
         }
     }
@@ -311,16 +263,6 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
         return sorter;
     }
 
-    protected QueryModelDescriptor buildQueryModelDescriptor(
-            String queryModelName) {
-        if (queryModelName == null || "".equals(queryModelName)) {
-            return null;
-        }
-        QueryModelService service = (QueryModelService) Framework.getRuntime().getComponent(
-                QueryModelService.NAME);
-        return service.getQueryModelDescriptor(queryModelName);
-    }
-
     public Filter getFilter(String pluginName) {
         return filters.get(pluginName);
     }
@@ -331,16 +273,6 @@ public class TreeManagerImpl extends DefaultComponent implements TreeManager {
 
     public Sorter getSorter(String pluginName) {
         return sorters.get(pluginName);
-    }
-
-    public QueryModelDescriptor getQueryModelDescriptor(String pluginName) {
-        // lazily compute the descriptor to allow for runtime overriding
-        return buildQueryModelDescriptor(queryModelNames.get(pluginName));
-    }
-
-    public QueryModelDescriptor getOrderableQueryModelDescriptor(
-            String pluginName) {
-        return buildQueryModelDescriptor(orderableQueryModelNames.get(pluginName));
     }
 
     @Override

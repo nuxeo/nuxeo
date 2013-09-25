@@ -112,21 +112,6 @@ public interface NavigationContext {
      */
     void saveCurrentDocument() throws ClientException;
 
-    /**
-     * Retrieves the documents contained in the current parent.
-     *
-     * @deprecated this method is not scalable, all the documents will be in
-     *             memory
-     */
-    @Deprecated
-    DocumentModelList getCurrentDocumentChildren() throws ClientException;
-
-    /**
-     * @return list of children for the current document composing the current
-     *         page
-     */
-    DocumentModelList getCurrentDocumentChildrenPage() throws ClientException;
-
     List<PathElement> getCurrentPathList() throws ClientException;
 
     /**
@@ -297,11 +282,6 @@ public interface NavigationContext {
     RepositoryLocation factoryCurrentServerLocation();
 
     /**
-     * Gets children of currentDocuments and put it in Page context.
-     */
-    DocumentModelList factoryCurrentDocumentChildren() throws ClientException;
-
-    /**
      * Gets current document for edition.
      */
     DocumentModel factoryChangeableDocument();
@@ -320,11 +300,6 @@ public interface NavigationContext {
      * Sets the current ContentRoot.
      */
     void setCurrentContentRoot(DocumentModel currentContentRoot);
-
-    /**
-     * Invalidates children provider (temporarily).
-     */
-    void invalidateChildrenProvider();
 
     /**
      * Will trigger reloading of current document data from the server.

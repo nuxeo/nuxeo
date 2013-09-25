@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -50,7 +49,6 @@ import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -86,12 +84,6 @@ public class DirectoryTreeNode {
     protected DirectoryService directoryService;
 
     protected ContentView contentView;
-
-    /**
-     * @deprecated use {@link #contentView} instead
-     */
-    @Deprecated
-    protected QueryModel queryModel;
 
     protected DocumentModelList childrenEntries;
 
@@ -154,19 +146,9 @@ public class DirectoryTreeNode {
                 log.error("Cannot select node: search document model is null");
             }
         } else {
-            lookupQueryModel();
-            String fieldName = config.getFieldName();
-            String schemaName = config.getSchemaName();
-            if (config.isMultiselect()) {
-                List<String> values = (List<String>) queryModel.getProperty(
-                        schemaName, fieldName);
-                values = processSelectedValuesOnMultiSelect(path, values);
-                queryModel.setProperty(schemaName, fieldName, values);
-            } else {
-                queryModel.setProperty(schemaName, fieldName, path);
-            }
-            Events.instance().raiseEvent(EventNames.QUERY_MODEL_CHANGED,
-                    queryModel);
+            log.error(String.format(
+                    "Cannot select node on tree '%s': no content view available",
+                    identifier));
         }
         // raise this event in order to reset the documents lists from
         // 'conversationDocumentsListsManager'
@@ -195,20 +177,13 @@ public class DirectoryTreeNode {
             } else {
                 log.error("Cannot check if node is selected: "
                         + "search document model is null");
-                return false;
             }
         } else {
-            lookupQueryModel();
-            String fieldName = config.getFieldName();
-            String schemaName = config.getSchemaName();
-            if (config.isMultiselect()) {
-                List<Object> values = (List<Object>) queryModel.getProperty(
-                        schemaName, fieldName);
-                return values.contains(path);
-            } else {
-                return path.equals(queryModel.getProperty(schemaName, fieldName));
-            }
+            log.error(String.format(
+                    "Cannot check if node is selected on tree '%s': no "
+                            + "content view available", identifier));
         }
+        return false;
     }
 
     /**
@@ -228,17 +203,13 @@ public class DirectoryTreeNode {
                         return ((String) value).startsWith(path);
                     }
                 } else {
-                    log.error("Cannot check if node is selected: "
+                    log.error("Cannot check if node is opened: "
                             + "search document model is null");
                 }
             } else {
-                lookupQueryModel();
-                String fieldName = config.getFieldName();
-                String schemaName = config.getSchemaName();
-                Object value = queryModel.getProperty(schemaName, fieldName);
-                if (value instanceof String) {
-                    return ((String) value).startsWith(path);
-                }
+                log.error(String.format(
+                        "Cannot check if node is opened on tree '%s': no "
+                                + "content view available", identifier));
             }
         }
         return false;
@@ -344,8 +315,8 @@ public class DirectoryTreeNode {
     }
 
     public String getDescription() {
-        if (level==0) {
-            return translate( FacesContext.getCurrentInstance(), description);
+        if (level == 0) {
+            return translate(FacesContext.getCurrentInstance(), description);
         }
         return description;
     }
@@ -428,23 +399,6 @@ public class DirectoryTreeNode {
         return null;
     }
 
-    /**
-     * @deprecated ise {@link #lookupContentView()} instead
-     */
-    @Deprecated
-    protected void lookupQueryModel() throws ClientException {
-        if (queryModel != null) {
-            return;
-        }
-        SeamContextHelper seamContextHelper = new SeamContextHelper();
-        QueryModelActions qma = (QueryModelActions) seamContextHelper.get("queryModelActions");
-        queryModel = qma.get(config.getQuerymodel());
-        if (queryModel == null) {
-            throw new ClientException("no query model registered as "
-                    + config.getQuerymodel());
-        }
-    }
-
     protected boolean isLastLevel() {
         return config.getDirectories().length == level;
     }
@@ -468,9 +422,6 @@ public class DirectoryTreeNode {
             } catch (ClientException e) {
                 throw new ClientRuntimeException(e);
             }
-        } else if (queryModel != null) {
-            aPath = (String) queryModel.getProperty(config.getSchemaName(),
-                    config.getFieldName());
         }
         if (aPath != null && aPath != "") {
             String[] bitsOfPath = aPath.split("/");

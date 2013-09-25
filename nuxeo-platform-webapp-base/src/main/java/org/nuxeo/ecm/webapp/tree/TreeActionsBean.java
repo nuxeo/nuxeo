@@ -49,8 +49,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.Sorter;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -173,37 +171,20 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 Filter leafFilter = null;
                 Sorter sorter = null;
                 String pageProvider = null;
-                QueryModel queryModel = null;
-                QueryModel orderableQueryModel = null;
                 try {
                     TreeManager treeManager = Framework.getService(TreeManager.class);
                     filter = treeManager.getFilter(treeName);
                     leafFilter = treeManager.getLeafFilter(treeName);
                     sorter = treeManager.getSorter(treeName);
                     pageProvider = treeManager.getPageProviderName(treeName);
-                    QueryModelDescriptor queryModelDescriptor = treeManager.getQueryModelDescriptor(treeName);
-                    queryModel = queryModelDescriptor == null ? null
-                            : new QueryModel(queryModelDescriptor);
-                    QueryModelDescriptor orderableQueryModelDescriptor = treeManager.getOrderableQueryModelDescriptor(treeName);
-                    orderableQueryModel = orderableQueryModelDescriptor == null ? null
-                            : new QueryModel(orderableQueryModelDescriptor);
                 } catch (Exception e) {
                     log.error("Could not fetch filter or sorter for tree ", e);
                 }
 
                 DocumentTreeNode treeRoot = null;
-                if (pageProvider == null) {
-                    // compatibility code
-                    treeRoot = new DocumentTreeNodeImpl(
-                            documentManager.getSessionId(),
-                            firstAccessibleParent, filter, leafFilter, sorter,
-                            queryModel, orderableQueryModel);
-                } else {
-                    treeRoot = new DocumentTreeNodeImpl(
-                            documentManager.getSessionId(),
-                            firstAccessibleParent, filter, leafFilter, sorter,
-                            pageProvider);
-                }
+                treeRoot = new DocumentTreeNodeImpl(
+                        documentManager.getSessionId(), firstAccessibleParent,
+                        filter, leafFilter, sorter, pageProvider);
                 currentTree.add(treeRoot);
                 log.debug("Tree initialized with document: "
                         + firstAccessibleParent.getId());

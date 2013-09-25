@@ -23,7 +23,6 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.Sorter;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
 
 /**
  * Interface for the tree manager service.
@@ -53,24 +52,5 @@ public interface TreeManager extends Serializable {
      * @since 5.4.2
      */
     String getPageProviderName(String pluginName);
-
-    /**
-     * Returns the query model descriptor to use for given plugin name.
-     *
-     * @deprecated since 5.4.2, use {@link #getPageProviderName(String)}
-     *             instead
-     */
-    @Deprecated
-    QueryModelDescriptor getQueryModelDescriptor(String pluginName);
-
-    /**
-     * Returns the query model descriptor to use for given plugin name on an
-     * Orderable DocumentModel.
-     *
-     * @deprecated since 5.4.2, use {@link #getPageProviderName(String)}
-     *             instead
-     */
-    @Deprecated
-    QueryModelDescriptor getOrderableQueryModelDescriptor(String pluginName);
 
 }

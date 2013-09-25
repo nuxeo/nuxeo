@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.quota.QuotaStats;
 import org.nuxeo.ecm.core.api.quota.QuotaStatsNonFolderishCount;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -73,61 +72,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected ContentView orderableContentView;
 
-    @Deprecated
-    protected final QueryModel queryModel;
-
-    @Deprecated
-    protected final QueryModel orderableQueryModel;
-
     protected Map<Object, DocumentTreeNodeImpl> children;
-
-    /**
-     * @deprecated since 5.4: use constructors with content views instead
-     */
-    @Deprecated
-    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
-            Filter leafFilter, Sorter sorter, QueryModel queryModel) {
-        this(document.getSessionId(), document, filter, leafFilter, sorter,
-                queryModel);
-    }
-
-    /**
-     * @deprecated since 5.4: use constructors with content views instead
-     */
-    @Deprecated
-    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
-            Filter leafFilter, Sorter sorter, QueryModel queryModel,
-            QueryModel orderableQueryModel) {
-        this(document.getSessionId(), document, filter, leafFilter, sorter,
-                queryModel, orderableQueryModel);
-    }
-
-    /**
-     * @deprecated since 5.4: use constructors with content views instead
-     */
-    @Deprecated
-    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
-            Filter filter, Filter leafFilter, Sorter sorter,
-            QueryModel queryModel) {
-        this(sessionId, document, filter, leafFilter, sorter, queryModel, null);
-    }
-
-    /**
-     * @deprecated since 5.4: use constructors with content views instead
-     */
-    @Deprecated
-    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
-            Filter filter, Filter leafFilter, Sorter sorter,
-            QueryModel queryModel, QueryModel orderableQueryModel) {
-        this.document = document;
-        this.sessionId = sessionId;
-        this.filter = filter;
-        this.leafFilter = leafFilter;
-        this.sorter = sorter;
-        this.queryModel = queryModel;
-        this.orderableQueryModel = orderableQueryModel;
-        this.pageProviderName = null;
-    }
 
     public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
             Filter filter, Filter leafFilter, Sorter sorter,
@@ -137,8 +82,6 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         this.filter = filter;
         this.leafFilter = leafFilter;
         this.sorter = sorter;
-        this.queryModel = null;
-        this.orderableQueryModel = null;
         this.pageProviderName = pageProviderName;
     }
 
@@ -226,21 +169,11 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                     sessionId);
             List<DocumentModel> documents;
             boolean isOrderable = document.hasFacet(FacetNames.ORDERABLE);
-            if (queryModel == null && pageProviderName == null) {
+            if (pageProviderName == null) {
                 // get the children using the core
                 Sorter sorterToUse = isOrderable ? null : sorter;
                 documents = session.getChildren(document.getRef(), null,
                         SecurityConstants.READ, filter, sorterToUse);
-            } else if (queryModel != null) {
-                // get the children using a query model (BBB)
-                if (isOrderable && orderableQueryModel != null) {
-                    documents = orderableQueryModel.getDocuments(session,
-                            new Object[] { getId() });
-                } else {
-                    documents = queryModel.getDocuments(session,
-                            new Object[] { getId() });
-                }
-                documents = filterAndSort(documents, !isOrderable);
             } else {
                 // use page providers
                 try {
@@ -268,15 +201,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             for (DocumentModel child : documents) {
                 String identifier = child.getId();
                 DocumentTreeNodeImpl childNode;
-                if (queryModel != null) {
-                    childNode = new DocumentTreeNodeImpl(
-                            session.getSessionId(), child, filter, leafFilter,
-                            sorter, queryModel, orderableQueryModel);
-                } else {
-                    childNode = new DocumentTreeNodeImpl(
-                            session.getSessionId(), child, filter, leafFilter,
-                            sorter, pageProviderName);
-                }
+                childNode = new DocumentTreeNodeImpl(session.getSessionId(),
+                        child, filter, leafFilter, sorter, pageProviderName);
                 children.put(identifier, childNode);
             }
         } catch (ClientException e) {

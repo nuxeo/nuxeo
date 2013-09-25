@@ -19,11 +19,9 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
-import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.webapp.action.TypesTool;
@@ -132,20 +130,6 @@ public interface DocumentActions extends SelectDataModelListener {
     Type getChangeableDocumentType();
 
     /**
-     * @deprecated since 5.4: {@link SelectDataModel} usage is now useless
-     *             since content views provide selection wrappers.
-     */
-    @Deprecated
-    SelectDataModel getChildrenSelectModel() throws ClientException;
-
-    /**
-     * @deprecated since 5.4: {@link SelectDataModel} usage is now useless
-     *             since content views provide selection wrappers.
-     */
-    @Deprecated
-    SelectDataModel getSectionChildrenSelectModel() throws ClientException;
-
-    /**
      * Checks the current document write permission.
      *
      * @return <code>true</code> if the user has WRITE permission on current
@@ -153,58 +137,6 @@ public interface DocumentActions extends SelectDataModelListener {
      * @throws ClientException
      */
     boolean getWriteRight() throws ClientException;
-
-    /**
-     * Handle complete row selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect
-     * against browsers' back button errors
-     *
-     * @throws ClientException if currentDocRef is not a valid document
-     * @deprecated since 5.4, use
-     *             {@link DocumentListingActionsBean#checkCurrentDocAndProcessSelectRow(String, String, String, Boolean, String)}
-     *             as selection is now done through ajax
-     */
-    @WebRemote
-    @Deprecated
-    String checkCurrentDocAndProcessSelectRow(String docRef,
-            String providerName, String listName, Boolean selection,
-            String currentDocRef) throws ClientException;
-
-    /**
-     * @deprecated since 5.4, use
-     *             {@link DocumentListingActionsBean#processSelectRow(String, String, String, Boolean)}
-     *             as selection is now done through ajax
-     */
-    @WebRemote
-    @Deprecated
-    String processSelectRow(String docRef, String providerName,
-            String listName, Boolean selection);
-
-    /**
-     * Handle complete table selection event after having ensured that the
-     * navigation context stills points to currentDocumentRef to protect
-     * against browsers' back button errors
-     *
-     * @throws ClientException if currentDocRef is not a valid document
-     * @deprecated since 5.4, use
-     *             {@link DocumentListingActionsBean#checkCurrentDocAndProcessSelectPage(String, String, Boolean, String)}
-     *             as selection is now done through ajax
-     */
-    @Deprecated
-    @WebRemote
-    String checkCurrentDocAndProcessSelectPage(String providerName,
-            String listName, Boolean selection, String currentDocRef)
-            throws ClientException;
-
-    /**
-     * @deprecated since 5.4, use
-     *             {@link DocumentListingActionsBean#processSelectPage(String, String, Boolean)}
-     *             as selection is now done through ajax
-     */
-    @Deprecated
-    @WebRemote
-    String processSelectPage(String providerName, String listName,
-            Boolean selection);
 
     /**
      * Returns the comment to attach to the document

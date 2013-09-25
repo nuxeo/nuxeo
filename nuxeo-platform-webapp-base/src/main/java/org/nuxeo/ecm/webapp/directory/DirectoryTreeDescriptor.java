@@ -60,15 +60,6 @@ public class DirectoryTreeDescriptor {
     protected String label;
 
     /**
-     * Stateful QueryModel to be edited on node selection.
-     *
-     * @deprecated use {@link #contentView} instead
-     */
-    @Deprecated
-    @XNode("@querymodel")
-    protected String querymodel;
-
-    /**
      * Content view to be updated on node selection
      */
     @XNode("@contentView")
@@ -137,14 +128,6 @@ public class DirectoryTreeDescriptor {
         return outcome;
     }
 
-    /**
-     * @deprecated use {@link #getContentView()} instead
-     */
-    @Deprecated
-    public String getQuerymodel() {
-        return querymodel;
-    }
-
     public String getContentView() {
         return contentView;
     }
@@ -169,9 +152,6 @@ public class DirectoryTreeDescriptor {
 
         if (other.schemaName != null) {
             this.schemaName = other.schemaName;
-        }
-        if (other.querymodel != null) {
-            this.querymodel = other.querymodel;
         }
         if (other.contentView != null) {
             this.contentView = other.contentView;
@@ -201,7 +181,6 @@ public class DirectoryTreeDescriptor {
         clone.enabled = enabled;
         clone.isNavigationTree = isNavigationTree;
         clone.label = label;
-        clone.querymodel = querymodel;
         clone.contentView = contentView;
         clone.fieldName = fieldName;
         clone.schemaName = schemaName;
