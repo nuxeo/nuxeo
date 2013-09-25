@@ -79,6 +79,8 @@ public final class TaskEventNames {
 
     /**
      * Fired when an assignment has been updated.
+     *
+     * @deprecated @since 5.7.3 WORKFLOW_TASK_REASSIGNED is used
      */
     public static final String WORKFLOW_USER_ASSIGNMENT_CHANGED = "workflowUserAssignmentChanged";
 
@@ -88,6 +90,11 @@ public final class TaskEventNames {
      * @since 5.7.3
      */
     public static final String WORKFLOW_TASK_REASSIGNED = "workflowTaskReassigned";
+
+    /**
+     * @since 5.8
+     */
+    public static final String WORKFLOW_TASK_DELEGATED = "workflowTaskDelegated";
 
     /**
      * Fired when a new work items list is created.

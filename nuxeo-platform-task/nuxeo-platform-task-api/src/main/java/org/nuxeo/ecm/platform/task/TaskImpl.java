@@ -323,4 +323,15 @@ public class TaskImpl implements Task {
             throw new ClientRuntimeException(e);
         }
     }
+
+    @Override
+    public List<String> getDelegatedActors() throws ClientException {
+        return getPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME);
+    }
+
+    @Override
+    public void setDelegatedActors(List<String> delegatedActors) {
+        setPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME,
+                delegatedActors);
+    }
 }

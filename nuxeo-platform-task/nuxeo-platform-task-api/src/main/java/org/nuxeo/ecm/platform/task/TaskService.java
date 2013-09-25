@@ -254,4 +254,18 @@ public interface TaskService extends Serializable, TaskProvider {
      */
     void reassignTask(CoreSession session, String taskId, List<String> actors,
             String comment) throws ClientException;
+
+    /**
+     * Delegates the given task to the list of actors. The new actors are
+     * granted 'Manage everything' on the task document. The
+     * 'workflowTaskDelegated' event is triggered.
+     *
+     * @param session
+     * @param taskId
+     * @param actors
+     *
+     * @since 5.8
+     */
+    void delegateTask(CoreSession session, String taskId, List<String> actors,
+            String comment) throws ClientException;
 }

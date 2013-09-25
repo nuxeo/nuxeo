@@ -31,9 +31,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 public interface TaskProvider extends Serializable {
 
     /**
-     *
      * @param coreSession
-     * @return A list of task instances visible by the coreSession's user.
+     * @return A list of task instances where the current user is an actor.
+     * Doesn't take into account tasks that were delegated to this user.
+     *
      * @throws IllegalStateException If the currentUser is null.
      */
     List<Task> getCurrentTaskInstances(CoreSession coreSession)
@@ -42,6 +43,12 @@ public interface TaskProvider extends Serializable {
     /**
      * Returns a list of task instances assigned to one of the actors in the
      * list or to its pool.
+     * Doesn't take into account tasks that were delegated to these users.
+     *
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
+     *
+     * @since 5.5
      *
      * @param actors a list used as actorId to retrieve the tasks.
      * @param coreSession
@@ -54,8 +61,12 @@ public interface TaskProvider extends Serializable {
     /**
      * Returns the list of task instances associated with this document for
      * which the user is the actor or belongs to the pooled actor list.
+     * Doesn't take into account tasks that were delegated to this user.
      * <p>
      * If the user is null, then it returns all task instances for the document.
+     *
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
      *
      * @param dm the document.
      * @param user
@@ -69,6 +80,10 @@ public interface TaskProvider extends Serializable {
     /**
      * Returns the list of task instances associated with this document assigned
      * to one of the actor in the list or its pool.
+     * Doesn't take into account tasks that were delegated to these users.
+     *
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
      *
      * @param dm
      * @param actors
@@ -78,6 +93,21 @@ public interface TaskProvider extends Serializable {
      */
     List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
             CoreSession coreSession) throws ClientException;
+
+    /**
+     * Returns the list of task instances associated with this document assigned
+     * to one of the actor in the list or its pool. If the parameter
+     * {@code includeDelegatedTasks} is true, takes into account tasks that were
+     * delegated to these users.
+     *
+     * The query is done in unrestricted mode and so the documents linked to the
+     * tasks are detached.
+     *
+     * @since 5.8
+     */
+    List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
+            boolean includeDelegatedTasks, CoreSession session)
+            throws ClientException;
 
     /**
      * Returns all the tasks instances for the given {@code processId}.
@@ -93,6 +123,7 @@ public interface TaskProvider extends Serializable {
     /**
      * Returns all the tasks instances for the given {@code processId} and where
      * the user is the actor or belongs to the pooled actor list.
+     * Doesn't take into account tasks that were delegated to this user.
      * <p>
      * The query is done in unrestricted mode and so the documents linked to the
      * tasks are detached.
@@ -105,6 +136,7 @@ public interface TaskProvider extends Serializable {
     /**
      * Returns all the tasks instances for the given {@code processId} which
      * assigned to one of the actor in the list or its pool.
+     * Doesn't take into account tasks that were delegated to these users.
      * <p>
      * The query is done in unrestricted mode and so the documents linked to the
      * tasks are detached.

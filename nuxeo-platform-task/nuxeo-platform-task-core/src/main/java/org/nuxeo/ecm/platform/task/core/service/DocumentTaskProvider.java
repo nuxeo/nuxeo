@@ -237,4 +237,20 @@ public class DocumentTaskProvider implements TaskProvider {
                 processId, nodeId);
         return queryTasksUnrestricted(query, session);
     }
+
+    @Override
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
+            boolean includeDelegatedTasks, CoreSession session)
+            throws ClientException {
+        String userNames = TaskQueryConstant.formatStringList(actors);
+        String query = String.format(
+                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY,
+                dm.getId(), userNames);
+        if (includeDelegatedTasks) {
+            query = String.format(
+                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY_OR_DELEGATED_ACTORS_QUERY,
+                    dm.getId(), userNames, userNames);
+        }
+        return queryTasksUnrestricted(query, session);
+    }
 }

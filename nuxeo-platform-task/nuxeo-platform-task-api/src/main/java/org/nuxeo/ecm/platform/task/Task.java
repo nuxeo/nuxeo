@@ -123,4 +123,13 @@ public interface Task extends Serializable {
         needi18n, taskType
     };
 
+    /**
+     * @since 5.8
+     */
+    List<String> getDelegatedActors() throws ClientException;
+
+    /**
+     * @since 5.8
+     */
+    void setDelegatedActors(List<String> delegatedActors);
 }

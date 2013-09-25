@@ -76,4 +76,6 @@ public class TaskConstants {
 
     public static final String TASK_FACET_NAME = "Task";
 
+    public static final String TASK_DELEGATED_ACTORS_PROPERTY_NAME = "nt:delegatedActors";
+
 }

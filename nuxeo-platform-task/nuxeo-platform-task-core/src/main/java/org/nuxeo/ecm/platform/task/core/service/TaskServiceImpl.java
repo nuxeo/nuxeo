@@ -236,13 +236,13 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         if (task != null && (!task.isCancelled() && !task.hasEnded())) {
             return principal.isAdministrator()
                     || principal.getName().equals(task.getInitiator())
-                    || isTaskAssignedToUser(task, principal);
+                    || isTaskAssignedToUser(task, principal, true);
         }
         return false;
     }
 
-    protected boolean isTaskAssignedToUser(Task task, NuxeoPrincipal user)
-            throws ClientException {
+    protected boolean isTaskAssignedToUser(Task task, NuxeoPrincipal user,
+            boolean checkDelegatedActors) throws ClientException {
         if (task != null && user != null) {
             // user actors
             List<String> actors = user.getAllGroups();
@@ -254,6 +254,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             }
             // users
             List<String> users = task.getActors();
+            if (checkDelegatedActors) {
+                users.addAll(task.getDelegatedActors());
+            }
             if (users != null) {
                 for (String userName : users) {
                     if (userName.contains(":")) {
@@ -488,6 +491,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     public void reassignTask(CoreSession session, final String taskId,
             final List<String> newActors, final String comment)
             throws ClientException {
+
         new UnrestrictedSessionRunner(session) {
 
             @Override
@@ -530,6 +534,11 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
                 taskDoc.setACP(acp, true);
                 task.setActors(actorIds);
+                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser();
+                if (currentUser == null) {
+                    currentUser = session.getPrincipal().getName();
+                }
+                task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
 
                 notifyEvent(session, task, session.getDocument(new IdRef(
@@ -541,6 +550,69 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             }
         }.runUnrestricted();
 
+    }
+
+    @Override
+    public void delegateTask(CoreSession session, final String taskId,
+            final List<String> delegatedActors, final String comment)
+            throws ClientException {
+
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+                Task task = taskDoc.getAdapter(Task.class);
+                if (task == null) {
+                    throw new ClientException("Invalid taskId: " + taskId);
+                }
+                // grant EVERYTHING on task doc to the delegated actors
+                List<String> actorIds = new ArrayList<String>();
+                ACP acp = taskDoc.getACP();
+                ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+
+                for (String actor : delegatedActors) {
+                    if (actor.startsWith(NotificationConstants.GROUP_PREFIX)
+                            || actor.startsWith(NotificationConstants.USER_PREFIX)) {
+                        // prefixed assignees with "user:" or "group:"
+                        actorIds.add(actor.substring(actor.indexOf(":") + 1));
+                    } else {
+                        actorIds.add(actor);
+                    }
+                }
+                for (String actorId : actorIds) {
+                    ACE ace = new ACE(actorId, SecurityConstants.EVERYTHING,
+                            true);
+                    if (!acl.contains(ace)) {
+                        acl.add(ace);
+                    }
+                }
+                taskDoc.setACP(acp, true);
+
+                List<String> allDelegatedActors = new ArrayList<String>();
+                allDelegatedActors.addAll(task.getDelegatedActors());
+                for (String actor : delegatedActors) {
+                    if (!allDelegatedActors.contains(actor)) {
+                        allDelegatedActors.add(actor);
+                    }
+                }
+                task.setDelegatedActors(allDelegatedActors);
+
+                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser();
+                if (currentUser == null) {
+                    currentUser = session.getPrincipal().getName();
+                }
+                task.addComment(currentUser, comment);
+                session.saveDocument(taskDoc);
+
+                notifyEvent(session, task, session.getDocument(new IdRef(
+                        task.getTargetDocumentId())),
+                        TaskEventNames.WORKFLOW_TASK_DELEGATED,
+                        new HashMap<String, Serializable>(), comment,
+                        (NuxeoPrincipal) session.getPrincipal(), actorIds);
+
+            }
+
+        }.runUnrestricted();
     }
 
     protected void notifyEvent(CoreSession session, Task task,
@@ -558,7 +630,18 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             eventProperties.putAll(eventInfo);
         }
         TaskEventNotificationHelper.notifyEvent(session, doc, principal, task,
-                event, eventProperties,
-                comment, null);
+                event, eventProperties, comment, null);
+    }
+
+    @Override
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
+            boolean includeDelegatedTasks, CoreSession session)
+            throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            tasks.addAll(taskProvider.getTaskInstances(dm, actors,
+                    includeDelegatedTasks, session));
+        }
+        return tasks;
     }
 }
