@@ -1,7 +1,9 @@
 <div xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html" xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory" xmlns:nxl="http://nuxeo.org/nxforms/layout">
-  
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
   <h3 class="summaryTitle">
     <h:outputText value="#{messages['label.document.routing.participatingDocuments']}" />
   </h3>
@@ -16,8 +18,10 @@
     <c:when test="#{lifeCycleState eq 'validated'}">
       <nxl:layout mode="edit" value="#{currentDocument}"
         name="document_routing_instance" />
-      <h:commandButton type="submit" class="button smallButton"
-        value="#{messages['action.start.document.routing']}" action="#{routingActions.startRoute()}" id="start_route" />
+      <h:commandButton styleClass="button smallButton"
+        value="#{messages['action.start.document.routing']}"
+        action="#{routingActions.startRoute()}"
+        id="start_route" />
     </c:when>
     <c:otherwise>
       <nxl:layout mode="view" value="#{currentDocument}"

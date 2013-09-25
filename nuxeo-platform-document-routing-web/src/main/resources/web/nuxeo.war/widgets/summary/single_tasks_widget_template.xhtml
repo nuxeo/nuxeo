@@ -1,4 +1,5 @@
-<div class="single_tasks_block" xmlns:f="http://java.sun.com/jsf/core"
+<div class="single_tasks_block"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -7,77 +8,73 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-  
+
   <a4j:outputPanel id="#{widget.id}_panel" layout="block">
 
     <nxu:set var="currentDashBoardItemsExceptPublishingTasks"
       value="#{taskActions.getCurrentDashBoardItemsExceptPublishingTasks()}"
       cache="true">
-      <nxu:set var="showFirstForm"
-        value="#{currentDashBoardItemsExceptPublishingTasks.size() == 1}"
-        cache="true">
+    <nxu:set var="showFirstForm"
+      value="#{currentDashBoardItemsExceptPublishingTasks.size() == 1}"
+      cache="true">
 
-        <c:if
-          test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
+      <c:if test="#{!empty currentDashBoardItemsExceptPublishingTasks}">
 
-          <c:if test="#{widget.handlingLabels}">
-            <c:if test="#{!empty widget.label}">
-              <ui:include
-                src="/widgets/incl/widget_label_template.xhtml">
-                <ui:param name="labelStyleClass"
-                  value="summaryTitle #{widgetProperty_headerStyleClass}" />
-              </ui:include>
-            </c:if>
-            <c:if test="#{empty widget.label}">
-              <ui:include src="/widgets/incl/label_template.xhtml">
-                <ui:param name="label"
-                  value="label.document.routing.your.tasks" />
-                <ui:param name="helpLabel" value="#{widget.helpLabel}" />
-                <ui:param name="translated" value="true" />
-                <ui:param name="required" value="#{widget.required}" />
-                <ui:param name="labelStyleClass"
-                  value="summaryTitle #{widgetProperty_headerStyleClass}" />
-              </ui:include>
-            </c:if>
+        <c:if test="#{widget.handlingLabels}">
+          <c:if test="#{!empty widget.label}">
+            <ui:include
+              src="/widgets/incl/widget_label_template.xhtml">
+              <ui:param name="labelStyleClass"
+                value="summaryTitle #{widgetProperty_headerStyleClass}" />
+            </ui:include>
           </c:if>
+          <c:if test="#{empty widget.label}">
+            <ui:include src="/widgets/incl/label_template.xhtml">
+              <ui:param name="label"
+                value="label.document.routing.your.tasks" />
+              <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+              <ui:param name="translated" value="true" />
+              <ui:param name="required" value="#{widget.required}" />
+              <ui:param name="labelStyleClass"
+                value="summaryTitle #{widgetProperty_headerStyleClass}" />
+            </ui:include>
+          </c:if>
+        </c:if>
 
-          <c:forEach var="dashboardItem"
-            items="#{currentDashBoardItemsExceptPublishingTasks}"
-            varStatus="status">
-             <nxu:set var="taskInfo"
-              value="#{routingTaskActions.getTaskInfo(dashboardItem.task, false)}"
-              cache="true">
-              <div class="simpleBox fullWidth focusColumn">
-              <c:if
-                test="#{taskInfo.isCanBeReassigned() and widgetProperty_allowTaskReassignment}">
+        <c:forEach var="dashboardItem"
+          items="#{currentDashBoardItemsExceptPublishingTasks}"
+          varStatus="status">
+          <nxu:set var="taskInfo"
+            value="#{routingTaskActions.getTaskInfo(dashboardItem.task, false)}"
+            cache="true">
+            <div class="simpleBox fullWidth focusColumn">
+              <c:if test="#{taskInfo.isCanBeReassigned() and widgetProperty_allowTaskReassignment}">
                 <nxl:layout name="task_additional_actions_layout"
                   mode="edit" value="#{taskInfo}" />
               </c:if>
               <c:if test="#{widgetProperty_allowTaskReassignment}">
-                <h:form enctype="multipart/form-data" id="#{widget.id}#{status.index}_nxl_current_route_layout_current_route_user_tasks_form">
+                <h:form enctype="multipart/form-data"
+                  id="#{widget.id}#{status.index}_nxl_current_route_layout_current_route_user_tasks_form">
                   <ui:include
                     src="/incl/tasks/workflow_task_template.xhtml">
-                    <ui:param name="dashboardItem"
-                      value="#{dashboardItem}" />
+                    <ui:param name="dashboardItem" value="#{dashboardItem}" />
                     <ui:param name="task" value="#{dashboardItem.task}" />
                   </ui:include>
                 </h:form>
               </c:if>
-             <c:if test="#{!widgetProperty_allowTaskReassignment}">
-                  <ui:include
-                    src="/incl/tasks/workflow_task_template.xhtml">
-                    <ui:param name="dashboardItem"
-                      value="#{dashboardItem}" />
-                    <ui:param name="task" value="#{dashboardItem.task}" />
-                  </ui:include>
+              <c:if test="#{!widgetProperty_allowTaskReassignment}">
+                <ui:include src="/incl/tasks/workflow_task_template.xhtml">
+                  <ui:param name="dashboardItem" value="#{dashboardItem}" />
+                  <ui:param name="task" value="#{dashboardItem.task}" />
+                </ui:include>
               </c:if>
-              </div>
-              </nxu:set>
-          </c:forEach>
+            </div>
+          </nxu:set>
+        </c:forEach>
 
-        </c:if>
+      </c:if>
 
-      </nxu:set>
+    </nxu:set>
     </nxu:set>
 
   </a4j:outputPanel>
