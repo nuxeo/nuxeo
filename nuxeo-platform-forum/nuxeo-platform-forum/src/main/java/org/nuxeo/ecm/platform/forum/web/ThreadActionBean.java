@@ -144,6 +144,8 @@ public class ThreadActionBean implements ThreadAction {
 
         if (moderated) {
 
+            List<String> selectedModerators = getSelectedModerators();
+
             // The current user should have the right to moderate
             if (!selectedModerators.contains(NuxeoPrincipal.PREFIX
                     + currentUser.getName())) {
@@ -179,7 +181,7 @@ public class ThreadActionBean implements ThreadAction {
         return docThread;
     }
 
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
         try {

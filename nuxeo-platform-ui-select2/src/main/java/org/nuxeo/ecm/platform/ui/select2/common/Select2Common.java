@@ -61,7 +61,7 @@ public class Select2Common {
 
     public static final String TYPE_KEY_NAME = "type";
 
-    public static final String PREFIXED_ID_KEY_NAME = "prefixedId";
+    public static final String PREFIXED_ID_KEY_NAME = "prefixed_id";
 
     public static final String SUGGESTION_FORMATTER = "suggestionFormatter";
 
