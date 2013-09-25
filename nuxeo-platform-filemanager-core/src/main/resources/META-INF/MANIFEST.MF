@@ -13,7 +13,7 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 0.0.0.SNAPSHOT
 Nuxeo-Component: OSGI-INF/nxfilemanager-service.xml,
  OSGI-INF/nxfilemanager-plugins-contrib.xml,
- OSGI-INF/nxfilemanager-querymodel-contrib.xml
+ OSGI-INF/nxfilemanager-pageprovider-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: au.com.bytecode.opencsv,
  javax.annotation;version="1.0",

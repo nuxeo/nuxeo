@@ -19,14 +19,18 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
-import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
-import org.nuxeo.ecm.core.search.api.client.querymodel.descriptor.QueryModelDescriptor;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -43,28 +47,26 @@ public class DefaultCreationContainerListProvider extends
 
     public static final String CONTAINER_LIST_PROVIDER_QM = "DEFAULT_CREATION_CONTAINER_LIST_PROVIDER";
 
-    protected QueryModelService qmService;
+    protected PageProviderService ppService;
 
-    protected QueryModelService getQueryModelService() {
-        if (qmService == null) {
-            // TODO: update this to a service lookup NXP-2132
-            qmService = (QueryModelService) Framework.getRuntime().getComponent(
-                    QueryModelService.NAME);
+    protected PageProviderService getPageProviderService() {
+        if (ppService == null) {
+            ppService = Framework.getLocalService(PageProviderService.class);
         }
-        return qmService;
+        return ppService;
     }
 
+    @SuppressWarnings("unchecked")
     public DocumentModelList getCreationContainerList(
             CoreSession documentManager, String docType) throws Exception {
-        // fetch the CONTAINER_LIST_PROVIDER_QM query model
-        QueryModelDescriptor descriptor = getQueryModelService().getQueryModelDescriptor(
-                CONTAINER_LIST_PROVIDER_QM);
-        // assume the QM is stateless
-        QueryModel qm = new QueryModel(descriptor);
-        DocumentModelList allContainers = qm.getDocuments(documentManager,
-                new Object[0]);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) documentManager);
+
+        PageProvider<DocumentModel> allContainers = (PageProvider<DocumentModel>) getPageProviderService().getPageProvider(
+                CONTAINER_LIST_PROVIDER_QM, null, null, null, props);
         DocumentModelList filteredContainers = new DocumentModelListImpl();
-        for (DocumentModel container : allContainers) {
+        for (DocumentModel container : allContainers.getCurrentPage()) {
             if (documentManager.hasPermission(container.getRef(),
                     SecurityConstants.ADD_CHILDREN)) {
                 filteredContainers.add(container);

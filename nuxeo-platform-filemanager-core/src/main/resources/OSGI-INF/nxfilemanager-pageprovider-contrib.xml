@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.PageProviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="DEFAULT_CREATION_CONTAINER_LIST_PROVIDER">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:primaryType IN ('Workspace',
+        'Folder') AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="ecm:path" ascending="true" />
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>
