@@ -273,6 +273,21 @@ public class CoreQueryDocumentPageProvider extends
     }
 
     /**
+     * Returns the page limit. The n first page we know they exist. We don't
+     * compute the number of page beyond this limit.
+     *
+     * @since 5.7.3
+     */
+    @Override
+    public long getPageLimit() {
+        long pageSize = getPageSize();
+        if (pageSize == 0) {
+            return 0;
+        }
+        return getMaxResults() / pageSize;
+    }
+
+    /**
      * Sets the maximum number of result elements.
      *
      * @since 5.6

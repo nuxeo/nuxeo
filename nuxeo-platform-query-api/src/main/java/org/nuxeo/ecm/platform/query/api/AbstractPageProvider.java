@@ -699,6 +699,15 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return currentHigherNonEmptyPageIndex;
     }
 
+    /**
+     * Returns the page limit. The n first page we know they exist.
+     *
+     * @since 5.7.3
+     */
+    public long getPageLimit() {
+        return PAGE_LIMIT_UNKNOWN;
+    }
+
     public void setCurrentHigherNonEmptyPageIndex(int higherFilledPageIndex) {
         this.currentHigherNonEmptyPageIndex = higherFilledPageIndex;
     }

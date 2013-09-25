@@ -59,6 +59,13 @@ public interface PageProvider<T> extends Serializable {
     public static final long DEFAULT_MAX_PAGE_SIZE = 100;
 
     /**
+     * Page limit unknown.
+     *
+     * @since 5.7.3
+     */
+    public static final long PAGE_LIMIT_UNKNOWN = -1;
+
+    /**
      * Returns the provider identifier
      */
     String getName();
@@ -139,6 +146,13 @@ public interface PageProvider<T> extends Serializable {
      * Returns the total number of pages or 0 if number of pages is unknown.
      */
     long getNumberOfPages();
+
+    /**
+     * Returns the page limit. The n first page we know they exist.
+     *
+     * @since 5.7.3
+     */
+    long getPageLimit();
 
     /**
      * Returns the current page of results.
