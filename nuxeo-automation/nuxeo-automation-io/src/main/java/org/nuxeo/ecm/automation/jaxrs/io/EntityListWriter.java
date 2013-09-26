@@ -39,9 +39,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
 
-    @Context
-    JsonFactory factory;
-
     /**
      * Returns the entity-type value of the list (ie: users, groups....)
      *
@@ -79,12 +76,6 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     }
 
     @Override
-    public long getSize(List<T> t, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return -1L;
-    }
-
-    @Override
     protected void writeEntityBody(JsonGenerator jg, List<T> list)
             throws IOException, ClientException {
         writePaginableHeader(jg, list);
@@ -94,8 +85,6 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
             writeItem(jg, item);
         }
         jg.writeEndArray();
-        jg.writeEndObject();
-        jg.flush();
     }
 
     protected void writePaginableHeader(JsonGenerator jg, List<T> list)

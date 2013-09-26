@@ -49,7 +49,7 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         if (genericType instanceof ParameterizedType) {
-            // See EntityListWriter to write Writer of parameterized class
+            // See EntityListWriter to write Writer of parametrized class
             return false;
         } else {
             ParameterizedType ptype = (ParameterizedType) this.getClass().getGenericSuperclass();
@@ -81,13 +81,6 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
         }
     }
 
-    /**
-     * @param jg a ready to user JsonGenerator
-     * @param item
-     * @throws IOException
-     * @throws ClientException
-     *
-     */
     public void writeEntity(JsonGenerator jg, T item) throws IOException,
             ClientException {
         jg.writeStartObject();
@@ -102,12 +95,6 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     /**
      * Write the body of the entity. The object has already been opened and it
      * entity-type rendered.
-     *
-     * @param jg
-     * @param item
-     * @throws IOException
-     * @throws ClientException
-     *
      */
     abstract protected void writeEntityBody(JsonGenerator jg, T item)
             throws IOException, ClientException;
