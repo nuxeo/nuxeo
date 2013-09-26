@@ -5,19 +5,25 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
+
   <ui:include src="/incl/document_actions.xhtml" />
-  <nxu:methodResult name="provider"
-  value="#{resultsProvidersCache.get('CURRENT_DOC_CHILDREN')}">
+  <div class="clear"></div>
 
-  <ui:decorate template="/incl/picturebook.xhtml">
-    <ui:param name="documents" value="#{currentChildrenSelectModel}" />
-    <ui:param name="showCheckboxes" value="#{true}" />
-    <ui:param name="provider" value="#{provider}" />
-    <ui:param name="providerName" value="CURRENT_DOC_CHILDREN" />
-    <ui:param name="listName" value="CURRENT_SELECTION" />
-    <ui:define name="buttons">
-      <ui:include src="/incl/clipboard.xhtml" />
-    </ui:define>
+  <nxu:set var="contentView"
+    value="#{contentViewActions.getContentViewWithProvider('document_content', null, null, -1, -1, -1)}"
+    cache="true">
+  <nxu:set var="provider" value="#{contentView.currentPageProvider}"
+    cache="true">
+    #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
 
-  </ui:decorate>
-</nxu:methodResult></div>
+    <c:if test="#{not empty provider.currentPage}">
+      <ui:decorate template="/incl/picturebook.xhtml">
+        <ui:param name="providerId" value="#{contentView.id}" />
+        <ui:param name="documents" value="#{provider.currentSelectPage}" />
+      </ui:decorate>
+    </c:if>
+
+  </nxu:set>
+  </nxu:set>
+
+</div>

@@ -15,6 +15,14 @@
         <layout>heading</layout>
         <layout>picturebook</layout>
       </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
     </type>
 
     <type id="Picture">

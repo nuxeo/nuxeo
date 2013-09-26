@@ -7,9 +7,7 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web,stateless
 Nuxeo-Component: OSGI-INF/imaging-types-contrib.xml,
  OSGI-INF/imaging-layouts-contrib.xml,
- OSGI-INF/imaging-codec-contrib.xml,
- OSGI-INF/imaging-querymodel-contrib.xml,
- OSGI-INF/imaging-resultsprovider-contrib.xml
+ OSGI-INF/imaging-codec-contrib.xml
 Eclipse-LazyStart: true
 Require-Bundle: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.webapp.base,

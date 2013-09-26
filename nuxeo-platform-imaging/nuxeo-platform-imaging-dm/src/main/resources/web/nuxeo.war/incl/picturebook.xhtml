@@ -10,7 +10,8 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:c="http://java.sun.com/jstl/core" onLoad="loadCSs()">
 
-  <a4j:region rendered="#{documents != null}">
+<c:if test="#{documents != null}">
+  <a4j:region>
 
   <ui:include src="/incl/picture_download_form.xhtml"/>
 
@@ -107,4 +108,6 @@
       <ui:insert name="buttons" />
     </h:form>
   </a4j:region>
+</c:if>
+
 </div>
