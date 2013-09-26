@@ -183,6 +183,8 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             TaskEventNames.WORKFLOW_TASK_STOP,
             TaskEventNames.WORKFLOW_TASK_REJECTED,
             TaskEventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED,
+            TaskEventNames.WORKFLOW_TASK_REASSIGNED,
+            TaskEventNames.WORKFLOW_TASK_DELEGATED,
             TaskEventNames.WORKFLOW_TASK_COMPLETED,
             TaskEventNames.WORKFLOW_TASK_REMOVED,
             TaskEventNames.WORK_ITEMS_LIST_LOADED,
