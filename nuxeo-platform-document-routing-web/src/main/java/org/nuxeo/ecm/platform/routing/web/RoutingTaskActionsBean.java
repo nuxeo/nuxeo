@@ -597,7 +597,9 @@ public class RoutingTaskActionsBean implements Serializable {
     /***
      * @since 5.7
      */
-    @Observer(value = { TaskEventNames.WORKFLOW_TASK_COMPLETED })
+    @Observer(value = { TaskEventNames.WORKFLOW_TASK_COMPLETED,
+            TaskEventNames.WORKFLOW_TASK_REASSIGNED,
+            TaskEventNames.WORKFLOW_TASK_DELEGATED })
     @BypassInterceptors
     public void OnTaskCompleted() {
         if (contentViewActions != null) {
@@ -615,9 +617,7 @@ public class RoutingTaskActionsBean implements Serializable {
             Framework.getLocalService(DocumentRoutingService.class).reassignTask(
                     documentManager, taskInfo.getTaskId(),
                     taskInfo.getActors(), taskInfo.getComment());
-            // triggers the refresh for the same providers as complete task, task is now
-            // assigned to a different user
-            Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
+            Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_REASSIGNED);
         } catch (DocumentRouteException e) {
             log.error(e);
             facesMessages.add(StatusMessage.Severity.ERROR,
@@ -640,5 +640,22 @@ public class RoutingTaskActionsBean implements Serializable {
             log.error("Can not fetch route instance with id " + instanceId, e);
         }
         return workflowTitle;
+    }
+
+    /**
+     * @since 5.8
+     */
+    public String delegateTask(TaskInfo taskInfo) {
+        try {
+            Framework.getLocalService(DocumentRoutingService.class).delegateTask(
+                    documentManager, taskInfo.getTaskId(),
+                    taskInfo.getActors(), taskInfo.getComment());
+            Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_DELEGATED);
+        } catch (DocumentRouteException e) {
+            log.error(e);
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    messages.get("workflow.feedback.error.taskEnded"));
+        }
+        return null;
     }
 }

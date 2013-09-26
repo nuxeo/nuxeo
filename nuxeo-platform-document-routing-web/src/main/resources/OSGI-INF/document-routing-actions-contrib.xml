@@ -166,6 +166,18 @@
         <property name="ajaxSupport">true</property>
       </properties>
     </action>
+    
+    <action id="delegateTask" order="110" label="label.workflow.task.delegation"
+      type="fancybox">
+      <category>TASK_ADDITIONAL_ACTIONS</category>
+      <properties>
+        <property name="include">/incl/tasks/task_delegation_box.xhtml</property>
+        <property name="autoDimensions">true</property>
+        <property name="modal">true</property>
+        <property name="scrolling">auto</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
 
   </extension>
 

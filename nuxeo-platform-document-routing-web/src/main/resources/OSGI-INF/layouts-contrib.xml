@@ -158,7 +158,7 @@
         <label mode="any"></label>
       </labels>
       <properties widgetMode="any">
-        <property name="allowTaskReassignment">true</property>
+        <property name="displayTaskAdditionalActions">true</property>
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>

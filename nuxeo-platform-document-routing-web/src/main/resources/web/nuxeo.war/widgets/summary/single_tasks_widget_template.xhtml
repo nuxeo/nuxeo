@@ -48,11 +48,11 @@
             value="#{routingTaskActions.getTaskInfo(dashboardItem.task, false)}"
             cache="true">
             <div class="simpleBox fullWidth focusColumn">
-              <c:if test="#{taskInfo.isCanBeReassigned() and widgetProperty_allowTaskReassignment}">
+              <c:if test="#{widgetProperty_displayTaskAdditionalActions}">
                 <nxl:layout name="task_additional_actions_layout"
                   mode="edit" value="#{taskInfo}" />
               </c:if>
-              <c:if test="#{widgetProperty_allowTaskReassignment}">
+              <c:if test="#{widgetProperty_displayTaskAdditionalActions}">
                 <h:form enctype="multipart/form-data"
                   id="#{widget.id}#{status.index}_nxl_current_route_layout_current_route_user_tasks_form">
                   <ui:include
@@ -62,7 +62,7 @@
                   </ui:include>
                 </h:form>
               </c:if>
-              <c:if test="#{!widgetProperty_allowTaskReassignment}">
+              <c:if test="#{!widgetProperty_displayTaskAdditionalActions}">
                 <ui:include src="/incl/tasks/workflow_task_template.xhtml">
                   <ui:param name="dashboardItem" value="#{dashboardItem}" />
                   <ui:param name="task" value="#{dashboardItem.task}" />

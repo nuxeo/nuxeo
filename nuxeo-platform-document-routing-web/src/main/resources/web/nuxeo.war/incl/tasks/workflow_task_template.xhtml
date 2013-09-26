@@ -35,6 +35,16 @@ Displays a 'task' or a 'dashboardItem' object if the task was not created by the
                   value="#{actor}" />
               </c:forEach></td>
           </tr>
+           <tr>
+            <td class="labelColumn"><h:outputText
+                value="#{messages['label.route.task.delegated.to']}" /></td>
+            <td class="fieldColumn"><c:forEach var="actor"
+                items="#{task.delegatedActors}">
+                <nxl:widgetType name="template" mode="view"
+                  template="/document_routing_widgets/route_assignee_widget_template.xhtml"
+                  value="#{actor}" />
+              </c:forEach></td>
+          </tr>
           <tr>
             <td class="labelColumn"><h:outputText
                 value=" #{messages['label.route.task.due.date']} " /></td>
