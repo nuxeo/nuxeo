@@ -2033,6 +2033,10 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals(
                 "test",
                 route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+        // user1 and user 2 have no longer Write on the document following the
+        // workflow
+        assertFalse(session.hasPermission(user2, docs.get(0).getRef(), "Write"));
+        assertFalse(session.hasPermission(user1, docs.get(0).getRef(), "Write"));
         closeSession(session);
     }
 }

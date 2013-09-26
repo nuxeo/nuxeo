@@ -588,4 +588,17 @@ public interface DocumentRoutingService {
     void grantPermissionToTaskDelegatedActors(CoreSession session,
             String permission, List<DocumentModel> docs, Task task)
             throws ClientException;
+
+    /**
+     * Removes on these documents the specified assignees permissions for the
+     * task actors and also tasks delegated actors if this task was delegated
+     *
+     * @param session the session
+     * @param docs the documents
+     * @param task the task
+     *
+     * @since 5.8
+     */
+    void removePermissionsForTaskActors(CoreSession session,
+            List<DocumentModel> docs, Task task) throws ClientException;
 }
