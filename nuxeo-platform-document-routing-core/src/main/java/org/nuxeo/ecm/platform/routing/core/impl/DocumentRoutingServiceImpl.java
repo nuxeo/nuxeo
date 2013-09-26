@@ -929,40 +929,24 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
 
     @Override
     public void grantPermissionToTaskAssignees(CoreSession session,
-            final String permission, final List<DocumentModel> docs,
-            final Task task) throws ClientException {
-        final List<String> actorIds = new ArrayList<String>();
-        for (String actor : task.getActors()) {
-            if (actor.contains(":")) {
-                actorIds.add(actor.split(":")[1]);
-            } else {
-                actorIds.add(actor);
-            }
-        }
-        final String aclName = getACLName(task);
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() throws ClientException {
-                for (DocumentModel doc : docs) {
-                    ACP acp = doc.getACP();
-                    acp.removeACL(aclName);
-                    ACL acl = new ACLImpl(aclName);
-                    for (String actorId : actorIds) {
-                        acl.add(new ACE(actorId, permission, true));
-                    }
-                    acp.addACL(0, acl); // add first to get before blocks
-                    doc.setACP(acp, true);
-                    session.saveDocument(doc);
-                }
-            }
+            String permission, List<DocumentModel> docs, Task task)
+            throws ClientException {
+        setAclForActors(session, getRoutingACLName(task), permission, docs,
+                task.getActors());
+    }
 
-        }.runUnrestricted();
+    @Override
+    public void grantPermissionToTaskDelegatedActors(CoreSession session,
+            String permission, List<DocumentModel> docs, Task task)
+            throws ClientException {
+        setAclForActors(session, getDelegationACLName(task), permission, docs,
+                task.getDelegatedActors());
     }
 
     @Override
     public void removePermissionFromTaskAssignees(CoreSession session,
             final List<DocumentModel> docs, Task task) throws ClientException {
-        final String aclName = getACLName(task);
+        final String aclName = getRoutingACLName(task);
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
@@ -980,8 +964,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
      * Finds an ACL name specific to the task (there may be several tasks
      * applying permissions to the same document).
      */
-    protected static String getACLName(Task task) {
+    protected static String getRoutingACLName(Task task) {
         return DocumentRoutingConstants.DOCUMENT_ROUTING_ACL + '/'
+                + task.getId();
+    }
+
+    protected static String getDelegationACLName(Task task) {
+        return DocumentRoutingConstants.DOCUMENT_ROUTING_DELEGATION_ACL + '/'
                 + task.getId();
     }
 
@@ -1017,6 +1006,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         try {
             removePermissionFromTaskAssignees(session, docs, task);
             // delete task
+            // remove permission for task delegated actors
             if (delete) {
                 session.removeDocument(new IdRef(task.getId()));
             }
@@ -1153,5 +1143,85 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new DocumentRouteException("Can not reassign task " + taskId,
                     e);
         }
+    }
+
+    @Override
+    public void delegateTask(CoreSession session, final String taskId,
+            final List<String> delegatedActors, final String comment)
+            throws DocumentRouteException {
+        try {
+            new UnrestrictedSessionRunner(session) {
+
+                @Override
+                public void run() throws ClientException {
+                    DocumentModel taskDoc = session.getDocument(new IdRef(
+                            taskId));
+                    Task task = taskDoc.getAdapter(Task.class);
+                    if (task == null) {
+                        throw new DocumentRouteException("Invalid taskId: "
+                                + taskId);
+                    }
+                    String routeId = task.getProcessId();
+                    if (routeId != null) {
+                        DocumentModel routeDoc = session.getDocument(new IdRef(
+                                routeId));
+                        GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                        if (routeInstance == null) {
+                            throw new DocumentRouteException(
+                                    "Invalid routeInstanceId: " + routeId
+                                            + " referenced by the task "
+                                            + taskId);
+                        }
+                        GraphNode node = routeInstance.getNode(task.getType());
+                        if (node == null) {
+                            throw new DocumentRouteException("Invalid node "
+                                    + routeId + " referenced by the task "
+                                    + taskId);
+                        }
+                        DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                        Framework.getLocalService(TaskService.class).delegateTask(
+                                session, taskId, delegatedActors, comment);
+                        // refresh task
+                        task.getDocument().refresh();
+                        // grant permission to the new assignees
+                        grantPermissionToTaskDelegatedActors(session,
+                                node.getTaskAssigneesPermission(), docs, task);
+                    }
+                }
+            }.runUnrestricted();
+        } catch (ClientException e) {
+            throw new DocumentRouteException("Can not delegate task " + taskId,
+                    e);
+        }
+    }
+
+    protected void setAclForActors(CoreSession session, final String aclName,
+            final String permission, final List<DocumentModel> docs,
+            List<String> actors) throws ClientException {
+        final List<String> actorIds = new ArrayList<String>();
+        for (String actor : actors) {
+            if (actor.contains(":")) {
+                actorIds.add(actor.split(":")[1]);
+            } else {
+                actorIds.add(actor);
+            }
+        }
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                for (DocumentModel doc : docs) {
+                    ACP acp = doc.getACP();
+                    acp.removeACL(aclName);
+                    ACL acl = new ACLImpl(aclName);
+                    for (String actorId : actorIds) {
+                        acl.add(new ACE(actorId, permission, true));
+                    }
+                    acp.addACL(0, acl); // add first to get before blocks
+                    doc.setACP(acp, true);
+                    session.saveDocument(doc);
+                }
+            }
+
+        }.runUnrestricted();
     }
 }

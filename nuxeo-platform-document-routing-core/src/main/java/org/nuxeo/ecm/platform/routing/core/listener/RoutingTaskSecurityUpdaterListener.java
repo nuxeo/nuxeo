@@ -34,6 +34,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -60,11 +61,19 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
             return;
         }
         CoreSession session = eventCtx.getCoreSession();
-        List<String> actors = task.getActors();
+        List<String> actors = null;
+
+        if (TaskEventNames.WORKFLOW_TASK_ASSIGNED.equals(event.getName())
+                || TaskEventNames.WORKFLOW_TASK_REASSIGNED.equals(event.getName())) {
+            actors = task.getActors();
+        }
+
+        if (TaskEventNames.WORKFLOW_TASK_DELEGATED.equals(event.getName())) {
+            actors = task.getDelegatedActors();
+        }
         if (actors == null || actors.isEmpty()) {
             return;
         }
-
         String routeDocId = task.getVariables().get(
                 DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         if (routeDocId == null) {
@@ -80,9 +89,12 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
 
             ACP acp = routeDoc.getACP();
             ACL routeACL = acp.getOrCreateACL(DocumentRoutingConstants.ROUTE_TASK_LOCAL_ACL);
-            routeACL.add(new ACE(userName, SecurityConstants.READ_WRITE, true));
+            ACE ace = new ACE(userName, SecurityConstants.READ_WRITE, true);
+            if (!routeACL.contains(ace)) {
+                routeACL.add(ace);
+            }
             acp.addACL(routeACL);
-            session.setACP(routeDoc.getRef(), acp, true);
+            session.setACP(routeDoc.getRef(), acp, false);
         }
         session.saveDocument(routeDoc);
     }
