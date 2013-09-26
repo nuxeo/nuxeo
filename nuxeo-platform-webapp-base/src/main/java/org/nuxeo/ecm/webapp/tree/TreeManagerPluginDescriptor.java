@@ -57,20 +57,6 @@ public class TreeManagerPluginDescriptor implements Serializable {
     @XNode("pageProvider")
     protected String pageProvider;
 
-    /**
-     * @deprecated since 5.4.2: use pageProvider instead
-     */
-    @Deprecated
-    @XNode("queryModel")
-    protected String queryModelName;
-
-    /**
-     * @deprecated since 5.4.2: use pageProvider instead
-     */
-    @Deprecated
-    @XNode("orderableQueryModel")
-    protected String orderableQueryModelName;
-
     @XNodeList(value = "excludedTypes/type", type = ArrayList.class, componentType = String.class)
     protected List<String> excludedTypes;
 
@@ -97,14 +83,6 @@ public class TreeManagerPluginDescriptor implements Serializable {
 
     public String getSorterClassName() {
         return sorterClassName;
-    }
-
-    public String getQueryModelName() {
-        return queryModelName;
-    }
-
-    public String getOrderableQueryModelName() {
-        return orderableQueryModelName;
     }
 
     public List<String> getExcludedTypes() {
