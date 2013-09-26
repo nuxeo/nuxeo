@@ -195,13 +195,15 @@ public class DocumentRoutingEscalationServiceImpl implements
             if (this == obj) {
                 return true;
             }
-            if (obj == null) {
-                return false;
-            }
             if (obj instanceof EscalationRuleWork) {
                 return workerId.equals(((EscalationRuleWork) obj).getId());
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return workerId.hashCode();
         }
     }
 }
