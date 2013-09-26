@@ -30,6 +30,7 @@
       priority="250">
       <event>workflowTaskAssigned</event>
       <event>workflowTaskReassigned</event>
+      <event>workflowTaskDelegated</event>
     </listener>
     
     <listener name="triggerEsclationRules" async="true"

@@ -557,4 +557,35 @@ public interface DocumentRoutingService {
      */
     void reassignTask(CoreSession session, String taskId, List<String> actors,
             String comment) throws DocumentRouteException;
+
+    /**
+     * Reassigns the given task to the list of actors. Grants to new delegated
+     * actors the same permissions as the task assignees on the document
+     * following the workflow .
+     *
+     * @param session
+     * @param taskId
+     * @param delegatedActors
+     * @param comment
+     *
+     * @since 5.8
+     */
+    void delegateTask(CoreSession session, String taskId,
+            List<String> delegatedActors, String comment)
+            throws DocumentRouteException;
+
+    /**
+     * Grants on these documents the specified assignees permissions for this
+     * task to the tasks delegated actors.
+     *
+     * @param session the session
+     * @param permission the permission
+     * @param docs the documents
+     * @param task the task
+     *
+     * @since 5.8
+     */
+    void grantPermissionToTaskDelegatedActors(CoreSession session,
+            String permission, List<DocumentModel> docs, Task task)
+            throws ClientException;
 }

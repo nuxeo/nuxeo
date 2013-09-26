@@ -80,6 +80,8 @@ public interface DocumentRoutingConstants {
 
     String DOCUMENT_ROUTING_ACL = "routing";
 
+    String DOCUMENT_ROUTING_DELEGATION_ACL = "delegation";
+
     String WORKFLOW_FORCE_RESUME = "_FORCE_RESUME_";
 
     /**
