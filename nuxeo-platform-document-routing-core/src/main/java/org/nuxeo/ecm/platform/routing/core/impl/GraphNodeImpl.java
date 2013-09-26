@@ -1098,7 +1098,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                 throw new DocumentRouteException("Invalid taskId: " + taskId);
             }
             DocumentModelList docs = graph.getAttachedDocumentModels();
-            Framework.getLocalService(DocumentRoutingService.class).removePermissionFromTaskAssignees(
+            Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(
                     session, docs, task);
             if (task.isOpened()) {
                 task.cancel(session);

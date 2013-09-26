@@ -960,6 +960,26 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }.runUnrestricted();
     }
 
+    @Override
+    public void removePermissionsForTaskActors(CoreSession session,
+            final List<DocumentModel> docs, Task task) throws ClientException {
+        final String aclRoutingName = getRoutingACLName(task);
+        final String aclDelegationName = getDelegationACLName(task);
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                for (DocumentModel doc : docs) {
+                    ACP acp = doc.getACP();
+                    acp.removeACL(aclRoutingName);
+                    acp.removeACL(aclDelegationName);
+                    doc.setACP(acp, true);
+                    session.saveDocument(doc);
+                }
+            };
+        }.runUnrestricted();
+    }
+
+
     /**
      * Finds an ACL name specific to the task (there may be several tasks
      * applying permissions to the same document).
@@ -1004,9 +1024,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             boolean delete) throws DocumentRouteException {
         DocumentModelList docs = route.getAttachedDocuments(session);
         try {
-            removePermissionFromTaskAssignees(session, docs, task);
+            removePermissionsForTaskActors(session, docs, task);
             // delete task
-            // remove permission for task delegated actors
             if (delete) {
                 session.removeDocument(new IdRef(task.getId()));
             }
@@ -1049,7 +1068,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                         }
 
                         DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                        removePermissionFromTaskAssignees(session, docs, task);
+                        removePermissionsForTaskActors(session, docs, task);
                         // task is considered processed with the status "null"
                         // when
                         // is

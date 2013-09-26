@@ -409,7 +409,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         DocumentModelList docs = graph.getAttachedDocumentModels();
         try {
-            routing.removePermissionFromTaskAssignees(session, docs, task);
+            routing.removePermissionsForTaskActors(session, docs, task);
             // delete task
             if (delete) {
                 session.removeDocument(new IdRef(task.getId()));
