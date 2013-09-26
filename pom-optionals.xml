@@ -23,47 +23,53 @@
     <modules>
      <module>nuxeo-platform-jbpm</module>
      <module>nuxeo-platform-user-dashboard-compat</module>
+     <module>nuxeo-platform-audit-web-access</module>
+     <module>nuxeo-platform-splitpane</module>
+     <module>nuxeo-sample-project</module>
+     <module>nuxeo-web-embedded</module>
+     <module>nuxeo-platform-intuition</module>
+     <module>nuxeo-groups-rights-audit</module>
     </modules>
   
     <dependencyManagement>
-     <dependencies>
-      <!-- jBPM -->
-      <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-jbpm-api</artifactId>
-       <version>${nuxeo.jbpm.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-jbpm-automation</artifactId>
-       <version>${nuxeo.jbpm.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-jbpm-core</artifactId>
-       <version>${nuxeo.jbpm.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-jbpm-test</artifactId>
-       <version>${nuxeo.jbpm.version}</version>
-       <scope>test</scope>
-      </dependency>
-      <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-jbpm-web</artifactId>
-       <version>${nuxeo.jbpm.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-jbpm-task-migration</artifactId>
-       <version>${nuxeo.jbpm.version}</version>
-      </dependency>
-      <dependency>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-jbpm-gadgets</artifactId>
-       <version>${nuxeo.jbpm.version}</version>
-      </dependency>
-     </dependencies>
+      <dependencies>
+       <!-- jBPM -->
+       <dependency>
+         <groupId>org.nuxeo.ecm.platform</groupId>
+         <artifactId>nuxeo-platform-jbpm-api</artifactId>
+         <version>${nuxeo.jbpm.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.nuxeo.ecm.platform</groupId>
+         <artifactId>nuxeo-platform-jbpm-automation</artifactId>
+         <version>${nuxeo.jbpm.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.nuxeo.ecm.platform</groupId>
+         <artifactId>nuxeo-platform-jbpm-core</artifactId>
+         <version>${nuxeo.jbpm.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.nuxeo.ecm.platform</groupId>
+         <artifactId>nuxeo-platform-jbpm-test</artifactId>
+         <version>${nuxeo.jbpm.version}</version>
+         <scope>test</scope>
+       </dependency>
+       <dependency>
+         <groupId>org.nuxeo.ecm.platform</groupId>
+         <artifactId>nuxeo-platform-jbpm-web</artifactId>
+         <version>${nuxeo.jbpm.version}</version>
+       </dependency>
+       <dependency>
+         <groupId>org.nuxeo.ecm.platform</groupId>
+         <artifactId>nuxeo-platform-jbpm-task-migration</artifactId>
+         <version>${nuxeo.jbpm.version}</version>
+       </dependency>
+        <dependency>
+         <groupId>org.nuxeo.ecm.platform</groupId>
+         <artifactId>nuxeo-platform-jbpm-gadgets</artifactId>
+         <version>${nuxeo.jbpm.version}</version>
+        </dependency>
+      </dependencies>
     </dependencyManagement>
 </project>
