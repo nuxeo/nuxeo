@@ -18,12 +18,10 @@ package org.mockito.configuration;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.configuration.FieldAnnotationProcessor;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.StreamRef;
-import org.nuxeo.runtime.test.InlineRef;
 
 /**
  *
@@ -53,32 +51,7 @@ public class NuxeoServiceMockAnnotationProcessor implements
      *
      */
     private void bindMockAsNuxeoService(final Field field, Object mock) {
-        String xml = "<component name=\"org.nuxeo.mockito."
-                + field.getType().getSimpleName()
-                + ".provider\">" //
-                + "<implementation class=\"org.mockito.configuration.MockProvider\"/>" //
-                + "<service>" //
-                + "  <provide interface=\"" + field.getType().getName()
-                + "\"/>" //
-                + "</service>" //
-                + "</component>";
-
-        StreamRef stream = new InlineRef(field.getName(), xml);
-
-        try {
-            Framework.getRuntime().getContext().deploy(stream);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("interrupted", e);
-        } catch (RuntimeException e) {
-            throw e; // avoid wrapping a RuntimeException in another
-                     // RuntimeException
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        MockProvider.bind(field.getType(), mock);
-
+        MockProvider.INSTANCE.bind(field.getType(), mock);
     }
 
 }

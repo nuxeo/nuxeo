@@ -19,33 +19,39 @@ package org.mockito.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.ServiceProvider;
 
 /**
  *
  *
  * @since 5.7.8
  */
-public class MockProvider extends DefaultComponent {
+public class MockProvider implements ServiceProvider {
+
+    public static MockProvider INSTANCE = MockProvider.install();
 
     private static Map<Class<?>, Object> mocks = new HashMap<>();
 
-    /**
-     * @param type
-     * @param mock
-     *
-     */
-    public static void bind(Class<?> klass, Object mock) {
+    public void bind(Class<?> klass, Object mock) {
         mocks.put(klass, mock);
     }
 
-    @SuppressWarnings("unchecked")
+
+    private MockProvider() {
+
+    }
+
+    private static MockProvider install() {
+        return new MockProvider();
+    }
+
     @Override
-    public <T> T getAdapter(Class<T> adapter) {
-        if (mocks.containsKey(adapter)) {
-            return (T) mocks.get(adapter);
+    public <T> T getService(Class<T> serviceClass) {
+        if (mocks.containsKey(serviceClass)) {
+            return (T) mocks.get(serviceClass);
         }
-        return null;
+        return Framework.getRuntime().getService(serviceClass);
     }
 
 }

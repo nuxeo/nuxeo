@@ -35,6 +35,8 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.mockito.configuration.MockProvider;
+import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
 
 import com.google.inject.Binder;
@@ -312,6 +314,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         // Return a Guice injected test class
         Object test = injector.getInstance(getTestClass().getJavaClass());
         // Init mockito
+        DefaultServiceProvider.setProvider(MockProvider.INSTANCE);
         initMocks(test);
         // let features adapt the test object if needed
         try {
