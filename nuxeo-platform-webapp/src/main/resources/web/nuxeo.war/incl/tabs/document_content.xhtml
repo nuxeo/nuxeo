@@ -1,14 +1,7 @@
 <div xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  xmlns:c="http://java.sun.com/jstl/core">
 
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
-
     <ui:include src="/incl/document_actions.xhtml" />
     <ui:include src="/incl/document_content_view.xhtml">
       <ui:param name="contentViewCategory" value="content" />
