@@ -54,10 +54,6 @@
             </f:subview>
           </nxu:methodResult>
 
-          <h:outputText rendered="false"> This h:panelGroup define the form to add a
-            comment inside the thread, i.e by replying an existing comment.
-            </h:outputText>
-
           <h:panelGroup
             rendered="#{commentManagerActions.commentStarted
           and threadEntry.comment.id==commentManagerActions.savedReplyCommentId }">
@@ -79,8 +75,6 @@
         action="#{commentManagerActions.beginComment}" styleClass="button" rendered="#{canWrite}"/>
     </h:panelGroup>
 
-    <h:outputText rendered="false"> This h:panelGroup define the form to add a comment at
-      the end of the thread. </h:outputText>
     <h:panelGroup
       rendered="#{canWrite and (currentThreadPosts.size == 0 || commentManagerActions.commentStarted)
        and commentManagerActions.savedReplyCommentId == null}">
