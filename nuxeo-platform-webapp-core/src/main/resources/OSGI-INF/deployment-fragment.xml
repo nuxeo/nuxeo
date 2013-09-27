@@ -243,17 +243,6 @@
       <redirect />
     </navigation-case>
 
-    <navigation-case>
-      <from-outcome>mass_edit</from-outcome>
-      <to-view-id>/massedit_documents.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
-      <from-outcome>mass_edit_confirm</from-outcome>
-      <to-view-id>/massedit_documents_preview.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
   </extension>
 
 </fragment>
