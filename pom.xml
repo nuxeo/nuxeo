@@ -63,6 +63,7 @@
     <nuxeo.dam.pdf.export.version>5.8-SNAPSHOT</nuxeo.dam.pdf.export.version>
     <nuxeo.resources.compat.version>5.8-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>5.8-SNAPSHOT</nuxeo.dmk.version>
+    <nuxeo.webengine.sites.version>5.8-SNAPSHOT</nuxeo.webengine.sites.version>
   </properties>
 
   <modules>
@@ -123,6 +124,7 @@
     <module>nuxeo-dam-pdf-export</module>
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
+    <module>nuxeo-webengine-sites</module>
   </modules>
 
   <dependencyManagement>
@@ -1077,6 +1079,37 @@
         <version>${nuxeo.dmk.version}</version>
       </dependency>
 
+      <!-- WebEngine Sites -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-blogs</artifactId>
+        <version>${nuxeo.webengine.sites.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-blogs-api</artifactId>
+        <version>${nuxeo.webengine.sites.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-blogs-core</artifactId>
+        <version>${nuxeo.webengine.sites.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites</artifactId>
+        <version>${nuxeo.webengine.sites.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites-api</artifactId>
+        <version>${nuxeo.webengine.sites.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
+        <version>${nuxeo.webengine.sites.version}</version>
+      </dependency>
 
     </dependencies>
   </dependencyManagement>
