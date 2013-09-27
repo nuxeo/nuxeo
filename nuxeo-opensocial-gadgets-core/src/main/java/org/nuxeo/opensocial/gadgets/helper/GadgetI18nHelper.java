@@ -28,10 +28,18 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 public class GadgetI18nHelper {
 
     /**
-     *
+     * Default locale to use when no locale is given
+     */
+    private static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
+
+    /**
+     * Suffix used for localization key
      */
     private static final String LABEL_KEY_DESCRIPTION_SUFFIX = ".description";
 
+    /**
+     * Prefix used for localization key
+     */
     public static final String LABEL_KEY_PREFIX = "label.gadget.";
 
     private GadgetI18nHelper() {
@@ -40,7 +48,7 @@ public class GadgetI18nHelper {
 
     public static String getI18nGadgetTitle(String gadgetName, Locale locale) {
         if (locale == null) {
-            locale = new Locale("en");
+            locale = DEFAULT_LOCALE;
         }
         String labelKey = LABEL_KEY_PREFIX + gadgetName;
         String i18nTitle = I18NUtils.getMessageString("messages", labelKey,
@@ -61,7 +69,7 @@ public class GadgetI18nHelper {
     public static String getI18nGadgetDescription(String gadgetName,
             Locale locale) {
         if (locale == null) {
-            locale = new Locale("en");
+            locale = DEFAULT_LOCALE;
         }
         String labelKey = LABEL_KEY_PREFIX + gadgetName
                 + LABEL_KEY_DESCRIPTION_SUFFIX;
