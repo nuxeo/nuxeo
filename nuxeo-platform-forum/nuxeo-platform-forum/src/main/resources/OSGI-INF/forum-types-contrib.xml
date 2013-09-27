@@ -23,6 +23,14 @@
       <layouts mode="any">
         <layout>heading</layout>
       </layouts>
+      <contentViews category="content">
+        <contentView>forum_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
     </type>
 
     <type id="Thread" coretype="Thread">
