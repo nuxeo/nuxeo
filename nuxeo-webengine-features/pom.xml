@@ -17,13 +17,7 @@
   <modules>
     <module>nuxeo-webengine-base</module>
     <module>nuxeo-webengine-admin</module>
-    <module>nuxeo-webengine-sites</module>
-    <module>nuxeo-webengine-sites-api</module>
-    <module>nuxeo-webengine-sites-core-contrib</module>
     <module>nuxeo-webengine-management</module>
-    <module>nuxeo-webengine-blogs</module>
-    <module>nuxeo-webengine-blogs-api</module>
-    <module>nuxeo-webengine-blogs-core</module>
     <module>nuxeo-webengine-samples-base</module>
     <module>nuxeo-webengine-samples-extended</module>
   </modules>
