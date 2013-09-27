@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,6 +14,7 @@
  * Contributors:
  *     Wojciech Sulejman
  *     Florent Guillaume
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.signature.core.sign;
@@ -100,6 +101,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     protected static final int PAGE_TO_SIGN = 1;
 
+    protected static final String XP_SIGNATURE = "signature";
+
     protected static final String ALREADY_SIGNED_BY = "This document has already been signed by ";
 
     protected static final String MIME_TYPE_PDF = "application/pdf";
@@ -122,13 +125,21 @@ public class SignatureServiceImpl extends DefaultComponent implements
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-        config.add((SignatureDescriptor) contribution);
+        if (XP_SIGNATURE.equals(extensionPoint)) {
+            if (!((SignatureDescriptor) contribution).getRemoveExtension()) {
+                config.add((SignatureDescriptor) contribution);
+            }
+        }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-        config.remove(contribution);
+        if (XP_SIGNATURE.equals(extensionPoint)) {
+            if (!((SignatureDescriptor) contribution).getRemoveExtension()) {
+                config.remove(contribution);
+            }
+        }
     }
 
     //
@@ -228,7 +239,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
             throws SignException, ConversionException, ClientException {
 
         StatusWithBlob blobAndStatus = getSignedPdfBlobAndStatus(doc, user);
-        if (blobAndStatus != null ) {
+        if (blobAndStatus != null) {
             // re-sign it
             Blob signedBlob = signPDF(blobAndStatus.blob, user, keyPassword,
                     reason);
@@ -349,8 +360,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
             }
             pdfSignatureAppearance.setReason(reason);
             pdfSignatureAppearance.setAcro6Layers(true);
-            Font layer2Font = FontFactory.getFont(FontFactory.TIMES, 10,
-                    Font.NORMAL, new Color(0x00, 0x00, 0x00));
+            Font layer2Font = FontFactory.getFont(FontFactory.TIMES,
+                    getSignatureLayout().getTextSize(), Font.NORMAL, new Color(
+                            0x00, 0x00, 0x00));
             pdfSignatureAppearance.setLayer2Font(layer2Font);
             pdfSignatureAppearance.setRender(PdfSignatureAppearance.SignatureRenderDescription);
 
@@ -379,6 +391,20 @@ public class SignatureServiceImpl extends DefaultComponent implements
         }
     }
 
+    /**
+     * @since 5.8
+     * @return the signature layout. Default one if no contribution.
+     */
+    protected SignatureDescriptor.SignatureLayout getSignatureLayout() {
+        for (SignatureDescriptor signatureDescriptor : config) {
+            SignatureDescriptor.SignatureLayout signatureLayout = signatureDescriptor.getSignatureLayout();
+            if (signatureLayout != null) {
+                return signatureLayout;
+            }
+        }
+        return new SignatureDescriptor.SignatureLayout();
+    }
+
     protected String getSigningReason() throws SignException {
         for (SignatureDescriptor sd : config) {
             String reason = sd.getReason();
@@ -404,26 +430,46 @@ public class SignatureServiceImpl extends DefaultComponent implements
     }
 
     /**
-     * Provides the position rectangle for the next certificate.
-     *
-     * An assumption is made that all previous certificates in a given PDF were
-     * placed using the same technique and settings.
-     *
-     * New certificates are added on a vertical plane going downwards.
+     * @since 5.8 Provides the position rectangle for the next certificate. An
+     *        assumption is made that all previous certificates in a given PDF
+     *        were placed using the same technique and settings. New
+     *        certificates are added depending of signature layout contributed.
      */
     protected Rectangle getNextCertificatePosition(PdfReader pdfReader,
             List<X509Certificate> pdfCertificates) throws SignException {
         int numberOfSignatures = pdfCertificates.size();
-        Rectangle pageSize = pdfReader.getPageSize(PAGE_TO_SIGN);
-        // make smaller by page margin
-        float topRightX = pageSize.getRight() - SIGNATURE_MARGIN;
-        float topRightY = pageSize.getHeight() - SIGNATURE_MARGIN
-                - numberOfSignatures * SIGNATURE_FIELD_HEIGHT;
-        float bottomLeftX = topRightX - SIGNATURE_FIELD_WIDTH;
-        float bottomLeftY = topRightY - SIGNATURE_FIELD_HEIGHT;
 
-        log.debug("The new signature position is: " + bottomLeftX + " "
-                + bottomLeftY + " " + topRightX + " " + topRightY);
+        Rectangle pageSize = pdfReader.getPageSize(PAGE_TO_SIGN);
+
+        // PDF size
+        float width = pageSize.getWidth();
+        float height = pageSize.getHeight();
+
+        // Signature size
+        float rectangleWidth = width / getSignatureLayout().getColumns();
+        float rectangeHeight = height / getSignatureLayout().getLines();
+
+        // Signature location
+        int column = numberOfSignatures % getSignatureLayout().getColumns()
+                + getSignatureLayout().getStartColumn();
+        int line = numberOfSignatures / getSignatureLayout().getColumns()
+                + getSignatureLayout().getStartLine();
+        if (column > getSignatureLayout().getColumns()) {
+            column = column % getSignatureLayout().getColumns();
+            line++;
+        }
+
+        // Skip rectangle display If number of signatures exceed free locations
+        // on pdf layout
+        if (line > getSignatureLayout().getLines()) {
+            return new Rectangle(0, 0, 0, 0);
+        }
+
+        // make smaller by page margin
+        float topRightX = rectangleWidth * column;
+        float bottomLeftY = height - rectangeHeight * line;
+        float bottomLeftX = topRightX - SIGNATURE_FIELD_WIDTH;
+        float topRightY = bottomLeftY + SIGNATURE_FIELD_HEIGHT;
 
         // verify current position coordinates in case they were
         // misconfigured
@@ -448,7 +494,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
      */
     protected void validatePageBounds(PdfReader pdfReader, int pageNo,
             float valueToCheck, boolean isHorizontal) throws SignException {
-        if (valueToCheck <= 0) {
+        if (valueToCheck < 0) {
             String message = "The new signature position "
                     + valueToCheck
                     + " exceeds the page bounds. The position must be a positive number.";
