@@ -180,7 +180,8 @@ public class LayoutTagHandler extends TagHandler {
             if (!reservedVars.contains(localName)) {
                 // resolve value as there's no alias value expression exposed
                 // for layout properties
-                additionalProps.put(localName, (Serializable) var.getObject(ctx));
+                additionalProps.put(localName,
+                        (Serializable) var.getObject(ctx));
             }
         }
 
@@ -315,22 +316,13 @@ public class LayoutTagHandler extends TagHandler {
      */
     protected List<String> resolveLayoutNames(String nameValue) {
         List<String> res = new ArrayList<String>();
-        if (nameValue != null && nameValue.contains(",")) {
-            // parse potential multiple layout names
-            String[] names = nameValue.split(",");
-            for (String layoutName : names) {
-                if (!StringUtils.isBlank(layoutName)) {
-                    layoutName = layoutName.trim();
-                    res.add(layoutName);
+        if (nameValue != null) {
+            String[] split = StringUtils.split(nameValue, ',');
+            if (split != null) {
+                for (String item : split) {
+                    res.add(item.trim());
                 }
             }
-        } else {
-            if (nameValue == null) {
-                nameValue = "";
-            } else {
-                nameValue = nameValue.trim();
-            }
-            res.add(nameValue);
         }
         return res;
     }

@@ -99,6 +99,9 @@ public interface WebActions {
      * <p>
      * Actions are filtered according to filters set on the actions
      * definitions.
+     * <p>
+     * Since 5.8, the category can be a list of categories, separated by
+     * commas.
      */
     List<Action> getActionsList(String category, ActionContext context);
 
@@ -108,6 +111,9 @@ public interface WebActions {
      * <p>
      * Actions are filtered according to filters set on the actions
      * definitions.
+     * <p>
+     * Since 5.8, the category can be a list of categories, separated by
+     * commas.
      *
      * @since 5.7
      */
@@ -120,6 +126,8 @@ public interface WebActions {
      * <p>
      * Actions are filtered according to filters set on the actions
      * definitions.
+     * <p>
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @since 5.7.3
      */
@@ -132,6 +140,9 @@ public interface WebActions {
      * <p>
      * Actions are filtered according to filters set on the actions
      * definitions.
+     * <p>
+     * Since 5.8, the category can be a list of categories, separated by
+     * commas.
      *
      * @since 5.7
      */
@@ -141,6 +152,9 @@ public interface WebActions {
     /**
      * Returns all filtered actions for a given category, creating a new
      * context for the filters resolution.
+     * <p>
+     * Since 5.8, the category can be a list of categories, separated by
+     * commas.
      *
      * @see #getActionsList(String, ActionContext)
      */
@@ -152,6 +166,8 @@ public interface WebActions {
      * Actions are not filtered according to filters set on the actions
      * definitions: actions that should have been removed are just marked as
      * non-available.
+     * <p>
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @deprecated since 5.7, use
      *             {@link #getActionsList(String, ActionContext, boolean)}
@@ -162,6 +178,8 @@ public interface WebActions {
     /**
      * Returns all actions for a given category, creating a new context for the
      * filters resolution.
+     * <p>
+     * Since 5.8, the category can be a list of categories, separated by commas.
      *
      * @see #getUnfiltredActionsList(String, ActionContext)
      * @deprecated since 5.7, use

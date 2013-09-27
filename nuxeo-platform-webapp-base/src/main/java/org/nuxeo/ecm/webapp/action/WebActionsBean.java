@@ -30,6 +30,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
@@ -97,10 +98,21 @@ public class WebActionsBean implements WebActions, Serializable {
     public List<Action> getActionsList(String category, ActionContext context,
             boolean hideUnavailableAction) {
         List<Action> list = new ArrayList<Action>();
-        List<Action> actions = actionManager.getActions(category, context,
-                hideUnavailableAction);
-        if (actions != null) {
-            list.addAll(actions);
+        List<String> categories = new ArrayList<String>();
+        if (category != null) {
+            String[] split = StringUtils.split(category, ',');
+            if (split != null) {
+                for (String item : split) {
+                    categories.add(item.trim());
+                }
+            }
+        }
+        for (String cat : categories) {
+            List<Action> actions = actionManager.getActions(cat, context,
+                    hideUnavailableAction);
+            if (actions != null) {
+                list.addAll(actions);
+            }
         }
         return list;
     }
@@ -117,8 +129,8 @@ public class WebActionsBean implements WebActions, Serializable {
     }
 
     @Override
-    public List<Action> getActionsListForDocument(String category, DocumentModel document,
-            boolean hideUnavailableAction) {
+    public List<Action> getActionsListForDocument(String category,
+            DocumentModel document, boolean hideUnavailableAction) {
         return getActionsList(category, createActionContext(document),
                 hideUnavailableAction);
     }
