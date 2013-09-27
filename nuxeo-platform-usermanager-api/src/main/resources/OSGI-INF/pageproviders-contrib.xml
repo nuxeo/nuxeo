@@ -9,8 +9,18 @@
       <pageSize>20</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="nuxeo_principals_listing"
+      class="org.nuxeo.ecm.platform.usermanager.providers.NuxeoPrincipalsPageProvider">
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
     <genericPageProvider name="groups_listing"
       class="org.nuxeo.ecm.platform.usermanager.providers.GroupsPageProvider">
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
+    <genericPageProvider name="nuxeo_groups_listing"
+      class="org.nuxeo.ecm.platform.usermanager.providers.NuxeoGroupsPageProvider">
       <pageSize>20</pageSize>
     </genericPageProvider>
 

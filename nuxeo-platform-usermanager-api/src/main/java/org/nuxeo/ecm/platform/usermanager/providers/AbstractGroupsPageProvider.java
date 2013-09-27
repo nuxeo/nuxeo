@@ -1,15 +1,36 @@
+/*
+ * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thomas Roger
+ */
+
 package org.nuxeo.ecm.platform.usermanager.providers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Abstract Page provider listing groups.
@@ -22,28 +43,26 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
  * use.
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * @since 5.4.2
+ * @since 5.8
  */
-public abstract class AbstractGroupsPageProvider extends
-        AbstractPageProvider<DocumentModel> {
+public abstract class AbstractGroupsPageProvider<T> extends
+        AbstractPageProvider<T> {
 
     protected static final String GROUPS_LISTING_MODE_PROPERTY = "groupsListingMode";
+
     protected static final String ALL_MODE = "all";
+
     protected static final String SEARCH_ONLY_MODE = "search_only";
+
     protected static final String SEARCH_OVERFLOW_ERROR_MESSAGE = "label.security.searchOverFlow";
 
     private static final Log log = LogFactory.getLog(AbstractGroupsPageProvider.class);
 
     private static final long serialVersionUID = 1L;
 
-    protected abstract List<DocumentModel> searchAllGroups() throws Exception;
-
-    protected abstract List<DocumentModel> searchGroups() throws Exception;
-
     protected List<DocumentModel> pageGroups;
 
-    @Override
-    public List<DocumentModel> getCurrentPage() {
+    public List<DocumentModel> computeCurrentPage() {
         if (pageGroups == null) {
             error = null;
             errorMessage = null;
@@ -87,6 +106,23 @@ public abstract class AbstractGroupsPageProvider extends
             }
         }
         return pageGroups;
+    }
+
+    protected List<DocumentModel> searchAllGroups() throws Exception {
+        return Framework.getService(UserManager.class).searchGroups(
+                Collections.<String, Serializable> emptyMap(), null);
+    }
+
+    protected List<DocumentModel> searchGroups() throws Exception {
+        UserManager userManager = Framework.getService(UserManager.class);
+        List<DocumentModel> groups = new ArrayList<DocumentModel>();
+        String searchString = getFirstParameter();
+        if ("*".equals(searchString)) {
+            groups = searchAllGroups();
+        } else if (!StringUtils.isEmpty(searchString)) {
+            groups = userManager.searchGroups(searchString);
+        }
+        return groups;
     }
 
     protected String getGroupListingMode() {
