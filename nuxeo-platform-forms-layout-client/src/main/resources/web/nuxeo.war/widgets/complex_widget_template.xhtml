@@ -51,7 +51,7 @@
     </c:when>
 
     <c:when test="#{widgetProperty_display == 'inline'}">
-      <table class="dataTableNoBorder widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+      <table class="widgetTable complexWidgetTable #{widgetProperty_styleClass}">
         <tbody>
           <tr>
             <nxl:subWidget>
@@ -71,7 +71,7 @@
     </c:when>
 
     <c:when test="#{widgetProperty_display == 'block_top'}">
-      <table class="dataTableNoBorder widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+      <table class="widgetTable complexWidgetTable #{widgetProperty_styleClass}">
         <tbody>
           <nxl:subWidget>
             <c:if test="#{displaySubLabels and not widget.handlingLabels}">
@@ -93,7 +93,7 @@
     </c:when>
 
     <c:otherwise>
-      <table class="dataTableNoBorder widgetTable complexWidgetTable #{widgetProperty_styleClass}">
+      <table class="widgetTable complexWidgetTable #{widgetProperty_styleClass}">
         <tbody>
           <nxl:subWidget>
             <tr>
