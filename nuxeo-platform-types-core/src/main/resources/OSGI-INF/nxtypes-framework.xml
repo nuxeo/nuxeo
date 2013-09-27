@@ -79,8 +79,6 @@
       the document (available since 5.4.2) except when adding
       showInExportView="false" on the content view definition.
 
-      - layout: deprecated layout configuration.
-
       Example:
 
       <code>
