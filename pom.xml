@@ -263,7 +263,6 @@
           <url>
             http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
           </url>
-          <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
     </profile>

@@ -99,7 +99,6 @@
         <snapshotRepository>
           <id>daily-snapshots</id>
           <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots</url>
-          <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
     </profile>
@@ -113,7 +112,6 @@
         <snapshotRepository>
           <id>snapshots</id>
           <url>dav:http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots</url>
-          <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
     </profile>
