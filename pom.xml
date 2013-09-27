@@ -1312,21 +1312,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-blogs</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-blogs-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-blogs-core</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-management</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
@@ -1338,21 +1323,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-samples-extended</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-sites</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-sites-api</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
 
