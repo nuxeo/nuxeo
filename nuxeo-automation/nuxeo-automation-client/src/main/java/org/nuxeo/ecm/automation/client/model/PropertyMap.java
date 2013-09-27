@@ -78,18 +78,6 @@ public class PropertyMap implements Serializable {
         return PropertiesHelper.getString(map.get(key), defValue);
     }
 
-    public Blob getBlob(String key) {
-        Object v = map.get(key);
-        if (v == null) {
-            return null;
-        }
-        if (v instanceof Blob) {
-            return (Blob) v;
-        }
-        throw new IllegalArgumentException("Property '" + key
-                + "' is not a blob");
-    }
-
     public Boolean getBoolean(String key, Boolean defValue) {
         return PropertiesHelper.getBoolean(map.get(key), defValue);
     }
