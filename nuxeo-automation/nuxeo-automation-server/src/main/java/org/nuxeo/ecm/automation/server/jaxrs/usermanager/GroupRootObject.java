@@ -17,14 +17,14 @@
 package org.nuxeo.ecm.automation.server.jaxrs.usermanager;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -37,6 +37,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "groups")
 public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
+
+    public static final String PAGE_PROVIDER_NAME = "nuxeo_groups_listing";
 
     @Override
     protected NuxeoGroup getArtifact(String id) throws ClientException {
@@ -64,15 +66,6 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
         return um.getGroup(group.getName());
     }
 
-    /**
-     * Builds a DocumentModel from a group suitable to call UserManager methods.
-     *
-     * @param group
-     * @param um
-     * @return
-     * @throws ClientException
-     *
-     */
     private DocumentModel buildModelFromGroup(NuxeoGroup group, UserManager um)
             throws ClientException {
         DocumentModel groupModel = um.getBareGroupModel();
@@ -89,12 +82,6 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
         return groupModel;
     }
 
-    /**
-     * @param group
-     * @param um
-     * @throws ClientException
-     *
-     */
     private void checkGroupDoesNotAlreadyExists(NuxeoGroup group, UserManager um)
             throws ClientException {
         if (um.getGroup(group.getName()) != null) {
@@ -103,10 +90,6 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
         }
     }
 
-    /**
-     * @param group
-     *
-     */
     private void checkGroupHasAName(NuxeoGroup group) {
         if (group.getName() == null) {
             throw new WebException("Group MUST have a name",
@@ -120,12 +103,6 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
     }
 
-    /**
-     * @param group
-     * @param um
-     * @return
-     *
-     */
     static boolean isAPowerUserEditableGroup(NuxeoGroup group) {
         UserManager um = Framework.getLocalService(UserManager.class);
         return !um.getAdministratorsGroups().contains(group.getName());
@@ -133,17 +110,9 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     }
 
     @Override
-    protected List<NuxeoGroup> searchArtifact(String query)
-            throws ClientException {
-        List<DocumentModel> searchUsers = um.searchGroups(query);
-        List<NuxeoGroup> groups = new ArrayList<>(searchUsers.size());
-        for (DocumentModel userDoc : searchUsers) {
-            NuxeoGroup group = um.getGroup(userDoc.getProperty(
-                    um.getGroupIdField()).getValue(String.class));
-            groups.add(group);
-        }
-        return groups;
-
+    protected PageProviderDefinition getPageProviderDefinition() {
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        return ppService.getPageProviderDefinition(PAGE_PROVIDER_NAME);
     }
 
 }

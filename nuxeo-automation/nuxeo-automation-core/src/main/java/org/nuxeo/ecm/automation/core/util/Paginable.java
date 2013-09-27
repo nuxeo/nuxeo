@@ -11,12 +11,14 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
+import java.util.List;
+
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
  * @since 5.7 (extracted from PaginableDocumentModelList)
  */
-public interface Paginable {
+public interface Paginable<T> extends List<T> {
 
     /**
      * Returns the number of results per page. 0 means no pagination.

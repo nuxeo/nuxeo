@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
  *
  * @since 5.7.3
  */
-public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable {
+public class PaginablePageProvider<T> extends ArrayList<T> implements Paginable<T> {
 
     protected PageProvider<T> pageProvider;
 

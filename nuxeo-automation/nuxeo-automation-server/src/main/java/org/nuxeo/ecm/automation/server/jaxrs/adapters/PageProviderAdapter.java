@@ -16,14 +16,13 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.adapters;
 
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -58,10 +57,11 @@ public class PageProviderAdapter extends DocumentModelListPaginableAdapter {
 
     @GET
     @Path("{pageProviderName}")
-    public List<DocumentModel> getProviderDocs(@PathParam("pageProviderName")
-    String providerName) throws ClientException {
+    public Paginable<DocumentModel> getProviderDocs(
+            @PathParam("pageProviderName")
+            String providerName) throws ClientException {
         pageProviderName = providerName;
-        return super.getEntries();
+        return super.getPaginableEntries();
     }
 
 }

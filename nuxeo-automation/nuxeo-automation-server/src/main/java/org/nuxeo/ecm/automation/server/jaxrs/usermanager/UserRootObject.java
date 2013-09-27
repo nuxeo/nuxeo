@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.usermanager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Produces;
@@ -24,8 +23,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -40,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 @Produces({ MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_JSON + "+nxentity" })
 public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
+
+    public static final String PAGE_PROVIDER_NAME = "nuxeo_principals_listing";
 
     @Override
     protected NuxeoPrincipal getArtifact(String id) throws ClientException {
@@ -66,7 +68,6 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
         return um.getPrincipal(principal.getName());
     }
 
-
     private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal,
             UserManager um) throws ClientException {
         NuxeoPrincipal user = um.getPrincipal(principal.getName());
@@ -88,12 +89,6 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
         return isAPowerUserEditableUser(artifact);
     }
 
-    /**
-     * @param currentArtifact
-     * @param um
-     * @return
-     *
-     */
     static boolean isAPowerUserEditableUser(NuxeoPrincipal user) {
         UserManager um = Framework.getLocalService(UserManager.class);
         List<String> adminGroups = um.getAdministratorsGroups();
@@ -102,22 +97,18 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
                 return false;
             }
         }
-
         return true;
-
     }
 
     @Override
-    protected List<NuxeoPrincipal> searchArtifact(String query)
-            throws ClientException {
-        List<DocumentModel> searchUsers = um.searchUsers(query);
-        List<NuxeoPrincipal> users = new ArrayList<>(searchUsers.size());
-        for (DocumentModel userDoc : searchUsers) {
-            NuxeoPrincipal principal = um.getPrincipal(userDoc.getProperty(
-                    um.getUserIdField()).getValue(String.class));
-            users.add(principal);
-        }
-        return users;
-
+    protected PageProviderDefinition getPageProviderDefinition() {
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        return ppService.getPageProviderDefinition(PAGE_PROVIDER_NAME);
     }
+
+    @Override
+    protected Object[] getParams() {
+        return new Object[] { query };
+    }
+
 }

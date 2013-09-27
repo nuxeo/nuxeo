@@ -361,6 +361,7 @@ public class AuditTest extends BaseTest {
                 + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
         assertEquals(0, node.get("currentPageIndex").getIntValue());
         assertEquals(2, node.get("pageSize").getIntValue());
         assertEquals(3, node.get("numberOfPages").getIntValue());
@@ -378,6 +379,7 @@ public class AuditTest extends BaseTest {
                 + "/@" + AuditAdapter.NAME, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
         assertEquals(1, node.get("currentPageIndex").getIntValue());
         assertEquals(3, node.get("pageSize").getIntValue());
         assertEquals(2, node.get("numberOfPages").getIntValue());
@@ -397,6 +399,7 @@ public class AuditTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         nodes = getLogEntries(node);
+        assertTrue(node.get("isPaginable").getBooleanValue());
         assertEquals(0, nodes.size());
     }
 

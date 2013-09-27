@@ -17,8 +17,7 @@
 
 package org.nuxeo.ecm.automation.server.jaxrs.adapters;
 
-import java.util.List;
-
+import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -32,7 +31,7 @@ public abstract class DocumentModelListPaginableAdapter extends
         PaginableAdapter<DocumentModel> {
 
     @Override
-    protected List<DocumentModel> getEntries(
+    protected Paginable<DocumentModel> getPaginableEntries(
             PageProvider<DocumentModel> pageProvider) {
         return new PaginableDocumentModelListImpl(pageProvider, "restdocid");
     }

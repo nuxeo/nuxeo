@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.automation.server.jaxrs.adapters;
 
 import java.util.Calendar;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
@@ -26,12 +25,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -89,11 +86,6 @@ public class AuditAdapter extends PaginableAdapter<LogEntry> {
                 getCalendarParameter(request, END_EVENT_DATE_PARAMETER_NAME));
 
         return searchDocument;
-    }
-
-    @Override
-    protected List<LogEntry> getEntries(PageProvider<LogEntry> pageProvider) {
-        return new PaginablePageProvider<>(pageProvider);
     }
 
     protected Calendar getCalendarParameter(HttpServletRequest request,

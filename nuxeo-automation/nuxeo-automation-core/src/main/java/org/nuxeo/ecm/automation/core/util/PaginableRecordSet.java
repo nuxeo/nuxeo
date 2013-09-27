@@ -12,13 +12,16 @@
 
 package org.nuxeo.ecm.automation.core.util;
 
+import java.io.Serializable;
+import java.util.Map;
+
 /**
- * 
+ *
  * Adds page support on {@link RecordSet}
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
-public interface PaginableRecordSet extends Paginable, RecordSet {
+public interface PaginableRecordSet extends Paginable<Map<String, Serializable>>, RecordSet {
 
 }

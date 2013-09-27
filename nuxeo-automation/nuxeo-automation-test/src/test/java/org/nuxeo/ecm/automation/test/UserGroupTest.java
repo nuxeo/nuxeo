@@ -155,6 +155,8 @@ public class UserGroupTest extends BaseUserTest {
         assertEquals("nuxeo", principal.getCompany());
         assertEquals("test@nuxeo.com", principal.getEmail());
 
+        um.deleteUser("newuser");
+        assertNull(um.getPrincipal("newuser"));
     }
 
     @Test
@@ -226,6 +228,8 @@ public class UserGroupTest extends BaseUserTest {
         assertEquals(2, group.getMemberUsers().size());
         assertEquals(1, group.getMemberGroups().size());
 
+        um.deleteGroup("newGroup");
+        assertNull(um.getGroup("newGroup"));
     }
 
     @Test
@@ -304,6 +308,62 @@ public class UserGroupTest extends BaseUserTest {
     }
 
     @Test
+    public void itCanPaginateUsers() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("q", "*");
+        queryParams.putSingle("currentPageIndex", "0");
+        queryParams.putSingle("pageSize", "3");
+
+        ClientResponse response = getResponse(RequestType.GET, "/user/search",
+                queryParams);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(0, node.get("currentPageIndex").getIntValue());
+        assertEquals(3, node.get("pageSize").getIntValue());
+        assertEquals(2, node.get("numberOfPages").getIntValue());
+        ArrayNode entries = (ArrayNode) node.get("entries");
+        assertEquals(3, entries.size());
+        assertEquals("Administrator", entries.get(0).get("id").getValueAsText());
+        assertEquals("Guest", entries.get(1).get("id").getValueAsText());
+        assertEquals("user0", entries.get(2).get("id").getValueAsText());
+
+        queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("q", "*");
+        queryParams.putSingle("currentPageIndex", "1");
+        queryParams.putSingle("pageSize", "3");
+        response = getResponse(RequestType.GET, "/user/search", queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(1, node.get("currentPageIndex").getIntValue());
+        assertEquals(3, node.get("pageSize").getIntValue());
+        assertEquals(2, node.get("numberOfPages").getIntValue());
+        entries = (ArrayNode) node.get("entries");
+        assertEquals(3, entries.size());
+        assertEquals("user1", entries.get(0).get("id").getValueAsText());
+        assertEquals("user2", entries.get(1).get("id").getValueAsText());
+        assertEquals("user3", entries.get(2).get("id").getValueAsText());
+
+        queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("q", "*");
+        queryParams.putSingle("currentPageIndex", "2");
+        queryParams.putSingle("pageSize", "3");
+        response = getResponse(RequestType.GET, "/user/search", queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(2, node.get("currentPageIndex").getIntValue());
+        assertEquals(3, node.get("pageSize").getIntValue());
+        assertEquals(0, node.get("currentPageSize").getIntValue());
+        assertEquals(2, node.get("numberOfPages").getIntValue());
+        assertEquals(6, node.get("resultsCount").getIntValue());
+        entries = (ArrayNode) node.get("entries");
+        assertEquals(0, entries.size());
+    }
+
+    @Test
     public void itCanSearchGroups() throws Exception {
         // Given a search string
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -319,6 +379,84 @@ public class UserGroupTest extends BaseUserTest {
         assertEquals("Lannister",
                 entries.get(0).get("grouplabel").getValueAsText());
 
+    }
+
+    @Test
+    public void itCanPaginateGroups() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("q", "*");
+        queryParams.putSingle("currentPageIndex", "0");
+        queryParams.putSingle("pageSize", "3");
+
+        ClientResponse response = getResponse(RequestType.GET, "/group/search",
+                queryParams);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(0, node.get("currentPageIndex").getIntValue());
+        assertEquals(3, node.get("pageSize").getIntValue());
+        assertEquals(3, node.get("numberOfPages").getIntValue());
+        assertEquals(7, node.get("resultsCount").getIntValue());
+        ArrayNode entries = (ArrayNode) node.get("entries");
+        assertEquals(3, entries.size());
+        assertEquals("administrators",
+                entries.get(0).get("groupname").getValueAsText());
+        assertEquals("group0", entries.get(1).get("groupname").getValueAsText());
+        assertEquals("group1", entries.get(2).get("groupname").getValueAsText());
+
+        queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("q", "*");
+        queryParams.putSingle("currentPageIndex", "1");
+        queryParams.putSingle("pageSize", "3");
+        response = getResponse(RequestType.GET, "/group/search", queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(1, node.get("currentPageIndex").getIntValue());
+        assertEquals(3, node.get("pageSize").getIntValue());
+        assertEquals(3, node.get("numberOfPages").getIntValue());
+        assertEquals(7, node.get("resultsCount").getIntValue());
+        entries = (ArrayNode) node.get("entries");
+        assertEquals(3, entries.size());
+        assertEquals("group2", entries.get(0).get("groupname").getValueAsText());
+        assertEquals("group3", entries.get(1).get("groupname").getValueAsText());
+        assertEquals("members",
+                entries.get(2).get("groupname").getValueAsText());
+
+        queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("q", "*");
+        queryParams.putSingle("currentPageIndex", "2");
+        queryParams.putSingle("pageSize", "3");
+        response = getResponse(RequestType.GET, "/group/search", queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(2, node.get("currentPageIndex").getIntValue());
+        assertEquals(3, node.get("pageSize").getIntValue());
+        assertEquals(1, node.get("currentPageSize").getIntValue());
+        assertEquals(3, node.get("numberOfPages").getIntValue());
+        assertEquals(7, node.get("resultsCount").getIntValue());
+        entries = (ArrayNode) node.get("entries");
+        assertEquals(1, entries.size());
+        assertEquals("powerusers",
+                entries.get(0).get("groupname").getValueAsText());
+
+        queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("q", "*");
+        queryParams.putSingle("currentPageIndex", "3");
+        queryParams.putSingle("pageSize", "3");
+        response = getResponse(RequestType.GET, "/group/search", queryParams);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(3, node.get("currentPageIndex").getIntValue());
+        assertEquals(3, node.get("pageSize").getIntValue());
+        assertEquals(0, node.get("currentPageSize").getIntValue());
+        assertEquals(3, node.get("numberOfPages").getIntValue());
+        assertEquals(7, node.get("resultsCount").getIntValue());
+        entries = (ArrayNode) node.get("entries");
+        assertEquals(0, entries.size());
     }
 
 }

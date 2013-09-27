@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * Interface for Wrapping IterableQueryResult
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */

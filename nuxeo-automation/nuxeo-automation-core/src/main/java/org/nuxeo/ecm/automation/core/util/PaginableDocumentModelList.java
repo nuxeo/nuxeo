@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.util;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
@@ -18,7 +19,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  *
  */
 public interface PaginableDocumentModelList extends DocumentModelList,
-        Paginable {
+        Paginable<DocumentModel> {
 
     /**
      * Returns the name of what will be used to compute the document URLs,
