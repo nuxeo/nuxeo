@@ -316,6 +316,7 @@
             </ul>
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -346,6 +347,7 @@
             </ul>
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -377,6 +379,7 @@
             </ul>
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -426,6 +429,7 @@
           This widget displays the in/out relations for the
           currentDocument. It requires the Relation service to be deployed.
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -475,6 +479,7 @@
           This widget displays the publications of the
           currentDocument. It requires the Publisher service to be deployed.
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
@@ -603,6 +608,7 @@
             This widget displays the document contributors.
           </p>
         </description>
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>

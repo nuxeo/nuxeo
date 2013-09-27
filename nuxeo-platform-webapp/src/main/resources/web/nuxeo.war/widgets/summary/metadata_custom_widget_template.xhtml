@@ -10,9 +10,23 @@
   cache="true">
 
   <c:if test="#{hasSpecificFields}">
-    <h3 class="summaryTitle">
-      <h:outputText value="#{messages['action.view.metadata.specific']}" />
-    </h3>
+
+    <c:if test="#{widget.handlingLabels}">
+      <c:if test="#{!empty widget.label}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml">
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+      <c:if test="#{empty widget.label}">
+        <ui:include src="/widgets/incl/label_template.xhtml">
+          <ui:param name="label" value="action.view.metadata.specific" />
+          <ui:param name="helpLabel" value="#{widget.helpLabel}" />
+          <ui:param name="translated" value="true" />
+          <ui:param name="required" value="#{widget.required}" />
+          <ui:param name="labelStyleClass" value="summaryTitle #{widgetProperty_headerStyleClass}" />
+        </ui:include>
+      </c:if>
+    </c:if>
 
     <div class="summaryLayout">
       <nxl:documentLayout value="#{currentDocument}" mode="view" />
