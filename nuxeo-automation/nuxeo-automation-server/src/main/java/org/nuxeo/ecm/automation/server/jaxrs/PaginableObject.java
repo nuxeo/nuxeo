@@ -60,7 +60,7 @@ public abstract class PaginableObject<T> extends DefaultObject {
         maxResults = request.getParameter("maxResults");
     }
 
-    abstract protected PageProviderDefinition getPageProviderDefinition();
+    protected abstract PageProviderDefinition getPageProviderDefinition();
 
     protected Object[] getParams() {
         return new Object[] {};

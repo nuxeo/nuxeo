@@ -22,10 +22,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -43,12 +41,12 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
      * Returns the entity-type value of the list (ie: users, groups....)
      *
      */
-    abstract protected String getEntityType();
+    protected abstract String getEntityType();
 
     /**
      * Writes the item in a JsonGenerator.
      */
-    abstract protected void writeItem(JsonGenerator jg, T item)
+    protected abstract void writeItem(JsonGenerator jg, T item)
             throws ClientException, IOException;
 
     @Override

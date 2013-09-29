@@ -72,7 +72,7 @@ public interface Paginable<T> extends List<T> {
     long getCurrentPageIndex();
 
     /**
-     * Returns if this provider is sortable
+     * Returns if this provider is sortable.
      */
     boolean isSortable();
 
