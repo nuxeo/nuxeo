@@ -58,7 +58,7 @@ public abstract class AbstractUsersPageProvider<T> extends
     protected static final String SEARCH_OVERFLOW_ERROR_MESSAGE = "label.security.searchOverFlow";
 
     /**
-     * Map with first letter as key and users list as value
+     * Map with first letter as key and users list as value.
      */
     protected Map<String, DocumentModelList> userCatalog;
 
@@ -72,7 +72,7 @@ public abstract class AbstractUsersPageProvider<T> extends
 
             List<DocumentModel> users = new ArrayList<DocumentModel>();
             try {
-                UserManager userManager = Framework.getService(UserManager.class);
+                UserManager userManager = Framework.getLocalService(UserManager.class);
                 String userListingMode = getUserListingMode();
                 if (ALL_MODE.equals(userListingMode)) {
                     users = searchAllUsers(userManager);
@@ -85,7 +85,7 @@ public abstract class AbstractUsersPageProvider<T> extends
                 error = slee;
                 errorMessage = SEARCH_OVERFLOW_ERROR_MESSAGE;
                 log.warn(slee.getMessage(), slee);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 error = e;
                 errorMessage = e.getMessage();
                 log.warn(e.getMessage(), e);
@@ -194,9 +194,9 @@ public abstract class AbstractUsersPageProvider<T> extends
     public Collection<String> getCatalogLetters() {
         if (userCatalog == null) {
             try {
-                UserManager userManager = Framework.getService(UserManager.class);
+                UserManager userManager = Framework.getLocalService(UserManager.class);
                 updateUserCatalog(userManager);
-            } catch (Exception e) {
+            } catch (ClientException e) {
                 log.error("Unable to update user catalog", e);
                 return Collections.emptyList();
             }

@@ -49,7 +49,7 @@ public class NuxeoPrincipalsPageProvider extends
                         userManager.getUserIdField()).getValue(String.class));
                 principals.add(principal);
             } catch (ClientException e) {
-                log.error(e);
+                log.error(e, e);
             }
         }
         return principals;

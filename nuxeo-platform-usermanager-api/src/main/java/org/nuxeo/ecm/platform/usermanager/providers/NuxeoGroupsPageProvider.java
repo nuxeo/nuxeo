@@ -49,7 +49,7 @@ public class NuxeoGroupsPageProvider extends
                         userManager.getGroupIdField()).getValue(String.class));
                 nuxeoGroups.add(nuxeoGroup);
             } catch (ClientException e) {
-                log.error(e);
+                log.error(e, e);
             }
         }
         return nuxeoGroups;
