@@ -120,7 +120,7 @@ public class NXMessagesRenderer extends MessagesRenderer {
             String scriptContent = "jQuery(document).ready(function() {\n"
                     + "  jQuery.ambiance({\n" + "    " + "message: \"%s\",\n"
                     + "    title: \"%s\",\n" + "    type: \"%s\",\n"
-                    + "    cssClass: \"%s\",\n" + "    timeout: \"%d\""
+                    + "    className: \"%s\",\n" + "    timeout: \"%d\""
                     + "  })\n" + "});\n";
             String formattedScriptContent;
             if (showDetail) {
