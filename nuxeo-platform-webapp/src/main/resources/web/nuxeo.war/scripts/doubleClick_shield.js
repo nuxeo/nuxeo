@@ -13,7 +13,7 @@ jQuery.fn.preventDoubleSubmission = function() {
         e.preventDefault();
         jQuery.ambiance({
           title: nuxeo.doubleClickShield.message,
-          cssClass: "infoFeedback",
+          className: "infoFeedback",
           timeout: 1.5
         });
       } else {

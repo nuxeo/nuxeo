@@ -17,7 +17,7 @@
       title: "",
       message: "",
       type: "default",
-      cssClass: "",
+      className: "",
       permanent: false,
       timeout: 2,
       fade: true,
@@ -29,9 +29,9 @@
 
     // Construct the new notification.
     var note = $(window.document.createElement('div'))
-                .addClass("ambiance");
-    var cssClass = options['cssClass'] || "ambiance-" + options['type'];
-    note.addClass(cssClass);
+                .addClass("ambiance")
+                .addClass("ambiance-" + options['type'])
+                .addClass(options['className']);
 
     note.css({width: options['width']});
 

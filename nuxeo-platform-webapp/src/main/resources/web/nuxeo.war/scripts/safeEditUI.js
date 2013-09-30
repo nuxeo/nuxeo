@@ -1,7 +1,7 @@
 function formSavedCallback() {
   jQuery.ambiance({
     title: nuxeo.safeEdit.feedbackMessage,
-    cssClass: "infoFeedback",
+    className: "infoFeedback",
     timeout: 1.5
   });
 }
@@ -29,7 +29,7 @@ function restoreDataCallbackPrompt(doLoadCB, formId, key) {
   jQuery.ambiance({
     title: nuxeo.safeEdit.restorePrompt.message,
     message: confirm.add(discard),
-    cssClass: "neutralFeedback",
+    className: "neutralFeedback",
     permanent: true
   });
 }
