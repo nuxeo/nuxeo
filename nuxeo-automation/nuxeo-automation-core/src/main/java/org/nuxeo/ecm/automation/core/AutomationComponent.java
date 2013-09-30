@@ -55,6 +55,7 @@ import org.nuxeo.ecm.automation.core.operations.SetVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.BlobToFile;
 import org.nuxeo.ecm.automation.core.operations.blob.BlobToPDF;
+import org.nuxeo.ecm.automation.core.operations.blob.ConcatenatePDFs;
 import org.nuxeo.ecm.automation.core.operations.blob.ConvertBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateZip;
@@ -217,6 +218,7 @@ public class AutomationComponent extends DefaultComponent {
         service.putOperation(SetDocumentBlob.class);
         service.putOperation(PostBlob.class);
         service.putOperation(BlobToPDF.class);
+        service.putOperation(ConcatenatePDFs.class);
         service.putOperation(ConvertBlob.class);
         service.putOperation(BlobToFile.class);
         service.putOperation(CreateBlob.class);

@@ -91,6 +91,10 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+    </dependency>
     <!-- only for tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

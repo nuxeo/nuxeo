@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,11 +31,13 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.FetchContextDocument;
 import org.nuxeo.ecm.automation.core.operations.RestoreDocumentInput;
 import org.nuxeo.ecm.automation.core.operations.SetInputAsVar;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.BlobToFile;
+import org.nuxeo.ecm.automation.core.operations.blob.ConcatenatePDFs;
 import org.nuxeo.ecm.automation.core.operations.blob.CreateBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetAllDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
@@ -272,13 +276,14 @@ public class BlobOperationsTest {
         Blob blob = new StringBlob("the blob content");
         blob.setFilename("initial_name.txt");
         blob.setMimeType("text/plain");
-        DocumentModel file = session.createDocumentModel(src.getPathAsString(), "blobWithName", "File");
+        DocumentModel file = session.createDocumentModel(src.getPathAsString(),
+                "blobWithName", "File");
         file.setPropertyValue("dc:title", "The File");
-        file.setPropertyValue("file:content", (Serializable)blob);
+        file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
         session.save();
         file = session.getDocument(file.getRef());
-        blob = (Blob)file.getPropertyValue("file:content");
+        blob = (Blob) file.getPropertyValue("file:content");
         assertEquals("the blob content", blob.getString());
         assertEquals("initial_name.txt", blob.getFilename());
 
@@ -291,7 +296,7 @@ public class BlobOperationsTest {
         service.run(ctx, chain);
 
         file = session.getDocument(file.getRef());
-        blob = (Blob)file.getPropertyValue("file:content");
+        blob = (Blob) file.getPropertyValue("file:content");
         assertEquals("the blob content", blob.getString());
         assertEquals("modified_name.txt", blob.getFilename());
 
@@ -331,5 +336,65 @@ public class BlobOperationsTest {
         assertEquals(files.size(), 2);
     }
 
+    @Test
+    public void testPDFMerge() throws Exception {
+        // Fetch two files
+        File pdfMerge1 = FileUtils.getResourceFileFromContext("pdfMerge1.pdf");
+        File pdfMerge2 = FileUtils.getResourceFileFromContext("pdfMerge2.pdf");
+        FileBlob pdf1 = new FileBlob(pdfMerge1);
+        FileBlob pdf2 = new FileBlob(pdfMerge2);
+        pdf1.setMimeType("application/pdf");
+        pdf2.setMimeType("application/pdf");
+        // Add them to list
+        BlobList blobs = new BlobList();
+        blobs.add(pdf1);
+        blobs.add(pdf2);
+        // Execute pdf merge operation
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(blobs);
+        // Inject a blob into context
+        ctx.put("blobToAppend", pdf1);
+        Map<String, Object> params = new HashMap<>();
+        params.put("filename", "pdfresult");
+        // Put as parameter the context variable to get the context blob
+        params.put("blob_to_append", "blobToAppend");
+        Blob blob = (Blob) service.run(ctx, ConcatenatePDFs.ID, params);
+        assertNotNull(blob);
+        assertEquals("pdfresult", blob.getFilename());
+
+        // Test failures
+
+        // Add them to list
+        blobs.clear();
+        pdf1.setMimeType("application/html");
+        blobs.add(pdf1);
+        blobs.add(pdf2);
+        ctx = new OperationContext(session);
+        ctx.setInput(blobs);
+        try{
+            service.run(ctx, ConcatenatePDFs.ID, params);
+            // Should fails before
+            Assert.fail();
+        }catch(OperationException e){
+            assertEquals("Blob pdfMerge1.pdf is not a PDF.", e.getCause().getMessage());
+        }
+
+        pdf1.setMimeType("application/pdf");
+        // Add them to list
+        blobs.clear();
+        blobs.add(pdf1);
+        blobs.add(pdf2);
+        ctx = new OperationContext(session);
+        ctx.setInput(blobs);
+        // Inject a file into context for failing
+        ctx.put("blobToAppend", pdfMerge1);
+        try{
+            service.run(ctx, ConcatenatePDFs.ID, params);
+            // Should fails before
+            Assert.fail();
+        }catch(OperationException e){
+            assertNotNull("The blob to append from variable context: 'blobToAppend' is not a blob.", e.getCause().getMessage());
+        }
+    }
     // TODO add post and file2pdf tests
 }
