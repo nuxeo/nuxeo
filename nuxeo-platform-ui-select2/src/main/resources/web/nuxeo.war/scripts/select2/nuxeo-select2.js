@@ -4,14 +4,14 @@
     var markup = "";
     if (entry.type) {
       if (entry.type == "USER_TYPE") {
-        markup += "<img src='/nuxeo/icons/user.png'/>";
+        markup += "<img src='" + window.nxContextPath + "/icons/user.png'/>";
       } else if (entry.type == "GROUP_TYPE") {
-        markup += "<img src='/nuxeo/icons/group.png'/>";
+        markup += "<img src='" + window.nxContextPath + "/icons/group.png'/>";
       }
     }
     markup += entry.label;
     if (entry.warn_message) {
-      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
           + entry.warn_message + "'/>"
     }
     return markup;
@@ -20,11 +20,11 @@
     function docEntryDefaultFormatter(doc) {
     var markup = "";
     if (doc.properties && doc.properties['common:icon']) {
-      markup += "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"
+      markup += "<img src='" + window.nxContextPath + doc.properties['common:icon'] + "'/>"
     }
     markup += doc.title;
     if (doc.warn_message) {
-      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
           + doc.warn_message + "'/>"
     }
     return markup;
@@ -33,7 +33,7 @@
     function dirEntryDefaultFormatter(entry) {
     var markup = entry.label;
     if (entry.warn_message) {
-      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
           + entry.warn_message + "'/>"
     }
     return markup;
@@ -44,11 +44,11 @@
   function docSelectionDefaultFormatter(doc) {
     var markup = "";
     if (doc.properties && doc.properties['common:icon']) {
-      markup += "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"
+      markup += "<img src='" + window.nxContextPath + doc.properties['common:icon'] + "'/>"
     }
     markup += getDocLinkElt(doc);
     if (doc.warn_message) {
-      markup += "<img src='/nuxeo/icons/warning.gif' title='"
+      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
           + doc.warn_message + "'/>"
     }
     return markup;
