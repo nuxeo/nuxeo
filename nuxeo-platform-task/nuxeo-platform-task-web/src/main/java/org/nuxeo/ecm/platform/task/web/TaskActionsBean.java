@@ -89,8 +89,10 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument != null) {
                 NuxeoPrincipal principal = (NuxeoPrincipal) documentManager.getPrincipal();
-                tasks = taskService.getTaskInstances(currentDocument,
-                        principal, documentManager);
+                List<String> actors = new ArrayList<String>();
+                actors.add(principal.getName());
+                tasks = taskService.getTaskInstances(currentDocument, actors,
+                        true, documentManager);
             }
         }
         return tasks;

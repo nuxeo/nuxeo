@@ -78,7 +78,7 @@
     <template name="aprobationWorkflowStarted" src="templates/appReviewStarted.ftl" />
     <template name="emailDocument" src="templates/emailDocument.ftl" />
     <template name="workflowTaskAssigned" src="templates/workflowTaskAssigned.ftl"/>
-
+    <template name="workflowTaskDelegated" src="templates/workflowTaskDelegated.ftl"/>
     <template name="defaultNotifTemplate" src="templates/defaultNotifTemplate.ftl" />
 
   </extension>

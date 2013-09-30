@@ -590,7 +590,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
                 List<String> allDelegatedActors = new ArrayList<String>();
                 allDelegatedActors.addAll(task.getDelegatedActors());
-                for (String actor : delegatedActors) {
+                for (String actor : actorIds) {
                     if (!allDelegatedActors.contains(actor)) {
                         allDelegatedActors.add(actor);
                     }
