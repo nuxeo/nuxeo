@@ -853,7 +853,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         Client client = Client.create(config);
         client.addFilter(new HTTPBasicAuthFilter("Administrator",
                 "Administrator"));
-        WebResource wr = client.resource("http://localhost:18080/api/automation/doc");
+        WebResource wr = client.resource("http://localhost:18080/api/v1/automation/doc");
 
         Builder builder = wr.accept(MediaType.TEXT_HTML);
         ClientResponse response = builder.get(ClientResponse.class);

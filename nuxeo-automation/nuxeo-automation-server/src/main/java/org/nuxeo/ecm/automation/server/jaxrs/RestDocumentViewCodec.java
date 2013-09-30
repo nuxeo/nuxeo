@@ -18,11 +18,13 @@ package org.nuxeo.ecm.automation.server.jaxrs;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
+
 import com.google.common.base.Joiner;
 
 /**
@@ -32,15 +34,7 @@ import com.google.common.base.Joiner;
  */
 public class RestDocumentViewCodec extends AbstractDocumentViewCodec {
 
-    public static final String PREFIX = "site/api/id";
-
-
-
-    public RestDocumentViewCodec() {
-    }
-
-    public RestDocumentViewCodec(String prefix) {
-    }
+    public static final String PREFIX = "site/api/v1/id";
 
     @Override
     public String getPrefix() {
@@ -70,7 +64,7 @@ public class RestDocumentViewCodec extends AbstractDocumentViewCodec {
     }
 
     /**
-     * There is no document veiw for Rest codec
+     * There is no document view for Rest codec
      */
     @Override
     public DocumentView getDocumentViewFromUrl(String url) {

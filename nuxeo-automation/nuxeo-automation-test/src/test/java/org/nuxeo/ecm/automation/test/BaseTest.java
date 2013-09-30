@@ -81,7 +81,7 @@ public class BaseTest {
         ClientConfig config = new DefaultClientConfig();
         Client client = Client.create(config);
         client.addFilter(new HTTPBasicAuthFilter(user, password));
-        return client.resource("http://localhost:18090/api/");
+        return client.resource("http://localhost:18090/api/v1/");
     }
 
     @Inject
