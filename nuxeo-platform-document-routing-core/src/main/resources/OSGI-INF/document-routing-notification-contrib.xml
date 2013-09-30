@@ -19,11 +19,17 @@
     </notification>
     
    <notification name="Task reassigned" channel="email" enabled="true" availableIn="Workspace"
-      autoSubscribed="true" template="workflowTaskAssigned" templateExpr="NotificationContext['taskInstance'].getVariable('taskNotificationTemplate')" subject="Task Reassigned for ${docTitle}"
+      autoSubscribed="true" template="workflowTaskAssigned" templateExpr="NotificationContext['taskInstance'].getVariable('taskNotificationTemplate')" subject="Task Reassigned on ${docTitle}"
       label="label.nuxeo.notifications.appReviewStarted">
       <event name="workflowTaskReassigned"/>
     </notification>
 
+   <notification name="Task delegated" channel="email" enabled="true" availableIn="Workspace"
+      autoSubscribed="true" template="workflowTaskDelegated"  subject="Task Delegated on ${docTitle}"
+      label="label.nuxeo.notifications.appReviewStarted">
+      <event name="workflowTaskDelegated"/>
+    </notification>
+    
   </extension>
 
 </component>

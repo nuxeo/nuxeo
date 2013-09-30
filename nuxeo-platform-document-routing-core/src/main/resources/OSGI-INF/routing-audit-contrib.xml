@@ -7,6 +7,7 @@
     <event name="workflowTaskReassigned"/>
     <event name="workflowTaskCompleted"/>
     <event name="workflowCanceled"/>
+    <event name="workflowTaskDelegated"/>
     
   </extension>
 </component>
