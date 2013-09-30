@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItem;
 import org.nuxeo.ecm.platform.task.dashboard.DashBoardItemImpl;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -90,7 +91,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
             if (currentDocument != null) {
                 NuxeoPrincipal principal = (NuxeoPrincipal) documentManager.getPrincipal();
                 List<String> actors = new ArrayList<String>();
-                actors.add(principal.getName());
+                actors.addAll(TaskActorsHelper.getTaskActors(principal));
                 tasks = taskService.getTaskInstances(currentDocument, actors,
                         true, documentManager);
             }
