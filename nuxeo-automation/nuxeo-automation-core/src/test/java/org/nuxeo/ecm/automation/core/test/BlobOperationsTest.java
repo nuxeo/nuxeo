@@ -364,11 +364,13 @@ public class BlobOperationsTest {
 
         // Test failures
 
-        // Add them to list
+        // Test check on mimetype failure
         blobs.clear();
         pdf1.setMimeType("application/html");
         blobs.add(pdf1);
         blobs.add(pdf2);
+        params.clear();
+        params.put("filename", "pdfresult");
         ctx = new OperationContext(session);
         ctx.setInput(blobs);
         try{
@@ -379,11 +381,14 @@ public class BlobOperationsTest {
             assertEquals("Blob pdfMerge1.pdf is not a PDF.", e.getCause().getMessage());
         }
 
+        // Test check on context blob failure
         pdf1.setMimeType("application/pdf");
-        // Add them to list
         blobs.clear();
         blobs.add(pdf1);
         blobs.add(pdf2);
+        params.clear();
+        params.put("filename", "pdfresult");
+        params.put("blob_to_append", "blobToAppend");
         ctx = new OperationContext(session);
         ctx.setInput(blobs);
         // Inject a file into context for failing

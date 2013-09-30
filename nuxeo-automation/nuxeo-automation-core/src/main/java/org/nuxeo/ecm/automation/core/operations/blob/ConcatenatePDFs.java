@@ -59,11 +59,26 @@ public class ConcatenatePDFs {
             COSVisitorException {
         PDFMergerUtility ut = new PDFMergerUtility();
         checkPdf(blob);
-        ut.addSource(blob.getStream());
         if (xpathBlobToAppend.isEmpty()) {
             return blob;
         }
         handleBlobToAppend(ut);
+        ut.addSource(blob.getStream());
+        FileBlob fb = appendPDFs(ut);
+        return fb;
+    }
+
+    @OperationMethod
+    public Blob run(BlobList blobs) throws IOException, OperationException,
+            COSVisitorException {
+        PDFMergerUtility ut = new PDFMergerUtility();
+        if (!xpathBlobToAppend.isEmpty()) {
+            handleBlobToAppend(ut);
+        }
+        for (Blob blob : blobs) {
+            checkPdf(blob);
+            ut.addSource(blob.getStream());
+        }
         FileBlob fb = appendPDFs(ut);
         return fb;
     }
@@ -78,10 +93,14 @@ public class ConcatenatePDFs {
         return fb;
     }
 
+    /**
+     * Check if blob to append is a PDF blob
+     */
     protected void handleBlobToAppend(PDFMergerUtility ut) throws IOException,
             OperationException {
         try {
             Blob blobToAppend = (Blob) ctx.get(xpathBlobToAppend);
+            checkPdf(blobToAppend);
             ut.addSource(blobToAppend.getStream());
         } catch (ClassCastException e) {
             throw new OperationException(
@@ -94,21 +113,9 @@ public class ConcatenatePDFs {
         }
     }
 
-    @OperationMethod
-    public Blob run(BlobList blobs) throws IOException, OperationException,
-            COSVisitorException {
-        PDFMergerUtility ut = new PDFMergerUtility();
-        for (Blob blob : blobs) {
-            checkPdf(blob);
-            ut.addSource(blob.getStream());
-        }
-        if (!xpathBlobToAppend.isEmpty()) {
-            handleBlobToAppend(ut);
-        }
-        FileBlob fb = appendPDFs(ut);
-        return fb;
-    }
-
+    /**
+     * Check if blob is a pdf
+     */
     protected void checkPdf(Blob blob) throws OperationException {
         if (!"application/pdf".equals(blob.getMimeType())) {
             throw new OperationException("Blob " + blob.getFilename()
