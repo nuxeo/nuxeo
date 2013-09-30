@@ -98,6 +98,8 @@ public class Select2Common {
 
     public static final int DEFAULT_MIN_CHARS = 3;
 
+    public static final String TITLE = "title";
+
     /**
      * Compute the filed name of the directory that holds the value that we
      * want to display.

@@ -19,7 +19,7 @@
 
     function docEntryDefaultFormatter(doc) {
     var markup = "";
-    if (doc.properties['common:icon']) {
+    if (doc.properties && doc.properties['common:icon']) {
       markup += "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"
     }
     markup += doc.title;
@@ -43,7 +43,7 @@
 
   function docSelectionDefaultFormatter(doc) {
     var markup = "";
-    if (doc.properties['common:icon']) {
+    if (doc.properties && doc.properties['common:icon']) {
       markup += "<img src='/nuxeo" + doc.properties['common:icon'] + "'/>"
     }
     markup += getDocLinkElt(doc);
@@ -69,9 +69,13 @@
   }
 
   function getDocLinkElt(doc) {
-    var url = doc.contextParameters.documentURL;
-    var markup = "<a href=" + url + " onclick='if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='" + getUrlWithConversationId(url) + "'}'>" + doc.title + "</a>"
-    return markup;
+    if(doc.contextParameters) {
+      var url = doc.contextParameters.documentURL;
+      var markup = "<a href=" + url + " onclick='if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='" + getUrlWithConversationId(url) + "'}'>" + doc.title + "</a>"
+      return markup;
+    } else {
+      return doc.title;
+    }
   }
 
   function getUrlWithConversationId(url) {

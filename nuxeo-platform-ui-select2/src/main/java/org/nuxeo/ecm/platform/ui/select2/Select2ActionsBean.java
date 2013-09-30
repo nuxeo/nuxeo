@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.ui.select2;
 
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerator;
@@ -675,6 +677,8 @@ public class Select2ActionsBean implements Serializable {
                 } else {
                     result.add(doc.getTitle());
                 }
+            } else {
+                result.add(messages.get("label.documentSuggestion.docNotFoundOrNotVisible") + "(" + ref + ")");
             }
         }
         return result;
@@ -713,9 +717,10 @@ public class Select2ActionsBean implements Serializable {
             DocumentModel doc = resolveReference(repo, ref, operationName,
                     idProperty);
             if (doc == null) {
-                return "";
+                processDocumentNotFound(ref, jg);
+            } else {
+                JsonDocumentWriter.writeDocument(jg, doc, schemas);
             }
-            JsonDocumentWriter.writeDocument(jg, doc, schemas);
         }
 
         jg.writeEndArray();
@@ -839,6 +844,25 @@ public class Select2ActionsBean implements Serializable {
             log.error("Unable to resolve reference", e);
         }
         return doc;
+    }
+
+    protected void processDocumentNotFound(String id, JsonGenerator jg)
+            throws ClientException {
+        if (StringUtils.isEmpty(id)) {
+            return;
+        }
+        try {
+            jg.writeStartObject();
+            jg.writeStringField(Select2Common.ID, id);
+            jg.writeStringField(Select2Common.TITLE,
+                    messages.get("label.documentSuggestion.docNotFoundOrNotVisible"));
+            jg.writeStringField(
+                    Select2Common.WARN_MESSAGE_LABEL, id);
+            jg.writeEndObject();
+            jg.flush();
+        } catch (IOException e) {
+            log.error("Error while writing not found message ", e);
+        }
 
     }
 
@@ -875,24 +899,27 @@ public class Select2ActionsBean implements Serializable {
 
         DocumentModel doc;
         doc = resolveReference(repo, storedReference, operationName, idProperty);
-        if (doc == null) {
-            return "";
-        }
-        String[] schemas = null;
-        if (schemaNames != null && !schemaNames.isEmpty()) {
-            schemas = schemaNames.split(",");
-        }
-
-        DocumentIdCodec documentIdCodec = new DocumentIdCodec();
-        Map<String, String> contextParameters = new HashMap<String, String>();
-        contextParameters.put(
-                "documentURL",
-                documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(doc)));
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters);
+        if (doc == null) {
+            processDocumentNotFound(storedReference, jg);
+        } else {
+            String[] schemas = null;
+            if (schemaNames != null && !schemaNames.isEmpty()) {
+                schemas = schemaNames.split(",");
+            }
+
+            DocumentIdCodec documentIdCodec = new DocumentIdCodec();
+            Map<String, String> contextParameters = new HashMap<String, String>();
+            contextParameters.put(
+                    "documentURL",
+                    documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(
+                            doc)));
+
+            JsonDocumentWriter.writeDocument(jg, doc, schemas,
+                    contextParameters);
+        }
         jg.flush();
         return new String(baos.toByteArray(), "UTF-8");
 
@@ -904,7 +931,7 @@ public class Select2ActionsBean implements Serializable {
         DocumentModel doc = resolveReference(repo, storedReference,
                 operationName, idProperty);
         if (doc == null) {
-            return "";
+            return messages.get("label.documentSuggestion.docNotFoundOrNotVisible") + "(" + doc + ")";
         }
 
         if (label != null && !label.isEmpty()) {
