@@ -298,30 +298,35 @@
       </fields>
     </widget>
     
-    <widget name="task_related_actions" type="currentDocumentActionsWithForms">
+    <widget name="reassign_task_widget" type="action">
       <properties widgetMode="any">
-        <property name="category">TASK_ADDITIONAL_ACTIONS</property>
+        <property name="action">#{webActions.getActionForDocument("reassignTask",null, false)}</property>
         <property name="styleClass">globalActionBar</property>
         <property name="subStyleClass">contextActions</property>
-        <property name="overallDisplay">horizontal_block</property>
         <property name="actionStyleClass">button</property>
         <property name="actionsDisplay">buttons</property>
+        <property name="addForm">true</property>
         <property name="useAjaxForm">true</property>
         <property name="ignoreTemplateProperty">true</property>
-        <property name="maxActionsNumber">3</property>
+      </properties>
+      <widgetModes>
+        <mode value="any">#{layoutValue.isCanBeReassigned()?'edit':'hidden'}</mode>
+      </widgetModes>
+    </widget>
+    
+    <widget name="delegate_task_widget" type="action">
+      <properties widgetMode="any">
+        <property name="action">#{webActions.getActionForDocument("delegateTask",null, false)}</property>
+        <property name="styleClass">globalActionBar</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="actionStyleClass">button</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="addForm">true</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
       </properties>
     </widget>
     
-    <widget name="task_related_actions_top" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <properties widgetMode="any">
-        <property name="category">TASK_ADDITIONAL_ACTIONS_TOP</property>
-        <property name="subStyleClass">summaryActions</property>
-      </properties>
-    </widget>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -444,12 +449,11 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
-            <property name="nxl_gridStyleClass_1">gridStyle7</property>
-            <property name="nxl_gridStyleClass_2">gridStyle5</property>
-            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+            <property name="nxl_gridStyleClass_0">gridStyle1</property>
+            <property name="nxl_gridStyleClass_1">gridStyle6</property>
           </properties>
-          <widget>task_related_actions_top</widget>
+          <widget>reassign_task_widget</widget>
+          <widget>delegate_task_widget</widget>
         </row>
       </rows>
     </layout>
@@ -560,13 +564,6 @@
         <property name="widgetName">current_route_abandon</property>
       </properties>
       <filter-id>currentUserIsWorkflowInitatior</filter-id>
-    </action>
-    
-    <action id="task_additional_actions" type="widget" order="100">
-      <category>TASK_ADDITIONAL_ACTIONS_TOP</category>
-      <properties>
-        <property name="widgetName">task_related_actions</property>
-      </properties>
     </action>
 
   </extension>
