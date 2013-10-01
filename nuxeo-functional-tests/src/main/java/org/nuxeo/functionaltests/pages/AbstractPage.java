@@ -95,7 +95,7 @@ public abstract class AbstractPage {
         String ret;
         try {
             ret = findElementWithTimeout(
-                    By.xpath("//li[@class=\"errorFeedback\"]")).getText();
+                    By.xpath("//div[contains(@class, 'errorFeedback')]/div[@class='ambiance-title']")).getText();
         } catch (NoSuchElementException e) {
             ret = "";
         }

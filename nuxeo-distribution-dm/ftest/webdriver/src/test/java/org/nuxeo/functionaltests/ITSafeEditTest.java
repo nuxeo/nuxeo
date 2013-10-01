@@ -41,6 +41,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -167,21 +168,15 @@ public class ITSafeEditTest extends AbstractTest {
         ((JavascriptExecutor) driver).executeScript("jQuery(window).unbind('unload');");
     }
 
-    private void checkSafeEditResoreProvided() {
+    private void checkSafeEditRestoreProvided() {
         // We must find the status message asking if we want to restore
         // previous unchanged data, and make sure it is visible
-        Boolean isRestoreVisible = Boolean.FALSE;
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
                 TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
                 NoSuchElementException.class);
-        isRestoreVisible = wait.until((new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                return Boolean.valueOf(!driver.findElement(
-                        By.id(CONFIRM_RESTORE_SPAN_ELT_ID)).getCssValue(
-                        "display").equals("none"));
-            }
-        }));
-        assertTrue(isRestoreVisible.booleanValue());
+        wait.until(ExpectedConditions.textToBePresentInElement(
+                By.className("ambiance-title"),
+                "A draft of this document has been saved"));
     }
 
     /**
@@ -201,8 +196,8 @@ public class ITSafeEditTest extends AbstractTest {
     }
 
     /**
-     * Returns true if detected FF browser version is >= FF 14, to avoid
-     * running the test on browsers that do not support localstorage.
+     * Returns true if detected FF browser version is >= FF 14, to avoid running
+     * the test on browsers that do not support localstorage.
      *
      * @return whether we run the test or not
      * @since 5.7.2
@@ -262,7 +257,7 @@ public class ITSafeEditTest extends AbstractTest {
 
         // We change the value of the title
         titleElt.click();
-        titleElt.sendKeys(Keys.chord(Keys.CONTROL, "a") + Keys.DELETE
+        titleElt.sendKeys(Keys.chord(Keys.COMMAND, "a") + Keys.DELETE
                 + NEW_WORKSPACE_TITLE);
         // weird thing in webdriver: we need to call clear on an input of the
         // form to fire an onchange event
@@ -310,7 +305,7 @@ public class ITSafeEditTest extends AbstractTest {
         assertTrue(lsItem.contains(lookupString));
         log.debug("6 - " + localStorage.getLocalStorageLength());
 
-        checkSafeEditResoreProvided();
+        checkSafeEditRestoreProvided();
 
         triggerSafeEditResotre();
 
@@ -379,7 +374,7 @@ public class ITSafeEditTest extends AbstractTest {
         filePage.getSummaryTab();
         filePage.getEditTab();
 
-        checkSafeEditResoreProvided();
+        checkSafeEditRestoreProvided();
 
         triggerSafeEditResotre();
 
@@ -395,7 +390,7 @@ public class ITSafeEditTest extends AbstractTest {
 
     private void triggerSafeEditResotre() {
         // Let's restore
-        WebElement confirmRestoreYes = driver.findElement(By.id(CONFIRM_RESTORE_YES_ELT_ID));
+        WebElement confirmRestoreYes = driver.findElement(By.linkText("Use draft"));
         // The following call randomly times out.
         // confirmRestoreYes.click();
         // We just want to trigger the js event handler attached to
