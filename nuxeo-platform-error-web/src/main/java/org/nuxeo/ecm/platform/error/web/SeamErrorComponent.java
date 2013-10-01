@@ -133,8 +133,19 @@ public class SeamErrorComponent implements Serializable {
         return null;
     }
 
+    // methods to test concurrency issues
+
+    protected int counter = 0;
+
     public String performConcurrentRequestTimeoutException() throws Exception {
         Thread.sleep(15*1000);
+        counter++;
         return null;
     }
+
+    public int getCounterValue() {
+        return counter;
+    }
+
+
 }

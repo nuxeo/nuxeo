@@ -1,4 +1,6 @@
-<html xmlns:h="http://java.sun.com/jsf/html">
+<html xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
 <title>Test errors in nuxeo jsf</title>
 <body>
@@ -7,7 +9,7 @@
 
 <h:messages globalOnly="true"/>
 
-<h:form>
+<h:form disableDoubleClickShield="true">
   <ul>
     <li><h:commandLink action="error_invalid_html"
       value="Error invalid html" /></li>
@@ -22,7 +24,7 @@
 
 <h3>Test errors in nuxeo seam</h3>
 
-<h:form>
+<h:form disableDoubleClickShield="true">
   <ul>
     <li><h:commandLink action="error_seam_getter_checked"
       value="Seam getter checked error" /></li>
@@ -51,11 +53,27 @@
     <li><h:commandLink
       action="#{errorSeamComponent.performPureRollback}"
       value="Seam action simple Rollback" /></li>
-    <li><h:commandLink
-      action="#{errorSeamComponent.performConcurrentRequestTimeoutException}"
-      value="Seam ConcurrentRequestTimeoutException" /></li>
   </ul>
 </h:form>
+
+<h3>Test Seam concurrency issues </h3>
+
+<h:form disableDoubleClickShield="true">
+  <ul>
+    <li><h:commandLink
+      action="#{errorSeamComponent.performConcurrentRequestTimeoutException}"
+      value="Seam long blocking call" /> (increment a counter)
+      -- current value of counter is #{errorSeamComponent.counterValue}
+    </li>
+    <li>
+      <h:outputLink value ="/nuxeo/error_test_web/error_index.faces?conversationId=#{nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId)}">Refresh this page</h:outputLink> (simple GET)
+    </li>
+    <li>
+      <nxd:restDocumentLink document="#{currentDocument}" pattern="home" view="view_home">Rest link</nxd:restDocumentLink>
+    </li>
+  </ul>
+</h:form>
+
 
 </body>
 
