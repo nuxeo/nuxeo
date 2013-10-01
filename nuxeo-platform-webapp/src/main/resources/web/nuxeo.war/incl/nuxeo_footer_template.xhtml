@@ -2,7 +2,9 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core">
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  id="footer">
 
 <ui:insert name="prefooter">
   <c:if test="#{connectUpdateStatusInfo.bannerPath!=null}">
@@ -13,19 +15,15 @@
 <ui:insert name="footer">
   <div class="footerDefaultLinks">
 
-    <div class="nuxLinks">
-      <nxu:set var="actions"
-        value="#{webActions.getActionsList('FOOTER')}" cache="true">
-        <c:forEach var="action" items="#{actions}" varStatus="status">
-          <ui:decorate template="/incl/action/generic_action_template.xhtml">
-            <ui:define name="after_action_template_content" />
-          </ui:decorate>
-          <c:if test="#{not status.last}">
-            <h:outputText value=" | " />
-          </c:if>
-        </c:forEach>
-      </nxu:set>
-    </div>
+    <nxl:widgetType name="documentActionsWithForms"
+      widgetName="footerButtons"
+      mode="view"
+      label=""
+      styleClass="nuxLinks"
+      overallDisplay="horizontal_block"
+      widgetProperty_category="FOOTER"
+      separator=" | "
+      value="#{currentDocument}" />
 
     <div class="copyrights">
       <h:outputFormat value="#{messages['label.login.copyright']}">

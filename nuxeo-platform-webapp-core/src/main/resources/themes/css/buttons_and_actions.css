@@ -126,6 +126,16 @@ div.syndicationButton div.syndicationLinks a:hover { color: "link.hover (__FLAVO
   padding: .1em }
 
 /* =Actionbar in Home */
+.actionList { float: right; list-style: none; margin: 0; padding: 0 }
+.actionList li { cursor: pointer; display: block; font-weight: normal; margin: 0 0 0 .4em; position: relative; text-decoration: none; z-index:3000 }
+.actionList li a { color: "default (__FLAVOR__ color)"; padding: 0 }
+.actionList .actionSubList { background-color: #fff; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; border-radius: 3px; box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); display:none; list-style: none; margin-top: .5em; padding: 0; position: absolute; right: 0; top: 19px; width: 250px; z-index: 1001 }
+.actionList .actionSubList li { background: none; border: none; float: none; height: auto; margin: 0; padding: 0; text-align: left; max-width: 300px }
+.actionList .actionSubList li a { background: none; border: none; display: block; margin: 0; padding: .5em 1em; text-decoration: none; white-space: normal }
+.actionList .actionSubList li a:hover { background-color:"color.major.medium (__FLAVOR__ background)";}
+.actionSubList .smallIcon { margin: 0 .8em -0.2em 0 }
+
+/* =Kept for social collab custom actions */
 .headerTitleAndTools h1 { display: inline }
 .headerTitleAndTools h1 span { color: "gray.light (__FLAVOR__ color)"; font-weight: normal }
 .headerTitleAndTools .globalActionBar { float: right } /* Clean headerTitleAndTools style, inheritance issue with globalActionBar class*/
@@ -144,10 +154,8 @@ div.syndicationButton div.syndicationLinks a:hover { color: "link.hover (__FLAVO
 /* =MainActions in Document Title Area */
 .titleBlock { float: left; max-width: 60% }
 .globalActions { text-align: right }
-.globalActions .contextActions { padding: .4em 0 .5em }
-  .globalActions .contextActions div { display: inline }
-  .globalActions .contextActions div a { display: inline-block }
-  .globalActions .contextActions div img { padding: -0.3em 0 0 }
+.contextActions { padding: .4em 0 .5em }
+.contextActions div img { padding: -0.3em 0 0 }
 
 /* Link on forms */
 .actionLink { margin: .1em .2em .1em .1em }

@@ -72,5 +72,11 @@ author: lkemen@nuxeo.com
 .userMenuActions ul ul a:hover { background-color: "color.major.medium (__FLAVOR__ background)"; text-shadow: none }
 
 /* =Studio header link */
-.studioButton { border-left: 1px solid #999 }
+.studioButton { border-left: 1px solid #999; float:left; color:white }
 .studioButton a { border: none; color: #fff; display: inline-block; font-size: 1.1em; line-height: 280%; margin: 0; padding: 0 .6em .15em }
+
+/* =Admin message */
+.adminMessage {text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;}
+
+/* =Connect header links */
+.updateNotificationArea {float:right; vertical-align:middle; padding:10px}
