@@ -169,6 +169,48 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
+    <!-- header actions -->
+
+    <action id="StudioRegistered" label="Studio" order="200" type="bare_link">
+      <category>MAIN_TABS</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>isRegisteredOnConnect</filter-id>
+      <properties>
+        <property name="containerStyleClass">studioButton</property>
+        <property name="target">studio</property>
+        <property name="link">
+          #{nuxeoConnectUrl}studio/ide
+        </property>
+      </properties>
+    </action>
+
+    <action id="StudioUnregistered" label="Studio" order="200" type="bare_link">
+      <category>MAIN_TABS</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>isNotRegisteredOnConnect</filter-id>
+      <properties>
+        <property name="containerStyleClass">studioButton</property>
+        <property name="target">studio</property>
+        <property name="link">
+          #{nuxeoConnectUrl}connect/trial/form?source=studioButton&#38;product=#{connectUpdateStatusInfo.distributionLabel}
+        </property>
+      </properties>
+    </action>
+
+    <action id="connectUpdates"
+      label="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available"
+      order="-100" type="template" icon="/icons/update.png">
+      <category>SEARCH_ACTIONS</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter-id>hasConnectUpdates</filter-id>
+      <properties>
+        <property name="containerStyleClass">updateNotificationArea</property>
+        <property name="template">/connect_upgrade_link.xhtml</property>
+      </properties>
+    </action>
+
+    <!-- end of header actions -->
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -197,6 +239,24 @@
     <filter id="user_manager">
       <rule grant="true">
         <condition>#{userServicesContext.userManagerEnabled}</condition>
+      </rule>
+    </filter>
+
+    <filter id="isRegisteredOnConnect">
+      <rule grant="true">
+        <condition>#{connectUpdateStatusInfo.registered}</condition>
+      </rule>
+    </filter>
+
+    <filter id="isNotRegisteredOnConnect">
+      <rule grant="false">
+        <condition>#{connectUpdateStatusInfo.registered}</condition>
+      </rule>
+    </filter>
+
+    <filter id="hasConnectUpdates">
+      <rule grant="true">
+        <condition>#{connectUpdateStatusInfo.availableUpdateCount &gt; 0}</condition>
       </rule>
     </filter>
 
