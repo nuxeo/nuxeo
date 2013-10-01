@@ -28,17 +28,16 @@
           includeAnyMode="false" />
       </h:form>
 
-      <div class="globalActions">
-        <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
-      </div>
+      <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
 
       <ui:include src="/incl/message_banner.xhtml"/>
 
-      <ui:include src="/incl/document_action_tabs.xhtml"/>
-      <div style="clear:both"></div>
-      <div class="tabsContent">
-        <ui:include src="#{webActions.currentTabAction.link}"/>
-      </div>
+      <nxl:widgetType name="documentTabsWithForms"
+        widgetName="documentTabs"
+        mode="view"
+        value="#{currentDocument}"
+        widgetProperty_category="VIEW_ACTION_LIST"
+        actionsDisplay="links" />
 
     </div>
   </ui:define>

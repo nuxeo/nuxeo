@@ -99,7 +99,7 @@
       tabs are handled by a specific template so links should be paths to
       template to include in the tab content
     -->
-    <action id="TAB_MANAGE" link="/incl/tabs/document_manage.xhtml"
+    <action id="TAB_MANAGE" type="rest_document_link"
       order="240" label="action.view.manage" icon="/icons/file.gif" accessKey="m">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
@@ -113,6 +113,8 @@
       <properties>
         <property name="ajaxSupport">true</property>
         <property name="isParentTab">true</property>
+        <!-- this property is not needed anymore, here for compat -->
+        <property name="link">/incl/tabs/document_manage.xhtml</property>
       </properties>
     </action>
 
@@ -293,8 +295,8 @@
       </filter>
     </action>
 
-    <action id="CURRENT_SELECTION_EDIT" type="fancybox"
-      label="command.bulk.edit" icon="" order="0">
+    <action id="CURRENT_SELECTION_EDIT" type="fancybox" label="command.bulk.edit"
+      icon="" order="0">
       <category>CURRENT_SELECTION_LIST</category>
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canEditCurrentSelection</filter-id>
