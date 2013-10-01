@@ -1,11 +1,23 @@
 <component name="org.nuxeo.ecm.platform.suggestbox.actions">
 
+  <require>org.nuxeo.ecm.platform.actions</require>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="simple_search" link="/search/suggestbox.xhtml"
-      label="" order="1">
-      <category>SEARCH_BOX_TEMPLATE</category>
+    <documentation>
+      Disable the default simple search from Nuxeo and adds a
+      suggestion search box instead.
+    </documentation>
+
+    <action id="simple_search_box" enabled="false" />
+
+    <action id="suggest_search_box" order="1" type="template">
+      <category>SEARCH_ACTIONS</category>
+      <filter-id>isSearchEnabled</filter-id>
+      <properties>
+        <property name="template">/search/suggestbox.xhtml</property>
+      </properties>
     </action>
 
   </extension>
