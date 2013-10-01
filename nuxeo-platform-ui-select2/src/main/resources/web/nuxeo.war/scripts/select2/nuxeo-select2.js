@@ -2,7 +2,7 @@
 
   function userEntryDefaultFormatter(entry) {
     var markup = "";
-    if (entry.type) {
+    if (entry.displayIcon && entry.type) {
       if (entry.type == "USER_TYPE") {
         markup += "<img src='" + window.nxContextPath + "/icons/user.png'/>";
       } else if (entry.type == "GROUP_TYPE") {
@@ -99,7 +99,16 @@
       op.addParameter("prefix", query.term);
       op.addParameter("searchType", params.userSuggestionSearchType);
       op.addParameter("groupRestriction", params.groupRestriction);
-      op.addParameter("userSuggestionMaxSearchResults", params.userSuggestionMaxSearchResults);
+      op.addParameter("userSuggestionMaxSearchResults",
+          params.userSuggestionMaxSearchResults);
+      op.addParameter("firstLabelField", params.firstLabelField);
+      op.addParameter("secondLabelField", params.secondLabelField);
+      op.addParameter("thirdLabelField", params.thirdLabelField);
+      op.addParameter("hideFirstLabel", params.hideFirstLabel);
+      op.addParameter("hideSecondLabel", params.hideSecondLabel);
+      op.addParameter("hideThirdLabel", params.hideThirdLabel);
+      op.addParameter("displayEmailInSuggestion", params.displayEmailInSuggestion);
+      op.addParameter("hideIcon", params.hideIcon);
     } else {
       // build default operation for Document
       op.addParameter("queryParams", query.term + "%");

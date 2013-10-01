@@ -80,7 +80,6 @@ import org.nuxeo.ecm.platform.ui.select2.automation.SuggestUserEntries;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.codec.DocumentIdCodec;
-import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -326,7 +325,10 @@ public class Select2ActionsBean implements Serializable {
 
     @SuppressWarnings("rawtypes")
     protected JSONArray getMultipleUserReference(final Object value,
-            final boolean prefixed) {
+            final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel,
+            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
         if (value == null) {
             return null;
         }
@@ -343,7 +345,10 @@ public class Select2ActionsBean implements Serializable {
         }
 
         for (String ref : storedRefs) {
-            JSONObject resolved = getSingleUserReference(ref, prefixed);
+            JSONObject resolved = getSingleUserReference(ref, prefixed,
+                    firstLabelField, secondLabelField, thirdLabelField,
+                    hideFirstLabel, hideSecondLabel, hideThirdLabel,
+                    displayEmailInSuggestion, hideIcon);
             if (resolved != null && !resolved.isEmpty()) {
                 result.add(resolved);
             }
@@ -429,7 +434,10 @@ public class Select2ActionsBean implements Serializable {
     }
 
     protected JSONObject getSingleUserReference(final String storedReference,
-            final boolean prefixed) {
+            final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel,
+            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
@@ -459,9 +467,6 @@ public class Select2ActionsBean implements Serializable {
             }
             if (user != null) {
                 Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
-                String username = null;
-                String firstname = null;
-                String lastname = null;
                 for (Field field : schema.getFields()) {
                     QName fieldName = field.getName();
                     String key = fieldName.getLocalName();
@@ -470,27 +475,14 @@ public class Select2ActionsBean implements Serializable {
                         continue;
                     }
                     obj.element(key, value);
-                    if (key.equals(userManager.getUserIdField())) {
-                        username = (String) value;
-                    } else if (key.equals(UserConfig.FIRSTNAME_COLUMN)) {
-                        firstname = (String) value;
-                    } else if (key.equals(UserConfig.LASTNAME_COLUMN)) {
-                        lastname = (String) value;
-                    }
-                }
-                String label = "";
-                if (firstname != null && !firstname.isEmpty()
-                        && lastname != null && !lastname.isEmpty()) {
-                    label = firstname + " " + lastname;
-                } else {
-                    label = username;
                 }
                 String userId = user.getId();
                 obj.put(Select2Common.ID, userId);
-                obj.put(Select2Common.LABEL, label);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
                 obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
                         NuxeoPrincipal.PREFIX + userId);
+                Select2Common.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField, hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
+                Select2Common.computeUserGroupIcon(obj, hideIcon);
             } else if (group != null) {
                 Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
                 for (Field field : schema.getFields()) {
@@ -498,15 +490,15 @@ public class Select2ActionsBean implements Serializable {
                     String key = fieldName.getLocalName();
                     Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
                     obj.element(key, value);
-                    if (key.equals(userManager.getGroupLabelField())) {
-                        obj.element(Select2Common.LABEL, value);
-                    }
                 }
+                // If the group hasn't an label, let's put the groupid
                 String groupId = group.getId();
+                Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
                 obj.put(Select2Common.ID, groupId);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
                 obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX
                         + groupId);
+                Select2Common.computeUserGroupIcon(obj, hideIcon);
             } else {
                 log.warn("Could not resolve user or group reference: "
                         + storedReference);
@@ -678,7 +670,8 @@ public class Select2ActionsBean implements Serializable {
                     result.add(doc.getTitle());
                 }
             } else {
-                result.add(messages.get("label.documentSuggestion.docNotFoundOrNotVisible") + "(" + ref + ")");
+                result.add(messages.get("label.documentSuggestion.docNotFoundOrNotVisible")
+                        + "(" + ref + ")");
             }
         }
         return result;
@@ -707,10 +700,7 @@ public class Select2ActionsBean implements Serializable {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        String[] schemas = null;
-        if (schemaNames != null && !schemaNames.isEmpty()) {
-            schemas = schemaNames.split(",");
-        }
+        String[] schemas = Select2Common.getSchemas(schemaNames);
         jg.writeStartArray();
 
         for (String ref : storedRefs) {
@@ -738,7 +728,10 @@ public class Select2ActionsBean implements Serializable {
 
     @SuppressWarnings("rawtypes")
     public String resolveMultipleUserReference(final Object value,
-            final boolean prefixed) {
+            final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel,
+            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
         if (value == null) {
             return "[]";
         }
@@ -755,7 +748,10 @@ public class Select2ActionsBean implements Serializable {
         }
 
         for (String ref : storedRefs) {
-            String resolved = resolveSingleUserReference(ref, prefixed);
+            String resolved = resolveSingleUserReference(ref, prefixed,
+                    firstLabelField, secondLabelField, thirdLabelField,
+                    hideFirstLabel, hideSecondLabel, hideThirdLabel,
+                    displayEmailInSuggestion, hideIcon);
             if (resolved != null && !resolved.isEmpty()) {
                 result.add(resolved);
             }
@@ -764,8 +760,14 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public List<String> resolveMultipleUserReferenceLabels(final Object value,
-            final boolean prefixed) {
-        return formatList(getMultipleUserReference(value, prefixed));
+            final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel,
+            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+        return formatList(getMultipleUserReference(value, prefixed,
+                firstLabelField, secondLabelField, thirdLabelField,
+                hideFirstLabel, hideSecondLabel, hideThirdLabel,
+                displayEmailInSuggestion, hideIcon));
     }
 
     protected DocumentModel resolveReference(final String repo,
@@ -854,10 +856,10 @@ public class Select2ActionsBean implements Serializable {
         try {
             jg.writeStartObject();
             jg.writeStringField(Select2Common.ID, id);
-            jg.writeStringField(Select2Common.TITLE,
-                    messages.get("label.documentSuggestion.docNotFoundOrNotVisible"));
             jg.writeStringField(
-                    Select2Common.WARN_MESSAGE_LABEL, id);
+                    Select2Common.TITLE,
+                    messages.get("label.documentSuggestion.docNotFoundOrNotVisible"));
+            jg.writeStringField(Select2Common.WARN_MESSAGE_LABEL, id);
             jg.writeEndObject();
             jg.flush();
         } catch (IOException e) {
@@ -905,10 +907,7 @@ public class Select2ActionsBean implements Serializable {
         if (doc == null) {
             processDocumentNotFound(storedReference, jg);
         } else {
-            String[] schemas = null;
-            if (schemaNames != null && !schemaNames.isEmpty()) {
-                schemas = schemaNames.split(",");
-            }
+            String[] schemas = Select2Common.getSchemas(schemaNames);
 
             DocumentIdCodec documentIdCodec = new DocumentIdCodec();
             Map<String, String> contextParameters = new HashMap<String, String>();
@@ -931,7 +930,8 @@ public class Select2ActionsBean implements Serializable {
         DocumentModel doc = resolveReference(repo, storedReference,
                 operationName, idProperty);
         if (doc == null) {
-            return messages.get("label.documentSuggestion.docNotFoundOrNotVisible") + "(" + doc + ")";
+            return messages.get("label.documentSuggestion.docNotFoundOrNotVisible")
+                    + "(" + doc + ")";
         }
 
         if (label != null && !label.isEmpty()) {
@@ -946,8 +946,14 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public String resolveSingleUserReference(final String storedReference,
-            final boolean prefixed) {
-        JSONObject result = getSingleUserReference(storedReference, prefixed);
+            final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel,
+            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+        JSONObject result = getSingleUserReference(storedReference, prefixed,
+                firstLabelField, secondLabelField, thirdLabelField,
+                hideFirstLabel, hideSecondLabel, hideThirdLabel,
+                displayEmailInSuggestion, hideIcon);
         if (result != null) {
             return result.toString();
         } else {
@@ -956,8 +962,14 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public String resolveUserReferenceLabel(final String storedReference,
-            final boolean prefixed) {
-        JSONObject obj = getSingleUserReference(storedReference, prefixed);
+            final boolean prefixed, final String firstLabelField,
+            final String secondLabelField, final String thirdLabelField,
+            final boolean hideFirstLabel, final boolean hideSecondLabel,
+            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+        JSONObject obj = getSingleUserReference(storedReference, prefixed,
+                firstLabelField, secondLabelField, thirdLabelField,
+                hideFirstLabel, hideSecondLabel, hideThirdLabel,
+                displayEmailInSuggestion, hideIcon);
         if (obj == null) {
             return "";
         }

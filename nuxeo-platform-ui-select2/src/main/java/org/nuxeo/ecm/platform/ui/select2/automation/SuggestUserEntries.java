@@ -49,7 +49,6 @@ import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
-import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -83,6 +82,30 @@ public class SuggestUserEntries {
     @Param(name = "userSuggestionMaxSearchResults", required = false)
     protected Integer userSuggestionMaxSearchResults;
 
+    @Param(name = "firstLabelField", required = false)
+    protected String firstLabelField;
+
+    @Param(name = "secondLabelField", required = false)
+    protected String secondLabelField;
+
+    @Param(name = "thirdLabelField", required = false)
+    protected String thirdLabelField;
+
+    @Param(name = "hideFirstLabel", required = false)
+    protected boolean hideFirstLabel = false;
+
+    @Param(name = "hideSecondLabel", required = false)
+    protected boolean hideSecondLabel = false;
+
+    @Param(name = "hideThirdLabel", required = false)
+    protected boolean hideThirdLabel;
+
+    @Param(name = "displayEmailInSuggestion", required = false)
+    protected boolean displayEmailInSuggestion;
+
+    @Param(name = "hideIcon", required = false)
+    protected boolean hideIcon;
+
     @Context
     protected UserManager userManager;
 
@@ -115,9 +138,6 @@ public class SuggestUserEntries {
                 Directory userDir = directoryService.getDirectory(userManager.getUserDirectoryName());
                 for (DocumentModel user : userList) {
                     JSONObject obj = new JSONObject();
-                    String username = null;
-                    String firstname = null;
-                    String lastname = null;
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();
@@ -126,33 +146,24 @@ public class SuggestUserEntries {
                             continue;
                         }
                         obj.element(key, value);
-                        if (key.equals(userManager.getUserIdField())) {
-                            username = (String) value;
-                        } else if (key.equals(UserConfig.FIRSTNAME_COLUMN)) {
-                            firstname = (String) value;
-                        } else if (key.equals(UserConfig.LASTNAME_COLUMN)) {
-                            lastname = (String) value;
-                        }
-                    }
-                    String label = "";
-                    if (firstname != null && !firstname.isEmpty()
-                            && lastname != null && !lastname.isEmpty()) {
-                        label = firstname + " " + lastname;
-                    } else {
-                        label = username;
                     }
                     String userId = user.getId();
                     obj.put(Select2Common.ID, userId);
-                    obj.put(Select2Common.LABEL, label);
                     obj.put(Select2Common.TYPE_KEY_NAME,
                             Select2Common.USER_TYPE);
                     obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
                             NuxeoPrincipal.PREFIX + userId);
+                    Select2Common.computeUserLabel(obj,
+                            firstLabelField, secondLabelField,
+                            thirdLabelField, hideFirstLabel,
+                            hideSecondLabel, hideThirdLabel,
+                            displayEmailInSuggestion, userId);
+                    Select2Common.computeUserGroupIcon(obj, hideIcon);
                     if (isGroupRestriction) {
-                        // We need to load all data about the user particualary
+                        // We need to load all data about the user particularly
                         // its
                         // groups.
-                        user = userManager.getUserModel(username);
+                        user = userManager.getUserModel(userId);
                         UserAdapter userAdapter = user.getAdapter(UserAdapter.class);
                         List<String> groups = userAdapter.getGroups();
                         if (groups != null && groups.contains(groupRestriction)) {
@@ -168,29 +179,21 @@ public class SuggestUserEntries {
                 groupList = userManager.searchGroups(prefix);
                 for (DocumentModel group : groupList) {
                     JSONObject obj = new JSONObject();
-                    boolean hasGroupLabel = false;
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
                         String key = fieldName.getLocalName();
                         Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
                         obj.element(key, value);
-                        if (key.equals(userManager.getGroupLabelField())) {
-                            if (value != null && value.toString().length() > 0) {
-                                hasGroupLabel = true;
-                                obj.element(Select2Common.LABEL, value);
-                            }
-                        }
                     }
                     String groupId = group.getId();
-                    // If the group hasn't an label, let's put the groupid
-                    if (!hasGroupLabel) {
-                        obj.element(Select2Common.LABEL, groupId);
-                    }
                     obj.put(Select2Common.ID, groupId);
+                    // If the group hasn't an label, let's put the groupid
+                    Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
                     obj.put(Select2Common.TYPE_KEY_NAME,
                             Select2Common.GROUP_TYPE);
                     obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
                             NuxeoGroup.PREFIX + groupId);
+                    Select2Common.computeUserGroupIcon(obj, hideIcon);
                     result.add(obj);
                 }
             }

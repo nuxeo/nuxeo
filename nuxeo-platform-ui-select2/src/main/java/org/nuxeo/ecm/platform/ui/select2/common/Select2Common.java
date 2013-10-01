@@ -20,7 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.json.JSONObject;
+
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.platform.usermanager.UserConfig;
 
 /**
  * Group fields and methods used at initialization and runtime for select2
@@ -76,6 +80,9 @@ public class Select2Common {
     public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<String>(
             Arrays.asList("suggestOneDirectory", "suggestManyDirectory"));
 
+    public static final List<String> SELECT2_DEFAULT_DOCUMENT_SCHEMAS = new ArrayList<String>(
+            Arrays.asList("dublincore", "common"));
+
     public static final String DIR_DEFAULT_SUGGESTION_FORMATTER = "dirEntryDefaultFormatter";
 
     public static final String READ_ONLY_PARAM = "readonly";
@@ -100,9 +107,11 @@ public class Select2Common {
 
     public static final String TITLE = "title";
 
+    private static final String DISPLAY_ICON = "displayIcon";
+
     /**
-     * Compute the filed name of the directory that holds the value that we
-     * want to display.
+     * Compute the filed name of the directory that holds the value that we want
+     * to display.
      *
      * @param schema the directory schema
      * @param dbl10n are translations carried by directory fields
@@ -146,6 +155,125 @@ public class Select2Common {
             }
         }
         return labelFieldName;
+    }
+
+    /**
+     * Returns an array containing the given schema names plus the default ones
+     * if not included
+     *
+     * @param schemaNames
+     *
+     * @since 5.8
+     */
+    public static String[] getSchemas(final String schemaNames) {
+        List<String> result = new ArrayList<String>();
+        result.addAll(Select2Common.SELECT2_DEFAULT_DOCUMENT_SCHEMAS);
+        String[] temp = null;
+        if (schemaNames != null && !schemaNames.isEmpty()) {
+            temp = schemaNames.split(",");
+        }
+        if (temp != null) {
+            for (String s : temp) {
+                result.add(s);
+            }
+        }
+        return result.toArray(new String[result.size()]);
+    }
+
+    public static void computeUserLabel(final JSONObject obj,
+            final String firstLabelField, final String secondLabelField,
+            final String thirdLabelField, final boolean hideFirstLabel,
+            final boolean hideSecondLabel, final boolean hideThirdLabel,
+            final boolean displayEmailInSuggestion, final String userId) {
+        String result = "";
+        if (obj != null) {
+
+            if (StringUtils.isNotBlank(firstLabelField) && !hideFirstLabel) {
+                // If firtLabelField given and first label not hidden
+                final String firstLabel = obj.optString(firstLabelField);
+                result += StringUtils.isNotBlank(firstLabel) ? firstLabel : "";
+            } else if (!hideFirstLabel) {
+                // Else we use firstname
+                final String firstname = obj.optString(UserConfig.FIRSTNAME_COLUMN);
+                result += StringUtils.isNotBlank(firstname) ? firstname : "";
+            }
+
+            if (StringUtils.isNotBlank(secondLabelField) && !hideSecondLabel) {
+                // If secondLabelField given and second label not hidden
+                final String secondLabel = obj.optString(firstLabelField);
+                if (StringUtils.isNotBlank(secondLabel)) {
+                    if (StringUtils.isNotBlank(result)) {
+                        result += " ";
+                    }
+                    result += secondLabel;
+                }
+            } else if (!hideSecondLabel) {
+                // Else we use lastname
+                final String lastname = obj.optString(UserConfig.LASTNAME_COLUMN);
+                if (StringUtils.isNotBlank(lastname)) {
+                    if (StringUtils.isNotBlank(result)) {
+                        result += " ";
+                    }
+                    result += lastname;
+                }
+            }
+            if (StringUtils.isBlank(result)) {
+                // At this point, if returned label is empty, we use user id
+                result += StringUtils.isNotBlank(userId) ? userId : "";
+            } else {
+                if (displayEmailInSuggestion && !hideThirdLabel) {
+                    if (StringUtils.isNotBlank(thirdLabelField)) {
+                        final String thirdLabel = obj.optString(thirdLabelField);
+                        if (StringUtils.isNotBlank(thirdLabel)) {
+                            if (StringUtils.isNotBlank(result)) {
+                                result += " ";
+                            }
+                            result += thirdLabel;
+                        }
+                    } else {
+                        // Else we use email
+                        String email = obj.optString(UserConfig.EMAIL_COLUMN);
+                        if (StringUtils.isNotBlank(email)) {
+                            if (StringUtils.isNotBlank(result)) {
+                                result += " ";
+                            }
+                            result += email;
+                        }
+                    }
+                }
+            }
+            obj.put(LABEL, result);
+        }
+    }
+
+    public static void computeGroupLabel(final JSONObject obj,
+            final String groupId, final String groupLabelField,
+            final boolean hideFirstLabel) {
+        String label = null;
+        if (hideFirstLabel) {
+            label = groupId;
+        } else {
+            String groupLabelValue = obj.optString(groupLabelField);
+            if (StringUtils.isNotBlank(groupLabelValue)) {
+                label = groupLabelValue;
+            } else {
+                label = groupId;
+            }
+        }
+        obj.put(LABEL, label);
+    }
+
+    public static void computeUserGroupIcon(final JSONObject obj,
+            final boolean hideIcon) {
+        if (obj != null) {
+            if (!hideIcon) {
+                String userGroupType = obj.optString(TYPE_KEY_NAME);
+                obj.element(
+                        DISPLAY_ICON,
+                        StringUtils.isNotBlank(userGroupType)
+                                && (userGroupType.equals(USER_TYPE) || userGroupType.equals(GROUP_TYPE)));
+            }
+        }
     }
 
 }
