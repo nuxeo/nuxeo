@@ -53,7 +53,7 @@
     point="actions">
 
     <action id="login" link="/casAuthentificationRedirection.xhtml"
-      label="command.login">
+      label="command.login" type="bare_link">
       <category>USER_SERVICES_BOTTOM</category>
       <filter-id>anonymous</filter-id>
     </action>
