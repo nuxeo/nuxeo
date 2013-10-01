@@ -107,7 +107,9 @@ public class Select2Common {
 
     public static final String TITLE = "title";
 
-    private static final String DISPLAY_ICON = "displayIcon";
+    public static final String DISPLAY_ICON = "displayIcon";
+
+    public static final String OPERATION_ID = "operationId";
 
     /**
      * Compute the filed name of the directory that holds the value that we want

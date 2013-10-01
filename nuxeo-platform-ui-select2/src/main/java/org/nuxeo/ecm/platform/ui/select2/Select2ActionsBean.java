@@ -123,6 +123,40 @@ public class Select2ActionsBean implements Serializable {
         }
     }
 
+    private static Map<String, String> getDefaultFormattersMap(
+            final String suggestionFormatterName, String selectionFormatterName) {
+        Map<String, String> result = new HashMap<String, String>();
+        result.put(Select2Common.SELECTION_FORMATTER, suggestionFormatterName);
+        result.put(Select2Common.SUGGESTION_FORMATTER, selectionFormatterName);
+        return result;
+    }
+
+    public String encodeParametersForUserSuggestion(final Widget widget)
+            throws Exception {
+        Map<String, String> params = getDefaultFormattersMap(
+                Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER,
+                Select2Common.USER_DEFAULT_SELECTION_FORMATTER);
+        params.put(Select2Common.OPERATION_ID, SuggestUserEntries.ID);
+        return encodeParameters(widget, params);
+    }
+
+    public String encodeParametersForDirectory(final Widget widget)
+            throws Exception {
+        return encodeParameters(
+                widget,
+                getDefaultFormattersMap(
+                        Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER,
+                        Select2Common.DIR_DEFAULT_SELECTION_FORMATTER));
+    }
+
+    public String encodeParameters(final Widget widget) throws Exception {
+        return encodeParameters(
+                widget,
+                getDefaultFormattersMap(
+                        Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER,
+                        Select2Common.DOC_DEFAULT_SELECTION_FORMATTER));
+    }
+
     /**
      * Encode widget properties and parameters that Select2 pick them up in a
      * hidden input.
@@ -132,7 +166,8 @@ public class Select2ActionsBean implements Serializable {
      * @throws Exception
      * @since 5.7.3
      */
-    public String encodeParameters(final Widget widget) throws Exception {
+    public String encodeParameters(final Widget widget,
+            final Map<String, String> defaultParams) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
 
@@ -150,13 +185,16 @@ public class Select2ActionsBean implements Serializable {
 
         Map<String, Serializable> propertySet = widget.getProperties();
         boolean hasPlaceholder = false;
-        boolean hasSuggestionFormatter = false;
-        boolean hasSelectionFormatter = false;
         boolean hasAjaxReRender = false;
         boolean hasWidth = false;
         boolean hasMinChars = false;
 
         for (Entry<String, Serializable> entry : propertySet.entrySet()) {
+
+            if (defaultParams != null) {
+                // Widget properties have priority on default properties
+                defaultParams.remove(entry.getKey());
+            }
 
             String value = entry.getValue().toString();
 
@@ -166,10 +204,6 @@ public class Select2ActionsBean implements Serializable {
                 if (isTranslated) {
                     value = messages.get(entry.getValue().toString());
                 }
-            } else if (entry.getKey().equals(Select2Common.SUGGESTION_FORMATTER)) {
-                hasSuggestionFormatter = true;
-            } else if (entry.getKey().equals(Select2Common.SELECTION_FORMATTER)) {
-                hasSelectionFormatter = true;
             } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
                 hasAjaxReRender = true;
             } else if (entry.getKey().equals(Select2Common.WIDTH)) {
@@ -182,44 +216,18 @@ public class Select2ActionsBean implements Serializable {
 
         }
 
+        if (defaultParams != null) {
+            // All default params which are not in widget properties
+            for (Entry<String, String> e : defaultParams.entrySet()) {
+                jg.writeStringField(e.getKey(), e.getValue());
+            }
+        }
+
         if (!hasPlaceholder) {
             // No placeholder provider and Select2 requires one to enable the
             // reset button.
             jg.writeStringField(Select2Common.PLACEHOLDER,
                     messages.get("label.vocabulary.selectValue"));
-        }
-
-        // Specific stuff for widget type
-        // TODO: move this to the widget type configuration
-        if (Select2Common.SELECT2_USER_WIDGET_TYPE_LIST.contains(widget.getType())) {
-            jg.writeStringField("operationId", SuggestUserEntries.ID);
-            // add default selection and suggestion formatter if needed.
-            if (!hasSuggestionFormatter) {
-                jg.writeStringField(Select2Common.SUGGESTION_FORMATTER,
-                        Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER);
-            }
-            if (!hasSelectionFormatter) {
-                jg.writeStringField(Select2Common.SELECTION_FORMATTER,
-                        Select2Common.USER_DEFAULT_SELECTION_FORMATTER);
-            }
-        } else if (Select2Common.SELECT2_DOC_WIDGET_TYPE_LIST.contains(widget.getType())) {
-            if (!hasSuggestionFormatter) {
-                jg.writeStringField(Select2Common.SUGGESTION_FORMATTER,
-                        Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER);
-            }
-            if (!hasSelectionFormatter) {
-                jg.writeStringField(Select2Common.SELECTION_FORMATTER,
-                        Select2Common.DOC_DEFAULT_SELECTION_FORMATTER);
-            }
-        } else if (Select2Common.SELECT2_DIR_WIDGET_TYPE_LIST.contains(widget.getType())) {
-            if (!hasSuggestionFormatter) {
-                jg.writeStringField(Select2Common.SUGGESTION_FORMATTER,
-                        Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER);
-            }
-            if (!hasSelectionFormatter) {
-                jg.writeStringField(Select2Common.SELECTION_FORMATTER,
-                        Select2Common.DIR_DEFAULT_SELECTION_FORMATTER);
-            }
         }
 
         if (!hasWidth) {
@@ -328,7 +336,8 @@ public class Select2ActionsBean implements Serializable {
             final boolean prefixed, final String firstLabelField,
             final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+            final boolean hideThirdLabel,
+            final boolean displayEmailInSuggestion, final boolean hideIcon) {
         if (value == null) {
             return null;
         }
@@ -437,7 +446,8 @@ public class Select2ActionsBean implements Serializable {
             final boolean prefixed, final String firstLabelField,
             final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+            final boolean hideThirdLabel,
+            final boolean displayEmailInSuggestion, final boolean hideIcon) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
@@ -481,7 +491,10 @@ public class Select2ActionsBean implements Serializable {
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
                 obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
                         NuxeoPrincipal.PREFIX + userId);
-                Select2Common.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField, hideFirstLabel, hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
+                Select2Common.computeUserLabel(obj, firstLabelField,
+                        secondLabelField, thirdLabelField, hideFirstLabel,
+                        hideSecondLabel, hideThirdLabel,
+                        displayEmailInSuggestion, userId);
                 Select2Common.computeUserGroupIcon(obj, hideIcon);
             } else if (group != null) {
                 Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
@@ -493,7 +506,8 @@ public class Select2ActionsBean implements Serializable {
                 }
                 // If the group hasn't an label, let's put the groupid
                 String groupId = group.getId();
-                Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
+                Select2Common.computeGroupLabel(obj, groupId,
+                        userManager.getGroupLabelField(), hideFirstLabel);
                 obj.put(Select2Common.ID, groupId);
                 obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
                 obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX
@@ -731,7 +745,8 @@ public class Select2ActionsBean implements Serializable {
             final boolean prefixed, final String firstLabelField,
             final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+            final boolean hideThirdLabel,
+            final boolean displayEmailInSuggestion, final boolean hideIcon) {
         if (value == null) {
             return "[]";
         }
@@ -763,7 +778,8 @@ public class Select2ActionsBean implements Serializable {
             final boolean prefixed, final String firstLabelField,
             final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+            final boolean hideThirdLabel,
+            final boolean displayEmailInSuggestion, final boolean hideIcon) {
         return formatList(getMultipleUserReference(value, prefixed,
                 firstLabelField, secondLabelField, thirdLabelField,
                 hideFirstLabel, hideSecondLabel, hideThirdLabel,
@@ -949,7 +965,8 @@ public class Select2ActionsBean implements Serializable {
             final boolean prefixed, final String firstLabelField,
             final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+            final boolean hideThirdLabel,
+            final boolean displayEmailInSuggestion, final boolean hideIcon) {
         JSONObject result = getSingleUserReference(storedReference, prefixed,
                 firstLabelField, secondLabelField, thirdLabelField,
                 hideFirstLabel, hideSecondLabel, hideThirdLabel,
@@ -965,7 +982,8 @@ public class Select2ActionsBean implements Serializable {
             final boolean prefixed, final String firstLabelField,
             final String secondLabelField, final String thirdLabelField,
             final boolean hideFirstLabel, final boolean hideSecondLabel,
-            final boolean hideThirdLabel, final boolean displayEmailInSuggestion, final boolean hideIcon) {
+            final boolean hideThirdLabel,
+            final boolean displayEmailInSuggestion, final boolean hideIcon) {
         JSONObject obj = getSingleUserReference(storedReference, prefixed,
                 firstLabelField, secondLabelField, thirdLabelField,
                 hideFirstLabel, hideSecondLabel, hideThirdLabel,
