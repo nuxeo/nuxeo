@@ -14,12 +14,13 @@
     </action>
 
     <action id="non_anonymous_logout" link="logout" label="command.logout"
-      order="100">
+      order="100" type="bare_link">
       <category>USER_MENU_ACTIONS</category>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <action id="login" link="logout" label="command.login" order="100">
+    <action id="login" link="logout" label="command.login" order="100"
+      type="bare_link">
       <category>USER_MENU_ACTIONS</category>
       <filter-id>anonymous</filter-id>
     </action>
@@ -99,8 +100,8 @@
       tabs are handled by a specific template so links should be paths to
       template to include in the tab content
     -->
-    <action id="TAB_MANAGE" type="rest_document_link"
-      order="240" label="action.view.manage" icon="/icons/file.gif" accessKey="m">
+    <action id="TAB_MANAGE" type="rest_document_link" order="240"
+      label="action.view.manage" icon="/icons/file.gif" accessKey="m">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
       <filter id="TAB_MANAGE_has_subtabs">
@@ -589,6 +590,18 @@
 
     <!-- end of actions on document create and edit pages -->
 
+    <!-- header actions -->
+
+    <action id="simple_search_box" order="1" type="template">
+      <category>SEARCH_ACTIONS</category>
+      <filter-id>isSearchEnabled</filter-id>
+      <properties>
+        <property name="template">/search/search_box.xhtml</property>
+      </properties>
+    </action>
+
+    <!-- end of header actions -->
+
     <!-- footer links -->
 
     <action id="footer_contact_us"
@@ -993,6 +1006,12 @@
     <filter id="is_not_creating_workspace">
       <rule grant="false">
         <condition>#{changeableDocument.type == 'Workspace'}</condition>
+      </rule>
+    </filter>
+
+    <filter id="isSearchEnabled">
+      <rule grant="true">
+        <condition>#{userServicesContext.searchEnabled}</condition>
       </rule>
     </filter>
 
