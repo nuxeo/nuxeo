@@ -221,6 +221,7 @@
         <option itemLabel="Vertical block (default)" itemValue="" />
         <option itemLabel="Horizontal block" itemValue="horizontal_block" />
         <option itemLabel="Menu" itemValue="menu" />
+        <option itemLabel="Rollover menu" itemValue="rollover_menu" />
       </selectOptions>
     </widget>
 

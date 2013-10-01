@@ -28,7 +28,7 @@
                   end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
                   step="1"
                   varStatus="status">
-                  <span class="#{action.properties.containerStyleClass}">
+                  <span class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                     <ui:decorate template="/incl/action/action_template.xhtml">
                       <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                       <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
@@ -53,7 +53,7 @@
                   begin="0"
                   end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
                   step="1">
-                  <li class="#{widget.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+                  <li class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                     <ui:decorate template="/incl/action/action_template.xhtml">
                       <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
                       <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
@@ -68,7 +68,41 @@
               <ui:include src="./actions_more_menu.xhtml" />
             </c:when>
 
-            <!-- TODO: add rollover menu? -->
+            <c:when test="#{widgetProperty_overallDisplay == 'rollover_menu'}">
+              <ul class="actionList">
+                <li class="dropDownMenu button dropdown">
+                  <ui:include src="/widgets/incl/widget_label_template.xhtml">
+                    <ui:param name="labelStyleClass"
+                      value="boldLabel #{widgetProperty_subLabelStyleClass}" />
+                  </ui:include>
+                  <ul class="actionSubList">
+                    <nxu:repeat var="action" items="#{widgetProperty_actions}">
+                      <li class="#{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
+                        <ui:decorate template="/incl/action/action_template.xhtml">
+                          <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons', 'links', widgetProperty_actionsDisplay)}" />
+                          <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+                          <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+                          <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+                          <ui:param name="formStyleClass" value="subWidgetForm" />
+                        </ui:decorate>
+                      </li>
+                    </nxu:repeat>
+                  </ul>
+                </li>
+              </ul>
+              <script type="text/javascript">
+                jQuery(document).ready(function($) {
+                  jQuery('.dropDownMenu').click(function(e) {
+                    jQuery(this).find('ul').hide();
+                    jQuery(this).find("ul").show();
+                    e.stopPropagation();
+                  });
+                  jQuery(document).click(function() {
+                    jQuery('.dropDownMenu').find('ul').hide();
+                  });
+                });
+              </script>
+            </c:when>
 
             <c:otherwise>
               <nxu:repeat var="action" items="#{widgetProperty_actions}"
