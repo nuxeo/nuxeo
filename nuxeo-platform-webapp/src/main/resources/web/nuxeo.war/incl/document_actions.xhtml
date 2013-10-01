@@ -28,9 +28,4 @@
     widgetProperty_category="SUBVIEW_UPPER_LIST_HREF"
     value="#{currentDocument}" />
 
-  <c:if test="#{!documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
-    <ui:include src="/incl/document_listing_layout_selector.xhtml" />
-    <div style="clear:both"></div>
-  </c:if>
-
 </div>
