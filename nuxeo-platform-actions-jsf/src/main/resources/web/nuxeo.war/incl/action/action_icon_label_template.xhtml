@@ -7,18 +7,22 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
+<nxu:set var="actionLabel" value="#{messages[action.label]}"
+  resolveTwice="true" cache="true">
+<nxu:set var="actionIcon" value="#{action.icon}"
+  resolveTwice="true" cache="true">
   <c:if test="#{not hideIcon}">
-    <c:if test="#{empty action.icon and hideLabel}">
+    <c:if test="#{empty actionIcon and hideLabel}">
       <c:if test="false">at least display a default image</c:if>
       <h:graphicImage value="/icons/action_empty.png"
-        title="#{messages[action.label]}"
-        alt="#{messages[action.label]}"
+        title="#{actionLabel}"
+        alt="#{actionLabel}"
         styleClass="smallIcon #{action.properties.iconStyleClass}" />
     </c:if>
-    <c:if test="#{not empty action.icon}">
-      <h:graphicImage value="#{action.icon}"
-        title="#{messages[action.label]}"
-        alt="#{messages[action.label]}"
+    <c:if test="#{not empty actionIcon}">
+      <h:graphicImage value="#{actionIcon}"
+        title="#{actionLabel}"
+        alt="#{actionLabel}"
         styleClass="smallIcon #{action.properties.iconStyleClass}" />
     </c:if>
   </c:if>
@@ -26,8 +30,10 @@
     <h:outputText value=" " />
   </c:if>
   <c:if test="#{not hideLabel}">
-    <h:outputText value="#{messages[action.label]}"
+    <h:outputText value="#{actionLabel}"
       styleClass="actionLabel #{action.properties.labelStyleClass}" />
   </c:if>
+</nxu:set>
+</nxu:set>
 
 </c:if>
