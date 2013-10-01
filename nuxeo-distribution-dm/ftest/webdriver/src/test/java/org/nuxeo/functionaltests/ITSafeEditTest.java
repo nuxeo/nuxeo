@@ -37,6 +37,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
@@ -256,8 +257,12 @@ public class ITSafeEditTest extends AbstractTest {
         log.debug("1 - " + localStorage.getLocalStorageLength());
 
         // We change the value of the title
+        Keys ctrlKey = Keys.CONTROL;
+        if (Platform.MAC.equals(driver.getCapabilities().getPlatform())) {
+            ctrlKey = Keys.COMMAND;
+        }
         titleElt.click();
-        titleElt.sendKeys(Keys.chord(Keys.COMMAND, "a") + Keys.DELETE
+        titleElt.sendKeys(Keys.chord(ctrlKey, "a") + Keys.DELETE
                 + NEW_WORKSPACE_TITLE);
         // weird thing in webdriver: we need to call clear on an input of the
         // form to fire an onchange event
