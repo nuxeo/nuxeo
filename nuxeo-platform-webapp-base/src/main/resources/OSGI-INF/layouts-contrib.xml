@@ -965,6 +965,10 @@
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion
+                  </widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -1085,6 +1089,10 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_displayEmailInSuggestion
+                  </widget>
                 </row>
               </rows>
             </layout>
