@@ -5,10 +5,6 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:c="http://java.sun.com/jstl/core">
 
-<nxu:set var="ajaxReRender"
-  value="#{widget.id}_panel"
-  cache="true">
-  <a4j:outputPanel id="#{ajaxReRender}" layout="block">
     <nxu:set var="actionContextDocument"
       value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
       cache="true">
@@ -24,7 +20,6 @@
         label="#{widget.label}"
         value="#{fieldOrValue}"
         properties="#{widget.properties}"
-        ajaxReRender="#{nxl:joinReRender(ajaxReRender, widgetProperty_ajaxReRender)}"
         actions="#{actions}"
         currentTabAction="#{currentAction}"
         fullCategory="#{nxu:test(empty widgetProperty_fullCategory, widgetProperty_category, widgetPropery_fullCategory)}"
@@ -55,7 +50,5 @@
     </nxu:set>
     </nxu:set>
     </nxu:set>
-  </a4j:outputPanel>
-</nxu:set>
 
 </c:if>

@@ -40,23 +40,6 @@
       </fields>
     </widget>
 
-    <widget name="actions_subStyleClass" type="text">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Sub style class</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Style class for div containing actions.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>subStyleClass</field>
-      </fields>
-    </widget>
-
     <widget name="actions_actionStyleClass" type="text">
       <categories>
         <category>widgetTypeConf</category>
