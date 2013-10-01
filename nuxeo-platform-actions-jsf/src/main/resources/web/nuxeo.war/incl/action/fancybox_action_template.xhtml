@@ -65,10 +65,6 @@
             target="#{selectionActions.selectedValueHolder}" />
           <nxu:actionListenerMethod
             value="#{selectionActions.onClick}" />
-          <ui:include src="/incl/action/action_icon_label_template.xhtml">
-            <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
-            <ui:param name="hideLabel" value="true" />
-          </ui:include>
           <ui:insert name="inside_action" />
         </a4j:commandButton>
       </c:if>
@@ -115,10 +111,6 @@
                 value="#{messages[action.label]}"
                 disabled="#{!action.available}"
                 styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}">
-                <ui:include src="/incl/action/action_icon_label_template.xhtml">
-                  <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
-                  <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
-                </ui:include>
                 <ui:insert name="inside_action" />
               </a4j:commandButton>
             </c:if>
