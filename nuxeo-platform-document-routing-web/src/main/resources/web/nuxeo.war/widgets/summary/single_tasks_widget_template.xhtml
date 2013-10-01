@@ -55,18 +55,11 @@
               <c:if test="#{widgetProperty_displayTaskAdditionalActions}">
                 <h:form enctype="multipart/form-data"
                   id="#{widget.id}#{status.index}_nxl_current_route_layout_current_route_user_tasks_form">
-                  <ui:include
-                    src="/incl/tasks/workflow_task_template.xhtml">
-                    <ui:param name="dashboardItem" value="#{dashboardItem}" />
-                    <ui:param name="task" value="#{dashboardItem.task}" />
-                  </ui:include>
+                  <nxl:layout value="#{dashboardItem.task}" mode="view" name="task_layout"/>
                 </h:form>
               </c:if>
               <c:if test="#{!widgetProperty_displayTaskAdditionalActions}">
-                <ui:include src="/incl/tasks/workflow_task_template.xhtml">
-                  <ui:param name="dashboardItem" value="#{dashboardItem}" />
-                  <ui:param name="task" value="#{dashboardItem.task}" />
-                </ui:include>
+                <nxl:layout value="#{dashboardItem.task}" mode="view" name="task_layout"/>
               </c:if>
             </div>
           </nxu:set>

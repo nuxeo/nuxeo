@@ -42,5 +42,17 @@
     </resource>
 
   </extension>
+  
+   <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
+
+      <view id="/view_home_task.xhtml">
+        <theme>userCenter/default</theme>
+      </view>
+
+    </application>
+
+  </extension>
 
 </component>

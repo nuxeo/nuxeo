@@ -92,6 +92,8 @@ public class RoutingTaskActionsBean implements Serializable {
 
     public static final String SUBJECT_PATTERN = "([a-zA-Z_0-9]*(:)[a-zA-Z_0-9]*)";
 
+    public static final String TASK_VIEW_HOME_CENTER = "view_home_task";
+
     /**
      * Runtime property name, that makes it possible to cache actions available
      * on a given task, depending on its type.
@@ -131,6 +133,8 @@ public class RoutingTaskActionsBean implements Serializable {
     protected ActionManager actionService;
 
     protected Map<String, TaskInfo> tasksInfoCache = new HashMap<String, TaskInfo>();
+
+    protected Task currentTask;
 
     public void validateTaskDueDate(FacesContext context,
             UIComponent component, Object value) {
@@ -282,8 +286,9 @@ public class RoutingTaskActionsBean implements Serializable {
 
         protected String name;
 
-        protected TaskInfo(String taskId, HashMap<String, Serializable> formVariables,
-                String layout, List<Button> buttons, boolean canBeReassigned, String name) {
+        protected TaskInfo(String taskId,
+                HashMap<String, Serializable> formVariables, String layout,
+                List<Button> buttons, boolean canBeReassigned, String name) {
             this.formVariables = formVariables;
             this.layout = layout;
             this.buttons = buttons;
@@ -312,11 +317,11 @@ public class RoutingTaskActionsBean implements Serializable {
             return canBeReassigned;
         }
 
-        public String getTaskId(){
+        public String getTaskId() {
             return taskId;
         }
 
-        public String getName(){
+        public String getName() {
             return name;
         }
     }
@@ -359,7 +364,6 @@ public class RoutingTaskActionsBean implements Serializable {
         tasksInfoCache.put(task.getId(), res[0]);
         return res[0];
     }
-
 
     /**
      * @since 5.6
@@ -617,7 +621,8 @@ public class RoutingTaskActionsBean implements Serializable {
             Framework.getLocalService(DocumentRoutingService.class).reassignTask(
                     documentManager, taskInfo.getTaskId(),
                     taskInfo.getActors(), taskInfo.getComment());
-            Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_REASSIGNED);
+            Events.instance().raiseEvent(
+                    TaskEventNames.WORKFLOW_TASK_REASSIGNED);
         } catch (DocumentRouteException e) {
             log.error(e);
             facesMessages.add(StatusMessage.Severity.ERROR,
@@ -657,5 +662,27 @@ public class RoutingTaskActionsBean implements Serializable {
                     messages.get("workflow.feedback.error.taskEnded"));
         }
         return null;
+    }
+
+    /**
+     * @since 5.8
+     */
+    public String navigateToTask(DocumentModel taskDoc) {
+        setCurrentTask(taskDoc.getAdapter(Task.class));
+        return TASK_VIEW_HOME_CENTER;
+    }
+
+    /**
+     * @since 5.8
+     */
+    public Task getCurrentTask() {
+        return currentTask;
+    }
+
+    /**
+     * @since 5.8
+     */
+    public void setCurrentTask(Task currentTask) {
+        this.currentTask = currentTask;
     }
 }

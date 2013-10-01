@@ -10,8 +10,10 @@
         <sinceVersion>5.6</sinceVersion>
         <title>Description</title>
         <description>
-          <p>This widget displays the name, description, author and creation
-            date of the current route started on the current document.
+          <p>This widget displays the name, description, author and
+            creation
+            date of the current route started on the current
+            document.
           </p>
         </description>
         <categories>
@@ -63,7 +65,8 @@
         <title>Description</title>
         <description>
           <p>
-            This widget displays an 'Abandon' action to cancel the current
+            This widget displays an 'Abandon' action to cancel the
+            current
             route
             started on the current document.
           </p>
@@ -92,7 +95,8 @@
           <p>
             This widget displays the user tasks of the current route on
             the
-            current document. Duplicate of "summary_current_document_single_tasks" widget.
+            current document. Duplicate of
+            "summary_current_document_single_tasks" widget.
           </p>
         </description>
         <handlingLabels>true</handlingLabels>
@@ -118,7 +122,8 @@
         <title>Description</title>
         <description>
           <p>
-            This widget displays all the open tasks of the current route
+            This widget displays all the open tasks of the current
+            route
             on the
             current document.
           </p>
@@ -139,6 +144,76 @@
         /widgets/route/current_route_open_tasks_widget_template.xhtml
       </property>
     </widgetType>
+
+    <widgetType name="task_workflow_name">
+      <configuration>
+        <title>Listing the name of the workflow that created the task
+        </title>
+        <documentation>
+          Two fields are required:
+          <ul>
+            <li>A field to map the task</li>
+            <li>A field to map the task name</li>
+          </ul>
+        </documentation>
+        <sinceVersion>5.8</sinceVersion>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/task/task_workflow_name_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="task_layout_with_actions">
+      <configuration>
+        <title>Listing the layout configured on Studio for the task or
+          default actions for non routing tasks
+        </title>
+        <documentation>
+          Two fields are required:
+          <ul>
+            <li>A field to map the task</li>
+            <li>A field to map the task id</li>
+          </ul>
+        </documentation>
+        <sinceVersion>5.8</sinceVersion>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/task/task_layout_with_actions_widget.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -147,7 +222,7 @@
     <widget name="current_route_description" type="current_route_description" />
     <widget name="current_route_show_graph" type="current_route_show_graph">
       <handlingLabels>true</handlingLabels>
-	</widget>
+    </widget>
     <widget name="current_route_abandon" type="current_route_abandon">
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
@@ -252,7 +327,8 @@
     </widget>
     <widget name="task_assignee" type="multiplePrefixedUsersSuggestion">
       <labels>
-        <label mode="any">label.document.route.content.header.actors</label>
+        <label mode="any">label.document.route.content.header.actors
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -297,10 +373,76 @@
         <field>data.task.dueDate</field>
       </fields>
     </widget>
-    
+
+    <!-- for "task_layout" @since 5.8, apply to an object Task -->
+    <widget name="task_workflow_name" type="task_workflow_name">
+      <labels>
+        <label mode="any">label.route.task.workflowStep</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field></field>
+        <field>name</field>
+      </fields>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+    <widget name="task_actors" type="multiplePrefixedUsersSuggestion">
+      <labels>
+        <label mode="any">label.document.route.content.header.actors
+        </label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>actors</field>
+      </fields>
+    </widget>
+    <widget name="task_duedate" type="datetime">
+      <labels>
+        <label mode="any">label.workflow.task.duedate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>dueDate</field>
+      </fields>
+    </widget>
+    <widget name="task_simple_directive" type="text">
+      <labels>
+        <label mode="any">label.workflow.task.directive</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>directive</field>
+      </fields>
+      <properties mode="any">
+        <property name="localize">true</property>
+      </properties>
+    </widget>
+    <widget name="task_delegated_users" type="multiplePrefixedUsersSuggestion">
+      <labels>
+        <label mode="any">label.route.task.delegated.to</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>delegatedActors</field>
+      </fields>
+    </widget>
+    <widget name="task_layout_with_actions" type="task_layout_with_actions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field></field>
+        <field>id</field>
+      </fields>
+    </widget>
+
     <widget name="reassign_task_widget" type="action">
       <properties widgetMode="any">
-        <property name="action">#{webActions.getActionForDocument("reassignTask",null, false)}</property>
+        <property name="action">#{webActions.getActionForDocument("reassignTask",null,
+          false)}
+        </property>
         <property name="styleClass">globalActionBar</property>
         <property name="subStyleClass">contextActions</property>
         <property name="actionStyleClass">button</property>
@@ -310,13 +452,16 @@
         <property name="ignoreTemplateProperty">true</property>
       </properties>
       <widgetModes>
-        <mode value="any">#{layoutValue.isCanBeReassigned()?'edit':'hidden'}</mode>
+        <mode value="any">#{layoutValue.isCanBeReassigned()?'edit':'hidden'}
+        </mode>
       </widgetModes>
     </widget>
-    
+
     <widget name="delegate_task_widget" type="action">
       <properties widgetMode="any">
-        <property name="action">#{webActions.getActionForDocument("delegateTask",null, false)}</property>
+        <property name="action">#{webActions.getActionForDocument("delegateTask",null,
+          false)}
+        </property>
         <property name="styleClass">globalActionBar</property>
         <property name="subStyleClass">contextActions</property>
         <property name="actionStyleClass">button</property>
@@ -326,7 +471,7 @@
         <property name="ignoreTemplateProperty">true</property>
       </properties>
     </widget>
-    
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -439,7 +584,7 @@
         </row>
       </rows>
     </layout>
-  
+
     <layout name="task_additional_actions_layout">
       <templates>
         <template mode="any">
@@ -457,44 +602,86 @@
         </row>
       </rows>
     </layout>
-      
+
+    <layout name="task_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>task_workflow_name</widget>
+        </row>
+        <row>
+          <widget>task_actors</widget>
+        </row>
+        <row>
+          <widget>task_delegated_users</widget>
+        </row>
+        <row>
+          <widget>task_duedate</widget>
+        </row>
+        <row>
+          <widget>task_simple_directive</widget>
+        </row>
+        <row>
+          <widget>container_for_task_layout_with_actions</widget>
+        </row>
+      </rows>
+      <widget name="container_for_task_layout_with_actions" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties mode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <subWidgetRefs>
+          <widget>task_layout_with_actions</widget>
+        </subWidgetRefs>
+      </widget>
+    </layout>
+
     <layout name="workflowTaskReassignmentLayout">
-      <!--applies to a TaskInfo-->
+      <!--applies to a TaskInfo -->
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml
         </template>
       </templates>
       <rows>
-       <row>
-         <widget>task_reassignment_actors</widget>
-       </row>
-       <row>
-         <widget>task_reassignment_comment</widget>
-       </row>
-       </rows>
-       <widget name="task_reassignment_actors" type="multiplePrefixedUsersSuggestion">
+        <row>
+          <widget>task_reassignment_actors</widget>
+        </row>
+        <row>
+          <widget>task_reassignment_comment</widget>
+        </row>
+      </rows>
+      <widget name="task_reassignment_actors" type="multiplePrefixedUsersSuggestion">
         <labels>
           <label mode="any">label.workflow.task.actors</label>
-         </labels>
-         <translated>true</translated>
-         <fields>
+        </labels>
+        <translated>true</translated>
+        <fields>
           <field>actors</field>
-         </fields>
-         <properties mode="any">
+        </fields>
+        <properties mode="any">
           <property name="required">true</property>
         </properties>
-       </widget>
+      </widget>
       <widget name="task_reassignment_comment" type="textarea">
-       <labels>
-         <label mode="any">label.workflow.task.comment</label>
-       </labels>
-       <translated>true</translated>
-       <fields>
-         <field>comment</field>
-       </fields>
-     </widget>
+        <labels>
+          <label mode="any">label.workflow.task.comment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>comment</field>
+        </fields>
+      </widget>
     </layout>
-    
+
     <layout name="userOpenTasksLayout">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml
@@ -506,17 +693,18 @@
         </row>
       </rows>
       <widget name="current_user_open_tasks" type="contentViewWithForms">
-      <labels>
-        <label mode="any"></label>
-      </labels>
-      <translated>false</translated>
-      <controls mode="any">
-       <control name="handleLabels">true</control>
-      </controls>
-      <properties widgetMode="any">
-        <property name="contentViewName">user_open_tasks</property>
-      </properties>
-    </widget>
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="contentViewName">user_open_tasks</property>
+          <property name="removeForm">true</property>
+        </properties>
+      </widget>
     </layout>
   </extension>
 
@@ -537,7 +725,8 @@
       </properties>
     </action>
 
-    <action id="current_route_previous_tasks" type="widget" order="300">
+    <action id="current_route_previous_tasks" type="widget"
+      order="300">
       <category>CURRENT_ROUTE_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">current_route_previous_tasks</property>

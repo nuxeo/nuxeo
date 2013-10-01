@@ -7,59 +7,10 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
-  <c:if test="false">
-Displays a 'task' or a 'dashboardItem' object if the task was not created by the workflow.
-@since 5.7.3 
-</c:if>
-
-  <nxu:set var="idPrefix" value="task_#{task.id}" cache="true">
+<nxu:set var="task" value="#{field_0}" cache="true">
+  <nxu:set var="idPrefix" value="task_#{field_1}" cache="true">
 
     <f:subview id="#{idPrefix}_subview">
-
-      <table class="dataTableNoBorder">
-        <tbody>
-          <tr>
-            <td class="labelColumn"><h:outputText
-                value="#{messages['label.route.task.workflowStep']}" /></td>
-            <td class="fieldColumn"><h:outputText
-                value="#{messages[routingActions.getRouteInstanceFor(task).title]} - #{messages[task.name]}" />
-            </td>
-          </tr>
-          <tr>
-            <td class="labelColumn"><h:outputText
-                value="#{messages['label.route.task.assigned.to']}" /></td>
-            <td class="fieldColumn"><c:forEach var="actor"
-                items="#{task.actors}">
-                <nxl:widgetType name="template" mode="view"
-                  template="/document_routing_widgets/route_assignee_widget_template.xhtml"
-                  value="#{actor}" />
-              </c:forEach></td>
-          </tr>
-           <tr>
-            <td class="labelColumn"><h:outputText
-                value="#{messages['label.route.task.delegated.to']}" /></td>
-            <td class="fieldColumn"><c:forEach var="actor"
-                items="#{task.delegatedActors}">
-                <nxl:widgetType name="template" mode="view"
-                  template="/document_routing_widgets/route_assignee_widget_template.xhtml"
-                  value="#{actor}" />
-              </c:forEach></td>
-          </tr>
-          <tr>
-            <td class="labelColumn"><h:outputText
-                value=" #{messages['label.route.task.due.date']} " /></td>
-            <td class="fieldColumn dueDate warningLabel"><h:outputText
-                value="#{task.dueDate}" /></td>
-          </tr>
-          <tr>
-            <td class="labelColumn"><h:outputText
-                value="#{messages['label.review.directive']}" /></td>
-            <td class="fieldColumn"><h:outputText
-                value="#{messages[task.directive]}" /></td>
-          </tr>
-        </tbody>
-      </table>
-
 
       <a4j:outputPanel id="#{idPrefix}_ajax_panel" layout="block">
 
@@ -92,7 +43,6 @@ Displays a 'task' or a 'dashboardItem' object if the task was not created by the
               </c:if>
 
               <c:if test="#{not isRoutingTask}">
-                <h4>#{dashboardItem.i18nTaskName}</h4>
                 <table class="dataInput">
                   <tr>
                     <td class="labelColumn"><h:outputText
@@ -112,13 +62,13 @@ Displays a 'task' or a 'dashboardItem' object if the task was not created by the
                   <h:commandLink
                     value="#{messages['label.review.end.task']}"
                     styleClass="button smallButton"
-                    action="#{taskActions.acceptTask(dashboardItem.task)}"
-                    rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}" />
+                    action="#{taskActions.acceptTask(task)}"
+                    rendered="#{taskService.canEndTask(currentUser, task)}" />
                   <a4j:commandLink
                     value="#{messages['label.review.reject.task']}"
                     styleClass="button smallButton"
-                    action="#{taskActions.rejectTask(dashboardItem.task)}"
-                    rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}"
+                    action="#{taskActions.rejectTask(task)}"
+                    rendered="#{taskService.canEndTask(currentUser, task)}"
                     reRender="#{widget.id}_panel"
                     onclick="jQuery.fancybox.close();" />
                 </p>
@@ -129,4 +79,5 @@ Displays a 'task' or a 'dashboardItem' object if the task was not created by the
       </a4j:outputPanel>
     </f:subview>
   </nxu:set>
+</nxu:set>
 </div>

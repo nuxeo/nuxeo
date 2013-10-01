@@ -22,7 +22,7 @@
       <to-view-id>/view_pdf_route.xhtml</to-view-id>
       <redirect />
     </navigation-case>
-
+  
   </extension>
 
   <install>

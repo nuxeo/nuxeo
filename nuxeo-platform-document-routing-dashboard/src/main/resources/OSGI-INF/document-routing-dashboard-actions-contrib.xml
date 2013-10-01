@@ -33,7 +33,7 @@
     <action id="WorkflowHome" link="user_center_fragment.xhtml"
       label="tab.admin.workflow" order="20" icon="/icons/workflow_definition.png">
       <properties>
-        <property name="alwaysDisplaySubTabs">true</property>
+        <property name="alwaysDisplaySubTabs">false</property>
       </properties>
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
