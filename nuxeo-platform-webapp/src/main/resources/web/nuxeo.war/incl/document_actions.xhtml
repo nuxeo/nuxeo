@@ -28,12 +28,6 @@
     widgetProperty_category="SUBVIEW_UPPER_LIST_HREF"
     value="#{currentDocument}" />
 
-  <h:form id="documentActionsWebViewForm">
-    <c:if test="#{currentDocument.hasFacet('WebView') and currentDocument.webc.isWebContainer}">
-      <nxl:layout name="#{currentDocument.type}" mode="view" value="" />
-    </c:if>
-  </h:form>
-
   <c:if test="#{!documentContentViewActions.hasContentViewSupport(currentDocument, 'content')}">
     <ui:include src="/incl/document_listing_layout_selector.xhtml" />
     <div style="clear:both"></div>
