@@ -20,6 +20,8 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 
+import java.util.HashMap;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -41,7 +43,7 @@ public class OperationResource extends ExecutableResource {
     @Override
     public Object execute(ExecutionRequest xreq) throws Exception {
         OperationContext ctx = xreq.createContext(request, getCoreSession());
-        return service.run(ctx, xreq.createChain(type));
+        return service.run(ctx, type.getId(), new HashMap<String, Object>());
     }
 
     protected static String entityType(Class<?> clazz) {

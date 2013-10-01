@@ -90,11 +90,4 @@ public class ExecutionRequest {
         return ctx;
     }
 
-    public OperationChain createChain(OperationType op) {
-        OperationChain chain = new OperationChain("operation");
-        OperationParameters oparams = new OperationParameters(op.getId(),
-                params);
-        chain.add(oparams);
-        return chain;
-    }
 }
