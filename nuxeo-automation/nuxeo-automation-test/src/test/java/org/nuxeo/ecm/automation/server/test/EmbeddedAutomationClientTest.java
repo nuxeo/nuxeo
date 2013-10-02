@@ -29,9 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import junit.framework.Assert;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -87,13 +84,6 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.WebResource.Builder;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -846,18 +836,4 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals("Update", note.getTitle());
     }
 
-    @Test
-    public void automationResourceIsAlsoAvailableBehindAPIRoot()
-            throws Exception {
-        ClientConfig config = new DefaultClientConfig();
-        Client client = Client.create(config);
-        client.addFilter(new HTTPBasicAuthFilter("Administrator",
-                "Administrator"));
-        WebResource wr = client.resource("http://localhost:18080/api/v1/automation/doc");
-
-        Builder builder = wr.accept(MediaType.TEXT_HTML);
-        ClientResponse response = builder.get(ClientResponse.class);
-
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    }
 }

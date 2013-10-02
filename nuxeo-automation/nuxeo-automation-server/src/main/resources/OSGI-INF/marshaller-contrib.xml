@@ -28,22 +28,6 @@
       </writer>
       <reader>org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterReader
       </reader>
-      <reader>org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader
-      </reader>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.usermanager.NuxeoPrincipalWriter
-      </writer>
-      <reader>org.nuxeo.ecm.automation.jaxrs.io.usermanager.NuxeoPrincipalReader
-      </reader>
-      <reader>org.nuxeo.ecm.automation.jaxrs.io.usermanager.NuxeoGroupReader
-      </reader>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.usermanager.NuxeoGroupWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.usermanager.NuxeoGroupListWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.usermanager.NuxeoPrincipalListWriter
-      </writer>
-      <writer>org.nuxeo.ecm.automation.jaxrs.io.documents.ACPWriter
-      </writer>
 
 
     </marshaller>
