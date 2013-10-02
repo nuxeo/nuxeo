@@ -83,39 +83,48 @@
   }
 
   function configureOperationParameters(op, params, query) {
+    var temp = {};
     if (params.directoryName && params.directoryName.length > 0) {
       // build default operation for Directory
-      op.addParameter("directoryName", params.directoryName);
-      op.addParameter("prefix", query.term);
-      op.addParameter("translateLabels", params.translateLabels);
-      op.addParameter("lang", currentUserLang);
-      op.addParameter("labelFieldName", params.labelFieldName);
-      op.addParameter("dbl10n", params.dbl10n);
-      op.addParameter("filterParent", params.filterParent);
-      op.addParameter("canSelectParent", params.canSelectParent);
-      op.addParameter("separator", params.separator);
-      op.addParameter("displayObsoleteEntries", params.displayObsoleteEntries);
+      temp.directoryName = params.directoryName;
+      temp.prefix = query.term;
+      temp.translateLabels = params.translateLabels;
+      temp.lang = currentUserLang;
+      temp.labelFieldName = params.labelFieldName;
+      temp.dbl10n = params.dbl10n;
+      temp.filterParent = params.filterParent;
+      temp.canSelectParent = params.canSelectParent;
+      temp.separator = params.separator;
+      temp.displayObsoleteEntries = params.displayObsoleteEntries;
     } else if (params.operationId == 'UserGroup.Suggestion') {
-      op.addParameter("prefix", query.term);
-      op.addParameter("searchType", params.userSuggestionSearchType);
-      op.addParameter("groupRestriction", params.groupRestriction);
-      op.addParameter("userSuggestionMaxSearchResults",
-          params.userSuggestionMaxSearchResults);
-      op.addParameter("firstLabelField", params.firstLabelField);
-      op.addParameter("secondLabelField", params.secondLabelField);
-      op.addParameter("thirdLabelField", params.thirdLabelField);
-      op.addParameter("hideFirstLabel", params.hideFirstLabel);
-      op.addParameter("hideSecondLabel", params.hideSecondLabel);
-      op.addParameter("hideThirdLabel", params.hideThirdLabel);
-      op.addParameter("displayEmailInSuggestion", params.displayEmailInSuggestion);
-      op.addParameter("hideIcon", params.hideIcon);
+      temp.prefix = query.term;
+      temp.searchType = params.userSuggestionSearchType;
+      temp.groupRestriction = params.groupRestriction;
+      temp.userSuggestionMaxSearchResults,
+          params.userSuggestionMaxSearchResults;
+      temp.firstLabelField = params.firstLabelField;
+      temp.secondLabelField = params.secondLabelField;
+      temp.thirdLabelField = params.thirdLabelField;
+      temp.hideFirstLabel = params.hideFirstLabel;
+      temp.hideSecondLabel = params.hideSecondLabel;
+      temp.hideThirdLabel = params.hideThirdLabel;
+      temp.displayEmailInSuggestion = params.displayEmailInSuggestion;
+      temp.hideIcon = params.hideIcon;
     } else {
       // build default operation for Document
-      op.addParameter("queryParams", query.term + "%");
-      op.addParameter("query", params.query);
-      op.addParameter("providerName", params.pageProviderName);
-      op.addParameter("page", "0");
-      op.addParameter("pageSize", "20");
+      temp.queryParams = query.term + "%";
+      temp.query = params.query;
+      temp.providerName = params.pageProviderName;
+      temp.page = "0";
+      temp.pageSize = "20";
+    }
+    if (typeof currentConversationId != 'undefined') {
+      // Give needed info to restore Seam context
+      op.addParameter("id", getOperationName(params));
+      op.addParameter("conversationId",currentConversationId);
+      op.setContext(temp);
+    } else {
+      op.addParameters(temp);
     }
   }
 
@@ -191,7 +200,13 @@
     }
 
     // init Automation Operation
-    var op = jQuery().automation(opName, automationParams);
+    var op = null;
+    if (typeof currentConversationId != 'undefined') {
+      // If Seam context is available, let's restore it
+      op = jQuery().automation('Seam.RunOperation', automationParams);
+    } else {
+      op = jQuery().automation(opName, automationParams);
+    }
 
     // detect if we need custom selection formatting
     var selectionFormatterFunction = null;
