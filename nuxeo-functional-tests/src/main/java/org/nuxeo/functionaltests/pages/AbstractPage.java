@@ -43,7 +43,7 @@ public abstract class AbstractPage {
     // Timeout for waitUntilURLDifferentFrom in seconds
     public static int URLCHANGE_MAX_WAIT = 10;
 
-    @FindBy(name = "userServicesForm")
+    @FindBy(xpath = "//div[@id='nxw_doc_userMenuActions_panel']/ul/li/span")
     public WebElement userServicesForm;
 
     protected WebDriver driver;
