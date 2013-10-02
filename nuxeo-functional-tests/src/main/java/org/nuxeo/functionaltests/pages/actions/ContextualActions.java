@@ -43,7 +43,7 @@ public class ContextualActions extends AbstractPage {
     @FindBy(id = "fancybox-close")
     public WebElement closePermaBoxButton;
 
-    @FindBy(className = "dropDownMenu")
+    @FindBy(xpath = "//div[@id=\"nxw_doc_documentActionsUpperButtons_panel\"]/div/ul/li")
     public WebElement moreButton;
 
     @FindBy(xpath = "//img[@title=\"Export options\"]")

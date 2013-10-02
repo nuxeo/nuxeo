@@ -45,22 +45,22 @@ import org.openqa.selenium.support.FindBy;
 public class DocumentBasePage extends AbstractPage {
 
     @Required
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]")
+    @FindBy(xpath = "//div[@id=\"nxw_doc_documentTabs_panel\"]")
     public WebElement tabsBar;
 
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Content\"]")
+    @FindBy(xpath = "//div[@id=\"nxw_doc_documentTabs_panel\"]//a/span[text()=\"Content\"]")
     public WebElement contentTabLink;
 
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Summary\"]")
+    @FindBy(xpath = "//div[@id=\"nxw_doc_documentTabs_panel\"]//a/span[text()=\"Summary\"]")
     public WebElement summaryTabLink;
 
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Edit\"]")
+    @FindBy(xpath = "//div[@id=\"nxw_doc_documentTabs_panel\"]//a/span[text()=\"Edit\"]")
     public WebElement editTabLink;
 
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"History\"]")
+    @FindBy(xpath = "//div[@id=\"nxw_doc_documentTabs_panel\"]//a/span[text()=\"History\"]")
     public WebElement historyTabLink;
 
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Manage\"]")
+    @FindBy(xpath = "//div[@id=\"nxw_doc_documentTabs_panel\"]//a/span[text()=\"Manage\"]")
     public WebElement manageTabLink;
 
     @FindBy(className = "documentDescription")
@@ -124,7 +124,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
-        WebElement selectedTab = findElementWithTimeout(By.xpath("/html/body/table[2]/tbody/tr/td[2]/div[2]//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a"));
+        WebElement selectedTab = findElementWithTimeout(By.xpath("//div[@id=\"nxw_doc_documentTabs_panel\"]//li[@class=\"selected\"]/a/span"));
         if (!selectedTab.equals(tabLink)) {
             tabLink.click();
         }

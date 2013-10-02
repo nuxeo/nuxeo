@@ -42,7 +42,7 @@ public class NavigationSubPage extends AbstractPage {
     public DocumentBasePage goToDocument(String docTitle) {
         navigationTree.findElement(By.linkText(docTitle)).click();
         // wait for page load after click
-        findElementWithTimeout(By.className("userActions"));
+        findElementWithTimeout(By.className("userMenuActions"));
         return asPage(DocumentBasePage.class);
     }
 
