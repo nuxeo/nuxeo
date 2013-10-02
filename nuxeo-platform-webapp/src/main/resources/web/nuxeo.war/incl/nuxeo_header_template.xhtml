@@ -18,51 +18,21 @@
   </ui:insert>
 
   <ui:insert name="header_search">
-    <nxl:widgetType name="documentActionsWithForms"
-      mode="view"
-      widgetName="userSearch"
-      value="#{currentDocument}"
-      styleClass="userSearchBlock searchService"
-      actionsStyleClass="advancedSearchLink"
-      widgetProperty_category="SEARCH_ACTIONS"
-      overallDisplay="horizontal_block" />
+    <nxl:widget name="headerSearch" mode="view" value="#{currentDocument}" />
   </ui:insert>
 
   <div class="userServicesBlock">
 
     <ui:insert name="header_main_tabs">
-      <nxl:widgetType name="documentActionsWithForms"
-        mode="view"
-        value="#{currentDocument}"
-        widgetName="main_tabs"
-        styleClass="mainTabs"
-        widgetProperty_category="MAIN_TABS"
-        overallDisplay="menu"
-        currentAction="#{webActions.getCurrentTabAction('MAIN_TABS')}" />
+      <nxl:widget name="mainTabs" mode="view" value="#{currentDocument}" />
     </ui:insert>
 
     <ui:insert name="header_user_menu_actions">
-      <nxl:widgetType name="documentActionsWithForms"
-        mode="view"
-        value="#{currentDocument}"
-        label="#{messages['label.loggedAsUser']}"
-        widgetName="userMenuActions"
-        styleClass="userMenuActions"
-        actionsDisplay="links"
-        widgetProperty_category="USER_MENU_ACTIONS, USER_SERVICES"
-        overallDisplay="rollover_menu" />
+      <nxl:widget name="userMenuActions" mode="view" value="#{currentDocument}" />
     </ui:insert>
 
     <ui:insert name="header_user_actions">
-      <nxl:widgetType name="documentActionsWithForms"
-        mode="view"
-        label="#{messages['label.loggedAsUser']}"
-        widgetName="userActions"
-        value="#{currentDocument}"
-        styleClass="userActions"
-        actionsDisplay="links"
-        widgetProperty_category="USER_SERVICES_BOTTOM"
-        overallDisplay="menu" />
+      <nxl:widget name="userActions" mode="view" value="#{currentDocument}" />
     </ui:insert>
 
     <div class="clear" />

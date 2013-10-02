@@ -29,15 +29,8 @@
       </h:form>
 
       <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
-
       <ui:include src="/incl/message_banner.xhtml"/>
-
-      <nxl:widgetType name="documentTabsWithForms"
-        widgetName="documentTabs"
-        mode="view"
-        value="#{currentDocument}"
-        widgetProperty_category="VIEW_ACTION_LIST"
-        actionsDisplay="links" />
+      <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
 
     </div>
   </ui:define>

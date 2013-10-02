@@ -1,17 +1,6 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+<div xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <nxl:widgetType name="documentActionsWithForms"
-    widgetName="documentActionsUpperButtons"
-    mode="view"
-    label=""
-    styleClass="globalActions contextActions"
-    actionStyleClass="button"
-    actionsDisplay="icons"
-    overallDisplay="horizontal_block"
-    widgetProperty_category="DOCUMENT_UPPER_ACTION"
-    maxActionsNumber="5"
-    value="#{currentDocument}" />
+  <nxl:widget name="documentActionsUpperButtons"
+    mode="view" value="#{currentDocument}" />
 
 </div>

@@ -15,15 +15,7 @@
 <ui:insert name="footer">
   <div class="footerDefaultLinks">
 
-    <nxl:widgetType name="documentActionsWithForms"
-      widgetName="footerButtons"
-      mode="view"
-      label=""
-      styleClass="nuxLinks"
-      overallDisplay="horizontal_block"
-      widgetProperty_category="FOOTER"
-      separator=" | "
-      value="#{currentDocument}" />
+    <nxl:widget name="footerLinks" mode="view" value="#{currentDocument}" />
 
     <div class="copyrights">
       <h:outputFormat value="#{messages['label.login.copyright']}">

@@ -16,12 +16,8 @@
       <h1 rendered="#{currentServerLocation.name}">
         <h:outputText value="#{messages['title.header.server']}" />
       </h1>
-      <nxl:widgetType name="documentTabsWithForms"
-        widgetName="documentTabs"
-        mode="view"
-        value="#{currentDocument}"
-        widgetProperty_category="VIEW_ACTION_LIST"
-        actionsDisplay="links" />
+      <ui:include src="/incl/message_banner.xhtml"/>
+      <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
     </div>
   </ui:define>
 
