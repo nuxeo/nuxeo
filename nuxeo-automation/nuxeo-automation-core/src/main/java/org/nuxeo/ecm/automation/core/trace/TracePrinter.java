@@ -93,6 +93,12 @@ public class TracePrinter {
             sb.append(trace.output.getClass().getSimpleName());
             printLine(sb.toString());
         }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(System.getProperty("line.separator"));
+        stringBuilder.append("****** Hierarchy calls ******");
+        stringBuilder.append(System.getProperty("line.separator"));
+        displayOperationTreeCalls(trace.operations, stringBuilder);
+        printLine(stringBuilder.toString());
         print(trace.operations);
         writer.flush();
     }
@@ -203,16 +209,10 @@ public class TracePrinter {
     }
 
     public void litePrintCall(List<Call> calls) throws IOException {
-        String tabs = "\t";
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(System.getProperty("line.separator"));
         try {
-            for (Call call : calls) {
-                stringBuilder.append(tabs);
-                stringBuilder.append(call.getType().getType().getName());
-                stringBuilder.append(System.getProperty("line.separator"));
-                tabs += "\t";
-            }
+            displayOperationTreeCalls(calls, stringBuilder);
             printLine(stringBuilder.toString());
             stringBuilder = new StringBuilder();
             for (Call call : calls) {
@@ -229,6 +229,17 @@ public class TracePrinter {
             printLine(stringBuilder.toString());
         } catch (IOException e) {
             log.error("Nuxeo TracePrinter cannot write traces output", e);
+        }
+    }
+
+    private void displayOperationTreeCalls(List<Call> calls,
+            StringBuilder stringBuilder) {
+        String tabs = "\t";
+        for (Call call : calls) {
+            stringBuilder.append(tabs);
+            stringBuilder.append(call.getType().getType().getName());
+            stringBuilder.append(System.getProperty("line.separator"));
+            tabs += "\t";
         }
     }
 
