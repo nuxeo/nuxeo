@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -109,9 +110,10 @@ public class DocumentTemplatesActionsBean extends InputController implements
             return null;
         }
 
-        String query = "SELECT * FROM Document where ecm:primaryType = '%s' AND ecm:path STARTSWITH '%s'";
+        String query = "SELECT * FROM Document where ecm:primaryType = '%s' AND ecm:path STARTSWITH %s";
         DocumentModelList tl = documentManager.query(String.format(query,
-                TemplateRoot, navigationContext.getCurrentDomainPath()));
+                TemplateRoot,
+                NXQL.escapeString(navigationContext.getCurrentDomainPath())));
 
         if (tl.isEmpty()) {
             templates = tl;
