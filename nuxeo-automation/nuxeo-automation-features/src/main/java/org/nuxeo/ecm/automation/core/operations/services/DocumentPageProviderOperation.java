@@ -18,6 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.el.ELContext;
+import javax.el.ValueExpression;
+
+import org.jboss.el.lang.FunctionMapperImpl;
+import org.jboss.seam.el.EL;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -30,7 +35,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
@@ -62,6 +69,9 @@ public class DocumentPageProviderOperation {
 
     @Context
     protected CoreSession session;
+
+    @Context
+    protected PageProviderService ppService;
 
     @Param(name = "providerName", required = false)
     protected String providerName;
@@ -171,9 +181,56 @@ public class DocumentPageProviderOperation {
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
-                            providerName, sortInfos, targetPageSize,
-                            targetPage, props, parameters), documentLinkBuilder);
+                            providerName,
+                            sortInfos,
+                            targetPageSize,
+                            targetPage,
+                            props,
+                            context.containsKey("seamActionContext") ? getParameters(
+                                    providerName, parameters) : parameters),
+                    documentLinkBuilder);
         }
 
+    }
+
+    /**
+     * Resolves additional parameters that could have been defined in the
+     * contribution.
+     *
+     * @param pageProviderName name of the Page Provider
+     * @param givenParameters parameters from the operation
+     *
+     * @since 5.8
+     */
+    private Object[] getParameters(final String pageProviderName,
+            final Object[] givenParameters) {
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        // resolve additional parameters
+        PageProviderDefinition ppDef = ppService.getPageProviderDefinition(pageProviderName);
+        String[] params = ppDef.getQueryParameters();
+        if (params == null) {
+            params = new String[0];
+        }
+
+        Object[] resolvedParams = new Object[params.length
+                + (givenParameters != null ? givenParameters.length : 0)];
+
+        ELContext elContext = EL.createELContext(SeamActionContext.EL_RESOLVER,
+                new FunctionMapperImpl());
+
+        int i = 0;
+        if (givenParameters != null) {
+            for (; i < givenParameters.length; i++) {
+                resolvedParams[i] = givenParameters[i];
+            }
+        }
+        for (int j = 0; j < params.length; j++) {
+            ValueExpression ve = SeamActionContext.EXPRESSION_FACTORY.createValueExpression(
+                    elContext, params[j], Object.class);
+            resolvedParams[i + j] = ve.getValue(elContext);
+        }
+        return resolvedParams;
     }
 }
