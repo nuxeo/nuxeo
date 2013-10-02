@@ -64,8 +64,7 @@ public class ConcatenatePDFs {
         }
         handleBlobToAppend(ut);
         ut.addSource(blob.getStream());
-        FileBlob fb = appendPDFs(ut);
-        return fb;
+        return appendPDFs(ut);
     }
 
     @OperationMethod
@@ -79,8 +78,7 @@ public class ConcatenatePDFs {
             checkPdf(blob);
             ut.addSource(blob.getStream());
         }
-        FileBlob fb = appendPDFs(ut);
-        return fb;
+        return appendPDFs(ut);
     }
 
     protected FileBlob appendPDFs(PDFMergerUtility ut) throws IOException,
@@ -94,27 +92,28 @@ public class ConcatenatePDFs {
     }
 
     /**
-     * Check if blob to append is a PDF blob
+     * Check if blob to append is a PDF blob.
      */
     protected void handleBlobToAppend(PDFMergerUtility ut) throws IOException,
             OperationException {
         try {
             Blob blobToAppend = (Blob) ctx.get(xpathBlobToAppend);
+            if (blobToAppend == null) {
+                throw new OperationException(
+                        "The blob to append from variable context: '"
+                                + xpathBlobToAppend + "' is null.");
+            }
             checkPdf(blobToAppend);
             ut.addSource(blobToAppend.getStream());
         } catch (ClassCastException e) {
             throw new OperationException(
                     "The blob to append from variable context: '"
                             + xpathBlobToAppend + "' is not a blob.", e);
-        } catch (NullPointerException e) {
-            throw new OperationException(
-                    "The blob to append from variable context: '"
-                            + xpathBlobToAppend + "' is null.", e);
         }
     }
 
     /**
-     * Check if blob is a pdf
+     * Check if blob is a pdf.
      */
     protected void checkPdf(Blob blob) throws OperationException {
         if (!"application/pdf".equals(blob.getMimeType())) {
