@@ -52,7 +52,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     private Class<?>[] linkParams;
 
     @XNode("@enabled")
-    protected boolean enabled = true;
+    protected Boolean enabled;
 
     @XNode("@label")
     protected String label;
@@ -128,12 +128,22 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.categories = categories;
     }
 
+    /**
+     * Returns true if the enabled element was set on the descriptor, useful
+     * for merging.
+     *
+     * @since 5.8
+     */
+    public boolean isEnableSet() {
+        return enabled != null;
+    }
+
     public boolean isEnabled() {
-        return enabled;
+        return enabled == null || Boolean.TRUE.equals(enabled);
     }
 
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.enabled = Boolean.valueOf(enabled);
     }
 
     protected String getStringProperty(String prop) {

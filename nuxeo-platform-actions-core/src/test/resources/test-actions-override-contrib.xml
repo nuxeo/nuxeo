@@ -47,6 +47,8 @@
       </properties>
     </action>
 
+    <action id="disabledAction" link="foo" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

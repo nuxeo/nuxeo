@@ -80,6 +80,8 @@
       <filter-id>WorkspaceOrSection</filter-id>
     </action>
 
+    <action id="disabledAction" enabled="false" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

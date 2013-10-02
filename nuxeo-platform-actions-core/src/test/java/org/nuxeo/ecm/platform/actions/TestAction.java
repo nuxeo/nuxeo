@@ -36,11 +36,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.actions.ActionFilter;
-import org.nuxeo.ecm.platform.actions.ActionService;
-import org.nuxeo.ecm.platform.actions.DefaultActionFilter;
-import org.nuxeo.ecm.platform.actions.FilterRule;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -61,7 +56,7 @@ public class TestAction extends NXRuntimeTestCase {
     @Test
     public void testActionExtensionPoint() {
         Collection<Action> actions = as.getActionRegistry().getActions();
-        assertEquals(8, actions.size());
+        assertEquals(9, actions.size());
 
         Action newDocument = as.getAction("newDocument");
         assertEquals("newDocument", newDocument.getId());
@@ -191,6 +186,9 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals(1, viewAction.getFilterIds().size());
         assertTrue(viewAction.getFilterIds().contains("MyCustomFilter"));
 
+        Action disabledAction = as.getAction("disabledAction");
+        assertFalse(disabledAction.isEnabled());
+
         // deploy override
         deployContrib("org.nuxeo.ecm.actions.tests",
                 "test-actions-override-contrib.xml");
@@ -227,6 +225,9 @@ public class TestAction extends NXRuntimeTestCase {
         assertNotNull(filter);
         filter = as.getFilterRegistry().getFilter("newFilter3");
         assertNotNull(filter);
+
+        disabledAction = as.getAction("disabledAction");
+        assertFalse(disabledAction.isEnabled());
     }
 
     // NXP-7287: test override of inner filter
