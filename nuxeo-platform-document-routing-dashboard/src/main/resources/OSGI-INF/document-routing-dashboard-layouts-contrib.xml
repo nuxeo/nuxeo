@@ -1,88 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.routing.dashboard.layouts">
+  <require>org.nuxeo.ecm.platform.routing.dashboard.actions</require>
+  <require>org.nuxeo.ecm.platform.routing.actions</require>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="user_open_tasks_cv" prefix="user_open_tasks_cv" src="schemas/user_open_tasks_cv.xsd"/>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="user_open_tasks_cv" prefix="user_open_tasks_cv"
+      src="schemas/user_open_tasks_cv.xsd" />
   </extension>
-  
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
     <doctype name="user_open_tasks_cv" extends="Document">
-      <facet name="ContentViewDisplay"/>
-      <schema name="user_open_tasks_cv"/>
+      <facet name="ContentViewDisplay" />
+      <schema name="user_open_tasks_cv" />
     </doctype>
-   </extension>
- 
- <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-      point="widgettypes">
-  
-   <widgetType name="listing_process_task">
-    <configuration>
-     <title>Listing process task link</title>
-     <documentation>
-      Two fields are required:
-      <ul>
-       <li>A field to map the task</li>
-       <li>A field to map the targetDocumentId on the task</li>
-      </ul>
-     </documentation>
-     <sinceVersion>5.7.3</sinceVersion>
-     <categories>
-      <category>routing</category>
-     </categories>
-     <supportedModes>
-      <mode>view</mode>
-     </supportedModes>
-     <fields>
-      <list>false</list>
-      <complex>false</complex>
-      <supportedTypes>
-       <type>string</type>
-      </supportedTypes>
-     </fields>
-    </configuration>
-    <handler-class>
-     org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-    </handler-class>
-    <property name="template">
-     /widgets/listing/listing_process_task_widget_template.xhtml
-    </property>
-   </widgetType>
-
- <widgetType name="listing_workflow_name_task">
-  <configuration>
-   <title>Listing the name of the workflow that created the task</title>
-   <documentation>
-    A field is required:
-    <ul>
-     <li>A field to map the processId on the task</li>
-    </ul>
-   </documentation>
-   <sinceVersion>5.7.3</sinceVersion>
-   <categories>
-    <category>routing</category>
-   </categories>
-   <supportedModes>
-    <mode>view</mode>
-   </supportedModes>
-   <fields>
-    <list>false</list>
-    <complex>false</complex>
-    <supportedTypes>
-     <type>string</type>
-    </supportedTypes>
-   </fields>
-  </configuration>
-  <handler-class>
-   org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-  </handler-class>
-  <property name="template">
-   /widgets/listing/listing_workflow_name_task_widget_template.xhtml
-  </property>
- </widgetType>
   </extension>
-  
-  
-  
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="listing_process_task">
+      <configuration>
+        <title>Listing process task link</title>
+        <documentation>
+          Two fields are required:
+          <ul>
+            <li>A field to map the task</li>
+            <li>A field to map the targetDocumentId on the task</li>
+          </ul>
+        </documentation>
+        <sinceVersion>5.7.3</sinceVersion>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_process_task_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_workflow_name_task">
+      <configuration>
+        <title>Listing the name of the workflow that created the task
+        </title>
+        <documentation>
+          A field is required:
+          <ul>
+            <li>A field to map the processId on the task</li>
+          </ul>
+        </documentation>
+        <sinceVersion>5.7.3</sinceVersion>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_workflow_name_task_widget_template.xhtml
+      </property>
+    </widgetType>
+  </extension>
+
+
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
@@ -127,7 +133,8 @@
         <mode value="any">view</mode>
       </widgetModes>
       <properties mode="any">
-        <property name="format">#{nxu:dateAndTimeFormater('medium')}</property>
+        <property name="format">#{nxu:dateAndTimeFormater('medium')}
+        </property>
         <property name="timeZone">#{timeZone}</property>
       </properties>
     </widget>
@@ -150,7 +157,8 @@
 
     <widget name="routing_task_actors" type="multiplePrefixedUsersSuggestion">
       <labels>
-        <label mode="any">label.document.route.content.header.actors</label>
+        <label mode="any">label.document.route.content.header.actors
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -186,7 +194,7 @@
         </widget>
       </subWidgets>
     </widget>
-    
+
     <widget name="routing_task_workflow_name" type="listing_workflow_name_task">
       <labels>
         <label mode="any">label.review.type</label>
@@ -202,7 +210,7 @@
         <property name="localize">true</property>
       </properties>
     </widget>
-    
+
     <widget name="routing_task_process_btn" type="listing_process_task">
       <labels>
         <label mode="any"></label>
@@ -217,6 +225,25 @@
       </widgetModes>
       <properties mode="any">
         <property name="tab">TAB_ROUTE_WORKFLOW</property>
+      </properties>
+    </widget>
+
+    <widget name="task_related_actions" type="documentActionsWithForms">
+      <fields>
+        <field>#{routingTaskActions.getTaskInfo(layoutValue, false)}
+        </field>
+      </fields>
+      <properties widgetMode="view">
+        <property name="category">TASK_ADDITIONAL_ACTIONS</property>
+        <property name="styleClass">globalActionBar</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">1</property>
+        <property name="actionContextDocument">#{layoutValue.getDocument()}</property>
       </properties>
     </widget>
 
@@ -298,7 +325,7 @@
         </column>
       </columns>
     </layout>
-    
+
     <layout name="routing_user_open_task_listing">
       <templates>
         <template mode="any">
@@ -364,10 +391,11 @@
         </column>
       </columns>
     </layout>
-    
+
     <layout name="routing_user_open_task_search_layout">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml</template>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
       </templates>
       <rows>
         <row>
@@ -413,8 +441,289 @@
         </fields>
       </widget>
     </layout>
-    
 
+    <!--@since 5.8, layouts for task resolution screen on User home -->
+    <layout name="routing_task_general_info">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>task_workflow_name</widget>
+        </row>
+        <row>
+          <widget>task_actors</widget>
+        </row>
+        <row>
+          <widget>task_delegated_users</widget>
+        </row>
+        <row>
+          <widget>task_duedate</widget>
+        </row>
+        <row>
+          <widget>task_simple_directive</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="routing_task_node_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>task_layout_with_actions</widget>
+        </row>
+      </rows>
+    </layout>
+
+    <layout name="routing_task_resolution_layout">
+      <templates>
+        <template mode="any">/layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle10</property>
+            <property name="nxl_gridStyleClass_1">gridStyle1</property>
+          </properties>
+          <widget>container_0</widget>
+          <widget>container_01</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle5</property>
+            <property name="nxl_gridStyleClass_1">gridStyle7</property>
+          </properties>
+          <widget>container</widget>
+          <widget>container_1</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle12</property>
+          </properties>
+          <widget>container_2</widget>
+        </row>
+      </rows>
+      <widget name="container_0" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties mode="any">
+          <property name="hideSubLabels">true</property>
+          <property name="styleClass">description_block</property>
+        </properties>
+        <subWidgetRefs>
+          <widget>task_workflow_name</widget>
+        </subWidgetRefs>
+      </widget>
+      <widget name="container_01" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties mode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <subWidgetRefs>
+          <widget>task_related_actions</widget>
+        </subWidgetRefs>
+      </widget>
+      <widget name="container" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="styleClass">fullWidth
+          </property>
+        </properties>
+        <subWidgets>
+          <widget name="sub0" type="layout">
+            <labels>
+              <label mode="any">routing_task_general_info</label>
+            </labels>
+            <translated>false</translated>
+            <fields />
+            <properties widgetMode="view">
+              <property name="name">routing_task_general_info
+              </property>
+            </properties>
+            <controls mode="any">
+              <control name="handleLabels">true</control>
+              <control name="requireSurroundingForm">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="container_1" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties widgetMode="any">
+          <property name="styleClass">simpleBox fullWidth focusColumn
+          </property>
+        </properties>
+        <subWidgets>
+          <widget name="sub0" type="layout">
+            <labels>
+              <label mode="any">routing_task_node_layout</label>
+            </labels>
+            <translated>false</translated>
+            <fields />
+            <properties widgetMode="view">
+              <property name="name">routing_task_node_layout
+              </property>
+            </properties>
+            <controls mode="any">
+              <control name="requireSurroundingForm">true</control>
+              <control name="handleLabels">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="container_2" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <subWidgets>
+          <widget name="sub0" type="contentViewWithForms">
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <translated>false</translated>
+            <properties widgetMode="view">
+              <property name="showRefreshCommand">false</property>
+              <property name="foldable">false</property>
+              <property name="showSyndicationLinks">false</property>
+              <property name="showPDFExport">false</property>
+              <property name="showCSVExport">false</property>
+              <property name="showPageSizeSelector">false</property>
+              <property name="showFilterForm">false</property>
+              <property name="contentViewName">task_target_documents</property>
+            </properties>
+            <controls mode="any">
+              <control name="handleLabels">true</control>
+            </controls>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+    
+    <layout name="task_related_documents_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <properties mode="csv">
+            <property name="isHidden">true</property>
+          </properties>
+          <properties mode="pdf">
+            <property name="isHidden">true</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:modified</property>
+            <property name="defaultSortAscending">false</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:lastContributor</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="isSortable">false</property>
+          </properties>
+          <widget>listing_version</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">
+              ecm:currentLifeCycleState
+            </property>
+          </properties>
+          <widget>listing_lifecycle</widget>
+        </column>
+      </columns>
+    </layout>
+    
   </extension>
 
 </component>

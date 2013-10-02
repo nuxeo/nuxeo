@@ -92,8 +92,6 @@ public class RoutingTaskActionsBean implements Serializable {
 
     public static final String SUBJECT_PATTERN = "([a-zA-Z_0-9]*(:)[a-zA-Z_0-9]*)";
 
-    public static final String TASK_VIEW_HOME_CENTER = "view_home_task";
-
     /**
      * Runtime property name, that makes it possible to cache actions available
      * on a given task, depending on its type.
@@ -611,6 +609,7 @@ public class RoutingTaskActionsBean implements Serializable {
             contentViewActions.resetPageProviderOnSeamEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         }
         tasksInfoCache.clear();
+        currentTask = null;
     }
 
     /**
@@ -669,7 +668,15 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public String navigateToTask(DocumentModel taskDoc) {
         setCurrentTask(taskDoc.getAdapter(Task.class));
-        return TASK_VIEW_HOME_CENTER;
+        return null;
+    }
+
+    /**
+     * @since 5.8
+     */
+    public String navigateToTasksView() {
+        setCurrentTask(null);
+        return null;
     }
 
     /**

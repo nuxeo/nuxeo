@@ -1,30 +1,40 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <ui:define name="body">
+  <a4j:outputPanel id="user_center_subtab" layout="block">
+    <ui:include src="/incl/message_banner.xhtml" />
+    <c:if test="#{routingTaskActions.currentTask ==null}">
 
-    <a4j:outputPanel id="user_center_divtab" layout="block">
-      <table class="adminViewContent">
-        <tr>
-          <td class="adminTabsColumn"><ui:include
-              src="/incl/user_center_view_selector.xhtml" /></td>
-          <td class="adminContentColumn"><nxl:layout
-              value="#{routingTaskActions.currentTask}" mode="view"
-              name="task_layout" /></td>
-        </tr>
-      </table>
-    </a4j:outputPanel>
+      <c:if
+        test="#{!empty currentUserCenterView.properties.alwaysDisplaySubTabs or userCenterViews.availableSubActions.size > 1}">
+        <ui:include src="/incl/user_center_subview_selector.xhtml" />
+      </c:if>
 
-  </ui:define>
+      <div style="clear: both"></div>
+      <div class="tabsContent">
+        <ui:include src="#{currentUserCenterSubView.link}" />
+      </div>
+    </c:if>
+    <c:if test="#{routingTaskActions.currentTask !=null}">
+      <a4j:outputPanel id="user_center_tab" layout="block">
+        <table class="adminViewContent">
+          <tr>
+            <td class="adminContentColumn"><nxl:layout
+                value="#{routingTaskActions.currentTask}" mode="view"
+                name="routing_task_resolution_layout" /></td>
+          </tr>
+        </table>
+      </a4j:outputPanel>
+    </c:if>
 
-</nxthemes:composition>
+  </a4j:outputPanel>
+
+</div>
 

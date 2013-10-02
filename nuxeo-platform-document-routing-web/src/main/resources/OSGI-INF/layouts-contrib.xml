@@ -386,6 +386,7 @@
       </fields>
       <properties mode="any">
         <property name="localize">true</property>
+        <property name="styleClass">h3</property>
       </properties>
     </widget>
     <widget name="task_actors" type="multiplePrefixedUsersSuggestion">

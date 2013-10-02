@@ -7,7 +7,8 @@
       To enable them, add the following contribution:
     </p>
     <code>
-      <require>org.nuxeo.ecm.platform.routing.dashboard.actions</require>
+      <require>org.nuxeo.ecm.platform.routing.dashboard.actions
+      </require>
       <extension target="org.nuxeo.ecm.platform.actions.ActionService"
         point="actions">
         <action id="workflow_dashboard" enabled="true" />
@@ -19,8 +20,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="workflow_dashboard" link="view_workflow" label="label.main.tab.workflow"
-      order="30" enabled="false">
+    <action id="workflow_dashboard" link="view_workflow"
+      label="label.main.tab.workflow" order="30" enabled="false">
       <category>MAIN_TABS</category>
     </action>
 
@@ -28,23 +29,28 @@
       label="action.view.workflow.tasks" order="10" enabled="false">
       <category>WORKFLOW_DASHBOARD</category>
     </action>
-    
-    <!--since 5.7.3  -->    
-    <action id="WorkflowHome" link="user_center_fragment.xhtml"
-      label="tab.admin.workflow" order="20" icon="/icons/workflow_definition.png">
+
+    <!--since 5.7.3 -->
+    <action id="WorkflowHome" link="view_home_task.xhtml" label="tab.admin.workflow"
+      order="20" icon="/icons/workflow_definition.png">
       <properties>
         <property name="alwaysDisplaySubTabs">false</property>
       </properties>
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
     </action>
-    
-    <!--since 5.7.3  --> 
-     <action id="UsersTasks" label="title.dashboard.userTasks" 
-      link="/incl/home/user_open_tasks.xhtml" order="10">
+
+    <!--since 5.7.3 -->
+    <action id="UsersTasks" label="title.dashboard.userTasks"
+      link="/incl/home/user_open_tasks.xhtml" order="40">
       <category>WorkflowHome_sub_tab</category>
       <filter-id>not_readonly</filter-id>
-     </action>
+    </action>
+
+    <action id="go_back_to_tasks_view" link="#{routingTaskActions.navigateToTasksView()}"
+      order="10" label="command.back">
+      <category>TASK_ADDITIONAL_ACTIONS</category>
+    </action>
 
   </extension>
 

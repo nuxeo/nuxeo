@@ -10,7 +10,6 @@
       <to-view-id>/view_workflow.xhtml</to-view-id>
       <redirect />
     </navigation-case>
-
   </extension>
 
   <extension target="web#STD-AUTH-FILTER">
