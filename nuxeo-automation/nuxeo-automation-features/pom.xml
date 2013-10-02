@@ -57,6 +57,11 @@
       <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- for page provider operation -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-actions-jsf</artifactId>
+    </dependency>
     <!-- for directory/vocabulary operations -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
