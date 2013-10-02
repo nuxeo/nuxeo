@@ -21,7 +21,7 @@
   <c:set var="emptySentence"
     value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
   <c:if test="#{provider.currentSelectPage.rowCount == 0 and not provider.hasError()}">
-    <nxp:paragraph>
+    <nxp:paragraph styleClass="emptyResult emptyResultBig" >
       #{nxu:test(empty emptySentence, messages['label.content.emptyFolder'], emptySentence)}
     </nxp:paragraph>
   </c:if>

@@ -26,7 +26,7 @@
 
   <ui:insert name="empty_folder_label">
     <h:outputText value="#{messages['label.content.emptyFolder']}"
-      rendered="#{documents.rowCount == 0}" />
+      rendered="#{documents.rowCount == 0}" styleClass="emptyResult emptyResultBig" />
   </ui:insert>
 
   <ui:insert name="error_message" />

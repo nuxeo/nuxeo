@@ -213,7 +213,7 @@
                   <c:set var="emptySentence"
                     value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
                   <h:outputText value="#{nxu:test(empty emptySentence, defaultSentence, emptySentence)}"
-                    rendered="#{documents.rowCount == 0 and not provider.hasError()}" />
+                    rendered="#{documents.rowCount == 0 and not provider.hasError()}" styleClass="emptyResult emptyResultBig" />
                 </ui:insert>
               </ui:define>
 
