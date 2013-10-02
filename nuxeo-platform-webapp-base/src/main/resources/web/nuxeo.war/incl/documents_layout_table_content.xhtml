@@ -124,14 +124,6 @@
     </c:if>
   </ui:insert>
 
-  <ui:insert name="syndication_buttons">
-    <div class="syndicationContainer">
-      <c:if test="#{currentDocument.folder}">
-        <ui:include src="/incl/syndication_buttons.xhtml">
-          <ui:param name="type" value="document" />
-        </ui:include>
-      </c:if>
-    </div>
-  </ui:insert>
+  <ui:insert name="syndication_buttons" />
 
 </c:if>
