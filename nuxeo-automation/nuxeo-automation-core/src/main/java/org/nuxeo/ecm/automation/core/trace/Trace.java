@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3
@@ -90,9 +91,14 @@ public class Trace {
     }
 
     public String getFormattedText() {
+        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
-            new TracePrinter(out).print(this);
+            if (tracerFactory.getRecordingState()) {
+                new TracePrinter(out).print(this);
+            } else {
+                new TracePrinter(out).litePrint(this);
+            }
         } catch (IOException e) {
             LogFactory.getLog(Trace.class).error(
                     "Cannot print trace of " + chain.getId(), e);
@@ -100,17 +106,4 @@ public class Trace {
         }
         return out.toString();
     }
-
-    public String getLiteFormattedText() {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            new TracePrinter(out).litePrint(this);
-        } catch (IOException e) {
-            LogFactory.getLog(Trace.class).error(
-                    "Cannot print trace of " + chain.getId(), e);
-            return chain.getId();
-        }
-        return out.toString();
-    }
-
 }
