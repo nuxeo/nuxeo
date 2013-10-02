@@ -131,8 +131,7 @@ public class Select2ActionsBean implements Serializable {
         return result;
     }
 
-    public String encodeParametersForUserSuggestion(final Widget widget)
-            throws Exception {
+    public String encodeParametersForUserSuggestion(final Widget widget) {
         Map<String, String> params = getDefaultFormattersMap(
                 Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER,
                 Select2Common.USER_DEFAULT_SELECTION_FORMATTER);
@@ -140,8 +139,7 @@ public class Select2ActionsBean implements Serializable {
         return encodeParameters(widget, params);
     }
 
-    public String encodeParametersForDirectory(final Widget widget)
-            throws Exception {
+    public String encodeParametersForDirectory(final Widget widget) {
         return encodeParameters(
                 widget,
                 getDefaultFormattersMap(
@@ -149,7 +147,7 @@ public class Select2ActionsBean implements Serializable {
                         Select2Common.DIR_DEFAULT_SELECTION_FORMATTER));
     }
 
-    public String encodeParameters(final Widget widget) throws Exception {
+    public String encodeParameters(final Widget widget) {
         return encodeParameters(
                 widget,
                 getDefaultFormattersMap(
@@ -167,93 +165,102 @@ public class Select2ActionsBean implements Serializable {
      * @since 5.7.3
      */
     public String encodeParameters(final Widget widget,
-            final Map<String, String> defaultParams) throws Exception {
+            final Map<String, String> defaultParams) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
 
-        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        jg.writeStartObject();
+        JsonGenerator jg;
+        try {
+            jg = JsonHelper.createJsonGenerator(out);
 
-        // multiple is not in properties and we must add it because Select2
-        // needs to know.
-        jg.writeStringField("multiple", "" + isMultiSelection(widget));
+            jg.writeStartObject();
 
-        final boolean isTranslated = widget.isTranslated();
+            // multiple is not in properties and we must add it because Select2
+            // needs to know.
+            jg.writeStringField("multiple", "" + isMultiSelection(widget));
 
-        // The operation might need to know if we translate the labels or not.
-        jg.writeStringField("translateLabels", "" + isTranslated);
+            final boolean isTranslated = widget.isTranslated();
 
-        Map<String, Serializable> propertySet = widget.getProperties();
-        boolean hasPlaceholder = false;
-        boolean hasAjaxReRender = false;
-        boolean hasWidth = false;
-        boolean hasMinChars = false;
+            // The operation might need to know if we translate the labels or
+            // not.
+            jg.writeStringField("translateLabels", "" + isTranslated);
 
-        for (Entry<String, Serializable> entry : propertySet.entrySet()) {
+            Map<String, Serializable> propertySet = widget.getProperties();
+            boolean hasPlaceholder = false;
+            boolean hasAjaxReRender = false;
+            boolean hasWidth = false;
+            boolean hasMinChars = false;
+
+            for (Entry<String, Serializable> entry : propertySet.entrySet()) {
+
+                if (defaultParams != null) {
+                    // Widget properties have priority on default properties
+                    defaultParams.remove(entry.getKey());
+                }
+
+                String value = entry.getValue().toString();
+
+                if (entry.getKey().equals(Select2Common.PLACEHOLDER)) {
+                    hasPlaceholder = true;
+                    // placeholder can be translated
+                    if (isTranslated) {
+                        value = messages.get(entry.getValue().toString());
+                    }
+                } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
+                    hasAjaxReRender = true;
+                } else if (entry.getKey().equals(Select2Common.WIDTH)) {
+                    hasWidth = true;
+                } else if (entry.getKey().equals(Select2Common.MIN_CHARS)) {
+                    hasMinChars = true;
+                }
+
+                jg.writeStringField(entry.getKey(), value);
+
+            }
 
             if (defaultParams != null) {
-                // Widget properties have priority on default properties
-                defaultParams.remove(entry.getKey());
-            }
-
-            String value = entry.getValue().toString();
-
-            if (entry.getKey().equals(Select2Common.PLACEHOLDER)) {
-                hasPlaceholder = true;
-                // placeholder can be translated
-                if (isTranslated) {
-                    value = messages.get(entry.getValue().toString());
+                // All default params which are not in widget properties
+                for (Entry<String, String> e : defaultParams.entrySet()) {
+                    jg.writeStringField(e.getKey(), e.getValue());
                 }
-            } else if (entry.getKey().equals(Select2Common.AJAX_RERENDER)) {
-                hasAjaxReRender = true;
-            } else if (entry.getKey().equals(Select2Common.WIDTH)) {
-                hasWidth = true;
-            } else if (entry.getKey().equals(Select2Common.MIN_CHARS)) {
-                hasMinChars = true;
             }
 
-            jg.writeStringField(entry.getKey(), value);
-
-        }
-
-        if (defaultParams != null) {
-            // All default params which are not in widget properties
-            for (Entry<String, String> e : defaultParams.entrySet()) {
-                jg.writeStringField(e.getKey(), e.getValue());
+            if (!hasPlaceholder) {
+                // No placeholder provider and Select2 requires one to enable
+                // the
+                // reset button.
+                jg.writeStringField(Select2Common.PLACEHOLDER,
+                        messages.get("label.vocabulary.selectValue"));
             }
-        }
 
-        if (!hasPlaceholder) {
-            // No placeholder provider and Select2 requires one to enable the
-            // reset button.
-            jg.writeStringField(Select2Common.PLACEHOLDER,
-                    messages.get("label.vocabulary.selectValue"));
-        }
+            if (!hasWidth) {
+                jg.writeStringField(Select2Common.WIDTH,
+                        Select2Common.DEFAULT_WIDTH);
+            }
 
-        if (!hasWidth) {
-            jg.writeStringField(Select2Common.WIDTH,
-                    Select2Common.DEFAULT_WIDTH);
-        }
+            if (!hasMinChars) {
+                jg.writeNumberField(Select2Common.MIN_CHARS,
+                        Select2Common.DEFAULT_MIN_CHARS);
+            }
 
-        if (!hasMinChars) {
-            jg.writeNumberField(Select2Common.MIN_CHARS,
-                    Select2Common.DEFAULT_MIN_CHARS);
-        }
+            // Are we writing or reading
+            boolean readonly = !widget.getMode().equals("edit")
+                    && !widget.getMode().equals("create");
+            jg.writeStringField(Select2Common.READ_ONLY_PARAM,
+                    Boolean.toString(readonly));
+            if (hasAjaxReRender) {
+                jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME,
+                        widget.getId() + "_reRender");
+            }
 
-        // Are we writing or reading
-        boolean readonly = !widget.getMode().equals("edit")
-                && !widget.getMode().equals("create");
-        jg.writeStringField(Select2Common.READ_ONLY_PARAM,
-                Boolean.toString(readonly));
-        if (hasAjaxReRender) {
-            jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME,
-                    widget.getId() + "_reRender");
+            jg.writeEndObject();
+            jg.flush();
+            out.flush();
+            return new String(baos.toByteArray(), "UTF-8");
+        } catch (IOException e) {
+            log.error("Could not encode parameters", e);
+            return null;
         }
-
-        jg.writeEndObject();
-        jg.flush();
-        out.flush();
-        return new String(baos.toByteArray(), "UTF-8");
     }
 
     protected LayoutStore getLayoutStore() {
