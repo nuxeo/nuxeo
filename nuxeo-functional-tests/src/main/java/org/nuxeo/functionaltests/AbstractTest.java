@@ -800,9 +800,18 @@ public abstract class AbstractTest {
         return findElementWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000);
     }
 
-    public static List<WebElement> findElementsWithTimeout(By by)
+    public static List<WebElement> findElementsWithTimeout(final By by)
             throws NoSuchElementException {
-        return driver.findElements(by);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS).ignoring(
+                NoSuchElementException.class);
+        return wait.until(new Function<WebDriver, List<WebElement>>() {
+            public List<WebElement> apply(WebDriver driver) {
+                List<WebElement> elements = driver.findElements(by);
+                return elements.isEmpty() ? null : elements;
+            }
+        });
     }
 
     /**

@@ -122,10 +122,6 @@ public class ITSafeEditTest extends AbstractTest {
 
     private final static String INITIAL_DESCRIPTION = "workspaceDescription";
 
-    private final static String CONFIRM_RESTORE_YES_ELT_ID = "confirmRestoreYes";
-
-    private final static String CONFIRM_RESTORE_SPAN_ELT_ID = "confirmRestore";
-
     private void prepare() throws Exception {
         DocumentBasePage documentBasePage;
         DocumentBasePage s = login();
