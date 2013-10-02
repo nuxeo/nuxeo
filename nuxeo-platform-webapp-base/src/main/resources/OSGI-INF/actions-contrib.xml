@@ -5,13 +5,13 @@
     point="actions">
 
     <action id="devModeFlush" link="#{seamReload.doFlush}" enabled="true"
-      label="Dev mode: force flush" order="10">
-      <category>USER_SERVICES</category>
+      label="Dev mode: force flush" order="100">
+      <category>USER_MENU_ACTIONS</category>
       <filter-id>devModeEnabledForAdmin</filter-id>
     </action>
 
     <action id="seamReload" link="#{seamReload.doReload}" enabled="true"
-      label="Reload Seam" order="20">
+      label="Reload Seam" order="50">
       <category>USER_MENU_ACTIONS</category>
       <filter-id>seamHotReloadIsEnabled</filter-id>
     </action>
