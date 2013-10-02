@@ -12,6 +12,9 @@ author: lkemen@nuxeo.com
 .nxFooter .content { text-align: right; width: 100% }
 .nxFooter a {	color: "link.footer (__FLAVOR__ color)" }
 
+.nxFooter .actionsWidgetPanel {
+  padding: 0 }
+
 .copyrights { color: "link.footer (__FLAVOR__ color)"; float: right; filter:alpha(opacity=65); opacity: .65; padding: .2em 2em 0 0 }
 .nuxLinks { float: right; padding-left: 2em }
 .nuxLinks a { vertical-align: middle }
