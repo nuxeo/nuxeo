@@ -199,8 +199,8 @@
 
     <action id="connectUpdates"
       label="#{connectUpdateStatusInfo.availableUpdateCount} update(s) available"
-      order="-100" type="template" icon="/icons/update.png">
-      <category>SEARCH_ACTIONS</category>
+      order="1000" type="template" icon="/icons/update.png">
+      <category>USER_SERVICES</category>
       <filter-id>only_for_manager</filter-id>
       <filter-id>hasConnectUpdates</filter-id>
       <properties>
