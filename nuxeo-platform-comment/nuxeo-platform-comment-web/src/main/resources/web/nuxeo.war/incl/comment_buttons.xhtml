@@ -2,13 +2,14 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html">
 
-  <nxu:methodResult name="actions"
-    value="#{commentManagerActions.getActionsForComment()}">
-    <nxu:dataList var="action" value="#{actions}">
-      <nxh:commandButton action="#{action.getLink()}"
-        immediate="#{action.immediate}"
-        value="#{messages[action.label]}" styleClass="button" />
+  <nxu:set var="actions"
+    value="#{commentManagerActions.getActionsForComment()}"
+    cache="true">
+    <nxu:dataList var="commentAction" value="#{actions}">
+      <nxh:commandButton action="#{commentAction.getLink()}"
+        immediate="#{commentAction.immediate}"
+        value="#{messages[commentAction.label]}" styleClass="button" />
     </nxu:dataList>
-  </nxu:methodResult>
+  </nxu:set>
 
 </div>
