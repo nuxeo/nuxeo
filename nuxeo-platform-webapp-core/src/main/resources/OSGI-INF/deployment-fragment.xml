@@ -226,12 +226,6 @@
     <!-- miscellaneous -->
 
     <navigation-case>
-      <from-outcome>clipboard</from-outcome>
-      <to-view-id>/incl/clipboard.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
       <from-outcome>select_workspace_template</from-outcome>
       <to-view-id>/select_workspace_template.xhtml</to-view-id>
       <redirect />
