@@ -152,6 +152,19 @@ ul.visibleList {
 p.detail,
 div.detail { margin: .1em 0 .7em }
 
+/* Empty folder or result */
+.emptyResult {
+  color: "gray.light (__FLAVOR__ color)";
+  display: block;
+  font-style: italic;
+  font-weight: normal;
+  padding: 1em .7em 2em;
+  text-align: center }
+
+.emptyResult.emptyResultBig {
+  font-size: 1.3em;
+  padding: 3em 2em 6em }
+
 /* =Tips */
 .widgetHelpLabel {
   border-bottom: 1px dashed #ffcc1d;

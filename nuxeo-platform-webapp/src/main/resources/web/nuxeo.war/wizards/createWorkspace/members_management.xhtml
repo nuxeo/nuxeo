@@ -96,8 +96,7 @@
 				    </h:column>
 					</h:dataTable>
 					<br/>
-				    <h:outputText value="#{messages['label.security.selectedUserListEmpty']}"
-			 		  class="clipboardEmptyMessage"
+				    <h:outputText value="#{messages['label.security.selectedUserListEmpty']}" class="emptyResult"
 			          rendered="#{principalListManager.selectedUserListEmpty}"/>
 
 			   	    <a4j:commandButton value="#{messages['label.security.resetUserList']}"

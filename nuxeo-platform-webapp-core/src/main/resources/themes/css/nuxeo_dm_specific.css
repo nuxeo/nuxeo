@@ -53,8 +53,6 @@ author: lkemen@nuxeo.com
 .clipboardFunction { padding: .2em }
 .clipboardRemoveItem { bottom: 2px; float: right; position: absolute; right: 0 }
 
-.clipboardEmptyMessage { color: "gray.dark (__FLAVOR__ color)"; font-style: italic; padding: 0 .2em .2em; text-align: center }
-
 /* check if it's still used */
 .wizardFrame { border: 1px solid; border-color: "neutral.lighter (__FLAVOR__ border)"; padding: 0 .4em; width: 800px }
 .wizardFrame .wizardFinish h4 img { float: left; margin-right: 1em }
