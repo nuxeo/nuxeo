@@ -17,10 +17,6 @@
     </div>
   </ui:insert>
 
-  <ui:insert name="header_search">
-    <nxl:widget name="headerSearch" mode="view" value="#{currentDocument}" />
-  </ui:insert>
-
   <div class="userServicesBlock">
 
     <ui:insert name="header_main_tabs">
@@ -35,8 +31,13 @@
       <nxl:widget name="userActions" mode="view" value="#{currentDocument}" />
     </ui:insert>
 
-    <div class="clear" />
+    <div class="clear"></div>
 
   </div>
+
+  <ui:insert name="header_search">
+    <nxl:widget name="headerSearch" mode="view" value="#{currentDocument}" />
+  </ui:insert>
+  <div class="clear"></div>
 
 </div>

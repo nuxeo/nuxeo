@@ -23,15 +23,15 @@ author: lkemen@nuxeo.com
   padding: 0 }
 
 /* =Search */
-.userSearchBlock { float: right }
-.searchService {
+.userSearchBlock {
+  float: right;
   line-height: 200%;
   margin: 0 1em 0 .5em;
   opacity: .85;
   padding: .4em 0 0 }
-.searchService input[type="text"]:focus, .searchService:hover { opacity: 1 }
-.searchService .directoryFilter { border: 1px solid #fff; margin: 0 .3em 0 0 }
-.searchService input.button {  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset; margin: .3em .5em 0 .3em; padding: .2em }
+.userSearchBlock input[type="text"]:focus, .userSearchBlock:hover { opacity: 1 }
+.userSearchBlock .directoryFilter { border: 1px solid #fff; margin: 0 .3em 0 0 }
+.userSearchBlock input.button {  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset; margin: .3em .5em 0 .3em; padding: .2em }
 .advancedSearchLink a { font-size: .8em }
 
 /* =UserServices */
@@ -86,4 +86,4 @@ author: lkemen@nuxeo.com
 .adminMessage {text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;}
 
 /* =Connect header links */
-.updateNotificationArea {float:left; vertical-align:middle; padding:10px}
+.updateNotificationArea {float:right; vertical-align:middle; padding:10px}

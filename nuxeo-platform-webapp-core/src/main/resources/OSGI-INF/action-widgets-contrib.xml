@@ -42,7 +42,7 @@
       <properties mode="view">
         <property name="category">SEARCH_ACTIONS</property>
         <property name="overallDisplay">horizontal_block</property>
-        <property name="styleClass">userSearchBlock searchService</property>
+        <property name="styleClass">userSearchBlock</property>
         <property name="actionStyleClass">advancedSearchLink</property>
       </properties>
     </widget>
