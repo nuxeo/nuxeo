@@ -12,7 +12,6 @@ Nuxeo-Component: OSGI-INF/AutomationServer.xml,
  OSGI-INF/batchmanager-framework.xml,
  OSGI-INF/binding-contrib.xml,
  OSGI-INF/pageprovider-contrib.xml,
- OSGI-INF/docviewurl-service-contrib.xml,
  OSGI-INF/marshaller-contrib.xml
 Nuxeo-AllowOverride: true
 Import-Package: javax.mail,
