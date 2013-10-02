@@ -234,7 +234,6 @@
         </typeCompatibility>
         <typeCompatibility type="bare_link">
           <category>DOCUMENT_HEADER_ACTIONS_LIST_HREF</category>
-          <category>USER_MENU_ACTIONS</category>
         </typeCompatibility>
       </code>
 
