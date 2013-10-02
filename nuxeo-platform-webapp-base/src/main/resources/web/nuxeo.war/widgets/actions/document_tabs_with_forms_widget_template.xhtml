@@ -5,50 +5,50 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:c="http://java.sun.com/jstl/core">
 
-    <nxu:set var="actionContextDocument"
-      value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
-      cache="true">
-    <nxu:set var="actions"
-      value="#{webActions.getActionsListForDocument(widgetProperty_category, actionContextDocument, not widgetProperty_disableFiltered)}"
-      cache="true">
-    <nxu:set var="currentAction"
-      value="#{webActions.getCurrentTabAction(widgetProperty_category)}"
-      cache="true">
-      <nxl:widgetType name="tabs"
-        mode="#{widget.mode}"
-        widgetName="doc_#{widget.name}"
-        label="#{widget.label}"
-        value="#{fieldOrValue}"
-        properties="#{widget.properties}"
-        actions="#{actions}"
-        currentTabAction="#{currentAction}"
-        fullCategory="#{nxu:test(empty widgetProperty_fullCategory, widgetProperty_category, widgetPropery_fullCategory)}"
-        ignoreTemplateProperty="true"
-        subWidgets="#{widget.subWidgets}"
-        addForm="true">
+<nxu:set var="actionContextDocument"
+  value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
+  cache="true">
+<nxu:set var="actions"
+  value="#{webActions.getActionsListForDocument(widgetProperty_category, actionContextDocument, not widgetProperty_disableFiltered)}"
+  cache="true">
+<nxu:set var="currentAction"
+  value="#{webActions.getCurrentTabAction(widgetProperty_category)}"
+  cache="true">
+  <nxl:widgetType name="tabs"
+    mode="#{widget.mode}"
+    widgetName="doc_#{widget.name}"
+    label="#{widget.label}"
+    value="#{fieldOrValue}"
+    properties="#{widget.properties}"
+    actions="#{actions}"
+    currentTabAction="#{currentAction}"
+    fullCategory="#{nxu:test(empty widgetProperty_fullCategory, widgetProperty_category, widgetPropery_fullCategory)}"
+    ignoreTemplateProperty="true"
+    subWidgets="#{widget.subWidgets}"
+    addForm="true">
 
-        <ui:define name="tab_content">
-          <c:if test="#{not empty widgetProperty_currentTabAction.link}">
-            <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
-              <ui:include src="/incl/action/generic_mode_action_template.xhtml">
-                <ui:param name="mode" value="tab_content" />
-              </ui:include>
-            </nxu:set>
-          </c:if>
+    <ui:define name="tab_content">
+      <c:if test="#{not empty widgetProperty_currentTabAction.link}">
+        <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
+          <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+            <ui:param name="mode" value="tab_content" />
+          </ui:include>
+        </nxu:set>
+      </c:if>
 
-          <c:if test="#{empty widgetProperty_currentTabAction.link and widgetProperty_currentTabAction.properties.isParentTab == true}">
-            <nxl:widgetType name="documentTabsWithForms"
-              mode="#{widget.mode}"
-              widgetName="#{widget.name}_sub_tab"
-              value="#{fieldOrValue}"
-              widgetProperty_category="#{widgetProperty_currentTabAction}_sub_tab"
-              fullCategory="#{widgetProperty_fullCategory}:#{widgetProperty_currentTabAction}_sub_tab" />
-          </c:if>
-        </ui:define>
+      <c:if test="#{empty widgetProperty_currentTabAction.link and widgetProperty_currentTabAction.properties.isParentTab == true}">
+        <nxl:widgetType name="documentTabsWithForms"
+          mode="#{widget.mode}"
+          widgetName="#{widget.name}_sub_tab"
+          value="#{fieldOrValue}"
+          widgetProperty_category="#{widgetProperty_currentTabAction}_sub_tab"
+          fullCategory="#{widgetProperty_fullCategory}:#{widgetProperty_currentTabAction}_sub_tab" />
+      </c:if>
+    </ui:define>
 
-      </nxl:widgetType>
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
+  </nxl:widgetType>
+</nxu:set>
+</nxu:set>
+</nxu:set>
 
 </c:if>
