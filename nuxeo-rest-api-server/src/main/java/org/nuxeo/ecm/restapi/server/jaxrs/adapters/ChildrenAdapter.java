@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebAdapter(name = ChildrenAdapter.NAME, type = "ChildrenService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
-public class ChildrenAdapter extends PaginableAdapter {
+public class ChildrenAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "children";
 
@@ -44,6 +44,6 @@ public class ChildrenAdapter extends PaginableAdapter {
 
     @Override
     protected Object[] getParams() {
-        return new Object[]{ getTarget().getAdapter(DocumentModel.class).getId()};
+        return new Object[] { getTarget().getAdapter(DocumentModel.class).getId() };
     }
 }

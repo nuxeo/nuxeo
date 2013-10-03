@@ -37,7 +37,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  *
  * @since 5.7.2
  */
-@Path("/api{repo : (/repo/[^/]+?)?}")
+@Path("/api/v1{repo : (/repo/[^/]+?)?}")
 @Produces("text/html;charset=UTF-8")
 @WebObject(type = "APIRoot")
 public class APIRoot extends ModuleRoot {

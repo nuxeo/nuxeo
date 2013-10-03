@@ -16,10 +16,9 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -34,29 +33,19 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
  */
 @WebAdapter(name = SearchAdapter.NAME, type = "SearchService")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
-public class SearchAdapter extends PaginableAdapter {
-
-
-    @Context
-    UriInfo info;
+public class SearchAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "search";
 
-
-    private String getParam(String paramName) {
-        return info.getQueryParameters().getFirst(paramName);
-    }
-
-    private String extractQueryFromRequest() {
-        String query = getParam("query");
-
+    private String extractQueryFromRequest(final HttpServletRequest request) {
+        String query = request.getParameter("query");
         if (query == null) {
-            String fullText = getParam("fullText");
+            String fullText = request.getParameter("fullText");
             if (fullText == null) {
                 throw new IllegalParameterException(
                         "Expecting a query or a fullText parameter");
             }
-            String orderBy = getParam("orderBy");
+            String orderBy = request.getParameter("orderBy");
             String orderClause = "";
             if (orderBy != null) {
                 orderClause = " ORDER BY " + orderBy;
@@ -77,12 +66,9 @@ public class SearchAdapter extends PaginableAdapter {
         return query;
     }
 
-
-
-
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        String query = extractQueryFromRequest();
+        String query = extractQueryFromRequest(ctx.getRequest());
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
         if (maxResults != null && !maxResults.isEmpty()
@@ -94,3 +80,4 @@ public class SearchAdapter extends PaginableAdapter {
 
     }
 }
+
