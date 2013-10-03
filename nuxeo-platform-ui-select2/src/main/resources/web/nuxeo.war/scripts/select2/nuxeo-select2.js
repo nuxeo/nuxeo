@@ -309,6 +309,13 @@
         });
       }
 
+      // Handle onclick widget property
+      el.on("select2-opening", function(e) {
+        if (params.onclick) {
+          eval(params.onclick);
+        }
+      });
+
       // trigger for safeEdit restore
       el.on("change", function(e) {
         if (e) {
@@ -350,6 +357,12 @@
         if (params.reRenderFunctionName) {
           window[params.reRenderFunctionName]();
         }
+
+        // Handle onchange widget property
+        if (params.onchange) {
+          eval(params.onchange);
+        }
+
       });
     }
   }
