@@ -56,6 +56,8 @@ public class TracerFactory implements TracerFactoryMBean {
 
     protected boolean recording;
 
+    protected Trace lastError;
+
     public TracerFactory() {
         this.tracesCache = CacheBuilder.newBuilder().concurrencyLevel(
                 CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
@@ -132,6 +134,9 @@ public class TracerFactory implements TracerFactoryMBean {
         if (chainTraces == null) {
             tracesCache.put(chainId, new ChainTraces(trace.chain));
         }
+        if (trace.getError()!=null) {
+            lastError = trace;
+        }
         return tracesCache.getIfPresent(chainId).add(trace);
     }
 
@@ -144,12 +149,23 @@ public class TracerFactory implements TracerFactoryMBean {
      * @return The last trace of the given chain.
      */
     public Trace getTrace(String key) {
+        return getTrace(key, -1);
+    }
+
+    public Trace getTrace(String key, int index) {
         ChainTraces chainTrace = tracesCache.getIfPresent(key);
         if (chainTrace == null) {
             return null;
         }
+        if (index<0) {
+            index = chainTrace.traces.size() - 1;
+        }
         return tracesCache.getIfPresent(key).getTrace(
-                chainTrace.traces.size() - 1);
+                index);
+    }
+
+    public Trace getLastErrorTrace() {
+        return lastError;
     }
 
     public void clearTrace(OperationChain chain, int index) {

@@ -122,6 +122,8 @@ import org.nuxeo.ecm.automation.core.operations.stack.PushBlob;
 import org.nuxeo.ecm.automation.core.operations.stack.PushBlobList;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocument;
 import org.nuxeo.ecm.automation.core.operations.stack.PushDocumentList;
+import org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceGetOperation;
+import org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOperation;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocumentFeed;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
@@ -262,6 +264,10 @@ public class AutomationComponent extends DefaultComponent {
 
         // disabled operations
         // service.putOperation(RunScriptFile.class);
+
+        // Trace related operations
+        service.putOperation(AutomationTraceGetOperation.class);
+        service.putOperation(AutomationTraceToggleOperation.class);
 
         handlers = new EventHandlerRegistry(service);
     }
