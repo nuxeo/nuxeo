@@ -131,15 +131,24 @@
     <action id="TAB_CONTENT" link="/incl/tabs/document_content.xhtml"
       order="10" label="action.view.content" icon="/icons/file.gif" accessKey="c">
       <category>VIEW_ACTION_LIST</category>
+      <!--
+        NXP-12715: use same tab on workspaces and sections
+      -->
+      <!--
+        <filter-id>outSection</filter-id>
+      -->
       <filter-id>view_content</filter-id>
-      <filter-id>outSection</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
     </action>
 
+    <!--
+      NXP-12715: use same tab on workspaces and sections => disable this action
+      by default
+    -->
     <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
-      order="10" label="action.view.content" icon="/icons/file.gif">
+      order="10" label="action.view.content" icon="/icons/file.gif" enabled="false">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>inSection</filter-id>
