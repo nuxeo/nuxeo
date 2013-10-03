@@ -111,10 +111,8 @@ public class ActionContributionHandler extends
         }
 
         // Enabled ?
-        if (source.isEnableSet()) {
-            if (source.isEnabled() != dest.isEnabled()) {
-                dest.setEnabled(source.isEnabled());
-            }
+        if (source.isEnableSet() && source.isEnabled() != dest.isEnabled()) {
+            dest.setEnabled(source.isEnabled());
         }
 
         // Merge categories without duplicates
