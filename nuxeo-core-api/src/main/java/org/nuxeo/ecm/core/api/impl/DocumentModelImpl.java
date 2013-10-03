@@ -765,7 +765,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             // NXP-12584 for a proper fix
             CoreSession session = getCoreSession();
             if (session == null) {
-                return false;
+                return true;
             }
             refresh(REFRESH_STATE, null);
         }
