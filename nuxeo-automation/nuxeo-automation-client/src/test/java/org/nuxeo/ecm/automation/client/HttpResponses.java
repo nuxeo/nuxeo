@@ -91,6 +91,7 @@ public class HttpResponses {
             + "    \"type\":\"File\","
             + "    \"state\":\"project\","
             + "    \"versionLabel\":\"1.1\","
+            + "    \"isCheckedOut\":false,"
             + "    \"lockOwner\":\"Administrator\","
             + "    \"lockCreated\":\"2013-05-16T17:58:26.618+02:00\","
             + "    \"title\":\"My File\","

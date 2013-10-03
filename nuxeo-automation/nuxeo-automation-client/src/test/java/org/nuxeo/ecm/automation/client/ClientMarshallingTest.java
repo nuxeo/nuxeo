@@ -17,7 +17,7 @@
 package org.nuxeo.ecm.automation.client;
 
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -89,6 +89,7 @@ public class ClientMarshallingTest {
         assertEquals("Administrator", file.getLockOwner());
         assertEquals("/default-domain/UserWorkspaces/Administrator/My File", file.getPath());
         assertEquals("1.1", file.getVersionLabel());
+        assertFalse(file.isCheckedOut());
         assertEquals("File", file.getType());
         assertEquals("My File", file.getTitle());
         assertEquals("project", file.getState());
