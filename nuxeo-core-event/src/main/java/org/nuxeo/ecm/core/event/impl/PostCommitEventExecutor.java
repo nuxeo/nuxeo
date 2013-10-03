@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +31,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.ecm.core.work.WorkManagerImpl.NamedThreadFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -56,6 +56,34 @@ public class PostCommitEventExecutor {
     private static final int MAX_POOL_SIZE = 100;
 
     protected final ExecutorService executor;
+
+    /**
+     * Creates non-daemon threads at normal priority.
+     */
+    private static class NamedThreadFactory implements ThreadFactory {
+
+        private final AtomicInteger threadNumber = new AtomicInteger();
+
+        private final ThreadGroup group;
+
+        private final String prefix;
+
+        public NamedThreadFactory(String prefix) {
+            SecurityManager sm = System.getSecurityManager();
+            group = sm == null ? Thread.currentThread().getThreadGroup()
+                    : sm.getThreadGroup();
+            this.prefix = prefix;
+        }
+
+        @Override
+        public Thread newThread(Runnable r) {
+            String name = prefix + threadNumber.incrementAndGet();
+            Thread thread = new Thread(group, r, name);
+            // do not set daemon
+            thread.setPriority(Thread.NORM_PRIORITY);
+            return thread;
+        }
+    }
 
     public PostCommitEventExecutor() {
         // use as much thread as needed up to MAX_POOL_SIZE

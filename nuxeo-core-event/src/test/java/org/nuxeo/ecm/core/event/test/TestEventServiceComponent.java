@@ -105,6 +105,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
         test2.setIsCommitEvent(true);
         service.fireEvent(test2);
         service.waitForAsyncCompletion();
+        Thread.sleep(100); // TODO async completion has race conditions
         assertEquals(DummyPostCommitEventListener.handledCount(), 1);
         assertEquals(1, DummyPostCommitEventListener.eventCount());
 

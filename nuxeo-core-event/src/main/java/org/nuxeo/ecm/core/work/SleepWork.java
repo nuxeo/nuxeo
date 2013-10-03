@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -26,25 +23,26 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SleepWork extends AbstractWork {
 
-    public static final String STATE_DURATION = "durationMillis";
+    private static final long serialVersionUID = 1L;
 
-    protected final long durationMillis;
+    protected long durationMillis;
 
-    protected final String category;
-
-    protected final boolean debug;
+    protected String category;
 
     /** used for debug. */
-    protected CountDownLatch readyLatch = new CountDownLatch(1);
+    protected transient boolean debug;
 
     /** used for debug. */
-    protected CountDownLatch doneLatch = new CountDownLatch(1);
+    protected transient CountDownLatch readyLatch = new CountDownLatch(1);
 
     /** used for debug. */
-    protected CountDownLatch startLatch = new CountDownLatch(1);
+    protected transient CountDownLatch doneLatch = new CountDownLatch(1);
 
     /** used for debug. */
-    protected CountDownLatch finishLatch = new CountDownLatch(1);
+    protected transient CountDownLatch startLatch = new CountDownLatch(1);
+
+    /** used for debug. */
+    protected transient CountDownLatch finishLatch = new CountDownLatch(1);
 
     /**
      * Creates a work instance that does nothing but sleep.
@@ -52,7 +50,7 @@ public class SleepWork extends AbstractWork {
      * @param durationMillis the sleep duration
      */
     public SleepWork(long durationMillis) {
-        this(durationMillis, false);
+        this(durationMillis, "SleepWork", false);
     }
 
     /**
@@ -67,10 +65,25 @@ public class SleepWork extends AbstractWork {
         this(durationMillis, "SleepWork", debug);
     }
 
+    public SleepWork(long durationMillis, boolean debug, String id) {
+        this(durationMillis, "SleepWork", debug, id);
+    }
+
     public SleepWork(long durationMillis, String category, boolean debug) {
+        super();
+        init(durationMillis, category, debug);
+    }
+
+    public SleepWork(long durationMillis, String category, boolean debug, String id) {
+        super(id);
+        init(durationMillis, category, debug);
+    }
+
+    private void init(long durationMillis, String category, boolean debug) {
         this.durationMillis = durationMillis;
         this.category = category;
         this.debug = debug;
+        setProgress(Progress.PROGRESS_0_PC);
     }
 
     @Override
@@ -81,17 +94,6 @@ public class SleepWork extends AbstractWork {
     @Override
     public String getTitle() {
         return "Sleep " + durationMillis + " ms";
-    }
-
-    @Override
-    protected void suspendFromQueue() {
-        suspend(durationMillis);
-    }
-
-    protected void suspend(long remainingMillis) {
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(STATE_DURATION, Long.valueOf(remainingMillis));
-        suspended(map);
     }
 
     @Override
@@ -112,9 +114,12 @@ public class SleepWork extends AbstractWork {
             setProgress(new Progress(100F * elapsed / durationMillis));
 
             if (isSuspending()) {
-                suspend(durationMillis - elapsed);
-                doneLatch.countDown();
-                finishLatch.await();
+                durationMillis -= elapsed; // save state
+                suspended();
+                if (debug) {
+                    doneLatch.countDown();
+                    finishLatch.await();
+                }
                 return;
             }
 
@@ -131,8 +136,9 @@ public class SleepWork extends AbstractWork {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + durationMillis + "ms, "
-                + getState() + ", " + getProgress() + ")";
+        return getClass().getSimpleName() + "("
+                + (getId().length() > 10 ? "" : (getId() + ", "))
+                + durationMillis + "ms, " + getProgress() + ")";
     }
 
     public void debugWaitReady() throws InterruptedException {

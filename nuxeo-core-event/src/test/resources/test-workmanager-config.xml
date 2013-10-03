@@ -11,7 +11,6 @@
     <queue id="PrioritizedSleepWork">
       <name>Prioritized Queue</name>
       <maxThreads>1</maxThreads>
-      <usePriority>true</usePriority>
       <category>PrioritizedSleepWork</category>
     </queue>
   </extension>

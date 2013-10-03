@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
@@ -56,12 +55,12 @@ import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.FulltextUpdaterInfo;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -346,7 +345,7 @@ public class SessionImpl implements Session, XAResource {
         checkThread();
         List<Work> works;
         if (!repository.getRepositoryDescriptor().fulltextDisabled) {
-            works = getFulltextWork();
+            works = getFulltextWorks();
         } else {
             works = Collections.emptyList();
         }
@@ -363,7 +362,7 @@ public class SessionImpl implements Session, XAResource {
             for (Work work : works) {
                 // schedule work post-commit
                 // in non-tx mode, this may execute it nearly immediately
-                workManager.schedule(work, true);
+                workManager.schedule(work, Scheduling.IF_NOT_SCHEDULED, true);
             }
         }
     }
@@ -393,7 +392,7 @@ public class SessionImpl implements Session, XAResource {
      *
      * @return a list of {@link Work} instances to schedule post-commit.
      */
-    protected List<Work> getFulltextWork() throws StorageException {
+    protected List<Work> getFulltextWorks() throws StorageException {
         Set<Serializable> dirtyStrings = new HashSet<Serializable>();
         Set<Serializable> dirtyBinaries = new HashSet<Serializable>();
         context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
@@ -402,21 +401,13 @@ public class SessionImpl implements Session, XAResource {
         }
 
         List<Work> works = new LinkedList<Work>();
-        Work work = getFulltextSimpleWork(dirtyStrings);
-        if (work != null) {
-            works.add(work);
-        }
-        work = getFulltextBinariesWork(dirtyBinaries);
-        if (work != null) {
-            works.add(work);
-        }
+        getFulltextSimpleWorks(works, dirtyStrings);
+        getFulltextBinariesWorks(works, dirtyBinaries);
         return works;
     }
 
-    protected Work getFulltextSimpleWork(Set<Serializable> dirtyStrings)
-            throws StorageException {
-        List<FulltextUpdaterInfo> infos = new ArrayList<FulltextUpdaterInfo>();
-
+    protected void getFulltextSimpleWorks(List<Work> works,
+            Set<Serializable> dirtyStrings) throws StorageException {
         // update simpletext on documents with dirty strings
         for (Serializable docId : dirtyStrings) {
             if (docId == null) {
@@ -444,40 +435,33 @@ public class SessionImpl implements Session, XAResource {
                     model.idToString(document.getId()));
             fulltextParser.setDocument(document, this);
             try {
-            for (String indexName : model.getFulltextInfo().indexNames) {
-                Set<String> paths;
-                if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
-                    // index all string fields, minus excluded ones
-                    // TODO XXX excluded ones...
-                    paths = model.getSimpleTextPropertyPaths(documentType,
-                            mixinTypes);
-                } else {
-                    // index configured fields
-                    paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
+                for (String indexName : model.getFulltextInfo().indexNames) {
+                    Set<String> paths;
+                    if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
+                        // index all string fields, minus excluded ones
+                        // TODO XXX excluded ones...
+                        paths = model.getSimpleTextPropertyPaths(documentType,
+                                mixinTypes);
+                    } else {
+                        // index configured fields
+                        paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
+                    }
+                    String text = fulltextParser.findFulltext(indexName, paths);
+                    Work work = new FulltextUpdaterWork(repository.getName(),
+                            model.idToString(docId), indexName, true, text,
+                            false);
+                    works.add(work);
                 }
-                String text = fulltextParser.findFulltext(indexName, paths);
-                FulltextUpdaterInfo info = new FulltextUpdaterInfo();
-                info.docId = model.idToString(docId);
-                info.indexName = indexName;
-                info.text = text;
-                infos.add(info);
-            }
             } finally {
                 fulltextParser.setDocument(null, this);
             }
         }
-        if (infos.isEmpty()) {
-            return null;
-        }
-        // true = simple text
-        Work work = new FulltextUpdaterWork(true, repository.getName(), infos);
-        return work;
     }
 
-    protected Work getFulltextBinariesWork(final Set<Serializable> dirtyBinaries)
-            throws StorageException {
+    protected void getFulltextBinariesWorks(List<Work> works,
+            final Set<Serializable> dirtyBinaries) throws StorageException {
         if (dirtyBinaries.isEmpty()) {
-            return null;
+            return;
         }
 
         // mark indexing in progress, so that future copies (including versions)
@@ -495,12 +479,11 @@ public class SessionImpl implements Session, XAResource {
         // FulltextExtractorWork does fulltext extraction using converters
         // and then schedules a FulltextUpdaterWork to write the results
         // single-threaded
-        Set<String> set = new HashSet<String>();
         for (Serializable id : dirtyBinaries) {
-            set.add(model.idToString(id));
+            String docId = model.idToString(id);
+            Work work = new FulltextExtractorWork(repository.getName(), docId);
+            works.add(work);
         }
-        Work work = new FulltextExtractorWork(repository.getName(), set);
-        return work;
     }
 
     /**

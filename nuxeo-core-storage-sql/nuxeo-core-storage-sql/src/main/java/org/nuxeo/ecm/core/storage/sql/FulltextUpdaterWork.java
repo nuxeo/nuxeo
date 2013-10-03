@@ -12,21 +12,18 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
-import org.nuxeo.ecm.core.work.PrioritizedWork;
+import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 
 /**
@@ -36,12 +33,12 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
  * <p>
  * This is done single-threaded through the use of a {@link WorkManager} queue
  * with only one thread.
- * <p>
- * Priority is used to update "simpletext" before "binarytext".
  *
  * @since 5.7
  */
-public class FulltextUpdaterWork extends PrioritizedWork {
+public class FulltextUpdaterWork extends AbstractWork {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(FulltextUpdaterWork.class);
 
@@ -49,47 +46,26 @@ public class FulltextUpdaterWork extends PrioritizedWork {
 
     protected static final String TITLE = "Fulltext Updater";
 
-    /**
-     * Info about what should be updated in a fulltext index.
-     * <p>
-     * Either docId or jobId is set.
-     *
-     * @since 5.7
-     */
-    public static class FulltextUpdaterInfo {
-        /** If set, then only this document is updated. */
-        String docId;
+    /** The index to be updated. */
+    protected final String indexName;
 
-        /** If set, then all the documents with this jobId are updated. */
-        String jobId;
+    /** Is this a simple text index or a binary text one. */
+    protected final boolean isSimpleText;
 
-        /** The index to be updated. */
-        String indexName;
+    /** The text to set in the index. */
+    protected final String text;
 
-        /** The text to set in the index. */
-        String text;
+    /** If true, then all the documents with the id as their jobId are updated. */
+    protected final boolean isJob;
 
-        @Override
-        public String toString() {
-            return getClass().getSimpleName() + '('
-                    + (jobId != null ? "job=" + jobId : "doc=" + docId)
-                    + ", index=" + indexName + ")";
-        }
-    }
-
-    protected boolean simpletext;
-
-    protected String repositoryName;
-
-    protected Collection<FulltextUpdaterInfo> infos;
-
-    public FulltextUpdaterWork(boolean simpletext, String repositoryName,
-            Collection<FulltextUpdaterInfo> infos) {
-        // simpletext prioritized before binarytext
-        super((simpletext ? "1" : "2") + "-" + System.currentTimeMillis());
-        this.simpletext = simpletext;
-        this.repositoryName = repositoryName;
-        this.infos = infos;
+    public FulltextUpdaterWork(String repositoryName, String docId,
+            String indexName, boolean isSimpleText, String text, boolean isJob) {
+        super(); // random id, for unique job
+        setDocument(repositoryName, docId);
+        this.indexName = indexName;
+        this.isSimpleText = isSimpleText;
+        this.text = text;
+        this.isJob = isJob;
     }
 
     @Override
@@ -103,83 +79,62 @@ public class FulltextUpdaterWork extends PrioritizedWork {
     }
 
     @Override
-    public Collection<DocumentLocation> getDocuments() {
-        List<DocumentLocation> docs = new ArrayList<DocumentLocation>(
-                infos.size());
-        for (FulltextUpdaterInfo info : infos) {
-            DocumentRef ref = new IdRef(info.jobId != null ? info.jobId
-                    : info.docId);
-            DocumentLocation doc = new DocumentLocationImpl(repositoryName, ref);
-            docs.add(doc);
-        }
-        return docs;
-    }
-
-    @Override
     public void work() throws Exception {
-        if (infos.isEmpty()) {
-            return;
-        }
-
-        initSession(repositoryName);
+        initSession();
         // if the runtime has shut down (normally because tests are finished)
         // this can happen, see NXP-4009
         if (session.getPrincipal() == null) {
             return;
         }
 
-        boolean save = false;
-        int n = 0;
+        setProgress(Progress.PROGRESS_0_PC);
         setStatus("Updating");
-        for (FulltextUpdaterInfo info : infos) {
-            setProgress(new Progress(++n, infos.size()));
-
-            Collection<DocumentModel> docs;
-            if (info.jobId != null) {
-                String query = String.format(
-                        "SELECT * FROM Document WHERE ecm:fulltextJobId = '%s' AND ecm:isProxy = 0",
-                        info.jobId);
-                docs = session.query(query);
-            } else {
-                DocumentRef ref = new IdRef(info.docId);
-                if (!session.exists(ref)) {
-                    // doc is gone
-                    continue;
-                }
-                DocumentModel doc = session.getDocument(ref);
-                if (doc.isProxy()) {
-                    // proxies don't have any fulltext attached, it's
-                    // the target document that carries it
-                    continue;
-                }
-                docs = Collections.singleton(doc);
-            }
-            for (DocumentModel doc : docs) {
-                try {
-                    DocumentRef ref = doc.getRef();
-                    if (info.jobId != null) {
-                        // reset job id
-                        session.setDocumentSystemProp(ref,
-                                SQLDocument.FULLTEXT_JOBID_SYS_PROP, null);
-                    }
-                    session.setDocumentSystemProp(ref,
-                            getFulltextPropertyName(info.indexName), info.text);
-                    save = true;
-                } catch (DocumentException e) {
-                    log.error("Could not set fulltext on: " + doc.getId(), e);
-                    continue;
-                }
-            }
-        }
-        if (save) {
-            setStatus("Saving");
-            session.save();
-        }
-        setStatus(null);
+        update();
+        setStatus("Saving");
+        session.save();
+        setStatus("Done");
     }
 
-    protected String getFulltextPropertyName(String indexName) {
-        String name = simpletext ? SQLDocument.SIMPLE_TEXT_SYS_PROP
+    protected void update() throws ClientException {
+        Collection<DocumentModel> docs;
+        if (isJob) {
+            String query = String.format(
+                    "SELECT * FROM Document WHERE ecm:fulltextJobId = '%s' AND ecm:isProxy = 0",
+                    docId);
+            docs = session.query(query);
+        } else {
+            DocumentRef ref = new IdRef(docId);
+            if (!session.exists(ref)) {
+                // doc is gone
+                return;
+            }
+            DocumentModel doc = session.getDocument(ref);
+            if (doc.isProxy()) {
+                // proxies don't have any fulltext attached, it's
+                // the target document that carries it
+                return;
+            }
+            docs = Collections.singleton(doc);
+        }
+        String fulltextPropertyName = getFulltextPropertyName();
+        for (DocumentModel doc : docs) {
+            try {
+                DocumentRef ref = doc.getRef();
+                if (isJob) {
+                    // reset job id
+                    session.setDocumentSystemProp(ref,
+                            SQLDocument.FULLTEXT_JOBID_SYS_PROP, null);
+                }
+                session.setDocumentSystemProp(ref, fulltextPropertyName, text);
+            } catch (DocumentException e) {
+                log.error("Could not set fulltext on: " + doc.getId(), e);
+                continue;
+            }
+        }
+    }
+
+    protected String getFulltextPropertyName() {
+        String name = isSimpleText ? SQLDocument.SIMPLE_TEXT_SYS_PROP
                 : SQLDocument.BINARY_TEXT_SYS_PROP;
         if (!Model.FULLTEXT_DEFAULT_INDEX.equals(indexName)) {
             name += '_' + indexName;
@@ -190,7 +145,5 @@ public class FulltextUpdaterWork extends PrioritizedWork {
     @Override
     public void cleanUp(boolean ok, Exception e) {
         super.cleanUp(ok, e);
-        infos.clear();
-        infos = null;
     }
 }

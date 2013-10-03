@@ -3857,7 +3857,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        assertEventSet(IGNORE_VCS, "sessionSaved=2");
+        // 3 = 1 main save + 2 indexes
+        assertEventSet(IGNORE_VCS, "sessionSaved=3");
 
         // modify binary
         StringBlob blob = new StringBlob("hello world");
@@ -3867,7 +3868,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        assertEventSet(IGNORE_VCS, "sessionSaved=3");
+        // 4 = 1 main save + 2 simple indexes + 1 binary index
+        assertEventSet(IGNORE_VCS, "sessionSaved=4");
 
         // delete
         session.removeDocument(doc.getRef());

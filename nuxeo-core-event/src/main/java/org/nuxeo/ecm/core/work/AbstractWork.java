@@ -16,22 +16,12 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_0_PC;
-import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_100_PC;
 import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_INDETERMINATE;
-import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
-import static org.nuxeo.ecm.core.work.api.Work.State.FAILED;
-import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
-import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
-import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDED;
-import static org.nuxeo.ecm.core.work.api.Work.State.SUSPENDING;
 
-import java.io.Serializable;
-import java.security.Principal;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Random;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -41,13 +31,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
 
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the
@@ -56,66 +46,160 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * Actual implementations must at a minimum implement the {@link #work()}
  * method. A method {@link #cleanUp} is available.
  * <p>
- * To deal with suspension, the method {@link #suspendFromQueue()} should be
- * implemented, and {@link #work()} should periodically check for
- * {@link #isSuspending()}.
+ * To deal with suspension, {@link #work()} should periodically check for
+ * {@link #isSuspending()} and if true save its state and call
+ * {@link #suspended()}.
  * <p>
- * Specific information about the work can be returned by
- * {@link #getPrincipal()} and {@link #getDocuments()}.
+ * Specific information about the work can be returned by {@link #getDocument()}
+ * or {@link #getDocuments()}.
  *
  * @since 5.6
  */
 public abstract class AbstractWork implements Work {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(AbstractWork.class);
 
-    protected volatile State state;
+    protected static final Random RANDOM = new Random();
 
-    protected volatile Progress progress;
+    protected String id;
 
-    protected volatile String status;
+    /** Suspend requested by the work manager. */
+    protected transient volatile boolean suspending;
+
+    /** Suspend acknowledged by the work instance. */
+    protected transient volatile boolean suspended;
+
+    protected transient State state;
+
+    protected transient Progress progress;
+
+    /** Repository name for the Work instance, if relevant. */
+    protected String repositoryName;
 
     /**
-     * Monitor held while runningState is changed.
+     * Doc id for the Work instance, if relevant. This describes for the
+     * WorkManager a document on which this Work instance will act.
+     * <p>
+     * Either docId or docIds is set. Not both.
      */
-    protected Object stateMonitor = new Object();
+    protected String docId;
+
+    /**
+     * Doc ids for the Work instance, if relevant. This describes for the
+     * WorkManager the documents on which this Work instance will act.
+     * <p>
+     * Either docId or docIds is set. Not both.
+     */
+    protected List<String> docIds;
+
+    /**
+     * If {@code true}, the docId is only the root of a set of documents on
+     * which this Work instance will act.
+     */
+    protected boolean isTree;
+
+    protected String status;
 
     protected long schedulingTime;
 
-    protected volatile long startTime;
+    protected long startTime;
 
-    protected volatile long completionTime;
+    protected long completionTime;
 
-    protected volatile Map<String, Serializable> data;
+    protected transient LoginContext loginContext;
 
-    // Subclasses can update this field during the lifecycle of the work execution
-    // when they want to manage their transaction manually (e.g. for long running tasks
-    // that only need access to transactional resources at specific times)
-    protected volatile boolean isTransactionStarted = false;
+    protected transient CoreSession session;
 
-    protected LoginContext loginContext;
-
-    protected CoreSession session;
-
+    /**
+     * Constructs a {@link Work} instance with a unique id.
+     */
     public AbstractWork() {
-        state = SCHEDULED;
+        // we user RANDOM to deal with these cases:
+        // - several calls in the time granularity of nanoTime()
+        // - several concurrent calls on different servers
+        this(System.nanoTime() + "." + Math.abs(RANDOM.nextInt()));
+    }
+
+    public AbstractWork(String id) {
+        this.id = id;
         progress = PROGRESS_INDETERMINATE;
         schedulingTime = System.currentTimeMillis();
     }
 
     @Override
-    public void setData(Map<String, Serializable> data) {
-        this.data = data;
+    public String getId() {
+        return id;
     }
 
-    /**
-     * This method should be called periodically by the actual work method when
-     * it knows of its progress.
-     *
-     * @param progress the progress
-     */
-    protected void setProgress(Progress progress) {
+    public void setDocument(String repositoryName, String docId, boolean isTree) {
+        this.repositoryName = repositoryName;
+        this.docId = docId;
+        docIds = null;
+        this.isTree = isTree;
+    }
+
+    public void setDocument(String repositoryName, String docId) {
+        setDocument(repositoryName, docId, false);
+    }
+
+    public void setDocuments(String repositoryName, List<String> docIds) {
+        this.repositoryName = repositoryName;
+        if (docIds.size() == 1) {
+            docId = docIds.get(0);
+            this.docIds = null;
+        } else {
+            docId = null;
+            this.docIds = new ArrayList<String>(docIds);
+        }
+    }
+
+    @Override
+    public void setWorkInstanceSuspending() {
+        suspending = true;
+    }
+
+    @Override
+    public boolean isSuspending() {
+        return suspending;
+    }
+
+    @Override
+    public void suspended() {
+        suspended = true;
+    }
+
+    @Override
+    public boolean isWorkInstanceSuspended() {
+        return suspended;
+    }
+
+    @Override
+    public void setWorkInstanceState(State state) {
+        this.state = state;
+        if (log.isTraceEnabled()) {
+            log.trace(this + " state=" + state);
+        }
+    }
+
+    @Override
+    public State getWorkInstanceState() {
+        return state;
+    }
+
+    @Override
+    @Deprecated
+    public State getState() {
+        return state;
+    }
+
+    @Override
+    public void setProgress(Progress progress) {
         this.progress = progress;
+        if (log.isTraceEnabled()) {
+            log.trace(String.valueOf(this));
+        }
     }
 
     @Override
@@ -123,7 +207,12 @@ public abstract class AbstractWork implements Work {
         return progress;
     }
 
-    protected void setStatus(String status) {
+    /**
+     * Sets a human-readable status for this work instance.
+     *
+     * @param status the status
+     */
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -132,94 +221,14 @@ public abstract class AbstractWork implements Work {
         return status;
     }
 
-    // before this, state is QUEUED or SUSPENDED
-    // after this, state is RUNNING or SUSPENDED
-    @Override
-    public void beforeRun() {
-        startTime = System.currentTimeMillis();
-        setProgress(PROGRESS_0_PC);
-        synchronized (stateMonitor) {
-            if (state == SCHEDULED) {
-                state = RUNNING;
-            }
-            // else may already be SUSPENDED
-            // cannot be SUSPENDING because we switch to that state
-            // only if state is RUNNING (in suspend())
-        }
-    }
-
-    @Override
-    public void run() {
-        if (state == SUSPENDED) {
-            return;
-        }
-        boolean tx = isTransactional();
-        if (tx) {
-            isTransactionStarted = TransactionHelper.startTransaction();
-        }
-        boolean ok = false;
-        Exception err = null;
-        try {
-            work();
-            ok = true;
-        } catch (Exception e) {
-            err = e;
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
-        } finally {
-            try {
-                cleanUp(ok, err);
-            } finally {
-                try {
-                    if (tx && isTransactionStarted) {
-                        if (!ok) {
-                            TransactionHelper.setTransactionRollbackOnly();
-                        }
-                        TransactionHelper.commitOrRollbackTransaction();
-                        isTransactionStarted = false;
-                    }
-                } finally {
-                    if (err instanceof InterruptedException) {
-                        // restore interrupted status for the thread pool worker
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-        }
-    }
-
     /**
-     * This method should implement the actual work done by the {@link Work}
-     * instance.
-     * <p>
-     * It should periodically call {@link #setProgress()} to report its
-     * progress.
-     * <p>
-     * To allow for suspension by the {@link WorkManager}, it should
-     * periodically call {@link #isSuspending()}, and if true call
-     * {@link #suspended()} with saved state data and return early.
+     * May be called by implementing classes to open a session on the
+     * repository.
+     *
+     * @return the session (also available in {@code session} field)
      */
-    public abstract void work() throws Exception;
-
-    // before this, state is RUNNING, SUSPENDED or SUSPENDING (and error)
-    // after this, state is COMPLETED, SUSPENDED or FAILED
-    @Override
-    public void afterRun(boolean ok) {
-        synchronized (stateMonitor) {
-            if (!ok) {
-                state = FAILED;
-            } else if (state == RUNNING || state == SUSPENDING) {
-                state = COMPLETED;
-            }
-            // else SUSPENDED
-        }
-        if (state == COMPLETED) {
-            setProgress(PROGRESS_100_PC);
-        }
-        completionTime = System.currentTimeMillis();
+    public CoreSession initSession() throws Exception {
+        return initSession(repositoryName);
     }
 
     /**
@@ -238,7 +247,8 @@ public abstract class AbstractWork implements Work {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         if (repositoryManager == null) {
             // would happen if only low-level repo is initialized
-            throw new RuntimeException("RepositoryManager service not available");
+            throw new RuntimeException(
+                    "RepositoryManager service not available");
         }
         Repository repository;
         if (repositoryName != null) {
@@ -258,9 +268,15 @@ public abstract class AbstractWork implements Work {
      * @param ok {@code true} if the work completed normally
      * @param e the exception, if available
      */
+    @Override
     public void cleanUp(boolean ok, Exception e) {
-        if (!ok && !(e instanceof InterruptedException)) {
-            log.error("Exception during work: " + this, e);
+        completionTime = System.currentTimeMillis();
+        if (!ok) {
+            if (e instanceof InterruptedException) {
+                log.debug("Suspended work: " + this);
+            } else {
+                log.error("Exception during work: " + this, e);
+            }
         }
         try {
             if (session != null) {
@@ -279,104 +295,10 @@ public abstract class AbstractWork implements Work {
         }
     }
 
-    /**
-     * Subclass this to return {@code false} if the work instance should not run
-     * in a transaction.
-     */
-    protected boolean isTransactional() {
-        return true;
-    }
-
-    // after this, state may be
-    // COMPLETED, FAILED
-    // SUSPENDING, SUSPENDED
     @Override
-    public boolean suspend() {
-        synchronized (stateMonitor) {
-            if (state != COMPLETED && state != FAILED) {
-                if (state != SUSPENDED) {
-                    if (state == SCHEDULED) {
-                        suspendFromQueue();
-                        state = SUSPENDED;
-                    } else { // RUNNING
-                        state = SUSPENDING;
-                    }
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Called when suspension occurs while the work instance is queued.
-     * <p>
-     * Implementations should call {@link #suspended} with their saved state
-     * data.
-     */
-    protected void suspendFromQueue() {
-    }
-
-    /**
-     * Checks if a suspend has been requested for this work instance by the work
-     * manager.
-     * <p>
-     * If yes, {@link #suspended} should be called and the {@link #work} method
-     * should return early.
-     */
-    protected boolean isSuspending() {
-        return state == SUSPENDING;
-    }
-
-    /**
-     * Should be called by work implementations to advertise that suspension is
-     * done and the saved state data is available.
-     */
-    protected void suspended(Map<String, Serializable> data) {
-        this.data = data;
-        synchronized (stateMonitor) {
-            if (state == SUSPENDING) {
-                state = SUSPENDED;
-            }
-        }
-    }
-
-    @Override
-    public boolean awaitTermination(long timeout, TimeUnit unit)
-            throws InterruptedException {
-        // TODO use Condition
-        long delay = unit.toMillis(timeout);
-        long t0 = System.currentTimeMillis();
-        for (;;) {
-            if (state != RUNNING && state != SUSPENDING) {
-                return true;
-            }
-            if (System.currentTimeMillis() - t0 > delay) {
-                return false;
-            }
-            Thread.sleep(50);
-        }
-    }
-
-    @Override
-    public void setCanceled() {
-        synchronized (stateMonitor) {
-            if (state == SCHEDULED) {
-                state = State.CANCELED;
-            } else {
-                throw new IllegalStateException(String.valueOf(state));
-            }
-        }
-    }
-
-    @Override
-    public Map<String, Serializable> getData() {
-        return data;
-    }
-
-    @Override
-    public State getState() {
-        return state;
+    public String getUserId() {
+        // TODO
+        return null;
     }
 
     @Override
@@ -401,45 +323,89 @@ public abstract class AbstractWork implements Work {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + getState() + ", "
-                + getProgress() + ", " + getStatus() + ")";
+        StringBuilder buf = new StringBuilder();
+        buf.append(getClass().getSimpleName());
+        buf.append('(');
+        if (docId != null) {
+            buf.append(docId);
+            buf.append(", ");
+        } else if (docIds != null && docIds.size() > 0) {
+            buf.append(docIds.get(0));
+            buf.append("..., ");
+        }
+        buf.append(getProgress());
+        buf.append(", ");
+        buf.append(getStatus());
+        buf.append(')');
+        return buf.toString();
     }
 
     @Override
-    public Principal getPrincipal() {
+    public DocumentLocation getDocument() {
+        if (docId != null) {
+            return newDocumentLocation(docId);
+        }
         return null;
     }
 
     @Override
-    public Collection<DocumentLocation> getDocuments() {
+    public List<DocumentLocation> getDocuments() {
+        if (docIds != null) {
+            List<DocumentLocation> res = new ArrayList<DocumentLocation>(
+                    docIds.size());
+            for (String docId : docIds) {
+                res.add(newDocumentLocation(docId));
+            }
+            return res;
+        }
+        if (docId != null) {
+            return Collections.singletonList(newDocumentLocation(docId));
+        }
         return Collections.emptyList();
     }
 
+    protected DocumentLocation newDocumentLocation(String docId) {
+        return new DocumentLocationImpl(repositoryName, new IdRef(docId));
+    }
+
+    @Override
+    public boolean isDocumentTree() {
+        return isTree;
+    }
+
     /**
-     * Release the transaction resources by committing the existing transaction
-     * (if any). This is recommended before running a long process such as a
-     * video conversion for instance.
+     * Releases the transaction resources by committing the existing transaction
+     * (if any). This is recommended before running a long process.
      */
-    protected void commitOrRollbackTransaction() {
-        if (isTransactional() && isTransactionStarted) {
+    public void commitOrRollbackTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();
-            isTransactionStarted = false;
         }
     }
 
     /**
-     * Start a new transaction if {@code commitOrRollbackTransaction()} was
-     * called previously, for instance for saving back the results of a long
-     * process such as a video conversion back as blob property of a nuxeo
-     * document in the repository.
+     * Starts a new transaction.
+     * <p>
+     * Usually called after {@code commitOrRollbackTransaction()}, for instance
+     * for saving back the results of a long process.
      *
-     * @return true if a new transaction has started
+     * @return true if a new transaction was started
      */
-    protected boolean startTransaction() {
-        if (isTransactional() && !isTransactionStarted) {
-            isTransactionStarted = TransactionHelper.startTransaction();
+    public boolean startTransaction() {
+        return TransactionHelper.startTransaction();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Work)) {
+            return false;
         }
-        return isTransactionStarted;
+        return ((Work) other).getId().equals(getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
     }
 
 }

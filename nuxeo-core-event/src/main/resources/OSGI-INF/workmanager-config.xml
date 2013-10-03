@@ -19,7 +19,6 @@
       <!-- fulltext updates are single-threaded to avoid concurrent
         writes to the same column -->
       <maxThreads>1</maxThreads>
-      <usePriority>true</usePriority>
       <category>fulltextUpdater</category>
       <!-- clear completed work quickly as it contains (potentially large)
         text data -->

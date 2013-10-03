@@ -17,52 +17,94 @@
 package org.nuxeo.ecm.core.work.api;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 
 /**
- * A {@link Work} instance gets executed by a {@link WorkManager}.
+ * A {@link Work} instance gets scheduled and executed by a {@link WorkManager}
+ * .
  * <p>
- * It's a runnable that can be {@linkplain #suspend() suspended} and can report
- * its status and progress.
+ * Its {@link #work} method runs when a slot in a queue becomes available, note
+ * however that it can be suspended at any time (before initial execution, or
+ * during execution).
  * <p>
- * Implementors must take care to implement correctly {@link #beforeRun} and
- * {@link #afterRun} to change the state.
+ * A {@link Work} instance has an id that is used by the queuing mechanisms to
+ * determine uniqueness. It also has a category that is used to choose which
+ * queue should execute it. It can report its status and progress.
+ * <p>
+ * A {@link Work} instance is Serializable because it must be able to save its
+ * computation state on interruption, and be reconstructed again with the saved
+ * state to continue execution at a later time. Because of this, the instance
+ * itself may change over time and be executed on a different JVM than the one
+ * that constructed it initially.
+ * <p>
+ * A {@link Work} instance must have an id, which is used for equality
+ * comparisons and as a key for persistent queues.
+ * <p>
+ * Implementors are strongly advised to inherit from {@link AbstractWork}.
  *
  * @see AbstractWork
  * @since 5.6
  */
-public interface Work extends Runnable {
+public interface Work extends Serializable {
 
     /**
      * The running state of a {@link Work} instance.
+     * <p>
+     * The following transitions between states are possible:
+     * <ul>
+     * <li>SCHEDULED -> CANCELED (is never scheduled or run)
+     * <li>SCHEDULED -> RUNNING
+     * <li>RUNNING -> COMPLETED
+     * <li>RUNNING -> FAILED
+     * <li>RUNNING -> SCHEDULED (is suspended and persisted)
+     * </ul>
      */
     enum State {
-        /** Work instance is scheduled but not yet running. */
+        /**
+         * Work instance is scheduled to run later.
+         */
         SCHEDULED,
-        /** Work instance is running. */
+        /**
+         * Work instance was canceled.
+         * <p>
+         * This happens if:
+         * <ul>
+         * <li>it is never scheduled because another instance with the same id
+         * was already scheduled or running (when scheduled with
+         * {@link Scheduling#IF_NOT_SCHEDULED},
+         * {@link Scheduling#IF_NOT_RUNNING}, or
+         * {@link Scheduling#IF_NOT_RUNNING_OR_SCHEDULED}),
+         * <li>it is never run because it was scheduled after commit and the
+         * transaction rolled back,
+         * <li>it is never run because it was scheduled, but another work with
+         * the same id was scheduled with {@link Scheduling#CANCEL_SCHEDULED}.
+         * </ul>
+         */
+        CANCELED,
+        /**
+         * Work instance is running.
+         */
         RUNNING,
-        /** Work instance is running but should suspend work. */
-        SUSPENDING,
-        /** Work instance is suspended in memory and work is stopped. */
-        SUSPENDED,
-        /** Work instance has completed. */
+        /**
+         * Work instance has completed normally.
+         */
         COMPLETED,
-        /** Work instance has failed. */
+        /**
+         * Work instance has completed with an exception.
+         */
         FAILED,
-        /** Work instance was canceled. */
-        CANCELED
     }
 
     /**
      * A progress report about a work instance.
      * <p>
-     * Progress can be expressed as a percentage, or with an "n out of m" pair.
+     * Progress can be expressed as a percentage, or with a current and total
+     * count.
      * <ul>
      * <li>26.2% (percent not indeterminate)</li>
      * <li>12/345 (current not indeterminate)</li>
@@ -72,7 +114,9 @@ public interface Work extends Runnable {
      *
      * @since 5.6
      */
-    public static class Progress {
+    public static class Progress implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         public static long CURRENT_INDETERMINATE = -1;
 
@@ -91,12 +135,24 @@ public interface Work extends Runnable {
 
         protected final long total;
 
+        /**
+         * Constructs a {@link Progress} as a percentage.
+         *
+         * @param percent the percentage, a float between 0 and 100, or
+         *            {@link #PERCENT_INDETERMINATE}
+         */
         public Progress(float percent) {
             this.percent = percent > 100F ? 100F : percent;
             this.current = CURRENT_INDETERMINATE;
             this.total = 0;
         }
 
+        /**
+         * Constructs a {@link Progress} as a current and total count.
+         *
+         * @param current the current count or {@link #CURRENT_INDETERMINATE}
+         * @param total the total count
+         */
         public Progress(long current, long total) {
             this.percent = PERCENT_INDETERMINATE;
             this.current = current;
@@ -141,41 +197,121 @@ public interface Work extends Runnable {
     }
 
     /**
+     * This method should implement the actual work done by the {@link Work}
+     * instance.
+     * <p>
+     * It should periodically update its progress through {@link #setProgress}.
+     * <p>
+     * To allow for suspension by the {@link WorkManager}, it should
+     * periodically call {@link #isSuspending}, and if {@code true} call
+     * {@link #suspended} return early with saved state data.
+     * <p>
+     * Clean up can by implemented by {@link #cleanUp()}.
+     *
+     * @see #isSuspending
+     * @see #suspended
+     * @see #cleanUp
+     */
+    void work() throws Exception;
+
+    /**
+     * The work id.
+     * <p>
+     * The id is used for equality comparisons, and as a key in persistent
+     * queues.
+     *
+     * @return the work id, which must not be {@code null}
+     *
+     * @since 5.8
+     */
+    String getId();
+
+    /**
+     * This method is called after {@link #work} is done, in a finally block,
+     * whether work completed normally or was in error or was interrupted.
+     *
+     * @param ok {@code true} if the work completed normally
+     * @param e the exception, if available
+     */
+    void cleanUp(boolean ok, Exception e);
+
+    /**
+     * CALLED BY THE WORK MANAGER (not user code) when it requests that this
+     * work instance be suspended.
+     *
+     * @since 5.8
+     */
+    void setWorkInstanceSuspending();
+
+    /**
+     * Checks if a suspend has been requested for this work instance by the work
+     * manager.
+     * <p>
+     * If {@code true}, then state should be saved, {@link #suspended()} should
+     * be called, and the {@link #work()} method should return.
+     *
+     * @since 5.8
+     */
+    boolean isSuspending();
+
+    /**
+     * Must be called by {@link Work} implementations to advertise that state
+     * saving is done, when {@link #isSuspending()} returned {@code true}. After
+     * this is called, the {@link #work()} method should return.
+     *
+     * @since 5.8
+     */
+    void suspended();
+
+    /**
+     * CALLED BY THE WORK MANAGER (not user code) to check if this work instance
+     * really suspended.
+     *
+     * @since 5.8
+     */
+    boolean isWorkInstanceSuspended();
+
+    /**
+     * CALLED BY THE WORK MANAGER (not user code) to set this work instance's
+     * state.
+     *
+     * @since 5.8
+     */
+    void setWorkInstanceState(State state);
+
+    /**
+     * CALLED BY THE WORK MANAGER (not user code) to get this work instance's
+     * state.
+     * <p>
+     * Used only to get the final state of a completed instance (
+     * {@link State#COMPLETED}, {@link State#FAILED} or {@link State#CANCELED}).
+     *
+     * @since 5.8
+     */
+    State getWorkInstanceState();
+
+    /**
+     * DO NOT USE THIS - gets the state of this work instance.
+     * <p>
+     * This should not be used because for non in-memory persistence, the work
+     * instance gets serialized and deserialized for running and when retrieved
+     * after completion, and therefore the original instance cannot get updated
+     * after the original scheduling.
+     *
+     * @return the state
+     * @deprecated since 5.8, use {@link WorkManager#getWorkState} instead
+     */
+    @Deprecated
+    State getState();
+
+    /**
      * Gets the category for this work.
      * <p>
-     * Used to choose a thread pool queue.
+     * Used to choose an execution queue.
      *
      * @return the category, or {@code null} for the default
      */
     String getCategory();
-
-    /**
-     * Called by the thread pool executor before the work is run. Must set the
-     * proper state (RUNNING if not already SUSPENDED).
-     */
-    void beforeRun();
-
-    /**
-     * The actual work.
-     */
-    @Override
-    void run();
-
-    /**
-     * Called by the thread pool executor after the work is run. Must set the
-     * proper state (COMPLETED, SUSPENDED or FAILED).
-     *
-     * @param ok {@code false} if there was an exception during task run and the
-     *            state should be FAILED
-     */
-    void afterRun(boolean ok);
-
-    /**
-     * Gets the running state for this work instance.
-     *
-     * @return the running state
-     */
-    State getState();
 
     /**
      * Gets a human-readable name for this work instance.
@@ -192,19 +328,18 @@ public interface Work extends Runnable {
     String getStatus();
 
     /**
-     * Gets the time at which this work instance was scheduled.
+     * Gets the time at which this work instance was first scheduled.
      *
      * @return the scheduling time (milliseconds since epoch)
      */
     long getSchedulingTime();
 
     /**
-     * Gets the time at which this work instance was started.
+     * Gets the time at which this work instance was first started.
      *
      * @return the start time (milliseconds since epoch), or {@code 0} if not
      *         stated
      */
-    // TODO what if suspended / resumed
     long getStartTime();
 
     /**
@@ -217,6 +352,16 @@ public interface Work extends Runnable {
     long getCompletionTime();
 
     /**
+     * This method should be called periodically by the actual work method when
+     * it knows of its progress.
+     *
+     * @param progress the progress
+     * @see Progress#Progress(float)
+     * @see Progress#Progress(long, long)
+     */
+    void setProgress(Progress progress);
+
+    /**
      * Gets a progress report for this work instance.
      *
      * @return a progress report, not {@code null}
@@ -224,66 +369,43 @@ public interface Work extends Runnable {
     Progress getProgress();
 
     /**
-     * Requests that this work instance suspend its state in memory.
-     * <p>
-     * Does not block. Use {@link #awaitTermination} to wait for actual
-     * suspension and then {@link #getData} to get the data.
-     * <p>
-     * A QUEUED work instance must immediately suspend.
-     *
-     * @return {@code true} if suspend was started, or {@code false} if the job
-     *         was already completed
-     */
-    boolean suspend();
-
-    /**
-     * Wait for the work to be completed or suspension finished.
-     *
-     * @param timeout how long to wait
-     * @param unit the timeout unit
-     * @return {@code true} if the work is completed or suspended, or
-     *         {@code false} for a timeout
-     */
-    boolean awaitTermination(long timeout, TimeUnit unit)
-            throws InterruptedException;
-
-    /**
-     * Sets the state of this queued work instance to {@link State#CANCELED
-     * CANCELED}. Called by the work manager implementation.
-     */
-    void setCanceled();
-
-    /**
-     * Gets the state data for this suspended work instance.
-     *
-     * @return the data allowing the work instance to be resumed, or
-     *         {@code null} if no data is available
-     */
-    Map<String, Serializable> getData();
-
-    /**
-     * Restores a saved state data for this work instance.
-     *
-     * @param data the saved state data
-     */
-    void setData(Map<String, Serializable> data);
-
-    /**
-     * Gets the principal on behalf of which this work is done.
+     * Gets the user on behalf of which this work is done.
      * <p>
      * This is informative only.
      *
-     * @return the principal, or {@code null}
+     * @return the user id, or {@code null}
      */
-    Principal getPrincipal();
+    String getUserId();
+
+    /**
+     * Gets the document impacted by the work.
+     * <p>
+     * Returns {@code null} if the work isn't about a single document.
+     *
+     * @return the document, or {@code null}. This is always a
+     *         {@link DocumentLocation} with an {@link IdRef}
+     * @since 5.8
+     */
+    DocumentLocation getDocument();
 
     /**
      * Gets the documents impacted by the work.
      * <p>
-     * This is informative only.
+     * Returns {@code null} if the work isn't about documents.
      *
-     * @return the documents
+     * @return the documents, or an empty list. List elements are always a
+     *         {@link DocumentLocation} with an {@link IdRef}
+     * @since 5.8
      */
-    Collection<DocumentLocation> getDocuments();
+    List<DocumentLocation> getDocuments();
+
+    /**
+     * Returns {@code true} if {@link #getDocument} is only the root of a set of
+     * documents on which this Work instance will act.
+     *
+     * @return {@code true} if a whole tree is impacted
+     * @since 5.8
+     */
+    boolean isDocumentTree();
 
 }

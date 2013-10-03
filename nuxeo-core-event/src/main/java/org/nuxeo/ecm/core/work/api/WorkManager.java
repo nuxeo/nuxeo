@@ -45,7 +45,10 @@ public interface WorkManager {
         /**
          * Any other scheduled work equals to this one is removed from
          * scheduling and canceled first, before this work is scheduled.
+         *
+         * @deprecated unused
          */
+        @Deprecated
         CANCEL_SCHEDULED,
         /**
          * If there is a scheduled work equals to this one, then don't schedule
@@ -55,7 +58,10 @@ public interface WorkManager {
         /**
          * If there is a running work equals to this one, then don't schedule
          * the work.
+         *
+         * @deprecated unused
          */
+        @Deprecated
         IF_NOT_RUNNING(State.RUNNING),
         /**
          * If there is a running or scheduled work equals to this one, then
@@ -175,33 +181,38 @@ public interface WorkManager {
     void schedule(Work work, Scheduling scheduling, boolean afterCommit);
 
     /**
-     * Finds a work instance by equality or identity.
-     * <p>
-     * Note that an instance requested as RUNNING could be found SUSPENDING or
-     * SUSPENDED, and an instance requested as COMPLETED could be found FAILED.
-     * <p>
-     * Also, due to the asynchronous nature of work execution, the
-     * {@linkplain Work#getState state} of the work could be different than
-     * what's expected if the work started or finished in the middle of the
-     * call.
+     * Finds a work instance.
      *
      * @param work the work to find
      * @param state the state defining the state to look into,
      *            {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
      *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null}
      *            for non-completed
-     * @param useEquals if {@code true} then use {@link Work#equals} to find the
-     *            work instance, otherwise use object identity
-     * @param pos a 1-element array to return the position in the internal queue
+     * @param useEquals ignored, always uses work id equality
+     * @param pos ignored, pass null
      * @return the found work instance, or {@code null} if not found
+     *
+     * @deprecated since 5.8, use {@link #getWorkState} instead
      */
+    @Deprecated
     Work find(Work work, State state, boolean useEquals, int[] pos);
 
     /**
-     * Lists the work instances in a given queue in a defined state.
+     * Gets the state in which a work instance is.
      * <p>
-     * Note that an instance requested as RUNNING could be found SUSPENDING or
-     * SUSPENDED, and an instance requested as COMPLETED could be found FAILED.
+     * This can be {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     * RUNNING}, {@link State#COMPLETED COMPLETED}, {@link State#CANCELED} or
+     * {@link State#FAILED}.
+     *
+     * @param workId the id of the work to find
+     * @return the work state, or {@code null} if not found
+     *
+     * @since 5.8
+     */
+    State getWorkState(String workId);
+
+    /**
+     * Lists the work instances in a given queue in a defined state.
      *
      * @param queueId the queue id
      * @param state the state defining the state to look into,
@@ -213,12 +224,32 @@ public interface WorkManager {
     List<Work> listWork(String queueId, State state);
 
     /**
+     * Gets the number of work instances in a given queue in a defined state.
+     * <p>
+     *
+     * @param queueId the queue id
+     * @param state the state defining the state to look into,
+     *            {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null}
+     *            for non-completed ({@link State#SCHEDULED SCHEDULED} or
+     *            {@link State#RUNNING RUNNING})
+     * @return the number of work instances in the given state
+     *
+     * @since 5.8
+     */
+    int getQueueSize(String queueId, State state);
+
+    /**
      * Gets the size of the non-completed work (scheduled + running) for a give
      * queue.
      *
      * @param queueId the queue id
      * @return the number of non-completed work instances
+     *
+     * @deprecated since 5.8, use {@link #getQueueSize} with {@code null} state
+     *             instead
      */
+    @Deprecated
     int getNonCompletedWorkSize(String queueId);
 
     /**

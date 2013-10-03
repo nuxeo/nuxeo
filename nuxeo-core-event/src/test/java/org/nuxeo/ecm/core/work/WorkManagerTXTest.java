@@ -52,9 +52,9 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
         service = Framework.getLocalService(WorkManager.class);
         assertNotNull(service);
         service.clearCompletedWork(0);
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
-        assertEquals(0, service.listWork(QUEUE, RUNNING).size());
-        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
         NuxeoContainer.install();
         TransactionHelper.startTransaction();
     }
@@ -76,47 +76,47 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
     @Test
     public void testWorkManagerPostCommit() throws Exception {
         int duration = 1000; // 1s
-        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work, true);
-        assertEquals(1, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         Thread.sleep(duration + 1000);
         // still scheduled as tx didn't commit
-        assertEquals(1, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
-        assertEquals(SCHEDULED, work.getState());
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        assertEquals(SCHEDULED, work.getWorkInstanceState());
 
         TransactionHelper.commitOrRollbackTransaction();
         Thread.sleep(duration + 1000);
         // tx commit triggered a release of the scheduled work
-        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(1, service.listWork(QUEUE, COMPLETED).size());
-        assertEquals(COMPLETED, work.getState());
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
+        assertEquals(COMPLETED, work.getWorkInstanceState());
     }
 
     @Test
     public void testWorkManagerRollback() throws Exception {
         int duration = 1000; // 1s
-        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work, true);
-        assertEquals(1, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         Thread.sleep(duration + 1000);
         // still scheduled as tx didn't commit
-        assertEquals(1, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
-        assertEquals(SCHEDULED, work.getState());
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        assertEquals(SCHEDULED, work.getWorkInstanceState());
 
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
         // tx rollback cancels the task and removes it
-        assertEquals(0, service.listWork(QUEUE, SCHEDULED).size());
-        assertEquals(0, service.listWork(QUEUE, COMPLETED).size());
-        assertEquals(CANCELED, work.getState());
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        assertEquals(CANCELED, work.getWorkInstanceState());
     }
 
 }

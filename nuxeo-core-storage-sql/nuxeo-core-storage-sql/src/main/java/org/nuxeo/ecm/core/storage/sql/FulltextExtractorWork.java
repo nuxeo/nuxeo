@@ -14,24 +14,23 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.FulltextUpdaterInfo;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -39,8 +38,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Work task that does fulltext extraction from the blobs of documents whose ids
- * are given at construction time.
+ * Work task that does fulltext extraction from the blobs of the given document.
  * <p>
  * The extracted fulltext is then passed to the single-threaded
  * {@link FulltextUpdaterWork}.
@@ -48,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 public class FulltextExtractorWork extends AbstractWork {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(FulltextExtractorWork.class);
 
@@ -57,19 +57,15 @@ public class FulltextExtractorWork extends AbstractWork {
 
     protected static final String TITLE = "fulltextExtractor";
 
-    protected String repositoryName;
+    protected transient ModelFulltext fulltextInfo;
 
-    protected Set<String> ids;
+    protected transient Class<? extends FulltextParser> fulltextParserClass;
 
-    protected ModelFulltext fulltextInfo;
+    protected transient FulltextParser fulltextParser;
 
-    protected Class<? extends FulltextParser> fulltextParserClass;
-
-    protected FulltextParser fulltextParser;
-
-    public FulltextExtractorWork(String repositoryName, Set<String> ids) {
-        this.repositoryName = repositoryName;
-        this.ids = ids;
+    public FulltextExtractorWork(String repositoryName, String docId) {
+        super(repositoryName + ':' + docId + ":fulltextExtractor");
+        setDocument(repositoryName, docId);
     }
 
     @Override
@@ -83,23 +79,8 @@ public class FulltextExtractorWork extends AbstractWork {
     }
 
     @Override
-    public Collection<DocumentLocation> getDocuments() {
-        List<DocumentLocation> docs = new ArrayList<DocumentLocation>(
-                ids.size());
-        for (String id : ids) {
-            DocumentRef ref = new IdRef(id);
-            DocumentLocation doc = new DocumentLocationImpl(repositoryName, ref);
-            docs.add(doc);
-        }
-        return docs;
-    }
-
-    @Override
     public void work() throws Exception {
-        if (ids.isEmpty()) {
-            return;
-        }
-        initSession(repositoryName);
+        initSession();
         // if the runtime has shutdown (normally because tests are finished)
         // this can happen, see NXP-4009
         if (session.getPrincipal() == null) {
@@ -110,60 +91,52 @@ public class FulltextExtractorWork extends AbstractWork {
         fulltextParserClass = RepositoryResolver.getFulltextParserClass(repositoryName);
         initFulltextParser();
 
-        // we have all the info from the bundle, now do the extraction
-        BlobsExtractor extractor = new BlobsExtractor();
-        Collection<FulltextUpdaterInfo> infos = new ArrayList<FulltextUpdaterInfo>();
-        int n = 0;
         setStatus("Extracting");
-        for (String id : ids) {
-            setProgress(new Progress(++n, ids.size()));
-            IdRef docRef = new IdRef(id);
-            if (!session.exists(docRef)) {
-                // doc is gone
-                continue;
-            }
-            DocumentModel doc = session.getDocument(docRef);
-            if (doc.isProxy()) {
-                // proxies don't have any fulltext attached, it's
-                // the target document that carries it
-                continue;
-            }
-            if (!fulltextInfo.isFulltextIndexable(doc.getType())) {
-                // excluded by config
-                continue;
-            }
+        setProgress(Progress.PROGRESS_0_PC);
+        extractBinaryText();
+        setProgress(Progress.PROGRESS_100_PC);
+        setStatus("Done");
+    }
 
-            // Iterate on each index to set the binaryText column
-            for (String indexName : fulltextInfo.indexNames) {
-                if (!fulltextInfo.indexesAllBinary.contains(indexName)
-                        && fulltextInfo.propPathsByIndexBinary.get(indexName) == null) {
-                    // nothing to do: index not configured for blob
-                    continue;
-                }
-                extractor.setExtractorProperties(
-                        fulltextInfo.propPathsByIndexBinary.get(indexName),
-                        fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
-                        fulltextInfo.indexesAllBinary.contains(indexName));
-                List<Blob> blobs = extractor.getBlobs(doc);
-                String text = blobsToText(blobs, id);
-                fulltextParser.setStrings(new ArrayList<String>());
-                fulltextParser.parse(text, null);
-                text = StringUtils.join(fulltextParser.getStrings(), " ");
-
-                FulltextUpdaterInfo info = new FulltextUpdaterInfo();
-                info.jobId = doc.getId();
-                info.indexName = indexName;
-                info.text = text;
-                infos.add(info);
-            }
-
+    protected void extractBinaryText() throws ClientException {
+        IdRef docRef = new IdRef(docId);
+        if (!session.exists(docRef)) {
+            // doc is gone
+            return;
         }
-        if (!infos.isEmpty()) {
-            // false = binary text
-            Work work = new FulltextUpdaterWork(false, repositoryName, infos);
-            Framework.getLocalService(WorkManager.class).schedule(work);
+        DocumentModel doc = session.getDocument(docRef);
+        if (doc.isProxy()) {
+            // proxies don't have any fulltext attached, it's
+            // the target document that carries it
+            return;
         }
-        setStatus(null);
+        if (!fulltextInfo.isFulltextIndexable(doc.getType())) {
+            // excluded by config
+            return;
+        }
+
+        // Iterate on each index to set the binaryText column
+        BlobsExtractor extractor = new BlobsExtractor();
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        for (String indexName : fulltextInfo.indexNames) {
+            if (!fulltextInfo.indexesAllBinary.contains(indexName)
+                    && fulltextInfo.propPathsByIndexBinary.get(indexName) == null) {
+                // nothing to do: index not configured for blob
+                continue;
+            }
+            extractor.setExtractorProperties(
+                    fulltextInfo.propPathsByIndexBinary.get(indexName),
+                    fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
+                    fulltextInfo.indexesAllBinary.contains(indexName));
+            List<Blob> blobs = extractor.getBlobs(doc);
+            String text = blobsToText(blobs, docId);
+            fulltextParser.setStrings(new ArrayList<String>());
+            fulltextParser.parse(text, null);
+            text = StringUtils.join(fulltextParser.getStrings(), " ");
+            Work work = new FulltextUpdaterWork(repositoryName, doc.getId(),
+                    indexName, false, text, true);
+            workManager.schedule(work, true);
+        }
     }
 
     @Override
@@ -172,7 +145,6 @@ public class FulltextExtractorWork extends AbstractWork {
         fulltextInfo = null;
         fulltextParser = null;
         fulltextParserClass = null;
-        ids = null;
     }
 
     protected void initFulltextParser() {

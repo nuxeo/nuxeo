@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,28 +13,21 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventStats;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
-import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.Work.State;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -87,7 +80,7 @@ public class AsyncEventExecutor {
         WorkManager workManager = getWorkManager();
         int n = 0;
         for (String queueId : workManager.getWorkQueueIds()) {
-            n += workManager.getNonCompletedWorkSize(queueId);
+            n += workManager.getQueueSize(queueId, null);
         }
         return n;
     }
@@ -96,12 +89,14 @@ public class AsyncEventExecutor {
         WorkManager workManager = getWorkManager();
         int n = 0;
         for (String queueId : workManager.getWorkQueueIds()) {
-            n += workManager.listWork(queueId, State.RUNNING).size();
+            n += workManager.getQueueSize(queueId, State.RUNNING);
         }
         return n;
     }
 
     protected static class ListenerWork extends AbstractWork {
+
+        private static final long serialVersionUID = 1L;
 
         protected final String title;
 
@@ -110,6 +105,7 @@ public class AsyncEventExecutor {
         protected EventListenerDescriptor listener;
 
         public ListenerWork(EventListenerDescriptor listener, EventBundle bundle) {
+            super(); // random id, for unique job
             this.listener = listener;
             if (bundle instanceof ReconnectedEventBundle) {
                 this.bundle = (ReconnectedEventBundle) bundle;
@@ -118,6 +114,8 @@ public class AsyncEventExecutor {
                         listener.getName());
             }
             List<String> l = new LinkedList<String>();
+            List<String> docIds = new LinkedList<String>();
+            String repositoryName = null;
             for (Event event : bundle) {
                 String s = event.getName();
                 EventContext ctx = event.getContext();
@@ -125,11 +123,16 @@ public class AsyncEventExecutor {
                     DocumentModel source = ((DocumentEventContext) ctx).getSourceDocument();
                     if (source != null) {
                         s += "/" + source.getRef();
+                        docIds.add(source.getId());
+                        repositoryName = source.getRepositoryName();
                     }
                 }
                 l.add(s);
             }
             title = "Listener " + listener.getName() + " " + l;
+            if (!docIds.isEmpty()) {
+                setDocuments(repositoryName, docIds);
+            }
         }
 
         @Override
@@ -140,12 +143,6 @@ public class AsyncEventExecutor {
         @Override
         public String getTitle() {
             return title;
-        }
-
-        @Override
-        public Collection<DocumentLocation> getDocuments() {
-            // TODO
-            return Collections.emptyList();
         }
 
         @Override
@@ -167,36 +164,19 @@ public class AsyncEventExecutor {
             bundle = null;
             listener = null;
         }
-    }
-
-    // TODO still used by quota and video
-    /**
-     * Creates non-daemon threads at normal priority.
-     */
-    public static class NamedThreadFactory implements ThreadFactory {
-
-        private static final AtomicInteger poolNumber = new AtomicInteger();
-
-        private final AtomicInteger threadNumber = new AtomicInteger();
-
-        private final ThreadGroup group;
-
-        private final String namePrefix;
-
-        public NamedThreadFactory(String prefix) {
-            SecurityManager sm = System.getSecurityManager();
-            group = sm == null ? Thread.currentThread().getThreadGroup()
-                    : sm.getThreadGroup();
-            namePrefix = prefix + ' ' + poolNumber.incrementAndGet() + '-';
-        }
 
         @Override
-        public Thread newThread(Runnable r) {
-            String name = namePrefix + threadNumber.incrementAndGet();
-            Thread t = new Thread(group, r, name);
-            t.setDaemon(true);
-            t.setPriority(Thread.NORM_PRIORITY);
-            return t;
+        public String toString() {
+            StringBuilder buf = new StringBuilder();
+            buf.append(getClass().getSimpleName());
+            buf.append('(');
+            buf.append(title);
+            buf.append(", ");
+            buf.append(getProgress());
+            buf.append(", ");
+            buf.append(getStatus());
+            buf.append(')');
+            return buf.toString();
         }
     }
 

@@ -43,5 +43,16 @@
     <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
   </extension-point>
 
+  <extension-point name="implementation">
+    <documentation>
+      Defines the implementation of the queuing mechanism:
+      <code>
+        <queuing class="org.nuxeo.ecm.core.work.redis.WorkQueuingRedis"/>
+      </code>
+      The class must be a subclass of org.nuxeo.ecm.core.work.WorkQueuing.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor" />
+  </extension-point>
 
 </component>

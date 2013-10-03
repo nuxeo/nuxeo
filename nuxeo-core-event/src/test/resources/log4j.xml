@@ -12,6 +12,10 @@
     </layout>
   </appender>
 
+  <logger name="org.nuxeo.ecm.core.work">
+    <level value="WARN" />
+  </logger>
+
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
