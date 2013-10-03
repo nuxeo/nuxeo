@@ -76,6 +76,14 @@ public class TaskConstants {
 
     public static final String TASK_FACET_NAME = "Task";
 
+    /**
+     * @since 5.7.3
+     */
     public static final String TASK_DELEGATED_ACTORS_PROPERTY_NAME = "nt:delegatedActors";
+
+    /**
+     * @since 5.8
+     */
+    public static final String TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME = "nt:targetDocumentsIds";
 
 }

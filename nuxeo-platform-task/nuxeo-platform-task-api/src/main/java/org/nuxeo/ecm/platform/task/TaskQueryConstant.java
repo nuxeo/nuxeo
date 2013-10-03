@@ -42,8 +42,20 @@ public class TaskQueryConstant {
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_QUERY = GET_TASKS_QUERY
             + " AND nt:targetDocumentId = '%s'";
 
+    /**
+     * @since 5.8
+     */
+    public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_QUERY = GET_TASKS_QUERY
+            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') )";
+
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY = GET_TASKS_QUERY
             + " AND nt:targetDocumentId = '%s' AND nt:actors IN (%s) ";
+
+    /**
+     * @since 5.8
+     */
+    public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY = GET_TASKS_QUERY
+            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') ) AND nt:actors IN (%s) ";
 
     /**
      * @since 5.6
@@ -67,7 +79,7 @@ public class TaskQueryConstant {
      * @since 5.8
      */
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY_OR_DELEGATED_ACTORS_QUERY = GET_TASKS_QUERY
-            + " AND nt:targetDocumentId = '%s' AND ( nt:actors IN (%s) OR nt:delegatedActors IN (%s) ) ";
+            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') ) AND ( nt:actors IN (%s) OR nt:delegatedActors IN (%s) ) ";
 
     public static String getVariableWhereClause(String key, String value) {
         return String.format(TASK_VARIABLES_WHERE_CLAUSE, key, value);

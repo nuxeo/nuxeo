@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://nuxeo.com/schemas/task"
-  xmlns:nxt="http://nuxeo.com/schemas/task"
+  targetNamespace="http://nuxeo.com/schemas/task" xmlns:nxt="http://nuxeo.com/schemas/task"
   xmlns:nxs="http://nuxeo.com/schemas/base/">
 
   <xs:include schemaLocation="base.xsd" />
@@ -9,7 +8,10 @@
   <xs:element name="actors" type="nxt:stringList" />
   <xs:element name="delegatedActors" type="nxt:stringList" />
   <xs:element name="initiator" type="xs:string" />
-  <xs:element name="targetDocumentId" type="xs:string" />
+  <xs:element name="targetDocumentId" type="xs:string" /> 
+  <!-- if the workflow is run on multiple documents, stores the id of the 
+    first doc -->
+  <xs:element name="targetDocumentsIds" type="nxt:stringList" /><!-- since 5.8 -->
   <xs:element name="directive" type="xs:string" />
   <xs:element name="name" type="xs:string" />
   <xs:element name="type" type="xs:string" /> <!-- since 5.6 -->

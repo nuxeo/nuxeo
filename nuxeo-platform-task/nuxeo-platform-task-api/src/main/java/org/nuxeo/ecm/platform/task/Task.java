@@ -41,6 +41,10 @@ public interface Task extends Serializable {
 
     String getId();
 
+    /**
+     * @deprecated
+     * @since 5.8, getTargetDocumentsIds() should be used instead
+     */
     String getTargetDocumentId();
 
     List<String> getActors() throws ClientException;
@@ -85,6 +89,11 @@ public interface Task extends Serializable {
 
     void setInitiator(String initiator) throws ClientException;
 
+    /**
+     * @deprecated
+     * @since 5.8, setTargetDocumentsIds(List<String> ids) should be used
+     *        instead
+     */
     void setTargetDocumentId(String targetDocumentId) throws ClientException;
 
     void setName(String name) throws ClientException;
@@ -132,4 +141,16 @@ public interface Task extends Serializable {
      * @since 5.8
      */
     void setDelegatedActors(List<String> delegatedActors);
+
+    /**
+     * @since 5.8
+     */
+    List<String> getTargetDocumentsIds() throws ClientException;
+
+    /**
+     * The first id on the list is also set as 'targetDocumentId'
+     *
+     * @since 5.8
+     */
+    void setTargetDocumentsIds(List<String> ids) throws ClientException;
 }

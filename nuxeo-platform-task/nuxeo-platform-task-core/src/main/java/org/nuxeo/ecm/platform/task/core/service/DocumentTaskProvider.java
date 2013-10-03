@@ -90,14 +90,14 @@ public class DocumentTaskProvider implements TaskProvider {
         String query;
         if (user == null) {
             query = String.format(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_QUERY,
-                    dm.getId());
+                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_QUERY,
+                    dm.getId(), dm.getId());
         } else {
             List<String> actors = TaskActorsHelper.getTaskActors(user);
             String userNames = TaskQueryConstant.formatStringList(actors);
             query = String.format(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY,
-                    dm.getId(), userNames);
+                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY,
+                    dm.getId(), dm.getId(), userNames);
         }
         return queryTasksUnrestricted(query, coreSession);
     }
@@ -110,8 +110,8 @@ public class DocumentTaskProvider implements TaskProvider {
         }
         String userNames = TaskQueryConstant.formatStringList(actors);
         String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY,
-                dm.getId(), userNames);
+                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY,
+                dm.getId(), dm.getId(), userNames);
         return queryTasksUnrestricted(query, coreSession);
     }
 
@@ -202,11 +202,28 @@ public class DocumentTaskProvider implements TaskProvider {
                 notificationRecipients);
         // try to resolve document when notifying
         DocumentModel document = null;
-        String docId = task.getVariable(TaskService.VariableName.documentId.name());
+
+        List<String> docIds = new ArrayList<String>();
+        docIds.addAll(task.getTargetDocumentsIds());
+        // handle compatibility with tasks created before 5.8
+        String docId = task.getTargetDocumentId();
+        if (!docIds.contains(docId)) {
+            docIds.add(docId);
+        }
+        // also handle compatibility with deprecated jbpm tasks
+        String docIdVar = task.getVariable(TaskService.VariableName.documentId.name());
+        if (!docIds.contains(docIdVar)) {
+            docIds.add(docIdVar);
+        }
         String docRepo = task.getVariable(TaskService.VariableName.documentRepositoryName.name());
+        List<DocumentModel> documents = new ArrayList<DocumentModel>();
         if (coreSession.getRepositoryName().equals(docRepo)) {
             try {
-                document = coreSession.getDocument(new IdRef(docId));
+                for (String id : docIds) {
+                    document = coreSession.getDocument(new IdRef(id));
+                    documents.add(document);
+                }
+
             } catch (Exception e) {
                 log.error(
                         String.format(
@@ -221,9 +238,10 @@ public class DocumentTaskProvider implements TaskProvider {
                     coreSession.getRepositoryName()));
         }
 
-        TaskEventNotificationHelper.notifyEvent(coreSession, document,
-                principal, task, eventName, eventProperties, comment, null);
-
+        for (DocumentModel doc : documents) {
+            TaskEventNotificationHelper.notifyEvent(coreSession, doc,
+                    principal, task, eventName, eventProperties, comment, null);
+        }
         String seamEventName = isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED
                 : TaskEventNames.WORKFLOW_TASK_REJECTED;
         return seamEventName;
@@ -244,12 +262,12 @@ public class DocumentTaskProvider implements TaskProvider {
             throws ClientException {
         String userNames = TaskQueryConstant.formatStringList(actors);
         String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY,
-                dm.getId(), userNames);
+                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY,
+                dm.getId(), dm.getId(), userNames);
         if (includeDelegatedTasks) {
             query = String.format(
                     TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY_OR_DELEGATED_ACTORS_QUERY,
-                    dm.getId(), userNames, userNames);
+                    dm.getId(), dm.getId(), userNames, userNames);
         }
         return queryTasksUnrestricted(query, session);
     }

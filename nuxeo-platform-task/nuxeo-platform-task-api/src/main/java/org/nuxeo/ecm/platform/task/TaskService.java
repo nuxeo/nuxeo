@@ -104,15 +104,15 @@ public interface TaskService extends Serializable, TaskProvider {
      * @since 5.6
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document, String taskName, String taskType, String processId,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath)
+            DocumentModel document, String taskName, String taskType,
+            String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath)
             throws ClientException;
 
     /**
-     * Creates a task of the given document type and starts it. Notifies events with names
-     * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and
+     * Creates a task of the given document type and starts it. Notifies events
+     * with names {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and
      * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED}, passing the task in the
      * event properties using key {@link #TASK_INSTANCE_EVENT_PROPERTIES_KEY}
      * Also the map eventInfo is passed in the event properties
@@ -140,12 +140,48 @@ public interface TaskService extends Serializable, TaskProvider {
      * @since 5.6
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal,
-            DocumentModel document, String taskDocumentType, String taskName, String taskType, String processId,
+            DocumentModel document, String taskDocumentType, String taskName,
+            String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath,
+            Map<String, Serializable> eventInfo) throws ClientException;
+
+    /**
+     * Creates a task of the given documents type and starts it. Notifies events
+     * with names {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and
+     * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED}, passing the task in the
+     * event properties using key {@link #TASK_INSTANCE_EVENT_PROPERTIES_KEY}
+     * Also the map eventInfo is passed in the event properties
+     *
+     * @param coreSession the session to use when notifying
+     * @param principal the principal marked as initiator of the task and used
+     *            when notifying.
+     * @param documents the documents to attach to the task.
+     * @param the task document type
+     * @param taskName the task name.
+     * @param taskType the task type.
+     * @param processId the process ID linked to this task if any.
+     * @param prefixedActorIds the list of actor ids, prefixed with 'user:' or
+     *            'group:'.
+     * @param createOneTaskPerActor if true, one task will be created per actor,
+     *            else a single task will be assigned to all actors.
+     * @param directive the directive, put in the task variables.
+     * @param comment string added to the task comments and used as a
+     *            notification comment
+     * @param dueDate the due date, set on the task instance
+     * @param taskVariables additional task variables
+     * @param parentPath /task-root if null
+     * @param eventInfo
+     * @throws ClientException
+     * @since 5.6
+     */
+    List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal,
+            List<DocumentModel> documents, String taskDocumentType,
+            String taskName, String taskType, String processId,
             List<String> prefixedActorIds, boolean createOneTaskPerActor,
             String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
-            throws ClientException;
-
+            Map<String, String> taskVariables, String parentPath,
+            Map<String, Serializable> eventInfo) throws ClientException;
 
     /**
      * Returns true if user is an administrator, the initiator of the task, or
@@ -268,4 +304,5 @@ public interface TaskService extends Serializable, TaskProvider {
      */
     void delegateTask(CoreSession session, String taskId, List<String> actors,
             String comment) throws ClientException;
+
 }

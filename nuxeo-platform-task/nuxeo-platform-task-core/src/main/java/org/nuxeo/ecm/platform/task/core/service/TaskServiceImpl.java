@@ -150,24 +150,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             boolean createOneTaskPerActor, String directive, String comment,
             Date dueDate, Map<String, String> taskVariables, String parentPath,
             Map<String, Serializable> eventInfo) throws ClientException {
-        if (StringUtils.isBlank(parentPath)) {
-            parentPath = getTaskRootParentPath(coreSession);
-        }
-        CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
-                principal, document, taskDocumentType, taskName, taskType,
-                processId, actorIds, createOneTaskPerActor, directive, comment,
-                dueDate, taskVariables, parentPath);
-        runner.runUnrestricted();
-
-        List<Task> tasks = runner.getTasks();
-
-        for (Task task : tasks) {
-            // notify
-            notifyEvent(coreSession, task, document,
-                    TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventInfo, comment,
-                    principal, task.getActors());
-        }
-        return tasks;
+        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        docs.add(document);
+        return createTask(coreSession, principal, docs, taskDocumentType,
+                taskName, taskType, processId, actorIds, createOneTaskPerActor,
+                directive, comment, dueDate, taskVariables, parentPath,
+                eventInfo);
     }
 
     /**
@@ -541,8 +529,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
 
-                notifyEvent(session, task, session.getDocument(new IdRef(
-                        task.getTargetDocumentId())),
+                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                for (String string : task.getTargetDocumentsIds()) {
+                    docs.add(session.getDocument(new IdRef(string)));
+
+                }
+                notifyEvent(session, task, docs,
                         TaskEventNames.WORKFLOW_TASK_REASSIGNED,
                         new HashMap<String, Serializable>(), comment,
                         (NuxeoPrincipal) session.getPrincipal(), actorIds);
@@ -603,20 +595,22 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 }
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
+                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                for (String string : task.getTargetDocumentsIds()) {
+                    docs.add(session.getDocument(new IdRef(string)));
 
-                notifyEvent(session, task, session.getDocument(new IdRef(
-                        task.getTargetDocumentId())),
+                }
+                notifyEvent(session, task, docs,
                         TaskEventNames.WORKFLOW_TASK_DELEGATED,
                         new HashMap<String, Serializable>(), comment,
                         (NuxeoPrincipal) session.getPrincipal(), actorIds);
-
             }
 
         }.runUnrestricted();
     }
 
     protected void notifyEvent(CoreSession session, Task task,
-            DocumentModel doc, String event,
+            List<DocumentModel> docs, String event,
             Map<String, Serializable> eventInfo, String comment,
             NuxeoPrincipal principal, List<String> actorIds)
             throws ClientException {
@@ -629,8 +623,10 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         if (eventInfo != null) {
             eventProperties.putAll(eventInfo);
         }
-        TaskEventNotificationHelper.notifyEvent(session, doc, principal, task,
-                event, eventProperties, comment, null);
+        for (DocumentModel doc : docs) {
+            TaskEventNotificationHelper.notifyEvent(session, doc, principal,
+                    task, event, eventProperties, comment, null);
+        }
     }
 
     @Override
@@ -641,6 +637,37 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         for (TaskProvider taskProvider : tasksProviders.values()) {
             tasks.addAll(taskProvider.getTaskInstances(dm, actors,
                     includeDelegatedTasks, session));
+        }
+        return tasks;
+    }
+
+    /**
+     * @since 5.8
+     */
+    @Override
+    public List<Task> createTask(CoreSession coreSession,
+            NuxeoPrincipal principal, List<DocumentModel> documents,
+            String taskDocumentType, String taskName, String taskType,
+            String processId, List<String> actorIds,
+            boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath,
+            Map<String, Serializable> eventInfo) throws ClientException {
+        if (StringUtils.isBlank(parentPath)) {
+            parentPath = getTaskRootParentPath(coreSession);
+        }
+        CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession,
+                principal, documents, taskDocumentType, taskName, taskType,
+                processId, actorIds, createOneTaskPerActor, directive, comment,
+                dueDate, taskVariables, parentPath);
+        runner.runUnrestricted();
+
+        List<Task> tasks = runner.getTasks();
+
+        for (Task task : tasks) {
+            // notify
+            notifyEvent(coreSession, task, documents,
+                    TaskEventNames.WORKFLOW_TASK_ASSIGNED, eventInfo, comment,
+                    principal, task.getActors());
         }
         return tasks;
     }
