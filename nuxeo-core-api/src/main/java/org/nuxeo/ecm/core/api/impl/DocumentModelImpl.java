@@ -382,8 +382,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             String messageTemp = "Try to get session closed %s. Document path %s, user connected %s";
             NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
             String username = principal == null ? "null" : principal.getName();
-            String message = String.format(messageTemp, sid,
-                    getPathAsString(), username);
+            String message = String.format(messageTemp, sid, getPathAsString(),
+                    username);
             log.error(message);
             throw e;
         }
@@ -479,8 +479,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     protected final DataModel loadDataModel(String schema)
             throws ClientException {
 
-        if(log.isTraceEnabled()) {
-            log.trace("lazy loading of schema " + schema + " for doc " + toString());
+        if (log.isTraceEnabled()) {
+            log.trace("lazy loading of schema " + schema + " for doc "
+                    + toString());
         }
 
         if (!schemas.contains(schema)) {
@@ -760,6 +761,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public boolean isCheckedOut() throws ClientException {
         if (!isStateLoaded) {
+            // quick fix to avoid crash when core session is null, see
+            // NXP-12584 for a proper fix
+            CoreSession session = getCoreSession();
+            if (session == null) {
+                return false;
+            }
             refresh(REFRESH_STATE, null);
         }
         return isCheckedOut;
@@ -1662,12 +1669,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     /**
-     * Sets the document id.
-     * May be useful when detaching from a repo and attaching to
-     * another one or when unmarshalling a documentModel from
-     * a XML or JSON representation
-     * @param id
+     * Sets the document id. May be useful when detaching from a repo and
+     * attaching to another one or when unmarshalling a documentModel from a
+     * XML or JSON representation
      *
+     * @param id
      * @since 5.7.2
      */
     public void setId(String id) {
