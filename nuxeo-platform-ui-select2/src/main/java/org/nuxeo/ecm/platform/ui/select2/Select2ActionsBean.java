@@ -131,28 +131,33 @@ public class Select2ActionsBean implements Serializable {
         return result;
     }
 
-    public String encodeParametersForUserSuggestion(final Widget widget) {
+    public String encodeParametersForUserSuggestion(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
         Map<String, String> params = getDefaultFormattersMap(
                 Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER,
                 Select2Common.USER_DEFAULT_SELECTION_FORMATTER);
         params.put(Select2Common.OPERATION_ID, SuggestUserEntries.ID);
-        return encodeParameters(widget, params);
+        return encodeParameters(widget, params, resolvedWidgetProperties);
     }
 
-    public String encodeParametersForDirectory(final Widget widget) {
+    public String encodeParametersForDirectory(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
         return encodeParameters(
                 widget,
                 getDefaultFormattersMap(
                         Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER,
-                        Select2Common.DIR_DEFAULT_SELECTION_FORMATTER));
+                        Select2Common.DIR_DEFAULT_SELECTION_FORMATTER), resolvedWidgetProperties);
     }
 
     public String encodeParameters(final Widget widget) {
         return encodeParameters(
+                widget, null);
+    }
+
+    public String encodeParameters(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
+        return encodeParameters(
                 widget,
                 getDefaultFormattersMap(
                         Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER,
-                        Select2Common.DOC_DEFAULT_SELECTION_FORMATTER));
+                        Select2Common.DOC_DEFAULT_SELECTION_FORMATTER), resolvedWidgetProperties);
     }
 
     /**
@@ -165,7 +170,7 @@ public class Select2ActionsBean implements Serializable {
      * @since 5.7.3
      */
     public String encodeParameters(final Widget widget,
-            final Map<String, String> defaultParams) {
+            final Map<String, String> defaultParams, final Map<String, Serializable> resolvedWidgetProperties) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
 
@@ -185,11 +190,18 @@ public class Select2ActionsBean implements Serializable {
             // not.
             jg.writeStringField("translateLabels", "" + isTranslated);
 
-            Map<String, Serializable> propertySet = widget.getProperties();
+            Map<String, Serializable> propertySet = null;
+            if (resolvedWidgetProperties != null) {
+                propertySet = resolvedWidgetProperties;
+            } else {
+                propertySet = widget.getProperties();
+            }
+
             boolean hasPlaceholder = false;
             boolean hasAjaxReRender = false;
             boolean hasWidth = false;
             boolean hasMinChars = false;
+
 
             for (Entry<String, Serializable> entry : propertySet.entrySet()) {
 
