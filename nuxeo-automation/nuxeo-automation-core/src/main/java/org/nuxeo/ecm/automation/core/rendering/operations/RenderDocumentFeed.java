@@ -49,12 +49,17 @@ public class RenderDocumentFeed {
     @Param(name = "mimetype", required = false, values="text/xml")
     protected String mimeType = "text/xml";
 
+    @Param(name = "charset", required = false)
+    protected String charset = "UTF-8";
+
+
     @OperationMethod
     public Blob run(DocumentModelList docs) throws Exception {
         String content = RenderingService.getInstance().render(type, template, ctx);
         StringBlob blob = new StringBlob(content);
         blob.setFilename(name);
         blob.setMimeType(mimeType);
+        blob.setEncoding(charset);
         return blob;
     }
 
