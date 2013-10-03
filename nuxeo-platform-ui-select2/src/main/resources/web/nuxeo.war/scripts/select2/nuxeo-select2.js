@@ -122,7 +122,7 @@
       // Give needed info to restore Seam context
       op.addParameter("id", getOperationName(params));
       op.addParameter("conversationId",currentConversationId);
-      op.context =temp;
+      op.opts.automationParams.context = temp;
     } else {
       op.addParameters(temp);
     }
