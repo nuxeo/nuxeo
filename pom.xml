@@ -64,6 +64,7 @@
     <nuxeo.resources.compat.version>5.8-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>5.8-SNAPSHOT</nuxeo.dmk.version>
     <nuxeo.webengine.sites.version>5.8-SNAPSHOT</nuxeo.webengine.sites.version>
+    <nuxeo.rest-api.version>5.8-SNAPSHOT</nuxeo.rest-api.version>
   </properties>
 
   <modules>
@@ -1110,6 +1111,21 @@
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
         <version>${nuxeo.webengine.sites.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-rest-api-io</artifactId>
+        <version>${nuxeo.rest-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-rest-api-server</artifactId>
+        <version>${nuxeo.rest-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-rest-api-test</artifactId>
+        <version>${nuxeo.rest-api.version}</version>
       </dependency>
 
     </dependencies>
