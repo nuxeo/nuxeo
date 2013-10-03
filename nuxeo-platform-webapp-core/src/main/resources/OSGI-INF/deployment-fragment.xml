@@ -33,23 +33,21 @@
     <!-- This calls a method which load the Workspace logo -->
     <page view-id="/showLogo.xhtml" action="#{logoHelper.getLogo}" />
 
-    <!-- Bind URL to the Document URL resolver-->
-    <page view-id="/getDocument.xhtml"
-      action="#{navigationContext.navigateToURL}">
+    <!-- Bind URL to the Document URL resolver -->
+    <page view-id="/getDocument.xhtml" action="#{navigationContext.navigateToURL}">
     </page>
 
     <page view-id="/nxliveedit.xhtml" action="#{liveEditHelper.getBootstrap()}" />
 
-    <!-- Bind URL to the Parallele conversation Document URL resolver-->
-    <page view-id="/parallele.xhtml"
-      action="#{paralleleNavigationHelper.navigateToURL}">
+    <!-- Bind URL to the Parallele conversation Document URL resolver -->
+    <page view-id="/parallele.xhtml" action="#{paralleleNavigationHelper.navigateToURL}">
     </page>
 
     <!-- Post login and 'home' view handler -->
     <page view-id="/nxstartup.xhtml"
       action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'view')}" />
 
-    <!--  config for workspace management
+    <!-- config for workspace management
       = give a description for each viewId
     -->
 
@@ -151,49 +149,20 @@
     </navigation-case>
 
     <navigation-case>
-      <from-outcome>create_workspace_wizard</from-outcome>
-      <to-view-id>/createWorkspaceWizard.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <navigation-case>
       <from-outcome>send_email</from-outcome>
       <to-view-id>/document_email.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 
-    <!-- AT: BBB, use view_documents instead -->
-    <navigation-case>
-      <from-outcome>view_workspaces</from-outcome>
-      <to-view-id>/view_workspaces.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <!-- AT: BBB, use create_document instead -->
     <navigation-case>
       <from-outcome>create_domain</from-outcome>
       <to-view-id>/create_domain.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 
-    <!-- AT: BBB, use edit_document instead -->
-    <navigation-case>
-      <from-outcome>edit_domain</from-outcome>
-      <to-view-id>/edit_domain.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <!-- AT: BBB, use create_document instead -->
     <navigation-case>
       <from-outcome>create_workspace</from-outcome>
       <to-view-id>/create_workspace.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-    <!-- AT: BBB, use edit_document instead -->
-    <navigation-case>
-      <from-outcome>edit_workspace</from-outcome>
-      <to-view-id>/edit_workspace.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 
@@ -224,12 +193,6 @@
     </navigation-case>
 
     <!-- miscellaneous -->
-
-    <navigation-case>
-      <from-outcome>select_workspace_template</from-outcome>
-      <to-view-id>/select_workspace_template.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
 
     <navigation-case>
       <from-outcome>pdf_generation_error</from-outcome>

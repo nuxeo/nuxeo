@@ -10,10 +10,6 @@
   <!-- perspectives -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="perspectives">
 
-    <perspective name="view_calendar">
-      <title>Calendar management mode</title>
-    </perspective>
-
     <perspective name="multiple_domains">
       <title>Perspective for multiple domains</title>
     </perspective>
@@ -454,12 +450,6 @@
 
       <view id="/create_relation_search_document_popup.xhtml">
         <theme>galaxy/popup</theme>
-      </view>
-      <view id="/view_calendar.xhtml">
-        <perspective>view_calendar</perspective>
-      </view>
-      <view id="/print.xhtml">
-        <perspective>print</perspective>
       </view>
       <view id="/editor_link_search_document.xhtml">
         <theme>galaxy/popup</theme>

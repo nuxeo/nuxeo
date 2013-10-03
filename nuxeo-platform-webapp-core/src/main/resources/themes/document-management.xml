@@ -23,8 +23,6 @@
           <fragment perspectives="default,multiple_domains" type="generic fragment"/>
           <!-- clip board -->
           <fragment perspectives="default,multiple_domains" type="generic fragment"/>
-          <!-- calendar -->
-          <fragment perspectives="view_calendar" type="generic fragment"/>
         </cell>
         <cell class="content">
           <!-- breadcrumbs -->
