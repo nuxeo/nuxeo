@@ -56,6 +56,8 @@ public class RenderVariables {
         field,
         //
         widgetProperty,
+        // @since 5.8
+        widgetProperties,
         // @since 5.7
         widgetControl,
         //

@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -109,6 +110,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
         blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name()
                 + "_*");
+        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperties.name());
         blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name()
                 + "_*");
 
@@ -166,6 +168,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (layoutService == null) {
             throw new FacesException("Layout service not found");
         }
+        Map<String, ValueExpression> mappedExpressions = new HashMap<String, ValueExpression>();
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();
             String name = String.format("%s_%s",
@@ -183,9 +186,13 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 value = String.format("#{%s.properties.%s}",
                         RenderVariables.widgetVariables.widget.name(), key);
             }
-            variables.put(name,
-                    eFactory.createValueExpression(ctx, value, Object.class));
+            ValueExpression ve = eFactory.createValueExpression(ctx, value,
+                    Object.class);
+            variables.put(name, ve);
+            mappedExpressions.put(key, ve);
         }
+        variables.put(RenderVariables.widgetVariables.widgetProperties.name(),
+                new MapValueExpression(mappedExpressions));
         // expose widget controls too
         for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
             String key = ctrl.getKey();
