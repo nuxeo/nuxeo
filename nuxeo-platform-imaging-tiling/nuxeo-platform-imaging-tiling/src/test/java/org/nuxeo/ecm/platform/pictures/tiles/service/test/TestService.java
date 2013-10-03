@@ -19,13 +19,16 @@
 
 package org.nuxeo.ecm.platform.pictures.tiles.service.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -311,6 +314,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    // NXP-12733: disabled because failing randomly
+    @Ignore
     public void testGC2() throws Exception {
         int reduceSize = 500;
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
@@ -381,6 +386,8 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    // NXP-12733: disabled because failing randomly
+    @Ignore
     public void testBorderTiles() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
