@@ -21,6 +21,8 @@ package org.nuxeo.functionaltests.pages.tabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -45,9 +47,17 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     private static final Log log = LogFactory.getLog(ContentTabSubPage.class);
 
+    private static final String COPY_BUTTON_XPATH = "//input[@value=\"Copy\"]";
+
+    private static final String PAST_BUTTON_XPATH = "//input[@value=\"Paste\"]";
+
     private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
 
     private static final String SELECT_ALL_BUTTON_XPATH = "//input[@type=\"checkbox\" and @title=\"Select all / deselect all\"]";
+
+    private static final String CHECK_BOX_XPATH = "td/input[@type=\"checkbox\"]";
+
+    private static final String DOCUEMNT_TITLE_XPATH = "//span[@id[starts-with(.,'title_')]]";
 
     @Required
     @FindBy(id = "document_content")
@@ -214,5 +224,81 @@ public class ContentTabSubPage extends DocumentBasePage {
                 // ignore
             }
         }
+    }
+
+    /**
+     * Select the document by their index in the content view.
+     *
+     * @param indexes
+     *
+     * @since 5.7.8
+     */
+    public void selectDocumentByIndex(int ... indexes) {
+        for (int i : indexes) {
+            getChildDocumentRows().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
+        }
+    }
+
+    /**
+     * Select the document by their title in the content view.
+     *
+     * @param indexes
+     *
+     * @since 5.7.8
+     */
+    public void selectDocumentByTitles(String ... titles) {
+        selectDocumentByIndex(convertToIndexes(titles));
+    }
+
+    protected int[] convertToIndexes(String ... titles) {
+        List<String> titleList = Arrays.asList(titles);
+        List<Integer> temp = new ArrayList<Integer>();
+        int index = 0;
+        for (WebElement row : childDocumentRows) {
+            String docTitle = row.findElement(By.xpath(DOCUEMNT_TITLE_XPATH)).getText();
+            if (docTitle != null && titleList.contains(docTitle)) {
+                temp.add(index);
+            }
+            index++;
+        }
+        int[] result = new int[temp.size()];
+        for(int i = 0; i < temp.size(); i++) {
+            result[i] = temp.get(i);
+        }
+        return result;
+    }
+
+    /**
+     * Select the document by their index in the content view and copy them in the clipboard.
+     *
+     * @param indexes
+     *
+     * @since 5.7.8
+     */
+    public void copyByIndex(int ... indexes) {
+        selectDocumentByIndex(indexes);
+        findElementWaitUntilEnabledAndClick(By.xpath(COPY_BUTTON_XPATH));
+    }
+
+    /**
+     * Select the document by their title in the content view and copy them in the clipboard.
+     *
+     * @param indexes
+     *
+     * @since 5.7.8
+     */
+    public void copyByTitle(String ... titles) {
+        copyByIndex(convertToIndexes(titles));
+    }
+
+    /**
+     * Past the content of the clip board.
+     *
+     * @param indexes
+     *
+     * @since 5.7.8
+     */
+    public void paste() {
+        findElementWaitUntilEnabledAndClick(By.xpath(PAST_BUTTON_XPATH));
     }
 }
