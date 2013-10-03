@@ -125,6 +125,7 @@
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
     <module>nuxeo-webengine-sites</module>
+    <module>nuxeo-rest-api</module>
   </modules>
 
   <dependencyManagement>
