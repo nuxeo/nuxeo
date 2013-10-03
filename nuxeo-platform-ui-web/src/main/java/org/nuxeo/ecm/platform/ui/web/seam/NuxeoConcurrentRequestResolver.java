@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,14 +36,12 @@ import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
- *
- * Default implementation to handle concurrent requests against the same Seam Conversation.
- * This component can be overridden using the standard Seam override system.
+ * Default implementation to handle concurrent requests against the same Seam
+ * Conversation. This component can be overridden using the standard Seam
+ * override system.
  *
  * @since 5.7.3
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @Scope(ScopeType.STATELESS)
 @Name(ConcurrentRequestResolver.NAME)
@@ -52,21 +50,29 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 public class NuxeoConcurrentRequestResolver extends AbstractResolver implements
         ConcurrentRequestResolver {
 
-    public boolean handleConcurrentRequest(ConversationEntry ce, HttpServletRequest request,
-            HttpServletResponse response) {
+    public boolean handleConcurrentRequest(ConversationEntry ce,
+            HttpServletRequest request, HttpServletResponse response) {
 
         if (request.getMethod().equalsIgnoreCase("get")) {
             // flag request to skip apply method bindings
-            request.setAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY, true);
+            request.setAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY,
+                    true);
             // let's try to continue
-            addTransientMessage(Severity.WARN, "org.nuxeo.seam.concurrent.unsaferun", "This page may be not up to date, an other concurrent requests is still running");
+            addTransientMessage(
+                    Severity.WARN,
+                    "org.nuxeo.seam.concurrent.unsaferun",
+                    "This page may be not up to date, an other concurrent requests is still running");
             return true;
         } else if (request.getMethod().equalsIgnoreCase("post")) {
             String url = request.getHeader("referer");
-            if (url==null || url.length()==0) {
-                url = VirtualHostHelper.getServerURL(request) + request.getRequestURI();
+            if (url == null || url.length() == 0) {
+                url = VirtualHostHelper.getServerURL(request)
+                        + request.getRequestURI();
             }
-            addTransientMessage(Severity.WARN,"org.nuxeo.seam.concurrent.skip", "Your request was not processed because you already have a requests in processing.");
+            addTransientMessage(
+                    Severity.WARN,
+                    "org.nuxeo.seam.concurrent.skip",
+                    "Your request was not processed because you already have a requests in processing.");
             // XXX should Mark Request for No Tx Commit !
             return handleRedirect(ce, response, url);
         } else {

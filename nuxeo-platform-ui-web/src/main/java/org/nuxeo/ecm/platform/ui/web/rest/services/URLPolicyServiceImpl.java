@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -379,7 +379,8 @@ public class URLPolicyServiceImpl implements URLPolicyService {
             docViewParameters = docView.getParameters();
         }
         ValueBindingDescriptor[] bindings = pattern.getValueBindings();
-        if (bindings != null && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY)==null) {
+        if (bindings != null
+                && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY) == null) {
             for (ValueBindingDescriptor binding : bindings) {
                 if (!binding.getCallSetter()) {
                     continue;
@@ -538,7 +539,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         ELContext context = facesContext.getELContext();
         String actionBinding = pattern.getActionBinding();
 
-        if (actionBinding != null && !"".equals(actionBinding) && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY)==null) {
+        if (actionBinding != null
+                && !"".equals(actionBinding)
+                && httpRequest.getAttribute(URLPolicyService.DISABLE_ACTION_BINDING_KEY) == null) {
             MethodExpression action = ef.createMethodExpression(context,
                     actionBinding, String.class,
                     new Class[] { DocumentView.class });
