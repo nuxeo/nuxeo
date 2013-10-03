@@ -92,6 +92,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
+    <!-- Listing widgets -->
     <widget name="routing_task_name" type="text">
       <labels>
         <label mode="any">label.workflow.task.name</label>
@@ -227,26 +228,7 @@
         <property name="tab">TAB_ROUTE_WORKFLOW</property>
       </properties>
     </widget>
-
-    <widget name="task_related_actions" type="documentActionsWithForms">
-      <fields>
-        <field>#{routingTaskActions.getTaskInfo(layoutValue, false)}
-        </field>
-      </fields>
-      <properties widgetMode="view">
-        <property name="category">TASK_ADDITIONAL_ACTIONS</property>
-        <property name="styleClass">globalActionBar</property>
-        <property name="subStyleClass">contextActions</property>
-        <property name="overallDisplay">horizontal_block</property>
-        <property name="actionStyleClass">button</property>
-        <property name="actionsDisplay">buttons</property>
-        <property name="useAjaxForm">true</property>
-        <property name="ignoreTemplateProperty">true</property>
-        <property name="maxActionsNumber">1</property>
-        <property name="actionContextDocument">#{layoutValue.getDocument()}</property>
-      </properties>
-    </widget>
-
+    <!-- Listing widgets -->
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -442,7 +424,8 @@
       </widget>
     </layout>
 
-    <!--@since 5.8, layouts for task resolution screen on User home -->
+    <!--@since 5.8, layouts for task resolution screen on User home, applies 
+      to a Task object -->
     <layout name="routing_task_general_info">
       <templates>
         <template mode="any">
@@ -476,10 +459,12 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle10</property>
-            <property name="nxl_gridStyleClass_1">gridStyle1</property>
+            <property name="nxl_gridStyleClass_0">gridStyle3</property>
+            <property name="nxl_gridStyleClass_1">gridStyle7</property>
+            <property name="nxl_gridStyleClass_2">gridStyle1</property>
           </properties>
           <widget>container_0</widget>
+          <widget>container_02</widget>
           <widget>container_01</widget>
         </row>
         <row>
@@ -530,9 +515,51 @@
         <properties mode="any">
           <property name="hideSubLabels">true</property>
         </properties>
-        <subWidgetRefs>
-          <widget>task_related_actions</widget>
-        </subWidgetRefs>
+        <subWidgets>
+          <widget name="task_related_actions" type="documentActionsWithForms">
+            <fields>
+              <field>#{routingTaskActions.getTaskInfo(layoutValue,
+                false)}
+              </field>
+            </fields>
+            <properties widgetMode="view">
+              <property name="category">TASK_ADDITIONAL_ACTIONS</property>
+              <property name="styleClass">globalActionBar</property>
+              <property name="subStyleClass">contextActions</property>
+              <property name="overallDisplay">horizontal_block</property>
+              <property name="actionStyleClass">button</property>
+              <property name="actionsDisplay">buttons</property>
+              <property name="useAjaxForm">true</property>
+              <property name="ignoreTemplateProperty">true</property>
+              <property name="maxActionsNumber">1</property>
+              <property name="actionContextDocument">#{layoutValue.getDocument()}
+              </property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+      <widget name="container_02" type="container">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field></field>
+        </fields>
+        <controls mode="any">
+          <control name="handleLabels">true</control>
+        </controls>
+        <properties mode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="task_show_workflow_graph" type="current_route_show_graph">
+            <fields>
+              <field>processId</field>
+            </fields>
+            <handlingLabels>true</handlingLabels>
+          </widget>
+        </subWidgets>
       </widget>
       <widget name="container" type="container">
         <labels>

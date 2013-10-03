@@ -42,12 +42,21 @@
             Fancybox
             popup.
           </p>
+          A field to map the id of the document representing
+          the workflow instance is required.
         </description>
         <categories>
           <category>routing</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
+          <fields>
+            <list>false</list>
+            <complex>false</complex>
+            <supportedTypes>
+              <type>string</type>
+            </supportedTypes>
+          </fields>
         </supportedModes>
         <!-- no configurable properties -->
       </configuration>
@@ -221,6 +230,10 @@
 
     <widget name="current_route_description" type="current_route_description" />
     <widget name="current_route_show_graph" type="current_route_show_graph">
+      <fields>
+        <field>#{layoutValue.document.id}
+        </field>
+      </fields>
       <handlingLabels>true</handlingLabels>
     </widget>
     <widget name="current_route_abandon" type="current_route_abandon">
