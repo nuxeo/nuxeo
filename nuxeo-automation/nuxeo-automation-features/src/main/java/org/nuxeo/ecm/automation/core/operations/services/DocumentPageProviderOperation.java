@@ -222,9 +222,8 @@ public class DocumentPageProviderOperation {
 
         int i = 0;
         if (givenParameters != null) {
-            for (; i < givenParameters.length; i++) {
-                resolvedParams[i] = givenParameters[i];
-            }
+            i = givenParameters.length;
+            System.arraycopy(givenParameters, 0, resolvedParams, 0, i);
         }
         for (int j = 0; j < params.length; j++) {
             ValueExpression ve = SeamActionContext.EXPRESSION_FACTORY.createValueExpression(
