@@ -65,7 +65,7 @@
       </c:if>
 
       <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
-        value="#{select2Actions.encodeParametersForDirectory(widget)}" />
+        value="#{select2Actions.encodeParametersForDirectory(widget, widgetProperties)}" />
       <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
 
     </nxu:set>
