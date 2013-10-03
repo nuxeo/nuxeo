@@ -212,7 +212,7 @@ AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureC
 (function($) {
 
    $.fn.automation = function ( operationId , options) {
-      var opts = jQuery.extend({}, $.fn.automation.defaults, options);
+      var opts = jQuery.extend(true, {}, $.fn.automation.defaults, options);
       return new AutomationWrapper(operationId, opts);
    }
 
