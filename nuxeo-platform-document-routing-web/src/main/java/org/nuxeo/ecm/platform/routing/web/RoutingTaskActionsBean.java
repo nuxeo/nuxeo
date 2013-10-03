@@ -245,9 +245,10 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
         clear(task.getId());
-        if (documentManager.hasPermission(
-                navigationContext.getCurrentDocument().getRef(),
-                SecurityConstants.READ)) {
+        if (navigationContext.getCurrentDocument() != null
+                && documentManager.hasPermission(
+                        navigationContext.getCurrentDocument().getRef(),
+                        SecurityConstants.READ)) {
             return null;
         }
         // if the user only had temporary permissions on the current doc given
