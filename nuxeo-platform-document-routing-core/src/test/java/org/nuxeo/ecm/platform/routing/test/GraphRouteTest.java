@@ -1989,7 +1989,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         routing.delegateTask(sessionUser1, task1.getId(), newActors,
                 "Delegated");
 
-        // check that user1 still have Write permission  on documents
+        // check that user1 still have Write permission on documents
         // following the workflow
         docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
         assertTrue(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
@@ -2005,9 +2005,9 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
 
-        //check that the user can get the task as a delegate
-        tasks = taskService.getTaskInstances(doc, Arrays.asList(new String[]{"myuser2"}),
-                true, sessionUser2);
+        // check that the user can get the task as a delegate
+        tasks = taskService.getTaskInstances(doc,
+                Arrays.asList(new String[] { "myuser2" }), true, sessionUser2);
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -2039,4 +2039,103 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertFalse(session.hasPermission(user1, docs.get(0).getRef(), "Write"));
         closeSession(session);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testWorkflowOnMultipleDocuments() throws Exception {
+        // a doc, associated to the route
+        DocumentModel doc2 = session.createDocumentModel("/", "file", "File");
+        doc2.setPropertyValue("dc:title", "file");
+        doc2 = session.createDocument(doc2);
+        List<String> docIds = new ArrayList<String>();
+        docIds.add(doc.getId());
+        docIds.add(doc2.getId());
+
+        NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
+        assertNotNull(user1);
+
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
+        DocumentModel node1 = createNode(routeDoc, "node1", session);
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(
+                node1,
+                transition("trans1", "node2",
+                        "NodeVariables[\"button\"] == \"trans1\"",
+                        "testchain_title1"));
+
+        // task properties
+
+        node1.setPropertyValue(GraphNode.PROP_OUTPUT_CHAIN, "testchain_title1");
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES_PERMISSION,
+                "Write");
+        node1.setPropertyValue(GraphNode.PROP_INPUT_CHAIN,
+                "test_setGlobalvariable");
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_DOC_TYPE, "MyTaskDoc");
+        String[] users = { user1.getName() };
+        node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
+        setButtons(node1, button("btn1", "label-btn1", "filterrr"));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2", session);
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+
+        DocumentRoute route = instantiateAndRun(session, docIds, null);
+
+        // test that we can fetch the task instances on both documents
+        List<Task> tasks = taskService.getTaskInstances(doc, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        tasks = taskService.getTaskInstances(doc2, user1, session);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        CoreSession sessionUser1 = openSession(user1);
+        Task task1 = tasks.get(0);
+        assertEquals("MyTaskDoc", task1.getDocument().getType());
+        List<DocumentModel> docs = routing.getWorkflowInputDocuments(
+                sessionUser1, task1);
+
+        assertEquals(2, docs.size());
+        // task assignees have WRITE on both documents following the workflow
+        assertTrue(sessionUser1.hasPermission(docs.get(0).getRef(), "Write"));
+        assertTrue(sessionUser1.hasPermission(docs.get(1).getRef(), "Write"));
+
+        routing.endTask(sessionUser1, tasks.get(0), data, "trans1");
+        closeSession(sessionUser1);
+        // end task and verify that route was done
+        NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
+        session = openSession(admin);
+        route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                DocumentRoute.class);
+        assertTrue(route.isDone());
+        assertEquals(
+                "test",
+                route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+
+        // verify that the optput chain was executed on both docs
+        doc = session.getDocument(doc.getRef());
+        assertEquals("title 1", doc.getTitle());
+
+        doc2 = session.getDocument(doc2.getRef());
+        assertEquals("title 1", doc2.getTitle());
+
+        // task assignees don't have WRITE any more on both documents following
+        // the workflow
+        // workflow
+        assertFalse(session.hasPermission(user1, docs.get(0).getRef(), "Write"));
+        assertFalse(session.hasPermission(user1, docs.get(1).getRef(), "Write"));
+
+        closeSession(session);
+    }
+
 }

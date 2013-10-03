@@ -367,12 +367,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
             // TODO documents other than the first are not attached to the task
             // (task API allows only one document)
-            DocumentModel doc = docs.size() > 0 ? docs.get(0) : null;
             // we may get several tasks if there's one per actor when the node
             // has the property
             // hasMultipleTasks set to true
             List<Task> tasks = taskService.createTask(session,
-                    (NuxeoPrincipal) session.getPrincipal(), doc,
+                    (NuxeoPrincipal) session.getPrincipal(), docs,
                     node.getTaskDocType(), node.getDocument().getTitle(),
                     node.getId(), routeInstance.getDocument().getId(),
                     new ArrayList<String>(actors), node.hasMultipleTasks(),
