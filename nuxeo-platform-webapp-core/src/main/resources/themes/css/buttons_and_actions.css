@@ -184,35 +184,87 @@ div.syndicationButton div.syndicationLinks a:hover { color: "link.hover (__FLAVO
 .ctxMenuItemStyle a, .ctxMenuItemHoverStyle a { display: block; text-decoration: none }
 .ctxMenuImg { vertical-align: middle; padding: 0 .4em .1em 0 }
 
-/* =Labels and tags */
-.tag { background: "color.major.stronger (__FLAVOR__ background)"; border-radius: 3px; color: #fff; display: block; margin: .2em; padding: 0 .3em }
-.tagLink { display: inline-block }
-.tagLink a { color: #fff; opacity: .8; padding: 0 0 0 .2em; text-decoration: none }
-.tagLink img { display: inline; margin: 0 0 -0.1em; opacity: .7; width: 12px }
-.tagLink a:hover, .tagLink img:hover { opacity: 1 }
+/* =Labels, tags, users */
+.tag {
+  background: "neutral.medium (__FLAVOR__ background)";
+  border-radius: 3px;
+  border-color: transparent #ddd #ccc transparent;
+  border-style: solid;
+  border-width: 1px;
+  color: "black (__FLAVOR__ color)";
+  display: inline-block;
+  font-family: monospace;
+  font-size: 13px;
+  margin: .1em;
+  padding: 0 .3em;
+  text-decoration: none; }
+
+.tag a,
+.tagLink a,
+a.tag {
+  color: "black (__FLAVOR__ color)";
+  opacity: .8;
+  padding: 0 0 0 .2em;
+  text-decoration: none }
+
+.tagLink img {
+  display: inline;
+  margin: 0 0 -0.1em;
+  opacity: .7;
+  width: 12px }
+
+a.tag:hover,
+.tag a:hover,
+.tag img:hover {
+  color: "link (__FLAVOR__ color)";
+  opacity: 1 }
 
 .tag.newTag {
   background: url("${basePath}/icons/add.png") no-repeat scroll 0 0 transparent;
-  background-color: "neutral.medium (__FLAVOR__ background)";
   color: "black (__FLAVOR__ color)";
-  display: inline-block;
   font-weight: bold;
   padding: 0 .3em 0 1.6em }
 
-.user, span.user, .group, span.group { background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent; border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)"; box-shadow: -1px -2px 2px rgba(140, 140, 140, 0.2) inset, 1px 1px 1px #fff inset; color: "gray.dark (__FLAVOR__ color)"; display: inline-block; opacity: 1; padding: .1em .3em .1em 1.8em; white-space: nowrap }
-.group, span.group { background: url("${basePath}/icons/group.png") no-repeat scroll 2px 2px transparent }
-.user a { color: "link (__FLAVOR__ color)" }
-span.user:hover { background-color: "color.major.light (__FLAVOR__ background)" ; border-color: "color.major.stronger (__FLAVOR__ border)" }
-.user a:hover { text-decoration: none }
-.description_block span.user { display: inline-block; font-size: 1em; padding: .1em .3em .1em 2.1em }
+.user,
+.group,
+span.user,
+span.group {
+  background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px transparent;
+  border: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
+  border-radius: 3px;
+  color: "gray.dark (__FLAVOR__ color)";
+  display: inline-block;
+  opacity: 1;
+  padding: .1em .3em .1em 1.8em;
+  white-space: nowrap }
 
-.sticker,
-.description_block .sticker,
-.chainSelect div {
+.group,
+span.group {
+  background: url("${basePath}/icons/group.png") no-repeat scroll 2px 2px transparent }
+
+.user a:hover,
+.group a:hover {
+  color: "link (__FLAVOR__ color)";
+  text-decoration: none }
+
+a .user:hover,
+a .group:hover {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  border-color: "color.major.stronger (__FLAVOR__ border)" }
+
+.description_block span.user {
+  display: inline-block;
+  font-size: 1em;
+  padding: .1em .3em .1em 2.1em }
+
+.sticker {
   background-color: #fff;
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  color: "black (__FLAVOR__ color)";
   display: inline-block;
   font-size: .95em;
   font-weight: bold;
