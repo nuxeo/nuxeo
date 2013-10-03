@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.routing.dashboard.contentviews">
-  
+
   <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
     point="contentViews">
 
@@ -84,11 +84,11 @@
       <showTitle>true</showTitle>
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <parameter>#{routingTaskActions.getCurrentTask().getTargetDocumentId()}
+        <parameter>#{routingTaskActions.getCurrentTask().getTargetDocumentsIds()}
         </parameter>
         <whereClause docType="Document">
           <fixedPart>
-            ecm:uuid LIKE ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:uuid IN (?) AND ecm:isCheckedInVersion = 0 AND
             ecm:isProxy = 0
           </fixedPart>
         </whereClause>
@@ -99,6 +99,7 @@
       <useGlobalPageSize>false</useGlobalPageSize>
       <refresh>
         <event>documentCreated</event>
+        <event>documentChanged</event>
         <event>workflowTaskCompleted</event>
       </refresh>
       <cacheSize>10</cacheSize>
