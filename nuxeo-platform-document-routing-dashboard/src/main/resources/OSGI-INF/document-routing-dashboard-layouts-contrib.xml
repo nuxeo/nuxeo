@@ -468,19 +468,6 @@
       </rows>
     </layout>
 
-    <layout name="routing_task_node_layout">
-      <templates>
-        <template mode="any">
-          /layouts/layout_default_template.xhtml
-        </template>
-      </templates>
-      <rows>
-        <row>
-          <widget>task_layout_with_actions</widget>
-        </row>
-      </rows>
-    </layout>
-
     <layout name="routing_task_resolution_layout">
       <templates>
         <template mode="any">/layouts/layout_grid_template.xhtml
@@ -590,28 +577,16 @@
         </fields>
         <controls mode="any">
           <control name="handleLabels">true</control>
+          <control name="requireSurroundingForm">true</control>
         </controls>
         <properties widgetMode="any">
           <property name="styleClass">simpleBox fullWidth focusColumn
           </property>
+          <property name="hideSubLabels">true</property>
         </properties>
-        <subWidgets>
-          <widget name="sub0" type="layout">
-            <labels>
-              <label mode="any">routing_task_node_layout</label>
-            </labels>
-            <translated>false</translated>
-            <fields />
-            <properties widgetMode="view">
-              <property name="name">routing_task_node_layout
-              </property>
-            </properties>
-            <controls mode="any">
-              <control name="requireSurroundingForm">true</control>
-              <control name="handleLabels">true</control>
-            </controls>
-          </widget>
-        </subWidgets>
+        <subWidgetRefs>
+          <widget>task_layout_with_actions</widget>
+        </subWidgetRefs>
       </widget>
       <widget name="container_2" type="container">
         <labels>
@@ -647,10 +622,11 @@
         </subWidgets>
       </widget>
     </layout>
-    
+
     <layout name="task_related_documents_listing">
       <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="any">/layouts/layout_listing_template.xhtml
+        </template>
         <template mode="csv">
           /layouts/layout_listing_csv_template.xhtml
         </template>
@@ -723,7 +699,7 @@
         </column>
       </columns>
     </layout>
-    
+
   </extension>
 
 </component>
