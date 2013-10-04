@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Florent Guillaume
  *
@@ -47,14 +47,14 @@ public class TestRFC2231 {
 
     @Test
     public void testEncodeContentDisposition() throws Exception {
-        assertEquals("inline; filename*=UTF-8''caf%C3%A9;",
+        assertEquals("inline; filename*=UTF-8''caf%C3%A9",
                 RFC2231.encodeContentDisposition("caf\u00e9", true, "Firefox"));
-        assertEquals("attachment; filename=caf%C3%A9;",
+        assertEquals("attachment; filename=caf%C3%A9",
                 RFC2231.encodeContentDisposition("caf\u00e9", false, "MSIE"));
-        assertEquals("attachment; filename=caf\u00e9;",
+        assertEquals("attachment; filename=caf\u00e9",
                 RFC2231.encodeContentDisposition("caf\u00e9", false, null));
         assertEquals(
-                "attachment; filename*=UTF-8''R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.;",
+                "attachment; filename*=UTF-8''R%C3%A9sultat%20d%27Activit%C3%A9%20%28%3Bprovisoire/draft%29.",
                 RFC2231.encodeContentDisposition(
                         "R\u00e9sultat d'Activit\u00e9 (;provisoire/draft).",
                         false, "Firefox"));
