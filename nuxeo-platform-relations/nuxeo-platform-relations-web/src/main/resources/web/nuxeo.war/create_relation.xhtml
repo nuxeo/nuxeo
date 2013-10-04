@@ -135,14 +135,13 @@
           </h:panelGroup>
 
           <nxu:radio for="objectType" index="2" id="document" />
-          <a4j:outputPanel onclick="javascript:selectObjectType(2)">
+          <a4j:outputPanel>
             <h:inputHidden id="objectDocumentUid"
               value="#{relationActions.objectDocumentUid}" />
             <nxl:widgetType name="singleDocumentSuggestion" mode="edit"
-              ajaxReRender="objectDocumentUid"
-              pageProviderName="default_document_suggestion"
+              ajaxReRender="objectDocumentUid" onclick="javascript:selectObjectType(2)"
               value="#{relationActions}" field="objectDocumentUid"
-              width="300" translated="true" minChars="3"
+              translated="true"
               placeholder="label.relation.search.popup.title"
               documentSchemas="dublincore,common">
             </nxl:widgetType>
