@@ -27,7 +27,8 @@
       immediate="#{action.immediate}"
       value="#{messages[action.label]}"
       disabled="#{!action.available}"
-      styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
+      styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+      accessKey="#{action.accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml">
         <ui:param name="hideLabel" value="true" />
       </ui:include>
@@ -44,7 +45,8 @@
         value="#{messages[action.label]}"
         disabled="#{!action.available}"
         styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
-        <ui:include src="/incl/action/action_icon_label_template.xhtml">
+        <ui:include src="/incl/action/action_icon_label_template.xhtml"
+        accessKey="#{action.accessKey}">
           <ui:param name="hideLabel" value="true" />
         </ui:include>
         <ui:insert name="before_action_trigger" />
@@ -61,7 +63,8 @@
         value="#{messages[action.label]}"
         disabled="#{!action.available}"
         reRender="#{elementsToReRender}"
-        styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
+        styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+        accessKey="#{action.accessKey}">
         <ui:include src="/incl/action/action_icon_label_template.xhtml">
           <ui:param name="hideLabel" value="true" />
         </ui:include>
@@ -85,7 +88,8 @@
       immediate="#{action.immediate}"
       target="#{action.properties.target}"
       disabled="#{!action.available}"
-      styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
+      styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+      accessKey="#{action.accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </nxh:commandLink>
@@ -98,7 +102,8 @@
         onclick="#{onclick}"
         ajaxSingle="#{action.immediate}"
         disabled="#{!action.available}"
-        styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
+        styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+        accessKey="#{action.accessKey}">
         <ui:include src="/incl/action/action_icon_label_template.xhtml" />
         <ui:insert name="before_action_trigger" />
         <nxu:actionListenerMethod
@@ -113,7 +118,8 @@
         ajaxSingle="#{action.immediate}"
         disabled="#{!action.available}"
         reRender="#{elementsToReRender}"
-        styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}">
+        styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+        accessKey="#{action.accessKey}">
         <ui:include src="/incl/action/action_icon_label_template.xhtml" />
         <ui:insert name="before_action_trigger" />
         <nxu:actionListenerMethod

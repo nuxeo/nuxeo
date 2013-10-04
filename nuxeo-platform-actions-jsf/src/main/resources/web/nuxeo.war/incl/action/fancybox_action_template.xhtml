@@ -29,7 +29,8 @@
           onclick="#{onclick}"
           styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
-          reRender="#{fancyboxIdPrefix}ajax_panel">
+          reRender="#{fancyboxIdPrefix}ajax_panel"
+          accessKey="#{action.accessKey}">
           <f:setPropertyActionListener value="#{nxu:test(widgetProperty_formAdded,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
           <f:setPropertyActionListener value="#{action.id}"
@@ -55,7 +56,8 @@
           value="#{messages[action.label]}"
           styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
-          reRender="#{fancyboxIdPrefix}ajax_panel">
+          reRender="#{fancyboxIdPrefix}ajax_panel"
+          accessKey="#{action.accessKey}">
           <f:setPropertyActionListener value="#{nxu:test(widgetProperty_formAdded,'2','1')}"
             target="#{selectionActions.lookupLevelValue}" />
           <f:setPropertyActionListener value="#{action.id}"
@@ -94,7 +96,8 @@
                 ignoreDupResponses="true" requestDelay="100"
                 onclick="#{onclick};#{fancyboxJs}"
                 disabled="#{!action.available}"
-                styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}">
+                styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+                accessKey="#{action.accessKey}">
                 <ui:include src="/incl/action/action_icon_label_template.xhtml">
                   <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
                   <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
@@ -110,7 +113,8 @@
                 onclick="#{onclick};#{fancyboxJs}"
                 value="#{messages[action.label]}"
                 disabled="#{!action.available}"
-                styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}">
+                styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+                accessKey="#{action.accessKey}">
                 <ui:insert name="inside_action" />
               </a4j:commandButton>
             </c:if>

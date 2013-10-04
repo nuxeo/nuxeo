@@ -23,7 +23,8 @@
     accesskey="#{action.accessKey}"
     id="#{widget.id}"
     target="#{action.properties.target}"
-    onclick="#{onclick}">
+    onclick="#{onclick}"
+    accessKey="#{action.accessKey}">
     <ui:include src="/incl/action/action_icon_label_template.xhtml" />
     <ui:insert name="inside_action" />
   </nxd:restDocumentLink>
@@ -54,7 +55,8 @@
           accesskey="#{action.accessKey}"
           onbeforedomupdate="history.pushState(null, '#{action.id}', '#{nxu:javaScriptEscape(docUrl)}');"
           onclick="#{onclick}"
-          ignoreDupResponses="true">
+          ignoreDupResponses="true"
+          accessKey="#{action.accessKey}">
           <ui:include src="/incl/action/action_icon_label_template.xhtml" />
           <ui:insert name="inside_action" />
         </a4j:commandLink>
@@ -68,7 +70,8 @@
           reRender="#{elementsToReRender}"
           onbeforedomupdate="history.pushState(null, '#{action.id}', '#{nxu:javaScriptEscape(docUrl)}');"
           onclick="#{onclick}"
-          ignoreDupResponses="true">
+          ignoreDupResponses="true"
+          accessKey="#{action.accessKey}">
           <ui:include src="/incl/action/action_icon_label_template.xhtml" />
           <ui:insert name="inside_action" />
         </a4j:commandLink>

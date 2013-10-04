@@ -18,7 +18,8 @@
         addTabInfo="false"
         target="#{action.properties.target}"
         tabs="MAIN_TABS:#{action.id}"
-        onclick="#{onclick}">
+        onclick="#{onclick}"
+        accessKey="#{action.accessKey}">
         <h:outputText value="#{messages[action.label]}" />
       </nxd:restDocumentLink>
     </c:if>
@@ -30,7 +31,8 @@
         addTabInfo="false"
         target="#{action.properties.target}"
         tabs="MAIN_TABS:#{action.id}"
-        onclick="#{onclick}">
+        onclick="#{onclick}"
+        accessKey="#{action.accessKey}">
         <h:outputText value="#{messages[action.label]}" />
       </nxd:restDocumentLink>
     </c:if>
