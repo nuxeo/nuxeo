@@ -219,7 +219,9 @@ public class DocumentBasePage extends AbstractPage {
      */
     public UserHomePage getUserHome() {
         findElementWithTimeout(By.linkText("Home")).click();
-        return asPage(UserHomePage.class);
+        UserHomePage page = asPage(UserHomePage.class);
+        // make sure we're back on the dashboard tab
+        return page.goToDashboard();
     }
 
     public ContextualActions getContextualActions() {

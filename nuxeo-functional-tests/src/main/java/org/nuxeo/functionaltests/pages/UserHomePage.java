@@ -16,7 +16,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.fragment.GadgetsContainerFragment;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
@@ -29,31 +28,37 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UserHomePage extends AbstractPage {
 
-    @Required
-    @FindBy(linkText = "Dashboard")
-    public WebElement dashboardLink;
+    // not required: when navigating to home, we could be on another tab than
+    // dashboard
+    @FindBy(id = GadgetsContainerFragment.GADGETS_CONTAINER_ID)
+    public WebElement gadgetsContainer;
 
     protected GadgetsContainerFragment gadgetsFragment;
 
     public UserHomePage(WebDriver driver) {
         super(driver);
-        gadgetsFragment = getWebFragment(
-                By.id(GadgetsContainerFragment.GADGETS_CONTAINER_ID),
-                GadgetsContainerFragment.class);
+    }
+
+    protected GadgetsContainerFragment getGadgetsFragment() {
+        if (gadgetsFragment == null) {
+            gadgetsFragment = getWebFragment(gadgetsContainer,
+                    GadgetsContainerFragment.class);
+        }
+        return gadgetsFragment;
     }
 
     public boolean isTaskGadgetLoaded() {
-        return gadgetsFragment.isGadgetLoaded("My Tasks");
+        return getGadgetsFragment().isGadgetLoaded("My Tasks");
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
-        WebDriver driver = gadgetsFragment.switchToFrame("My Tasks");
+        WebDriver driver = getGadgetsFragment().switchToFrame("My Tasks");
         driver.findElement(By.linkText(taskTitle)).click();
         return new SummaryTabSubPage(driver);
     }
 
     public boolean isTaskGadgetEmpty() {
-        return gadgetsFragment.isTaskGadgetEmpty("My Tasks");
+        return getGadgetsFragment().isTaskGadgetEmpty("My Tasks");
     }
 
     /**
@@ -63,4 +68,10 @@ public class UserHomePage extends AbstractPage {
         findElementWithTimeout(By.linkText("Workflow")).click();
         return asPage(WorkflowHomePage.class);
     }
+
+    public UserHomePage goToDashboard() {
+        findElementWithTimeout(By.linkText("Dashboard")).click();
+        return this;
+    }
+
 }
