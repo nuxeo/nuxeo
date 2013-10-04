@@ -12,7 +12,7 @@
           <field type="largetext">relatedtext</field>
           <field type="largetext">webp:content</field>
           <field type="largetext">webc:welcomeText</field>
-          <field type="largetext">comment:comment</field>
+          <field type="largetext">comment:text</field>
           <field type="largetext">post</field>
           <field type="largetext">mail:mail</field>
         </schema>
