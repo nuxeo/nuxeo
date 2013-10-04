@@ -17,12 +17,15 @@
 
 package org.nuxeo.ecm.automation.core.operations.traces;
 
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -40,8 +43,21 @@ public class AutomationTraceGetOperation {
     @Param(name = "index", required = false)
     protected int index = -1;
 
+    @Context
+    protected OperationContext ctx;
+
+    protected boolean canManageTraces() {
+        NuxeoPrincipal principal = (NuxeoPrincipal)ctx.getPrincipal();
+        return principal !=null && (principal.isAdministrator());
+    }
+
     @OperationMethod
     public String run() {
+
+        if (canManageTraces()) {
+            return null;
+        }
+
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
 
         if (traceKey==null) {
