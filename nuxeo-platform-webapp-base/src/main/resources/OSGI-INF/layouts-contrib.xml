@@ -32,7 +32,7 @@
         <mode value="edit_demo_preview">hidden</mode>
       </widgetModes>
       <fields>
-        <field>directory</field>
+        <field>directoryName</field>
       </fields>
       <properties widgetMode="any">
         <property name="required">true</property>
