@@ -17,7 +17,6 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.fragment.GadgetsContainerFragment;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -25,42 +24,37 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
- * @since 5.7
+ * @since 5.8
  */
-public class UserHomePage extends AbstractPage {
+public class WorkflowHomePage extends AbstractPage {
 
-    @Required
-    @FindBy(linkText = "Dashboard")
-    public WebElement dashboardLink;
-
-    protected GadgetsContainerFragment gadgetsFragment;
-
-    public UserHomePage(WebDriver driver) {
+    public WorkflowHomePage(WebDriver driver) {
         super(driver);
-        gadgetsFragment = getWebFragment(
-                By.id(GadgetsContainerFragment.GADGETS_CONTAINER_ID),
-                GadgetsContainerFragment.class);
     }
 
-    public boolean isTaskGadgetLoaded() {
-        return gadgetsFragment.isGadgetLoaded("My Tasks");
+    @Required
+    @FindBy(xpath = "//div[contains(@id, 'cv_user_open_tasks_nxw_current_user_open_tasks_resultsPanel')]")
+    protected WebElement userTasksPanel;
+
+    @Required
+    @FindBy(linkText = "Workflow")
+    public WebElement workflowLink;
+
+    public boolean taskExistsOnTasksDashboard(String taskName) {
+        WebElement taskNameEl = userTasksPanel.findElement(By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"));
+        return taskName.equals(taskNameEl.getText());
+    }
+
+    public void processFirstTask() {
+        userTasksPanel.findElement(By.linkText("Process")).click();
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
-        WebDriver driver = gadgetsFragment.switchToFrame("My Tasks");
         driver.findElement(By.linkText(taskTitle)).click();
         return new SummaryTabSubPage(driver);
     }
 
-    public boolean isTaskGadgetEmpty() {
-        return gadgetsFragment.isTaskGadgetEmpty("My Tasks");
-    }
-
-    /**
-     * @since 5.8
-     */
-    public WorkflowHomePage getWorkflowHomePage() {
-        findElementWithTimeout(By.linkText("Workflow")).click();
-        return asPage(WorkflowHomePage.class);
+    public boolean isTasksDashboardEmpty() {
+        return !userTasksPanel.getText().contains("Task Name");
     }
 }

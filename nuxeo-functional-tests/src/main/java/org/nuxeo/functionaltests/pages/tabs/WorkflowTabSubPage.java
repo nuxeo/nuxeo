@@ -39,7 +39,9 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void addWorkflowReviewer() {
-        Select2WidgetElement particpants = new Select2WidgetElement(driver, By.xpath("//div[contains(@id, 'nxw_participants_select2')]"), true);
+        Select2WidgetElement particpants = new Select2WidgetElement(driver,
+                By.xpath("//div[contains(@id, 'nxw_participants_select2')]"),
+                true);
         particpants.selectValue("jdoe");
         selectItemInDropDownMenu(reviewSelector, "Simple review");
     }
@@ -58,6 +60,13 @@ public class WorkflowTabSubPage extends DocumentBasePage {
 
     public void endTask(String taskName) {
         findElementAndWaitUntilEnabled(By.linkText(taskName)).click();
+    }
+
+    /**
+     * @since 5.8
+     */
+    public WebElement getTaskLayoutNode() {
+        return findElementWithTimeout(By.xpath("//div[starts-with(@id, 'task_')]"));
     }
 
     @Override
