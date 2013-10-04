@@ -262,7 +262,7 @@ public class ContentTabSubPage extends DocumentBasePage {
             index++;
         }
         int[] result = new int[temp.size()];
-        for(int i = 0; i < temp.size(); i++) {
+        for (int i = 0; i < temp.size(); i++) {
             result[i] = temp.get(i);
         }
         return result;
