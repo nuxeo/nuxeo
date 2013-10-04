@@ -29,6 +29,14 @@
         </td>
         <td class="adminContentColumn">
 
+          <c:if test="#{adminViews.productionServer}">
+            <div class="warningFeedback">
+              <div class="processMessage completeWarning">
+                #{messages['label.admin.productionWarning']}
+              </div>
+            </div>
+          </c:if>
+
           <a4j:outputPanel id="setupRequiresRestartPanel"
             layout="block"
             ajaxRendered="true">

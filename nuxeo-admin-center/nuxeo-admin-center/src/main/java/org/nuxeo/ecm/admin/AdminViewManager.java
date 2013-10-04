@@ -144,6 +144,11 @@ public class AdminViewManager implements Serializable {
     }
 
     public boolean isUpdateCenterDisabled() {
-        return "true".equals(Framework.getProperty("nuxeo.updatecenter.disabled",""));
+        return Framework.isBooleanPropertyTrue("nuxeo.updatecenter.disabled");
     }
+
+    public boolean isProductionServer() {
+        return Framework.isBooleanPropertyTrue("nuxeo.admin.production");
+    }
+
 }
