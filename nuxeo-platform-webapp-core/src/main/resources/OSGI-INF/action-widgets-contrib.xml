@@ -12,6 +12,7 @@
       <properties mode="view">
         <property name="category">VIEW_ACTION_LIST</property>
         <property name="actionsDisplay">links</property>
+        <property name="useAjaxForm">#{useAjaxTabs}</property>
       </properties>
     </widget>
 
