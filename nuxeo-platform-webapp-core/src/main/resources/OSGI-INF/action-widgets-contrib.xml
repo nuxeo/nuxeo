@@ -91,6 +91,24 @@
       </properties>
     </widget>
 
+    <widget name="documentEditButtons" type="documentActions">
+     <properties mode="view">
+        <property name="actionsDisplay">buttons</property>
+        <property name="category">EDIT_DOCUMENT_FORM</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
+   <widget name="documentCreateButtons" type="documentActions">
+     <properties mode="view">
+        <property name="actionsDisplay">buttons</property>
+        <property name="category">CREATE_DOCUMENT_FORM</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
   </extension>
 
 </component>
