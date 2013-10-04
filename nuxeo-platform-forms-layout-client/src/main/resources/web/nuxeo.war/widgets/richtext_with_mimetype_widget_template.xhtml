@@ -56,39 +56,78 @@
       var="disableHtmlInit"
       defaultValue="#{field_1 != null and field_1 != 'text/html'}">
       <nxu:set var="disableBinding" value="#{disableHtmlInit}">
-        <nxu:editor id="#{widget.id}_editor" value="#{field_0}"
-          width="#{width}" cols="#{cols}" height="#{height}"
-          rows="#{rows}" editorSelector="#{editorSelector}"
-          disableHtmlInit="#{disableBinding}" />
+        <a4j:outputPanel id="#{widget.id}_panel">
+          <nxu:editor id="#{widget.id}_editor" value="#{field_0}"
+            width="#{width}" cols="#{cols}" height="#{height}"
+            rows="#{rows}" editorSelector="#{editorSelector}"
+            disableHtmlInit="#{disableBinding}" />
+        </a4j:outputPanel>
       </nxu:set>
-    </nxu:valueHolder>
-    <br />
 
-    <h:outputText value="#{messages['label.richtext.format']} " />
-    <h:selectOneMenu value="#{field_1}"
-      onchange="changeEditorType(this)" id="#{widget.id}_editorselector"
-      styleClass="#{widget.id}">
-      <f:selectItem itemLabel="#{messages['mimetype.html']}"
-        itemValue="text/html" />
-      <f:selectItem itemLabel="#{messages['mimetype.text']}"
-        itemValue="text/plain" />
-      <f:selectItem itemLabel="#{messages['mimetype.xml']}"
-        itemValue="text/xml" />
-      <f:selectItem itemLabel="#{messages['mimetype.markdown']}"
-        itemValue="text/x-web-markdown" />
-    </h:selectOneMenu>
+      <br />
+      <h:outputText value="#{messages['label.richtext.format']} " />
+      <h:selectOneMenu value="#{field_1}"
+        onchange="changeEditorType(this)"
+        id="#{widget.id}_editorselector" styleClass="#{widget.id}">
+        <f:selectItem itemLabel="#{messages['mimetype.html']}"
+          itemValue="text/html" />
+        <f:selectItem itemLabel="#{messages['mimetype.text']}"
+          itemValue="text/plain" />
+        <f:selectItem itemLabel="#{messages['mimetype.xml']}"
+          itemValue="text/xml" />
+        <f:selectItem itemLabel="#{messages['mimetype.markdown']}"
+          itemValue="text/x-web-markdown" />
+      </h:selectOneMenu>
+
+      <a4j:commandButton value="#{messages['label.fullscreen.toggle']}"
+        onclick="return toggleFullscreen(this);" styleClass="button"
+        id="#{widget.id}_fancybox"
+        style="#{disableHtmlInit?'':'display: none;'}" />
+    </nxu:valueHolder>
 
     <script>
           function changeEditorType(cbo) {
             var value = cbo.value;
             var id = cbo.id.replace("_editorselector", "");
-            var disableElt = document.getElementById(id + '_disableHtmlInit');
+            var escId = id.replace(/:/g, "\\:");
+            var disableElt = jQuery('#' + escId + '_disableHtmlInit');
+            var resizeElt = jQuery('#' + escId + '_fancybox');
+            var editorElt = jQuery('#' + escId + '_editor');
             if (value == "text/html") {
               addTinyMCE(id + '_editor');
-              disableElt.value = 'false';
+              disableElt.attr("value", "false");
+              resizeElt.css({
+                "display" : "none"
+              });
+              editorElt.removeClass('disableMCEInit');
             } else {
               removeTinyMCE(id + '_editor');
-              disableElt.value = 'true';
+              disableElt.attr("value", "true");
+              resizeElt.css({
+                "display" : "inline"
+              });
+              editorElt.addClass('disableMCEInit');
+            }
+          }
+
+          function toggleFullscreen(cbo) {
+            var id = cbo.id.replace("_fancybox", "_panel")
+                .replace(/:/g, "\\\:");
+            try {
+              jQuery('<a href="#' + id + '"></a>').fancybox({
+                'autoDimensions' : true,
+                'autoScale' : true,
+                'transitionIn' : 'none',
+                'transitionOut' : 'none',
+                'enableEscapeButton' : true,
+                'centerOnScroll' : true,
+                'scrolling' : 'auto',
+                'fsBtn' : true
+              }).click();
+            } catch (err) {
+              console.error(err);
+            } finally {
+              return false;
             }
           }
         </script>

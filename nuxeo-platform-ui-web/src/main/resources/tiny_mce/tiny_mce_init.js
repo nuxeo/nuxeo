@@ -1,6 +1,10 @@
 var nbTinyMceEditor = 0;
 
 function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
+  var escId = eltId.replace(/:/g, "\\:");
+  if (jQuery("#" + escId).hasClass("disableMCEInit")) {
+    return;
+  }
   // force English by default since there are no translations for other
   // languages than en and fr
   if (lang != 'en' && lang != 'fr'){
@@ -37,7 +41,6 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
     mode : "exact",
     theme : "advanced",
     elements : eltId,
-    editor_deselector : "disableMCEInit",
     plugins : plugins,
     language : lang,
     theme_advanced_resizing : true,
