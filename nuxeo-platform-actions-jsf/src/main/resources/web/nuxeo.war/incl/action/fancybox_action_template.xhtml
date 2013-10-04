@@ -13,7 +13,7 @@
   value="#{action.properties.iframe}"
   resolveTwice="true" cache="true">
 
-<c:if test="#{widget.mode != 'after_view' and vidget.mode != 'tab_content'}">
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
 
   <f:subview id="#{fancyboxIdPrefix}subview">
   <nxu:set var="onclick"
