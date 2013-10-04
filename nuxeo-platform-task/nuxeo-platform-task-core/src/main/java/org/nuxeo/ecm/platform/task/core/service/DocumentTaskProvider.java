@@ -237,10 +237,25 @@ public class DocumentTaskProvider implements TaskProvider {
                             + "repository '%s'", docRepo,
                     coreSession.getRepositoryName()));
         }
-
+        boolean taskEndedByDelegatedActor = task.getDelegatedActors() != null
+                && task.getDelegatedActors().contains(principal.getName());
         for (DocumentModel doc : documents) {
             TaskEventNotificationHelper.notifyEvent(coreSession, doc,
                     principal, task, eventName, eventProperties, comment, null);
+            if (taskEndedByDelegatedActor) {
+                TaskEventNotificationHelper.notifyEvent(
+                        coreSession,
+                        doc,
+                        principal,
+                        task,
+                        eventName,
+                        eventProperties,
+                        String.format("Task ended by an delegated actor '%s' ",
+                                principal.getName())
+                                + (!StringUtils.isEmpty(comment) ? " with the following comment: "
+                                        + comment
+                                        : ""), null);
+            }
         }
         String seamEventName = isValidated ? TaskEventNames.WORKFLOW_TASK_COMPLETED
                 : TaskEventNames.WORKFLOW_TASK_REJECTED;

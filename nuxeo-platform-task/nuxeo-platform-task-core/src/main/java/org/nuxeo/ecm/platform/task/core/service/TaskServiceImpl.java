@@ -600,9 +600,18 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(session, task, docs,
+                notifyEvent(
+                        session,
+                        task,
+                        docs,
                         TaskEventNames.WORKFLOW_TASK_DELEGATED,
-                        new HashMap<String, Serializable>(), comment,
+                        new HashMap<String, Serializable>(),
+                        String.format("Task delegated by '%s' to '%s'",
+                                currentUser,
+                                StringUtils.join(actorIds, ","))
+                                + (!StringUtils.isEmpty(comment) ? " with the following comment: "
+                                        + comment
+                                        : ""),
                         (NuxeoPrincipal) session.getPrincipal(), actorIds);
             }
 
