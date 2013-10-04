@@ -369,10 +369,6 @@
         <field>file:content</field>
         <field>file:filename</field>
       </fields>
-      <properties>
-        <property name="acceptedExtensions">.mpg, .mpe, .mpeg, .wmv, .swf,
-          .ogg, .ogv, .mkv, .mov, .qt, .avi, .mp4, .m4v, .flv, .fla</property>
-      </properties>
     </widget>
   </extension>
 
