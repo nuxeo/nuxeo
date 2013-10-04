@@ -148,7 +148,7 @@ public class AdminViewManager implements Serializable {
     }
 
     public boolean isProductionServer() {
-        return Framework.isBooleanPropertyTrue("nuxeo.admin.production");
+        return Framework.isBooleanPropertyTrue("org.nuxeo.prod");
     }
 
 }
