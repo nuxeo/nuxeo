@@ -197,7 +197,7 @@
                   <label mode="any">
                     A comma separated list of supported file
                     extensions. Default value: '.mpg, .mpe, .mpeg, .wmv, .swf,
-                    .ogg, .ogv, .mkv, .mov, .avi, .mp4, .m4v, .flv, .fla'.
+                    .ogg, .ogv, .mkv, .mov, .qt, .avi, .mp4, .m4v, .flv, .fla'.
                   </label>
                 </helpLabels>
                 <fields>
@@ -369,6 +369,10 @@
         <field>file:content</field>
         <field>file:filename</field>
       </fields>
+      <properties>
+        <property name="acceptedExtensions">.mpg, .mpe, .mpeg, .wmv, .swf,
+          .ogg, .ogv, .mkv, .mov, .qt, .avi, .mp4, .m4v, .flv, .fla</property>
+      </properties>
     </widget>
   </extension>
 
