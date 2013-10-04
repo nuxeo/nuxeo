@@ -480,18 +480,22 @@ public class WebActionsBean implements WebActions, Serializable {
         setCurrentTabId(currentTabActionId);
     }
 
+    /**
+     * Returns true if ajax is activated on the server, and if history push
+     * state is supported by browser.
+     *
+     * @since 5.6
+     */
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTab() {
-        String bUseAjaxTab = Framework.getProperty(AJAX_TAB_PROPERTY, null);
-        if (bUseAjaxTab != null) {
-            return Boolean.parseBoolean(bUseAjaxTab);
+        if (Framework.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
+            FacesContext context = FacesContext.getCurrentInstance();
+            ExternalContext econtext = context.getExternalContext();
+            HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
+            String ua = request.getHeader("User-Agent");
+            return UserAgentMatcher.isHistoryPushStateSupported(ua);
         }
-
-        FacesContext context = FacesContext.getCurrentInstance();
-        ExternalContext econtext = context.getExternalContext();
-        HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
-        String ua = request.getHeader("User-Agent");
-        return UserAgentMatcher.isHistoryPushStateSupported(ua);
+        return false;
     }
 
 }

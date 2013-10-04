@@ -15,11 +15,14 @@
 <nxu:set var="clickedActionIdHolder" value="#{idPrefix}clickedActionIdHolder"
   cache="true">
 <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
+<nxu:set var="tabsPanelId" value="#{widget.id}_panel" cache="true">
+<nxu:set var="tabContentPanelId" value="#{widget.id}_tab_content" cache="true">
 <nxu:valueHolder id="#{clickedActionIdHolder}"
   var="clickedActionId"
   defaultValue="#{widgetProperty_currentTabAction.id}">
 
-  <a4j:outputPanel id="#{widget.id}_panel" layout="block" styleClass="tabsBar #{widgetProperty_styleClass}">
+  <a4j:outputPanel id="#{tabsPanelId}" layout="block"
+    styleClass="tabsBar #{widgetProperty_styleClass}">
 
     <ul>
       <nxu:repeat var="action" items="#{widgetProperty_actions}">
@@ -27,7 +30,7 @@
           <ui:decorate template="/incl/action/action_template.xhtml">
             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
             <ui:param name="fullCategory" value="#{widgetProperty_fullCategory}" />
-            <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+            <ui:param name="ajaxReRender" value="#{nxl:joinReRender(tabsPanelId, nxl:joinReRender(tabContentPanelId, widgetProperty_ajaxReRender))}" />
             <ui:param name="addForm" value="#{widgetProperty_addForm}" />
             <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
             <ui:param name="formStyleClass" value="subWidgetForm" />
@@ -46,7 +49,8 @@
   </a4j:outputPanel>
   <div class="clear" />
 
-  <div class="tabsContent">
+  <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
+    styleClass="tabsContent">
 
     <ui:insert name="tab_content">
       <c:if test="#{not empty widgetProperty_currentTabAction}">
@@ -58,9 +62,11 @@
       </c:if>
     </ui:insert>
 
-  </div>
+  </a4j:outputPanel>
 
 </nxu:valueHolder>
+</nxu:set>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>
