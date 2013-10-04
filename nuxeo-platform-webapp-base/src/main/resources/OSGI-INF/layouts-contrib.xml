@@ -879,6 +879,10 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="edit">
+            <property name="minChars">3</property>
+            <property name="width">300</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="singleUserSuggestion_widget_type_properties_view">
               <rows>
@@ -1001,6 +1005,10 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="edit">
+            <property name="minChars">3</property>
+            <property name="width">300</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="multipleUsersSuggestion_widget_type_properties_view">
               <rows>
@@ -1131,6 +1139,10 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="minChars">0</property>
+            <property name="width">300</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="suggestOneDirectory_type_properties_any">
               <rows>
@@ -1233,6 +1245,10 @@
           </supportedTypes>
         </fields>
         <properties>
+          <defaultValues mode="edit">
+            <property name="minChars">0</property>
+            <property name="width">300</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="suggestManyDirectory_widget_type_properties_any">
               <rows>
@@ -1408,6 +1424,12 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="edit">
+            <property name="pageProviderName">default_document_suggestion</property>
+            <property name="documentSchemas">dublincore,common</property>
+            <property name="minChars">3</property>
+            <property name="width">300</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="multipleDocumentsSuggestion_widget_type_properties_view">
               <rows>
@@ -1509,6 +1531,12 @@
           <category>document</category>
         </categories>
         <properties>
+          <defaultValues mode="edit">
+            <property name="pageProviderName">default_document_suggestion</property>
+            <property name="documentSchemas">dublincore,common</property>
+            <property name="minChars">3</property>
+            <property name="width">300</property>
+          </defaultValues>
           <layouts mode="view">
             <layout name="singleDocumentSuggestion_widget_type_properties_view">
               <rows>
