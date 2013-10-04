@@ -76,17 +76,22 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
                     pluginService.getFormattedToolbarsButtonsNames());
         }
 
-        writer.startElement("script", editorComp);
-        writer.writeAttribute("type", "text/javascript", null);
-
         String clientId = editorComp.getClientId(context);
-        String scriptContent = String.format(
-                "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
-                editorComp.getWidth(), editorComp.getHeight(), clientId,
-                pluginsOptions.get("plugins"), locale.getLanguage(),
-                toolbarPluginsOptions.get("toolbar"));
-        writer.writeText(scriptContent, null);
-        writer.endElement("script");
+        boolean disableHtmlInit = Boolean.TRUE.equals(editorComp.getDisableHtmlInit());
+        if (!disableHtmlInit) {
+            // Since 5.7.3, tiny mce editor are initilized individually, no need
+            // anymore to specify a class to to know which one should or should
+            // not be initialized
+            writer.startElement("script", editorComp);
+            writer.writeAttribute("type", "text/javascript", null);
+            String scriptContent = String.format(
+                    "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
+                    editorComp.getWidth(), editorComp.getHeight(), clientId,
+                    pluginsOptions.get("plugins"), locale.getLanguage(),
+                    toolbarPluginsOptions.get("toolbar"));
+            writer.writeText(scriptContent, null);
+            writer.endElement("script");
+        }
 
         // input text area
         writer.startElement("textarea", editorComp);
