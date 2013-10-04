@@ -434,6 +434,7 @@ class BasePage:
                         or 'No incoming or outgoing relation' in self.fl.getBody())
         return ret
 
+    # NXP-12675/NXP-8924: this tab is now disabled, this method is deprecated
     def mySubscriptions(self):
         ret = self.viewDocumentUid(self.getDocUid(),
                                    tab='TAB_MY_SUBSCRIPTIONS',
