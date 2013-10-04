@@ -30,8 +30,8 @@ import org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper;
 
 /**
  *
- * Seam Bean to expose Administrator Message to the JSF Web Layer.
- * (base on {@link AdministrativeStatusManager}
+ * Seam Bean to expose Administrator Message to the JSF Web Layer. (base on
+ * {@link AdministrativeStatusManager}
  *
  * @author tiry
  *
@@ -42,12 +42,12 @@ public class AdminMessageActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Factory(value="adminMessageActivated", scope=ScopeType.EVENT)
+    @Factory(value = "adminMessageActivated", scope = ScopeType.EVENT)
     public boolean isAdminMessageActivated() {
         return AdminStatusHelper.isAdminMessageActivated();
     }
 
-    @Factory(value="adminMessage", scope=ScopeType.EVENT)
+    @Factory(value = "adminMessage", scope = ScopeType.EVENT)
     public String getAdminMessage() {
         return AdminStatusHelper.getAdminMessage();
     }
