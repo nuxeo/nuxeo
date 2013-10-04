@@ -74,14 +74,18 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
                 GroupComputerDescriptor desc = (GroupComputerDescriptor) contribution;
 
                 if (desc.isEnabled()) {
-                    log.debug("Add " + desc.getName() + " from component " + contributor.getName());
+                    log.debug("Add " + desc.getName() + " from component "
+                            + contributor.getName());
                     computers.put(desc.getName(), desc);
                 } else {
                     if (computers.containsKey(desc.getName())) {
-                        log.debug("Remove " + desc.getName() + " from component " + contributor.getName());
+                        log.debug("Remove " + desc.getName()
+                                + " from component " + contributor.getName());
                         computers.remove(desc.getName());
                     } else {
-                        log.warn("Can't remove " + desc.getName() + " as not found, from component " + contributor.getName());
+                        log.warn("Can't remove " + desc.getName()
+                                + " as not found, from component "
+                                + contributor.getName());
                     }
                 }
                 return;
@@ -102,7 +106,8 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
             return;
         }
 
-        log.warn("Unkown contribution, please check the component " + contributor.getName());
+        log.warn("Unkown contribution, please check the component "
+                + contributor.getName());
     }
 
     @Override
@@ -122,8 +127,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void updateGroupsForUser(
-            NuxeoPrincipalImpl nuxeoPrincipal) {
+    public void updateGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
         try {
             List<String> computedGroups = computeGroupsForUser(nuxeoPrincipal);
             Set<String> virtualGroups = new HashSet<String>(
@@ -136,10 +140,12 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public boolean allowGroupOverride() {
         return allowOverride;
     }
 
+    @Override
     public NuxeoGroup getComputedGroup(String groupName) {
         try {
             for (String name : computerNames) {
@@ -158,6 +164,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public List<String> computeGroupIds() {
 
         List<String> groupIds = new ArrayList<String>();
@@ -176,6 +183,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         return groupIds;
     }
 
+    @Override
     public List<String> getComputedGroupMembers(String groupName) {
         try {
             List<String> members = new ArrayList<String>();
@@ -196,6 +204,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public List<String> getComputedGroupParent(String groupName) {
         try {
             List<String> parents = new ArrayList<String>();
@@ -216,6 +225,7 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         return null;
     }
 
+    @Override
     public List<String> getComputedGroupSubGroups(String groupName) {
         try {
             List<String> subGroups = new ArrayList<String>();
@@ -244,10 +254,12 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements
         return result;
     }
 
+    @Override
     public boolean activateComputedGroups() {
         return computerNames.size() > 0;
     }
 
+    @Override
     public List<String> searchComputedGroups(Map<String, Serializable> filter,
             Set<String> fulltext) {
 

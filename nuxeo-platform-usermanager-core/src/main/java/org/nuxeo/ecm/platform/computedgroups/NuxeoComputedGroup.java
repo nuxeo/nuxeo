@@ -24,7 +24,7 @@ import java.util.List;
 import org.nuxeo.runtime.api.Framework;
 
 /**
-
+ *
  * Computed group implementation class.
  * Delegates part of the implementation logic to the
  * {@link ComputedGroupsService} that is pluggable.
@@ -37,8 +37,11 @@ public class NuxeoComputedGroup implements ComputedGroup {
     private static final long serialVersionUID = 1L;
 
     protected String name;
+
     protected List<String> parents;
+
     protected List<String> subGroups;
+
     protected List<String> members;
 
     private String label;
@@ -52,6 +55,7 @@ public class NuxeoComputedGroup implements ComputedGroup {
         this.label = label;
     }
 
+    @Override
     public List<String> getMemberUsers() {
         if (members == null) {
             ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
@@ -65,10 +69,12 @@ public class NuxeoComputedGroup implements ComputedGroup {
         return members;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getLabel() {
         if (label != null) {
             return label;
@@ -76,6 +82,7 @@ public class NuxeoComputedGroup implements ComputedGroup {
         return getName();
     }
 
+    @Override
     public List<String> getParentGroups() {
         if (parents == null) {
             ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
@@ -89,6 +96,7 @@ public class NuxeoComputedGroup implements ComputedGroup {
         return parents;
     }
 
+    @Override
     public List<String> getMemberGroups() {
         if (subGroups == null) {
             ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
@@ -102,29 +110,29 @@ public class NuxeoComputedGroup implements ComputedGroup {
         return subGroups;
     }
 
+    @Override
     public void setMemberGroups(List<String> groups) {
-        throw new UnsupportedOperationException(
-                "Computed groups are read only");
+        throw new UnsupportedOperationException("Computed groups are read only");
     }
 
+    @Override
     public void setMemberUsers(List<String> users) {
-        throw new UnsupportedOperationException(
-                "Computed groups are read only");
+        throw new UnsupportedOperationException("Computed groups are read only");
     }
 
+    @Override
     public void setName(String name) {
-        throw new UnsupportedOperationException(
-                "Computed groups are read only");
+        throw new UnsupportedOperationException("Computed groups are read only");
     }
 
+    @Override
     public void setLabel(String label) {
-        throw new UnsupportedOperationException(
-                "Computed groups are read only");
+        throw new UnsupportedOperationException("Computed groups are read only");
     }
 
+    @Override
     public void setParentGroups(List<String> groups) {
-        throw new UnsupportedOperationException(
-                "Computed groups are read only");
+        throw new UnsupportedOperationException("Computed groups are read only");
     }
 
 }
