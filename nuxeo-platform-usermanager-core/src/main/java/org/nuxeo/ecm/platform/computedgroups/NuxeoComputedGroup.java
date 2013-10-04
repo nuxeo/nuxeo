@@ -41,8 +41,15 @@ public class NuxeoComputedGroup implements ComputedGroup {
     protected List<String> subGroups;
     protected List<String> members;
 
+    private String label;
+
     public NuxeoComputedGroup(String name) {
-        this.name=name;
+        this(name, null);
+    }
+
+    public NuxeoComputedGroup(String name, String label) {
+        this.name = name;
+        this.label = label;
     }
 
     public List<String> getMemberUsers() {
@@ -63,6 +70,9 @@ public class NuxeoComputedGroup implements ComputedGroup {
     }
 
     public String getLabel() {
+        if (label != null) {
+            return label;
+        }
         return getName();
     }
 
