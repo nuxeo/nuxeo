@@ -177,11 +177,11 @@ public class RoutingTaskActionsBean implements Serializable {
     }
 
     public String getTaskLayout(Task task) throws ClientException {
-        return getTaskInfo(task, false).layout;
+        return getTaskInfo(task, true).layout;
     }
 
     public List<Action> getTaskButtons(Task task) throws ClientException {
-        List<Button> buttons = getTaskInfo(task, false).buttons;
+        List<Button> buttons = getTaskInfo(task, true).buttons;
         List<Action> actions = new ArrayList<Action>();
 
         DocumentModel workflowInstance = documentManager.getDocument(new IdRef(

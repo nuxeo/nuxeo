@@ -519,7 +519,7 @@
           <widget name="task_related_actions" type="documentActionsWithForms">
             <fields>
               <field>#{routingTaskActions.getTaskInfo(layoutValue,
-                false)}
+                true)}
               </field>
             </fields>
             <properties widgetMode="view">

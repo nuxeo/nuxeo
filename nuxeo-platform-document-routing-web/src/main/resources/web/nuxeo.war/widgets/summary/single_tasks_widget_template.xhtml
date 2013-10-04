@@ -45,7 +45,7 @@
           items="#{currentDashBoardItemsExceptPublishingTasks}"
           varStatus="status">
           <nxu:set var="taskInfo"
-            value="#{routingTaskActions.getTaskInfo(dashboardItem.task, false)}"
+            value="#{routingTaskActions.getTaskInfo(dashboardItem.task, true)}"
             cache="true">
             <div class="simpleBox fullWidth focusColumn">
               <c:if test="#{widgetProperty_displayTaskAdditionalActions}">
