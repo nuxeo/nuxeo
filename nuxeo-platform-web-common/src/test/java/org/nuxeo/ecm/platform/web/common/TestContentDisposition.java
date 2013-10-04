@@ -35,17 +35,17 @@ public class TestContentDisposition {
         for (boolean useAttribute : new Boolean[] { true, false }) {
 
             HttpServletRequest req = getRequest(useAttribute, "true", "MSIE");
-            assertEquals("inline; filename=myfile.txt;",
+            assertEquals("inline; filename=myfile.txt",
                     ServletHelper.getRFC2231ContentDisposition(req,
                             "myfile.txt"));
 
             req = getRequest(useAttribute, "false", "MSIE");
-            assertEquals("attachment; filename=myfile.txt;",
+            assertEquals("attachment; filename=myfile.txt",
                     ServletHelper.getRFC2231ContentDisposition(req,
                             "myfile.txt"));
 
             req = getRequest(useAttribute, null, "MSIE");
-            assertEquals("attachment; filename=myfile.txt;",
+            assertEquals("attachment; filename=myfile.txt",
                     ServletHelper.getRFC2231ContentDisposition(req,
                             "myfile.txt"));
         }
