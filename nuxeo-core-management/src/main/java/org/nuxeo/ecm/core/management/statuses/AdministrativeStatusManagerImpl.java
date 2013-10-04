@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.storage.AdministrativeStatusPersister;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Implementation class for the {@link AdministrativeStatusManager} service.
@@ -119,7 +120,17 @@ public class AdministrativeStatusManagerImpl implements
     public class NotifyStatusesHandler implements Runnable {
         @Override
         public void run() {
-            doNotifyAllStatuses();
+            TransactionHelper.startTransaction();
+            boolean notified = false;
+            try {
+                doNotifyAllStatuses();
+                notified = true;
+            } finally {
+                if (!notified) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                TransactionHelper.commitOrRollbackTransaction();
+            }
         }
     }
 
