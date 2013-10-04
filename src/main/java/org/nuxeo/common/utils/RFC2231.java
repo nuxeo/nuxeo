@@ -101,7 +101,7 @@ public class RFC2231 {
                 buf.append(filename);
             }
         }
-        return buf.append(';').toString();
+        return buf.toString();
     }
 
 }
