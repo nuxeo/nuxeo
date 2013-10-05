@@ -38,7 +38,7 @@ public class FileCreationFormPage extends AbstractPage {
     @FindBy(id = "document_create:nxl_heading:nxw_description")
     public WebElement descriptionTextInput;
 
-    @FindBy(id = "document_create:create_doc_CREATE_DOCUMENT")
+    @FindBy(id = "document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT")
     public WebElement createButton;
 
     /**
