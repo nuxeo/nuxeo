@@ -40,8 +40,7 @@ public abstract class BaseApiDocFilter implements Filter {
     protected boolean isFilterActivated() {
         if (activated == null) {
             // don't activate by default
-            activated = Boolean.valueOf(Framework.getProperty(
-                    APIDOC_FILTERS_ACTIVATED, "false"));
+            activated = Boolean.valueOf(Framework.isBooleanPropertyTrue(APIDOC_FILTERS_ACTIVATED));
         }
         return activated.booleanValue();
     }

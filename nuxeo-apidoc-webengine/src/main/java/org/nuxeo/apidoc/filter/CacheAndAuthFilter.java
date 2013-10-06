@@ -41,8 +41,7 @@ public class CacheAndAuthFilter extends BaseApiDocFilter {
 
     protected boolean forceAnonymous() {
         if (forceAnonymous == null) {
-            forceAnonymous = Boolean.valueOf(Framework.getProperty(
-                    "org.nuxeo.apidoc.forceanonymous", "false"));
+            forceAnonymous = Boolean.valueOf(Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.forceanonymous"));
         }
         return forceAnonymous.booleanValue();
     }
