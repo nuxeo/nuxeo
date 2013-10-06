@@ -27,7 +27,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,7 +52,7 @@ public class InstallAfterRestart {
     protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
     protected static boolean isNeededByOs() {
-        if ("true".equals(Framework.getProperty(FAKE_VIDOZ, "false"))) {
+        if (Framework.isBooleanPropertyTrue(FAKE_VIDOZ)) {
             return true;
         }
         return isVindozBox();
@@ -75,9 +74,7 @@ public class InstallAfterRestart {
     }
 
     protected static boolean isDevMode() {
-        String debugPropValue = Framework.getProperty(
-                ConfigurationGenerator.NUXEO_DEV_SYSTEM_PROP, "false");
-        return Boolean.TRUE.equals(Boolean.valueOf(debugPropValue));
+        return Framework.isDevModeSet();
     }
 
     protected static boolean isVindozBox() {

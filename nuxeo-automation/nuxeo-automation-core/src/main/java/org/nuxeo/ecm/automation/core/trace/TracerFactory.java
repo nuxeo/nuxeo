@@ -62,8 +62,7 @@ public class TracerFactory implements TracerFactoryMBean {
         this.tracesCache = CacheBuilder.newBuilder().concurrencyLevel(
                 CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
                 CACHE_TIMEOUT, TimeUnit.HOURS).build();
-        this.recording = Boolean.parseBoolean(Framework.getProperty(
-                AUTOMATION_TRACE_PROPERTY, "false"));
+        this.recording = Framework.isBooleanPropertyTrue(AUTOMATION_TRACE_PROPERTY);
         this.printableTraces = Framework.getProperty(
                 AUTOMATION_TRACE_PRINTABLE_PROPERTY, "*");
     }
@@ -99,8 +98,8 @@ public class TracerFactory implements TracerFactoryMBean {
     }
 
     /**
-     * If trace mode is enabled, instantiate {@link Tracer}. If not, instantiate
-     * {@link TracerLite}.
+     * If trace mode is enabled, instantiate {@link Tracer}. If not,
+     * instantiate {@link TracerLite}.
      */
     public OperationCallback newTracer(String operationTypeId) {
         if (recording) {
@@ -134,7 +133,7 @@ public class TracerFactory implements TracerFactoryMBean {
         if (chainTraces == null) {
             tracesCache.put(chainId, new ChainTraces(trace.chain));
         }
-        if (trace.getError()!=null) {
+        if (trace.getError() != null) {
             lastError = trace;
         }
         return tracesCache.getIfPresent(chainId).add(trace);
@@ -157,11 +156,10 @@ public class TracerFactory implements TracerFactoryMBean {
         if (chainTrace == null) {
             return null;
         }
-        if (index<0) {
+        if (index < 0) {
             index = chainTrace.traces.size() - 1;
         }
-        return tracesCache.getIfPresent(key).getTrace(
-                index);
+        return tracesCache.getIfPresent(key).getTrace(index);
     }
 
     public Trace getLastErrorTrace() {
