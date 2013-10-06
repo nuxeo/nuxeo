@@ -39,8 +39,7 @@ public class NxFormRenderer extends FormRenderer {
     public static final String ENABLE_DOUBLE_CLICK_ON_ELEMENT = "disableDoubleClickShield";
 
     protected static boolean isDoubleShieldEnabled() {
-        return Boolean.TRUE.equals(Boolean.valueOf(Framework.getProperty(
-                ENABLE_DOUBLE_CLICK_SHIELD, "false")));
+        return Framework.isBooleanPropertyTrue(ENABLE_DOUBLE_CLICK_SHIELD);
     }
 
     @Override

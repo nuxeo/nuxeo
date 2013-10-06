@@ -207,7 +207,8 @@ public final class ComponentUtils {
                     } else {
                         response.setHeader("ETag", digest);
                         response.setHeader("Content-Disposition",
-                                ServletHelper.getRFC2231ContentDisposition(request, filename));
+                                ServletHelper.getRFC2231ContentDisposition(
+                                        request, filename));
 
                         addCacheControlHeaders(request, response);
 
@@ -240,8 +241,7 @@ public final class ComponentUtils {
 
     protected static boolean forceNoCacheOnMSIE() {
         // see NXP-7759
-        return Boolean.parseBoolean(Framework.getProperty(
-                FORCE_NO_CACHE_ON_MSIE, "false"));
+        return Framework.isBooleanPropertyTrue(FORCE_NO_CACHE_ON_MSIE);
     }
 
     /**
@@ -362,8 +362,8 @@ public final class ComponentUtils {
     }
 
     /**
-     * Returns the component specified by the {@code componentId} parameter from
-     * the {@code base} component.
+     * Returns the component specified by the {@code componentId} parameter
+     * from the {@code base} component.
      * <p>
      * Does not throw any exception if the component is not found, returns
      * {@code null} instead.

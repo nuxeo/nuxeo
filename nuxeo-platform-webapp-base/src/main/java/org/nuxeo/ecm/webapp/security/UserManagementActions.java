@@ -165,7 +165,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
         if (selectedUser != null) {
             NuxeoPrincipal selectedPrincipal = userManager.getPrincipal(selectedUser.getId());
-            if(selectedPrincipal.isAdministrator() && !((NuxeoPrincipal) currentUser).isAdministrator()) {
+            if (selectedPrincipal.isAdministrator()
+                    && !((NuxeoPrincipal) currentUser).isAdministrator()) {
                 return false;
             }
         }
@@ -314,8 +315,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     @Factory(value = "notReadOnly", scope = APPLICATION)
     public boolean isNotReadOnly() {
-        return !"true".equals(Framework.getProperty(
-                "org.nuxeo.ecm.webapp.readonly.mode", "false"));
+        return !Framework.isBooleanPropertyTrue("org.nuxeo.ecm.webapp.readonly.mode");
     }
 
     public List<String> getUserVirtualGroups(String userId) throws Exception {
