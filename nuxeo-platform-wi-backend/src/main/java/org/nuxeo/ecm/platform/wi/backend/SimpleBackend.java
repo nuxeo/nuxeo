@@ -20,6 +20,14 @@
  */
 package org.nuxeo.ecm.platform.wi.backend;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -37,20 +46,11 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.webdav.resource.ExistingResource;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class SimpleBackend extends AbstractCoreBackend {
 
@@ -143,7 +143,8 @@ public class SimpleBackend extends AbstractCoreBackend {
     public DocumentModel updateDocument(DocumentModel doc, String name,
             Blob content) throws ClientException {
         FileManager fileManager = Framework.getLocalService(FileManager.class);
-        String parentPath = new Path(doc.getPathAsString()).removeLastSegments(1).toString();
+        String parentPath = new Path(doc.getPathAsString()).removeLastSegments(
+                1).toString();
         try {
             // this cannot be done before the update anymore
             // doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
@@ -159,11 +160,11 @@ public class SimpleBackend extends AbstractCoreBackend {
 
     @Override
     public LinkedList<String> getVirtualFolderNames() throws ClientException {
-        if(orderedBackendNames == null){
+        if (orderedBackendNames == null) {
             List<DocumentModel> children = getChildren(new PathRef(rootPath));
             orderedBackendNames = new LinkedList<String>();
-            if(children != null){
-                for(DocumentModel model : children){
+            if (children != null) {
+                for (DocumentModel model : children) {
                     orderedBackendNames.add(model.getName());
                 }
             }
@@ -461,8 +462,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         try {
             cleanTrashPath(parent, name);
             DocumentModel file;
-            if (Boolean.parseBoolean(Framework.getProperty(
-                    ALWAYS_CREATE_FILE_PROP, "false"))) {
+            if (Framework.isBooleanPropertyTrue(ALWAYS_CREATE_FILE_PROP)) {
                 // compat for older versions, always create a File
                 file = getSession().createDocumentModel(
                         parent.getPathAsString(), name, "File");
@@ -643,7 +643,8 @@ public class SimpleBackend extends AbstractCoreBackend {
         return cleanTrashPath(parent, name);
     }
 
-    protected String encode(byte[] bytes, String encoding) throws ClientException {
+    protected String encode(byte[] bytes, String encoding)
+            throws ClientException {
         try {
             return new String(bytes, encoding);
         } catch (UnsupportedEncodingException e) {
