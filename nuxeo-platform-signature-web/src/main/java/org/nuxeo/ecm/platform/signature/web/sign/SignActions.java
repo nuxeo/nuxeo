@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -148,7 +147,8 @@ public class SignActions implements Serializable {
 
     /**
      * Signs digitally a PDF blob contained in the current document, modifies
-     * the document status and updates UI & auditing messages related to signing
+     * the document status and updates UI & auditing messages related to
+     * signing
      *
      * @param signingReason
      * @param password
@@ -208,8 +208,7 @@ public class SignActions implements Serializable {
     }
 
     protected boolean getPDFA() {
-        return BooleanUtils.toBoolean(Framework.getProperty(
-                SIGNATURE_USE_PDFA_PROP, "false"));
+        return Framework.isBooleanPropertyTrue(SIGNATURE_USE_PDFA_PROP);
     }
 
     protected SigningDisposition getDisposition(boolean originalIsPdf) {
