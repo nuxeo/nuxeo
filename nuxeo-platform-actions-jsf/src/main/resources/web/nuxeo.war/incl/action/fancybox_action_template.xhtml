@@ -17,7 +17,7 @@
 
   <f:subview id="#{fancyboxIdPrefix}subview">
   <nxu:set var="onclick"
-    value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
+    value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
     cache="true">
 
     <c:if test="#{empty iframe}">

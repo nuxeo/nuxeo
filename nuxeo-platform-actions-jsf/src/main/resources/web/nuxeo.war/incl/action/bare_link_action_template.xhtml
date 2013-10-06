@@ -5,7 +5,7 @@
   xmlns:h="http://java.sun.com/jsf/html">
   <nxu:set var="actionLink" value="#{action.getLink()}" resolveTwice="true" >
   <nxu:set var="onclick"
-    value="#{nxu:test(not empty action.properties.confirmMessage, 'if (!confirm#{widget.name}Message()) return false;', '')}#{action.confirm};#{action.properties.onclick};"
+    value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
     cache="true">
     <h:outputLink value="#{actionLink}"
       target="#{action.properties.target}"
