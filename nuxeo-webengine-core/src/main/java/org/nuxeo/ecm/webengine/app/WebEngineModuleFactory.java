@@ -36,7 +36,6 @@ import org.osgi.service.packageadmin.PackageAdmin;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class WebEngineModuleFactory {
 
@@ -45,11 +44,12 @@ public class WebEngineModuleFactory {
     public static Bundle[] getFragments(Bundle bundle) {
         BundleContext context = bundle.getBundleContext();
         ServiceReference ref = context.getServiceReference(PackageAdmin.class.getName());
-        PackageAdmin admin = (PackageAdmin)context.getService(ref);
+        PackageAdmin admin = (PackageAdmin) context.getService(ref);
         return admin.getFragments(bundle);
     }
 
-    public static WebEngineModule getApplication(WebEngineModule app, Bundle bundle, Map<String,String> attrs) throws Exception {
+    public static WebEngineModule getApplication(WebEngineModule app,
+            Bundle bundle, Map<String, String> attrs) throws Exception {
         WebEngine engine = Framework.getLocalService(WebEngine.class);
 
         boolean explode = true;
@@ -60,12 +60,11 @@ public class WebEngineModuleFactory {
         }
         // register the web engine
 
-
         File moduleDir = locateModuleDir(bundle, engine, explode);
 
         if (engine.isDevMode() && moduleDir != null) {
             engine.getWebLoader().addClassPathElement(moduleDir);
-            app = (WebEngineModule)engine.loadClass(app.getClass().getName()).newInstance();
+            app = (WebEngineModule) engine.loadClass(app.getClass().getName()).newInstance();
         }
 
         app.init(engine, bundle, new File(moduleDir, "module.xml"), attrs);
@@ -73,15 +72,16 @@ public class WebEngineModuleFactory {
         app.cfg.directory = moduleDir;
 
         Bundle[] fragments = getFragments(bundle);
-        for (Bundle fragment:fragments) {
+        for (Bundle fragment : fragments) {
             File fragmentDir = locateModuleDir(fragment, engine, explode);
             app.cfg.fragmentDirectories.add(fragmentDir);
         }
-        app.cfg.allowHostOverride = Boolean.parseBoolean((String)bundle.getHeaders().get(
+        app.cfg.allowHostOverride = Boolean.parseBoolean((String) bundle.getHeaders().get(
                 BundleManifestReader.ALLOW_HOST_OVERRIDE));
         engine.addApplication(app);
 
-        log.info("Deployed web module found in bundle: " + bundle.getSymbolicName());
+        log.info("Deployed web module found in bundle: "
+                + bundle.getSymbolicName());
 
         return app;
     }
@@ -90,8 +90,9 @@ public class WebEngineModuleFactory {
             boolean explode) throws IOException {
         File moduleDir = null;
         File bundleFile = Framework.getRuntime().getBundleFile(bundle);
-        if (explode) { // this will also add the exploded directory to WebEngine
-                       // class loader
+        if (explode) {
+            // this will also add the exploded directory to WebEngine class
+            // loader
             moduleDir = explodeBundle(engine, bundle, bundleFile);
         } else if (bundleFile.isDirectory()) {
             moduleDir = bundleFile;
@@ -99,8 +100,8 @@ public class WebEngineModuleFactory {
         return moduleDir;
     }
 
-
-    private static File explodeBundle(WebEngine engine, Bundle bundle, File bundleFile) throws IOException {
+    private static File explodeBundle(WebEngine engine, Bundle bundle,
+            File bundleFile) throws IOException {
         if (bundleFile.isDirectory()) { // exploded jar - deploy it as is.
             return bundleFile;
         } else { // should be a JAR - we copy the bundle module content
@@ -125,6 +126,7 @@ public class WebEngineModuleFactory {
                     public boolean isExclusive() {
                         return false;
                     }
+
                     @Override
                     public boolean accept(Path arg0) {
                         return !arg0.lastSegment().endsWith(".class");
