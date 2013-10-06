@@ -37,7 +37,8 @@
 
     <!-- Contextual tools buttons contrib NXP-9039 -->
     <action id="documentLock" link="#{lockActions.lockCurrentDocument}"
-      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png"
+      accessKey="l">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
@@ -47,7 +48,8 @@
     </action>
 
     <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}"
-      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png"
+      accessKey="l">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
@@ -57,7 +59,7 @@
     </action>
 
     <action id="permalinkAction" order="20" label="label.permalink" type="fancybox"
-      icon="/icons/contextual_menu/share.png">
+      icon="/icons/contextual_menu/share.png" accessKey="k">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties>
         <property name="include">/incl/permalink_box.xhtml</property>
