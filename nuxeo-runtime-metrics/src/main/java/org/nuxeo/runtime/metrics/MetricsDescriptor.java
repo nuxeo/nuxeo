@@ -158,8 +158,7 @@ public class MetricsDescriptor implements Serializable {
         public Integer period = 10;
 
         @XNode("@enabled")
-        public boolean enabled = Boolean.valueOf(Framework.getProperty(
-                ENABLED_PROPERTY, "false"));
+        public boolean enabled = Framework.isBooleanPropertyTrue(ENABLED_PROPERTY);
 
         public int getPeriod() {
             if (period == null) {
@@ -273,8 +272,7 @@ public class MetricsDescriptor implements Serializable {
         protected void registerTomcatGauge(String mbean, String attribute,
                 MetricRegistry registry, String name) {
             try {
-                registry.register(
-                        MetricRegistry.name("tomcat", name),
+                registry.register(MetricRegistry.name("tomcat", name),
                         new JmxAttributeGauge(new ObjectName(mbean), attribute));
             } catch (MalformedObjectNameException | IllegalArgumentException e) {
                 throw new UnsupportedOperationException(
@@ -287,7 +285,8 @@ public class MetricsDescriptor implements Serializable {
                 return;
             }
             LogFactory.getLog(MetricsServiceImpl.class).info(this);
-            // TODO: do not hard code the common datasource nameenable(registry)
+            // TODO: do not hard code the common datasource
+            // nameenable(registry)
             String pool = "Catalina:type=DataSource,class=javax.sql.DataSource,name=\"jdbc/nuxeo\"";
             String connector = String.format(
                     "Catalina:type=ThreadPool,name=\"http-bio-%s-%s\"",
@@ -343,7 +342,8 @@ public class MetricsDescriptor implements Serializable {
             registry.register("jvm.garbage", new GarbageCollectorMetricSet());
             registry.register("jvm.threads", new ThreadStatesGaugeSet());
             registry.register("jvm.files", new FileDescriptorRatioGauge());
-            registry.register("jvm.buffers", new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+            registry.register("jvm.buffers", new BufferPoolMetricSet(
+                    ManagementFactory.getPlatformMBeanServer()));
         }
 
         public void disable(MetricRegistry registry) {

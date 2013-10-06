@@ -44,8 +44,9 @@ import org.nuxeo.runtime.api.login.LoginService;
  * <p>
  * There are two type of services:
  * <ul>
- * <li>Global Services - these services are uniquely defined by a service class,
- * and there is an unique instance of the service in the system per class.
+ * <li>Global Services - these services are uniquely defined by a service
+ * class, and there is an unique instance of the service in the system per
+ * class.
  * <li>Local Services - these services are defined by a class and an URI. This
  * type of service allows multiple service instances for the same class of
  * services. Each instance is uniquely defined in the system by an URI.
@@ -95,11 +96,12 @@ public final class Framework {
     /**
      * A class loader used to share resources between all bundles.
      * <p>
-     * This is useful to put resources outside any bundle (in a directory on the
-     * file system) and then refer them from XML contributions.
+     * This is useful to put resources outside any bundle (in a directory on
+     * the file system) and then refer them from XML contributions.
      * <p>
-     * The resource directory used by this loader is ${nuxeo_data_dir}/resources
-     * whee ${nuxeo_data_dir} is usually ${nuxeo_home}/data
+     * The resource directory used by this loader is
+     * ${nuxeo_data_dir}/resources whee ${nuxeo_data_dir} is usually
+     * ${nuxeo_home}/data
      */
     protected static SharedResourceLoader resourceLoader;
 
@@ -139,7 +141,6 @@ public final class Framework {
      * Useful for hot reload of jars.
      *
      * @throws MalformedURLException
-     *
      * @since 5.6
      * @throws Exception
      */
@@ -404,8 +405,7 @@ public final class Framework {
 
     public static boolean isOSGiServiceSupported() {
         if (isOSGiServiceSupported == null) {
-            isOSGiServiceSupported = Boolean.valueOf(getProperty(
-                    "ecr.osgi.services", "false"));
+            isOSGiServiceSupported = Boolean.valueOf(isBooleanPropertyTrue("ecr.osgi.services"));
         }
         return isOSGiServiceSupported.booleanValue();
     }
