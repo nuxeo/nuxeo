@@ -18,9 +18,7 @@ package org.nuxeo.ecm.platform.filemanager.service.extension;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_PROPERTIES;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -47,7 +45,6 @@ import org.nuxeo.runtime.api.Framework;
  * Default file importer behavior.
  *
  * @see FileImporter
- *
  * @author <a href="mailto:akalogeropoulos@nuxeo.com">Andreas Kalogeropolos</a>
  */
 public abstract class AbstractFileImporter implements FileImporter {
@@ -198,7 +195,7 @@ public abstract class AbstractFileImporter implements FileImporter {
             }
             // update data
             updateDocument(doc, content);
-            if (Framework.getProperty(SKIP_UPDATE_AUDIT_LOGGING, "false").equalsIgnoreCase("true")) {
+            if (Framework.isBooleanPropertyTrue(SKIP_UPDATE_AUDIT_LOGGING)) {
                 // skip the update event if configured to do so
                 doc.putContextData(DISABLE_AUDIT_LOGGER, true);
             }

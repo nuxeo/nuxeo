@@ -74,8 +74,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
 
     public boolean detachResults() {
         if (detachResultsFlag == null) {
-            detachResultsFlag = Boolean.valueOf(Framework.getProperty(
-                    ALWAYS_DETACH_SEARCH_RESULTS_KEY, "false"));
+            detachResultsFlag = Framework.isBooleanPropertyTrue(ALWAYS_DETACH_SEARCH_RESULTS_KEY);
         }
         return detachResultsFlag.booleanValue();
     }
