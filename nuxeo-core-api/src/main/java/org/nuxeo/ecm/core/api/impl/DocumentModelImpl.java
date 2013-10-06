@@ -391,8 +391,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected boolean useStrictSessionManagement() {
         if (strictSessionManagement == null) {
-            strictSessionManagement = Boolean.valueOf(Framework.getProperty(
-                    STRICT_LAZY_LOADING_POLICY_KEY, "false"));
+            strictSessionManagement = Boolean.valueOf(Framework.isBooleanPropertyTrue(STRICT_LAZY_LOADING_POLICY_KEY));
         }
         return strictSessionManagement.booleanValue();
     }
