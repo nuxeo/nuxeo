@@ -62,10 +62,13 @@ public class WebEngineModuleFactory {
 
         File moduleDir = locateModuleDir(bundle, engine, explode);
 
-        if (engine.isDevMode() && moduleDir != null) {
-            engine.getWebLoader().addClassPathElement(moduleDir);
-            app = (WebEngineModule) engine.loadClass(app.getClass().getName()).newInstance();
-        }
+        // NXP-12749: temporary disable of this feature as it's breaking
+        // automation server module deployment, so it may be buggy
+        // if (engine.isDevMode() && moduleDir != null) {
+        // engine.getWebLoader().addClassPathElement(moduleDir);
+        // app = (WebEngineModule)
+        // engine.loadClass(app.getClass().getName()).newInstance();
+        // }
 
         app.init(engine, bundle, new File(moduleDir, "module.xml"), attrs);
 
