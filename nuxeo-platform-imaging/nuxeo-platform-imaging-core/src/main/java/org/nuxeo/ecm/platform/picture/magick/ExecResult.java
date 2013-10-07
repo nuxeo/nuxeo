@@ -32,6 +32,8 @@ public class ExecResult {
 
     protected long execTime;
 
+    protected Exception error;
+
     public ExecResult(List<String> output, long execTime) {
         this.execTime = execTime;
         this.output = output;
@@ -45,4 +47,11 @@ public class ExecResult {
         return execTime;
     }
 
+    /**
+     * Method to avoid heisenbug when running unit tests
+     * @since 5.6.0-HF24
+     */
+    public Exception getError() {
+        return error;
+    }
 }
