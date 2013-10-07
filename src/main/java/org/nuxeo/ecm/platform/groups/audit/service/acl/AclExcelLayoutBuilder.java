@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder.Type;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.AcceptsAllContent;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutable;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.utils.MessageAccessor;
 
 import com.google.common.collect.Multimap;
@@ -200,21 +199,21 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     @Override
     public void renderAudit(CoreSession session, final DocumentModel doc,
             boolean unrestricted) throws ClientException {
-        renderAudit(session, doc, unrestricted, null);
+        renderAudit(session, doc, unrestricted, 0);
     }
 
     @Override
     public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted, final ITimeoutable work)
+            boolean unrestricted, final int timeout)
             throws ClientException {
         if (!unrestricted) {
-            analyzeAndRender(session, doc, work);
+            analyzeAndRender(session, doc, timeout);
         } else {
             UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(
                     session) {
                 @Override
                 public void run() throws ClientException {
-                    analyzeAndRender(session, doc, work);
+                    analyzeAndRender(session, doc, timeout);
                 }
             };
             runner.runUnrestricted();
@@ -222,9 +221,9 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     }
 
     protected void analyzeAndRender(CoreSession session,
-            final DocumentModel doc, ITimeoutable work) throws ClientException {
+            final DocumentModel doc, int timeout) throws ClientException {
         log.debug("start processing data");
-        data.analyze(session, doc, work);
+        data.analyze(session, doc, timeout);
 
         configure(session);
         render(data);

@@ -47,7 +47,6 @@ import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -64,9 +63,6 @@ public class ExportGroupManagementActions implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
-
-    @In(create = true)
-    protected transient ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
     protected transient ContentViewActions contentViewActions;

@@ -17,24 +17,24 @@
 
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
-
 import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.job.RunnableAclAudit;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.job.Work;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.AclAuditWork;
+import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -80,17 +80,19 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
         log.info("done building test data");
 
         // --------------------
-        final Work work = new Work("test-work");
-        new RunnableAclAudit(session, root, work, testFile){
+        IResultPublisher publisher = new IResultPublisher() {
+            private static final long serialVersionUID = 1L;
+
             @Override
-            public void onAuditDone() {
+            public void publish(FileBlob fileBlob) throws ClientException {
                 log.info("audit done");
             }
         };
-        assertEquals(SCHEDULED, work.getState());
+        Work work = new AclAuditWork("test-work", session.getRepositoryName(), root.getId(), testFile, publisher);
 
         // Go!
         WorkManager wm = Framework.getLocalService(WorkManager.class);
-        wm.schedule(work);
+        wm.schedule(work, true);
     }
+
 }

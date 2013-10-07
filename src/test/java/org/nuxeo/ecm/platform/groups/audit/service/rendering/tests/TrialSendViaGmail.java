@@ -53,8 +53,8 @@ public class TrialSendViaGmail {
 
         // do send
         String to = defaultFrom;
-        IResultPublisher p = new PublishByMail(fb, to, defaultFrom, repository);
-        p.publish();
+        IResultPublisher p = new PublishByMail(to, defaultFrom, repository);
+        p.publish(fb);
     }
 
     /**

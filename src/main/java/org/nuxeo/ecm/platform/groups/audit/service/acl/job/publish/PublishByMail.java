@@ -24,6 +24,9 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.utils.MessageAccessor;
 import org.nuxeo.runtime.api.Framework;
 
 public class PublishByMail implements IResultPublisher {
+
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory.getLog(PublishByMail.class);
 
     public static final String PROPERTY_ACLAUDIT_SENDMAIL_CHAIN = "ACL.Audit.SendMail";
@@ -34,40 +37,29 @@ public class PublishByMail implements IResultPublisher {
 
     public static final String PROPERTY_MAIL_BODY = "message.acl.audit.mail.body";
 
+    public static String OUTPUT_FILE_NAME = "permissions.xls";
+
     public static String FROM = "noreply@nuxeo.com";
 
-    protected final AutomationService automation = Framework.getLocalService(AutomationService.class);
-
-    protected FileBlob file;
-
-    protected String documentName = "";
-
-    protected String repository;
+    protected String repositoryName;
 
     protected String to;
 
     protected String defaultFrom;
 
-    public PublishByMail(FileBlob fb, String to, String defaultFrom,
-            String repository) {
-        this.file = fb;
-        this.repository = repository;
+    public PublishByMail(String to, String defaultFrom, String repositoryName) {
+        this.repositoryName = repositoryName;
         this.to = to;
         this.defaultFrom = defaultFrom;
     }
 
     @Override
-    public void publish() throws ClientException {
-        reconnectAndSendMail();
-    }
-
-    /* repository required to have a session and to build a document */
-    protected void reconnectAndSendMail() throws ClientException {
-        new UnrestrictedSessionRunner(repository) {
+    public void publish(final FileBlob file) throws ClientException {
+        file.setFilename(OUTPUT_FILE_NAME);
+        new UnrestrictedSessionRunner(repositoryName) {
             @Override
             public void run() throws ClientException {
-                DocumentModel docToSend = createDocument(session, file,
-                        documentName, documentName);
+                DocumentModel docToSend = createDocument(session, file, "", "");
                 doCallOperationSendMail(session, docToSend, to, defaultFrom);
                 log.debug("audit sent");
             }
@@ -80,6 +72,7 @@ public class PublishByMail implements IResultPublisher {
         String title = MessageAccessor.get(session, PROPERTY_MAIL_SUBJECT);
         String body = MessageAccessor.get(session, PROPERTY_MAIL_BODY);
         String from = Framework.getProperty(PROPERTY_MAILFROM, defaultFrom);
+        AutomationService automation = Framework.getLocalService(AutomationService.class);
 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(docToSend);

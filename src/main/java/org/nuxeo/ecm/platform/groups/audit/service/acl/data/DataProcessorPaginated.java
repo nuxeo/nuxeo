@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutable;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 
 public class DataProcessorPaginated extends DataProcessor {
@@ -51,7 +50,7 @@ public class DataProcessorPaginated extends DataProcessor {
 
     @Override
     protected void doAnalyze(CoreSession session, DocumentModel root,
-            ITimeoutable work) throws ClientException {
+            int timeout) throws ClientException {
         // get data
         DataFetch fetch = new DataFetch();
         CoreQueryDocumentPageProvider pages = fetch.getAllChildrenPaginated(
@@ -64,8 +63,8 @@ public class DataProcessorPaginated extends DataProcessor {
         // handling processing time
         t.tic();
         int maxProcessTime = UNBOUNDED_PROCESS_TIME;
-        if (work != null) {
-            maxProcessTime = work.getTimeout() - EXCEL_RENDERING_RESERVED_TIME;
+        if (timeout > 0) {
+            maxProcessTime = timeout - EXCEL_RENDERING_RESERVED_TIME;
             if (maxProcessTime <= 0) {
                 throw new IllegalArgumentException(
                         "can't start a time bounded process with a timeout < "

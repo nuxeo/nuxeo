@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
-import org.nuxeo.ecm.platform.groups.audit.service.acl.job.ITimeoutable;
 
 public interface IAclExcelLayoutBuilder {
 
@@ -44,7 +43,7 @@ public interface IAclExcelLayoutBuilder {
             boolean unrestricted) throws ClientException;
 
     public void renderAudit(CoreSession session, final DocumentModel doc,
-            boolean unrestricted, ITimeoutable work) throws ClientException;
+            boolean unrestricted, int timeout) throws ClientException;
 
     public IExcelBuilder getExcel();
 
