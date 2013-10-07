@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.usermanager.providers.AbstractGroupsPageProvider;
+import org.nuxeo.ecm.platform.usermanager.providers.GroupsPageProvider;
 
 /**
  * Page provider listing Shibboleth groups
@@ -29,7 +29,8 @@ import org.nuxeo.ecm.platform.usermanager.providers.AbstractGroupsPageProvider;
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  * @since 5.4.2
  */
-public class ShibbolethGroupsPageProvider extends AbstractGroupsPageProvider {
+public class ShibbolethGroupsPageProvider extends GroupsPageProvider {
+
     @Override
     protected List<DocumentModel> searchAllGroups() throws Exception {
         return ShibbolethGroupHelper.getGroups();

@@ -17,9 +17,15 @@
 
 package org.nuxeo.ecm.platform.shibboleth.computedgroups;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jboss.el.ExpressionFactoryImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,16 +50,10 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
-import de.odysseus.el.ExpressionFactoryImpl;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
-@Deploy( { "org.nuxeo.ecm.platform.content.template",
+@Deploy({ "org.nuxeo.ecm.platform.content.template",
         "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.usermanager", "org.nuxeo.ecm.platform.el",
         "org.nuxeo.ecm.platform.usermanager.api",
@@ -106,10 +106,10 @@ public class TestShibbolethComputedGroup {
         ExpressionContext ec = new ExpressionContext();
 
         ee.bindValue(ec, "hello", sampleArray);
-        assertSame("world", ee.evaluateExpression(ec, "${hello[1]}",
-                String.class));
-        assertNotSame("world", ee.evaluateExpression(ec, "${hello[0]}",
-                String.class));
+        assertSame("world",
+                ee.evaluateExpression(ec, "${hello[1]}", String.class));
+        assertNotSame("world",
+                ee.evaluateExpression(ec, "${hello[0]}", String.class));
     }
 
     @Test
@@ -164,7 +164,9 @@ public class TestShibbolethComputedGroup {
 
         assertTrue(ELGroupComputerHelper.isValidEL("currentUser.user.email != \"test\""));
         assertFalse(ELGroupComputerHelper.isValidEL("fdsfds ! fdsf^6"));
-        assertFalse(ELGroupComputerHelper.isValidEL("testMethodCall == hello"));
+        // changed to assertTrue when switching from juel-impl to jboss-el
+        // implementation: can't see why this would not be a valid EL
+        assertTrue(ELGroupComputerHelper.isValidEL("testMethodCall == hello"));
         assertTrue(ELGroupComputerHelper.isValidEL("empty currentUser"));
     }
 
