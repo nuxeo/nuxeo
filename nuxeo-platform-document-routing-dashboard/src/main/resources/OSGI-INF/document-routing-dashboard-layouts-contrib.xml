@@ -437,6 +437,9 @@
           <widget>task_workflow_name</widget>
         </row>
         <row>
+          <widget>task_show_workflow_graph</widget>
+        </row>
+        <row>
           <widget>task_actors</widget>
         </row>
         <row>
@@ -459,16 +462,15 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle3</property>
-            <property name="nxl_gridStyleClass_1">gridStyle7</property>
-            <property name="nxl_gridStyleClass_2">gridStyle1</property>
+            <property name="nxl_gridStyleClass_0">gridStyle10</property>
+            <property name="nxl_gridStyleClass_1">gridStyle1</property>
           </properties>
           <widget>container_0</widget>
-          <widget>container_02</widget>
           <widget>container_01</widget>
         </row>
         <row>
           <properties mode="any">
+            <property name="gridRowStyleClass">simpleBox</property>
             <property name="nxl_gridStyleClass_0">gridStyle5</property>
             <property name="nxl_gridStyleClass_1">gridStyle7</property>
           </properties>
@@ -498,7 +500,7 @@
           <property name="styleClass">description_block</property>
         </properties>
         <subWidgetRefs>
-          <widget>task_workflow_name</widget>
+          <widget>task_workflow_title</widget>
         </subWidgetRefs>
       </widget>
       <widget name="container_01" type="container">
@@ -535,29 +537,6 @@
               <property name="actionContextDocument">#{layoutValue.getDocument()}
               </property>
             </properties>
-          </widget>
-        </subWidgets>
-      </widget>
-      <widget name="container_02" type="container">
-        <labels>
-          <label mode="any"></label>
-        </labels>
-        <translated>false</translated>
-        <fields>
-          <field></field>
-        </fields>
-        <controls mode="any">
-          <control name="handleLabels">true</control>
-        </controls>
-        <properties mode="any">
-          <property name="hideSubLabels">true</property>
-        </properties>
-        <subWidgets>
-          <widget name="task_show_workflow_graph" type="current_route_show_graph">
-            <fields>
-              <field>processId</field>
-            </fields>
-            <handlingLabels>true</handlingLabels>
           </widget>
         </subWidgets>
       </widget>

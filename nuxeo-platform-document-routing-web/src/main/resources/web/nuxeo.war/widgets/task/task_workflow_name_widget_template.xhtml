@@ -1,10 +1,4 @@
-<f:subview id="#{widget.id}" xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
-<h:outputText value="#{messages[routingActions.getRouteInstanceFor(field_0).title]} - #{messages[field_1]}" />
-</f:subview>
+<h:outputText
+  value="#{messages[routingActions.getRouteInstanceFor(field_0).title]} - #{messages[field_1]}"
+  styleClass="#{widgetProperty_styleClass}"
+  xmlns:h="http://java.sun.com/jsf/html" />

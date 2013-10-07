@@ -12,7 +12,8 @@
         <description>
           <p>This widget displays the name, description, author and
             creation
-            date of the current route started on the current
+            date
+            of the current route started on the current
             document.
           </p>
         </description>
@@ -43,7 +44,8 @@
             popup.
           </p>
           A field to map the id of the document representing
-          the workflow instance is required.
+          the workflow
+          instance is required.
         </description>
         <categories>
           <category>routing</category>
@@ -154,17 +156,59 @@
       </property>
     </widgetType>
 
-    <widgetType name="task_workflow_name">
+    <widgetType name="task_workflow_title">
       <configuration>
-        <title>Listing the name of the workflow that created the task
+        <title>
+          Task workflow title
         </title>
-        <documentation>
+        <description>
+          <p>
+            Displays the name of the worklow for a task, inside a h1 tag.
+          </p>
           Two fields are required:
           <ul>
             <li>A field to map the task</li>
             <li>A field to map the task name</li>
           </ul>
-        </documentation>
+        </description>
+        <sinceVersion>5.8</sinceVersion>
+        <categories>
+          <category>routing</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/task/task_workflow_title_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="task_workflow_name">
+      <configuration>
+        <title>
+          Task workflow name
+        </title>
+        <description>
+          <p>
+            Displays the name of the worklow for a task.
+          </p>
+          Two fields are required:
+          <ul>
+            <li>A field to map the task</li>
+            <li>A field to map the task name</li>
+          </ul>
+        </description>
         <sinceVersion>5.8</sinceVersion>
         <categories>
           <category>routing</category>
@@ -191,7 +235,8 @@
     <widgetType name="task_layout_with_actions">
       <configuration>
         <title>Listing the layout configured on Studio for the task or
-          default actions for non routing tasks
+          default
+          actions for non routing tasks
         </title>
         <documentation>
           Two fields are required:
@@ -388,6 +433,16 @@
     </widget>
 
     <!-- for "task_layout" @since 5.8, apply to an object Task -->
+    <widget name="task_workflow_title" type="task_workflow_title">
+      <labels>
+        <label mode="any">label.route.task.workflowStep</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field></field>
+        <field>name</field>
+      </fields>
+    </widget>
     <widget name="task_workflow_name" type="task_workflow_name">
       <labels>
         <label mode="any">label.route.task.workflowStep</label>
@@ -397,10 +452,14 @@
         <field></field>
         <field>name</field>
       </fields>
-      <properties mode="any">
-        <property name="localize">true</property>
-        <property name="styleClass">h3</property>
-      </properties>
+    </widget>
+    <widget name="task_show_workflow_graph" type="current_route_show_graph">
+      <labels>
+        <label mode="any"></label>
+      </labels>
+      <fields>
+        <field>processId</field>
+      </fields>
     </widget>
     <widget name="task_actors" type="multiplePrefixedUsersSuggestion">
       <labels>
@@ -698,7 +757,8 @@
 
     <layout name="userOpenTasksLayout">
       <templates>
-        <template mode="any">/layouts/layout_default_template.xhtml
+        <template mode="any">
+          /layouts/layout_div_template.xhtml
         </template>
       </templates>
       <rows>
@@ -739,8 +799,7 @@
       </properties>
     </action>
 
-    <action id="current_route_previous_tasks" type="widget"
-      order="300">
+    <action id="current_route_previous_tasks" type="widget" order="300">
       <category>CURRENT_ROUTE_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">current_route_previous_tasks</property>
