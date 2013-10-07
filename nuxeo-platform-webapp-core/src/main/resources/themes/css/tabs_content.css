@@ -13,9 +13,13 @@ author: lkemen@nuxeo.com
   padding: 1.5em 1em }
 
 .contentViewTitle {
-  float: left;
+  border-bottom: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  clear: both;
   line-height: normal;
-  margin: 0 1em 1em 0 }
+  margin: 0 1em .5em 0 }
+.contentViewTitle h3 {
+  padding: .3em 0 }
 
 .description_block {
   color: "gray.medium (__FLAVOR__ color)";
