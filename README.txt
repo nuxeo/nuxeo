@@ -55,12 +55,18 @@ or:
 
 add your language in the list that looks like this:
 
-<locale-config>
-  <default-locale>en</default-locale>
-  <supported-locale>en</supported-locale>
-  <supported-locale>fr</supported-locale>
-  <supported-locale>de</supported-locale>
-  <supported-locale>it</supported-locale>
-</locale-config>
+  <locale-config>
+    <supported-locale>ar_SA</supported-locale>
+    <supported-locale>ca_ES</supported-locale>
+    <supported-locale>cs_CZ</supported-locale> 
+    <supported-locale>zh_CN</supported-locale>
+    <supported-locale>de_DE</supported-locale>
+    <supported-locale>el_GR</supported-locale>
+    <supported-locale>es_ES</supported-locale>
+    <supported-locale>eu_ES</supported-locale>
+    <supported-locale>fr_CA</supported-locale>
+    <supported-locale>gl_ES</supported-locale>
+    ...
+  </locale-config>
 <message-bundle>messages</message-bundle>
 
