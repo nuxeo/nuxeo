@@ -35,7 +35,7 @@
     </action>
 
     <action id="userCenterNuxeoDrive" link="/incl/nuxeodrive/user_center_nuxeo_drive.xhtml"
-      label="user.center.nuxeoDrive" icon="/icons/drive_unsynced.png"
+      label="user.center.nuxeoDrive" icon="/icons/drive_tab.png"
       order="100">
       <category>USER_CENTER</category>
     </action>
