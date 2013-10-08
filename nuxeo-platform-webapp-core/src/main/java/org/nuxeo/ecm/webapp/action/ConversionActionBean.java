@@ -241,21 +241,6 @@ public class ConversionActionBean implements ConversionAction {
         return "pdf_generation_error";
     }
 
-    /**
-     * @since 5.8
-     */
-    public String generatePdfFile(String docRef, String fileFieldFullName)
-            throws ClientException {
-        DocumentModel doc = null;
-        if (docRef == null) {
-            doc = navigationContext.getCurrentDocument();
-        } else {
-            doc = documentManager.getDocument(new IdRef(docRef));
-        }
-        BlobHolder bh = new DocumentBlobHolder(doc, fileFieldFullName);
-        return generatePdfFileFromBlobHolder(bh);
-    }
-
     public void initialize() {
         // NOP
     }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.action;
 
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 
 public interface ConversionAction {
 
@@ -35,10 +34,4 @@ public interface ConversionAction {
 
     void reCheckConverterAvailability();
 
-    /**
-     * @throws ClientException
-     * @since 5.8
-     */
-    String generatePdfFile(String docRef, String fileFieldFullName)
-            throws ClientException;
 }
