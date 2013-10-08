@@ -22,11 +22,11 @@
   </appender>
 
   <category name="org.nuxeo">
-    <priority value="DEBUG" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.nuxeo.ecm.platform.importer.xml.parser">
-    <priority value="DEBUG" />
+    <priority value="WARN" />
   </category>
 
 
