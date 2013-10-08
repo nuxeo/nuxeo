@@ -19,7 +19,8 @@ author: lkemen@nuxeo.com
   line-height: normal;
   margin: 1em 0 .5em 0 }
 .contentViewTitle h3 {
-  padding: .3em 0 }
+  padding: .3em 0 0;
+  border: none; }
 
 .description_block {
   color: "gray.medium (__FLAVOR__ color)";
