@@ -28,6 +28,7 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.RenderingInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 
 /**
@@ -82,6 +83,12 @@ public class WidgetImpl implements Widget {
     protected List<RenderingInfo> renderingInfos;
 
     protected String definitionId;
+
+    protected boolean dynamic = false;
+
+    protected boolean global = false;
+
+    protected WidgetDefinition definition;
 
     // needed by GWT serialization
     protected WidgetImpl() {
@@ -336,6 +343,30 @@ public class WidgetImpl implements Widget {
     @Override
     public List<RenderingInfo> getRenderingInfos() {
         return renderingInfos;
+    }
+
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+
+    public boolean isGlobal() {
+        return global;
+    }
+
+    public void setGlobal(boolean global) {
+        this.global = global;
+    }
+
+    public WidgetDefinition getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(WidgetDefinition definition) {
+        this.definition = definition;
     }
 
     @Override

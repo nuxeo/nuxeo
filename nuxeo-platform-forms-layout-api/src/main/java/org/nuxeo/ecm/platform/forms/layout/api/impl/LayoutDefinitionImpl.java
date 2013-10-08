@@ -61,6 +61,8 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
 
     protected List<String> aliases;
 
+    protected boolean dynamic = false;
+
     // needed by GWT serialization
     protected LayoutDefinitionImpl() {
         super();
@@ -272,6 +274,14 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         this.aliases = aliases;
     }
 
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+
     @Override
     public LayoutDefinition clone() {
         Map<String, Map<String, Serializable>> cprops = null;
@@ -333,6 +343,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         if (aliases != null) {
             clone.setAliases(new ArrayList<String>(aliases));
         }
+        clone.setDynamic(dynamic);
         return clone;
     }
 

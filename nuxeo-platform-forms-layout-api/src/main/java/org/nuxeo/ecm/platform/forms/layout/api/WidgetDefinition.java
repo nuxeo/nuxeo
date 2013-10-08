@@ -303,6 +303,30 @@ public interface WidgetDefinition extends Serializable {
     List<String> getAliases();
 
     /**
+     * Returns true if the widget is defined globally (as opposed to being held
+     * by a layout definition).
+     *
+     * @since 6.0
+     */
+    boolean isGlobal();
+
+    /**
+     * Sets the global status on this definition, depending on how it's been
+     * retrievd by the service.
+     *
+     * @since 6.0
+     */
+    void setGlobal(boolean global);
+
+    /**
+     * Returns true if this widget was generated from configuration on a
+     * service, and not generated on-the-fly using dynamic behaviors.
+     *
+     * @since 6.0
+     */
+    boolean isDynamic();
+
+    /**
      * Returns a clone instance of this widget definition.
      * <p>
      * Useful for conversion of widget definition during export.

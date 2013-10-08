@@ -149,6 +149,11 @@ public interface LayoutDefinition extends Serializable {
     boolean isEmpty();
 
     /**
+     * @since 6.0
+     */
+    boolean isDynamic();
+
+    /**
      * Returns a clone instance of this layout definition.
      * <p>
      * Useful for conversion of layout definition during export.

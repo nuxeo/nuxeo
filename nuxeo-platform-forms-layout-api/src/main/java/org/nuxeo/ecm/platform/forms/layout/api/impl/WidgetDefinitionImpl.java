@@ -79,6 +79,10 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
 
     protected List<String> aliases;
 
+    protected boolean dynamic = false;
+
+    protected boolean global = false;
+
     // needed by GWT serialization
     protected WidgetDefinitionImpl() {
         super();
@@ -445,6 +449,22 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         return getRenderingInfos(renderingInfos, mode);
     }
 
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+
+    public boolean isGlobal() {
+        return global;
+    }
+
+    public void setGlobal(boolean global) {
+        this.global = global;
+    }
+
     @Override
     public List<String> getAliases() {
         return aliases;
@@ -563,6 +583,8 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         if (aliases != null) {
             clone.setAliases(new ArrayList<String>(aliases));
         }
+        clone.setDynamic(dynamic);
+        clone.setGlobal(global);
         return clone;
     }
 

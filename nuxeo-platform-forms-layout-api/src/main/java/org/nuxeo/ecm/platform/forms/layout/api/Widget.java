@@ -212,4 +212,29 @@ public interface Widget extends Serializable {
      */
     List<RenderingInfo> getRenderingInfos();
 
+    /**
+     * Returns true if the widget is defined globally (as opposed to being held
+     * by a layout definition).
+     *
+     * @since 6.0
+     */
+    boolean isGlobal();
+
+    /**
+     * Returns true if this widget was generated from configuration on a
+     * service, and not generated on-the-fly using dynamic behaviors.
+     *
+     * @since 6.0
+     */
+    boolean isDynamic();
+
+    /**
+     * Returns the definition from which this widget instance was generated.
+     * <p>
+     * Useful in dev mode to show the corresponding configuration in the UI.
+     *
+     * @since 6.0
+     */
+    WidgetDefinition getDefinition();
+
 }

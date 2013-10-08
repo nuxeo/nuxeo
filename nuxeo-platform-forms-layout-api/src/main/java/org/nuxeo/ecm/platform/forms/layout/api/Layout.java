@@ -164,4 +164,31 @@ public interface Layout extends Serializable {
      */
     void setValueName(String valueName);
 
+    /**
+     * Return true if this layout was generated from configuration on a
+     * service, and not generated on-the-fly using dynamic behaviors.
+     *
+     * @since 6.0
+     */
+    boolean isDynamic();
+
+    /**
+     * Returns the template to use for dev mode.
+     * <p>
+     * Is retrieved from layout definition templates, or from layout type
+     * templates, using the {@link BuiltinModes#DEV}.
+     *
+     * @since 6.0
+     */
+    String getDevTemplate();
+
+    /**
+     * Returns the definition from which this layout instance was generated.
+     * <p>
+     * Useful in dev mode to show the corresponding configuration in the UI.
+     *
+     * @since 6.0
+     */
+    LayoutDefinition getDefinition();
+
 }
