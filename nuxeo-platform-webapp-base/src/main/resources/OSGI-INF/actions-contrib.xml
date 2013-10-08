@@ -4,16 +4,28 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+    <action id="seamReload" link="#{seamReload.doReload}" enabled="true"
+      label="Reload Seam" order="50">
+      <category>USER_MENU_ACTIONS</category>
+      <filter-id>seamHotReloadIsEnabled</filter-id>
+    </action>
+
     <action id="devModeFlush" link="#{seamReload.doFlush}" enabled="true"
       label="Dev mode: force flush" order="100">
       <category>USER_MENU_ACTIONS</category>
       <filter-id>devModeEnabledForAdmin</filter-id>
     </action>
 
-    <action id="seamReload" link="#{seamReload.doReload}" enabled="true"
-      label="Reload Seam" order="50">
-      <category>USER_MENU_ACTIONS</category>
-      <filter-id>seamHotReloadIsEnabled</filter-id>
+    <action id="activateLayoutDevMode" link="#{nuxeoLayoutManagerBean.setDevModeSet(true)}"
+      label="Activate UI Development mode" order="100">
+      <category>USER_SERVICES</category>
+      <filter-id>layoutDevModeDisabled</filter-id>
+    </action>
+
+    <action id="deactivateLayoutDevMode" link="#{nuxeoLayoutManagerBean.setDevModeSet(false)}"
+      label="Deactivate UI Development mode" order="100">
+      <category>USER_SERVICES</category>
+      <filter-id>layoutDevModeEnabled</filter-id>
     </action>
 
     <!-- NXP-7025: disable pdf export on doc -->
@@ -141,6 +153,18 @@
     <filter id="seamHotReloadIsEnabled">
       <rule grant="true">
         <condition>#{seamHotReloadIsEnabled}</condition>
+      </rule>
+    </filter>
+
+    <filter id="layoutDevModeEnabled">
+      <rule grant="true">
+        <condition>#{nxDevModeSet and nuxeoLayoutManagerBean.devModeSet}</condition>
+      </rule>
+    </filter>
+
+    <filter id="layoutDevModeDisabled">
+      <rule grant="true">
+        <condition>#{nxDevModeSet and not nuxeoLayoutManagerBean.devModeSet}</condition>
       </rule>
     </filter>
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -50,6 +50,14 @@ public interface WidgetTypeHandler extends Serializable {
      */
     FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig,
             Widget widget, FaceletHandler[] subHandlers) throws WidgetException;
+
+    /**
+     * Returns the facelet handler used for dev mode.
+     *
+     * @since 6.0
+     */
+    FaceletHandler getDevFaceletHandler(FaceletContext ctx,
+            TagConfig tagConfig, Widget widget) throws WidgetException;
 
     /**
      * Returns a property value given its name.

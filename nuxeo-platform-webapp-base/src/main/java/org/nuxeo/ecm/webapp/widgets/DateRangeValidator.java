@@ -36,11 +36,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 
 /**
- * Compares two dates in a date rage widget and throws a validation error if the
- * second date it's not superior to the stratDate
+ * Compares two dates in a date range widget and throws a validation error if
+ * the second date is not superior to the first date.
+ * <p>
+ * Looks up component ids by reytrieving attributes on the validated component,
+ * named "startDateComponentId" and "endDateComponentId".
  *
  * @since 5.7
- *
  */
 @Name("dateRangeValidator")
 @Scope(ScopeType.CONVERSATION)

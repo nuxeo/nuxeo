@@ -29,10 +29,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.html.HtmlMessage;
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.validator.Validator;
 import javax.faces.view.facelets.ComponentConfig;
@@ -49,6 +51,7 @@ import javax.faces.view.facelets.ValidatorHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.forms.layout.actions.NuxeoLayoutManagerBean;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
@@ -57,6 +60,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -73,7 +77,6 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  */
 public final class FaceletHandlerHelper {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(FaceletHandlerHelper.class);
 
     public static final String LAYOUT_ID_PREFIX = "nxl_";
@@ -81,6 +84,21 @@ public final class FaceletHandlerHelper {
     public static final String WIDGET_ID_PREFIX = "nxw_";
 
     public static final String MESSAGE_ID_SUFFIX = "_message";
+
+    /**
+     * @since 6.0
+     */
+    public static final String DEV_CONTAINER_ID_SUFFIX = "_dev_container";
+
+    /**
+     * @since 6.0
+     */
+    public static final String DEV_REGION_ID_SUFFIX = "_dev_region";
+
+    /**
+     * @since 6.0
+     */
+    public static String DEV_MODE_DISABLED_VARIABLE = "nuxeolayoutDevModeDisabled";
 
     static final String LAYOUT_ID_COUNTERS = "org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS";
 
@@ -198,6 +216,22 @@ public final class FaceletHandlerHelper {
     public String generateMessageId(String widgetName) {
         return generateUniqueId(WIDGET_ID_PREFIX + widgetName
                 + MESSAGE_ID_SUFFIX);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public String generateDevRegionId(String widgetName) {
+        return generateUniqueId(WIDGET_ID_PREFIX + widgetName
+                + DEV_REGION_ID_SUFFIX);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public String generateDevContainerId(String widgetName) {
+        return generateUniqueId(WIDGET_ID_PREFIX + widgetName
+                + DEV_CONTAINER_ID_SUFFIX);
     }
 
     /**
@@ -639,4 +673,51 @@ public final class FaceletHandlerHelper {
         return currentHandler;
     }
 
+    /**
+     * @since 6.0
+     */
+    public static boolean isDevModeEnabled(FaceletContext ctx) {
+        // avoid stack overflow when using layout tags within the dev
+        // handler
+        if (Framework.isDevModeSet()) {
+            NuxeoLayoutManagerBean bean = lookupBean(ctx.getFacesContext());
+            if (bean.isDevModeSet()) {
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression disableDevAttr = eFactory.createValueExpression(
+                        ctx,
+                        String.format("#{%s}", DEV_MODE_DISABLED_VARIABLE),
+                        Boolean.class);
+                if (!Boolean.TRUE.equals(disableDevAttr.getValue(ctx))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected static NuxeoLayoutManagerBean lookupBean(FacesContext ctx) {
+        String expr = "#{" + NuxeoLayoutManagerBean.NAME + "}";
+        NuxeoLayoutManagerBean bean = (NuxeoLayoutManagerBean) ctx.getApplication().evaluateExpressionGet(
+                ctx, expr, Object.class);
+        if (bean == null) {
+            log.error("Managed bean not found: " + expr);
+            return null;
+        }
+        return bean;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public FaceletHandler getDisableDevModeTagHandler(String tagConfigId,
+            FaceletHandler nextHandler) {
+        TagConfig config = TagConfigFactory.createTagConfig(
+                tagConfig,
+                tagConfigId,
+                getTagAttributes(
+                        createAttribute("var", DEV_MODE_DISABLED_VARIABLE),
+                        createAttribute("value", "true"),
+                        createAttribute("cache", "true")), nextHandler);
+        return new SetTagHandler(config);
+    }
 }

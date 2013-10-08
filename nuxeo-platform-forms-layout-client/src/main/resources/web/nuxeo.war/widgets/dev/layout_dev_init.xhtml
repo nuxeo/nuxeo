@@ -1,0 +1,61 @@
+<c:if xmlns="http://www.w3.org/1999/xhtml"
+ xmlns:c="http://java.sun.com/jstl/core"
+ test="#{nuxeoLayoutManagerBean.devModeSet}">
+
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    var enabledMsg = "UI Development mode activated on this page";
+    var disabledMsg = "UI Development mode deactivated on this page";
+    var nxlDevEnabled = #{nuxeoLayoutManagerBean.devModeSet};
+    jQuery(document).bind('keydown', 'Shift+d', function() {
+      nxlDevEnabled = !nxlDevEnabled;
+      var msg = enabledMsg;
+      if (!nxlDevEnabled) {
+        var msg = disabledMsg;
+        jQuery(".nxlDevContainer").hide();
+      }
+      jQuery.ambiance({
+        title: msg,
+        type: "info",
+        className: "infoFeedback",
+        timeout: 0
+      });
+    });
+    jQuery(".nxlDevRegion").each(function() {
+      jQuery(this).hover(function() {
+        if (nxlDevEnabled) {
+          jQuery(".nxlDevRegion.highlight").removeClass("highlight");
+          jQuery(".nxlDevContainer").hide();
+          jQuery(this).children(".nxlDevContainer").show();
+          jQuery(this).addClass("highlight");
+        }
+      }, function() {
+        if (nxlDevEnabled) {
+          jQuery(this).children(".nxlDevContainer").hide();
+          jQuery(".nxlDevRegion.").removeClass("highlight");
+        }
+      });
+    });
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        jQuery(".nxlDevRegion").each(function() {
+          jQuery(this).hover(function() {
+            if (nxlDevEnabled) {
+              jQuery(".nxlDevRegion.highlight").removeClass("highlight");
+              jQuery(".nxlDevContainer").hide();
+              jQuery(this).children(".nxlDevContainer").show();
+              jQuery(this).addClass("highlight");
+            }
+          }, function() {
+            if (nxlDevEnabled) {
+              jQuery(this).children(".nxlDevContainer").hide();
+              jQuery(".nxlDevRegion.").removeClass("highlight");
+            }
+          });
+        });
+      }
+    });
+  });
+</script>
+</c:if>

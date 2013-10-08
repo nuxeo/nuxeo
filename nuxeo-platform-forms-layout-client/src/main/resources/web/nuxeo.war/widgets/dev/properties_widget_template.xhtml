@@ -1,0 +1,17 @@
+<c:forEach xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  var="item" items="#{field}">
+  <div>
+    <h:outputText value="#{item.key}" style="font-style: italic;" />
+    <h:outputText value=": " />
+    <h:outputText value="#{item.value}" />
+  </div>
+</c:forEach>

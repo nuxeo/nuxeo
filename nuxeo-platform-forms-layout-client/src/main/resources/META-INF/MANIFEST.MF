@@ -7,4 +7,5 @@ Bundle-Category: stateless
 Require-Bundle: org.nuxeo.ecm.platform.forms.layout.api,
  org.nuxeo.ecm.core.api
 Nuxeo-Component: OSGI-INF/layouts-framework.xml,
+ OSGI-INF/layouts-dev-contrib.xml,
  OSGI-INF/layouts-contrib.xml

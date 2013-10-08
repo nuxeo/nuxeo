@@ -1,0 +1,31 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  id="#{layout.id}"
+  styleClass="#{layoutProperty_styleClass}">
+<c:if test="false">
+Simplified layout template to avoid tables, because this layout can be
+inserted in DOM where tables are not allowed.
+</c:if>
+
+  <nxl:layoutRow>
+    <nxl:layoutRowWidget>
+      <div>
+        <c:if test="#{not empty widget.label}">
+          <ui:include src="/widgets/incl/widget_label_template.xhtml">
+            <ui:param name="labelStyleClass" value="bold" />
+          </ui:include>
+          <h:outputText value=": " />
+        </c:if>
+        <nxl:widget widget="#{widget}" value="#{value}" />
+      </div>
+    </nxl:layoutRowWidget>
+  </nxl:layoutRow>
+
+</c:if>
