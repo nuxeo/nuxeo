@@ -9,7 +9,7 @@
 
   <h:outputText rendered="#{fn:startsWith(fieldOrValue, 'group:')}">
     <nxu:set var="group" value="#{fn:split(fieldOrValue, ':')[1]}">
-      <span class="tag group creator">
+      <span class="group creator">
          <h:commandLink action="#{groupManagementActions.viewGroup(group)}">
           <h:outputText value="#{group}"/>
          </h:commandLink>
@@ -18,7 +18,7 @@
   </h:outputText>
   <h:outputText rendered="#{fn:startsWith(fieldOrValue, 'user:')}">
     <nxu:set var="user" value="#{fn:split(fieldOrValue, ':')[1]}">
-      <span class="tag user creator">
+      <span class="user creator">
         <a href="#{baseURL}user/#{user}">
           #{nxu:userFullName(user)}
         </a>
@@ -26,7 +26,7 @@
     </nxu:set>
   </h:outputText>
   <h:outputText rendered="#{not fn:startsWith(fieldOrValue, 'group:') and not fn:startsWith(fieldOrValue, 'user:')}">
-    <span class="tag user creator">
+    <span class="user creator">
       #{fieldOrValue}
     </span>
   </h:outputText>
