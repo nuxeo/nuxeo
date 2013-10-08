@@ -8,33 +8,68 @@ author: lkemen@nuxeo.com
 */
 
 /* =Tree */
-a.treeLink, a.treeLink:link, a.treeLink:visited { border: 1px solid transparent;
+a.treeLink,
+a.treeLink:link,
+a.treeLink:visited {
+  border: 1px solid transparent;
   border-radius: 3px;
   padding: 0 .4em .1em;
   font-weight: normal }
-.selected a.treeLink, a.treeLink:hover { background-color: "color.major.light (__FLAVOR__ background)"; border-color: "color.major.medium (__FLAVOR__ border)";
+
+a.treeLink:hover,
+.selected a.treeLink {
+  background-color: "color.major.light (__FLAVOR__ background)";
+  border-color: "color.major.medium (__FLAVOR__ border)";
   color: #000;
   text-decoration: none;
   text-shadow: 1px 1px 0 #fff }
 
-.cell img, .clipboardFunction img { vertical-align: middle }
-.cell .iconImage { margin-right: .4em }
+.cell img,
+.clipboardFunction img {
+  vertical-align: middle }
 
-.menu dl, .menu dd { margin: 0 }
-.menu dd { padding: 1em 0 }
+.cell .iconImage {
+  margin-right: .4em }
 
-td.dr-tree-h-text, td.dr-tree-h-text span, td.dr-tree-h-text a.treeLink { white-space: normal }
-td.dr-tree-h-text { padding: 0 4px }
-td.dr-tree-i-sel { padding: 0 4px }
-.dr-tree-h-ic-div { margin-left: 8px; padding-left: 10px }
-.treeNodeHighlightedClass { text-decoration: none }
-.treeNodeSelectedClass { border: none }
+.menu dl,
+.menu dd {
+  margin: 0 }
 
-.dataInput .dr-tree td, .dataInput .dr-tree td td { padding: .1em }
-.fieldColumn .dr-tree img { margin: 0 }
+.menu dd {
+  padding: 1em 0 }
+
+td.dr-tree-h-text,
+td.dr-tree-h-text span,
+td.dr-tree-h-text a.treeLink {
+  white-space: normal }
+
+td.dr-tree-h-text {
+  padding: 0 4px }
+
+td.dr-tree-i-sel {
+  padding: 0 4px }
+
+.dr-tree-h-ic-div {
+  margin-left: 8px;
+  padding-left: 10px }
+
+.treeNodeHighlightedClass {
+  text-decoration: none }
+
+.treeNodeSelectedClass {
+  border: none }
+
+.dataInput .dr-tree td,
+.dataInput .dr-tree td td {
+  padding: .1em }
+
+.fieldColumn .dr-tree img {
+  margin: 0 }
 
 /* =FileUpload */
-.rich-fileupload-list-decor { margin: 1em 0 }
+.rich-fileupload-list-decor {
+  margin: 1em 0 }
+
 .rich-fileupload-button,
 .rich-fileupload-button-light,
 .rich-fileupload-button-press {
@@ -43,6 +78,7 @@ td.dr-tree-i-sel { padding: 0 4px }
   background-color: "button (__FLAVOR__ background)";
   border: none 0;
   padding: 0 }
+
 .rich-fileupload-button:hover,
 .rich-fileupload-button-light:hover,
 .rich-fileupload-button-press:hover {
@@ -53,10 +89,13 @@ td.dr-tree-i-sel { padding: 0 4px }
   margin: .2em;
   border-color: "button (__FLAVOR__ border)";
   border-radius: 2px }
-.rich-fileupload-button-border:hover {
-  border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 
-.rich-fileupload-button-content { padding: .1em .5em .1em 1.7em }
+.rich-fileupload-button-border:hover {
+  border: 1px solid;
+  border-color: "button.hover (__FLAVOR__ border)" }
+
+.rich-fileupload-button-content {
+  padding: .1em .5em .1em 1.7em }
 
 .rich-fileupload-table-td {
   border-color: "neutral.lighter (__FLAVOR__ border)" ;
@@ -73,18 +112,60 @@ rich-fileupload-list-overflow table {
   color: "normal.status (__FLAVOR__ color)" }
 
 /* =Modal Panel */
-.rich-mpnl-mask-div { opacity: 0.1 }
-h3.documentTypes { padding: 0; margin: 1.4em 0 .5em; color: #333; border-width: 1px; border-style: none none solid;  border-color: "neutral.light (__FLAVOR__ border)"; }
+.rich-mpnl-mask-div {
+  opacity: 0.1 }
 
-.documentType { margin: 1em 0; width: 200px }
-.documentType img { float: left; margin-right: .5em }
-.documentType a, .documentType a:link, .documentType a:visted, .documentType a:hover { font-weight: bold; color: "link (__FLAVOR__ color)"; text-decoration: none }
-.documentType span { color: #454545 }
-a.documentTypeLink { color: "link (__FLAVOR__ color)"; font-weight: bold; text-decoration: none }
+h3.documentTypes {
+  padding: 0;
+  margin: 1.4em 0 .5em;
+  color: #333;
+  border-width: 1px;
+  border-style: none none solid;
+  border-color: "neutral.light (__FLAVOR__ border)" }
 
-#tooltip { position: absolute; display: block }
-#tooltipContent { display: block; padding: .2em 1.1em .3em .6em; margin-left: .5em; background: #FFFFAA; color:"black (__FLAVOR__ color)"; border: 1px solid #333 }
+.documentType {
+  margin: 1em 0;
+  width: 200px }
+
+.documentType img {
+  float: left;
+  margin-right: .5em }
+
+.documentType a,
+.documentType a:link,
+.documentType a:visted,
+.documentType a:hover {
+  font-weight: bold;
+  color: "link (__FLAVOR__ color)";
+  text-decoration: none }
+
+.documentType span {
+  color: #454545 }
+
+a.documentTypeLink {
+  color: "link (__FLAVOR__ color)";
+  font-weight: bold;
+  text-decoration: none }
+
+#tooltip {
+  position: absolute;
+  display: block }
+
+#tooltipContent {
+  display: block;
+  padding: .2em 1.1em .3em .6em;
+  margin-left: .5em;
+  background: #ffa;
+  color:"black (__FLAVOR__ color)";
+  border: 1px solid #333 }
 
 /* Suggestion Box */
-.suggestionBoxResult .rich-sb-cell-padding img { max-height: 16px; max-width: 16px }
-.suggestionBoxResult .rich-sb-cell-padding span { display: block; width: 250px; overflow: hidden; text-overflow: ellipsis }
+.suggestionBoxResult .rich-sb-cell-padding img {
+  max-height: 16px;
+  max-width: 16px }
+
+.suggestionBoxResult .rich-sb-cell-padding span {
+  display: block;
+  width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis }

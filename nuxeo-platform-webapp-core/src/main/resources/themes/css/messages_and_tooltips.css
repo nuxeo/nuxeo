@@ -79,25 +79,31 @@ a.ambiance-close {
 .avert,
 .error,
 .success,
-.warning { font-weight: bold }
+.warning {
+  font-weight: bold }
 
 .info,
-.infoMessage { color: "info.status (__FLAVOR__ color)" }
+.infoMessage {
+  color: "info.status (__FLAVOR__ color)" }
 
 .success,
 .successLink,
-.successMessage { color: "success.status (__FLAVOR__ color)" }
+.successMessage {
+  color: "success.status (__FLAVOR__ color)" }
 
-.avert { color: "gray.dark (__FLAVOR__ color)" }
+.avert {
+  color: "gray.dark (__FLAVOR__ color)" }
 
 .warning,
 .warningLink,
 .warningLabel,
-.warningMessage { color: "warning.status (__FLAVOR__ color)" }
+.warningMessage {
+  color: "warning.status (__FLAVOR__ color)" }
 
 .error,
 .errorLink,
-.errorMessage { color: "error.status (__FLAVOR__ color)" }
+.errorMessage {
+  color: "error.status (__FLAVOR__ color)" }
 
 .processMessage {
   background: url("${basePath}/icons/bullet.png") no-repeat scroll 0 4px transparent;
@@ -106,11 +112,21 @@ a.ambiance-close {
   font-weight: bold;
   margin: .1em .5em .3em 0;
   padding: .2em 0 .2em 1.7em }
-.completeSuccess { background-image: url("${basePath}/icons/checked.gif") }
-.completeError { background-image: url("${basePath}/icons/delete_red.png") }
-.completeWarning { background-image: url("${basePath}/icons/warning.gif") }
-.running { background-image: url("${basePath}/img/standart_waiter.gif") }
-.scheduled { background-image: url("${basePath}/icons/clock.png") }
+
+.completeSuccess {
+  background-image: url("${basePath}/icons/checked.gif") }
+
+.completeError {
+  background-image: url("${basePath}/icons/delete_red.png") }
+
+.completeWarning {
+  background-image: url("${basePath}/icons/warning.gif") }
+
+.running {
+  background-image: url("${basePath}/img/standart_waiter.gif") }
+
+.scheduled {
+  background-image: url("${basePath}/icons/clock.png") }
 
 .adminMessage {
   background-color: #000;
@@ -159,16 +175,20 @@ a.ambiance-close {
   color: "black (__FLAVOR__ color)" }
 
 .label-info,
-.chip-info { background-color: "info.strong (__FLAVOR__ background)" }
+.chip-info {
+  background-color: "info.strong (__FLAVOR__ background)" }
 
 .label-success,
-.chip-success { background-color: "success.strong (__FLAVOR__ background)" }
+.chip-success {
+  background-color: "success.strong (__FLAVOR__ background)" }
 
 .label-warning,
-.chip-warning { background-color: "warning.strong (__FLAVOR__ background)" }
+.chip-warning {
+  background-color: "warning.strong (__FLAVOR__ background)" }
 
 .label-error,
-.chip-error { background-color: "error.strong (__FLAVOR__ background)" }
+.chip-error {
+  background-color: "error.strong (__FLAVOR__ background)" }
 
 /* =Quote */
 .quote {
@@ -183,12 +203,14 @@ ul.visibleList {
    margin: .5em 0 1em;
    padding: 0 0 0 2em }
 
-.visibleList li { list-style: disc outside none }
+.visibleList li {
+  list-style: disc outside none }
 
 /* =Small help messages */
 .specification {
   clear: both;
 	margin: 0 0 1.5em }
+
 .widgetPanel .specification {
   font-size: .95em }
 
@@ -198,7 +220,8 @@ ul.visibleList {
   font-size: .9em }
 
 p.detail,
-div.detail { margin: .1em 0 .7em }
+div.detail {
+  margin: .1em 0 .7em }
 
 /* Empty folder or result */
 .emptyResult {

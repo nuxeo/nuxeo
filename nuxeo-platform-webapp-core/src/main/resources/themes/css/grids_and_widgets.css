@@ -23,14 +23,14 @@ A .gridBox may contain several .widgetPanel vertically. */
 The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .gridStyle12 { width: 100% }
 .gridStyle10 { width: 84% }
-.gridStyle9 { width: 75% }
-.gridStyle8 { width: 66% }
-.gridStyle7 { width: 58% }
-.gridStyle6 { width: 50% }
-.gridStyle5 { width: 42% }
-.gridStyle4 { width: 33% }
-.gridStyle3 { width: 25% }
-.gridStyle2 { width: 16% }
+.gridStyle9  { width: 75% }
+.gridStyle8  { width: 66% }
+.gridStyle7  { width: 58% }
+.gridStyle6  { width: 50% }
+.gridStyle5  { width: 42% }
+.gridStyle4  { width: 33% }
+.gridStyle3  { width: 25% }
+.gridStyle2  { width: 16% }
 
 .gridBox h3,
 .gridBox h4 {
@@ -40,21 +40,23 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   font-size: 1.2em;
   margin: .7em 0 .5em;
   padding: .4em 0 }
+
 .gridBox h4 {
   font-size: 1.1em }
 
 .summaryTitle,
 .gridBox .summaryTitle {
-  border-width: 1px;
-  border-style: none none solid;
-  border-color: "color.major.medium (__FLAVOR__ border)";
+  border-width: 3px;
+  border-style: double none none;
+  border-color: #eee;
   color: "black (__FLAVOR__ color)";
   display: block;
   font-size: 1.2em;
   font-weight: bold;
   margin: 0 0 .6em;
-  padding: 2em 0 .2em;
+  padding: .8em 0 .2em;
   text-transform: uppercase }
+
 .gridBox .summaryTitle {
   padding: 0 0 .2em }
 
@@ -67,9 +69,11 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin: 0;
   padding: 0;
   display: inline }
+
 .resultLayoutSelection a img {
   border: 1px solid;
   border-color: "noborder (__FLAVOR__ border)" }
+
 .resultLayoutSelection a:hover img,
 .resultLayoutSelection.selected img {
   border: 1px solid;
@@ -78,6 +82,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .thumbnailContainer {
   height: 11em;
   max-width: 14em }
+
 .thumbnailContainer img {
   max-height: 100%;
   max-width: 100% }
@@ -91,6 +96,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .contextActions .actionsWidgetPanel {
   padding: 0 }
+
 .contextActions .actionLink.button  {
   margin: 0 .3em 0 0 }
 
@@ -114,9 +120,11 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 /* =Specifics */
 .indicators {
   margin: 0 .2em .5em 0 }
+
 .indicators .widgetPanel.actionsWidgetPanel > div {
   display: inline;
   margin: 0 1em 0 0 }
+
 .indicators .widgetPanel.actionsWidgetPanel img {
   margin: 0 0 -0.17em }
 
@@ -126,17 +134,17 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
    are reviewed to provide a compacter display than a default tab layout */
 
 /* Global rules */
-.compactLayout .containerWidgetPanel,
 .compactLayout .widgetPanel,
 .compactLayout .containerField,
+.compactLayout .containerWidgetPanel,
 .compactLayout .dataInput .containerLabel span {
   display: block;
   clear: both }
 
 .compactLayout .labelColumn,
-.compactLayout .containerWidgetPanel .labelColumn,
 .compactLayout .widgetPanel .labelColumn,
-.compactLayout .widgetTable .labelColumn {
+.compactLayout .widgetTable .labelColumn,
+.compactLayout .containerWidgetPanel .labelColumn {
   font-weight: normal;
   text-align: left;
   width: auto }
@@ -152,11 +160,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .compactLayout input[type="text"] {
   width: 95% }
+
 .compactLayout input[type="image"],
 .compactLayout input[type="button"] {
   width: auto }
+
 .compactLayout select {
   width: 100% }
+
 .compactLayout input[type="text"].rich-calendar-input {
   font-size: .9em;
   margin: .1em .3em .1em 0em;
@@ -169,16 +180,19 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   text-align: right;
   padding-right: .2em;
   width: 30px }
+
 .compactLayout .fieldColumn {
   padding-left: .1em }
+
 .compactLayout .fieldColumn img {
   margin: 0 }
+
 .compactLayout .fieldColumn a img {
   margin: 0 .5em 0 0;
   vertical-align: middle }
 
-.compactLayout .widgetTable .boldColumn,
-.compactLayout .widgetTable .boldLabel {
+.compactLayout .widgetTable .boldLabel,
+.compactLayout .widgetTable .boldColumn {
   font-weight: normal }
 
 /* Compact buttons */
@@ -188,6 +202,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin: 0 0 .1em .5em;
   padding: .1em .4em .2em;
   width: auto }
+
 .compactLayout .actionsWidgetPanel .containerField a.button {
   padding: 0 .4em }
 
@@ -196,14 +211,17 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .compactLayout .sticker {
   margin: .1em .2em .1em 0 }
+
 .compactLayout .sticker label {
   color: "black (__FLAVOR__ color)";
   float: left;
   font-size: .9em;
   max-width: 88% }
+
 .compactLayout .sticker a {
   float: right;
   vertical-align: top }
+
 .compactLayout .sticker a img {
   margin: 0;
   width: 95% }
@@ -271,7 +289,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 /* Compact Foldable boxes */
 .compactLayout .foldableBox {
-	margin: .1em 0 .6em }
+  margin: .1em 0 .6em }
+
 .compactLayout .containerWidgetPanel .foldedDisabled {
   padding-left: 0 }
 

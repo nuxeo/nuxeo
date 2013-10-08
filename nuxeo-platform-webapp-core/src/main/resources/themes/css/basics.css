@@ -45,11 +45,14 @@ a,
 a:link,
 a:visited {
   color: "link (__FLAVOR__ color)";
-  text-decoration: none }
+  text-decoration: none;
+  -moz-transition: all 0.1s ease 0.1s;
+  -webkit-transition: all 0.1s ease 0.1s;
+  transition: all 0.1s ease 0.1s }
 
 a:hover {
   color: "link.hover (__FLAVOR__ color)";
-  text-decoration: underline }
+  text-decoration: none }
 
 h1, h2,
 h3, h4,

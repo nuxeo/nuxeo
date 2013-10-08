@@ -9,13 +9,43 @@ author: lkemen@nuxeo.com
 */
 
 /* =Header */
-.nxHeader { background-color: "header (__FLAVOR__ background)"; overflow: auto; width:100% }
-.nxHeader .logo { text-align: center; vertical-align: middle; width: 18% }
-.nxHeader .content { padding: 0; line-height: 280%; vertical-align: middle; width: 82%; font-size: 12px }
-.nxHeader .includes { width: 0 }
-.nxHeader a, .nxHeader a:link, .nxHeader a:visited, .nxHeader a:hover, .nxHeader a:active { color: "link.header (__FLAVOR__ color)"; opacity: 0.75; text-decoration: none }
-.nxHeader a:hover, .nxHeader a:active { opacity: 1 }
-.nxHeader .logo a:link, .nxHeader .logo a:hover, .nxHeader .logo a:visited { opacity: 1 }
+.nxHeader {
+  background-color: "header (__FLAVOR__ background)";
+  overflow: auto;
+  width:100% }
+
+.nxHeader .logo {
+  text-align: center;
+  vertical-align: middle;
+  width: 18% }
+
+.nxHeader .content {
+  padding: 0;
+  line-height: 280%;
+  vertical-align: middle;
+  width: 82%;
+  font-size: 12px }
+
+.nxHeader .includes {
+  width: 0 }
+
+.nxHeader a,
+.nxHeader a:link,
+.nxHeader a:visited,
+.nxHeader a:hover,
+.nxHeader a:active {
+  color: "link.header (__FLAVOR__ color)";
+  opacity: 0.75;
+  text-decoration: none }
+
+.nxHeader a:hover,
+.nxHeader a:active {
+  opacity: 1 }
+
+.nxHeader .logo a:link,
+.nxHeader .logo a:hover,
+.nxHeader .logo a:visited {
+  opacity: 1 }
 
 .nxHeader .actionsWidgetPanel {
   padding: 0 }
@@ -27,21 +57,52 @@ author: lkemen@nuxeo.com
   margin: 0 1em 0 .5em;
   opacity: .85;
   padding: .4em 0 0 }
-.userSearchBlock input[type="text"]:focus, .userSearchBlock:hover { opacity: 1 }
-.userSearchBlock .directoryFilter { border: 1px solid #fff; margin: 0 .3em 0 0 }
-.userSearchBlock input.button {  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset; margin: .3em .5em 0 .3em; padding: .2em }
-.advancedSearchLink a { font-size: .8em }
+
+.userSearchBlock:hover,
+.userSearchBlock input[type="text"]:focus {
+  opacity: 1 }
+
+.userSearchBlock .directoryFilter {
+  border: 1px solid #fff;
+  margin: 0 .3em 0 0 }
+
+.userSearchBlock input.button {
+  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset;
+  margin: .3em .5em 0 .3em; padding: .2em }
+
+.advancedSearchLink a {
+  font-size: .8em }
 
 /* =UserServices */
-.userServicesBlock { float: left }
-.userServicesBlock a:hover { text-decoration: none }
+.userServicesBlock {
+  float: left }
+
+.userServicesBlock a:hover {
+  text-decoration: none }
 
 /* =MainTabs */
-.mainTabs { float: left }
-.mainTabs li { display: inline; float: left }
-.mainTabs a:link, .mainTabs a:visited { color: #fff; display: inline-block; font-size: 1.1em; padding: .2em .6em }
-.mainTabs li.selected, .mainTabs li:hover { background: url("${basePath}/img/white50.png") repeat-x 0 0 transparent } 
-.mainTabs li.selected a, .mainTabs li a:hover, .mainTabs li.selected a:visited { opacity: 1 }
+.mainTabs {
+  float: left }
+
+.mainTabs li {
+  display: inline;
+  float: left }
+
+.mainTabs a:link,
+.mainTabs a:visited {
+  color: #fff;
+  display: inline-block;
+  font-size: 1.1em;
+  padding: .2em .6em }
+
+.mainTabs li:hover,
+.mainTabs li.selected {
+  background: url("${basePath}/img/white50.png") repeat-x 0 0 transparent } 
+
+.mainTabs li a:hover,
+.mainTabs li.selected a,
+.mainTabs li.selected a:visited {
+  opacity: 1 }
 
 .userActions {
   float: left;
@@ -71,17 +132,37 @@ author: lkemen@nuxeo.com
 
 .userMenuActions ul:hover a,
 .userMenuActions ul:hover li,
-.userMenuActions ul li:hover { background-color:#fff; color:"black (__FLAVOR__ color)"; opacity: 1 }
+.userMenuActions ul li:hover {
+  background-color:#fff;
+  color:"black (__FLAVOR__ color)";
+  opacity: 1 }
 
 .nxHeader .actionList .actionSubList li a {
   color:"black (__FLAVOR__ color)" }
 
 /* =Studio header link */
-.studioButton { float:left; color:white }
-.studioButton a { border: none; color: #fff; display: inline-block; font-size: 1.1em; line-height: 280%; margin: 0; padding: 0 .6em .15em }
+.studioButton {
+  float:left;
+  color:white }
+
+.studioButton a {
+  border: none;
+  color: #fff;
+  display: inline-block;
+  font-size: 1.1em;
+  line-height: 280%;
+  margin: 0;
+  padding: 0 .6em .15em }
 
 /* =Admin message */
-.adminMessage {text-align: center; padding: 5px 5px 5px 25px; background-color:#fff9B4; font: normal 12px Arial,sans-serif;}
+.adminMessage {
+  text-align: center;
+  padding: 5px 5px 5px 25px;
+  background-color:#fff9B4;
+  font: normal 12px Arial,sans-serif; }
 
 /* =Connect header links */
-.updateNotificationArea {float:right; vertical-align:middle; padding:10px}
+.updateNotificationArea {
+  float: right;
+  vertical-align: middle;
+  padding: 10px }

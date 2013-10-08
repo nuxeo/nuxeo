@@ -18,6 +18,7 @@ author: lkemen@nuxeo.com
   clear: both;
   line-height: normal;
   margin: 1em 0 .5em 0 }
+
 .contentViewTitle h3 {
   padding: .3em 0 0;
   border: none; }
@@ -25,19 +26,24 @@ author: lkemen@nuxeo.com
 .description_block {
   color: "gray.medium (__FLAVOR__ color)";
   line-height: 155% }
+
 .description_block span {
   display: block;
   font-size: 1em }
+
 .description_block span.documentDescription {
   color: #444;
   font-size: 1.1em;
   font-weight: bold }
+
 .description_block .createdBy {
   color: #111;
   font-weight: bold;
   padding: 0 }
+
 .description_block .creationDate {
   display: inline-block }
+
 .dublincore_block table.floatingLeftTable {
   float: left;
   margin-right: 100px }
@@ -47,13 +53,16 @@ author: lkemen@nuxeo.com
 
 .rank_block,
 .attachments,
-.publication_block { margin-top: 1.3em }
+.publication_block {
+  margin-top: 1.3em }
 
-.content_block .actionsColumn { width: 20% }
+.content_block .actionsColumn {
+  width: 20% }
 
 .note_content_block {
   background-color: #fff;
-  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
+  border: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
   color: "black (__FLAVOR__ color)";
   display: block;
@@ -239,8 +248,10 @@ author: lkemen@nuxeo.com
   font-weight: bold }
 
 .lcAndVersion {
-  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
+  border: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
   padding: .3em }
+
 .versionNumber {
   float: right;
   font-weight: bold;
@@ -250,33 +261,52 @@ author: lkemen@nuxeo.com
   margin: 1em 0;
   padding: 1em .6em .2em }
 
-.comments_block .commentBlock { border: none }
-.comments_block .commentQuote { margin: .4em 0 .4em 2em }
+.comments_block .commentBlock {
+  border: none }
+
+.comments_block .commentQuote {
+  margin: .4em 0 .4em 2em }
 
 /*  =Manage tab */
-.rightsAddLabel { font-weight: bold; padding: 0 .4em 0 0 }
-.rightsAddSelect { margin-top: 0}
+.rightsAddLabel {
+  font-weight: bold;
+  padding: 0 .4em 0 0 }
 
-.userAndGroupSearch { margin: 0 }
-.userAndGroupFilter { margin: 1.3em 0 0 }
+.rightsAddSelect {
+  margin-top: 0}
+
+.userAndGroupSearch {
+  margin: 0 }
+
+.userAndGroupFilter {
+  margin: 1.3em 0 0 }
 
 .directoryFilter, .searchField {
-  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
+  border: 1px solid;
+  border-color: "neutral.light (__FLAVOR__ border)";
   font-size: 1em;
   margin: 0 .3em 0 0;
   padding: .25em }
 
 /*  =Relations */
-.relationPredicateColumn { vertical-align: top; width: 100px }
-.relationCommentList { background: transparent }
-.relationCreateLabelColumn { width: 100px }
+.relationPredicateColumn {
+  vertical-align: top;
+  width: 100px }
+
+.relationCommentList {
+  background: transparent }
+
+.relationCreateLabelColumn {
+  width: 100px }
 
 /*  =Archive */
 .archiveTabContent {
   margin-left: 1.8em }
+
 .archiveTabContent .notEditable {
   background-color: #fff;
   border: none }
+
 .archiveTabContent .currentDocumentInformation {
   background-color: "neutral.medium (__FLAVOR__ background)" }
 
@@ -288,8 +318,10 @@ author: lkemen@nuxeo.com
   margin: .4em 0 1em;
   padding: .4em;
   text-align: center }
+
 .taskActions {
   width: 470px }
+
 .closedContent {
   background: #fff;
   border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
@@ -300,16 +332,20 @@ author: lkemen@nuxeo.com
 .commentBlock {
   margin: .7em 0 .8em;
   padding: .2em 1em .2em 0 }
+
 .commentActions {
   float: right;
   font-size: .8em;
   margin-right: .4em;
   padding: 2em }
+
 .commentCreationDate {
   font-weight: normal }
+
 .commentQuote {
   margin: .4em 0;
   white-space: pre-line }
+
 .commentAuthor {
   background: transparent url("${basePath}/icons/comment.png") no-repeat 4px 4px;
   color: "gray.dark (__FLAVOR__ color)";

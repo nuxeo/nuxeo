@@ -24,12 +24,12 @@ option {
   background-color: white;
   font-weight: normal }
 
+.field,
+select,
+textarea,
 input[type="text"],
 input[type="file"],
-input[type="password"],
-textarea,
-select,
-.field {
+input[type="password"] {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   border: 1px solid;
@@ -52,10 +52,10 @@ label {
 input[type="file"] {
   margin-left: .6em }
 
-input[type="checkbox"],
 input[type="radio"],
 input[type="image"],
-input[type="hidden"] {
+input[type="hidden"],
+input[type="checkbox"] {
   background: none;
   border: none !important;
   box-shadow: none;
@@ -76,10 +76,10 @@ select:focus > optgroup > option:checked {
   background-color: "color.major.stronger (__FLAVOR__ background)" }
 
 /* in Tables */
-.dataTableNoBorder textarea,
 .dataInput textarea,
-.dataTableNoBorder input[type="text"],
-.dataInput input[type="text"] {
+.dataTableNoBorder textarea,
+.dataInput input[type="text"],
+.dataTableNoBorder input[type="text"] {
   max-width: 49em }
 
 input.rich-calendar-input[type="text"] {

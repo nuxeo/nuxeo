@@ -94,9 +94,9 @@ table td {
 
 .dataTableLine,
 .dataTableLine td,
-.dataList,/* deprecated since 5.7.2 */
+.dataList,
 .dataList td,
-.dataOutput,/* deprecated since 5.7.2 */
+.dataOutput,
 .dataOutput td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-style: solid none;
@@ -106,7 +106,7 @@ table td {
 .dataTableNoBorder,
 .dataTableNoBorder th,
 .dataTableNoBorder td,
-.dataInput,/* deprecated since 5.7.2 */
+.dataInput,
 .dataInput th,
 .dataInput td {
   background-color: none;
@@ -247,19 +247,39 @@ table.palettePreviewColors td div {
 .dataOutput2Columns {
   margin-top: .7em;
   margin-bottom: .4em }
+
 .twoColumns {
   width: 50% } /* replaced by .fiftyPercent */
 
-.iconColumn .cell { background: none; width: 1.8em }
+.iconColumn .cell {
+  background: none;
+  width: 1.8em }
 
-.dataInputGroup { margin: 0; padding: 0 }
+.dataInputGroup {
+  margin: 0;
+  padding: 0 }
 
-.relationCommentList td { border: 0 none }
-.relationObjectColumn { width: 100px }
-.relationActionsColumn { text-align: center; width: 60px }
-.relationCreateFieldColumn table,
-.workflowFieldColumn table { border: 0 none; margin: 0 }
+.relationCommentList td {
+  border: 0 none }
 
-.vocabularyEntryContent { margin-left: 1.6em }
-.vocabularyEntryContent .notEditable { background-color: #fff }
-.vocabularyEntryContent .dataInput { border: none; margin-bottom: 1.4em }
+.relationObjectColumn {
+  width: 100px }
+
+.relationActionsColumn {
+  text-align: center;
+  width: 60px }
+
+.workflowFieldColumn table,
+.relationCreateFieldColumn table {
+  border: 0 none;
+  margin: 0 }
+
+.vocabularyEntryContent {
+  margin-left: 1.6em }
+
+.vocabularyEntryContent .notEditable {
+  background-color: #fff }
+
+.vocabularyEntryContent .dataInput {
+  border: none;
+  margin-bottom: 1.4em }
