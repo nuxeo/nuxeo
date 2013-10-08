@@ -288,46 +288,6 @@ author: lkemen@nuxeo.com
   margin: 0 .3em 0 0;
   padding: .25em }
 
-/*  =Relations */
-.relationPredicateColumn {
-  vertical-align: top;
-  width: 100px }
-
-.relationCommentList {
-  background: transparent }
-
-.relationCreateLabelColumn {
-  width: 100px }
-
-/*  =Archive */
-.archiveTabContent {
-  margin-left: 1.8em }
-
-.archiveTabContent .notEditable {
-  background-color: #fff;
-  border: none }
-
-.archiveTabContent .currentDocumentInformation {
-  background-color: "neutral.medium (__FLAVOR__ background)" }
-
-/* Workflow @deprecated since 5.6 */
-.taskAssign {
-  background: "neutral.medium (__FLAVOR__ background)";
-  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
-  display: block;
-  margin: .4em 0 1em;
-  padding: .4em;
-  text-align: center }
-
-.taskActions {
-  width: 470px }
-
-.closedContent {
-  background: #fff;
-  border: 1px solid; border-color: "neutral.light (__FLAVOR__ border)";
-  margin: 1.4em 0;
-  padding: 0 .9em .9em }
-
 /* =Comments */
 .commentBlock {
   margin: .7em 0 .8em;

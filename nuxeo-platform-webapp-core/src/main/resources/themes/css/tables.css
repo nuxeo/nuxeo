@@ -259,10 +259,10 @@ table.palettePreviewColors td div {
   margin: 0;
   padding: 0 }
 
-.relationCommentList td {
-  border: 0 none }
-
-.relationObjectColumn {
+/*  =Relations */
+.relationObjectColumn,
+.relationPredicateColumn,
+.relationCreateLabelColumn {
   width: 100px }
 
 .relationActionsColumn {
