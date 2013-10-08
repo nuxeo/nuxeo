@@ -2236,6 +2236,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    // NXP-12776 randomly failing
+    @Ignore
     public void testVersioning() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
