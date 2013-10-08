@@ -327,3 +327,23 @@ div.detail {
 .tips.processMessage {
   background-position: 5px 13px;
   padding: .8em 1.8em }
+
+.nxlDevRegion .nxlDevContainer {
+  position: absolute}
+
+.nxlDevRegion.highlight {
+  border: 2px dashed;
+  border-color: #ff5b2b;
+  background-color: #ffefb6}
+
+.nxlDevContainer {
+  background-color: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  box-shadow: 0 0 3px #aaa;
+  color: #000;
+  display: none;
+  font-weight: normal;
+  padding: .6em .8em .8em;
+  white-space: normal;
+  z-index: 2000}
