@@ -21,7 +21,7 @@ String context = request.getContextPath();
   }
 
 .topBar {
-  background:#212325 url(<%=context%>/img/theme_galaxy/small_gray_bar.png) repeat-x scroll left top;
+  background:none #212325;
   width:100%;
   height:36px;
   border:0;
@@ -110,7 +110,7 @@ nxthemes css is not used in login.jsp */
   cursor:pointer;
   color: #454545;
   font-size: 10px;
-  background: #CECFD1 url(<%=context%>/img/theme_galaxy/buttons.png) repeat-x scroll left top;
+  background: none #e6e6e6;
   border:1px solid #BFC5CB;
   padding: 2px 5px 2px 5px;
   margin: 5px 10px 10px 0;
@@ -207,7 +207,7 @@ nxthemes css is not used in login.jsp */
   <tbody>
     <tr class="topBar">
       <td>
-        <img width="316" height="36" alt="Nuxeo Document Management" src="<%=context%>/img/theme_galaxy/nuxeo_5.2_login.png"/>
+        <img width="92" height="36" alt="Nuxeo Document Management" src="<%=context%>/img/nuxeo_logo.png"/>
       </td>
     </tr>
 
