@@ -122,6 +122,8 @@ public class ITSafeEditTest extends AbstractTest {
 
     private final static String INITIAL_DESCRIPTION = "workspaceDescription";
 
+    private final static String DRAFT_SAVE_TEXT_NOTIFICATION = "Draft saved";
+
     private void prepare() throws Exception {
         DocumentBasePage documentBasePage;
         DocumentBasePage s = login();
@@ -358,10 +360,9 @@ public class ITSafeEditTest extends AbstractTest {
                 NoSuchElementException.class);
 
         try {
-            wait.until(new Function<WebDriver, Boolean>() {
-                public Boolean apply(WebDriver driver) {
-                    WebElement saveFeedback = driver.findElement(By.id("savedFeedback"));
-                    return Boolean.valueOf(saveFeedback.isDisplayed());
+            wait.until(new Function<WebDriver, WebElement>() {
+                public WebElement apply(WebDriver driver) {
+                    return driver.findElement(By.xpath("//div[contains(.,'" + DRAFT_SAVE_TEXT_NOTIFICATION + "')]"));
                 }
             });
         } catch (TimeoutException e) {
