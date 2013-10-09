@@ -13,20 +13,27 @@
  *
  * Contributors:
  *     Gagnavarslan ehf
+ *     Thomas Haines
  */
 package org.nuxeo.ecm.ui.web.auth.digest;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
@@ -35,15 +42,20 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
  */
 public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
+    private static final Log log = LogFactory.getLog(DigestAuthenticator.class);
+
     protected static final String DEFAULT_REALMNAME = "NUXEO";
 
     protected static final long DEFAULT_NONCE_VALIDITY_SECONDS = 1000;
 
-    protected static final String COMMA_SEPARATOR = ",";
-
-    protected static final String EQUAL_SEPARATOR = "=";
-
-    protected static final String QUOTE = "\"";
+    /*
+     * match the first portion up until an equals sign
+     * followed by optional white space of quote chars
+     * and ending with an optional quote char
+     * Pattern is a thread-safe class and so can be defined statically
+     * Example pair pattern: username="kirsty"
+     */
+    protected static final Pattern PAIR_ITEM_PATTERN = Pattern.compile("^(.*?)=([\\s\"]*)?(.*)(\")?$");
 
     protected static final String REALM_NAME_KEY = "RealmName";
 
@@ -137,18 +149,35 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     public static Map<String, String> splitParameters(String auth) {
-        String[] array = auth.split(COMMA_SEPARATOR);
-        if (array == null || array.length == 0) {
-            return null;
-        }
         Map<String, String> map = new HashMap<String, String>();
-        for (String item : array) {
-            item = StringUtils.remove(item, QUOTE);
-            String[] parts = item.split(EQUAL_SEPARATOR, 2);
-            if (parts == null) {
-                continue;
+        CSVReader reader = null;
+        try {
+            reader = new CSVReader(new StringReader(auth));
+            String[] array = null;
+            try {
+                array = reader.readNext();
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                return map;
             }
-            map.put(parts[0].trim(), parts[1].trim());
+            for (String itemPairStr : array) {
+                Matcher match = PAIR_ITEM_PATTERN.matcher(itemPairStr);
+                if (match.find()) {
+                    String key = match.group(1);
+                    String value = match.group(3);
+                    map.put(key.trim(), value.trim());
+                } else {
+                    log.warn("Could not parse item pair " + itemPairStr);
+                }
+            }
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ioe) {
+                    log.error("Could not close reader", ioe);
+                }
+            }
         }
         return map;
     }
