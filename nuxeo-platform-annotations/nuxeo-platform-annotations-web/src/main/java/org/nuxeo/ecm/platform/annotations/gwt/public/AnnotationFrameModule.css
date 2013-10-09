@@ -80,7 +80,7 @@ padding:0;
 }
 
 .gwt-Button {
-background:#cecfd1 url(../img/theme_galaxy/buttons.png) top left repeat-x;
+background: none #e6e6e6;
 border:1px solid #bfc5cb;
 cursor:pointer;
 font-size:small;
