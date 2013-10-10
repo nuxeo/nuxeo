@@ -3,7 +3,6 @@ multiple_task {
   border: 3px solid #549CFB;
   height: 60px;
   width: 60px;
-  position: relative;
   z-index: 100;
   color: gray;
   font-family: serif;
@@ -11,7 +10,7 @@ multiple_task {
   padding-top: .9em;
   font-size: .9em;
   text-align: center;
-  background-color: white;;
+  background-color: white;
 }
 
 .multiple_task { 

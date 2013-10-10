@@ -80,7 +80,7 @@ function displayGraph(data, divContainerTargetId) {
 	jQuery.each(data['nodes'], function() {
 		var node = '<div class="node" id="' + this.id + '">' + this.title
 				+ '</div>';
-		var el = jQuery(node).appendTo('#' + divContainerTargetId).css('left',
+		var el = jQuery(node).appendTo('#' + divContainerTargetId).css('position', 'absolute').css('left',
 				this.x).css('top', this.y);
 		if (this.isStartNode) {
 			el.addClass('start_node');
