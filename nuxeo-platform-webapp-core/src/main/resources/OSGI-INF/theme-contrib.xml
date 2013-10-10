@@ -59,7 +59,7 @@
       <resource>static-styles.css</resource>
       <resource>hideableAdminMessage.js</resource>
       <resource>accessKey.js</resource>
-      <resource>doubleClick_shield.js</resource>
+      <resource>jquery.nuxeo.doubleclickshield.js</resource>
       <resource>jquery.ambiance.js</resource>
       <resource>jquery.ambiance.css</resource>
     </view>
@@ -207,9 +207,10 @@
       <require>jquery.ui.widget.js</require>
       <require>jquery.ui.mouse.js</require>
     </resource>
-    <!-- doubleClick_shield.js -->
-    <resource name="doubleClick_shield.js">
-      <path>scripts/doubleClick_shield.js</path>
+    <!-- Double click shield -->
+    <resource name="jquery.nuxeo.doubleclickshield.js">
+      <path>scripts/jquery.nuxeo.doubleclickshield.js</path>
+      <require>jquery.js</require>
     </resource>
     <!-- jQuery Ambiance -->
     <resource name="jquery.ambiance.js">
