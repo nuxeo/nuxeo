@@ -19,7 +19,11 @@ package org.nuxeo.functionaltests.pages;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Required;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,6 +33,12 @@ import org.openqa.selenium.support.ui.Select;
  * Nuxeo default login page.
  */
 public class LoginPage extends AbstractPage {
+
+    private static final Log log = LogFactory.getLog(LoginPage.class);
+
+    public static final String FEEDBACK_MESSAGE_DIV_XPATH = "//div[contains(@class,'feedbackMessage')]";
+
+    public static final String LOGIN_DIV_XPATH = "//div[@class='login']";
 
     @Required
     @FindBy(id = "username")
@@ -101,8 +111,19 @@ public class LoginPage extends AbstractPage {
      */
     public <T> T login(String username, String password,
             Class<T> pageClassToProxy) {
-        login(username, password);
-        return asPage(pageClassToProxy);
+        try {
+            login(username, password);
+            return asPage(pageClassToProxy);
+        } catch (NoSuchElementException e) {
+            if (hasElement(By.xpath(LOGIN_DIV_XPATH))) {
+                // Means we are still on login page.
+                if (hasElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH))) {
+                    log.error("Login failed. Application said : " + driver.findElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH)).getText());
+                } else {
+                    log.error("Login failed");
+                }
+            }
+            throw e;
+        }
     }
-
 }
