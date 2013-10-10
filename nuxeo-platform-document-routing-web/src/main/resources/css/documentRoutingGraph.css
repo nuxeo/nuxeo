@@ -23,7 +23,6 @@ multiple_task {
   -moz-border-radius: 40px;
   -webkit-border-radius: 40px;
   border-radius: 40px;
-  position: relative;
   z-index: 100;
   line-height: 200%;
   font-family: serif;
@@ -42,7 +41,6 @@ multiple_task {
   border-bottom: 40px solid #dededd;
   border-left: 20px solid transparent;
   border-right: 20px solid transparent;
-  position: relative;
   z-index: 100;
   line-height: 100%;
   font-family: serif;
