@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi-core</artifactId>
+      <artifactId>org.osgi.core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
