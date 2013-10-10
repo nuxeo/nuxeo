@@ -12,8 +12,10 @@
  */
 package org.nuxeo.runtime.jtajca;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -81,13 +83,15 @@ public class NuxeoContainer {
 
     private static TransactionManagerWrapper transactionManager;
 
-    private final UserTransaction userTransaction = new UserTransactionImpl();
+    private static final UserTransaction userTransaction = new UserTransactionImpl();
 
     /**
      * Per-repository connection managers.
      */
     private static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<String, ConnectionManagerWrapper>(
             8, 0.75f, 2);
+
+    private static final List<NuxeoContainerListener> listeners = new ArrayList<NuxeoContainerListener>();
 
     private static InstallContext installContext;
 
@@ -98,23 +102,21 @@ public class NuxeoContainer {
     protected static Context rootContext;
 
     // @since 5.7
-    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    protected static final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter rollbackCount = registry.counter(MetricRegistry.name(
+    protected static final Counter rollbackCount = registry.counter(MetricRegistry.name(
             "nuxeo", "transactions", "rollbacks"));
 
-    protected final Counter concurrentCount = registry.counter(MetricRegistry.name(
+    protected static final Counter concurrentCount = registry.counter(MetricRegistry.name(
             "nuxeo", "transactions", "concurrents", "count"));
 
-    protected final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
+    protected static final Counter concurrentMaxCount = registry.counter(MetricRegistry.name(
             "nuxeo", "transactions", "concurrents", "max"));
 
-    protected final Timer transactionTimer  = registry.timer(MetricRegistry.name(
+    protected static final Timer transactionTimer  = registry.timer(MetricRegistry.name(
             "nuxeo", "transactions", "duration"));
 
-    protected final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<Transaction, Timer.Context>();
-
-    protected static NuxeoContainer instance = new NuxeoContainer();
+    protected static final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<Transaction, Timer.Context>();
 
     private NuxeoContainer() {
     }
@@ -204,6 +206,9 @@ public class NuxeoContainer {
                         + config.name + " to name " + jndiName);
             }
         }
+        for (NuxeoContainerListener listener:listeners) {
+            listener.handleNewConnectionManager(repositoryName, cm.cm);
+        }
         return cm;
     }
 
@@ -269,6 +274,29 @@ public class NuxeoContainer {
         parentContext = null;
         rootContext = null;
         revertSetAsInitialContext();
+    }
+
+    /**
+     *
+     * @since 5.8
+     */
+    public static void addListener(NuxeoContainerListener listener) {
+        synchronized(listeners) {
+            listeners.add(listener);
+        }
+        for(Map.Entry<String, ConnectionManagerWrapper> entry:connectionManagers.entrySet()) {
+            listener.handleNewConnectionManager(entry.getKey(), entry.getValue().cm);
+        }
+    }
+
+    /**
+     *
+     * @since 5.8
+     */
+    public static void removeListener(NuxeoContainerListener listener) {
+        synchronized(listeners) {
+            listeners.remove(listener);
+        }
     }
 
     /**
@@ -419,7 +447,7 @@ public class NuxeoContainer {
      *
      * @return the user transaction
      */
-    public UserTransaction getUserTransaction() throws NamingException {
+    public static UserTransaction getUserTransaction() throws NamingException {
         return userTransaction;
     }
 
@@ -429,7 +457,7 @@ public class NuxeoContainer {
 
             @Override
             public Object getContent() throws NamingException {
-                return instance.getUserTransaction();
+                return getUserTransaction();
             }
         };
     }
@@ -493,8 +521,13 @@ public class NuxeoContainer {
 
     // called by reflection from RepositoryReloader
     public static synchronized void resetConnectionManager() throws Exception {
-        for (ConnectionManagerWrapper cm : connectionManagers.values()) {
-            cm.reset();
+        for (Map.Entry<String,ConnectionManagerWrapper> entry : connectionManagers.entrySet()) {
+            String repositoryName = entry.getKey();
+            ConnectionManagerWrapper mgr = entry.getValue();
+            mgr.reset();
+            for (NuxeoContainerListener listener:listeners) {
+                listener.handleConnectionManagerReset(repositoryName, mgr.cm);
+            }
         }
     }
 
@@ -531,7 +564,7 @@ public class NuxeoContainer {
      *
      * @since 5.6
      */
-    public class UserTransactionImpl implements UserTransaction {
+    public static class UserTransactionImpl implements UserTransaction {
 
         protected boolean checked;
 

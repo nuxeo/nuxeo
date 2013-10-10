@@ -32,7 +32,7 @@ public class NuxeoUserTransactionFactory implements ObjectFactory {
         if (!UserTransaction.class.getName().equals(ref.getClassName())) {
             return null;
         }
-        return NuxeoContainer.instance.getUserTransaction();
+        return NuxeoContainer.getUserTransaction();
     }
 
 }
