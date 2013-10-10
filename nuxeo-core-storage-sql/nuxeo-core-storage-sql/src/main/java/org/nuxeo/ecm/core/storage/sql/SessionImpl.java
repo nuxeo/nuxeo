@@ -149,10 +149,11 @@ public class SessionImpl implements Session, XAResource {
         computeRootNode();
     }
 
-    private void checkLive() {
+    public void checkLive() {
         if (!live) {
             throw new IllegalStateException("Session is not live");
         }
+        checkThread();
     }
 
     // called by NetServlet when forwarding remote NetMapper calls.
@@ -202,7 +203,7 @@ public class SessionImpl implements Session, XAResource {
                 "Concurrency Error: Session was started in thread %s (%s)"
                         + " but is being used in thread %s (%s)", threadId,
                 threadName, currentThreadId, currentThreadName);
-        log.debug(msg, new Exception(msg));
+        throw new IllegalStateException(msg);
     }
 
     protected void checkThreadStart() {
@@ -241,6 +242,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected void closeSession() throws StorageException {
+        checkLive();
         live = false;
         context.clearCaches();
         // close the mapper and therefore the connection
