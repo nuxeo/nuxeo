@@ -149,6 +149,7 @@
           <c:if test="#{layoutWidgetMode == toggledMode}">
 
             <c:if test="#{useAjaxForm}">
+            <ui:include src="/incl/safeEdit.xhtml"/>
               <a4j:form
                 id="#{widget.id}_toggledForm"
                 ajaxSubmit="true"
@@ -156,6 +157,7 @@
                 reRender="#{widget.id}_regionPanel"
                 selfRendered="true"
                 onsubmit="removeAllTinyMCEEditors(); return true;">
+                dasfargev
 
                 <ui:insert name="toggled_mode_content" />
 
@@ -229,9 +231,15 @@
                 </p>
 
               </a4j:form>
+              <script>
+                   var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
+                   initSafeEditOnForm(#{widget.id}_formId, 'toggled-#{fieldOrValue}', '#{messages[safeEdit_message]}');
+               </script>
             </c:if>
 
             <c:if test="#{not useAjaxForm}">
+
+             <ui:include src="/incl/safeEdit.xhtml"/>
               <h:form id="#{widget.id}_toggledForm"
                 enctype="multipart/form-data">
 
@@ -287,6 +295,10 @@
                 </p>
 
               </h:form>
+               <script>
+                   var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
+                   initSafeEditOnForm(#{widget.id}_formId, 'toggled-#{fieldOrValue}', '#{messages[safeEdit_message]}');
+               </script>
             </c:if>
 
           </c:if>
