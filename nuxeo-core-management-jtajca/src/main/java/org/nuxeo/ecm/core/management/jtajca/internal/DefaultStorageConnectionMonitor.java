@@ -22,9 +22,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import javax.management.ObjectInstance;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnection;
 
 import org.apache.commons.logging.Log;
@@ -41,7 +38,6 @@ import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.storage.sql.SoftRefCachingMapper;
 import org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionImpl;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.JmxAttributeGauge;
@@ -59,14 +55,13 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
     // @since 5.7.2
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private static final String NUXEO_CONNECTION_MANAGER_PREFIX = "java:comp/env/NuxeoConnectionManager/";
-
-    protected String repositoryName;
+    protected final String repositoryName;
 
     protected AbstractConnectionManager cm;
 
-    protected DefaultStorageConnectionMonitor(String repositoryName) {
+    protected DefaultStorageConnectionMonitor(String repositoryName, AbstractConnectionManager cm) {
         this.repositoryName = repositoryName;
+        this.cm = enhanceConnectionManager(cm);
     }
 
     protected static Field field(Class<?> clazz, String name) {
@@ -199,8 +194,6 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
 
     @Override
     public void install() {
-        cm = lookup(repositoryName);
-        cm = enhanceConnectionManager(cm);
         self = DefaultMonitorComponent.bind(this, repositoryName);
         registry.register(MetricRegistry.name("nuxeo", "repositories",
                 repositoryName, "connections", "count"), new JmxAttributeGauge(
@@ -214,32 +207,6 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
         self = null;
-        cm = null;
-    }
-
-    protected AbstractConnectionManager lookup(String repositoryName) {
-        ConnectionManager cm = NuxeoContainer.getConnectionManager(repositoryName);
-        if (cm == null) { // try setup through NuxeoConnectionManagerFactory
-            try {
-                InitialContext ic = new InitialContext();
-                cm = (ConnectionManager) ic.lookup(NUXEO_CONNECTION_MANAGER_PREFIX
-                        + repositoryName);
-            } catch (NamingException cause) {
-                throw new RuntimeException("Cannot lookup connection manager",
-                        cause);
-            }
-        }
-        if (!(cm instanceof NuxeoContainer.ConnectionManagerWrapper)) {
-            throw new RuntimeException("Nuxeo container not installed");
-        }
-        try {
-            Field f = NuxeoContainer.ConnectionManagerWrapper.class.getDeclaredField("cm");
-            f.setAccessible(true);
-            return (AbstractConnectionManager) f.get(cm);
-        } catch (Exception cause) {
-            throw new RuntimeException(
-                    "Cannot access to geronimo connection manager", cause);
-        }
     }
 
     @Override
@@ -295,6 +262,13 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
     @Override
     public void setIdleTimeoutMinutes(int idleTimeoutMinutes) {
         cm.setIdleTimeoutMinutes(idleTimeoutMinutes);
+    }
+
+    /**
+     * @since 5.8
+     */
+    public void handleNewConnectionManager(AbstractConnectionManager cm) {
+        this.cm = enhanceConnectionManager(cm);
     }
 
 }

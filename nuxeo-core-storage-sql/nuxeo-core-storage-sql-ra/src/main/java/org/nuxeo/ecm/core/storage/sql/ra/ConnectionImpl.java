@@ -89,6 +89,7 @@ public class ConnectionImpl implements Session {
      * Called by {@link ManagedConnectionImpl#removeConnection}.
      */
     protected void disassociate() {
+        session.checkLive();
         session = null;
     }
 

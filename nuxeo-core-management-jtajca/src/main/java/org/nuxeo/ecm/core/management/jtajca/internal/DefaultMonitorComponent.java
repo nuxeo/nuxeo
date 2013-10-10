@@ -35,7 +35,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
+import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -45,10 +45,10 @@ import org.nuxeo.ecm.core.management.jtajca.DatabaseConnectionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
 import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
-import org.nuxeo.ecm.core.repository.RepositoryManager;
-import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.jtajca.NuxeoContainerListener;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.metrics.MetricsServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -61,6 +61,25 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 5.6
  */
 public class DefaultMonitorComponent extends DefaultComponent {
+
+    private final ConnectionManagerUpdater cmUpdater = new ConnectionManagerUpdater();
+
+    private class ConnectionManagerUpdater implements NuxeoContainerListener {
+        @Override
+        public void handleNewConnectionManager(String repositoryName, AbstractConnectionManager cm) {
+            DefaultStorageConnectionMonitor monitor = new DefaultStorageConnectionMonitor(
+                    repositoryName, cm);
+            monitor.install();
+            storageConnectionMonitors.put(repositoryName, monitor);
+        }
+
+        @Override
+        public void handleConnectionManagerReset(String repositoryName,
+                AbstractConnectionManager mgr) {
+            DefaultStorageConnectionMonitor monitor = (DefaultStorageConnectionMonitor)storageConnectionMonitors.get(repositoryName);
+            monitor.handleNewConnectionManager(mgr);
+        }
+    }
 
     protected final Log log = LogFactory.getLog(DefaultMonitorComponent.class);
 
@@ -122,22 +141,14 @@ public class DefaultMonitorComponent extends DefaultComponent {
             log.error("Cannot install database storage monitors", e);
         }
         try {
-        installRepositoryStorageMonitors();
+            installRepositoryStorageMonitors();
         } catch (Exception e) {
             log.error("Cannot install repository storage monitors", e);
         }
     }
 
     protected void installRepositoryStorageMonitors() throws ClientException {
-        RepositoryService repositoryService = NXCore.getRepositoryService();
-        RepositoryManager repositoryManager = repositoryService.getRepositoryManager();
-        for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            activateRepository(repositoryName);
-            DefaultStorageConnectionMonitor cmon = new DefaultStorageConnectionMonitor(
-                    repositoryName);
-            cmon.install();
-            storageConnectionMonitors.put(repositoryName, cmon);
-        }
+        NuxeoContainer.addListener(cmUpdater);
     }
 
     protected void installDatabaseStorageMonitors() throws NamingException {
@@ -177,6 +188,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
             return;
         }
         installed = false;
+        NuxeoContainer.removeListener(cmUpdater);
         for (StorageConnectionMonitor storage : storageConnectionMonitors.values()) {
             storage.uninstall();
         }
