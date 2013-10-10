@@ -41,6 +41,7 @@ import org.codehaus.jackson.map.type.TypeModifier;
 import org.codehaus.jackson.type.JavaType;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
+import org.nuxeo.ecm.automation.client.jaxrs.impl.AutomationClientActivator;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.BooleanMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DateMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DocumentMarshaller;
@@ -62,7 +63,7 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 public class JsonMarshalling {
 
     /**
-     *
+     * 
      * @author matic
      * @since 5.5
      */
@@ -273,7 +274,7 @@ public class JsonMarshalling {
         jp.nextToken();
         if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
             throw new RuntimeException(
-                    "unuspported respone type. No entity-type key found at top of the object");
+                    "unuspported respone type. No entity-type key found atbundle top of the object");
         }
         jp.nextToken();
         String etype = jp.getText();
@@ -282,8 +283,17 @@ public class JsonMarshalling {
             // fall-back on generic java class loading in case etype matches a
             // valid class name
             try {
-                Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(
-                        etype);
+                // Introspect bundle context to load marshalling class
+                AutomationClientActivator automationClientActivator = AutomationClientActivator.getInstance();
+                Class<?> loadClass;
+                // Java mode or OSGi mode
+                if (automationClientActivator == null) {
+                    loadClass = Thread.currentThread().getContextClassLoader().loadClass(
+                            etype);
+                } else {
+                    loadClass = automationClientActivator.getContext().getBundle().loadClass(
+                            etype);
+                }
                 ObjectMapper mapper = new ObjectMapper();
                 jp.nextToken(); // move to next field
                 jp.nextToken(); // value field name
@@ -338,7 +348,8 @@ public class JsonMarshalling {
             Object obj = entry.getValue();
             if (obj instanceof String) {
                 jg.writeStringField(entry.getKey(), (String) obj);
-            } else if (obj instanceof PropertyMap || obj instanceof OperationInput) {
+            } else if (obj instanceof PropertyMap
+                    || obj instanceof OperationInput) {
                 jg.writeStringField(entry.getKey(), obj.toString());
             } else {
                 jg.writeFieldName(entry.getKey());

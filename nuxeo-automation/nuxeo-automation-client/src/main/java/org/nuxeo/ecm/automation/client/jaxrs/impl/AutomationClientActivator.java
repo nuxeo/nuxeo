@@ -18,8 +18,6 @@ import java.net.URL;
 
 import org.nuxeo.ecm.automation.client.AutomationClient;
 import org.nuxeo.ecm.automation.client.AutomationClientFactory;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.PojoMarshaller;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -30,15 +28,22 @@ import org.osgi.framework.BundleContext;
 public class AutomationClientActivator implements AutomationClientFactory,
         BundleActivator {
 
+    protected static volatile AutomationClientActivator instance;
+
+    protected BundleContext context;
+
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         bundleContext.registerService(AutomationClientFactory.class.getName(),
                 this, null);
+        this.instance = this;
+        this.context = bundleContext;
     }
 
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
-
+        this.instance = null;
+        this.context = null;
     }
 
     @Override
@@ -46,10 +51,18 @@ public class AutomationClientActivator implements AutomationClientFactory,
         return new HttpAutomationClient(url.toURI().toASCIIString());
     }
 
+    public BundleContext getContext() {
+        return context;
+    }
+
     @Override
     public AutomationClient getClient(URL url, int httpCxTimeout)
             throws URISyntaxException {
         return new HttpAutomationClient(url.toURI().toASCIIString(),
                 httpCxTimeout);
+    }
+
+    public static AutomationClientActivator getInstance() {
+        return instance;
     }
 }
