@@ -2371,8 +2371,8 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>osgi-core</artifactId>
-        <version>4.1</version>
+        <artifactId>org.osgi.core</artifactId>
+        <version>4.2.0</version>
       </dependency>
       <!-- OSGI compendium - do not change to org.osgi group since it is
         not containing all needed classes -->
@@ -3928,11 +3928,6 @@
         <artifactId>org.apache.felix.framework</artifactId>
         <version>3.2.2</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.core</artifactId>
-        <version>4.2.0</version>
       </dependency>
       <dependency>
         <groupId>javax.inject</groupId>
