@@ -53,7 +53,7 @@
     styleClass="tabsContent">
 
     <ui:insert name="tab_content">
-      <c:if test="#{not empty widgetProperty_currentTabAction}">
+      <c:if test="#{not empty widgetProperty_currentTabAction.link}">
         <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
           <ui:include src="/incl/action/generic_mode_action_template.xhtml">
             <ui:param name="mode" value="tab_content" />
