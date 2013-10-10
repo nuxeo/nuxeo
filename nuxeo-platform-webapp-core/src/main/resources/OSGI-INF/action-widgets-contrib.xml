@@ -8,11 +8,13 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="documentTabs" type="documentTabsWithForms">
+    <widget name="documentTabs" type="tabs">
       <properties mode="view">
-        <property name="category">VIEW_ACTION_LIST</property>
         <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
         <property name="useAjaxForm">#{useAjaxTabs}</property>
+        <property name="actions">#{tabsActionsList}</property>
+        <property name="currentTabAction">#{webActions.currentTabAction}</property>
       </properties>
     </widget>
 
@@ -92,7 +94,7 @@
     </widget>
 
     <widget name="documentEditButtons" type="documentActions">
-     <properties mode="view">
+      <properties mode="view">
         <property name="actionsDisplay">buttons</property>
         <property name="category">EDIT_DOCUMENT_FORM</property>
         <property name="overallDisplay">horizontal_block</property>
@@ -100,8 +102,8 @@
       </properties>
     </widget>
 
-   <widget name="documentCreateButtons" type="documentActions">
-     <properties mode="view">
+    <widget name="documentCreateButtons" type="documentActions">
+      <properties mode="view">
         <property name="actionsDisplay">buttons</property>
         <property name="category">CREATE_DOCUMENT_FORM</property>
         <property name="overallDisplay">horizontal_block</property>
