@@ -478,12 +478,6 @@ public class WebActionsBean implements WebActions, Serializable {
         setCurrentTabId(currentTabActionId);
     }
 
-    /**
-     * Returns true if ajax is activated on the server, and if history push
-     * state is supported by browser.
-     *
-     * @since 5.6
-     */
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTabs() {
         if (Framework.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
