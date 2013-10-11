@@ -775,7 +775,7 @@ public class RedisWorkQueuing implements WorkQueuing {
                 long t = Long.parseLong(new String(bytes, 1, bytes.length - 1,
                         UTF_8));
                 if (t < completionTime) {
-                    jedis.srem(completedKey(queueId));
+                    jedis.srem(completedKey(queueId), workIdBytes);
                     removeWork(workIdBytes, jedis);
                 }
             }
