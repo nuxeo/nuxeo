@@ -29,10 +29,6 @@
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.glassfish.embedded</groupId>
