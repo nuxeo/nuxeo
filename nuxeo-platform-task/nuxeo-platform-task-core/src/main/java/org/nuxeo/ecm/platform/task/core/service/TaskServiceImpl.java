@@ -447,8 +447,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                         path.removeLastSegments(1).toString(),
                         path.lastSegment(), TaskConstants.TASK_ROOT_TYPE_NAME);
                 taskRootDoc = session.createDocument(taskRootDoc);
+                ACP acp = taskRootDoc.getACP();
+                ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+                acl.add(new ACE("Everyone", "Everything", false));
+                taskRootDoc.setACP(acp, true);
+                taskRootDoc = session.saveDocument(taskRootDoc);
             }
-
         }
 
         public DocumentModel getTaskRootDoc() {
@@ -607,8 +611,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                         TaskEventNames.WORKFLOW_TASK_DELEGATED,
                         new HashMap<String, Serializable>(),
                         String.format("Task delegated by '%s' to '%s'",
-                                currentUser,
-                                StringUtils.join(actorIds, ","))
+                                currentUser, StringUtils.join(actorIds, ","))
                                 + (!StringUtils.isEmpty(comment) ? " with the following comment: "
                                         + comment
                                         : ""),
