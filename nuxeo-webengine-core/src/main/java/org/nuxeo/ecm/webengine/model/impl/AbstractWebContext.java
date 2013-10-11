@@ -276,7 +276,7 @@ public abstract class AbstractWebContext implements WebContext {
     @Override
     public Locale getLocale() {
         LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
-        if (localeProvider != null) {
+        if (localeProvider != null && request.getUserPrincipal() != null) {
             try {
                 Locale userPrefLocale = localeProvider.getLocale(getCoreSession());
                 if (userPrefLocale != null) {
