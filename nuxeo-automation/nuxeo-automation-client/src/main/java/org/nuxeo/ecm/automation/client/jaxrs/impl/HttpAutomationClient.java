@@ -21,6 +21,7 @@ import org.nuxeo.ecm.automation.client.adapters.BusinessServiceFactory;
 import org.nuxeo.ecm.automation.client.adapters.DocumentServiceFactory;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.AsyncAutomationClient;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
+import org.nuxeo.ecm.automation.client.rest.api.RestClient;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -98,5 +99,15 @@ public class HttpAutomationClient extends AsyncAutomationClient {
     @Override
     protected Connector newConnector() {
         return new HttpConnector(http, httpConnectionTimeout);
+    }
+
+    /**
+     * Returns the {@link RestClient} associated to this
+     * {@link org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient}.
+     *
+     * @since 5.8
+     */
+    public RestClient getRestClient() {
+        return new RestClient(this);
     }
 }

@@ -20,13 +20,17 @@ import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
 
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.ClientRequest;
+import com.sun.jersey.api.client.ClientResponse;
+
 /**
  * Injects the token authentication header in the request.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
-public class TokenAuthInterceptor implements RequestInterceptor {
+public class TokenAuthInterceptor extends RequestInterceptor {
 
     protected static final String TOKEN_HEADER = "X-Authentication-Token";
 
@@ -41,4 +45,12 @@ public class TokenAuthInterceptor implements RequestInterceptor {
         request.put(TOKEN_HEADER, token);
     }
 
+    @Override
+    public ClientResponse handle(ClientRequest cr)
+            throws ClientHandlerException {
+        if (!cr.getHeaders().containsKey(TOKEN_HEADER)) {
+            cr.getHeaders().add(TOKEN_HEADER, token);
+        }
+        return getNext().handle(cr);
+    }
 }

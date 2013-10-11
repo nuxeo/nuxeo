@@ -11,17 +11,23 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.auth;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Connector;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.Request;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.RequestInterceptor;
 import org.nuxeo.ecm.automation.client.jaxrs.util.Base64;
+
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.ClientRequest;
+import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * Inject the basic authentication header in the request.
  *
  * @author matic
  */
-public class BasicAuthInterceptor implements RequestInterceptor {
+public class BasicAuthInterceptor extends RequestInterceptor {
 
     protected String token;
 
@@ -36,7 +42,15 @@ public class BasicAuthInterceptor implements RequestInterceptor {
 
     @Override
     public void processRequest(Request request, Connector connector) {
-        request.put("Authorization", token);
+        request.put(HttpHeaders.AUTHORIZATION, token);
     }
 
+    @Override
+    public ClientResponse handle(ClientRequest cr)
+            throws ClientHandlerException {
+        if (!cr.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+            cr.getHeaders().add(HttpHeaders.AUTHORIZATION, token);
+        }
+        return getNext().handle(cr);
+    }
 }
