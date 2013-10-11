@@ -71,8 +71,6 @@ public class WebActionsBean implements WebActions, Serializable {
 
     private static final long serialVersionUID = 1959221536502251848L;
 
-    protected static final String AJAX_TAB_PROPERTY = "org.nuxeo.ui.ajax.tab";
-
     private static final Log log = LogFactory.getLog(WebActionsBean.class);
 
     @In(create = true, required = false)
@@ -487,7 +485,7 @@ public class WebActionsBean implements WebActions, Serializable {
      * @since 5.6
      */
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
-    public boolean useAjaxTab() {
+    public boolean useAjaxTabs() {
         if (Framework.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
             FacesContext context = FacesContext.getCurrentInstance();
             ExternalContext econtext = context.getExternalContext();

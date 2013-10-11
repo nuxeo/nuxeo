@@ -94,6 +94,13 @@ public interface WebActions {
     public static final String CURRENT_TAB_SELECTED_EVENT = "currentTabSelected";
 
     /**
+     * Framework property to control ajaxified behaviour of document tabs.
+     *
+     * @since 5.8
+     */
+    public static final String AJAX_TAB_PROPERTY = "nuxeo.jsf.useAjaxTabs";
+
+    /**
      * Returns all filtered actions for a given category and given resolution
      * context.
      * <p>
@@ -127,7 +134,8 @@ public interface WebActions {
      * Actions are filtered according to filters set on the actions
      * definitions.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by commas.
+     * Since 5.8, the category can be a list of categories, separated by
+     * commas.
      *
      * @since 5.7.3
      */
@@ -167,7 +175,8 @@ public interface WebActions {
      * definitions: actions that should have been removed are just marked as
      * non-available.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by commas.
+     * Since 5.8, the category can be a list of categories, separated by
+     * commas.
      *
      * @deprecated since 5.7, use
      *             {@link #getActionsList(String, ActionContext, boolean)}
@@ -179,7 +188,8 @@ public interface WebActions {
      * Returns all actions for a given category, creating a new context for the
      * filters resolution.
      * <p>
-     * Since 5.8, the category can be a list of categories, separated by commas.
+     * Since 5.8, the category can be a list of categories, separated by
+     * commas.
      *
      * @see #getUnfiltredActionsList(String, ActionContext)
      * @deprecated since 5.7, use
@@ -391,6 +401,15 @@ public interface WebActions {
      */
     Action getAction(String actionId, ActionContext context,
             boolean hideUnavailableAction);
+
+    /**
+     * Returns true if ajaxified behaviour of tabs is activated on the server,
+     * and if history push state is supported by browser.
+     *
+     * @since 5.8
+     * @see #AJAX_TAB_PROPERTY
+     */
+    boolean useAjaxTabs();
 
     @Deprecated
     List<Action> getSubViewActionsList();
