@@ -35,13 +35,13 @@
         <binding name="language" callGetter="false">
           #{restHelper.localeString}
         </binding>
-        <binding name="contentViewName" callGetter="false">
+        <binding name="contentViewName" callGetter="true">
           #{damSearchActions.currentContentViewName}
         </binding>
-        <binding name="currentPage" callGetter="false">
+        <binding name="currentPage" callGetter="true">
           #{damSearchActions.currentPage}
         </binding>
-        <binding name="pageSize" callGetter="false">
+        <binding name="pageSize" callGetter="true">
           #{damSearchActions.pageSize}
         </binding>
         <binding name="state" callGetter="false">
