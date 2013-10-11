@@ -103,6 +103,7 @@
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <it.jacoco.destFile>${java.io.tmpdir}/jacoco-it.dump</it.jacoco.destFile>
     <sonar.jacoco.itReportPath>${it.jacoco.destFile}</sonar.jacoco.itReportPath>
+    <it.failsafe.argLine></it.failsafe.argLine>
 
     <!-- License Maven Plugin -->
     <license.excludedGroups>org\.nuxeo.*</license.excludedGroups>
@@ -4051,10 +4052,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -4416,7 +4413,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.6.1.201212231917</version>
+          <version>0.6.3.201306030806</version>
           <configuration>
             <propertyName>it.failsafe.argLine</propertyName>
             <destFile>${it.jacoco.destFile}</destFile>
@@ -4428,13 +4425,6 @@
                 <goal>prepare-agent</goal>
               </goals>
             </execution>
-            <!-- <execution> -->
-            <!-- <id>post-test</id> -->
-            <!-- <phase>test</phase> -->
-            <!-- <goals> -->
-            <!-- <goal>report</goal> -->
-            <!-- </goals> -->
-            <!-- </execution> -->
           </executions>
         </plugin>
         <plugin>
@@ -5407,6 +5397,17 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>sonar</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <developers>
