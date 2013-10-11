@@ -386,6 +386,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         return listenerDescriptors;
     }
 
+    @Override
+    public EventListenerDescriptor getEventListener(String name) {
+        return listenerDescriptors.getDescriptor(name);
+    }
+
     // methods for monitoring
 
     @Override
@@ -395,7 +400,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     @Override
     public void setListenerEnabledFlag(String listenerName, boolean enabled) {
-        if (!listenerDescriptors.getListenerNames().contains(listenerName)) {
+        if (!listenerDescriptors.hasListener(listenerName)) {
             return;
         }
 

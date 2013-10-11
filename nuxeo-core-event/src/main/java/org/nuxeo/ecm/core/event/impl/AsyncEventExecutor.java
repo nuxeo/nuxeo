@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -102,16 +103,17 @@ public class AsyncEventExecutor {
 
         protected ReconnectedEventBundle bundle;
 
-        protected EventListenerDescriptor listener;
+        protected String listenerName;
+
+        protected transient EventListenerDescriptor listener;
 
         public ListenerWork(EventListenerDescriptor listener, EventBundle bundle) {
             super(); // random id, for unique job
-            this.listener = listener;
+            this.listenerName = listener.getName();
             if (bundle instanceof ReconnectedEventBundle) {
                 this.bundle = (ReconnectedEventBundle) bundle;
             } else {
-                this.bundle = new ReconnectedEventBundleImpl(bundle,
-                        listener.getName());
+                this.bundle = new ReconnectedEventBundleImpl(bundle, listenerName);
             }
             List<String> l = new LinkedList<String>();
             List<String> docIds = new LinkedList<String>();
@@ -129,7 +131,7 @@ public class AsyncEventExecutor {
                 }
                 l.add(s);
             }
-            title = "Listener " + listener.getName() + " " + l;
+            title = "Listener " + listenerName + " " + l;
             if (!docIds.isEmpty()) {
                 setDocuments(repositoryName, docIds);
             }
@@ -137,7 +139,7 @@ public class AsyncEventExecutor {
 
         @Override
         public String getCategory() {
-            return listener.getName();
+            return listenerName;
         }
 
         @Override
@@ -147,6 +149,11 @@ public class AsyncEventExecutor {
 
         @Override
         public void work() throws Exception {
+            EventService eventService = Framework.getLocalService(EventService.class);
+            listener = eventService.getEventListener(listenerName);
+            if (listener == null) {
+                throw new RuntimeException("Cannot find listener: " + listenerName);
+            }
             listener.asPostCommitListener().handleEvent(bundle);
         }
 
@@ -155,14 +162,17 @@ public class AsyncEventExecutor {
             bundle.disconnect();
             if (e != null && !(e instanceof InterruptedException)) {
                 log.error("Failed to execute async event " + bundle.getName()
-                        + " on listener " + listener.getName(), e);
-            }
-            EventStats stats = Framework.getLocalService(EventStats.class);
-            if (stats != null) {
-                stats.logAsyncExec(listener, System.currentTimeMillis() - startTime);
+                        + " on listener " + listenerName, e);
             }
             bundle = null;
-            listener = null;
+            if (listener != null) {
+                EventStats stats = Framework.getLocalService(EventStats.class);
+                if (stats != null) {
+                    stats.logAsyncExec(listener, System.currentTimeMillis()
+                            - startTime);
+                }
+                listener = null;
+            }
         }
 
         @Override

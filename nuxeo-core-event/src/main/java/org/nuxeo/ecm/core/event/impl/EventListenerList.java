@@ -16,7 +16,9 @@ package org.nuxeo.ecm.core.event.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
@@ -40,7 +42,7 @@ public class EventListenerList {
 
     protected volatile List<EventListenerDescriptor> enabledAsyncPostCommitListenersDescriptors = null;
 
-    protected final List<String> listenerNames = new ArrayList<String>();
+    protected final Map<String, EventListenerDescriptor> descriptors = new HashMap<String, EventListenerDescriptor>();
 
     protected synchronized void flushCache() {
         enabledAsyncPostCommitListenersDescriptors = null;
@@ -52,7 +54,7 @@ public class EventListenerList {
 
         flushCache();
         // merge if necessary
-        if (listenerNames.contains(descriptor.getName())) {
+        if (descriptors.containsKey(descriptor.getName())) {
             descriptor = mergeDescriptor(descriptor);
         }
 
@@ -76,7 +78,7 @@ public class EventListenerList {
                     new EventListenerDescriptorComparator());
         }
 
-        listenerNames.add(descriptor.getName());
+        descriptors.put(descriptor.getName(), descriptor);
     }
 
     protected EventListenerDescriptor mergeDescriptor(
@@ -89,7 +91,7 @@ public class EventListenerList {
 
     public void removeDescriptor(EventListenerDescriptor descriptor) {
         flushCache();
-        if (listenerNames.contains(descriptor.getName())) {
+        if (descriptors.containsKey(descriptor.getName())) {
             if (descriptor.isPostCommit) {
                 if (descriptor.getIsAsync()) {
                     asyncPostCommitListenersDescriptors.remove(descriptor);
@@ -99,30 +101,12 @@ public class EventListenerList {
             } else {
                 inlineListenersDescriptors.remove(descriptor);
             }
-            listenerNames.remove(descriptor.getName());
+            descriptors.remove(descriptor.getName());
         }
     }
 
     public EventListenerDescriptor getDescriptor(String listenerName) {
-        if (!listenerNames.contains(listenerName)) {
-            return null;
-        }
-        for (EventListenerDescriptor desc : inlineListenersDescriptors) {
-            if (desc.getName().equals(listenerName)) {
-                return desc;
-            }
-        }
-        for (EventListenerDescriptor desc : syncPostCommitListenersDescriptors) {
-            if (desc.getName().equals(listenerName)) {
-                return desc;
-            }
-        }
-        for (EventListenerDescriptor desc : asyncPostCommitListenersDescriptors) {
-            if (desc.getName().equals(listenerName)) {
-                return desc;
-            }
-        }
-        return null;
+        return descriptors.get(listenerName);
     }
 
     public List<EventListener> getInLineListeners() {
@@ -207,7 +191,11 @@ public class EventListenerList {
     }
 
     public List<String> getListenerNames() {
-        return listenerNames;
+        return new ArrayList<String>(descriptors.keySet());
+    }
+
+    public boolean hasListener(String name) {
+        return descriptors.containsKey(name);
     }
 
 }

@@ -121,6 +121,15 @@ public interface EventService extends EventProducer {
     List<PostCommitEventListener> getPostCommitEventListeners();
 
     /**
+     * Gets the event listener descriptor corresponding to the give name.
+     *
+     * @since 5.8
+     * @param name the event listener name
+     * @return the descriptor, or {@code null} if not found
+     */
+    EventListenerDescriptor getEventListener(String name);
+
+    /**
      * Notifies that a transaction was started. Used by the framework.
      * <p>
      * Any fired events will be recorded until the transaction is terminated

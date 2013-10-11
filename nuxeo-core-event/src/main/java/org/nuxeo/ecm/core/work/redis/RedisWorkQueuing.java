@@ -106,8 +106,9 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected RedisService redisService;
 
+    protected String redisPrefix;
+
     public RedisWorkQueuing(WorkQueueDescriptorRegistry workQueueDescriptors) {
-        redisService = Framework.getLocalService(RedisService.class);
     }
 
     @Override
@@ -302,12 +303,20 @@ public class RedisWorkQueuing implements WorkQueuing {
      * ******************** Redis Interface ********************
      */
 
+    protected RedisService getRedisService() {
+        if (redisService == null) {
+            redisService = Framework.getLocalService(RedisService.class);
+            redisPrefix = redisService.getPrefix();
+        }
+        return redisService;
+    }
+
     protected Jedis getJedis() {
-        return redisService.getJedisPool().getResource();
+        return getRedisService().getJedisPool().getResource();
     }
 
     protected void closeJedis(Jedis jedis) {
-        redisService.getJedisPool().returnResource(jedis);
+        getRedisService().getJedisPool().returnResource(jedis);
     }
 
     protected static byte[] bytes(String string) {
@@ -320,11 +329,11 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     protected byte[] keyBytes(String prefix, String queueId) {
-        return bytes(redisService.getPrefix() + prefix + queueId);
+        return bytes(redisPrefix + prefix + queueId);
     }
 
     protected byte[] keyBytes(String prefix) {
-        return bytes(redisService.getPrefix() + prefix);
+        return bytes(redisPrefix + prefix);
     }
 
     protected byte[] suspendedKey(String queueId) {
