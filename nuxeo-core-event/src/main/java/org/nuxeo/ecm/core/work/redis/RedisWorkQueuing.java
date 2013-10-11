@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.runtime.api.Framework;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 /**
  * Implementation of a {@link WorkQueuing} storing {@link Work} instances in
@@ -312,7 +313,15 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     protected Jedis getJedis() {
-        return getRedisService().getJedisPool().getResource();
+        RedisService redisService = getRedisService();
+        if (redisService == null) {
+            return null;
+        }
+        JedisPool jedisPool = redisService.getJedisPool();
+        if (jedisPool == null) {
+            return null;
+        }
+        return jedisPool.getResource();
     }
 
     protected void closeJedis(Jedis jedis) {
@@ -706,6 +715,9 @@ public class RedisWorkQueuing implements WorkQueuing {
      */
     protected Work removeScheduledWork(String queueId) throws IOException {
         Jedis jedis = getJedis();
+        if (jedis == null) {
+            return null;
+        }
         try {
             // pop from queue
             byte[] workIdBytes = jedis.rpop(scheduledKey(queueId));
