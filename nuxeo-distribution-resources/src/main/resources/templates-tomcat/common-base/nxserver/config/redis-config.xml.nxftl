@@ -1,0 +1,26 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.redis.config">
+
+<#if "${nuxeo.redis.enabled}" == "true">
+  <extension target="org.nuxeo.ecm.core.redis.RedisService"
+    point="configuration">
+    <redis>
+      <prefix>${nuxeo.redis.prefix}</prefix>
+      <host>${nuxeo.redis.host}</host>
+      <port>${nuxeo.redis.port}</port>
+      <password>${nuxeo.redis.password}</password>
+      <database>${nuxeo.redis.database}</database>
+      <timeout>${nuxeo.redis.timeout}</timeout>
+    </redis>
+  </extension>
+
+<#if "${nuxeo.work.queuing}" == "redis">
+  <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
+    <queuing class="org.nuxeo.ecm.core.work.redis.RedisWorkQueuing"/>
+  </extension>
+</#if>
+</#if>
+
+</component>
+</#escape>
