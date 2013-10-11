@@ -76,10 +76,6 @@
       <artifactId>jurt</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.cforcoding.jmd</groupId>
       <artifactId>jmd</artifactId>
     </dependency>
