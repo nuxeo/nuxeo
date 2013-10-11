@@ -13,12 +13,7 @@
   <description>Nuxeo Core Management Test</description>
 
   <dependencies>
-
     <!-- bundles -->
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-management</artifactId>
