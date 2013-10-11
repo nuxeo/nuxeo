@@ -134,7 +134,7 @@
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.4.0</gwt.version>
     <guice.version>3.0</guice.version>
-    <jersey.version>1.11</jersey.version>
+    <jersey.version>1.17.1</jersey.version>
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating-nx1</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
@@ -2672,6 +2672,11 @@
       <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-servlet</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.jersey.contribs</groupId>
+        <artifactId>jersey-apache-client4</artifactId>
         <version>${jersey.version}</version>
       </dependency>
       <dependency>
