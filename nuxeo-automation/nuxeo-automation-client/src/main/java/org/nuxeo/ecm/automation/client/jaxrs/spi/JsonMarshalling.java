@@ -14,7 +14,6 @@ package org.nuxeo.ecm.automation.client.jaxrs.spi;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +40,7 @@ import org.codehaus.jackson.map.type.TypeModifier;
 import org.codehaus.jackson.type.JavaType;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
+import org.nuxeo.ecm.automation.client.RemoteThrowable;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.AutomationClientActivator;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.BooleanMarshaller;
 import org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers.DateMarshaller;
@@ -79,21 +79,6 @@ public class JsonMarshalling {
         }
     }
 
-    public static class RemoteThrowable extends Throwable {
-
-        private static final long serialVersionUID = 1L;
-
-        protected RemoteThrowable(String message) {
-            super(message);
-        }
-
-        protected final HashMap<String, JsonNode> otherNodes = new HashMap<String, JsonNode>();
-
-        public Map<String, JsonNode> getOtherNodes() {
-            return Collections.unmodifiableMap(otherNodes);
-        }
-    }
-
     @JsonCachable(false)
     public static class ThrowableDeserializer extends
             org.codehaus.jackson.map.deser.ThrowableDeserializer {
@@ -111,7 +96,7 @@ public class JsonMarshalling {
 
             RemoteThrowable t = (RemoteThrowable) super.deserializeFromObject(
                     jp, ctxt);
-            t.otherNodes.putAll(otherNodes);
+            t.getOtherNodes().putAll(otherNodes);
             return t;
         }
     }
@@ -274,7 +259,7 @@ public class JsonMarshalling {
         jp.nextToken();
         if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
             throw new RuntimeException(
-                    "unuspported respone type. No entity-type key found atbundle top of the object");
+                    "unuspported respone type. No entity-type key found at top of the object");
         }
         jp.nextToken();
         String etype = jp.getText();

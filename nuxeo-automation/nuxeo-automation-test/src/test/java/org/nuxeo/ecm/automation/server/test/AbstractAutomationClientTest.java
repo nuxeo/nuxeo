@@ -33,10 +33,10 @@ import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
+import org.nuxeo.ecm.automation.client.RemoteThrowable;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.adapters.DocumentService;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.jaxrs.spi.JsonMarshalling;
 import org.nuxeo.ecm.automation.client.model.Blobs;
 import org.nuxeo.ecm.automation.client.model.DateUtils;
 import org.nuxeo.ecm.automation.client.model.DocRef;
@@ -128,7 +128,7 @@ public abstract class AbstractAutomationClientTest {
                     && remoteCause.getCause() != null) {
                 remoteCause = remoteCause.getCause();
             }
-            Map<String, JsonNode> otherNodes = ((JsonMarshalling.RemoteThrowable) remoteCause).getOtherNodes();
+            Map<String, JsonNode> otherNodes = ((RemoteThrowable) remoteCause).getOtherNodes();
             String className = otherNodes.get("className").getTextValue();
             assertThat(className,
                     is("org.nuxeo.ecm.core.model.NoSuchDocumentException"));
