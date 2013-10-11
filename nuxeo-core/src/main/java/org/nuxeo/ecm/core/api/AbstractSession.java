@@ -2246,7 +2246,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             // re-read doc model after restoration
             docModel = readModel(doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_RESTORED, docModel,
-                    options, null, null, true, false);
+                    options, null, docModel.getVersionLabel(), true, false);
             docModel = writeModel(doc, docModel);
 
             if (!skipCheckout) {
