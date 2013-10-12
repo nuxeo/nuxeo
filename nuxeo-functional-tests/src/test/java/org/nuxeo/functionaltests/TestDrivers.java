@@ -48,8 +48,8 @@ public class TestDrivers extends AbstractTest {
     public void testFireFox() throws Exception {
         initFirefoxDriver();
         driver.get("http://google.com");
-        assertTrue(watchman.takeScreenshot("firefox").delete());
-        assertTrue(watchman.dumpPageSource("firefox").delete());
+        assertTrue(takeScreenshot("firefox").delete());
+        assertTrue(dumpPageSource("firefox").delete());
         quitDriver();
         removeFireBug();
         stopProxy();
@@ -60,8 +60,8 @@ public class TestDrivers extends AbstractTest {
     public void testGoogleChrome() throws Exception {
         initChromeDriver();
         driver.get("http://google.com");
-        assertTrue(watchman.takeScreenshot("google-chrome").delete());
-        assertTrue(watchman.dumpPageSource("google-chrome").delete());
+        assertTrue(takeScreenshot("google-chrome").delete());
+        assertTrue(dumpPageSource("google-chrome").delete());
         quitDriver();
         stopProxy();
     }
