@@ -46,9 +46,11 @@ import org.browsermob.proxy.ProxyServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
+import org.junit.internal.runners.statements.RunAfters;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.Statement;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.functionaltests.forms.FileWidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
@@ -159,15 +161,65 @@ public abstract class AbstractTest {
 
     protected static ProxyServer proxyServer = null;
 
+    private String lastScreenshot;
+
+    private String lastPageSource;
+
+    private String filePrefix;
+
     /**
      * @since 5.7
      */
     protected class LogTestWatchman extends TestWatchman {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Statement apply(final Statement base,
+                final FrameworkMethod method, Object target) {
+            return new Statement() {
+                @Override
+                public void evaluate() throws Throwable {
+                    starting(method);
+                    try {
+                        if (base instanceof RunAfters) {
+                            // Hack JUnit: in order to take screenshot at the right time we add through reflection an after
+                            // function that will be executed before all other
+                            // ones. See NXP-12742
+                            Field fAtersField = RunAfters.class.getDeclaredField("fAfters");
+                            fAtersField.setAccessible(true);
+
+                            List<FrameworkMethod> afters = (List<FrameworkMethod>) fAtersField.get(base);
+                            if (afters != null && !afters.isEmpty()) {
+                                FrameworkMethod first = afters.get(0);
+                                Method m = AbstractTest.class.getMethod(
+                                        "runBeforeAfters", (Class<?>[]) null);
+                                FrameworkMethod f = new FrameworkMethod(m);
+                                if (first != null && !first.equals(f)) {
+                                    afters.add(0, f);
+                                }
+                            }
+                        }
+                        base.evaluate();
+                        succeeded(method);
+                    } catch (Throwable t) {
+                        failed(t, method);
+                        throw t;
+                    } finally {
+                        finished(method);
+                    }
+                }
+            };
+        }
+
         @Override
         public void starting(FrameworkMethod method) {
             String message = String.format("Starting test '%s#%s'",
                     getTestClassName(method), method.getName());
             log.info(message);
+            String className = getTestClassName(method);
+            String methodName = method.getName();
+            filePrefix = String.format("screenshot-lastpage-%s-%s", className,
+                    methodName);
             logOnServer(message);
         }
 
@@ -178,10 +230,23 @@ public abstract class AbstractTest {
             log.error(
                     String.format("Test '%s#%s' failed", className, methodName),
                     e);
-            String filename = String.format("screenshot-lastpage-%s-%s",
-                    className, methodName);
-            takeScreenshot(filename);
-            dumpPageSource(filename);
+
+            if (lastScreenshot == null || lastPageSource == null) {
+                if (lastScreenshot == null) {
+                    File temp = takeScreenshot(filePrefix);
+                    lastScreenshot = temp!= null ? temp.getAbsolutePath() : null;
+                }
+
+                if (lastPageSource == null) {
+                    File temp = dumpPageSource(filePrefix);
+                    lastPageSource = temp!= null ? temp.getAbsolutePath() : null;
+                }
+
+            }
+            log.info(String.format("Created screenshot file named '%s'",
+                    lastScreenshot));
+            log.info(String.format("Created page source file named '%s'",
+                    lastPageSource));
             super.failed(e, method);
         }
 
@@ -189,6 +254,8 @@ public abstract class AbstractTest {
         public void finished(FrameworkMethod method) {
             log.info(String.format("Finished test '%s#%s'",
                     getTestClassName(method), method.getName()));
+            lastScreenshot = null;
+            lastPageSource = null;
             super.finished(method);
         }
 
@@ -208,43 +275,55 @@ public abstract class AbstractTest {
             }
         }
 
-        public File takeScreenshot(String filename) {
-            if (TakesScreenshot.class.isInstance(driver)) {
-                try {
-                    Thread.sleep(250);
-                    return TakesScreenshot.class.cast(driver).getScreenshotAs(
-                            new ScreenShotFileOutput(filename));
-                } catch (InterruptedException e) {
-                    log.error(e, e);
-                }
+    }
+
+    /**
+     * This method will be executed before any method registered with JUnit
+     * After annotation.
+     *
+     * @since 5.8
+     */
+    public void runBeforeAfters() {
+        lastScreenshot = takeScreenshot(filePrefix).getAbsolutePath();
+        lastPageSource = dumpPageSource(filePrefix).getAbsolutePath();
+    }
+
+    public File takeScreenshot(String filename) {
+        if (TakesScreenshot.class.isInstance(driver)) {
+            try {
+                Thread.sleep(250);
+                return TakesScreenshot.class.cast(driver).getScreenshotAs(
+                        new ScreenShotFileOutput(filename));
+            } catch (InterruptedException e) {
+                log.error(e, e);
             }
+        }
+        return null;
+    }
+
+    public File dumpPageSource(String filename) {
+        if (driver == null) {
             return null;
         }
-
-        public File dumpPageSource(String filename) {
-            if (driver == null) {
-                return null;
+        FileWriter writer = null;
+        try {
+            String location = System.getProperty("basedir")
+                    + File.separator + "target";
+            File outputFolder = new File(location);
+            if (!outputFolder.exists() || !outputFolder.isDirectory()) {
+                outputFolder = null;
             }
-            FileWriter writer = null;
-            try {
-                String location = System.getProperty("basedir")
-                        + File.separator + "target";
-                File outputFolder = new File(location);
-                if (!outputFolder.exists() || !outputFolder.isDirectory()) {
-                    outputFolder = null;
-                }
-                File tmpFile = File.createTempFile(filename, ".html",
-                        outputFolder);
-                log.info(String.format("Created page source file named '%s'",
-                        tmpFile.getPath()));
-                writer = new FileWriter(tmpFile);
-                writer.write(driver.getPageSource());
-                return tmpFile;
-            } catch (IOException e) {
-                throw new WebDriverException(e);
-            } finally {
-                IOUtils.closeQuietly(writer);
-            }
+            File tmpFile = File.createTempFile(filename, ".html",
+                    outputFolder);
+            log.trace(String.format("Created page source file named '%s'",
+                    tmpFile.getPath()));
+            writer = new FileWriter(tmpFile);
+            writer.write(driver.getPageSource());
+            return tmpFile;
+        } catch (IOException e) {
+            throw new WebDriverException(e);
+        } finally {
+            IOUtils.closeQuietly(writer);
         }
     }
 
