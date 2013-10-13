@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.work;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -57,6 +58,7 @@ public class WorkHolder implements Runnable {
             return;
         }
         TransactionHelper.startTransaction();
+        WorkSchedulePath.handleEnter(work);
         boolean ok = false;
         Exception exc = null;
         try {
@@ -70,6 +72,7 @@ public class WorkHolder implements Runnable {
                 throw new RuntimeException(e);
             }
         } finally {
+            WorkSchedulePath.handleReturn();
             try {
                 work.cleanUp(ok, exc);
             } finally {

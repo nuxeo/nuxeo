@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor;
+import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -702,6 +703,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         String workId = work.getId();
         String queueId = getCategoryQueueId(work.getCategory());
         if (log.isDebugEnabled()) {
+            log.debug("Scheduling work: " + work + " using queue: " + queueId);
+        }
+        WorkSchedulePath.newInstance(work);
+        if (log.isTraceEnabled()) {
+            log.trace("Scheduling work: " + work + " using queue: " + queueId, work.getSchedulePath().getStack());
+        } else if (log.isDebugEnabled()) {
             log.debug("Scheduling work: " + work + " using queue: " + queueId);
         }
         switch (scheduling) {

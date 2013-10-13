@@ -17,10 +17,10 @@
 package org.nuxeo.ecm.core.work.api;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 
@@ -143,8 +143,8 @@ public interface Work extends Serializable {
          */
         public Progress(float percent) {
             this.percent = percent > 100F ? 100F : percent;
-            this.current = CURRENT_INDETERMINATE;
-            this.total = 0;
+            current = CURRENT_INDETERMINATE;
+            total = 0;
         }
 
         /**
@@ -154,7 +154,7 @@ public interface Work extends Serializable {
          * @param total the total count
          */
         public Progress(long current, long total) {
-            this.percent = PERCENT_INDETERMINATE;
+            percent = PERCENT_INDETERMINATE;
             this.current = current;
             this.total = total;
         }
@@ -408,4 +408,17 @@ public interface Work extends Serializable {
      */
     boolean isDocumentTree();
 
+    /**
+     * Returns the schedule path
+     *
+     * @since 5.8
+     */
+    WorkSchedulePath getSchedulePath();
+
+    /**
+     * Set the schedule path, internal usage
+     *
+     * @since 5.8
+     */
+    void setSchedulePath(WorkSchedulePath path);
 }

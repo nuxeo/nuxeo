@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -112,6 +113,8 @@ public abstract class AbstractWork implements Work {
 
     protected transient CoreSession session;
 
+    protected transient WorkSchedulePath schedulePath = WorkSchedulePath.EMPTY;
+
     /**
      * Constructs a {@link Work} instance with a unique id.
      */
@@ -131,6 +134,16 @@ public abstract class AbstractWork implements Work {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public WorkSchedulePath getSchedulePath() {
+        return schedulePath;
+    }
+
+    @Override
+    public void setSchedulePath(WorkSchedulePath path) {
+        schedulePath = path;
     }
 
     public void setDocument(String repositoryName, String docId, boolean isTree) {
@@ -276,6 +289,9 @@ public abstract class AbstractWork implements Work {
                 log.debug("Suspended work: " + this);
             } else {
                 log.error("Exception during work: " + this, e);
+                if (WorkSchedulePath.captureStackEnabled) {
+                    WorkSchedulePath.log.error("Work schedule path", schedulePath.getStack());
+                }
             }
         }
         try {
@@ -333,6 +349,8 @@ public abstract class AbstractWork implements Work {
             buf.append(docIds.get(0));
             buf.append("..., ");
         }
+        buf.append(getSchedulePath().getParentPath());
+        buf.append(", ");
         buf.append(getProgress());
         buf.append(", ");
         buf.append(getStatus());
