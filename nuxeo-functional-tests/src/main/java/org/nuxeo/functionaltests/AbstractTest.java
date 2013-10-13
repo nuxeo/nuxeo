@@ -234,12 +234,12 @@ public abstract class AbstractTest {
             if (lastScreenshot == null || lastPageSource == null) {
                 if (lastScreenshot == null) {
                     File temp = takeScreenshot(filePrefix);
-                    lastScreenshot = temp!= null ? temp.getAbsolutePath() : null;
+                    lastScreenshot = temp != null ? temp.getAbsolutePath() : null;
                 }
 
                 if (lastPageSource == null) {
                     File temp = dumpPageSource(filePrefix);
-                    lastPageSource = temp!= null ? temp.getAbsolutePath() : null;
+                    lastPageSource = temp != null ? temp.getAbsolutePath() : null;
                 }
 
             }
