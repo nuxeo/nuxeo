@@ -23,6 +23,5 @@
 					  load,
 					  writer-disk,
 					  reader-cpu,
-					  drive,
 					  reader-memory" />
 </project>
