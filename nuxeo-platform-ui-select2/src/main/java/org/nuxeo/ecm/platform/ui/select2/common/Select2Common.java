@@ -40,7 +40,9 @@ public class Select2Common {
 
     public static final String ID = "id";
 
-    public static final String LABEL = "label";
+    public static final String LABEL = "displayLabel";
+
+    public static final String DIRECTORY_DEFAULT_LABEL_COL_NAME = "label";
 
     public static final String PARENT_FIELD_ID = "parent";
 
@@ -126,7 +128,7 @@ public class Select2Common {
             String labelFieldName, final String lang) {
         if (labelFieldName == null || labelFieldName.isEmpty()) {
             // No labelFieldName provided, we assume it is 'label'
-            labelFieldName = LABEL;
+            labelFieldName = DIRECTORY_DEFAULT_LABEL_COL_NAME;
         }
         if (dbl10n) {
             int i = labelFieldName.indexOf(LANG_TOKEN);

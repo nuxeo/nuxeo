@@ -105,9 +105,9 @@ public class SuggestDirectoryEntries {
                         value = translate(value.toString());
                     }
                     obj.element(Select2Common.LABEL, value);
-                } else {
-                    obj.element(key, value);
                 }
+                obj.element(key, value);
+
             }
             if (displayObsoleteEntries) {
                 if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID)
@@ -288,7 +288,7 @@ public class SuggestDirectoryEntries {
     protected String prefix;
 
     @Param(name = "labelFieldName", required = false)
-    protected String labelFieldName = Select2Common.LABEL;
+    protected String labelFieldName = Select2Common.DIRECTORY_DEFAULT_LABEL_COL_NAME;
 
     @Param(name = "dbl10n", required = false)
     protected boolean dbl10n = false;
