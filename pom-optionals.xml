@@ -23,7 +23,6 @@
 
   <modules>
     <module>nuxeo-platform-jbpm</module>
-    <module>nuxeo-platform-user-dashboard-compat</module>
     <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-platform-splitpane</module>
     <module>nuxeo-sample-project</module>
