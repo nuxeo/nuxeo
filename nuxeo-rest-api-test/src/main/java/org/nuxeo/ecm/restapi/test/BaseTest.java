@@ -135,7 +135,24 @@ public class BaseTest {
 
     protected JsonNode getResponseAsJson(RequestType responseType, String url)
             throws IOException, JsonProcessingException {
-        ClientResponse response = getResponse(responseType, url);
+        return getResponseAsJson(responseType, url,null);
+    }
+
+
+    /**
+     *
+     * @param get
+     * @param string
+     * @param queryParamsForPage
+     * @return
+     * @throws IOException
+     * @throws JsonProcessingException
+     *
+     * @since 5.8
+     */
+    protected JsonNode getResponseAsJson(RequestType responseType, String url,
+            MultivaluedMap<String, String> queryParams) throws JsonProcessingException, IOException {
+        ClientResponse response = getResponse(responseType, url,queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         return mapper.readTree(response.getEntityInputStream());
     }
