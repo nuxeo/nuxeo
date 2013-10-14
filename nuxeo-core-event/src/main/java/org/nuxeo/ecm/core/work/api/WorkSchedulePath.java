@@ -84,8 +84,9 @@ public class WorkSchedulePath implements Serializable {
 
     public static void handleReturn() {
         if (!capturePath) {
-            enteredLocal.remove();
+            return;
         }
+        enteredLocal.remove();
     }
 
     protected static String path(WorkSchedulePath parent) {
