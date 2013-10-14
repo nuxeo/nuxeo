@@ -113,8 +113,6 @@
       </filter>
       <properties>
         <property name="ajaxSupport">true</property>
-        <property name="isParentTab">true</property>
-        <!-- this property is not needed anymore, here for compat -->
         <property name="link">/incl/tabs/document_manage.xhtml</property>
       </properties>
     </action>
