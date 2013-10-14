@@ -63,6 +63,7 @@
     <nuxeo.dam.pdf.export.version>5.8-SNAPSHOT</nuxeo.dam.pdf.export.version>
     <nuxeo.resources.compat.version>5.8-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>5.8-SNAPSHOT</nuxeo.dmk.version>
+    <nuxeo.jbpm.version>5.8-SNAPSHOT</nuxeo.jbpm.version>
     <nuxeo.webengine.sites.version>5.8-SNAPSHOT</nuxeo.webengine.sites.version>
     <nuxeo.rest-api.version>5.8-SNAPSHOT</nuxeo.rest-api.version>
   </properties>
@@ -1128,7 +1129,51 @@
         <version>${nuxeo.rest-api.version}</version>
       </dependency>
 
+      <!-- jBPM -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-api</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-automation</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-core</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-test</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-web</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-task-migration</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-jbpm-gadgets</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
+      <!-- user dashboard compat (required by jbpm) -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-user-dashboard-compat</artifactId>
+        <version>${nuxeo.jbpm.version}</version>
+      </dependency>
     </dependencies>
+
   </dependencyManagement>
 
   <repositories>
