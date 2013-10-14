@@ -19,9 +19,10 @@ package org.nuxeo.ecm.platformui.web.form;
 import java.io.IOException;
 
 import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlForm;
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.renderkit.html_basic.FormRenderer;
@@ -38,38 +39,60 @@ public class NxFormRenderer extends FormRenderer {
 
     public static final String ENABLE_DOUBLE_CLICK_ON_ELEMENT = "disableDoubleClickShield";
 
+    public static final String DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG = "doubleClickShielded";
+
     protected static boolean isDoubleShieldEnabled() {
         return Framework.isBooleanPropertyTrue(ENABLE_DOUBLE_CLICK_SHIELD);
+    }
+
+    protected static boolean dcDisabledOnElement(UIComponent component) {
+        if (component != null) {
+            Object dcDisabledOnElement = component.getAttributes().get(
+                    ENABLE_DOUBLE_CLICK_ON_ELEMENT);
+            if (dcDisabledOnElement != null) {
+                if (dcDisabledOnElement instanceof String) {
+                    Boolean.TRUE.equals(Boolean.valueOf((String) dcDisabledOnElement));
+                } else if (dcDisabledOnElement instanceof Boolean) {
+                    Boolean.TRUE.equals(dcDisabledOnElement);
+                }
+            }
+        } else {
+            return true;
+        }
+        return false;
+    }
+
+    protected static boolean containsDoubleClickShieldClass(final String styleClass) {
+        if (styleClass != null) {
+            String[] split = styleClass.split(" ");
+            for (String s : split) {
+                if (s.equals(DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public void encodeBegin(FacesContext context, UIComponent component)
             throws IOException {
 
-        super.encodeBegin(context, component);
-
         if (component.isRendered() && isDoubleShieldEnabled()) {
-            String dcDisabledOnElement = (String) component.getAttributes().get(
-                    ENABLE_DOUBLE_CLICK_ON_ELEMENT);
-            if (dcDisabledOnElement != null
-                    && Boolean.TRUE.equals(Boolean.valueOf(dcDisabledOnElement))) {
-                return;
+            if (!dcDisabledOnElement(component)) {
+                String styleClass =
+                        (String) ((HtmlForm) component).getAttributes().get("styleClass");
+                if (StringUtils.isBlank(styleClass)) {
+                    ((HtmlForm) component).setStyleClass(DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
+                } else {
+                    if (!containsDoubleClickShieldClass(styleClass)) {
+                        ((HtmlForm) component).setStyleClass(styleClass + " " + DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG);
+                    }
+                }
             }
-
-            ResponseWriter writer = context.getResponseWriter();
-
-            // The purpose of this code is to prevent user from double submit a
-            // form.
-            writer.startElement("script", component);
-            writer.writeAttribute("type", "text/javascript", null);
-
-            String clientId = component.getClientId(context);
-            String scriptContent = String.format(
-                    "jQuery(\"#%s\").preventDoubleSubmission();",
-                    clientId.replace(":", "\\\\:"));
-            writer.writeText(scriptContent, null);
-            writer.endElement("script");
         }
+
+        super.encodeBegin(context, component);
 
     }
 
