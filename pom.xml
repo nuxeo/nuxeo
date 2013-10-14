@@ -1161,12 +1161,6 @@
         <artifactId>nuxeo-platform-jbpm-gadgets</artifactId>
         <version>${nuxeo.jbpm.version}</version>
       </dependency>
-      <!-- user dashboard compat (required by jbpm) -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-user-dashboard-compat</artifactId>
-        <version>${nuxeo.jbpm.version}</version>
-      </dependency>
     </dependencies>
 
   </dependencyManagement>
