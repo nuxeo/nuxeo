@@ -9,7 +9,7 @@
         markup += "<img src='" + window.nxContextPath + "/icons/group.png'/>";
       }
     }
-    markup += entry.label;
+    markup += entry.displayLabel;
     if (entry.warn_message) {
       markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
           + entry.warn_message + "'/>"
@@ -31,7 +31,7 @@
   }
 
     function dirEntryDefaultFormatter(entry) {
-    var markup = entry.label;
+    var markup = entry.displayLabel;
     if (entry.warn_message) {
       markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
           + entry.warn_message + "'/>"
@@ -84,39 +84,24 @@
 
   function configureOperationParameters(op, params, query) {
     var temp = {};
-    if (params.directoryName && params.directoryName.length > 0) {
+    jQuery.extend(temp,params);
+    temp.lang = currentUserLang;
+    if (params.operationId == 'Directory.SuggestEntries') {
       // build default operation for Directory
-      temp.directoryName = params.directoryName;
       temp.prefix = query.term;
-      temp.translateLabels = params.translateLabels;
-      temp.lang = currentUserLang;
-      temp.labelFieldName = params.labelFieldName;
-      temp.dbl10n = params.dbl10n;
-      temp.filterParent = params.filterParent;
-      temp.canSelectParent = params.canSelectParent;
-      temp.separator = params.separator;
-      temp.displayObsoleteEntries = params.displayObsoleteEntries;
     } else if (params.operationId == 'UserGroup.Suggestion') {
       temp.prefix = query.term;
       temp.searchType = params.userSuggestionSearchType;
-      temp.groupRestriction = params.groupRestriction;
-      temp.userSuggestionMaxSearchResults,
-          params.userSuggestionMaxSearchResults;
-      temp.firstLabelField = params.firstLabelField;
-      temp.secondLabelField = params.secondLabelField;
-      temp.thirdLabelField = params.thirdLabelField;
-      temp.hideFirstLabel = params.hideFirstLabel;
-      temp.hideSecondLabel = params.hideSecondLabel;
-      temp.hideThirdLabel = params.hideThirdLabel;
-      temp.displayEmailInSuggestion = params.displayEmailInSuggestion;
-      temp.hideIcon = params.hideIcon;
-    } else {
+    } else if (params.operationId == 'Document.PageProvider') {
       // build default operation for Document
       temp.queryParams = query.term + "%";
       temp.query = params.query;
       temp.providerName = params.pageProviderName;
       temp.page = "0";
       temp.pageSize = "20";
+    } else {
+      // custom operation, pass at least the query term
+      temp.searchTerm = query.term;
     }
     if (typeof currentConversationId != 'undefined') {
       // Give needed info to restore Seam context
@@ -146,8 +131,8 @@
   }
 
   function getDefaultLabel(item) {
-    if (item.label) {
-      return item.label;
+    if (item.displayLabel) {
+      return item.displayLabel;
     } else {
       return item.title;
     }

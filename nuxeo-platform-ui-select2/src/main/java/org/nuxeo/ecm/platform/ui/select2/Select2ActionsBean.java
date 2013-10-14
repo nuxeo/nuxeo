@@ -50,6 +50,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -76,6 +77,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
+import org.nuxeo.ecm.platform.ui.select2.automation.SuggestDirectoryEntries;
 import org.nuxeo.ecm.platform.ui.select2.automation.SuggestUserEntries;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -140,11 +142,13 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public String encodeParametersForDirectory(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
+        Map<String, String> params = getDefaultFormattersMap(
+                Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER,
+                Select2Common.DIR_DEFAULT_SELECTION_FORMATTER);
+        params.put(Select2Common.OPERATION_ID, SuggestDirectoryEntries.ID);
         return encodeParameters(
                 widget,
-                getDefaultFormattersMap(
-                        Select2Common.DIR_DEFAULT_SUGGESTION_FORMATTER,
-                        Select2Common.DIR_DEFAULT_SELECTION_FORMATTER), resolvedWidgetProperties);
+                params, resolvedWidgetProperties);
     }
 
     public String encodeParameters(final Widget widget) {
@@ -153,11 +157,13 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public String encodeParameters(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
+        Map<String, String> params = getDefaultFormattersMap(
+                Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER,
+                Select2Common.DOC_DEFAULT_SELECTION_FORMATTER);
+        params.put(Select2Common.OPERATION_ID, DocumentPageProviderOperation.ID);
         return encodeParameters(
                 widget,
-                getDefaultFormattersMap(
-                        Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER,
-                        Select2Common.DOC_DEFAULT_SELECTION_FORMATTER), resolvedWidgetProperties);
+                params, resolvedWidgetProperties);
     }
 
     /**
