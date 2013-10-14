@@ -86,7 +86,7 @@
     var temp = {};
     jQuery.extend(temp,params);
     temp.lang = currentUserLang;
-    if (params.directoryName && params.directoryName.length > 0) {
+    if (params.operationId == 'Directory.SuggestEntries') {
       // build default operation for Directory
       temp.prefix = query.term;
     } else if (params.operationId == 'UserGroup.Suggestion') {
