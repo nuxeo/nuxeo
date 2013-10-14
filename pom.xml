@@ -272,11 +272,6 @@
         <artifactId>nuxeo-web-embedded-servlet</artifactId>
         <version>${nuxeo.webembedded.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.web</groupId>
-        <artifactId>nuxeo-web-embedded-distribution</artifactId>
-        <version>${nuxeo.webembedded.version}</version>
-      </dependency>
 
       <!-- OpenSocial -->
       <dependency>
