@@ -31,11 +31,11 @@
         });
       </script>
         <nxl:documentLayout mode="create" value="#{changeableDocument}" />
-        <p class="buttonsGadget">
+        <div class="buttonsGadget">
           <input type="hidden" name="parentDocumentPath"
             value="#{currentDocument.pathAsString}" />
           <nxl:widget name="documentCreateButtons" mode="view" value="#{changeableDocument}" />
-        </p>
+        </div>
       </h:form>
       <script>
       jQuery(document).ready(function() {
