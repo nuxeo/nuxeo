@@ -2065,6 +2065,16 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryJoinWithSubQuery() throws Exception {
+        String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
+                + " FROM cmis:document A" //
+                + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
+                + " WHERE 'foo' = ANY B.dc:subjects";
+        ObjectList res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+    }
+
+    @Test
     public void testQueryJoinWithSecurity() throws Exception {
         nuxeotc.closeSession();
         nuxeotc.session = nuxeotc.openSessionAs("bob");
