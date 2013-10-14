@@ -224,6 +224,16 @@ public abstract class AbstractTest {
         }
 
         @Override
+        public void succeeded(FrameworkMethod method) {
+            if (lastPageSource != null) {
+                new File(lastPageSource).delete();
+            }
+            if (lastScreenshot != null) {
+                new File(lastScreenshot).delete();
+            }
+        }
+
+        @Override
         public void failed(Throwable e, FrameworkMethod method) {
             String className = getTestClassName(method);
             String methodName = method.getName();
