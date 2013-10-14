@@ -87,16 +87,21 @@ public class WorkErrorsAreTracableTest {
     @Inject
     protected LogCaptureFeature.Result result;
 
-    protected boolean oldCaptureStackEnabled;
+    protected boolean beforeCapturePath;
 
     @Before
     public void captureStacks() {
-        oldCaptureStackEnabled = WorkSchedulePath.captureScheduleStack(true);
+        beforeCapturePath = WorkSchedulePath.capturePath;
+        if (!WorkSchedulePath.isCaptureStackEnabled()) {
+            WorkSchedulePath.toggleCaptureStack();
+        }
     }
 
     @After
     public void resetCaptureStacks() {
-        WorkSchedulePath.captureScheduleStack(oldCaptureStackEnabled);
+        if (!beforeCapturePath) {
+            WorkSchedulePath.toggleCapturePath();
+        }
     }
 
     @Test

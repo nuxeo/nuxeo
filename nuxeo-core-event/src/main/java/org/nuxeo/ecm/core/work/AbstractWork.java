@@ -289,7 +289,7 @@ public abstract class AbstractWork implements Work {
                 log.debug("Suspended work: " + this);
             } else {
                 log.error("Exception during work: " + this, e);
-                if (WorkSchedulePath.captureStackEnabled) {
+                if (WorkSchedulePath.captureStack) {
                     WorkSchedulePath.log.error("Work schedule path", schedulePath.getStack());
                 }
             }

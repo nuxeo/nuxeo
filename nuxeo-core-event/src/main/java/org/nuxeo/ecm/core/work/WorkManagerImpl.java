@@ -702,9 +702,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
         String workId = work.getId();
         String queueId = getCategoryQueueId(work.getCategory());
-        if (log.isDebugEnabled()) {
-            log.debug("Scheduling work: " + work + " using queue: " + queueId);
-        }
         WorkSchedulePath.newInstance(work);
         if (log.isTraceEnabled()) {
             log.trace("Scheduling work: " + work + " using queue: " + queueId, work.getSchedulePath().getStack());

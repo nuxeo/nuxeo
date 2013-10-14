@@ -2,11 +2,14 @@ package org.nuxeo.ecm.core.work.api;
 
 import java.io.Serializable;
 
+import javax.management.MXBean;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
 
+@MXBean
 public class WorkSchedulePath implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -15,7 +18,9 @@ public class WorkSchedulePath implements Serializable {
 
     public static final Log log = LogFactory.getLog(WorkSchedulePath.class);
 
-    public static boolean captureStackEnabled = Framework.isBooleanPropertyTrue("work.captureScheduleStack") ||
+    public static boolean capturePath = Boolean.parseBoolean(Framework.getProperty("work.schedule.capturePath", "true"));
+
+    public static boolean captureStack = Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack", "false")) ||
             log.isTraceEnabled();
 
     public static WorkSchedulePath EMPTY = new WorkSchedulePath();
@@ -39,22 +44,38 @@ public class WorkSchedulePath implements Serializable {
         }
     }
 
+    public static void toggleCapturePath() {
+        capturePath = !capturePath;
+    }
 
+    public static boolean isCapturePathEnabled() {
+        return capturePath;
+    }
 
+    public static void toggleCaptureStack() {
+        captureStack = !captureStack;
+        if (captureStack) {
+            capturePath = true;
+        }
+    }
 
-    public static boolean captureScheduleStack(boolean enabled) {
-        boolean old = captureStackEnabled;
-        captureStackEnabled = enabled;
-        return old;
+    public static boolean isCaptureStackEnabled() {
+        return capturePath && captureStack;
     }
 
     public static void newInstance(Work work) {
+        if (!capturePath) {
+            return;
+        }
         Work entered = enteredLocal.get();
         WorkSchedulePath  path = new WorkSchedulePath(entered == null ? EMPTY : entered.getSchedulePath(), work);
         work.setSchedulePath(path);
     }
 
     public static void handleEnter(Work work) {
+        if (!capturePath) {
+            return;
+        }
         if (enteredLocal.get() != null) {
             throw new AssertionError("thread local leak, chain should not be re-rentrant");
         }
@@ -62,7 +83,9 @@ public class WorkSchedulePath implements Serializable {
      }
 
     public static void handleReturn() {
-        enteredLocal.remove();
+        if (!capturePath) {
+            enteredLocal.remove();
+        }
     }
 
     protected static String path(WorkSchedulePath parent) {
@@ -85,7 +108,7 @@ public class WorkSchedulePath implements Serializable {
     protected WorkSchedulePath(WorkSchedulePath parent, Work work) {
         parentPath = parent.getPath();
         name = name(work);
-        scheduleStackTrace = captureStackEnabled ? new Trace(parent.scheduleStackTrace) : null;
+        scheduleStackTrace = captureStack ? new Trace(parent.scheduleStackTrace) : null;
     }
 
     public String getPath() {
