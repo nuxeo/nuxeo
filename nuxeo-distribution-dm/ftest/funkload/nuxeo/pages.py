@@ -543,6 +543,7 @@ class FolderPage(BasePage):
             ['nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Click on 'New' action")
+        fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform'],
@@ -574,6 +575,7 @@ class FolderPage(BasePage):
             ['nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Click on 'New' action")
+        fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform'],
