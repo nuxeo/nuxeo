@@ -25,28 +25,7 @@
     fullCategory="#{nxu:test(empty widgetProperty_fullCategory, widgetProperty_category, widgetPropery_fullCategory)}"
     ignoreTemplateProperty="true"
     subWidgets="#{widget.subWidgets}"
-    addForm="true">
-
-    <ui:define name="tab_content">
-      <c:if test="#{not empty widgetProperty_currentTabAction.link}">
-        <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
-          <ui:include src="/incl/action/generic_mode_action_template.xhtml">
-            <ui:param name="mode" value="tab_content" />
-          </ui:include>
-        </nxu:set>
-      </c:if>
-
-      <c:if test="#{empty widgetProperty_currentTabAction.link and widgetProperty_currentTabAction.properties.isParentTab == true}">
-        <nxl:widgetType name="documentTabsWithForms"
-          mode="#{widget.mode}"
-          widgetName="#{widget.name}_sub_tab"
-          value="#{fieldOrValue}"
-          widgetProperty_category="#{widgetProperty_currentTabAction}_sub_tab"
-          fullCategory="#{widgetProperty_fullCategory}:#{widgetProperty_currentTabAction}_sub_tab" />
-      </c:if>
-    </ui:define>
-
-  </nxl:widgetType>
+    addForm="true" />
 </nxu:set>
 </nxu:set>
 </nxu:set>
