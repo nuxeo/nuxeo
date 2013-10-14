@@ -1392,18 +1392,21 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             Column column = (Column) col.getInfo();
             String qual = col.getQualifier();
+            // we need the real table and column in the subquery
+            Table realTable = column.getTable().getRealTable();
+            Column realColumn = realTable.getColumn(column.getKey());
             Column hierMainColumn = getTable(hierTable, qual).getColumn(
                     model.MAIN_KEY);
-            Column multiMainColumn = column.getTable().getColumn(model.MAIN_KEY);
+            Column multiMainColumn = realTable.getColumn(model.MAIN_KEY);
 
             whereBuf.append("EXISTS (SELECT 1 FROM ");
-            whereBuf.append(column.getTable().getQuotedName());
+            whereBuf.append(realTable.getQuotedName());
             whereBuf.append(" WHERE ");
             whereBuf.append(hierMainColumn.getFullQuotedName());
             whereBuf.append(" = ");
             whereBuf.append(multiMainColumn.getFullQuotedName());
             whereBuf.append(" AND ");
-            whereBuf.append(column.getFullQuotedName());
+            whereBuf.append(realColumn.getFullQuotedName());
             whereBuf.append(" ");
             whereBuf.append(op);
             whereBuf.append(" ");
