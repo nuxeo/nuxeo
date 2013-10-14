@@ -8,6 +8,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:c="http://java.sun.com/jstl/core" onLoad="loadCSs()">
 
 <c:if test="#{documents != null}">
@@ -31,25 +32,25 @@
           <c:forEach varStatus="status" items="#{documents.rows}" var="row">
 
             <div id="#{row.data.ref}"
-              class="#{nxu:test(row.selected,'pictureBookItem itemSelected','pictureBookItem')}">
-                <script type="text/javascript">
-                    var dblclick;
-                    function link<h:outputText value="#{status.index}" />(){
-                        if(!dblclick){
-                           if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class')==('pictureBookItem itemSelected')){
-                             document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=false;
-                             document.getElementById('<h:outputText value="#{row.data.ref}" />').className='pictureBookItem';
-                           }else{
-                            document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked=true;
-                            document.getElementById('<h:outputText value="#{row.data.ref}" />').className='pictureBookItem itemSelected';
-                           }
-                           selectDataTableRow('<h:outputText value="#{row.data.ref}" />' ,
-                             '<h:outputText value="#{providerName}" />',
-                             document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0],
-                             '<h:outputText value="#{listName}" />');
-                        }
-                    }
+              class="#{nxu:test(row.selected, 'pictureBookItem itemSelected' , 'pictureBookItem')}">
+              <script type="text/javascript">
+                var dblclick;
+                function link#{status.index}() {
+                  if (!dblclick) {
+                     if (document.getElementById('<h:outputText value="#{row.data.ref}" />').getAttribute('class') == ('pictureBookItem itemSelected')) {
+                       document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked = false;
+                       document.getElementById('<h:outputText value="#{row.data.ref}" />').className='pictureBookItem';
+                     } else {
+                       document.getElementById('docRefDiv:<h:outputText value="#{row.data.ref}" />').childNodes[0].checked = true;
+                       document.getElementById('<h:outputText value="#{row.data.ref}" />').className='pictureBookItem itemSelected';
+                     }
+                     a4jLink#{status.index}();
+                  }
+                }
               </script>
+              <a4j:jsFunction name="a4jLink#{status.index}"
+                action="#{documentListingActions.checkCurrentDocAndProcessSelectRow(row.data.ref, contentView.name, contentView.selectionListName, row.selected, currentDocument.ref)}"
+                reRender="ajax_selection_buttons" />
               <div id="docRefDiv:#{row.data.ref}" style="display: none;" >
                 <h:selectBooleanCheckbox value="#{row.selected}"  />
               </div>
@@ -105,8 +106,54 @@
         </div>
         </div>
       </div>
-      <ui:insert name="buttons" />
     </h:form>
+
+    <a4j:outputPanel id="ajax_selection_buttons"
+      layout="block"
+      ajaxRendered="false">
+      <div id="selection_buttons">
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <ui:insert name="content_view_actions_before" />
+                <ui:insert name="content_view_actions">
+                  <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
+                    <nxu:set var="actionContext" value="#{actionContextProvider.createActionContext()}" cache="true">
+                    <nxu:set var="foo" value="#{actionContext.putLocalVariable('contentView', contentView)}" cache="true" />
+                    <nxu:set var="foo" value="#{actionContext.putLocalVariable('selectedDocuments', documentsListsManager.getWorkingList(contentView.selectionListName))}" cache="true" />
+                    <nxu:set var="actions" value="#{webActions.getUnfiltredActionsList(actionCategory, actionContext)}" cache="true">
+                      <c:if test="#{not status.first and not empty actions}">
+                        <br />
+                      </c:if>
+                      <nxl:widgetType name="actions"
+                        mode="view"
+                        widgetName="cvButton"
+                        label=""
+                        actions="#{actions}"
+                        overallDisplay="horizontal_block"
+                        actionsDisplay="buttons"
+                        ignoreTemplateProperty="true"
+                        addForm="true" />
+                    </nxu:set>
+                    </nxu:set>
+                  </c:forEach>
+                </ui:insert>
+                <ui:insert name="content_view_actions_after" />
+              </td>
+              <td rowSpan="#{contentView.actionsCategories.size}" valign="middle">
+                <a4j:status>
+                  <f:facet name="start">
+                    <h:graphicImage value="/img/standart_waiter.gif" />
+                  </f:facet>
+                </a4j:status>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </a4j:outputPanel>
+
   </a4j:region>
 </c:if>
 

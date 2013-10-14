@@ -16,12 +16,10 @@
     cache="true">
     #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
 
-    <c:if test="#{not empty provider.currentPage}">
-      <ui:decorate template="/incl/picturebook.xhtml">
-        <ui:param name="providerId" value="#{contentView.id}" />
-        <ui:param name="documents" value="#{provider.currentSelectPage}" />
-      </ui:decorate>
-    </c:if>
+    <ui:decorate template="/incl/picturebook.xhtml">
+      <ui:param name="providerId" value="#{contentView.id}" />
+      <ui:param name="documents" value="#{provider.currentSelectPage}" />
+    </ui:decorate>
 
   </nxu:set>
   </nxu:set>
