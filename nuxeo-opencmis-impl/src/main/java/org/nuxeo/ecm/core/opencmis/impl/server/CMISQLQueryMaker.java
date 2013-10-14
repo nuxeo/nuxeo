@@ -1413,15 +1413,41 @@ public class CMISQLQueryMaker implements QueryMaker {
 
         @Override
         public Boolean walkIsNull(Tree opNode, Tree colNode) {
-            walkExpr(colNode);
-            whereBuf.append(" IS NULL");
-            return null;
+            return walkIsNullOrIsNotNull(colNode, true);
         }
 
         @Override
         public Boolean walkIsNotNull(Tree opNode, Tree colNode) {
-            walkExpr(colNode);
-            whereBuf.append(" IS NOT NULL");
+            return walkIsNullOrIsNotNull(colNode, false);
+        }
+
+        protected Boolean walkIsNullOrIsNotNull(Tree colNode, boolean isNull) {
+            int token = ((Tree) colNode).getTokenStartIndex();
+            ColumnReference col = (ColumnReference) query.getColumnReference(Integer.valueOf(token));
+            PropertyDefinition<?> pd = col.getPropertyDefinition();
+            boolean multi = pd.getCardinality() == Cardinality.MULTI;
+            if (multi) {
+                // we need the real table and column in the subquery
+                Column column = (Column) col.getInfo();
+                String qual = col.getQualifier();
+                Table realTable = column.getTable().getRealTable();
+                Column hierMainColumn = getTable(hierTable, qual).getColumn(
+                        model.MAIN_KEY);
+                Column multiMainColumn = realTable.getColumn(model.MAIN_KEY);
+                if (isNull) {
+                    whereBuf.append("NOT ");
+                }
+                whereBuf.append("EXISTS (SELECT 1 FROM ");
+                whereBuf.append(realTable.getQuotedName());
+                whereBuf.append(" WHERE ");
+                whereBuf.append(hierMainColumn.getFullQuotedName());
+                whereBuf.append(" = ");
+                whereBuf.append(multiMainColumn.getFullQuotedName());
+                whereBuf.append(')');
+            } else {
+                walkExpr(colNode);
+                whereBuf.append(isNull ? " IS NULL" : " IS NOT NULL");
+            }
             return null;
         }
 
