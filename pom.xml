@@ -37,7 +37,6 @@
     <nuxeo.sync.version>5.8-SNAPSHOT</nuxeo.sync.version>
     <nuxeo.audio.version>5.8-SNAPSHOT</nuxeo.audio.version>
     <nuxeo.video.version>5.8-SNAPSHOT</nuxeo.video.version>
-    <nuxeo.semantic.entities.version>5.8-SNAPSHOT</nuxeo.semantic.entities.version>
     <nuxeo.categorization.version>5.8-SNAPSHOT</nuxeo.categorization.version>
     <nuxeo.rendition.version>5.8-SNAPSHOT</nuxeo.rendition.version>
     <nuxeo.replication.version>5.8-SNAPSHOT</nuxeo.replication.version>
@@ -63,9 +62,13 @@
     <nuxeo.dam.pdf.export.version>5.8-SNAPSHOT</nuxeo.dam.pdf.export.version>
     <nuxeo.resources.compat.version>5.8-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>5.8-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.jbpm.version>5.8-SNAPSHOT</nuxeo.jbpm.version>
-    <nuxeo.webengine.sites.version>5.8-SNAPSHOT</nuxeo.webengine.sites.version>
     <nuxeo.rest-api.version>5.8-SNAPSHOT</nuxeo.rest-api.version>
+    <nuxeo.webengine.sites.version>5.8-SNAPSHOT</nuxeo.webengine.sites.version>
+
+    <!-- optional addons -->
+    <nuxeo.jbpm.version>5.8-SNAPSHOT</nuxeo.jbpm.version>
+    <nuxeo.semantic.entities.version>5.8-SNAPSHOT</nuxeo.semantic.entities.version>
+    <!-- end of optional addons -->
   </properties>
 
   <modules>
@@ -86,7 +89,6 @@
     <module>nuxeo-platform-sync</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
-    <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-categorization</module>
     <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-shell</module>
