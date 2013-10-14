@@ -28,7 +28,6 @@
     <module>nuxeo-sample-project</module>
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-intuition</module>
-    <module>nuxeo-groups-rights-audit</module>
     <module>nuxeo-platform-semantic-entities</module>
   </modules>
 
