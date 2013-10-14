@@ -1647,6 +1647,22 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryIsNullMuti() throws Exception {
+        String statement = "SELECT cmis:objectId FROM cmis:document"
+                + " WHERE dc:subjects IS NULL";
+        ObjectList res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryIsNotNullMuti() throws Exception {
+        String statement = "SELECT cmis:objectId FROM cmis:document"
+                + " WHERE dc:subjects IS NOT NULL";
+        ObjectList res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+    }
+
+    @Test
     public void testQueryMixinTypes() throws Exception {
         String statement;
         ObjectList res;
@@ -2063,13 +2079,23 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
-    public void testQueryJoinWithSubQuery() throws Exception {
+    public void testQueryJoinWithSubQueryMulti() throws Exception {
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
                 + " WHERE 'foo' = ANY B.dc:subjects";
         ObjectList res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryJoinWithSubQueryMultiIsNull() throws Exception {
+        String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
+                + " FROM cmis:document A" //
+                + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
+                + " WHERE B.dc:subjects IS NULL";
+        ObjectList res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
     }
 
     @Test
