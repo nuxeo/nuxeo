@@ -4543,6 +4543,8 @@
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
+                  <!-- NXP-12791: temporary exclude due to SNAPSHOT dependency from connect-client -->
+                  <exclude>org.eclipse.equinox:org.eclipse.equinox.p2.cudf</exclude>
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
               </requireReleaseDeps>
