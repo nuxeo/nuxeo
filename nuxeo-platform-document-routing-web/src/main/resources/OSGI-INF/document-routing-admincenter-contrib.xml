@@ -21,20 +21,27 @@
       <showTitle>false</showTitle>
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <pattern>SELECT * FROM DocumentRoute WHERE ecm:path STARTSWITH '/document-route-models-root'</pattern>
-        <sort column="dc:title" ascending="true" />
-        <pageSize>20</pageSize>
+        <pattern>SELECT * FROM DocumentRoute WHERE ecm:path STARTSWITH
+          '/document-route-models-root'
+        </pattern>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
       </coreQueryPageProvider>
-      <cacheKey>#{currentDocument.id}</cacheKey>
-      <cacheSize>10</cacheSize>
+      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
+      </cacheKey>
+      <cacheSize>10</cacheSize>
+      <refresh>
+        <event>documentChildrenChanged</event>
+      </refresh>
       <resultLayouts>
         <layout name="document_route_models_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true" showSyndicationLinks="true" />
-       </resultLayouts>
-       <selectionList>CURRENT_SELECTION</selectionList>
-       <actions category="CURRENT_SELECTION_LIST" />
-     </contentView>
+          showCSVExport="true" showPDFExport="true"
+          showSyndicationLinks="true" />
+      </resultLayouts>
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+    </contentView>
 
   </extension>
 
