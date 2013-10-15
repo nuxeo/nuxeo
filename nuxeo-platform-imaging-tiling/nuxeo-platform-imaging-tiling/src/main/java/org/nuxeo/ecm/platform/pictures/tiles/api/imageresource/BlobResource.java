@@ -19,8 +19,12 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.api.imageresource;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 
@@ -48,7 +52,7 @@ public class BlobResource implements ImageResource {
         if (blob.getDigest() != null) {
             hash = blob.getDigest();
         } else {
-            hash = blob.hashCode() + "fakeHash";
+            hash = getMD5Digest();
         }
 
         modified = Calendar.getInstance();
@@ -64,6 +68,19 @@ public class BlobResource implements ImageResource {
 
     public Calendar getModificationDate() throws ClientException {
         return modified;
+    }
+
+    protected String getMD5Digest() {
+        InputStream in = null;
+        try {
+            Blob b = blob.persist();
+            in = b.getStream();
+            return DigestUtils.md5Hex(in);
+        } catch (IOException e) {
+            return blob.hashCode() + "fakeHash";
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
     }
 
 }

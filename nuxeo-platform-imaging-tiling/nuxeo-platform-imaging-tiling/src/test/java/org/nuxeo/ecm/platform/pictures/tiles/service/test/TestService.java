@@ -25,6 +25,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -58,6 +62,7 @@ public class TestService extends NXRuntimeTestCase {
 
         deployContrib("org.nuxeo.ecm.platform.picture.core",
         "OSGI-INF/commandline-imagemagick-contrib.xml");
+        PictureTilingComponent.getCache().clear();
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
         PictureTilingComponent.endGC();
     }
@@ -314,8 +319,6 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
-    // NXP-12733: disabled because failing randomly
-    @Ignore
     public void testGC2() throws Exception {
         int reduceSize = 500;
         int gcRuns = PictureTilingCacheGCManager.getGCRuns();
@@ -371,7 +374,6 @@ public class TestService extends NXRuntimeTestCase {
 
         PictureTilingComponent.setEnvValue(
                 PictureTilingCacheGCManager.MAX_DISK_SPACE_USAGE_KEY, maxStr);
-
     }
 
     @Test
@@ -386,8 +388,6 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
-    // NXP-12733: disabled because failing randomly
-    @Ignore
     public void testBorderTiles() throws Exception {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
