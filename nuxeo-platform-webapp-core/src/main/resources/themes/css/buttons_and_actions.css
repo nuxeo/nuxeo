@@ -25,6 +25,7 @@ input.button,
   border-color: "button (__FLAVOR__ border)";
   color: "link.action (__FLAVOR__ color)";
   cursor: pointer;
+  display: inline-block;
   font-size: .95em;
   font-weight: bold;
   margin: 0 .9em .9em 0;
@@ -32,18 +33,11 @@ input.button,
   text-decoration: none;
   white-space: nowrap }
 
-a.button,
-a.tinyButton,
-a.smallButton,
-.button,
-.tinyButton,
-.smallButton {
-  color: "link.action (__FLAVOR__ color)";
-  display: inline-block;
-  padding: .3em .7em;
-  text-decoration: none }
+a.button {
+  padding: .3em .5em }
 
 .button:hover,
+a.button:hover,
 input.button:hover,
 .action_bar a:hover {
   border: 1px solid;
@@ -54,10 +48,10 @@ input.button:hover,
   border-color: #2e9cff;
   box-shadow: 0 0 3px #b5dcff, 0 -2px 0 #ddd inset }
 
-input.button[disabled],
-input.button[disabled]:hover,
-input.button[disabled=disabled],
-input.button[disabled=disabled]:hover {
+.button[disabled],
+.button[disabled]:hover,
+.button[disabled=disabled],
+.button[disabled=disabled]:hover {
   background: none "button.disabled (__FLAVOR__ background)";
   border: 1px solid;
   box-shadow: none;
@@ -65,19 +59,21 @@ input.button[disabled=disabled]:hover {
   color: "link.disabled (__FLAVOR__ color)";
   cursor: default }
 
+.tinyButton,
 .smallButton,
-input.smallButton,
-a.smallButton {
+a.tinyButton,
+a.smallButton,
+input.tinyButton,
+input.smallButton {
   background-color: #fff;
   color: "link (__FLAVOR__ color)";
   font-size: .92em;
-  padding: .2em .5em .25em }
+  padding: .25em .5em;
+  text-decoration: none }
 
 .tinyButton,
-input.tinyButton,
-a.tinyButton {
-  background-color: #fff;
-  color: "link (__FLAVOR__ color)";
+a.tinyButton,
+input.tinyButton {
   font-size: .85em;
   padding: 0 .3em }
 
