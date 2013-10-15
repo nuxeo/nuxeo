@@ -41,7 +41,10 @@ public class CreateVersion {
             "None", "Minor", "Major" })
     protected String snapshot = "None";
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @Param(name = "saveDocument", required = false, widget = Constants.W_CHECK, description = "Save the document in the session after versioning")
+    protected boolean saveDocument = true;
+
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (!doc.hasFacet(FacetNames.VERSIONABLE)) {
             throw new ClientException(
@@ -60,8 +63,12 @@ public class CreateVersion {
         if (vo != null) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, vo);
         }
-        // return session.saveDocument(doc);
-        return DocumentHelper.saveDocument(session, doc);
+
+        if (saveDocument) {
+            return DocumentHelper.saveDocument(session, doc);
+        } else {
+            return doc;
+        }
     }
 
 }
