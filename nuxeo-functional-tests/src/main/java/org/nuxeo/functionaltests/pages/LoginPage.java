@@ -118,12 +118,13 @@ public class LoginPage extends AbstractPage {
             if (hasElement(By.xpath(LOGIN_DIV_XPATH))) {
                 // Means we are still on login page.
                 if (hasElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH))) {
-                    log.error("Login failed. Application said : " + driver.findElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH)).getText());
+                    throw new NoSuchElementException("Login failed. Application said : " + driver.findElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH)).getText(), e);
                 } else {
-                    log.error("Login failed");
+                    throw new NoSuchElementException("Login failed", e);
                 }
+            } else {
+                throw e;
             }
-            throw e;
         }
     }
 }
