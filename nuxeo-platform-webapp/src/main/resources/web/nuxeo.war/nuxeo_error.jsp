@@ -31,7 +31,8 @@
 body { background: url("<%=context%>/img/error_pages/page_background.gif") repeat scroll 0 0 transparent;
   color: #999;
   font: normal 100%/1.5 "Lucida Grande", Arial, Verdana, sans-serif;
-  margin: 0 }
+  margin: 0;
+  text-align: center }
 
 .container {  margin: 2em auto;
   text-align: center;
@@ -56,7 +57,7 @@ a.block { background: url("<%=context%>/img/error_pages/refresh.png") no-repeat 
   display: inline-block;
   font-weight: bold;
   margin: .4em;
-  padding: 3em .8em .8em;
+  padding: 3em .5em .8em;
   text-align: center;
   text-decoration: none;
   vertical-align: top;
