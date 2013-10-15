@@ -55,11 +55,13 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void startWorkflow() {
-        findElementAndWaitUntilEnabled(By.linkText("Start the review")).click();
+        findElementAndWaitUntilEnabled(
+                By.xpath("//input[@value='Start the review']")).click();
     }
 
     public void endTask(String taskName) {
-        findElementAndWaitUntilEnabled(By.linkText(taskName)).click();
+        findElementAndWaitUntilEnabled(
+                By.xpath(String.format("//input[@value='%s']", taskName))).click();
     }
 
     /**
