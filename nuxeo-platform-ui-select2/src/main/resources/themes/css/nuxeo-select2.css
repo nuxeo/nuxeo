@@ -86,3 +86,7 @@ div.select2-container-disabled > a.select2-choice {
 
 div.select2-container-disabled span.select2-arrow {
   display: none !important }
+
+/* Customize sortable mode */
+.ui-sortable .select2-search-choice {
+	cursor: move }
