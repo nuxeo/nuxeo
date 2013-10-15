@@ -16,28 +16,32 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.UserHomePage;
+import org.nuxeo.functionaltests.pages.WorkflowHomePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * @since 5.7
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ FakeSmtpMailServerFeature.class})
+@Features({ FakeSmtpMailServerFeature.class })
 public class ITDefaultWorkflowTest extends AbstractTest {
 
     @Override
@@ -92,16 +96,27 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         // check that jdoe has an open task on his dashboard
         UserHomePage homePage = filePage.getUserHome();
-
-        assertTrue(homePage.isTaskGadgetLoaded());
-
+        // check that jdoe has an open task on his tasks dashboard
+        WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Document validation"));
+        workflowHomePage.processFirstTask();
+        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
         // check that the open task is displayed on the summary page
-        SummaryTabSubPage summaryTabPage = homePage.redirectToTask("Test file");
+
         assertTrue(summaryTabPage.workflowAlreadyStarted());
         assertTrue(summaryTabPage.openTaskForCurrentUser());
 
         // switch to workflow tab and validate task
         WorkflowTabSubPage workflowTab = summaryTabPage.getWorkflow();
+
+        WebElement taskLayoutDiv = workflowTab.getTaskLayoutNode();
+        // get value for Participants on the review that were set on the
+        // previous step
+        // the value is stored in a global workflow variable
+        String participantsOnTheReview = taskLayoutDiv.findElement(
+                By.className("user")).getText();
+
+        assertEquals("jdoe lastname1", participantsOnTheReview);
         workflowTab.endTask("Validation");
 
         // check that the workflow was ended but jdoe doesn't have the right to
@@ -114,6 +129,10 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         assertTrue(homePage.isTaskGadgetLoaded());
         assertTrue(homePage.isTaskGadgetEmpty());
+
+        // check that jdoe doesn't have the task on his workflow tasks dashboard
+        workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.isTasksDashboardEmpty());
 
         // cleanup file doc and user
         logout();

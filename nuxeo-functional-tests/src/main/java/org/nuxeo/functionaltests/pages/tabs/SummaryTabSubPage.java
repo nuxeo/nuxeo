@@ -16,6 +16,9 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -35,6 +38,21 @@ public class SummaryTabSubPage extends AbstractPage {
 
     @FindBy(xpath = "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks_form')]")
     public WebElement workflowTasksForm;
+
+    @FindBy(xpath = "//div[@class='nxw_lastContributor']")
+    public WebElement lastContributor;
+
+    @FindBy(xpath = "//div[@class='nxw_author']")
+    public WebElement creator;
+
+    @FindBy(xpath = "//span[@id='nxl_grid_summary_layout:nxw_summary_current_document_dublincore_form:nxl_dublincore:nxw_created']")
+    public WebElement createdAt;
+
+    @FindBy(xpath = "//span[@id='nxl_grid_summary_layout:nxw_summary_current_document_dublincore_form:nxl_dublincore:nxw_modified']")
+    public WebElement lastModifiedAt;
+
+    @FindBy(xpath = "//span[@class[starts-with(.,'nxw_contributors_')]]")
+    public List<WebElement> contributors;
 
     public SummaryTabSubPage(WebDriver driver) {
         super(driver);
@@ -67,4 +85,36 @@ public class SummaryTabSubPage extends AbstractPage {
                 By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_document_route_form')]")).getText().contains(
                 "No workflow process can be started on this document.");
     }
+
+    /**
+     * Get the creator of the doc.
+     *
+     * @since 5.8
+     */
+    public String getCreator() {
+        return creator.getText();
+    }
+
+    /**
+     * Get the last contributor of the doc.
+     *
+     * @since 5.8
+     */
+    public String getLastContributor() {
+        return lastContributor.getText();
+    }
+
+    /**
+     * Get the list of contributors of the doc.
+     *
+     * @since 5.8
+     */
+    public List<String> getContributors() {
+        List<String> result = new ArrayList<String>();
+        for (WebElement contributor : contributors) {
+            result.add(contributor.getText());
+        }
+        return result;
+    }
+
 }

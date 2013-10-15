@@ -75,7 +75,7 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>document_create:create_doc_CREATE_DOCUMENT</td>
+	<td>document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT</td>
 	<td></td>
 </tr>
 <tr>
@@ -85,50 +85,50 @@
 </tr>
 <!-- Since 5.7.3 subjects is a select2Multiple widget-->
 <tr>
-    <td>clickAt</td>
-    <td>css=div[id$='nxw_subjects_select2'] input.select2-input</td>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_subjects_select2']</td>
+    <td>Cinema</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
     <td></td>
 </tr>
 <tr>
-    <td>waitForElementPresent</td>
-    <td>css=.select2-result-label:contains('Cinema')</td>
-    <td></td>
-</tr>
-<tr>
     <td>clickAt</td>
-    <td>css=.select2-result-label:contains('Cinema')</td>
+    <td>css=.select2-result-selectable:contains('Cinema')</td>
     <td></td>
 </tr>
 <!-- Since 5.7.3 coverage is a select2 widget-->
 <tr>
-    <td>clickAt</td>
-    <td>css=div[id$='nxw_coverage_select2'] a</td>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_coverage_select2']</td>
+    <td>Greece</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
     <td></td>
 </tr>
 <tr>
-    <td>waitForElementPresent</td>
-    <td>css=.select2-result-label:contains('Greece')</td>
-    <td></td>
-</tr>
-<tr>
     <td>clickAt</td>
-    <td>css=.select2-result-label:contains('Greece')</td>
+    <td>css=.select2-result-selectable:contains('Greece')</td>
     <td></td>
 </tr>
 <!-- Since 5.7.3 nature is a select2 widget-->
 <tr>
-    <td>clickAt</td>
-    <td>css=div[id$='nxw_nature_select2'] a</td>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_nature_select2']</td>
+    <td>Article</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
     <td></td>
 </tr>
 <tr>
-    <td>waitForElementPresent</td>
-    <td>css=.select2-result-label:contains('Article')</td>
-    <td></td>
-</tr>
-<tr>
     <td>clickAt</td>
-    <td>css=.select2-result-label:contains('Article')</td>
+    <td>css=.select2-result-selectable:contains('Article')</td>
     <td></td>
 </tr>
 <tr>
@@ -154,18 +154,18 @@
 </tr>
 <!-- Since 5.7.3 nature is a select2 widget-->
 <tr>
-    <td>clickAt</td>
-    <td>css=div[id$='nxw_search_nature_select2'] input.select2-input</td>
+    <td>select2Type</td>
+    <td>css=div[id$='nxw_search_nature_select2']</td>
+    <td>Article</td>
+</tr>
+<tr>
+    <td>waitForSelect2</td>
+    <td>10000</td>
     <td></td>
 </tr>
 <tr>
-    <td>waitForElementPresent</td>
-    <td>css=.select2-result-label:contains('Article')</td>
-    <td></td>
-</tr>
-<tr>
     <td>clickAt</td>
-    <td>css=.select2-result-label:contains('Article')</td>
+    <td>css=.select2-result-selectable:contains('Article')</td>
     <td></td>
 </tr>
 <tr>

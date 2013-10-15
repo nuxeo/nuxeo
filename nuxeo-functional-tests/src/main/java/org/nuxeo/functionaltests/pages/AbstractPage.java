@@ -43,7 +43,7 @@ public abstract class AbstractPage {
     // Timeout for waitUntilURLDifferentFrom in seconds
     public static int URLCHANGE_MAX_WAIT = 10;
 
-    @FindBy(name = "userServicesForm")
+    @FindBy(xpath = "//div[@id='nxw_doc_userMenuActions_panel']/ul/li/span")
     public WebElement userServicesForm;
 
     protected WebDriver driver;
@@ -90,7 +90,9 @@ public abstract class AbstractPage {
      * Gets the info feedback message.
      *
      * @return the message if any or an empty string.
+     * @deprecated since 5.8
      */
+    @Deprecated
     public String getFeedbackMessage() {
         String ret;
         try {
@@ -102,6 +104,28 @@ public abstract class AbstractPage {
         return ret.trim();
     }
 
+    /**
+     * Returns the error feedback message.
+     * <p>
+     * If there are more than one error message, always return the second one
+     * (not interested by 'Please correct errors' message).
+     *
+     * @since 5.8
+     */
+    public String getErrorFeedbackMessage() {
+        String ret = "";
+        try {
+            List<WebElement> elements = findElementsWithTimeout(By.xpath("//div[contains(@class, 'errorFeedback')]/div[@class='ambiance-title']"));
+            if (elements.size() == 1) {
+                ret = elements.get(0).getText();
+            } else if (elements.size() > 1) {
+                ret = elements.get(1).getText();
+            }
+        } catch (NoSuchElementException e) {
+            ret = "";
+        }
+        return ret.trim();
+    }
     /**
      * Gets the top bar navigation sub page.
      */

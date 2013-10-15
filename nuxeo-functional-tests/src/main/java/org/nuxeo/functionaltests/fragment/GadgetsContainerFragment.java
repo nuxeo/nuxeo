@@ -132,8 +132,11 @@ public class GadgetsContainerFragment extends WebFragmentImpl {
 
     public boolean isTaskGadgetEmpty(String gadgetTitle) {
         WebDriver driver = switchToFrame(gadgetTitle);
-        return driver.findElement(By.id("nxDocumentListData")).getText().contains(
+        boolean res = driver.findElement(By.id("nxDocumentListData")).getText().contains(
                 "Your dashboard is empty. There are no tasks that require your intervention.");
+        // switch back to parent page after that
+        driver.switchTo().defaultContent();
+        return res;
     }
 
     public WebDriver switchToFrame(String gadgetTitle) {

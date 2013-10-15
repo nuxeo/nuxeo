@@ -65,7 +65,7 @@ public class ScreenShotFileOutput implements OutputType<File> {
             }
             File tmpFile = File.createTempFile(screenshotFilePrefix, ".png",
                     outputFolder);
-            log.info(String.format("Created screenshot file named '%s'",
+            log.trace(String.format("Created screenshot file named '%s'",
                     tmpFile.getPath()));
             fos = new FileOutputStream(tmpFile);
             fos.write(data);

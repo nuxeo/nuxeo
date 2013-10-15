@@ -20,7 +20,7 @@ nuxeo.url=http://localhost:8080/nuxeo
 org.nuxeo.ecm.contextPath=/nuxeo
 
 org.nuxeo.ecm.product.name=Nuxeo Platform
-org.nuxeo.ecm.product.version=5.7.3-SNAPSHOT
+org.nuxeo.ecm.product.version=5.8-SNAPSHOT
 
 # Various other default values
 #nuxeo.db.host=
@@ -65,3 +65,7 @@ nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
 nuxeo.freemarker_parsing_extensions=nxftl
 
 session.timeout=60
+
+# Enable double click shield. Might be disabled for 5.8 release
+nuxeo.jsf.enableDoubleClickShield=true
+

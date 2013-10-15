@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>5.7.3-SNAPSHOT</version>
+    <version>5.8-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -15,7 +14,7 @@
   <description>Build package distributions of nuxeo applications</description>
 
   <properties>
-    <nuxeo.distribution.version>5.7.3-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.distribution.version>5.8-SNAPSHOT</nuxeo.distribution.version>
   </properties>
 
   <modules>
@@ -63,6 +62,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-marketplace-rest-api</module>
       </modules>
     </profile>
     <profile>
@@ -71,6 +71,7 @@
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
+        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-marketplace-dm</module>
       </modules>
     </profile>
@@ -79,6 +80,7 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
+        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-marketplace-dam</module>
       </modules>
     </profile>
@@ -86,6 +88,7 @@
       <id>nuxeo-cmf</id>
       <modules>
         <module>nuxeo-distribution-coreserver</module>
+        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-cmf</module>
         <module>nuxeo-marketplace-cmf</module>
@@ -100,6 +103,7 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-marketplace-dam</module>
+        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
         <module>nuxeo-distribution-cmf</module>
@@ -116,6 +120,7 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-marketplace-dam</module>
+        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
         <module>nuxeo-distribution-cmf</module>
@@ -135,6 +140,7 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-marketplace-dam</module>
+        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
         <module>nuxeo-distribution-cmf</module>
@@ -264,7 +270,6 @@
           <url>
             http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
           </url>
-          <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
     </profile>
@@ -326,6 +331,12 @@
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-marketplace-dm</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-marketplace-rest-api</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>

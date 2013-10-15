@@ -216,7 +216,7 @@ class BasePage:
                     ['javax.faces.ViewState', fl.getLastJsfState()],
                     ['usersListingView:createUserActionsForm:createUserButton', 'usersListingView:createUserActionsForm:createUserButton']],
                     description="View user creation form")
-        fl.assert_('createUser:button_save_and_create' in fl.getBody(), 
+        fl.assert_('createUser:button_save_and_create' in fl.getBody(),
                    'Wrong page')
 
         jsfState = fl.getLastJsfState()
@@ -246,7 +246,7 @@ class BasePage:
             ['createUserView:createUser:button_save_and_create', 'createUserView:createUser:button_save_and_create'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Create user")
-        fl.assert_('User already exists' in fl.getBody() or 
+        fl.assert_('User already exists' in fl.getBody() or
                    'User created' in fl.getBody())
         return self
 
@@ -434,6 +434,7 @@ class BasePage:
                         or 'No incoming or outgoing relation' in self.fl.getBody())
         return ret
 
+    # NXP-12675/NXP-8924: this tab is now disabled, this method is deprecated
     def mySubscriptions(self):
         ret = self.viewDocumentUid(self.getDocUid(),
                                    tab='TAB_MY_SUBSCRIPTIONS',
@@ -525,7 +526,7 @@ class FolderPage(BasePage):
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:nxl_heading:nxw_title', title],
-            ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create']],
             description="Create a section submit")
         fl.assert_('Section saved' in fl.getBody())
@@ -542,6 +543,7 @@ class FolderPage(BasePage):
             ['nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Click on 'New' action")
+        fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform'],
@@ -555,7 +557,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             #['parentDocumentPath', '/default-domain/workspaces/flnxtest-page-workspace.1237992970017'],
-            ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create folder: Submit")
@@ -573,6 +575,7 @@ class FolderPage(BasePage):
             ['nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Click on 'New' action")
+        fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform'],
@@ -589,7 +592,7 @@ class FolderPage(BasePage):
              file_path and 'upload' or 'none'],
             ['document_create:nxl_file:nxw_file:nxw_file_file:upload',
              Upload(file_path or '')],
-            ['document_create:create_doc_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create file: Submit")

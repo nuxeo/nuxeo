@@ -59,7 +59,7 @@ public class ITUsersTest extends AbstractTest {
         // user already exists
         page = usersTab.getUserCreatePage().createUser(username, "firstname1",
                 "lastname1", "company1", "email1", "test_user1", "members");
-        assertEquals(page.getFeedbackMessage(), "User already exists");
+        assertEquals("User already exists", page.getErrorFeedbackMessage());
         // cancel
         usersTab = asPage(UserCreationFormPage.class).cancelCreation();
 

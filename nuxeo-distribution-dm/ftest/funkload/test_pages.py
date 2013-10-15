@@ -141,7 +141,6 @@ class Pages(NuxeoTestCase):
              .files()
              .publish()
              .relations()
-             .mySubscriptions()
              .comments()
              .history())
         p = (p.getRootWorkspaces()

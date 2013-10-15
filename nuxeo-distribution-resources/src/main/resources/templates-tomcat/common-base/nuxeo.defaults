@@ -40,3 +40,12 @@ mail.from=noreply@nuxeo.com
 
 nuxeo.core.binarymanager=
 nuxeo.quartz.enable=false
+
+nuxeo.redis.enabled=false
+nuxeo.redis.prefix=nuxeo:work:
+nuxeo.redis.host=localhost
+nuxeo.redis.port=6379
+nuxeo.redis.password=
+nuxeo.redis.database=0
+nuxeo.redis.timeout=2000
+nuxeo.work.queuing=redis
