@@ -23,17 +23,16 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.ChildrenAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.PageProviderAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
-import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -42,12 +41,11 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.common.base.Joiner;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Test the various ways to query for document lists
- *
+ * 
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
@@ -74,7 +72,6 @@ public class DocumentListTest extends BaseTest {
     }
 
     @Test
-    @Ignore
     public void iCanSearchInFullTextForDocuments() throws Exception {
         // Given a note with "nuxeo" in its description
         DocumentModel note = RestServerInit.getNote(0, session);
@@ -82,6 +79,10 @@ public class DocumentListTest extends BaseTest {
                 "nuxeo one platform to rule them all");
         session.saveDocument(note);
         session.save();
+
+        // Waiting for all async events work for indexing content before
+        // executing fulltext search
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         // When I search for "nuxeo"
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
