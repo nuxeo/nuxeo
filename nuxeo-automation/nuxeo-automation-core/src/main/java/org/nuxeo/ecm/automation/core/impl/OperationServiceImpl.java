@@ -66,7 +66,7 @@ public class OperationServiceImpl implements AutomationService {
 
     protected final AutomationFilterRegistry automationFilterRegistry;
 
-    protected Map<String, CompiledChainImpl> compiledChains = new HashMap<String, CompiledChainImpl>();
+    protected Map<CacheKey, CompiledChainImpl> compiledChains = new HashMap<CacheKey, CompiledChainImpl>();
 
     /**
      * Adapter registry.
@@ -148,14 +148,16 @@ public class OperationServiceImpl implements AutomationService {
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
             if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
                 tracer.onChain(operationType);
-                chain = compiledChains.get(operationType.getId());
+                CacheKey cacheKey = new CacheKey(operationType.getId(),
+                        inputType.getName());
+                chain = compiledChains.get(cacheKey);
                 if (chain == null) {
                     chain = (CompiledChainImpl) operationType.newInstance(ctx,
                             params);
                     // Registered Chains are the only ones that can be cached
                     // Runtime ones can update their operations, model...
                     if (hasOperation(operationType.getId())) {
-                        compiledChains.put(operationType.getId(), chain);
+                        compiledChains.put(cacheKey, chain);
                     }
                 }
             } else {
@@ -561,5 +563,48 @@ public class OperationServiceImpl implements AutomationService {
     public AutomationFilter[] getAutomationFilters() {
         Collection<AutomationFilter> automationFilters = automationFilterRegistry.lookup().values();
         return automationFilters.toArray(new AutomationFilter[automationFilters.size()]);
+    }
+
+    /**
+     * @since 5.8 - Composite key to handle several operations with same id and
+     *        different input types.
+     */
+    protected static class CacheKey {
+
+        String operationId;
+
+        String inputType;
+
+        public CacheKey(String operationId, String inputType) {
+            this.operationId = operationId;
+            this.inputType = inputType;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+
+            CacheKey cacheKey = (CacheKey) o;
+
+            if (inputType != null ? !inputType.equals(cacheKey.inputType)
+                    : cacheKey.inputType != null)
+                return false;
+            if (operationId != null ? !operationId.equals(cacheKey.operationId)
+                    : cacheKey.operationId != null)
+                return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = operationId != null ? operationId.hashCode() : 0;
+            result = 31 * result
+                    + (inputType != null ? inputType.hashCode() : 0);
+            return result;
+        }
     }
 }
