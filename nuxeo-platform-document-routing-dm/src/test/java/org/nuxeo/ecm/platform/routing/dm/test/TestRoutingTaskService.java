@@ -63,7 +63,7 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.directory");
+        deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
