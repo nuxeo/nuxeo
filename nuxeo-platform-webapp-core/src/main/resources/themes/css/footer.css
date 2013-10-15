@@ -40,10 +40,11 @@ a.linkedin {
   display: inline-block;
   height: 16px;
   margin: 0 .4em;
+  transition: none;
   width: 16px }
 
 a.linkedin {
-  background-position: -16px top }
+  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top }
 
 a.twitt:hover {
   background-position: left bottom }
@@ -65,7 +66,7 @@ a.linkedin .footerLabel {
 .links a:link,
 .links a:visited,
 .bannerBottom .links a {
-  background-color: #00a0db;
+  background-color: #009aea;
   border-radius: 5px;
   color: #fff;
   cursor: pointer;
@@ -76,7 +77,7 @@ a.linkedin .footerLabel {
   text-transform: uppercase }
 
 .bannerBottom .links a:hover {
-  background-color: #1dc2ff;
+  background-color: #00c168;
   color:#fff;
   text-decoration: none }
 
@@ -84,7 +85,9 @@ a.linkedin .footerLabel {
   padding: .1em }
 
 .unregistered {
-  background-color: #e3f2f8 }
+  background-color: #eee;
+  border-top: 1px solid #ddd;
+  color: #02316c }
 
 .unregistered .bannerMessage {
   float: left;
