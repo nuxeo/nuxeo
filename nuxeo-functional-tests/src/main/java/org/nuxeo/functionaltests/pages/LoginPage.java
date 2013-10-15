@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -72,9 +73,11 @@ public class LoginPage extends AbstractPage {
      *            For example, English (United States)
      */
     public void login(String username, String password, String language) {
-
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         usernameInputTextBox.sendKeys(username);
         passwordInputTextBox.sendKeys(password);
+        jsExecutor.executeScript("document.getElementById('username').blur();return true;");
+        jsExecutor.executeScript("document.getElementById('password').blur();return true;");
 
         if (language != null) {
             Select languageSelect = new Select(languageSelectBox);
