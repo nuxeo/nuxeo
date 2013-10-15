@@ -177,6 +177,7 @@
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="idPrefix" value="#{widget.id}_" />
                             <ui:param name="useAjaxForm" value="true" />
+                            <ui:param name="actionStyleClass" value="smallButton" />
                             <ui:define name="after_action_trigger">
                               <f:setPropertyActionListener
                                 value="#{modeValueHolderId}"
@@ -254,6 +255,7 @@
                         <c:forEach var="action" items="#{actions}">
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="idPrefix" value="#{widget.id}_" />
+                            <ui:param name="actionStyleClass" value="smallButton" />
                           </ui:decorate>
                         </c:forEach>
                       </nxu:set>
@@ -265,6 +267,7 @@
                         <c:forEach var="action" items="#{actions}">
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="idPrefix" value="#{widget.id}_" />
+                            <ui:param name="actionStyleClass" value="smallButton" />
                           </ui:decorate>
                         </c:forEach>
                       </nxu:set>
