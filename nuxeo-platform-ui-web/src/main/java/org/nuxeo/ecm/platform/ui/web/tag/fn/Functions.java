@@ -70,6 +70,8 @@ public final class Functions {
 
     public static final long DEFAULT_BIG_FILE_SIZE_LIMIT = 5 * 1024 * 1024;
 
+    public static Pattern YEAR_PATTERN = Pattern.compile("y+");
+
     public enum BytePrefix {
 
         SI(1000, new String[] { "", "k", "M", "G", "T", "P", "E", "Z", "Y" },
@@ -387,7 +389,7 @@ public final class Functions {
 
         if (style == DateFormat.SHORT && addCentury) {
             // hack to add century on generated pattern
-            pattern = pattern.replace("yy", "yyyy");
+            pattern = YEAR_PATTERN.matcher(pattern).replaceAll("yyyy");
         }
         return pattern;
     }
