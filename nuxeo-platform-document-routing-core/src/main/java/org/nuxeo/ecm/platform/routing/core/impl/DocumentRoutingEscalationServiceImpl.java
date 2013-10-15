@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -147,14 +146,10 @@ public class DocumentRoutingEscalationServiceImpl implements
                             + node.getId() + " already executed");
                     return;
                 }
-                Framework.getLocalService(AutomationService.class).run(context,
-                        rule.getChain());
+                node.executeChain(rule.getChain());
                 // mark the rule as resolved
                 rule.setExecuted(true);
                 session.saveDocument(rule.getNode().getDocument());
-            } catch (InterruptedException e) {
-                // restore interrupted state
-                Thread.currentThread().interrupt();
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {

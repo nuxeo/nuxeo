@@ -35,10 +35,12 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEscalationService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.EscalationRule;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -168,6 +170,10 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     public void testEscalationMultipleExecution() throws Exception {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        routeDoc = session.saveDocument(routeDoc);
+
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
@@ -177,9 +183,13 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
                         "testchain_title1"));
 
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        setEscalationRules(node1,
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        setEscalationRules(
+                node1,
                 escalationRule("rule1", "true", "testchain_title1", true),
-                escalationRule("rule2", "true", "testchain_title2", false));
+                escalationRule("rule2", "true", "testchain_title2", false),
+                escalationRule("rule3", "true", "testchain_stringfield", false),
+                escalationRule("rule4", "true", "testchain_stringfield2", false));
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
         setButtons(node1, button("btn1", "label-btn1", "filterr"));
@@ -190,7 +200,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node2 = session.saveDocument(node2);
-        instantiateAndRun(session);
+        DocumentRoute route = instantiateAndRun(session);
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
@@ -202,7 +212,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         GraphNode node = nodeDoc.getAdapter(GraphNode.class);
         assertEquals("node1", node.getId());
         List<EscalationRule> rules = escalationService.computeEscalationRulesToExecute(node);
-        assertEquals(2, rules.size());
+        assertEquals(4, rules.size());
         escalationService.scheduleExecution(rules.get(0), session);
         workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
         assertEquals(0, workManager.getQueueSize("escalation", null));
@@ -214,12 +224,12 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
-        // check that are still 2 rules, since rule1 is marked for
+        // check that are still 4 rules, since rule1 is marked for
         // multipleExecution
         nodeDoc = session.getDocument(new IdRef(node.getDocument().getId()));
         node = nodeDoc.getAdapter(GraphNode.class);
         rules = escalationService.computeEscalationRulesToExecute(node);
-        assertEquals(2, rules.size());
+        assertEquals(4, rules.size());
 
         // execute rule2
         escalationService.scheduleExecution(rules.get(1), session);
@@ -233,11 +243,29 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
-        // check that only one rule is found now
+        // check that only 3 rules are found now
         nodeDoc = session.getDocument(new IdRef(node.getDocument().getId()));
         node = nodeDoc.getAdapter(GraphNode.class);
         rules = escalationService.computeEscalationRulesToExecute(node);
-        assertEquals(1, rules.size());
+        assertEquals(3, rules.size());
+
+        // execute rule3 & rule4
+        escalationService.scheduleExecution(rules.get(1), session);
+        escalationService.scheduleExecution(rules.get(2), session);
+        workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
+        assertEquals(0, workManager.getQueueSize("escalation", null));
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        // check that the rules were executed
+
+        DocumentModel r = session.getDocument(route.getDocument().getRef());
+        nodeDoc = session.getDocument(new IdRef(node.getDocument().getId()));
+        assertEquals("foo",
+                (String) r.getPropertyValue("fctroute1:stringfield"));
+        assertEquals("bar",
+                (String) nodeDoc.getPropertyValue("fctnd1:stringfield2"));
+
     }
 
     protected void setEscalationRules(DocumentModel node,
