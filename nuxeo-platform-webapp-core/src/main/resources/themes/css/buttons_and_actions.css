@@ -28,10 +28,9 @@ input.button,
   font-size: .9em;
   font-weight: bold;
   margin: 0 .9em .9em 0;
-  padding: .4em .7em;
+  padding: .3em .7em .5em;
   text-decoration: none;
-  text-shadow: 1px 1px 0 #fff;
-  white-space: nowrap; }
+  white-space: nowrap }
 
 a.button,
 a.tinyButton,
@@ -47,9 +46,13 @@ a.smallButton,
 .button:hover,
 input.button:hover,
 .action_bar a:hover {
-  background: none "color.major.medium (__FLAVOR__ background)";
   border: 1px solid;
-  border-color: "button.hover (__FLAVOR__ border)" }
+  border-color: "button.hover (__FLAVOR__ border)";
+  box-shadow: 0 -2px 0 #ddd inset; }
+
+.button:focus {
+  border-color: #2e9cff;
+  box-shadow: 0 0 3px #b5dcff, 0 -2px 0 #ddd inset }
 
 input.button[disabled],
 input.button[disabled]:hover,
@@ -57,6 +60,7 @@ input.button[disabled=disabled],
 input.button[disabled=disabled]:hover {
   background: none "button.disabled (__FLAVOR__ background)";
   border: 1px solid;
+  box-shadow: none;
   border-color: "button.disabled (__FLAVOR__ border)";
   color: "link.disabled (__FLAVOR__ color)";
   cursor: default }
@@ -84,7 +88,7 @@ a.tinyButton {
   padding: .25em 1.5em .2em .8em !important }
 
 .dropdown:hover {
-  background-color: "color.major.medium (__FLAVOR__ background)" }
+  background-color: "neutral.light (__FLAVOR__ background)" }
 
 /* =Action Bar */
 .action_bar {
@@ -213,6 +217,8 @@ a.tinyButton {
 .actionList .actionSubList li a {
   background: none;
   border: none;
+  border-radius: 0;
+  box-shadow: none;
   display: block;
   margin: 0;
   padding: .5em 1em;
@@ -220,7 +226,7 @@ a.tinyButton {
   white-space: normal }
 
 .actionList .actionSubList li a:hover {
-  background-color:"color.major.medium (__FLAVOR__ background)" }
+  background-color:"neutral.light (__FLAVOR__ background)" }
 
 .actionSubList .smallIcon {
   margin: 0 .8em -0.2em 0 }
@@ -294,7 +300,10 @@ a.tinyButton {
   white-space: normal }
 
 .globalActionBar .actionList .actionSubList li a:hover {
-  background-color:"color.major.medium (__FLAVOR__ background)";}
+  background-color:"neutral.light (__FLAVOR__ background)";
+  border: none;
+  border-radius: none;
+  box-shadow: none }
 
 .globalActionBar .actionSubList .smallIcon {
   margin: 0 .8em -0.2em 0 }
@@ -383,18 +392,18 @@ a.tinyButton {
 
 /* =Labels, tags, users */
 .tag {
-  background: "neutral.medium (__FLAVOR__ background)";
+  background: none "neutral.medium (__FLAVOR__ background)";
   border-radius: 3px;
+  border: 1px solid;
   border-color: transparent #ddd #ccc transparent;
-  border-style: solid;
-  border-width: 1px;
   color: "black (__FLAVOR__ color)";
   display: inline-block;
   font-family: monospace;
   font-size: 13px;
+  line-height: inherit;
   margin: .1em;
   padding: 0 .3em;
-  text-decoration: none; }
+  text-decoration: none }
 
 .tag a,
 .tagLink a,
