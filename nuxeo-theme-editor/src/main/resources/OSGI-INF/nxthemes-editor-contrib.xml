@@ -10,7 +10,9 @@
   <require>org.nuxeo.theme.core</require>
   <require>org.nuxeo.theme.webengine</require>
 
-  <extension target="org.nuxeo.theme.services.ThemeService"
+  <!-- NXP-12846: disable access keys to the deprecated theme editor -->
+  <!--
+    <extension target="org.nuxeo.theme.services.ThemeService"
     point="shortcuts">
 
     <shortcut key="-" target="${org.nuxeo.ecm.contextPath}/nxthemes-select?engine=editor" />
@@ -19,8 +21,8 @@
 
     <shortcut key="t" target="${org.nuxeo.ecm.contextPath}/nxthemes-select?engine=editor" />
 
-  </extension>
-
+    </extension>
+  -->
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
