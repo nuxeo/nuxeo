@@ -25,10 +25,10 @@ input.button,
   border-color: "button (__FLAVOR__ border)";
   color: "link.action (__FLAVOR__ color)";
   cursor: pointer;
-  font-size: .9em;
+  font-size: .95em;
   font-weight: bold;
   margin: 0 .9em .9em 0;
-  padding: .3em .7em .5em;
+  padding: .4em .7em .5em;
   text-decoration: none;
   white-space: nowrap }
 
@@ -70,8 +70,8 @@ input.smallButton,
 a.smallButton {
   background-color: #fff;
   color: "link (__FLAVOR__ color)";
-  font-size: .9em;
-  padding: .1em .4em }
+  font-size: .92em;
+  padding: .2em .5em .25em }
 
 .tinyButton,
 input.tinyButton,
