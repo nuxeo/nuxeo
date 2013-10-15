@@ -29,14 +29,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingPersister;
@@ -89,7 +87,8 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             if (initiator == null) {
                 initiator = principal.getName();
             }
-            result.setPropertyValue(DocumentRoutingConstants.INITIATOR, initiator);
+            result.setPropertyValue(DocumentRoutingConstants.INITIATOR,
+                    initiator);
             // using the ref, the value of the attached document might not been
             // saved on the model
             result.setPropertyValue(
@@ -126,6 +125,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
             root = getDocumentRoutesStructure(
                     DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
                     session);
+
             if (root == null) {
                 root = createDocumentRoutesStructure(
                         DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
@@ -145,18 +145,9 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     protected DocumentModel createDocumentRoutesStructure(
             String routeStructureDocType, String id, CoreSession session)
             throws ClientException {
-        String query = "SELECT * FROM Domain WHERE " + NXQL.ECM_PARENTID
-                + " = '%s' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                + LifeCycleConstants.DELETED_STATE + "' ORDER BY ecm:name";
-        query = String.format(query, session.getRootDocument().getId());
-        DocumentModelList docs = session.query(query, 1);
-        if (docs.size() == 0) {
-            throw new ClientRuntimeException(
-                    "Can't create document-route-instances-root document to store workflows instances. No document of type Domain was found under root.");
-        }
-        DocumentModel defaultDomain = docs.get(0);
         DocumentModel root = session.createDocumentModel(
-                defaultDomain.getPathAsString(), id, routeStructureDocType);
+                session.getRootDocument().getPathAsString(), id,
+                routeStructureDocType);
         root.setPropertyValue(DC_TITLE, routeStructureDocType);
         root = session.createDocument(root);
         ACP acp = session.getACP(root.getRef());
