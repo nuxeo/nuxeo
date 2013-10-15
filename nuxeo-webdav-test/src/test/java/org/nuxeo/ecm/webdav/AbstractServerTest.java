@@ -19,27 +19,22 @@
 
 package org.nuxeo.ecm.webdav;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+@RunWith(FeaturesRunner.class)
+@Features(WebDavServerFeature.class)
+@Deploy({ "org.nuxeo.ecm.platform.wi.backend", Constants.BUNDLE_NAME })
+@RepositoryConfig(cleanup=Granularity.METHOD, init = WebDavRepoInit.class)
 public abstract class AbstractServerTest {
 
-    public static final int PORT = 9999;
 
-    public static final String TEST_URI = "http://localhost:" + PORT;
+    public static final String TEST_URI = "http://localhost:" + WebDavServerFeature.PORT;
 
     static final String ROOT_URI = TEST_URI + "/workspace/";
-
-    @BeforeClass
-    public static void startServer() throws Exception {
-        Server.startRuntime();
-        Server.startServer(PORT);
-    }
-
-    @AfterClass
-    public static void stopServer() throws Exception {
-        Server.stopServer();
-        Server.stopRuntime();
-    }
 
 }

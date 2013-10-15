@@ -51,9 +51,7 @@ import org.apache.jackrabbit.webdav.lock.Type;
 import org.apache.jackrabbit.webdav.property.DavProperty;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -62,16 +60,20 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.w3c.dom.Element;
 
+import com.google.inject.Inject;
+
 /**
  * Jackrabbit includes a WebDAV client library. Let's use it to test our
  * server.
  */
 public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
+
     private static String USERNAME = "userId";
 
     private static HttpClient client;
 
+    @Inject
     protected CoreSession session;
 
     @BeforeClass
@@ -79,14 +81,10 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         client = createClient(USERNAME);
     }
 
-    @Before
-    public void setUp() {
-        session = Server.osgi.session;
-    }
 
     protected static HttpClient createClient(String username) {
         HostConfiguration hostConfig = new HostConfiguration();
-        hostConfig.setHost("localhost", PORT);
+        hostConfig.setHost("localhost", WebDavServerFeature.PORT);
 
         HttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         HttpConnectionManagerParams params = new HttpConnectionManagerParams();
@@ -226,7 +224,6 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     @Test
     // NXP-12735: disabled because failing under windows + pgsql
-    @Ignore
     public void testOverwriteExistingFile() throws Exception {
         String name = "test.txt"; // this file already exists
         String mimeType = "application/binary";
