@@ -33,30 +33,47 @@ a.ambiance-close {
 .infoFeedback,
 .errorFeedback,
 .warningFeedback,
-.successFeedback {
+.successFeedback,
+.ambiance-default,
+.ambiance-neutral,
+.ambiance-info,
+.ambiance-success,
+.ambiance-warn,
+.ambiance-error,
+.ambiance-fatal {
   background-color: "info (__FLAVOR__ background)";
   border-radius: 5px 0 0 5px;
   color: "black (__FLAVOR__ color)";
   margin: 0 0 .2em;
   padding: .7em 1em }
 
-.neutralFeedback {
+.neutralFeedback,
+.ambiance-neutral {
   background-color: "neutral (__FLAVOR__ background)";
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-width: 1px;
   border-style: solid;
   color: "default (__FLAVOR__ color)" }
 
-.infoFeedback {
+.infoFeedback,
+.ambiance-info,
+.ambiance-default {
   background-color:"info (__FLAVOR__ background)";
   color: "info.status (__FLAVOR__ color)" }
-.successFeedback {
+
+.successFeedback,
+.ambiance-success {
   background-color:"success (__FLAVOR__ background)";
   color: "success.status (__FLAVOR__ color)" }
-.errorFeedback {
+
+.errorFeedback,
+.ambiance-error,
+.ambiance-fatal {
   background-color:"error (__FLAVOR__ background)";
   color: "error.status (__FLAVOR__ color)" }
-.warningFeedback {
+
+.warningFeedback,
+.ambiance-warn {
   background-color: "warning (__FLAVOR__ background)";
   color: "warning.status (__FLAVOR__ color)" }
 
@@ -130,24 +147,25 @@ a.ambiance-close {
 
 .adminMessage {
   background-color: #000;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: rgba(20,30,40,0.92);
   bottom: 0;
-  color: #fff;
-  font-size: 1.3em;
+  color: #ffd940;
+  font-size: 1.5em;
   left: 0;
   line-height: 160%;
-  padding: 1.5em 3em;
+  padding: 2em 3em;
   position: fixed;
   right: 0;
-  z-index: 1000 }
+  text-align: center;
+  text-transform: none;
+  z-index: 10000 }
 
 .adminMessage .close {
   color: #fff;
   display: block;
   float: right;
   font-family: Arial,sans-serif;
-  font-size: 1.8em;
-  font-weight: bold;
+  font-size: 2em;
   margin-left: 1.5em;
   position: relative;
   right: 0;
@@ -260,7 +278,7 @@ div.detail {
   border: 2px dashed; border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
   box-shadow: none;
-  color: "gray.medium (__FLAVOR__ color)";
+  color: "gray.light (__FLAVOR__ color)";
   font-size: 1.2em;
   padding: 1.5em;
   text-align: center }
