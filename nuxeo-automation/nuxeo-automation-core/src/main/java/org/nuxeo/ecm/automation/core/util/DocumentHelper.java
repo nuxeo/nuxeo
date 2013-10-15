@@ -70,7 +70,7 @@ public class DocumentHelper {
     public static void removeProperty(DocumentModel doc, String xpath)
             throws ClientException {
         Property p = doc.getProperty(xpath);
-        if (p.isList()) {
+        if (p instanceof ListProperty) {
             ((ListProperty) p).clear();
         } else {
             Property pp = p.getParent();
