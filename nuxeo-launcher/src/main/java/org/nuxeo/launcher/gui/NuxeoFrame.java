@@ -242,7 +242,7 @@ public class NuxeoFrame extends JFrame {
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setIconImage(appIcon.getImage());
-        getContentPane().setBackground(new Color(55, 55, 55));
+        getContentPane().setBackground(new Color(35, 37, 59));
         getContentPane().setLayout(new GridBagLayout());
         constraints = new GridBagConstraints();
 
@@ -384,7 +384,7 @@ public class NuxeoFrame extends JFrame {
         ColoredTextPane textArea = new ColoredTextPane();
         textArea.setEditable(false);
         textArea.setAutoscrolls(true);
-        textArea.setBackground(new Color(64, 64, 64));
+        textArea.setBackground(new Color(54, 55, 67));
         textArea.setMaxSize(LOG_MAX_SIZE);
 
         JScrollPane logsScroller = new JScrollPane(textArea);
@@ -409,7 +409,7 @@ public class NuxeoFrame extends JFrame {
     protected Component buildSummaryPanel() {
         JPanel summaryPanel = new JPanel();
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.PAGE_AXIS));
-        summaryPanel.setBackground(new Color(55, 55, 55));
+        summaryPanel.setBackground(new Color(35, 37, 59));
         summaryPanel.setForeground(Color.WHITE);
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>"
