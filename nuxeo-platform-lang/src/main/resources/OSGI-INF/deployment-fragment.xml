@@ -10,6 +10,7 @@
       <supported-locale>en_GB</supported-locale>
       <supported-locale>en_US</supported-locale>
       <supported-locale>fr</supported-locale>
+      <supported-locale>fr_FR</supported-locale>
     </locale-config>
     <message-bundle>messages</message-bundle>
   </extension>
@@ -25,6 +26,11 @@
     <append from="nuxeo.war/WEB-INF/classes/messages_en.properties"
         to="nuxeo.war/WEB-INF/classes/messages.properties"
         addNewLine="true"/>
+
+
+    <!-- Add fallback to two letters locale for browser compat -->
+    <copy from="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties"
+        to="nuxeo.war/WEB-INF/classes/messages_fr.properties"/>
 
   </install>
 
