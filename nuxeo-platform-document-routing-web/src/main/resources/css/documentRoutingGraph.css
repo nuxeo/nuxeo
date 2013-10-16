@@ -10,11 +10,10 @@ multiple_task {
   padding-top: .9em;
   font-size: .9em;
   text-align: center;
-  background-color: white;
-}
+  background-color: white }
 
 .multiple_task { 
-  border: 5px double #96a7bd; }
+  border: 5px double #96a7bd }
 
 .start_node,
 .end_node {
@@ -28,16 +27,16 @@ multiple_task {
   color: #fff;
   line-height: 40px;
   font-family: arial;
-  font-size: 0.9em;
+  font-size: .9em;
   font-style: normal;
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
-  background: #00aa60; }
+  background: #00aa60 }
   
 .end_node {
   background: #e5001b;
-  border-color: #e5001b; }
+  border-color: #e5001b }
 
 .fork_node,
 .merge_node {
@@ -59,39 +58,33 @@ multiple_task {
   line-height: 0 }
 
 .subworkflow_task {
-  border-color: #004FB9;
-  background: url("../icons/subworkflow_bg_node.png") no-repeat scroll right bottom white 
-  }
+  border-color: #004fb9;
+  background: url("../icons/subworkflow_bg_node.png") no-repeat scroll right bottom white }
 
 .node_draft,
 .node_ready {
   background-color: #fff;
   border-color: #adbed4;
-  color: #7a899d;
-}
+  color: #7a899d }
 
 .node_done,
 .node_validated {
-  background-color: #eee;
-}
+  background-color: #eee }
 
 .node_running,
 .node_suspended {
   background-color: #e1f0ff;
   border-color: #3c87ec;
   color: #000;
-  font-weight: bold
-}
+  font-weight: bold }
 
 .node_waiting {
   background-color: #ffe5bf;
   border-color: #8cbdff;
-  color: #444;
-}
+  color: #444 }
 
 .node_canceled {
-  background-color: #CCFF99;
-}
+  background-color: #cf9 }
 
 .node_connection_label {
   background-color: #eff4f8;
@@ -102,14 +95,12 @@ multiple_task {
   max-width: 170px;
   padding: 0.05em 0.15em !important;
   word-wrap: break-word;
-  z-index: 120; }
+  z-index: 120 }
 
 .targetDiv {
-	position: relative;
-	width: 880px;
-    height: 720px;
-}
-._jsPlumb_endpoint { z-index: 110
-}
-._jsPlumb_overlay { z-index: 6
-}
+  position: relative;
+  width: 880px;
+  height: 720px }
+
+._jsPlumb_endpoint { z-index: 110 }
+._jsPlumb_overlay { z-index: 6 }
