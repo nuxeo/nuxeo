@@ -14,7 +14,7 @@ var sourceEndpointOptions = {
 	isSource : true,
 	isTarget : false,
 	uniqueEndpoint : true,
-	maxConnections : 1,
+	maxConnections : 1
 };
 
 var targetEndpointOptions = {
@@ -109,7 +109,7 @@ function displayGraph(data, divContainerTargetId) {
 		nodes.push(this.nodeSourceId);
 		// increase index
 		var endPointSource = jsPlumb.addEndpoint(this.nodeSourceId, {
-			anchor : dynamicAnchors[anchorIndex],
+			anchor : dynamicAnchors[anchorIndex]
 		}, sourceEndpointOptions);
 		var endPointTarget = jsPlumb.addEndpoint(this.nodeTargetId, {
 			anchor : "TopCenter"
@@ -122,7 +122,7 @@ function displayGraph(data, divContainerTargetId) {
 			paintStyle : {
 				lineWidth : 1,
 				strokeStyle : connectionColors[anchorIndex]
-			},
+			}
 		});
 	});
 };
