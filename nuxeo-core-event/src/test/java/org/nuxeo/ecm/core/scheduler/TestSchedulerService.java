@@ -31,6 +31,20 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestSchedulerService extends NXRuntimeTestCase {
 
+    protected void waitUntilDummyEventListenerIsCalled(int maxRetry) throws Exception {
+        waitUntilDummyEventListenerIsCalled(maxRetry, 1);
+    }
+
+    protected void waitUntilDummyEventListenerIsCalled(int maxRetry, int minCountValue) throws Exception {
+        long count = DummyEventListener.getCount();
+        int retry = 0;
+        while (count<=minCountValue && retry < maxRetry*2) {
+            Thread.sleep(500);
+            count = DummyEventListener.getCount();
+            retry++;
+        }
+    }
+
     @Override
     @Before
     public void setUp() throws Exception {
@@ -46,7 +60,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     public void testScheduleRegistration() throws Exception {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-config.xml");
-        Thread.sleep(5000); // so that job is called at least once
+        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue("count " + count, count >= 1);
     }
@@ -61,7 +75,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         schedule.eventId = "testEvent";
         schedule.eventCategory = "default";
         service.registerSchedule(schedule);
-        Thread.sleep(5000); // so that job is called at least once
+        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
 
         long count = DummyEventListener.getCount();
         assertTrue("count " + count, count >= 1);
@@ -93,7 +107,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
         parameters.put("flag", "1");
         service.registerSchedule(schedule, parameters);
-        Thread.sleep(5000); // so that job is called at least once
+        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue("count " + count, count < 0);
         boolean unregistered = service.unregisterSchedule(schedule.id);
@@ -106,7 +120,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     public void testDisableSchedule() throws Exception {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-config.xml");
-        Thread.sleep(5000); // so that job is called at least once
+        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);
         deployContrib("org.nuxeo.ecm.core.event.test",
@@ -121,13 +135,19 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     public void testOverrideSchedule() throws Exception {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-config.xml");
-        Thread.sleep(5000); // so that job is called at least once
+        waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-override-config.xml");
-        Thread.sleep(5000);
         long newCount = DummyEventListener.getNewCount();
+        int retry = 0;
+        while (newCount<=0 && retry < 20) {
+            Thread.sleep(500);
+            newCount = DummyEventListener.getNewCount();
+            retry++;
+        }
+        newCount = DummyEventListener.getNewCount();
         assertTrue(newCount >= 1);
     }
 
