@@ -12,7 +12,7 @@ authors: ataillefer@nuxeo.com, lkemen@nuxeo.com
 
 /* =Foldable boxes */
 .docDiffResult .foldableBox .boxBody { padding: .5em }
-.docDiffResult .dataInput { width: 100% }
+.docDiffResult .dataInput { max-width: none; width: 100% }
 .docDiffResult .dataInput td { padding: .4em .3em }
 .docDiffResult .dataInput td.labelColumn { width: 18%; padding-right: 2em; text-align: left }
 .docDiffResult .dataInput td.fieldColumn { width: 33% }
