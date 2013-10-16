@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
@@ -75,7 +76,7 @@ import com.google.inject.Inject;
  * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ TransactionalFeature.class, PlatformFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
         "org.nuxeo.ecm.platform.web.common" })
@@ -109,9 +110,13 @@ public class TestMultiTenantService {
             userManager.deleteUser("leela");
         }
         Session dir = directoryService.open(TENANTS_DIRECTORY);
-        DocumentModelList docs = dir.getEntries();
-        for (DocumentModel doc : docs) {
-            dir.deleteEntry(doc.getId());
+        try {
+            DocumentModelList docs = dir.getEntries();
+            for (DocumentModel doc : docs) {
+                dir.deleteEntry(doc.getId());
+            }
+        } finally {
+            dir.close();
         }
         multiTenantService.disableTenantIsolation(session);
         List<DocumentModel> groups = userManager.searchGroups(null);
