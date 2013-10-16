@@ -327,6 +327,10 @@
   <category name="org.nuxeo.runtime.tomcat.NuxeoDeployer">
     <priority value="INFO" />
   </category>
+  <!-- Display INFO logs for automation traces when activated -->
+  <category name="org.nuxeo.ecm.automation.core">
+    <priority value="INFO" />
+  </category>
 
   <category name="javax.enterprise.resource.webcontainer.jsf.renderkit">
     <priority value="INFO" />
