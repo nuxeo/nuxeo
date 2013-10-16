@@ -428,7 +428,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         String body = writer.getBuffer().toString();
         String title = configuration.getValidationEmailTitle();
         String copyTo = (String) registrationDoc.getPropertyValue("registration:copyTo");
-        if (!Framework.isTestModeSet()) {
+        if (!isTestModeSet()) {
             try {
                 generateMail(emailAdress, copyTo, title, body);
             } catch (Exception e) {
@@ -438,6 +438,11 @@ public class UserRegistrationComponent extends DefaultComponent implements
             testRendering = body;
         }
 
+    }
+
+    protected static boolean isTestModeSet() {
+        return Framework.isTestModeSet()
+                || !StringUtils.isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
     }
 
     protected boolean checkUserFromRegistrationExistence(
