@@ -17,12 +17,13 @@
 
 package org.nuxeo.wss.fprpc.tests.request;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.servlet.Filter;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.nuxeo.wss.fprpc.tests.WindowsHelper;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
@@ -50,8 +51,7 @@ public class TestInfoRequests {
 
         // System.out.println(result);
 
-        String eol = System.getProperty( "line.separator" );
-        String[] lines = result.split(eol);
+        String[] lines = WindowsHelper.splitLines(result);
         assertEquals("FPVersion=\"12.0.0.000\"", lines[1]);
         assertEquals("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"", lines[2]);
         assertEquals("FPAuthorScriptUrl=\"_vti_bin/_vti_aut/author.dll\"", lines[3]);
@@ -72,8 +72,7 @@ public class TestInfoRequests {
 
         // System.out.println(result);
 
-        String eol = System.getProperty( "line.separator" );
-        String[] lines = result.split(eol);
+        String[] lines = WindowsHelper.splitLines(result);
 
         assertEquals("<p>method=server version:6.0.2.5523", lines[2]);
         assertEquals("<li>ver incr=6421", lines[8]);
@@ -92,8 +91,7 @@ public class TestInfoRequests {
 
         // System.out.println(result);
 
-        String eol = System.getProperty( "line.separator" );
-        String[] lines = result.split(eol);
+        String[] lines = WindowsHelper.splitLines(result);
 
         assertEquals("<p>method=open service:6.0.2.5523", lines[2]);
         assertEquals("<li>SX|http://localhost/_layouts/toolpane.aspx", lines[17]);

@@ -17,14 +17,16 @@
 
 package org.nuxeo.wss.fprpc.tests.request;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
 
 import javax.servlet.Filter;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.nuxeo.wss.fprpc.tests.WindowsHelper;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
@@ -66,8 +68,7 @@ public class TestFPRequests {
 
         String result= response.getOutput();
 
-        String eol = System.getProperty( "line.separator" );
-        String[] lines = result.split(eol);
+        String[] lines = WindowsHelper.splitLines(result);
         assertEquals("<p>message=successfully put document 'DocLib0/Workspace-1-1/Document-2-1.doc' as 'DocLib0/Workspace-1-1/Document-2-1.doc'", lines[3]);
     }
 

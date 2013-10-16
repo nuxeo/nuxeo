@@ -17,15 +17,15 @@
 
 package org.nuxeo.wss.fprpc.tests.fm;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.StringWriter;
-import java.util.Calendar;
 import java.util.HashMap;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.wss.fm.FreeMarkerRenderer;
 import org.nuxeo.wss.fprpc.FPRPCConts;
+import org.nuxeo.wss.fprpc.tests.WindowsHelper;
 
 public class TestFMRendering {
 
@@ -42,8 +42,7 @@ public class TestFMRendering {
 
         String result = writer.getBuffer().toString();
 
-        String eol = System.getProperty( "line.separator" );
-        String[] lines = result.split(eol);
+        String[] lines = WindowsHelper.splitLines(result);
 
         assertEquals("ABCD", lines[0]);
         assertEquals("success", lines[1]);
@@ -64,8 +63,7 @@ public class TestFMRendering {
 
         String result = writer.getBuffer().toString();
 
-        String eol = System.getProperty( "line.separator" );
-        String[] lines = result.split(eol);
+        String[] lines = WindowsHelper.splitLines(result);
 
         assertEquals("BEFORE", lines[0]);
         assertEquals("ABCD", lines[1]);
@@ -87,8 +85,7 @@ public class TestFMRendering {
 
         String result = writer.getBuffer().toString();
 
-        String eol = System.getProperty( "line.separator" );
-        String[] lines = result.split(eol);
+        String[] lines = WindowsHelper.splitLines(result);
 
         assertEquals("FPVersion=\"12.0.0.000\"", lines[1]);
         assertEquals("FPShtmlScriptUrl=\"_vti_bin/shtml.dll/_vti_rpc\"",
