@@ -34,13 +34,13 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
 /**
  * Given a File document holding a pdf on the file:content property and 2 pdfs
- * on the files:files property, the following chain will make the user download
- * a pdf that is the result of the merge of all the pdfs, with the content of
- * the one in file:content property first.
+ * on the files:files property, the following operation will provide a pdf that
+ * is the result of the merge of all the pdfs, with the content of the one in
+ * file:content property first.
  * 
  * @since 5.8
  */
-@Operation(id = ConcatenatePDFs.ID, category = Constants.CAT_CONVERSION, label = "Concatenate PDFs", description = "Given a File document holding a pdf on the file:content property and 2 pdfs on the files:files property, the following chain will make the user download a pdf that is the result of the merge of all the pdfs, with the content of the one in file:content property first.")
+@Operation(id = ConcatenatePDFs.ID, category = Constants.CAT_CONVERSION, label = "Concatenate PDFs", description = "Given a File document holding a pdf on the file:content property and 2 pdfs on the files:files property, the following operation will provide a pdf that is the result of the merge of all the pdfs, with the content of the one in file:content property first.")
 public class ConcatenatePDFs {
 
     public static final String ID = "Blob.ConcatenatePDFs";
