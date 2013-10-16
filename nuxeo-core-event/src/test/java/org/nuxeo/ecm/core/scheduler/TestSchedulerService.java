@@ -38,7 +38,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     protected void waitUntilDummyEventListenerIsCalled(int maxRetry, int minCountValue) throws Exception {
         long count = DummyEventListener.getCount();
         int retry = 0;
-        while (count<=minCountValue && retry < maxRetry*2) {
+        while (count<minCountValue && retry < maxRetry*2) {
             Thread.sleep(500);
             count = DummyEventListener.getCount();
             retry++;
