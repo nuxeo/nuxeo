@@ -117,20 +117,32 @@ public class LoginPage extends AbstractPage {
         try {
             login(username, password);
             return asPage(pageClassToProxy);
-        } catch (NoSuchElementException e) {
-            if (hasElement(By.xpath(LOGIN_DIV_XPATH))) {
-                // Means we are still on login page.
-                if (hasElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH))) {
-                    throw new NoSuchElementException(
-                            "Login failed. Application said : "
-                                    + driver.findElement(
-                                            By.xpath(FEEDBACK_MESSAGE_DIV_XPATH)).getText(),
-                            e);
+        } catch (NoSuchElementException exc) {
+            try {
+                // Try once again because of problem described in NXP-12835.
+                // TODO find the real cause of NXP-12835 and remove second login
+                // attempt
+                if (hasElement(By.xpath(LOGIN_DIV_XPATH))) {
+                    login(username, password);
+                    return asPage(pageClassToProxy);
                 } else {
-                    throw new NoSuchElementException("Login failed", e);
+                    throw exc;
                 }
-            } else {
-                throw e;
+            } catch (NoSuchElementException e) {
+                if (hasElement(By.xpath(LOGIN_DIV_XPATH))) {
+                    // Means we are still on login page.
+                    if (hasElement(By.xpath(FEEDBACK_MESSAGE_DIV_XPATH))) {
+                        throw new NoSuchElementException(
+                                "Login failed. Application said : "
+                                        + driver.findElement(
+                                                By.xpath(FEEDBACK_MESSAGE_DIV_XPATH)).getText(),
+                                e);
+                    } else {
+                        throw new NoSuchElementException("Login failed", e);
+                    }
+                } else {
+                    throw e;
+                }
             }
         }
     }
