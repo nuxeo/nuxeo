@@ -88,6 +88,9 @@ public class TestDefaultFileSystemItemFactory {
 
     private static final String DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
 
+    // needs to be bigger than 1s for MySQL
+    private static final int VERSIONING_DELAY = 1500; // ms
+
     @Inject
     protected CoreSession session;
 
@@ -119,6 +122,14 @@ public class TestDefaultFileSystemItemFactory {
     protected DocumentModel notAFileSystemItem;
 
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
+
+    /**
+     * For databases that don't have sub-second resolution, sleep a bit to get
+     * to the next second.
+     */
+    protected void maybeSleepToNextSecond() {
+        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
+    }
 
     @Before
     public void createTestDocs() throws Exception {
@@ -182,9 +193,9 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
 
         // Set versioning delay to 1 second
-        defaultFileSystemItemFactory.setVersioningDelay(1.0);
-        assertEquals(1.0, defaultFileSystemItemFactory.getVersioningDelay(),
-                .01);
+        defaultFileSystemItemFactory.setVersioningDelay(VERSIONING_DELAY/1000.0);
+        assertEquals(VERSIONING_DELAY / 1000.0,
+                defaultFileSystemItemFactory.getVersioningDelay(), .01);
         assertEquals(VersioningOption.MINOR,
                 defaultFileSystemItemFactory.getVersioningOption());
     }
@@ -536,8 +547,9 @@ public class TestDefaultFileSystemItemFactory {
         // and last modification was done before the versioning delay
         assertVersion("0.0", file);
 
-        // Wait for versioning delay: 1s
-        Thread.sleep(1000);
+        // Wait for versioning delay
+        Thread.sleep(VERSIONING_DELAY);
+
         newBlob.setFilename("File name modified.txt");
         fileItem.setBlob(newBlob);
         file = session.getDocument(file.getRef());
@@ -553,6 +565,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("New blob.txt", versionedBlob.getFilename());
 
         // Update file with another contributor
+        maybeSleepToNextSecond();
         file = joeSession.getDocument(file.getRef());
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         newBlob.setFilename("File name modified by Joe.txt");
@@ -585,8 +598,9 @@ public class TestDefaultFileSystemItemFactory {
         // and last modification was done before the versioning delay
         assertVersion("0.2", file);
 
-        // Wait for versioning delay: 1s
-        Thread.sleep(1000);
+        // Wait for versioning delay
+        Thread.sleep(VERSIONING_DELAY);
+
         fileItem.rename("Renamed again.txt");
         file = session.getDocument(file.getRef());
         updatedBlob = (Blob) file.getPropertyValue("file:content");
@@ -601,6 +615,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Renamed file.txt", updatedBlob.getFilename());
 
         // Update file with another contributor
+        maybeSleepToNextSecond();
         file = joeSession.getDocument(file.getRef());
         fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         fileItem.rename("File renamed by Joe.txt");
