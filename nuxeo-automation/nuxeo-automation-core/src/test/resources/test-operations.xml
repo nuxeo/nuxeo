@@ -90,6 +90,15 @@
       </operation>
     </chain>
 
+    <chain id="testEmptyExpression">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.SetProperty">
+        <param type="serializable" name="value">expr:@{empty}</param>
+        <param type="string" name="xpath">dc:title</param>
+        <param type="boolean" name="save">true</param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>

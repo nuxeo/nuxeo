@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.scripting;
 
+import org.mvel2.compiler.BlankLiteral;
 import org.mvel2.templates.CompiledTemplate;
 import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRuntime;
@@ -37,7 +38,9 @@ public class MvelTemplate implements Expression {
         }
         Object obj = TemplateRuntime.execute(compiled,
                 Scripting.initBindings(ctx));
-        return obj == null ? "" : obj.toString();
+        return obj == null
+                || obj.getClass().isAssignableFrom(BlankLiteral.class) ? ""
+                : obj.toString();
     }
 
 }

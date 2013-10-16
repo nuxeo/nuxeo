@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.core.scripting;
 import java.io.Serializable;
 
 import org.mvel2.MVEL;
+import org.mvel2.compiler.BlankLiteral;
 import org.nuxeo.ecm.automation.OperationContext;
 
 /**
@@ -35,7 +36,11 @@ public class MvelExpression implements Expression {
         if (compiled == null) {
             compiled = MVEL.compileExpression(expr);
         }
-        return MVEL.executeExpression(compiled, Scripting.initBindings(ctx));
+        Object result = MVEL.executeExpression(compiled,
+                Scripting.initBindings(ctx));
+        return result != null
+                && result.getClass().isAssignableFrom(BlankLiteral.class) ? ""
+                : result;
     }
 
 }
