@@ -19,6 +19,13 @@
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
     </unzip>
+
+    <!-- Add the content of messages_en.properties to use english as default if a
+         label does not exist -->
+    <append from="nuxeo.war/WEB-INF/classes/messages_en.properties"
+        to="nuxeo.war/WEB-INF/classes/messages.properties"
+        addNewLine="true"/>
+
   </install>
 
 </fragment>
