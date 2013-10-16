@@ -18,10 +18,11 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -51,11 +52,11 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.convert",
+@Deploy({ "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core",
-        "org.nuxeo.ecm.platform.preview",
-        "org.nuxeo.ecm.platform.dublincore"})
+        "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore" })
 public class TestService {
 
     @Test
@@ -68,8 +69,8 @@ public class TestService {
 
     @Test
     // disabled because failing under windows, see NXP-12666
-    @Ignore
-    public void testLatin1() throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
+    public void testLatin1() throws IOException, ClientException,
+            MimetypeNotFoundException, MimetypeDetectionException {
         DocumentModel doc = repo.createDocumentModel("/", "fake", "File");
         doc = repo.createDocument(doc);
         checkLatin1(doc, "latin1.txt", "text/plain");
@@ -77,7 +78,15 @@ public class TestService {
         checkLatin1(doc, "latin1.csv", "text/csv");
     }
 
-    @Inject protected CoreSession repo;
+    @Inject
+    protected CoreSession repo;
+
+    protected final Pattern charsetPattern = Pattern.compile(String.format(
+            ".*content=\"text/html;\\s*charset=(%s)\".*", charset()));
+
+    protected static String charset() {
+        return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0 ? "windows-1252" : "UTF-8";
+    }
 
     public void checkLatin1(DocumentModel doc, String name, String mtype) throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
         File file = new File(getClass().getResource("/" + name).getPath());
@@ -86,6 +95,14 @@ public class TestService {
         doc.getAdapter(BlobHolder.class).setBlob(blob);
         HtmlPreviewAdapter adapter = doc.getAdapter(HtmlPreviewAdapter.class);
         Blob htmlBlob = adapter.getFilePreviewBlobs().get(0);
-        Assert.assertThat(htmlBlob.getString(), Matchers.containsString("Test de prévisualisation avant rattachement"));
-    }
+        String htmlContent = htmlBlob.getString();
+        Matcher matcher = charsetPattern.matcher(htmlContent);
+        Assert.assertThat(matcher.matches(), Matchers.is(true));
+        String charset = matcher.group();
+        if ("windows-1252".equals(charset)) {
+            Assert.assertThat(htmlContent, Matchers.containsString("Test de pr&Atilde;&copy;visualisation avant rattachement"));
+        } else {
+            Assert.assertThat(htmlContent, Matchers.containsString("Test de prévisualisation avant rattachement"));
+        }
+     }
 }
