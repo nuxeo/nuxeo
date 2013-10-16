@@ -1,12 +1,12 @@
 .node,
 multiple_task {
-  border: 3px solid #549CFB;
+  border: 3px solid #96a7bd;
+  border-radius: 2px;
   height: 60px;
   width: 60px;
   z-index: 100;
-  color: gray;
-  font-family: serif;
-  font-style: italic;
+  color: #555;
+  font-family: Arial, sans-serif;
   padding-top: .9em;
   font-size: .9em;
   text-align: center;
@@ -14,7 +14,7 @@ multiple_task {
 }
 
 .multiple_task { 
-	border: 5px double #8FBFFF; }
+  border: 5px double #96a7bd; }
 
 .start_node,
 .end_node {
@@ -23,16 +23,21 @@ multiple_task {
   -moz-border-radius: 40px;
   -webkit-border-radius: 40px;
   border-radius: 40px;
+  border-color: #00aa60;
   z-index: 100;
-  line-height: 200%;
-  font-family: serif;
-  font-style: italic;
-  font-size: .9em;
+  color: #fff;
+  line-height: 40px;
+  font-family: arial;
+  font-size: 0.9em;
+  font-style: normal;
+  font-weight: bold;
   text-align: center;
-  background: #92c938; }
+  text-transform: uppercase;
+  background: #00aa60; }
   
 .end_node {
-  background: #f04545; }
+  background: #e5001b;
+  border-color: #e5001b; }
 
 .fork_node,
 .merge_node {
@@ -58,48 +63,46 @@ multiple_task {
   background: url("../icons/subworkflow_bg_node.png") no-repeat scroll right bottom white 
   }
 
-.node_draft {
-	background-color: white;
-}
-
-.node_validated {
-	background-color: white;
-}
-
+.node_draft,
 .node_ready {
-	background-color: white;
+  background-color: #fff;
+  border-color: #adbed4;
+  color: #7a899d;
 }
 
-.node_running {
-	background-color: #FFFFCC;
+.node_done,
+.node_validated {
+  background-color: #eee;
 }
 
-.node_done {
-	background-color: #DB4D4D;
+.node_running,
+.node_suspended {
+  background-color: #e1f0ff;
+  border-color: #3c87ec;
+  color: #000;
+  font-weight: bold
 }
 
 .node_waiting {
-	background-color: #FF9966;
-}
-
-.node_suspended {
-	background-color: #CCFF99;
+  background-color: #ffe5bf;
+  border-color: #8cbdff;
+  color: #444;
 }
 
 .node_canceled {
-	background-color: #FF3300;
+  background-color: #CCFF99;
 }
+
 .node_connection_label {
-  background-color: white;
-  padding: .1em .2em;
-  font: 12px sans-serif;
-  color: #444;
-  z-index: 120;
-  border: 1px dotted gray;
-  opacity: 0.8;
-  filter: alpha(opacity = 80);
+  background-color: #eff4f8;
+  border: 1px solid #b7c6d5;
+  border-radius: 2px;
+  color: #1f3c59;
+  font: bold 12px sans-serif;
   max-width: 170px;
-  word-wrap: break-word }
+  padding: 0.05em 0.15em !important;
+  word-wrap: break-word;
+  z-index: 120; }
 
 .targetDiv {
 	position: relative;
