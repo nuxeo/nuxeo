@@ -80,8 +80,9 @@ function displayGraph(data, divContainerTargetId) {
 	jQuery.each(data['nodes'], function() {
 		var node = '<div class="node" id="' + this.id + '">' + this.title
 				+ '</div>';
-		var el = jQuery(node).appendTo('#' + divContainerTargetId).css('position', 'absolute').css('left',
-				this.x).css('top', this.y);
+		var el = jQuery(node).appendTo('#' + divContainerTargetId).css(
+				'position', 'absolute').css('left', this.x).css('top', this.y);
+
 		if (this.isStartNode) {
 			el.addClass('start_node');
 		} else if (this.isEndNode) {
@@ -93,8 +94,12 @@ function displayGraph(data, divContainerTargetId) {
 		} else if (this.hasSubWorkflow) {
 			el.addClass('subworkflow_task');
 		} else {
-			el.addClass('node_' + this.state);
+			el.addClass('simple_node');
 		}
+		if (this.state == 'suspended') {
+			el.addClass('node_suspended');
+		}
+
 	});
 	// initialize connection source points
 	var nodes = [];

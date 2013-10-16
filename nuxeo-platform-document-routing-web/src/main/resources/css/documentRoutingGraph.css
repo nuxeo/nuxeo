@@ -61,30 +61,15 @@ multiple_task {
   border-color: #004fb9;
   background: url("../icons/subworkflow_bg_node.png") no-repeat scroll right bottom white }
 
-.node_draft,
-.node_ready {
+.simple_node {
   background-color: #fff;
   border-color: #adbed4;
   color: #7a899d }
 
-.node_done,
-.node_validated {
-  background-color: #eee }
 
-.node_running,
 .node_suspended {
   background-color: #e1f0ff;
-  border-color: #3c87ec;
-  color: #000;
   font-weight: bold }
-
-.node_waiting {
-  background-color: #ffe5bf;
-  border-color: #8cbdff;
-  color: #444 }
-
-.node_canceled {
-  background-color: #cf9 }
 
 .node_connection_label {
   background-color: #eff4f8;
