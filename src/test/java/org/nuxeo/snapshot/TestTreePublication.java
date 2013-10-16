@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -82,6 +83,10 @@ public class TestTreePublication {
 
     protected final boolean verbose = false;
 
+    protected void maybeSleepToNextSecond() {
+        DatabaseHelper.DATABASE.maybeSleepToNextSecond();
+    }
+
     protected void buildTree() throws Exception {
         root = session.createDocumentModel("/", "root", "SnapshotableFolder");
         root = session.createDocument(root);
@@ -121,12 +126,16 @@ public class TestTreePublication {
         doc1311.setPropertyValue("dc:title", "Doc 1311");
         doc1311 = session.createDocument(doc1311);
 
+        maybeSleepToNextSecond();
+
         session.checkIn(doc1311.getRef(), VersioningOption.MINOR, null);
 
         doc1312 = session.createDocumentModel(folder131.getPathAsString(),
                 "doc1312", "File");
         doc1312.setPropertyValue("dc:title", "Doc 1312");
         doc1312 = session.createDocument(doc1312);
+
+        maybeSleepToNextSecond();
 
         session.checkIn(doc1312.getRef(), VersioningOption.MINOR, null);
 
@@ -167,6 +176,8 @@ public class TestTreePublication {
 
         PublicationNode targetNode = nodes.get(0);
         assertTrue(tree.canPublishTo(targetNode));
+
+        maybeSleepToNextSecond();
 
         tree.publish(root, targetNode);
         session.save();
