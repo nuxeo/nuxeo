@@ -75,9 +75,9 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
     @Test
     public void testRamdomImport() throws Exception {
 
-        System.out.println("Starting prefill");
+        // System.out.println("Starting prefill");
         SourceNode src = RandomTextSourceNode.init(500);
-        System.out.println("prefill done");
+        // System.out.println("prefill done");
         String targetPath = "/default-domain/workspaces/";
 
         DefaultImporterExecutor executor = new DefaultImporterExecutor();
@@ -87,9 +87,10 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
         long createdDocs = executor.getCreatedDocsCounter();
         assertTrue(createdDocs > 0);
 
-        System.out.println("total content size = "
-                + RandomTextSourceNode.getSize() / (1024 * 1024) + " MB");
-        System.out.println("nb nodes = " + RandomTextSourceNode.getNbNodes());
+        // System.out.println("total content size = "
+        // + RandomTextSourceNode.getSize() / (1024 * 1024) + " MB");
+        // System.out.println("nb nodes = " +
+        // RandomTextSourceNode.getNbNodes());
     }
 
 }

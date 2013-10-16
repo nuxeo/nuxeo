@@ -64,9 +64,9 @@ public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
     @Test
     public void testNoteImport() throws Exception {
 
-        System.out.println("Starting prefil");
+        // System.out.println("Starting prefill");
         SourceNode src = RandomTextSourceNode.init(500);
-        System.out.println("profil done");
+        // System.out.println("prefill done");
         String targetPath = "/default-domain/workspaces/";
 
         DefaultImporterExecutor executor = new DefaultImporterExecutor();
