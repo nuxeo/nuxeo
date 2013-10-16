@@ -282,7 +282,7 @@ NXThemesSkinManager.deactivateSkin = function(theme) {
     new Ajax.Request(url, {
          method: 'post',
          parameters: {
-             theme: theme,
+             theme: theme
          },
          onSuccess: function(r) {
              NXThemes.getViewById("skin manager").refresh();
