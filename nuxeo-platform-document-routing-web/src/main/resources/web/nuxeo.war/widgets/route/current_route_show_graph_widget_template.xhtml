@@ -6,13 +6,13 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
+
   <script type="text/javascript">
-    <h:outputText  value="var routeDocId='#{field_0}';" />
     <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
     <h:outputText value="var divContainerTargetId='#{widget.id}_target';"/>
-    function showGraph() {
+    function showGraph(routeId) {
       jQuery('##{widget.id}_target').empty();
-      loadGraph(routeDocId, currentLang, divContainerTargetId);
+      loadGraph(routeId, currentLang, divContainerTargetId);
       openFancyBox('##{widget.id}_graphView_box', {
         'autoScale': false,
         'autoDimensions': false,
@@ -28,7 +28,7 @@
     }
   </script>
 
-  <a href="#" onclick="showGraph();return false;" class="button smallButton">
+  <a href="#" onclick="showGraph('#{field_0}');return false;" class="button smallButton">
     #{messages['label.document.routing.show.graph']}
   </a>
 
