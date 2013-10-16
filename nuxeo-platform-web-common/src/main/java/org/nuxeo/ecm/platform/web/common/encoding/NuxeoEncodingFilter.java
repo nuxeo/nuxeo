@@ -25,16 +25,18 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * Filter that sets encoding to UTF-8, before any other filter tries to parse
- * the request.
+ * the request. Also set the X-UA-Compatible meta for browsers.
  * <p>
  * See NXP-5555: the first parsing of the request is cached, so it should be
  * done with the right encoding.
+ * See NXP-12862: we must pass the X-UA-Compatible meta in the header.
  *
  * @author Anahide Tchertchian
  * @since 5.4.2
@@ -46,13 +48,21 @@ public class NuxeoEncodingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        // NXP-5555: set encoding to UTF-8 in case this method is called before
-        // encoding is set to UTF-8 on the request
-        if (request != null && request.getCharacterEncoding() == null) {
-            try {
-                request.setCharacterEncoding("UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error(e, e);
+        if (request != null) {
+            // NXP-5555: set encoding to UTF-8 in case this method is called
+            // before
+            // encoding is set to UTF-8 on the request
+            if (request.getCharacterEncoding() == null) {
+                try {
+                    request.setCharacterEncoding("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    log.error(e, e);
+                }
+            }
+            if (response instanceof HttpServletResponse
+                    && !((HttpServletResponse) response).containsHeader("X-UA-Compatible")) {
+                ((HttpServletResponse) response).addHeader("X-UA-Compatible",
+                        "IE=Edge,chrome=1");
             }
         }
 
