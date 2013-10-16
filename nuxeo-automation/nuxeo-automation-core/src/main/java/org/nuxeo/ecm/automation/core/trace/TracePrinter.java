@@ -90,7 +90,8 @@ public class TracePrinter {
             sb.append(trace.getChain().getId());
             sb.append(System.getProperty("line.separator"));
             sb.append("Produced output type: ");
-            sb.append(trace.output.getClass().getSimpleName());
+            sb.append(trace.output == null ? "Void"
+                    : trace.output.getClass().getSimpleName());
             printLine(sb.toString());
         }
         StringBuilder stringBuilder = new StringBuilder();
