@@ -526,6 +526,14 @@ public class ConnectBroker {
 
     public boolean pkgPurge() throws PackageException {
         List<String> localNames = new ArrayList<String>();
+        // Remove packages in DOWNLOADED state first
+        // This will avoid extending the CUDF universe needlessly
+        for (LocalPackage pkg : service.getPackages()) {
+            if (pkg.getState() == PackageState.DOWNLOADED.getValue()) {
+                pkgRemove(pkg.getId());
+            }
+        }
+        // Process the remaining packages
         for (LocalPackage pkg : service.getPackages()) {
             localNames.add(pkg.getName());
         }
