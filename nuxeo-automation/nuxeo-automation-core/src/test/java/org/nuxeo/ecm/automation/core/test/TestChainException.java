@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,12 +29,15 @@ import org.nuxeo.ecm.automation.ChainException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,6 +52,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-exception-chain.xml")
+@RepositoryConfig(cleanup=Granularity.METHOD, init=TestChainException.Populate.class)
 public class TestChainException {
 
     protected DocumentModel src;
@@ -65,26 +68,26 @@ public class TestChainException {
     @Inject
     TracerFactory factory;
 
-    @Before
-    public void initRepo() throws Exception {
-        // Document with Source as title
-        src = session.createDocumentModel("/", "src", "Folder");
-        src.setPropertyValue("dc:title", "Source");
-        src = session.createDocument(src);
-        // Document with Document as title
-        doc = session.createDocumentModel("/", "doc", "Folder");
-        doc.setPropertyValue("dc:title", "Document");
-        doc = session.createDocument(doc);
-        session.save();
-        src = session.getDocument(src.getRef());
-        doc = session.getDocument(doc.getRef());
+    public static class Populate implements RepositoryInit {
+
+        @Override
+        public void populate(CoreSession session) throws ClientException {
+            DocumentModel src = session.createDocumentModel("/", "src", "Folder");
+            src.setPropertyValue("dc:title", "Source");
+            src = session.createDocument(src);
+            // Document with Document as title
+            DocumentModel doc = session.createDocumentModel("/", "doc", "Folder");
+            doc.setPropertyValue("dc:title", "Document");
+            doc = session.createDocument(doc);
+        }
     }
 
-    @After
-    public void clearRepo() throws Exception {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.removeChildren(session.getRootDocument().getRef());
+    @Before
+    public void fetchDocuments() throws Exception {
+        src = session.getDocument(new PathRef("/src"));
+        doc = session.getDocument(new PathRef("/doc"));
     }
+
 
     @Test
     public void testChainExceptionContribution() throws Exception {
