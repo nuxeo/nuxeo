@@ -43,6 +43,9 @@ public class LogTestWatchman extends TestWatchman {
         this.serverURL = serverURL;
     }
 
+    public LogTestWatchman() {
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Statement apply(final Statement base, final FrameworkMethod method,
@@ -143,6 +146,14 @@ public class LogTestWatchman extends TestWatchman {
         super.finished(method);
     }
 
+    public RemoteWebDriver getDriver() {
+        return driver;
+    }
+
+    public String getServerURL() {
+        return serverURL;
+    }
+
     protected String getTestClassName(FrameworkMethod method) {
         return method.getMethod().getDeclaringClass().getName();
     }
@@ -166,6 +177,14 @@ public class LogTestWatchman extends TestWatchman {
     public void runBeforeAfters() {
         lastScreenshot = takeScreenshot(filePrefix).getAbsolutePath();
         lastPageSource = dumpPageSource(filePrefix).getAbsolutePath();
+    }
+
+    public void setDriver(RemoteWebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void setServerURL(String serverURL) {
+        this.serverURL = serverURL;
     }
 
     @Override

@@ -30,7 +30,7 @@ import org.junit.Test;
 public class TestDrivers extends AbstractTest {
 
     @Rule
-    public LogTestWatchman watchman = new LogTestWatchman() {
+    public LogTestWatchman watchman = new LogTestWatchman(driver, NUXEO_URL) {
 
         @Override
         protected void logOnServer(String message) {
@@ -47,9 +47,11 @@ public class TestDrivers extends AbstractTest {
     @Test
     public void testFireFox() throws Exception {
         initFirefoxDriver();
+        watchman.setDriver(driver);
+        watchman.setServerURL(NUXEO_URL);
         driver.get("http://google.com");
-        assertTrue(takeScreenshot("firefox").delete());
-        assertTrue(dumpPageSource("firefox").delete());
+        assertTrue(watchman.takeScreenshot("firefox").delete());
+        assertTrue(watchman.dumpPageSource("firefox").delete());
         quitDriver();
         removeFireBug();
         stopProxy();
@@ -60,8 +62,8 @@ public class TestDrivers extends AbstractTest {
     public void testGoogleChrome() throws Exception {
         initChromeDriver();
         driver.get("http://google.com");
-        assertTrue(takeScreenshot("google-chrome").delete());
-        assertTrue(dumpPageSource("google-chrome").delete());
+        assertTrue(watchman.takeScreenshot("google-chrome").delete());
+        assertTrue(watchman.dumpPageSource("google-chrome").delete());
         quitDriver();
         stopProxy();
     }
