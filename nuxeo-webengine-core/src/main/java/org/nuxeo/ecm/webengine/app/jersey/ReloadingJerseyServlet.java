@@ -61,9 +61,6 @@ public class ReloadingJerseyServlet extends ServletContainer implements
         if (engine == null) {
             engine = Framework.getLocalService(WebEngine.class);
         }
-        if (engine.isDevMode()) {
-            reloadIfNeeded();
-        }
         String method = request.getMethod().toUpperCase();
         if (!"GET".equals(method)) {
             // force reading properties because jersey is consuming one

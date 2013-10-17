@@ -39,7 +39,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.ResourceBinding;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.debug.ModuleTracker;
 import org.nuxeo.ecm.webengine.model.AdapterNotFoundException;
 import org.nuxeo.ecm.webengine.model.AdapterType;
 import org.nuxeo.ecm.webengine.model.LinkDescriptor;
@@ -87,8 +86,6 @@ public class ModuleImpl implements Module {
 
     protected DirectoryStack dirStack;
 
-    protected ModuleTracker tracker;
-
     // cache used for resolved files
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
@@ -103,15 +100,6 @@ public class ModuleImpl implements Module {
         loadConfiguration();
         reloadMessages();
         loadDirectoryStack();
-    }
-
-    public ModuleTracker getTracker() {
-        if (tracker == null) { // tracker will be installed only in debug mode
-            if (engine.isDevMode()) {
-                tracker = new ModuleTracker(this);
-            }
-        }
-        return tracker;
     }
 
     /**
@@ -136,14 +124,17 @@ public class ModuleImpl implements Module {
                 && configuration.natures.contains(natureId);
     }
 
+    @Override
     public WebEngine getEngine() {
         return engine;
     }
 
+    @Override
     public String getName() {
         return configuration.name;
     }
 
+    @Override
     public ModuleImpl getSuperModule() {
         return superModule;
     }
@@ -171,6 +162,7 @@ public class ModuleImpl implements Module {
      * @deprecated Use {@link WebApplication} to declare modules
      * @return
      */
+    @Override
     @Deprecated
     public Resource getRootObject(WebContext ctx) {
         try {
@@ -185,6 +177,7 @@ public class ModuleImpl implements Module {
         }
     }
 
+    @Override
     public String getSkinPathPrefix() {
         return skinPathPrefix;
     }
@@ -204,10 +197,12 @@ public class ModuleImpl implements Module {
         return typeReg;
     }
 
+    @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         return engine.loadClass(className);
     }
 
+    @Override
     public ResourceType getType(String typeName) {
         ResourceType type = getTypeRegistry().getType(typeName);
         if (type == null) {
@@ -216,14 +211,17 @@ public class ModuleImpl implements Module {
         return type;
     }
 
+    @Override
     public ResourceType[] getTypes() {
         return getTypeRegistry().getTypes();
     }
 
+    @Override
     public AdapterType[] getAdapters() {
         return getTypeRegistry().getAdapters();
     }
 
+    @Override
     public AdapterType getAdapter(Resource ctx, String name) {
         AdapterType type = getTypeRegistry().getAdapter(ctx, name);
         if (type == null) {
@@ -232,22 +230,27 @@ public class ModuleImpl implements Module {
         return type;
     }
 
+    @Override
     public List<String> getAdapterNames(Resource ctx) {
         return getTypeRegistry().getAdapterNames(ctx);
     }
 
+    @Override
     public List<AdapterType> getAdapters(Resource ctx) {
         return getTypeRegistry().getAdapters(ctx);
     }
 
+    @Override
     public List<String> getEnabledAdapterNames(Resource ctx) {
         return getTypeRegistry().getEnabledAdapterNames(ctx);
     }
 
+    @Override
     public List<AdapterType> getEnabledAdapters(Resource ctx) {
         return getTypeRegistry().getEnabledAdapters(ctx);
     }
 
+    @Override
     public String getMediaTypeId(MediaType mt) {
         if (configuration.mediatTypeRefs == null) {
             return null;
@@ -262,10 +265,12 @@ public class ModuleImpl implements Module {
         return null;
     }
 
+    @Override
     public List<ResourceBinding> getResourceBindings() {
         return configuration.resources;
     }
 
+    @Override
     public boolean isDerivedFrom(String moduleName) {
         if (configuration.name.equals(moduleName)) {
             return true;
@@ -276,6 +281,7 @@ public class ModuleImpl implements Module {
         return false;
     }
 
+    @Override
     public Validator getValidator(String docType) {
         if (configuration.validators != null) {
             return configuration.validators.get(docType);
@@ -293,10 +299,12 @@ public class ModuleImpl implements Module {
         configuration.links = null; // avoid storing unused data
     }
 
+    @Override
     public List<LinkDescriptor> getLinks(String category) {
         return linkReg.getLinks(category);
     }
 
+    @Override
     public List<LinkDescriptor> getActiveLinks(Resource context, String category) {
         return linkReg.getActiveLinks(context, category);
     }
@@ -305,6 +313,7 @@ public class ModuleImpl implements Module {
         return linkReg;
     }
 
+    @Override
     public String getTemplateFileExt() {
         return configuration.templateFileExt;
     }
@@ -327,6 +336,7 @@ public class ModuleImpl implements Module {
      * @deprecated resources are deprecated - you should use a jax-rs
      *             application to declare more resources.
      */
+    @Deprecated
     public void flushRootResourcesCache() {
         if (configuration.resources != null) { // reregister resources
             for (ResourceBinding rb : configuration.resources) {
@@ -342,6 +352,7 @@ public class ModuleImpl implements Module {
         }
     }
 
+    @Override
     public void flushCache() {
         reloadMessages();
         flushSkinCache();
@@ -383,6 +394,7 @@ public class ModuleImpl implements Module {
         }
     }
 
+    @Override
     public ScriptFile getFile(String path) {
         int len = path.length();
         if (len == 0) {
@@ -417,6 +429,7 @@ public class ModuleImpl implements Module {
         return file;
     }
 
+    @Override
     public ScriptFile getSkinResource(String path) throws IOException {
         File file = dirStack.getFile(path);
         if (file != null) {
@@ -450,6 +463,7 @@ public class ModuleImpl implements Module {
         return typeReg;
     }
 
+    @Override
     public File getRoot() {
         return configuration.directory;
     }
@@ -459,10 +473,12 @@ public class ModuleImpl implements Module {
                 : null, this);
     }
 
+    @Override
     public Messages getMessages() {
         return messages;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Map<String, String> getMessages(String language) {
         log.info("Loading i18n files for module " + configuration.name);

@@ -48,25 +48,8 @@ public class GroovyScripting {
     // compiled script class cache
     protected Map<File, Entry> cache;
 
-    public static ClassLoader getParentLoader() {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        return cl == null ? GroovyScripting.class.getClassLoader() : cl;
-    }
-
-    public GroovyScripting() {
-        this(getParentLoader(), new CompilerConfiguration());
-    }
-
-    public GroovyScripting(boolean debug) {
-        this(getParentLoader(), debug);
-    }
-
-    public GroovyScripting(ClassLoader parent, boolean debug) {
+    public GroovyScripting(ClassLoader parent) {
         CompilerConfiguration cfg = new CompilerConfiguration();
-        cfg.setDebug(debug);
-        if (debug) {
-            cfg.setRecompileGroovySource(true);
-        }
         loader = new GroovyClassLoader(parent, cfg);
         cache = new ConcurrentHashMap<File, Entry>();
     }

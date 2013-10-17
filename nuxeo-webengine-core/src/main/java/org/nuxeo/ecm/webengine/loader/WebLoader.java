@@ -44,7 +44,7 @@ public class WebLoader {
         this.engine = engine;
         File root = engine.getRootDirectory();
         classLoader = new ReloadingClassLoader(getParentLoader());
-        gScripting = new GroovyScripting(classLoader, engine.isDevMode());
+        gScripting = new GroovyScripting(classLoader);
         addClassPathElement(new File(root, "WEB-INF/classes"));
     }
 
@@ -90,9 +90,7 @@ public class WebLoader {
     }
 
     public ClassProxy getGroovyClassProxy(String className) throws ClassNotFoundException {
-        return engine.isDevMode() ?
-                new GroovyClassProxy(gScripting.getGroovyClassLoader(), className)
-            : new StaticClassProxy(gScripting.loadClass(className));
+        return new StaticClassProxy(gScripting.loadClass(className));
     }
 
     public ClassProxy getClassProxy(String className) throws ClassNotFoundException {

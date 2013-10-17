@@ -62,14 +62,6 @@ public class WebEngineModuleFactory {
 
         File moduleDir = locateModuleDir(bundle, engine, explode);
 
-        // NXP-12749: temporary disable of this feature as it's breaking
-        // automation server module deployment, so it may be buggy
-        // if (engine.isDevMode() && moduleDir != null) {
-        // engine.getWebLoader().addClassPathElement(moduleDir);
-        // app = (WebEngineModule)
-        // engine.loadClass(app.getClass().getName()).newInstance();
-        // }
-
         app.init(engine, bundle, new File(moduleDir, "module.xml"), attrs);
 
         app.cfg.directory = moduleDir;
@@ -120,22 +112,18 @@ public class WebEngineModuleFactory {
             }
             // create the module root
             moduleRoot.mkdirs();
-            if (engine.isDevMode()) {
-                ZipUtils.unzip(bundleFile, moduleRoot);
-            } else {
-                // avoid unziping classes
-                ZipUtils.unzip(bundleFile, moduleRoot, new PathFilter() {
-                    @Override
-                    public boolean isExclusive() {
-                        return false;
-                    }
+            // avoid unziping classes
+            ZipUtils.unzip(bundleFile, moduleRoot, new PathFilter() {
+                @Override
+                public boolean isExclusive() {
+                    return false;
+                }
 
-                    @Override
-                    public boolean accept(Path arg0) {
-                        return !arg0.lastSegment().endsWith(".class");
-                    }
-                });
-            }
+                @Override
+                public boolean accept(Path arg0) {
+                    return !arg0.lastSegment().endsWith(".class");
+                }
+            });
             return moduleRoot;
         }
     }

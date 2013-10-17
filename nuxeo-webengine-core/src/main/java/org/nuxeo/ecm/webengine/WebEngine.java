@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
-import org.nuxeo.ecm.webengine.debug.ReloadManager;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.loader.WebLoader;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -128,8 +127,6 @@ public class WebEngine implements ResourceLocator {
 
     protected final WebLoader webLoader;
 
-    protected ReloadManager reloadMgr;
-
     protected RequestConfiguration requestConfig;
 
     protected volatile boolean isDirty;
@@ -141,10 +138,6 @@ public class WebEngine implements ResourceLocator {
     public WebEngine(ResourceRegistry registry, File root) {
         this.registry = registry;
         this.root = root;
-        devMode = Framework.isDevModeSet();
-        if (devMode) {
-            reloadMgr = new ReloadManager(this);
-        }
         webLoader = new WebLoader(this);
         apps = new HashMap<String, WebEngineModule>();
         scripting = new Scripting(webLoader);
@@ -264,18 +257,6 @@ public class WebEngine implements ResourceLocator {
         return annoMgr;
     }
 
-    public final boolean isDevMode() {
-        return devMode;
-    }
-
-    public boolean getDevMode() {
-        return devMode;
-    }
-
-    public void setDevMode(boolean devMode) {
-        this.devMode = devMode;
-    }
-
     public void registerRenderingExtension(String id, Object obj) {
         rendering.setSharedVariable(id, obj);
     }
@@ -363,20 +344,17 @@ public class WebEngine implements ResourceLocator {
         return new File(root, "modules");
     }
 
-    public ReloadManager getReloadManager() {
-        return reloadMgr;
-    }
-
     public RenderingEngine getRendering() {
         return rendering;
     }
 
     /**
      * Manage jax-rs root resource bindings
-     * 
+     *
      * @deprecated resources are deprecated - you should use a jax-rs
      *             application to declare more resources.
      */
+    @Deprecated
     public void addResourceBinding(ResourceBinding binding) {
         try {
             binding.resolve(this);
@@ -390,6 +368,7 @@ public class WebEngine implements ResourceLocator {
      * @deprecated resources are deprecated - you should use a jax-rs
      *             application to declare more resources.
      */
+    @Deprecated
     public void removeResourceBinding(ResourceBinding binding) {
         registry.removeBinding(binding);
     }
@@ -398,6 +377,7 @@ public class WebEngine implements ResourceLocator {
      * @deprecated resources are deprecated - you should use a jax-rs
      *             application to declare more resources.
      */
+    @Deprecated
     public ResourceBinding[] getBindings() {
         return registry.getBindings();
     }
@@ -456,15 +436,9 @@ public class WebEngine implements ResourceLocator {
     }
 
     public void start() {
-        if (reloadMgr != null) {
-            reloadMgr.start();
-        }
     }
 
     public void stop() {
-        if (reloadMgr != null) {
-            reloadMgr.stop();
-        }
         registry.clear();
     }
 
@@ -480,6 +454,7 @@ public class WebEngine implements ResourceLocator {
 
     /* ResourceLocator API */
 
+    @Override
     public URL getResourceURL(String key) {
         try {
             return URLFactory.getURL(key);
@@ -488,6 +463,7 @@ public class WebEngine implements ResourceLocator {
         }
     }
 
+    @Override
     public File getResourceFile(String key) {
         WebContext ctx = getActiveContext();
         if (key.startsWith("@")) {
