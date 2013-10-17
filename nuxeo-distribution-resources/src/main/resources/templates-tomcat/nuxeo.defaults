@@ -36,6 +36,16 @@ nuxeo.vcs.max-pool-size=20
 # Database transaction timeout in seconds
 nuxeo.db.transactiontimeout=300
 
+# Redis
+nuxeo.redis.enabled=false
+nuxeo.redis.prefix=nuxeo:work:
+nuxeo.redis.host=localhost
+nuxeo.redis.port=6379
+nuxeo.redis.password=
+nuxeo.redis.database=0
+nuxeo.redis.timeout=2000
+nuxeo.work.queuing=redis
+
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 nuxeo.notification.eMailSigner=The Nuxeo team
 
