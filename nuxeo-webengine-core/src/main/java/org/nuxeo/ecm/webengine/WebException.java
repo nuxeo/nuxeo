@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -138,7 +139,15 @@ public class WebException extends WebApplicationException {
                 }
             }
         }
-        return Response.status(status).entity(toString(this)).build();
+        // Search for the real cause and display it once instead of multiple
+        // useless stacktraces
+        Throwable e = this;
+        while (e.getMessage() == null && e.getCause() != null
+                && e.getCause() != e) {
+            e = e.getCause();
+        }
+        return Response.status(status).type(MediaType.TEXT_PLAIN).entity(
+                toString(e)).build();
     }
 
     public String getStackTraceString() {
