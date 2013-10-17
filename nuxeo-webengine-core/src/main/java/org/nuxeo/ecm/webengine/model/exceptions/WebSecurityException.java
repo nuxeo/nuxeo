@@ -36,12 +36,12 @@ public class WebSecurityException extends WebException {
     }
 
     public WebSecurityException(String message, String action) {
-        super(message);
+        super(message, 403);
         this.action = action;
     }
 
     public WebSecurityException(String message, String action, Throwable cause) {
-        super(message, cause);
+        super(message, cause, 403);
         this.action = action;
     }
 
