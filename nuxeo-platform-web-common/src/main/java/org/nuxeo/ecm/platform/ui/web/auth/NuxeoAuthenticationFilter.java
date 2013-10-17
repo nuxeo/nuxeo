@@ -125,7 +125,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected static final String LOGIN_JMS_CATEGORY = "NuxeoAuthentication";
 
-    public static final String IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY = "org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.isLoginNotSynchronized";
+    protected static Boolean isLoginSynchronized;
 
     /** Used internally as a marker. */
     protected static final Principal DIRECTORY_ERROR_PRINCIPAL = new PrincipalImpl(
@@ -135,7 +135,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected final boolean avoidReauthenticate = true;
 
-    protected PluggableAuthenticationService service;
+    protected volatile PluggableAuthenticationService service;
 
     protected ReentrantReadWriteLock unAuthenticatedURLPrefixLock = new ReentrantReadWriteLock();
 
@@ -259,6 +259,20 @@ public class NuxeoAuthenticationFilter implements Filter {
         return sendAuthenticationEvent(userInfo, eventId, comment);
     }
 
+    protected static boolean isLoginSynchronized() {
+        if (isLoginSynchronized != null)  {
+            return isLoginSynchronized;
+        }
+        if (Framework.getRuntime() == null) {
+            return false;
+        }
+        synchronized(NuxeoAuthenticationFilter.class){
+            if (isLoginSynchronized != null) {
+                return isLoginSynchronized;
+            }
+            return isLoginSynchronized = !Boolean.parseBoolean(Framework.getProperty("org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter.isLoginNotSynchronized", "true"));
+        }
+    }
     protected Principal doAuthenticate(
             CachableUserIdentificationInfo cachableUserIdent,
             HttpServletRequest httpRequest) {
@@ -268,12 +282,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
             loginContext = new LoginContext(securityDomain, handler);
 
-            if (Boolean.parseBoolean(Framework.getProperty(IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY))) {
-                loginContext.login();
-            } else {
+            if (isLoginSynchronized()) {
                 synchronized (NuxeoAuthenticationFilter.class) {
                     loginContext.login();
                 }
+            } else {
+                loginContext.login();
             }
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
@@ -663,15 +677,20 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected void doInitIfNeeded() throws ServletException {
         if (service == null && Framework.getRuntime() != null) {
-            service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                    PluggableAuthenticationService.NAME);
-            // init preFilters
-            service.initPreFilters();
-            if (service == null) {
-                log.error("Unable to get Service "
-                        + PluggableAuthenticationService.NAME);
-                throw new ServletException(
-                        "Can't initialize Nuxeo Pluggable Authentication Service");
+            synchronized(this) {
+                if (service != null) {
+                    return;
+                }
+                service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                        PluggableAuthenticationService.NAME);
+                // init preFilters
+                service.initPreFilters();
+                if (service == null) {
+                    log.error("Unable to get Service "
+                            + PluggableAuthenticationService.NAME);
+                    throw new ServletException(
+                            "Can't initialize Nuxeo Pluggable Authentication Service");
+                }
             }
         }
     }
@@ -1098,12 +1117,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         LoginContext loginContext = new LoginContext(LOGIN_DOMAIN,
                 callbackHandler);
 
-        if (Boolean.parseBoolean(Framework.getProperty(IS_LOGIN_NOT_SYNCHRONIZED_PROPERTY_KEY))) {
-            loginContext.login();
-        } else {
+        if (isLoginSynchronized()) {
             synchronized (NuxeoAuthenticationFilter.class) {
                 loginContext.login();
             }
+        } else {
+            loginContext.login();
         }
         return loginContext;
     }
