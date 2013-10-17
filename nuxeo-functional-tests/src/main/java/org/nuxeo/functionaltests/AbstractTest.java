@@ -22,7 +22,6 @@ package org.nuxeo.functionaltests;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -38,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,12 +44,7 @@ import org.browsermob.proxy.ProxyServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.internal.runners.statements.RunAfters;
 import org.junit.rules.MethodRule;
-import org.junit.rules.TestWatchman;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.functionaltests.forms.FileWidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -68,7 +61,6 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -161,188 +153,12 @@ public abstract class AbstractTest {
 
     protected static ProxyServer proxyServer = null;
 
-    private String lastScreenshot;
-
-    private String lastPageSource;
-
-    private String filePrefix;
-
-    /**
-     * @since 5.7
-     */
-    protected class LogTestWatchman extends TestWatchman {
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Statement apply(final Statement base,
-                final FrameworkMethod method, Object target) {
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    starting(method);
-                    try {
-                        if (base instanceof RunAfters) {
-                            // Hack JUnit: in order to take screenshot at the right time we add through reflection an after
-                            // function that will be executed before all other
-                            // ones. See NXP-12742
-                            Field fAtersField = RunAfters.class.getDeclaredField("fAfters");
-                            fAtersField.setAccessible(true);
-
-                            List<FrameworkMethod> afters = (List<FrameworkMethod>) fAtersField.get(base);
-                            if (afters != null && !afters.isEmpty()) {
-                                FrameworkMethod first = afters.get(0);
-                                Method m = AbstractTest.class.getMethod(
-                                        "runBeforeAfters", (Class<?>[]) null);
-                                FrameworkMethod f = new FrameworkMethod(m);
-                                if (first != null && !first.equals(f)) {
-                                    afters.add(0, f);
-                                }
-                            }
-                        }
-                        base.evaluate();
-                        succeeded(method);
-                    } catch (Throwable t) {
-                        failed(t, method);
-                        throw t;
-                    } finally {
-                        finished(method);
-                    }
-                }
-            };
-        }
-
-        @Override
-        public void starting(FrameworkMethod method) {
-            String message = String.format("Starting test '%s#%s'",
-                    getTestClassName(method), method.getName());
-            log.info(message);
-            String className = getTestClassName(method);
-            String methodName = method.getName();
-            filePrefix = String.format("screenshot-lastpage-%s-%s", className,
-                    methodName);
-            logOnServer(message);
-        }
-
-        @Override
-        public void succeeded(FrameworkMethod method) {
-            if (lastPageSource != null) {
-                new File(lastPageSource).delete();
-            }
-            if (lastScreenshot != null) {
-                new File(lastScreenshot).delete();
-            }
-        }
-
-        @Override
-        public void failed(Throwable e, FrameworkMethod method) {
-            String className = getTestClassName(method);
-            String methodName = method.getName();
-            log.error(
-                    String.format("Test '%s#%s' failed", className, methodName),
-                    e);
-
-            if (lastScreenshot == null || lastPageSource == null) {
-                if (lastScreenshot == null) {
-                    File temp = takeScreenshot(filePrefix);
-                    lastScreenshot = temp != null ? temp.getAbsolutePath() : null;
-                }
-
-                if (lastPageSource == null) {
-                    File temp = dumpPageSource(filePrefix);
-                    lastPageSource = temp != null ? temp.getAbsolutePath() : null;
-                }
-
-            }
-            log.info(String.format("Created screenshot file named '%s'",
-                    lastScreenshot));
-            log.info(String.format("Created page source file named '%s'",
-                    lastPageSource));
-            super.failed(e, method);
-        }
-
-        @Override
-        public void finished(FrameworkMethod method) {
-            log.info(String.format("Finished test '%s#%s'",
-                    getTestClassName(method), method.getName()));
-            lastScreenshot = null;
-            lastPageSource = null;
-            super.finished(method);
-        }
-
-        protected String getTestClassName(FrameworkMethod method) {
-            return method.getMethod().getDeclaringClass().getName();
-        }
-
-        protected void logOnServer(String message) {
-            if (driver != null) {
-                driver.get(String.format(
-                        "%s/restAPI/systemLog?token=dolog&level=WARN&message=----- WebDriver: %s",
-                        NUXEO_URL,
-                        URIUtils.quoteURIPathComponent(message, true)));
-            } else {
-                log.warn(String.format("Cannot log on server message: %s",
-                        message));
-            }
-        }
-
-    }
-
-    /**
-     * This method will be executed before any method registered with JUnit
-     * After annotation.
-     *
-     * @since 5.8
-     */
-    public void runBeforeAfters() {
-        lastScreenshot = takeScreenshot(filePrefix).getAbsolutePath();
-        lastPageSource = dumpPageSource(filePrefix).getAbsolutePath();
-    }
-
-    public File takeScreenshot(String filename) {
-        if (TakesScreenshot.class.isInstance(driver)) {
-            try {
-                Thread.sleep(250);
-                return TakesScreenshot.class.cast(driver).getScreenshotAs(
-                        new ScreenShotFileOutput(filename));
-            } catch (InterruptedException e) {
-                log.error(e, e);
-            }
-        }
-        return null;
-    }
-
-    public File dumpPageSource(String filename) {
-        if (driver == null) {
-            return null;
-        }
-        FileWriter writer = null;
-        try {
-            String location = System.getProperty("basedir")
-                    + File.separator + "target";
-            File outputFolder = new File(location);
-            if (!outputFolder.exists() || !outputFolder.isDirectory()) {
-                outputFolder = null;
-            }
-            File tmpFile = File.createTempFile(filename, ".html",
-                    outputFolder);
-            log.trace(String.format("Created page source file named '%s'",
-                    tmpFile.getPath()));
-            writer = new FileWriter(tmpFile);
-            writer.write(driver.getPageSource());
-            return tmpFile;
-        } catch (IOException e) {
-            throw new WebDriverException(e);
-        } finally {
-            IOUtils.closeQuietly(writer);
-        }
-    }
-
     /**
      * Logger method to follow what's being run on server logs and take a
      * screenshot of the last page in case of failure
      */
     @Rule
-    public MethodRule watchman = new LogTestWatchman();
+    public MethodRule watchman = new LogTestWatchman(driver, NUXEO_URL);
 
     @BeforeClass
     public static void initDriver() throws Exception {
