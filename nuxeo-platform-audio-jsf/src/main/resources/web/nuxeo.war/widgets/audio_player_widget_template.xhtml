@@ -10,17 +10,17 @@
     </ui:include>
   </c:if>
 
-  <c:if test="#{not empty field and not empty field.mimeType and field.mimeType.startsWith('audio/')}">
+  <c:if test="#{not empty field_1 and not empty field_1.mimeType and field_1.mimeType.startsWith('audio/')}">
     <c:set var="width"
-        value="#{nxu:test(!empty widget.properties.width, widget.properties.width, '100%')}" />
+        value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, '100%')}" />
 
     <nxu:set var="sound_url"
-      value="#{nxd:bigFileUrl(value, widget.fieldDefinitions[0].propertyName, field.filename)}">
+      value="#{nxd:bigFileUrl(fieldOrValue, widget.fieldDefinitions[1].propertyName, field_1.filename)}">
 
       <audio id="audioplayer_#{widget.id}" preload="auto" controls="controls" style="width:#{width};">
         <source src="#{sound_url}" />
       </audio>
-      <c:if test="#{field.mimeType == 'audio/mpeg'}">
+      <c:if test="#{field_1.mimeType == 'audio/mpeg'}">
         <script type="text/javascript">
           var audioTag = document.createElement('audio');
           if (!(!!(audioTag.canPlayType) &amp;&amp; ("no" != audioTag.canPlayType("audio/mpeg")) &amp;&amp; ("" != audioTag.canPlayType("audio/mpeg")))) {

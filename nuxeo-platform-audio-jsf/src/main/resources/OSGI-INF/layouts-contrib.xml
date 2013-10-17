@@ -8,31 +8,62 @@
 
     <widgetType name="audio_player">
       <configuration>
-        <sinceVersion>5.7.2</sinceVersion>
+        <sinceVersion>5.8</sinceVersion>
         <title>Audio Player</title>
         <description>
           <p>This widgets displays a html5 or flash audio player</p>
         </description>
-        <handlingLabels>true</handlingLabels>s
+        <handlingLabels>true</handlingLabels>
         <categories>
           <category>summary</category>
         </categories>
-        <fields>
-          <list>false</list>
-          <complex>false</complex>
-          <supportedTypes>
-            <type>blob</type>
-          </supportedTypes>
-        </fields>
         <supportedModes>
           <mode>view</mode>
         </supportedModes>
         <fields>
           <list>false</list>
           <complex>false</complex>
-          <supportedTypes>
-            <type>blob</type>
-          </supportedTypes>
+          <layouts mode="any">
+            <layout>
+              <rows>
+                <row>
+                  <widget>field_0</widget>
+                </row>
+                <row>
+                  <widget>field_1</widget>
+                </row>
+              </rows>
+              <widget name="field_0" type="text">
+                <labels>
+                  <label mode="any">Bound document</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The bound document can be referenced using
+                    an empty field definition in a form layout, or using the
+                    equivalent expression "#{value}". In a listing layout, it
+                    can be referenced by using the value "data".
+                  </label>
+                </helpLabels>
+                <properties mode="any">
+                  <property name="resourceName">fields</property>
+                </properties>
+              </widget>
+              <widget name="field_1" type="selectOneResource">
+                <labels>
+                  <label mode="any">File field binding</label>
+                </labels>
+                <properties mode="any">
+                  <property name="resourceName">fields</property>
+                  <property name="list">false</property>
+                  <property name="complex">false</property>
+                  <propertyList name="supportedTypes">
+                    <value>blob</value>
+                  </propertyList>
+                </properties>
+              </widget>
+            </layout>
+          </layouts>
         </fields>
         <properties>
           <layouts mode="view">
@@ -135,6 +166,7 @@
 
     <widget name="summary_audio_player" type="audio_player">
       <fields>
+        <field>#{value}</field>
         <field>file:content</field>
       </fields>
     </widget>
