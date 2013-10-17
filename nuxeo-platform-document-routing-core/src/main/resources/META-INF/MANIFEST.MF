@@ -23,4 +23,5 @@ Nuxeo-Component: OSGI-INF/document-routing-core-types-contrib.xml,
  OSGI-INF/document-routing-notification-contrib.xml,
  OSGI-INF/document-routing-escalation-work-contrib.xml,
  OSGI-INF/document-routing-escalation-service.xml,
- OSGI-INF/document-routing-escalation-scheduler-contrib.xml
+ OSGI-INF/document-routing-escalation-scheduler-contrib.xml,
+ OSGI-INF/document-routing-cleanup-contrib.xml

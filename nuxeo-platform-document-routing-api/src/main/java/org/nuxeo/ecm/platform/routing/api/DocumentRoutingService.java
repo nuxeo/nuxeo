@@ -601,4 +601,17 @@ public interface DocumentRoutingService {
      */
     void removePermissionsForTaskActors(CoreSession session,
             List<DocumentModel> docs, Task task) throws ClientException;
+
+    /**
+     * Query for the routes 'done' or 'canceled' and delete them. The max no of
+     * the routes that will be deleted is specified by the 'limit' parameter.
+     * When the limit is '0' all the completed routes are deleted. The routes to
+     * be deleted are ordered ascending by their creation date.
+     *
+     * @throws ClientException
+     *
+     * @since 5.8
+     */
+    void cleanupDoneAndCanceledRouteInstances(String repositoryName, int limit)
+            throws ClientException;
 }

@@ -402,6 +402,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals(0, tasks.size());
         DocumentModelList cancelledTasks = session.query("Select * from TaskDoc where ecm:currentLifeCycleState = 'cancelled'");
         assertEquals(1, cancelledTasks.size());
+        DocumentRef routeRef = route.getDocument().getRef();
+
+        routing.cleanupDoneAndCanceledRouteInstances(
+                session.getRepositoryName(), 0);
+        session.save();
+        assertFalse(session.exists(routeRef));
+        closeSession(session);
     }
 
     @SuppressWarnings("unchecked")
@@ -951,12 +958,17 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
         session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
+        DocumentRef routeRef = route.getDocument().getRef();
+        route = session.getDocument(routeRef).getAdapter(DocumentRoute.class);
+
         assertTrue(route.isDone());
         assertEquals(
                 "test",
                 route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+        routing.cleanupDoneAndCanceledRouteInstances(
+                session.getRepositoryName(), 0);
+        session.save();
+        assertFalse(session.exists(routeRef));
         closeSession(session);
     }
 

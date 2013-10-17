@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.cleanup.config">
+
+  <extension
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+
+    <schedule id="workflowInstancesCleanup">
+      <eventId>workflowInstancesCleanup</eventId>
+      <!-- every day at 00.00 -->
+      <cronExpression>0 0 0 * * ?</cronExpression>
+    </schedule>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="workflowInstancesCleanup" async="false"
+      class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInstancesCleanup">
+      <event>workflowInstancesCleanup</event>
+    </listener>
+  </extension>
+
+</component>

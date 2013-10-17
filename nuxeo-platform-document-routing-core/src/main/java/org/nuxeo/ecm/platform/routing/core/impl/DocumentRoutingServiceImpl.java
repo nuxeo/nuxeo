@@ -979,7 +979,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }.runUnrestricted();
     }
 
-
     /**
      * Finds an ACL name specific to the task (there may be several tasks
      * applying permissions to the same document).
@@ -1241,6 +1240,35 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 }
             }
 
+        }.runUnrestricted();
+    }
+
+    @Override
+    public void cleanupDoneAndCanceledRouteInstances(String reprositoryName,
+            final int limit) throws ClientException {
+        new UnrestrictedSessionRunner(reprositoryName) {
+
+            @Override
+            public void run() throws ClientException {
+                List<String> routeIds = new ArrayList<String>();
+                String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
+                        + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
+                IterableQueryResult results = session.queryAndFetch(query,
+                        "NXQL");
+                int i = 0;
+                for (Map<String, Serializable> result : results) {
+                    routeIds.add(result.get("ecm:uuid").toString());
+                    i++;
+                    // stop when the limit is reached and close the resultSet
+                    if (i == limit) {
+                        break;
+                    }
+                }
+                results.close();
+                for (String routeDocId : routeIds) {
+                    session.removeDocument(new IdRef(routeDocId));
+                }
+            }
         }.runUnrestricted();
     }
 }
