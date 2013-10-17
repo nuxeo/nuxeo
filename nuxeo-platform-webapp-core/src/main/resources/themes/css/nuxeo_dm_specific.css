@@ -75,6 +75,15 @@ author: lkemen@nuxeo.com
 .clipboardFunction {
   padding: .2em }
 
+.clipboardFunction a,
+.clipboardFunction a:link,
+.clipboardFunction a:visited {
+  color: "gray.light (__FLAVOR__ color)" }
+
+.clipboardFunction a:hover,
+.clipboardFunction a:active {
+  color: "link (__FLAVOR__ color)" }
+
 .clipboardRemoveItem {
   bottom: 2px;
   float: right;
