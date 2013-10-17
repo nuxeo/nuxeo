@@ -3727,13 +3727,14 @@
       <dependency>
         <groupId>org.outerj.daisy</groupId>
         <artifactId>daisydiff</artifactId>
-        <version>1.2-NX1</version>
-      </dependency>
-      <!-- eclipse core runtime -->
-      <dependency>
-        <groupId>org.eclipse.core.runtime</groupId>
-        <artifactId>eclipse-core-runtime</artifactId>
-        <version>20070801</version>
+        <classifier>shaded</classifier>
+        <version>1.2-NX2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.eclipse.core.runtime</groupId>
+            <artifactId>eclipse-core-runtime</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
