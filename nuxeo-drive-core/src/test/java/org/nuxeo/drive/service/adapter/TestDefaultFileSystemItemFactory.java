@@ -193,7 +193,7 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(defaultFileSystemItemFactory instanceof VersioningFileSystemItemFactory);
 
         // Set versioning delay to 1 second
-        defaultFileSystemItemFactory.setVersioningDelay(VERSIONING_DELAY/1000.0);
+        defaultFileSystemItemFactory.setVersioningDelay(VERSIONING_DELAY / 1000.0);
         assertEquals(VERSIONING_DELAY / 1000.0,
                 defaultFileSystemItemFactory.getVersioningDelay(), .01);
         assertEquals(VersioningOption.MINOR,
@@ -727,8 +727,8 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------
         // Create another child adaptable as a FileSystemItem => should be
         // retrieved
-        DocumentModel adaptableChild = session.createDocumentModel("/syncRoot/aFolder",
-                "adaptableChild", "File");
+        DocumentModel adaptableChild = session.createDocumentModel(
+                "/syncRoot/aFolder", "adaptableChild", "File");
         Blob adaptableChildBlob = new StringBlob("Content of another file.");
         adaptableChildBlob.setFilename("Another file.odt");
         adaptableChild.setPropertyValue("file:content",
