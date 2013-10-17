@@ -944,6 +944,16 @@
             </ul>
           </p>
         </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler

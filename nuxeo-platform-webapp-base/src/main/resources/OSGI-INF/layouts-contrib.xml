@@ -509,7 +509,7 @@
       </fields>
     </widget>
 
-    <widget name="suggestion_selectionFormatter" type="text">
+    <widget name="select2_selectionFormatter" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -951,7 +951,7 @@
                   <widget category="widgetTypeConf">suggestion_helpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter
@@ -1080,7 +1080,7 @@
                   <widget category="widgetTypeConf">suggestion_helpLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter
@@ -1118,7 +1118,7 @@
     <widgetType name="suggestOneDirectory">
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2Directory</title>
+        <title>Single directory suggestion</title>
         <description>
           <p>Uses Select2 JS library to render a selection / suggestion widget
             where suggestions are loaded from a given directory.
@@ -1160,7 +1160,7 @@
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
@@ -1224,7 +1224,7 @@
     <widgetType name="suggestManyDirectory">
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2</title>
+        <title>Multiple directory suggestion</title>
         <description>
           <p>Uses Select2 JS library to render a selection / suggestion widget
             where suggestions are loaded from a given directory.
@@ -1266,7 +1266,7 @@
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
@@ -1649,7 +1649,7 @@
           </defaultConfiguration>
         </fields>
         <categories>
-          <category>document</category>
+          <category>standalone</category>
         </categories>
         <properties>
           <layouts mode="any">
@@ -2378,7 +2378,10 @@
           </p>
         </description>
         <categories>
-          <category>tab_designer</category>
+          <category>configuration_not_ready</category>
+          <!--
+            <category>tab_designer</category>
+          -->
         </categories>
         <handlingLabels>true</handlingLabels>
         <supportedModes>
@@ -2742,7 +2745,10 @@
           when using it.
         </description>
         <categories>
-          <category>tab_designer</category>
+          <category>configuration_not_ready</category>
+          <!--
+            <category>tab_designer</category>
+          -->
         </categories>
         <fields>
           <defaultConfiguration>
@@ -3599,7 +3605,7 @@
     <widgetType name="documentTabsWithForms">
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
-        <title>Document tabs</title>
+        <title>Tabs</title>
         <description>
           <p>This widget displays tabs filtered on current document context</p>
           <p>
@@ -3812,13 +3818,20 @@
 
     <widgetType name="dropZone">
       <configuration>
-        <sinceVersion>5.7</sinceVersion>
+        <sinceVersion>5.8</sinceVersion>
         <title>Drop zone</title>
         <description>
           <p>
             The dropZone widget wraps its subwidgets with a div acting as
             the
-            drop zone to be able to drop files inside.
+            drop zone to be able to drop files inside it.
+          </p>
+          <p>
+            More information is available on the
+            <a href="http://doc.nuxeo.com/x/c4ao" target="_blank">Drag and
+              Drop Service
+              documentation</a>
+            .
           </p>
         </description>
         <categories>
@@ -3829,6 +3842,106 @@
           <mode>view</mode>
         </supportedModes>
         <acceptingSubWidgets>true</acceptingSubWidgets>
+        <properties>
+          <layouts mode="edit">
+            <layout name="dropZone_widget_type_properties">
+              <rows>
+                <row>
+                  <widget>dropContext</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">styleClass</widget>
+                </row>
+                <row>
+                  <widget>isEmpty</widget>
+                </row>
+                <row>
+                  <widget>emptyMessage</widget>
+                </row>
+                <row>
+                  <widget>cannotDrop</widget>
+                </row>
+                <row>
+                  <widget>cannotDropMessage</widget>
+                </row>
+              </rows>
+              <widget name="dropContext" type="text">
+                <labels>
+                  <label mode="any">Drop context</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">The drop context is a marker used to
+                    identify which action will be called on drop. Actions with
+                    the given category will be be taken into account. Their id
+                    should correspond to the operation or automation chain
+                    identifier.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>dropContext</field>
+                </fields>
+                <properties mode="any">
+                  <property name="required">true</property>
+                </properties>
+              </widget>
+              <widget name="isEmpty" type="text">
+                <labels>
+                  <label mode="any">Is empty</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">Expression resolving to a boolean stating if
+                    the drop zone is empty. If it resolves to true, subwidgets
+                    are not displayed.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>isEmpty</field>
+                </fields>
+              </widget>
+              <widget name="emptyMessage" type="text">
+                <labels>
+                  <label mode="any">Empty message</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">Message to display if the drop zone is
+                    empty.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>emptyMessage</field>
+                </fields>
+              </widget>
+              <widget name="cannotDrop" type="text">
+                <labels>
+                  <label mode="any">Cannot drop</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">Expression resolving to a boolean stating if
+                    user should not be able to drop elements inside the drop
+                    zone (because user does not have enough rights to create
+                    documents, for instance).
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cannotDrop</field>
+                </fields>
+              </widget>
+              <widget name="cannotDropMessage" type="text">
+                <labels>
+                  <label mode="any">Cannot drop message</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">Message to display if user cannot drop items
+                    in the drop zone.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>cannotDropMessage</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
