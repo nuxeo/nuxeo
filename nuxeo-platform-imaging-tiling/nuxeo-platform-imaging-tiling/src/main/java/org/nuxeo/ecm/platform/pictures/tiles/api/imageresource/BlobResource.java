@@ -70,7 +70,7 @@ public class BlobResource implements ImageResource {
         return modified;
     }
 
-    protected String getMD5Digest() {
+    private String getMD5Digest() {
         InputStream in = null;
         try {
             Blob b = blob.persist();
