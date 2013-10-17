@@ -434,7 +434,7 @@ public final class Functions {
 
         if (style == DateFormat.SHORT && addCentury) {
             // hack to add century on generated pattern
-            pattern = pattern.replace("yy", "yyyy");
+            pattern = YEAR_PATTERN.matcher(pattern).replaceAll("yyyy");
         }
         return pattern;
     }
