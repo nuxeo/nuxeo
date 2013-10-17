@@ -9,7 +9,7 @@
      xmlns:nxd="http://nuxeo.org/nxweb/document"
      class="content_block">
 
-  <c:if test="#{value.hasFacet('Video')}">
+  <c:if test="#{fieldOrValue.hasFacet('Video')}">
 
   <c:if test="#{!empty widget.label and widget.handlingLabels}">
     <ui:include src="/widgets/incl/widget_label_template.xhtml">
@@ -32,21 +32,21 @@
           </td>
           <td class="actionsColumn">
             <nxu:set var="conversionStatus"
-              value="#{videoActions.getVideoConversionStatus(value, conversion.name)}">
+              value="#{videoActions.getVideoConversionStatus(fieldOrValue, conversion.name)}">
               <c:if test="#{not empty conversionStatus}">
                 #{videoActions.getStatusMessageFor(conversionStatus)}
               </c:if>
               <c:if test="#{empty conversionStatus}">
                 <nxu:set var="transcodedVideo"
-                  value="#{videoActions.getTranscodedVideo(value, conversion.name)}">
+                  value="#{videoActions.getTranscodedVideo(fieldOrValue, conversion.name)}">
                 <c:if test="#{not empty transcodedVideo}">
-                  <h:outputLink value="#{videoActions.getTranscodedVideoURL(value, conversion.name)}">
+                  <h:outputLink value="#{videoActions.getTranscodedVideoURL(fieldOrValue, conversion.name)}">
                     <h:graphicImage url="/icons/download.png" />
                   </h:outputLink>
                 </c:if>
                 <c:if test="#{empty transcodedVideo}">
                   <h:commandButton value="#{messages['action.video.launch.conversion']}"
-                    action="#{videoActions.launchConversion(value, conversion.name)}" class="button smallButton" />
+                    action="#{videoActions.launchConversion(fieldOrValue, conversion.name)}" class="button smallButton" />
                 </c:if>
                 </nxu:set>
               </c:if>

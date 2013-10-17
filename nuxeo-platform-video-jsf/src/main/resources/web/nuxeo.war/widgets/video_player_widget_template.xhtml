@@ -9,7 +9,7 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <c:if test="#{value.hasFacet('Video')}">
+  <c:if test="#{fieldOrValue.hasFacet('Video')}">
 
   <c:if test="#{!empty widget.label and widget.handlingLabels}">
     <ui:include src="/widgets/incl/widget_label_template.xhtml">
@@ -20,9 +20,9 @@
   <c:set var="width" value="#{nxu:test(!empty widgetProperty_width, widgetProperty_width, 550)}" />
   <c:set var="height" value="#{nxu:test(!empty widgetProperty_height, widgetProperty_height, 310)}" />
 
-  <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(value)}">
-  <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(value, 'MP4 480p')}">
-  <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(value, 'WebM 480p')}">
+  <nxu:set var="staticPreview" value="#{videoActions.getURLForStaticPreview(fieldOrValue)}">
+  <nxu:set var="mp4URL" value="#{videoActions.getTranscodedVideoURL(fieldOrValue, 'MP4 480p')}">
+  <nxu:set var="webmURL" value="#{videoActions.getTranscodedVideoURL(fieldOrValue, 'WebM 480p')}">
   <nxu:set var="safariHTML5" value="#{videoActions.safariHTML5}">
   <nxu:set var="chromeHTML5" value="#{videoActions.chromeHTML5}">
   <nxu:set var="firefoxHTML5" value="#{videoActions.firefoxHTML5}">
@@ -30,7 +30,7 @@
 
   <c:if test="#{empty mp4URL}">
     <nxu:set var="conversionStatus"
-      value="#{videoActions.getVideoConversionStatus(value, 'MP4 480p')}">
+      value="#{videoActions.getVideoConversionStatus(fieldOrValue, 'MP4 480p')}">
       <c:if test="#{not empty conversionStatus}">
         <p class="tips">
           #{videoActions.getStatusMessageFor(conversionStatus)}
