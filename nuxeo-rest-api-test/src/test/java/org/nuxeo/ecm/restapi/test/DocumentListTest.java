@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.ChildrenAdapter;
@@ -44,8 +45,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
- * Test the various ways to query for document lists
- * 
+ * Test the various ways to query for document lists.
+ *
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
@@ -83,6 +84,7 @@ public class DocumentListTest extends BaseTest {
         // Waiting for all async events work for indexing content before
         // executing fulltext search
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        DatabaseHelper.DATABASE.sleepForFulltext();
 
         // When I search for "nuxeo"
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
