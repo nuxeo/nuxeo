@@ -11,7 +11,7 @@
 
   <h3><h:outputText value="#{messages['label.dam.bulk.import.assets']}" /></h3>
 
-  <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="true">
+  <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="#{!useHtml5DragAndDrop}">
 
     <div class="content positionR">
 
