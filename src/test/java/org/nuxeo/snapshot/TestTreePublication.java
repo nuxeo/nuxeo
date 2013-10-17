@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -45,7 +44,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, init = PublishRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.versioning.api",
         "org.nuxeo.ecm.platform.versioning", "org.nuxeo.ecm.relations",
         "org.nuxeo.ecm.relations.jena",
@@ -83,48 +82,62 @@ public class TestTreePublication {
 
     protected final boolean verbose = false;
 
+    private StringBuilder debug = new StringBuilder();
+
     protected void maybeSleepToNextSecond() {
         DatabaseHelper.DATABASE.maybeSleepToNextSecond();
+    }
+
+    protected void debugCreationDate(DocumentModel doc) {
+        debug.append(doc.getName() + "@time=" + System.currentTimeMillis() + ", ");
     }
 
     protected void buildTree() throws Exception {
         root = session.createDocumentModel("/", "root", "SnapshotableFolder");
         root = session.createDocument(root);
+        debugCreationDate(root);
 
         folder1 = session.createDocumentModel(root.getPathAsString(),
                 "folder1", "Folder");
         folder1.setPropertyValue("dc:title", "Folder 1");
         folder1 = session.createDocument(folder1);
+        debugCreationDate(folder1);
 
         folder2 = session.createDocumentModel(root.getPathAsString(),
                 "folder2", "Folder");
         folder2.setPropertyValue("dc:title", "Folder 2");
         folder2 = session.createDocument(folder2);
+        debugCreationDate(folder2);
 
         folder11 = session.createDocumentModel(folder1.getPathAsString(),
                 "folder11", "Folder");
         folder11.setPropertyValue("dc:title", "Folder 11");
         folder11 = session.createDocument(folder11);
+        debugCreationDate(folder11);
 
         doc12 = session.createDocumentModel(folder1.getPathAsString(), "doc12",
                 "File");
         doc12.setPropertyValue("dc:title", "Doc 12");
         doc12 = session.createDocument(doc12);
+        debugCreationDate(doc12);
 
         folder13 = session.createDocumentModel(folder1.getPathAsString(),
                 "folder13", "Folder");
         folder13.setPropertyValue("dc:title", "Folder 13");
         folder13 = session.createDocument(folder13);
+        debugCreationDate(folder13);
 
         folder131 = session.createDocumentModel(folder13.getPathAsString(),
                 "folder131", "Folder");
         folder131.setPropertyValue("dc:title", "Folder 131");
         folder131 = session.createDocument(folder131);
+        debugCreationDate(folder131);
 
         doc1311 = session.createDocumentModel(folder131.getPathAsString(),
                 "doc1311", "File");
         doc1311.setPropertyValue("dc:title", "Doc 1311");
         doc1311 = session.createDocument(doc1311);
+        debugCreationDate(doc1311);
 
         maybeSleepToNextSecond();
 
@@ -134,6 +147,7 @@ public class TestTreePublication {
                 "doc1312", "File");
         doc1312.setPropertyValue("dc:title", "Doc 1312");
         doc1312 = session.createDocument(doc1312);
+        debugCreationDate(doc1312);
 
         maybeSleepToNextSecond();
 
@@ -181,6 +195,7 @@ public class TestTreePublication {
 
         tree.publish(root, targetNode);
         session.save();
+        debug.append("published@time=" + System.currentTimeMillis() + ", ");
         if (verbose) {
             dumpDBContent();
         }
@@ -205,6 +220,7 @@ public class TestTreePublication {
         // republish
         tree.publish(root, targetNode);
         session.save();
+        debug.append("published@time=" + System.currentTimeMillis() + ", ");
         if (verbose) {
             dumpDBContent();
         }
@@ -213,17 +229,23 @@ public class TestTreePublication {
         docs.remove(0); // remove head
         assertEquals(9, docs.size()); // 9 proxies
 
+        // gather debug info
+        for (DocumentModel doc : docs) {
+            debug.append(doc.getName() + "=" + doc.getVersionLabel() + ", ");
+        }
         for (DocumentModel doc : docs) {
             assertTrue(doc.isProxy());
             if (doc.getName().startsWith("doc131")
                     || doc.getName().startsWith("folder13")
                     || doc.getName().equals("folder1")
                     || doc.getName().equals("root")) {
-                assertEquals("0.2", doc.getVersionLabel());
+                assertEquals(debug + " bad version for: " + doc.getName(), "0.2",
+                        doc.getVersionLabel());
             } else {
-                assertEquals("0.1", doc.getVersionLabel());
+                assertEquals(debug + " bad version for: " + doc.getName(), "0.1",
+                        doc.getVersionLabel());
             }
         }
-
     }
+
 }
