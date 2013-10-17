@@ -70,7 +70,7 @@ public final class Functions {
 
     public static final long DEFAULT_BIG_FILE_SIZE_LIMIT = 5 * 1024 * 1024;
 
-    public static Pattern YEAR_PATTERN = Pattern.compile("y+");
+    public static final Pattern YEAR_PATTERN = Pattern.compile("y+");
 
     public enum BytePrefix {
 
