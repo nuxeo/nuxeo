@@ -100,14 +100,14 @@
     <widgetType name="select2Widget">
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2</title>
+        <title>Single generic suggestion (advanced)</title>
         <description>
           <p>Document Suggestion Widget based on Select2 JS library. Nuxeo
             Automation is used to manage Select2 data binding.
           </p>
         </description>
         <categories>
-          <category>document</category>
+          <category>dev</category>
         </categories>
         <supportedModes>
           <mode>view</mode>
@@ -186,7 +186,7 @@
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_dropdownCssClass</widget>
+                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
@@ -215,7 +215,7 @@
     <widgetType name="select2WidgetMultiple">
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
-        <title>Select2Multiple</title>
+        <title>Multiple generic suggestion (advanced)</title>
         <description>
           <p>Multiple Document Suggestion Widget based on Select2 JS library.
             Nuxeo
@@ -223,7 +223,7 @@
           </p>
         </description>
         <categories>
-          <category>document</category>
+          <category>dev</category>
         </categories>
         <supportedModes>
           <mode>view</mode>

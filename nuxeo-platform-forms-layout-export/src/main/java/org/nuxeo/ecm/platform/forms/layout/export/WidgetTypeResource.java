@@ -222,9 +222,9 @@ public class WidgetTypeResource {
 
     protected List<String> getNuxeoVersions() {
         if ("jsf".equals(category)) {
-            return Arrays.asList("5.6", "5.7.3");
+            return Arrays.asList("5.6", "5.7.3", "5.8");
         } else if ("jsfAction".equals(category)) {
-            return Arrays.asList("5.7.3");
+            return Arrays.asList("5.7.3", "5.8");
         }
         return Collections.emptyList();
     }
