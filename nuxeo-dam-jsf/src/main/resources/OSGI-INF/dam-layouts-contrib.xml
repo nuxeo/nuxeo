@@ -307,6 +307,7 @@
         </widget>
         <widget name="audioPlayer" type="audio_player">
           <fields>
+            <field>#{value}</field>
             <field>file:content</field>
           </fields>
         </widget>
