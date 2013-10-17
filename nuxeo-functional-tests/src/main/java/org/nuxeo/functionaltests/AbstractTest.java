@@ -160,6 +160,16 @@ public abstract class AbstractTest {
     @Rule
     public MethodRule watchman = new LogTestWatchman(driver, NUXEO_URL);
 
+    /**
+     * This method will be executed before any method registered with JUnit
+     * After annotation.
+     *
+     * @since 5.8
+     */
+    public void runBeforeAfters() {
+        ((LogTestWatchman) watchman).runBeforeAfters();
+    }
+
     @BeforeClass
     public static void initDriver() throws Exception {
         String browser = System.getProperty("browser", "firefox");

@@ -82,12 +82,19 @@ public class LogTestWatchman extends TestWatchman {
 
                         List<FrameworkMethod> afters = (List<FrameworkMethod>) fAtersField.get(base);
                         if (afters != null && !afters.isEmpty()) {
-                            FrameworkMethod first = afters.get(0);
-                            Method m = AbstractTest.class.getMethod(
-                                    "runBeforeAfters", (Class<?>[]) null);
-                            FrameworkMethod f = new FrameworkMethod(m);
-                            if (first != null && !first.equals(f)) {
-                                afters.add(0, f);
+                            try {
+                                // TODO improve this and instead of finding a
+                                // special function, we could register functions
+                                // specially annotated.
+                                FrameworkMethod first = afters.get(0);
+                                Method m = AbstractTest.class.getMethod(
+                                        "runBeforeAfters", (Class<?>[]) null);
+                                FrameworkMethod f = new FrameworkMethod(m);
+                                if (first != null && !first.equals(f)) {
+                                    afters.add(0, f);
+                                }
+                            } catch (NoSuchMethodException e) {
+                                // Do nothing
                             }
                         }
                     }
@@ -185,12 +192,6 @@ public class LogTestWatchman extends TestWatchman {
         }
     }
 
-    /**
-     * This method will be executed before any method registered with JUnit
-     * After annotation.
-     *
-     * @since 5.8
-     */
     public void runBeforeAfters() {
         lastScreenshot = takeScreenshot(filePrefix).getAbsolutePath();
         lastPageSource = dumpPageSource(filePrefix).getAbsolutePath();
