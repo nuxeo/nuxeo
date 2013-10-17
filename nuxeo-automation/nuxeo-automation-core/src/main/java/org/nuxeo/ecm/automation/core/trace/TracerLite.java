@@ -127,7 +127,6 @@ public class TracerLite implements OperationCallback {
 
     @Override
     public String getFormattedText() {
-        return trace != null ? trace.getFormattedText()
-                : "You can activate automation trace mode to get more informations on automation executions";
+        return trace != null ? trace.getFormattedText() : "";
     }
 }

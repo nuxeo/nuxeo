@@ -26,6 +26,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
@@ -138,6 +140,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AutomationComponent extends DefaultComponent {
+
+    private static final Log log = LogFactory.getLog(AutomationComponent.class);
 
     public static final String XP_OPERATIONS = "operations";
 
@@ -379,5 +383,12 @@ public class AutomationComponent extends DefaultComponent {
             return adapter.cast(tracerFactory);
         }
         return null;
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        super.applicationStarted(context);
+        if (!tracerFactory.getRecordingState())
+            log.info("You can activate automation trace mode to get more informations on automation executions");
     }
 }
