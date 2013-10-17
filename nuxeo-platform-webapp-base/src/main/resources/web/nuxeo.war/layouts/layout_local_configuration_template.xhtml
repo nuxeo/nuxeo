@@ -4,6 +4,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   id="local_configuration_#{layout.id}">
 
@@ -23,13 +24,14 @@
     disabling this local configuration
 </c:if>
 
-<c:set var="layoutTemplateToInclude"
-  value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/layout_default_template.xhtml')}" />
+<nxu:set var="layoutTemplateToInclude"
+  value="#{nxu:test(!empty layoutProperty_layoutTemplateToInclude, layoutProperty_layoutTemplateToInclude, '/layouts/layout_default_template.xhtml')}">
+<nxu:set var="localConfPanelId"
+  value="local_configuration_#{layout.id}_panel">
+<nxu:set var="elementsToReRender"
+  value="#{nxu:test(!empty layoutProperty_elementsToReRender, layoutProperty_elementsToReRender, localConfPanelId)}">
 
-<c:set var="elementsToReRender"
-  value="#{nxu:test(!empty layoutProperty_elementsToReRender, layoutProperty_elementsToReRender, 'local_configuration_#{layout.id}_panel')}" />
-
-  <a4j:outputPanel layout="block" id="local_configuration_#{layout.id}_panel">
+  <a4j:outputPanel layout="block" id="#{localConfPanelId}">
 
     <c:set var="hasLocalConfigurationFacet"
       value="#{nxu:test(currentDocument.hasFacet(layoutProperty_localConfigurationFacet), true, false)}" />
@@ -95,5 +97,9 @@
     </script>
 
   </a4j:outputPanel>
+
+</nxu:set>
+</nxu:set>
+</nxu:set>
 
 </f:subview>
