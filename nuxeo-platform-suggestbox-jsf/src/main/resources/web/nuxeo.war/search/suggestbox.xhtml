@@ -49,7 +49,8 @@
             class="search_suggest_box directoryFilter"
             onkeydown="if (event.keyCode == 13) {return simple_search();}"
             onfocus="call_suggestion(jQuery(this).attr('value'))"
-            value="#{suggestboxActions.searchKeywords}" />
+            value="#{suggestboxActions.searchKeywords}"
+            placeholder="#{messages['label.search.form.simple']}" />
         <rich:suggestionbox
           id="faceted_search_suggestionBox"
           for="faceted_search_suggest_box" tokens=""
