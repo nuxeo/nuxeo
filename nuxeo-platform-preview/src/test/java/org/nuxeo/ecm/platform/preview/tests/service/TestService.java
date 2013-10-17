@@ -18,6 +18,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -77,7 +79,10 @@ public class TestService {
         checkLatin1(doc, "latin1.csv", "text/csv");
     }
 
-    @Inject protected CoreSession repo;
+    @Inject
+    protected CoreSession repo;
+
+    protected final Pattern charsetPattern = Pattern.compile("content=\".*;\\s*charset=(.*)\"");
 
     public void checkLatin1(DocumentModel doc, String name, String mtype) throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
         File file = new File(getClass().getResource("/" + name).getPath());
@@ -86,6 +91,14 @@ public class TestService {
         doc.getAdapter(BlobHolder.class).setBlob(blob);
         HtmlPreviewAdapter adapter = doc.getAdapter(HtmlPreviewAdapter.class);
         Blob htmlBlob = adapter.getFilePreviewBlobs().get(0);
-        Assert.assertThat(htmlBlob.getString(), Matchers.containsString("Test de prévisualisation avant rattachement"));
-    }
+        String htmlContent = htmlBlob.getString().toLowerCase();
+        Matcher matcher = charsetPattern.matcher(htmlContent);
+        Assert.assertThat(matcher.find(), Matchers.is(true));
+        String charset = matcher.group();
+        if ("windows-1252".equals(charset)) {
+            Assert.assertThat(htmlContent, Matchers.containsString("test de pr&Atilde;&copy;visualisation avant rattachement"));
+        } else {
+            Assert.assertThat(htmlContent, Matchers.containsString("test de prévisualisation avant rattachement"));
+        }
+     }
 }
