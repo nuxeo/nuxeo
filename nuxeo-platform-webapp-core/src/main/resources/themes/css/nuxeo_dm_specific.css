@@ -89,3 +89,10 @@ author: lkemen@nuxeo.com
   float: right;
   position: absolute;
   right: 0 }
+
+.userClipboard .tabsBar img {
+  opacity: .6 }
+
+.userClipboard .tabsBar li:hover img,
+.userClipboard .tabsBar .selected img {
+  opacity: 1 }
