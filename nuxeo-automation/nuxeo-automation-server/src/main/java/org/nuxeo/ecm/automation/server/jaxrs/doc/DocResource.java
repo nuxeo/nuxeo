@@ -54,7 +54,7 @@ public class DocResource {
             ops = service.getDocumentation();
         } catch (Exception e) {
             log.error("Failed to get automation service", e);
-            throw new WebApplicationException(500);
+            throw new WebApplicationException(e, 500);
         }
     }
 

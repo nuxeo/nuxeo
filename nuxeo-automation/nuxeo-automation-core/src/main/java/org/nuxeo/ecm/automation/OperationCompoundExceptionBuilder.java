@@ -17,15 +17,24 @@ import java.util.List;
 
 /**
  * @since 5.7.2 Operation composite exception builder throwing @{link
- *        OperationCompoundException}
+ *        OperationCompoundException}.
  */
 public class OperationCompoundExceptionBuilder {
 
     protected final List<OperationException> accumulated = new LinkedList<OperationException>();
 
     protected OperationException newThrowable(List<OperationException> causes) {
-        return new OperationCompoundException("",
+        return new OperationCompoundException(getMessages(causes),
                 causes.toArray(new OperationException[causes.size()]));
+    }
+
+    protected String getMessages(List<OperationException> causes) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (OperationException operationException : causes) {
+            stringBuilder.append(operationException.getMessage());
+            stringBuilder.append(System.getProperty("line.separator"));
+        }
+        return stringBuilder.toString();
     }
 
     public void add(OperationException error) {

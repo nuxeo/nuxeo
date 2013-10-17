@@ -23,11 +23,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
-import org.nuxeo.ecm.automation.OperationCompoundExceptionBuilder;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -172,14 +170,8 @@ public class ChainTypeImpl implements OperationType {
             // Fill signature with first inputs of the first operation and
             // related outputs of last operation
             // following the proper automation path
-            OperationCompoundExceptionBuilder errorBuilder = new OperationCompoundExceptionBuilder();
-            try {
-                ArrayList<String> result = getSignature(operations);
-                doc.signature = result.toArray(new String[result.size()]);
-            } catch (OperationNotFoundException e) {
-                errorBuilder.add(e);
-            }
-            errorBuilder.throwOnError();
+            ArrayList<String> result = getSignature(operations);
+            doc.signature = result.toArray(new String[result.size()]);
         } else {
             doc.signature = new String[] { "void", "void" };
         }

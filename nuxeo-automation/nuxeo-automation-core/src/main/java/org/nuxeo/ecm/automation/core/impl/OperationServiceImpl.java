@@ -36,6 +36,7 @@ import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationChain;
+import org.nuxeo.ecm.automation.OperationCompoundExceptionBuilder;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
@@ -465,9 +466,15 @@ public class OperationServiceImpl implements AutomationService {
             throws OperationException {
         List<OperationDocumentation> result = new ArrayList<OperationDocumentation>();
         Collection<OperationType> ops = operations.lookup().values();
+        OperationCompoundExceptionBuilder errorBuilder = new OperationCompoundExceptionBuilder();
         for (OperationType ot : ops.toArray(new OperationType[ops.size()])) {
-            result.add(ot.getDocumentation());
+            try {
+                result.add(ot.getDocumentation());
+            } catch (OperationNotFoundException e) {
+                errorBuilder.add(e);
+            }
         }
+        errorBuilder.throwOnError();
         Collections.sort(result);
         return result;
     }
