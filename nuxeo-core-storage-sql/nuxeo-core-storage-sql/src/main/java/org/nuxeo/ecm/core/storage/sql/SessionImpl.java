@@ -111,9 +111,12 @@ public class SessionImpl implements Session, XAResource {
 
     private long threadId;
 
+    private String threadName;
+
+    private Throwable threadStack;
+
     private boolean readAclsChanged;
 
-    private String threadName;
 
     // @since 5.7
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
@@ -203,16 +206,21 @@ public class SessionImpl implements Session, XAResource {
                 "Concurrency Error: Session was started in thread %s (%s)"
                         + " but is being used in thread %s (%s)", threadId,
                 threadName, currentThreadId, currentThreadName);
-        throw new IllegalStateException(msg);
+        throw new IllegalStateException(msg, threadStack);
     }
 
     protected void checkThreadStart() {
         threadId = Thread.currentThread().getId();
         threadName = Thread.currentThread().getName();
+        if (log.isDebugEnabled()) {
+            threadStack = new Throwable("owner stack trace");
+        }
     }
 
     protected void checkThreadEnd() {
         threadId = 0;
+        threadName = null;
+        threadStack = null;
     }
 
     /**
