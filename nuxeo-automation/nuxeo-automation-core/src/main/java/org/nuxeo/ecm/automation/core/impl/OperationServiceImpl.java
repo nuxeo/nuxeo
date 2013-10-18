@@ -172,10 +172,8 @@ public class OperationServiceImpl implements AutomationService {
                 ctx.getCoreSession().save();
             }
             // Log at the end of the main chain execution.
-            if (mainChain) {
-                if (tracer.getTrace() != null) {
-                    log.info(tracer.getFormattedText());
-                }
+            if (mainChain && tracer.getTrace() != null) {
+                log.info(tracer.getFormattedText());
             }
             return ret;
         } catch (OperationException oe) {

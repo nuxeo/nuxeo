@@ -388,7 +388,8 @@ public class AutomationComponent extends DefaultComponent {
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
-        if (!tracerFactory.getRecordingState())
+        if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
+        }
     }
 }
