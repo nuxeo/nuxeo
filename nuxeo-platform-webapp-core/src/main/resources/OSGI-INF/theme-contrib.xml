@@ -462,6 +462,9 @@
       <view id="/create_relation_search_document_popup.xhtml">
         <theme>galaxy/popup</theme>
       </view>
+      <view id="/dndFormCollector.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
       <view id="/editor_link_search_document.xhtml">
         <theme>galaxy/popup</theme>
       </view>
