@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.ui.web.seam;
 
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -64,6 +65,14 @@ public class NuxeoConcurrentRequestResolver extends AbstractResolver implements
                     "This page may be not up to date, an other concurrent requests is still running");
             return true;
         } else if (request.getMethod().equalsIgnoreCase("post")) {
+
+            if (FacesContext.getCurrentInstance()==null) {
+                // we are not inside JSF
+                // may be an Automation call inside the Seam context
+                // continuing is not safe !
+                return false;
+            }
+
             String url = request.getHeader("referer");
             if (url == null || url.length() == 0) {
                 url = VirtualHostHelper.getServerURL(request)
