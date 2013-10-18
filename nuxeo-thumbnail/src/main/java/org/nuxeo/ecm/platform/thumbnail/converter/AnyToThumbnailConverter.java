@@ -41,7 +41,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AnyToThumbnailConverter implements Converter {
 
+    public static final String PDF_MIME_TYPE = "application/pdf";
+
     public static final Pattern PDF_MIME_TYPE_PATTERN = Pattern.compile("application/.*pdf");
+
+    public static final String ANY_TO_PDF_CONVERTER_NAME = "any2pdf";
 
     @Override
     public void init(ConverterDescriptor descriptor) {
@@ -64,13 +68,20 @@ public class AnyToThumbnailConverter implements Converter {
         }
 
         ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-        String converterName;
+
+        String converterName = null;
         if (mimeType.startsWith("image/")
                 || PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches()) {
             converterName = PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME;
         } else {
-            converterName = ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME;
+            if (conversionService.getConverterNames(mimeType, PDF_MIME_TYPE).contains(
+                    ANY_TO_PDF_CONVERTER_NAME)
+                    && conversionService.isConverterAvailable(
+                            ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME, true).isAvailable()) {
+                converterName = ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME;
+            }
         }
-        return conversionService.convert(converterName, blobHolder, parameters);
+        return converterName == null ? null : conversionService.convert(
+                converterName, blobHolder, parameters);
     }
 }
