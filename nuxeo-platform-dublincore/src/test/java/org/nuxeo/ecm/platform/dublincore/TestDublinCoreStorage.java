@@ -55,6 +55,8 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         super.setUp();
 
         deployBundle("org.nuxeo.ecm.platform.dublincore");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
+                "OSGI-INF/types-contrib.xml");
         deployBundle("org.nuxeo.ecm.core.event");
 
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
@@ -245,6 +247,20 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         DocumentModel version = session.getSourceDocument(proxyDoc.getRef());
         Calendar issued = (Calendar) version.getPropertyValue("dc:issued");
         assertNotNull(issued);
+    }
+
+    @Test
+    public void testProxySchemas() throws ClientException {
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        doc = session.createDocument(doc);
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        session.save();
+
+        proxy.setPropertyValue("info:info", "proxyinfo");
+        proxy = session.saveDocument(proxy);
+        session.save();
     }
 
     @Test

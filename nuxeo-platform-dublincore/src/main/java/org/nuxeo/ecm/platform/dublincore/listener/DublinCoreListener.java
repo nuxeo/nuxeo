@@ -110,6 +110,14 @@ public class DublinCoreListener implements EventListener {
                         session, doc.getRef(), "dc:issued", cEventDate);
                 setter.runUnrestricted();
             }
+            if (doc.isImmutable()) {
+                // proxies with attached schemas can be changed
+                // (and therefore saved), but they're still mostly
+                // immutable, so don't attempt to set modification dates
+                // on them
+                return;
+            }
+            // live proxies may be updated normally
         }
 
         if (eventId.equals(BEFORE_DOC_UPDATE)
