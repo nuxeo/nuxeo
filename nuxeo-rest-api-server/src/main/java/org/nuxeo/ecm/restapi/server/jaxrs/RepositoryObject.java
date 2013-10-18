@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -36,18 +37,22 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
  *
  * @since 5.7.3
  */
-@WebObject(type="repo")
+@WebObject(type = "repo")
 public class RepositoryObject extends DefaultObject {
-    @Path("path")
-    public Object getDocsByPath() {
 
-        return new JSONDocumentRoot(ctx, "/");
+    @Path("path{docPath:(/(?:(?!/@).)*)}")
+    public Object getDocsByPath(@PathParam("docPath") String docPath) throws ClientException {
+        CoreSession session = getContext().getCoreSession();
+        DocumentModel doc = session.getDocument(new PathRef(docPath));
+        return newObject("Document", doc);
     }
 
     @Path("id/{id}")
     public Object getDocsById(@PathParam("id")
-    String id) {
-        return new JSONDocumentRoot(ctx, new IdRef(id));
+    String id) throws ClientException {
+        CoreSession session = getContext().getCoreSession();
+        DocumentModel doc = session.getDocument(new IdRef(id));
+        return newObject("Document", doc);
     }
 
     @Path("bulk")

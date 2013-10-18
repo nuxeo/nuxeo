@@ -23,8 +23,6 @@ import java.util.Iterator;
 
 import javax.ws.rs.core.Response;
 
-import net.sf.ehcache.transaction.xa.processor.XARequest.RequestType;
-
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
@@ -168,12 +166,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // When I do a DELETE request
         ClientResponse response = getResponse(RequestType.DELETE,
                 "path" + doc.getPathAsString());
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
-        // Then the parent document is returned
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        String id = node.get("uid").getValueAsText();
-        assertEquals(folder.getId(), id);
 
         dispose(session);
         // Then the doc is deleted
