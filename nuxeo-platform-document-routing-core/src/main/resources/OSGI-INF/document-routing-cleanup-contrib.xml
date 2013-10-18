@@ -7,8 +7,8 @@
 
     <schedule id="workflowInstancesCleanup">
       <eventId>workflowInstancesCleanup</eventId>
-      <!-- every day at 00.00 -->
-      <cronExpression>0 0 0 * * ?</cronExpression>
+      <!-- every day at 11.59 PM -->
+      <cronExpression>0 59 23 * * ?</cronExpression>
     </schedule>
 
   </extension>
