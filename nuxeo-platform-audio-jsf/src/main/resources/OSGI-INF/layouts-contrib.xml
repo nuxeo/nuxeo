@@ -15,7 +15,12 @@
         </description>
         <handlingLabels>true</handlingLabels>
         <categories>
-          <category>summary</category>
+          <!-- set configuration not ready until Studio knows how to manage that
+            kind of configuration -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>summary</category>
+          -->
         </categories>
         <supportedModes>
           <mode>view</mode>
