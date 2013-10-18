@@ -293,7 +293,7 @@ DropZoneUIHandler.prototype.showContinue = function (batchId) {
 DropZoneUIHandler.prototype.updateForm = function (event, value) {
   log("updateForm: " + value);
   for (var i = 0; i < this.operationsDef.length; i++) {
-    if (this.operationsDef[i].id == value) {
+    if (this.operationsDef[i].chainOrOperationId == value) {
       var desc = jQuery("<div></div>");
       desc.html(this.operationsDef[i].help + "<br/>");
       jQuery("#dndSubForm").html(desc);
@@ -418,7 +418,7 @@ DropZoneUIHandler.prototype.executeBatch = function (operationId, params) {
   var batchExec = jQuery().automation(operationId, this.opts);
   log(this.ctx);
   batchExec.setContext(this.ctx);
-  batchExec.addParameters(params);
+  batchExec.setContext(params);
   log(batchExec);
   var cancelHandler = this;
   batchExec.batchExecute(this.batchId,
