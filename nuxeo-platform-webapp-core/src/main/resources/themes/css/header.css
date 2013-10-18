@@ -15,16 +15,19 @@ author: lkemen@nuxeo.com
   width:100% }
 
 .nxHeader .logo {
+  padding: .1em 0;
   text-align: center;
   vertical-align: middle;
   width: 18% }
 
 .nxHeader .content {
-  padding: 0;
+  font-size: 12px;
+  font-family: Arial;
   line-height: 280%;
+  padding: .5em 0;
+  text-transform: uppercase;
   vertical-align: middle;
-  width: 82%;
-  font-size: 12px }
+  width: 82% }
 
 .nxHeader .includes {
   width: 0 }
@@ -35,43 +38,78 @@ author: lkemen@nuxeo.com
 .nxHeader a:hover,
 .nxHeader a:active {
   color: "link.header (__FLAVOR__ color)";
-  opacity: 0.75;
-  text-decoration: none }
+  text-decoration: none;
+  opacity: .6;
+  -moz-transition: none;
+  -webkit-transition: none;
+  transition: none }
+
+.userMenuActions li > .widgetLabel {
+  font-weight: normal;
+  opacity: .6 }
 
 .nxHeader a:hover,
-.nxHeader a:active {
-  opacity: 1 }
-
+.nxHeader a:active,
 .nxHeader .logo a:link,
 .nxHeader .logo a:hover,
-.nxHeader .logo a:visited {
+.nxHeader .logo a:visited,
+.userMenuActions li:hover > .widgetLabel {
   opacity: 1 }
 
 .nxHeader .actionsWidgetPanel {
   padding: 0 }
+
+.nxHeader .actionLink {
+  margin: inherit }
 
 /* =Search */
 .userSearchBlock {
   float: right;
   line-height: 200%;
   margin: 0 1em 0 .5em;
-  opacity: .85;
-  padding: .4em 0 0 }
+  text-transform: none;
+  -moz-transition: all 0.3s ease 0.1s;
+  -webkit-transition: all 0.3s ease 0.1s;
+  transition: all 0.3s ease 0.1s }
 
-.userSearchBlock:hover,
+.userSearchBlock input[type="text"] {
+  opacity: .85;
+  width: 140px }
+
 .userSearchBlock input[type="text"]:focus {
-  opacity: 1 }
+  opacity: 1;
+  width: 160px }
 
 .userSearchBlock .directoryFilter {
-  border: 1px solid #fff;
-  margin: 0 .3em 0 0 }
+  background: #fff url('${basePath}/icons/search.png') no-repeat 98% center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  box-shadow: none;
+  border-radius: .25em;
+  font-size: 1em;
+  height: 25px;
+  line-height: normal;
+  padding: .4em 1.8em .3em .3em;
+  margin: 0 .6em 0 0;
+  -moz-transition: all 0.2s ease 0.1s;
+  -webkit-transition: all 0.2s ease 0.1s;
+  transition: all 0.2s ease 0.1s }
 
 .userSearchBlock input.button {
-  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset;
-  margin: .3em .5em 0 .3em; padding: .2em }
+  background: transparent;
+  border:none;
+  box-shadow: none;
+  cursor:pointer;
+  height: 25px;
+  padding: 0;
+  margin: 0 0 0 -23px;
+  text-indent: -9999px;
+  vertical-align: top;
+  width: 20px }
 
-.advancedSearchLink a {
-  font-size: .8em }
+.userSearchBlock input.button:hover {
+  cursor:pointer }
 
 /* =UserServices */
 .userServicesBlock {
@@ -82,36 +120,44 @@ author: lkemen@nuxeo.com
 
 /* =MainTabs */
 .mainTabs {
-  float: left }
+  float: left;
+  font-size: .9em;
+  font-weight: normal }
 
 .mainTabs li {
+  border-radius: .2em;
   display: inline;
-  float: left }
+  float: left;
+  line-height: 2em;
+  margin: 0 .05em }
 
 .mainTabs a:link,
 .mainTabs a:visited {
-  color: #fff;
+  color: "link.header (__FLAVOR__ color)";
   display: inline-block;
   font-size: 1.1em;
-  padding: .2em .6em }
+  padding: .15em .4em }
 
 .mainTabs li:hover,
 .mainTabs li.selected {
-  background: url("${basePath}/img/white50.png") repeat-x 0 0 transparent } 
+  background-color: "header.tabs.selected (__FLAVOR__ background)"; } 
 
 .mainTabs li a:hover,
 .mainTabs li.selected a,
 .mainTabs li.selected a:visited {
   opacity: 1 }
 
-.userActions {
+.mainTabs li.selected a {
+  font-weight: bold }
+
+.nxHeader .userActions {
   float: left;
   padding: .2em .4em }
 
-.userMenuActions {
+.nxHeader .userMenuActions {
   float: left;
   font-size: 1.1em;
-  padding: .5em .1em .2em }
+  padding: 0 }
 
 .nxHeader .userMenuActions a {
   background-color: #fff;
@@ -120,46 +166,32 @@ author: lkemen@nuxeo.com
 
 /* Override default dropdown button styles */
 .userMenuActions .dropdown {
-    background: url("${basePath}/icons/user_menu.png") no-repeat scroll right center transparent }
+  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 1px center transparent }
 
 .userMenuActions .button {
   background-color: rgba(0, 0, 0, 0);
   border: medium none;
   box-shadow: none;
-  color: "gray.light (__FLAVOR__ color)";
+  color: "link.header (__FLAVOR__ color)";
   line-height: 1.7em;
-  text-shadow: none }
+  padding: .15em .5em .1em 1.7em !important;
+  text-transform: none }
+
+.userMenuActions .dropDownMenu .widget {
+  font-weight: normal }
 
 .userMenuActions ul:hover a,
 .userMenuActions ul:hover li,
 .userMenuActions ul li:hover {
-  background-color:#fff;
-  color:"black (__FLAVOR__ color)";
-  opacity: 1 }
+  background-color: #fff;
+  color: "black (__FLAVOR__ color)" }
 
 .nxHeader .actionList .actionSubList li a {
-  color:"black (__FLAVOR__ color)" }
+  color: "black (__FLAVOR__ color)" }
 
 /* =Studio header link */
 .studioButton {
-  float:left;
-  color:white }
-
-.studioButton a {
-  border: none;
-  color: #fff;
-  display: inline-block;
-  font-size: 1.1em;
-  line-height: 280%;
-  margin: 0;
-  padding: 0 .6em .15em }
-
-/* =Admin message */
-.adminMessage {
-  text-align: center;
-  padding: 5px 5px 5px 25px;
-  background-color:#fff9B4;
-  font: normal 12px Arial,sans-serif; }
+  font-weight: normal }
 
 /* =Connect header links */
 .updateNotificationArea {
