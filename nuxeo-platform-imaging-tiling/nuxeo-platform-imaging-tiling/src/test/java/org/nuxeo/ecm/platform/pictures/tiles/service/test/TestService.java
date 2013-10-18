@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -64,6 +65,11 @@ public class TestService extends NXRuntimeTestCase {
         "OSGI-INF/commandline-imagemagick-contrib.xml");
         PictureTilingComponent.getCache().clear();
         PictureTilingComponent.setDefaultTiler(new MagickTiler());
+        PictureTilingComponent.endGC();
+    }
+
+    @After
+    public void setDown() {
         PictureTilingComponent.endGC();
     }
 

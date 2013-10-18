@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
+import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
 
 public class TestAdapters extends SQLRepositoryTestCase {
 
