@@ -158,11 +158,6 @@ public class DndFormActionBean implements Serializable {
     }
 
     public String save() throws JSONException {
-        System.out.println("Saving DataCollector");
-        for (String key : metadataCollector.keySet()) {
-            System.out.println(key + " => "
-                    + metadataCollector.get(key).toString());
-        }
         sendHtmlJSONResponse();
         return null;
     }
