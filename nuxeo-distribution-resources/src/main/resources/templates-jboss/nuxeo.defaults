@@ -76,3 +76,6 @@ nuxeo.freemarker_parsing_extensions=nxftl
 org.nuxeo.ecm.jboss.configuration=default
 
 session.timeout=60
+
+# Enable legacy sort NXP-12856
+java.util.Arrays.useLegacyMergeSort=true

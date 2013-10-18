@@ -84,3 +84,5 @@ session.timeout=60
 # Enable double click shield. Might be disabled for 5.8 release
 nuxeo.jsf.enableDoubleClickShield=true
 
+# Enable legacy sort NXP-12856
+java.util.Arrays.useLegacyMergeSort=true
