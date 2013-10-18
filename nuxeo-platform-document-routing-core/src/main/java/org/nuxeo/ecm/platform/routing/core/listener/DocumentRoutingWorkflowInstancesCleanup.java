@@ -31,9 +31,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentRoutingWorkflowInstancesCleanup implements EventListener {
 
-    public static final int WORKFLOW_INSTANCES_NO = 100;
+    public final static String CLEANUP_WORKFLOW_INSTANCES_PROPERTY = "nuxeo.routing.disable.cleanup.workflow.instances";
 
-    public final String CLEANUP_WORKFLOW_INSTANCES_PROPERTY = "nuxeo.routing.disable.cleanup.workflow.instances";
+    public final static String CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY = "nuxeo.routing.cleanup.workflow.instances.batch.size";
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -42,9 +42,11 @@ public class DocumentRoutingWorkflowInstancesCleanup implements EventListener {
             return;
         }
 
+        int batchSize = Integer.parseInt(Framework.getProperty(
+                CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100"));
         for (RepositoryManagement repoMgmt : RepositoryResolver.getRepositories()) {
             Framework.getLocalService(DocumentRoutingService.class).cleanupDoneAndCanceledRouteInstances(
-                    repoMgmt.getName(), WORKFLOW_INSTANCES_NO);
+                    repoMgmt.getName(), batchSize);
         }
     }
 }
