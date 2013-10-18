@@ -175,7 +175,7 @@ public class TestFileManagerService {
         assertNotNull(doc.getProperty("file", "content"));
     }
 
-    protected static final String SEPARATOR = System.getProperty("line.separator");
+    protected static final String SEPARATOR = "\n";
 
     protected static final String NOTE_HTML_CONTENT = "<html>" + SEPARATOR + "<body>" + SEPARATOR +
             "  <p>Hello from HTML document</p>" + SEPARATOR + "</body>" + SEPARATOR + "</html>";
@@ -191,7 +191,8 @@ public class TestFileManagerService {
                 workspace.getPathAsString(), true, "test-data/hello.html");
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_HTML_CONTENT, doc.getProperty("note", "note"));
+        String noteText = ((String)doc.getProperty("note", "note"));
+        assertEquals(NOTE_HTML_CONTENT, noteText);
     }
 
     @Test
@@ -208,7 +209,7 @@ public class TestFileManagerService {
 
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_HTML_CONTENT, doc.getProperty("note", "note"));
+        assertEquals(NOTE_HTML_CONTENT, ((String)doc.getProperty("note", "note")));
 
         List<DocumentModel> versions = coreSession.getVersions(docRef);
         assertEquals(0, versions.size());
@@ -220,7 +221,7 @@ public class TestFileManagerService {
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_HTML_CONTENT, doc.getProperty("note", "note"));
+        assertEquals(NOTE_HTML_CONTENT, ((String)doc.getProperty("note", "note")));
 
         versions = coreSession.getVersions(docRef);
         assertEquals(1, versions.size());
