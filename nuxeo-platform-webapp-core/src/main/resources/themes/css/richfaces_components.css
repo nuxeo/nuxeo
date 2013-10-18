@@ -19,10 +19,8 @@ a.treeLink:visited {
 a.treeLink:hover,
 .selected a.treeLink {
   background-color: "color.major.light (__FLAVOR__ background)";
-  border-color: "color.major.medium (__FLAVOR__ border)";
   color: #000;
-  text-decoration: none;
-  text-shadow: 1px 1px 0 #fff }
+  text-decoration: none }
 
 .cell img,
 .clipboardFunction img {
