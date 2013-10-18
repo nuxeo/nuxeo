@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.model.exceptions;
 
+import org.mortbay.jetty.Response;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -36,12 +37,12 @@ public class WebSecurityException extends WebException {
     }
 
     public WebSecurityException(String message, String action) {
-        super(message, 403);
+        super(message, Response.SC_FORBIDDEN);
         this.action = action;
     }
 
     public WebSecurityException(String message, String action, Throwable cause) {
-        super(message, cause, 403);
+        super(message, cause, Response.SC_FORBIDDEN);
         this.action = action;
     }
 
