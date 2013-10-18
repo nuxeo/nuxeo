@@ -83,7 +83,7 @@ public class LogTestWatchman extends TestWatchman {
                         List<FrameworkMethod> afters = (List<FrameworkMethod>) fAtersField.get(base);
                         if (afters != null && !afters.isEmpty()) {
                             try {
-                                // TODO improve this and instead of finding a
+                                // Improve this and instead of finding a
                                 // special function, we could register functions
                                 // specially annotated.
                                 FrameworkMethod first = afters.get(0);
