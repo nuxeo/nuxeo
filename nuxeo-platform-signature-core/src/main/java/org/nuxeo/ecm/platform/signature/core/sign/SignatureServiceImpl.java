@@ -120,14 +120,20 @@ public class SignatureServiceImpl extends DefaultComponent implements
 
     protected static final String USER_EMAIL = "user:email";
 
-    protected List<SignatureDescriptor> config = new ArrayList<SignatureDescriptor>();
+    protected final Map<String, SignatureDescriptor> signatureRegistryMap;
+
+    public SignatureServiceImpl() {
+        signatureRegistryMap = new HashMap<String, SignatureDescriptor>();
+    }
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
         if (XP_SIGNATURE.equals(extensionPoint)) {
-            if (!((SignatureDescriptor) contribution).getRemoveExtension()) {
-                config.add((SignatureDescriptor) contribution);
+            SignatureDescriptor signatureDescriptor = (SignatureDescriptor) contribution;
+            if (!signatureDescriptor.getRemoveExtension()) {
+                signatureRegistryMap.put(signatureDescriptor.getId(),
+                        signatureDescriptor);
             }
         }
     }
@@ -136,8 +142,9 @@ public class SignatureServiceImpl extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
         if (XP_SIGNATURE.equals(extensionPoint)) {
-            if (!((SignatureDescriptor) contribution).getRemoveExtension()) {
-                config.remove(contribution);
+            SignatureDescriptor signatureDescriptor = (SignatureDescriptor) contribution;
+            if (!signatureDescriptor.getRemoveExtension()) {
+                signatureRegistryMap.remove(signatureDescriptor.getId());
             }
         }
     }
@@ -396,7 +403,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
      * @return the signature layout. Default one if no contribution.
      */
     protected SignatureDescriptor.SignatureLayout getSignatureLayout() {
-        for (SignatureDescriptor signatureDescriptor : config) {
+        for (SignatureDescriptor signatureDescriptor : signatureRegistryMap.values()) {
             SignatureDescriptor.SignatureLayout signatureLayout = signatureDescriptor.getSignatureLayout();
             if (signatureLayout != null) {
                 return signatureLayout;
@@ -406,7 +413,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     }
 
     protected String getSigningReason() throws SignException {
-        for (SignatureDescriptor sd : config) {
+        for (SignatureDescriptor sd : signatureRegistryMap.values()) {
             String reason = sd.getReason();
             if (!StringUtils.isBlank(reason)) {
                 return reason;

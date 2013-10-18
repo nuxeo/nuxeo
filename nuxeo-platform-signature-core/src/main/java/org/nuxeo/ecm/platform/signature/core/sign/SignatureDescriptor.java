@@ -29,6 +29,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("configuration")
 public class SignatureDescriptor {
 
+    @XNode("@id")
+    protected String id;
+
     @XNode("reason")
     protected String reason;
 
@@ -87,6 +90,10 @@ public class SignatureDescriptor {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getId() {
+        return id;
     }
 
     private boolean remove;

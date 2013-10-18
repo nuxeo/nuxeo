@@ -28,7 +28,7 @@
         <configuration>
           <reason>This document signed as an example.
           </reason>
-          <layout lines="5" columns="3" startLine="1" startColumn="1" textSize="8"/>
+          <layout id="configExample" lines="5" columns="3" startLine="1" startColumn="1" textSize="8"/>
         </configuration>
       </code>
     </documentation>
