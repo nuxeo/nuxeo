@@ -110,30 +110,15 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         engine.render("testdata/c.ftl", input, writer);
         // double e = System.currentTimeMillis();
 
-        // File tmpFile = File.createTempFile("test", ".txt");
-        // OutputStream fileOutputStream = new FileOutputStream(tmpFile);
-        // fileOutputStream.write(writer.toString().getBytes());
-
         InputStream expected = new FileInputStream(
                 getTestFile("expecteddata/c_output.txt"));
-        assertEquals(FileUtils.read(expected), writer.toString());
+        assertTextEquals(FileUtils.read(expected), writer.toString());
 
-        // System.out.println(writer.getBuffer());
-        // System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((e - s) / 1000));
-        // System.out.flush();
-        //
-        // for (int i = 0; i < 1; i++) {
-        // writer = new StringWriter();
-        // s = System.currentTimeMillis();
-        // engine.render("testdata/c.ftl", input, writer);
-        // e = System.currentTimeMillis();
-        // System.out.println("###############################");
-        // System.out.println(writer.getBuffer());
-        // System.out.println("###############################");
-        // System.out.println(">>>>>>>>>> " + (i + 2) + " RENDERING TOOK: "
-        // + ((e - s) / 1000));
-        // System.out.println("###############################");
-        // }
+    }
+
+    protected void assertTextEquals(String expected, String actual) {
+        actual = actual.replace("\r", "");
+        assertEquals(expected, actual);
     }
 
     @Test
