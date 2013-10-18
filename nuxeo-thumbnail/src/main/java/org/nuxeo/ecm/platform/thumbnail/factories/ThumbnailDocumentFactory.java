@@ -13,6 +13,8 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.factories;
 
+import static org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants.ANY_TO_THUMBNAIL_CONVERTER_NAME;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -81,8 +83,8 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
                 // Thumbnail converter
                 params.put(ThumbnailConstants.THUMBNAIL_SIZE_PARAMETER_NAME,
                         ThumbnailConstants.THUMBNAIL_DEFAULT_SIZE);
-                bh = conversionService.convert(
-                        ThumbnailConstants.THUMBNAIL_CONVERTER_NAME, bh, params);
+                bh = conversionService.convert(ANY_TO_THUMBNAIL_CONVERTER_NAME,
+                        bh, params);
                 if (bh != null) {
                     thumbnailBlob = bh.getBlob();
                 }

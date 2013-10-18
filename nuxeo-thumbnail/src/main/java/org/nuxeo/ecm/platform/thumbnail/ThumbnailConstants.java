@@ -24,7 +24,11 @@ public class ThumbnailConstants {
 
     public static final String THUMBNAIL_PROPERTY_NAME = "thumb:thumbnail";
 
-    public static final String THUMBNAIL_CONVERTER_NAME = "thumbnailDocumentConverter";
+    public static final String ANY_TO_THUMBNAIL_CONVERTER_NAME = "anyToThumbnail";
+
+    public static final String PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME = "pdfAndImageToThumbnail";
+
+    public static final String ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME = "anyToPdfToThumbnail";
 
     public static final String THUMBNAIL_SIZE_PARAMETER_NAME = "size";
 

@@ -42,7 +42,7 @@ import com.google.inject.Inject;
 
 /**
  * Test thumbnail factories contributions
- * 
+ *
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
@@ -50,7 +50,8 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail",
         "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core",
+        "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml" })
 public class TestThumbnailFactories {
 

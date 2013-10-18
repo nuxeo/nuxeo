@@ -54,7 +54,8 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Deploy({ "org.nuxeo.ecm.platform.thumbnail",
         "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.web.common" })
+        "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.url.core",
+        "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-listener-contrib.xml")
 public class TestThumbnailStorage {
 
@@ -81,7 +82,6 @@ public class TestThumbnailStorage {
         file.setPropertyValue("file:content", (Serializable) blob);
         file = session.createDocument(file);
         TransactionHelper.commitOrRollbackTransaction();
-
 
         eventService.waitForAsyncCompletion(); // wait for thumbnail update
 
