@@ -61,6 +61,8 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
 
     public static final String STATUS_INITIAL_COMPUTATION_PENDING = "status.quota.initialComputationInProgress";
 
+    public static final String STATUS_INITIAL_COMPUTATION_COMPLETED = "status.quota.initialComputationCompleted";
+
     // TODO configurable through an ep?
     public static final int DEFAULT_BATCH_SIZE = 1000;
 
@@ -129,6 +131,8 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
             return null;
         } else if (state == State.SCHEDULED) {
             return STATUS_INITIAL_COMPUTATION_QUEUED;
+        } else if (state == State.COMPLETED) {
+            return STATUS_INITIAL_COMPUTATION_COMPLETED;
         } else { // RUNNING
             return STATUS_INITIAL_COMPUTATION_PENDING;
         }
@@ -277,7 +281,6 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements
         DocumentModel currentUserWorkspace = Framework.getLocalService(
                 UserWorkspaceService.class).getUserPersonalWorkspace(
                 session.getPrincipal().getName(), context);
-
 
         return ((IdRef) currentUserWorkspace.getParentRef()).value;
     }
