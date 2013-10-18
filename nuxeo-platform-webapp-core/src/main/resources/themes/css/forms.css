@@ -114,7 +114,7 @@ input.rich-calendar-input[type="text"] {
   vertical-align: top;
   float: right; }
 
-input.tagInput[type="text"] {
+input.tagInput {
   background: url("${basePath}/icons/tag.png") no-repeat scroll 2px center / 12px auto transparent;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   font-size: .95em;

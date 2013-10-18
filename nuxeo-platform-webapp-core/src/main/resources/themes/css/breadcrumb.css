@@ -23,7 +23,7 @@ author: lkemen@nuxeo.com
 .breadcrumbs a,
 .breadcrumbs a:link,
 .breadcrumbs a:visited {
-  color: "gray.medium (__FLAVOR__ color)" }
+  color: "gray.light (__FLAVOR__ color)" }
 
 .breadcrumbs a:hover,
 .breadcrumbs a:active {
@@ -31,7 +31,11 @@ author: lkemen@nuxeo.com
   font-weight: normal }
 
 .breadcrumbs a img {
+  border: 1px solid transparent;
   vertical-align: middle }
+
+.breadcrumbs a img:hover {
+  border-color: "neutral.lighter (__FLAVOR__ border)" }
 
 .printButton {
   float: right }

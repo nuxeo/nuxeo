@@ -122,9 +122,6 @@ input.tinyButton {
   float: left;
   margin: -0.2em .3em -0.3em -0.4em }
 
-.action_bar a:focus {
-  border-color: "color.major.strong (__FLAVOR__ border)" }
-
 .action_bar input[type="text"] {
   margin: 0 .2em }
 
@@ -135,7 +132,7 @@ input.tinyButton {
   margin: 0 }
 
 .contentViewUpperActions {
-  color: "gray.medium (__FLAVOR__ color)";
+  color: "gray.light (__FLAVOR__ color)";
   float: right;
   font-size: .9em;
   margin: 1em 0;
@@ -147,7 +144,7 @@ input.tinyButton {
   vertical-align: top }
 
 .contentViewUpperAction a {
-  color: "gray.medium (__FLAVOR__ color)";
+  color: "gray.light (__FLAVOR__ color)";
   font-size: .85em }
 
 .contentViewUpperAction .contentViewPageSelectorDesc {
@@ -422,10 +419,9 @@ a.tag:hover,
   opacity: 1 }
 
 .tag.newTag {
-  background: url("${basePath}/icons/add.png") no-repeat scroll 0 0 transparent;
+  background: url("${basePath}/icons/add.png") no-repeat scroll 0 0 #e0f8d9;
   color: "black (__FLAVOR__ color)";
-  font-weight: bold;
-  padding: 0 .3em 0 1.6em }
+  padding: 0 .3em 0 1.3em }
 
 .user,
 .group,
