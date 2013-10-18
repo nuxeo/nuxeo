@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,13 +7,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.dublincore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 
 import java.util.Arrays;
@@ -21,11 +22,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -45,19 +44,17 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * DublinCoreStorage Test Case.
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 public class TestDublinCoreStorage extends SQLRepositoryTestCase {
 
     private DocumentModel root;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.platform.dublincore",
-                "OSGI-INF/nxdublincore-service.xml");
+        deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployBundle("org.nuxeo.ecm.core.event");
 
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
@@ -68,6 +65,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         root = session.getRootDocument();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -256,7 +254,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         childFile.setPropertyValue("dc:creator", "Bender");
         Date now = new Date();
         childFile.setPropertyValue("dc:created", now);
-        childFile.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
+        childFile.putContextData(DISABLE_DUBLINCORE_LISTENER, Boolean.TRUE);
         DocumentModel childFile2 = session.createDocument(childFile);
         assertEquals(
                 now,

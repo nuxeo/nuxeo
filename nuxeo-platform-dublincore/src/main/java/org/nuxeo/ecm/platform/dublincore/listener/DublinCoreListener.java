@@ -56,6 +56,7 @@ public class DublinCoreListener implements EventListener {
      *
      * @param event event fired at core layer
      */
+    @Override
     public void handleEvent(Event event) throws ClientException {
 
         DocumentEventContext docCtx;
@@ -81,7 +82,7 @@ public class DublinCoreListener implements EventListener {
 
         Boolean block = (Boolean) event.getContext().getProperty(
                 DISABLE_DUBLINCORE_LISTENER);
-        if (block != null && block) {
+        if (Boolean.TRUE.equals(block)) {
             // ignore the event - we are blocked by the caller
             return;
         }
@@ -139,6 +140,7 @@ public class DublinCoreListener implements EventListener {
             this.value = value;
         }
 
+        @Override
         public void run() throws ClientException {
             DocumentModel doc = session.getSourceDocument(docRef);
             if (doc != null) {
