@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,6 +51,7 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
      *
      */
     public static final String ENTITY_TYPE = "user";
+
     @Context
     JsonFactory factory;
 
@@ -96,11 +98,30 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
         }
 
         for (Property p : part.getChildren()) {
-            jg.writeFieldName(p.getField().getName().getLocalName());
-            JsonDocumentWriter.writePropertyValue(jg, p, "");
+            String fieldName = p.getField().getName().getLocalName();
+            jg.writeFieldName(fieldName);
+
+            if (!fieldName.equals(getPasswordField(um))) {
+                JsonDocumentWriter.writePropertyValue(jg, p, "");
+            } else {
+                jg.writeString("");
+            }
         }
         jg.writeEndObject();
 
+    }
+
+    /**
+     * @param um
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.8
+     */
+    private static String getPasswordField(UserManager um) throws ClientException {
+        String userDirectoryName = um.getUserDirectoryName();
+        DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
+        return dirService.getDirectory(userDirectoryName).getPasswordField();
     }
 
     /**

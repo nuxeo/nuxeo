@@ -16,10 +16,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -363,6 +360,16 @@ public class UserGroupTest extends BaseUserTest {
             assertGroupEntries(node, expectedResults[i]);
 
         }
+
+    }
+
+    @Test
+    public void itDoesntWritePassword() throws Exception {
+        // When I call JSON for user1
+        JsonNode node  = getResponseAsJson(RequestType.GET, "/user/user1");
+
+        // Then it doesn't contain the password
+        assertEquals("",node.get("properties").get("password").getValueAsText());
 
     }
 
