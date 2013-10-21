@@ -91,6 +91,18 @@
   <!-- More Appender examples -->
   <!-- ====================== -->
 
+  <!-- Automation Trace appender - add ref into automation.core category
+  <appender name="AUTOMATION" class="org.apache.log4j.DailyRollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
+    <param name="File" value="${nuxeo.log.dir}/automation.log"/>
+    <param name="Append" value="true"/>
+    <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] [%c] %m%n"/>
+    </layout>
+  </appender>
+  -->
+
   <!--
     Buffer events and log them asynchronously
     <appender name="ASYNC" class="org.apache.log4j.AsyncAppender">
@@ -333,6 +345,7 @@
     <priority value="INFO" />
   </category>
   <!-- Display INFO logs for automation traces when activated -->
+  <!-- Add <appender-ref ref="AUTOMATION" /> if using AUTOMATION appender-->
   <category name="org.nuxeo.ecm.automation.core">
     <priority value="INFO" />
   </category>
