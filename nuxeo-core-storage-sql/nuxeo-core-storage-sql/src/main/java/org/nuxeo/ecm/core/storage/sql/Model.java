@@ -370,6 +370,15 @@ public class Model {
     /** Map of doctype to prefetched fragments. */
     protected final Map<String, Set<String>> docTypePrefetchedFragments;
 
+    /** Map of schema to child name to type. */
+    protected final Map<String, Map<String, String>> schemaComplexChildren;
+
+    /** Map of doctype/complextype to child name to type. */
+    protected final Map<String, Map<String, String>> typeComplexChildren;
+
+    /** Map of mixin to child name to type. */
+    protected final Map<String, Map<String, String>> mixinComplexChildren;
+
     /** Map of doctype to its supertype, for search. */
     protected final Map<String, String> documentSuperTypes;
 
@@ -440,6 +449,10 @@ public class Model {
         proxyFragments = new HashSet<String>();
         docTypePrefetchedFragments = new HashMap<String, Set<String>>();
         fieldFragment = new HashMap<String, String>();
+
+        schemaComplexChildren = new HashMap<String, Map<String, String>>();
+        typeComplexChildren = new HashMap<String, Map<String, String>>();
+        mixinComplexChildren = new HashMap<String, Map<String, String>>();
 
         documentSuperTypes = new HashMap<String, String>();
         documentSubTypes = new HashMap<String, Set<String>>();
@@ -948,6 +961,14 @@ public class Model {
         return null;
     }
 
+    public Map<String, String> getTypeComplexChildren(String typeName) {
+        return typeComplexChildren.get(typeName);
+    }
+
+    public Map<String, String> getMixinComplexChildren(String mixin) {
+        return mixinComplexChildren.get(mixin);
+    }
+
     public Set<String> getSimpleTextPropertyPaths(String primaryType,
             String[] mixinTypes) {
         Set<String> paths = new HashSet<String>();
@@ -1067,10 +1088,6 @@ public class Model {
 
     private void addTypeFragments(String typeName, Set<String> fragmentNames) {
         typeFragments.put(typeName, fragmentNames);
-    }
-
-    private void addMixinFragments(String mixin, Set<String> fragmentNames) {
-        mixinFragments.put(mixin, fragmentNames);
     }
 
     private void addFieldFragment(Field field, String fragmentName) {
@@ -1193,7 +1210,8 @@ public class Model {
         // document types
         for (DocumentType docType : schemaManager.getDocumentTypes()) {
             initDocTypeOrMixinModel(docType.getName(), docType.getSchemas(),
-                    allDocTypeSchemas, typeFragments, typePropertyInfos, true);
+                    allDocTypeSchemas, typeFragments, typePropertyInfos,
+                    typeComplexChildren, true);
             initDocTypePrefetch(docType);
             initDocTypeMixins(docType);
             inferSuperType(docType);
@@ -1201,7 +1219,8 @@ public class Model {
         // mixins
         for (CompositeType type : schemaManager.getFacets()) {
             initDocTypeOrMixinModel(type.getName(), type.getSchemas(),
-                    allMixinSchemas, mixinFragments, mixinPropertyInfos, false);
+                    allMixinSchemas, mixinFragments, mixinPropertyInfos,
+                    mixinComplexChildren, false);
             log.debug("Fragments for facet " + type.getName() + ": "
                     + getMixinFragments(type.getName()));
         }
@@ -1217,13 +1236,15 @@ public class Model {
             throws StorageException {
         Map<String, Set<String>> allSchemas = new HashMap<String, Set<String>>();
         Map<String, Set<String>> allFragments = new HashMap<String, Set<String>>();
+        Map<String, Map<String, String>> allChildren= new HashMap<String, Map<String, String>>();
         Map<String, Map<String, ModelProperty>> allPropertyInfos = new HashMap<String, Map<String, ModelProperty>>();
         String key = "__proxies__"; // not stored
         initDocTypeOrMixinModel(key, proxySchemas, allSchemas, allFragments,
-                allPropertyInfos, false);
+                allPropertyInfos, allChildren, false);
         allProxySchemas.addAll(allSchemas.get(key));
         proxyFragments.addAll(allFragments.get(key));
         proxyPropertyInfos.putAll(allPropertyInfos.get(key));
+        typeComplexChildren.put(PROXY_TYPE, allChildren.get(key));
     }
 
     private Set<String> getCommonFragments(String typeName) {
@@ -1257,9 +1278,11 @@ public class Model {
             Collection<Schema> schemas, Map<String, Set<String>> schemasMap,
             Map<String, Set<String>> fragmentsMap,
             Map<String, Map<String, ModelProperty>> propertyInfoMap,
+            Map<String, Map<String, String>> complexChildrenMap,
             boolean addCommonFragments) throws StorageException {
         Set<String> schemaNames = new HashSet<String>();
         Set<String> fragmentNames = new HashSet<String>();
+        Map<String,String> complexChildren = new HashMap<String, String>();
         if (addCommonFragments) {
             fragmentNames.addAll(getCommonFragments(typeName));
         }
@@ -1279,9 +1302,11 @@ public class Model {
                                 schema.getName(), typeName), e);
             }
             inferSchemaPropertyPaths(schema);
+            complexChildren.putAll(schemaComplexChildren.get(schema.getName()));
         }
         schemasMap.put(typeName, schemaNames);
         fragmentsMap.put(typeName, fragmentNames);
+        complexChildrenMap.put(typeName, complexChildren);
         inferPropertyInfos(propertyInfoMap, typeName, schemaNames);
     }
 
@@ -1530,7 +1555,10 @@ public class Model {
         } else if (!isSchema && typeFragments.containsKey(typeName)) {
             return;
         }
+        /** The fragment names to use for this type, usually just one. */
         Set<String> fragmentNames = new HashSet<String>(1);
+        /** The children complex properties for this type. */
+        Map<String, String> complexChildren = new HashMap<String, String>(1);
 
         log.debug("Making model for type " + typeName);
 
@@ -1541,6 +1569,8 @@ public class Model {
                 /*
                  * Complex type.
                  */
+                String propertyName = field.getName().getPrefixedName();
+                complexChildren.put(propertyName, fieldType.getName());
                 initComplexTypeModel((ComplexType) fieldType);
             } else {
                 String propertyName = field.getName().getPrefixedName();
@@ -1646,8 +1676,10 @@ public class Model {
 
         if (isSchema) {
             schemaFragments.put(typeName, fragmentNames);
+            schemaComplexChildren.put(typeName, complexChildren);
         } else {
             addTypeFragments(typeName, fragmentNames);
+            typeComplexChildren.put(typeName, complexChildren);
         }
     }
 

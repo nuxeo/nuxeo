@@ -206,6 +206,18 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
+    public boolean addMixinType(Node node, String mixin)
+            throws StorageException {
+        return getSession().addMixinType(node, mixin);
+    }
+
+    @Override
+    public boolean removeMixinType(Node node, String mixin)
+            throws StorageException {
+        return getSession().removeMixinType(node, mixin);
+    }
+
+    @Override
     public boolean hasChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         return getSession().hasChildNode(parent, name, complexProp);

@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.resource.ResourceException;
@@ -862,6 +864,56 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
+    public boolean addMixinType(Node node, String mixin)
+            throws StorageException {
+        if (model.getMixinPropertyInfos(mixin) == null) {
+            throw new IllegalArgumentException("No such mixin: " + mixin);
+        }
+        if (model.getDocumentTypeFacets(node.getPrimaryType()).contains(mixin)) {
+            return false; // already present in type
+        }
+        List<String> list = new ArrayList<String>(Arrays.asList(node.getMixinTypes()));
+        if (list.contains(mixin)) {
+            return false; // already present in node
+        }
+        list.add(mixin);
+        String[] mixins = list.toArray(new String[list.size()]);
+        node.hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+        // immediately create child nodes (for complex properties) in order
+        // to avoid concurrency issue later on
+        Map<String, String> childrenTypes = model.getMixinComplexChildren(mixin);
+        for (Entry<String, String> es : childrenTypes.entrySet()) {
+            String childName = es.getKey();
+            String childType = es.getValue();
+            addChildNode(node, childName, null, childType, true);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean removeMixinType(Node node, String mixin)
+            throws StorageException {
+        List<String> list = new ArrayList<String>(
+                Arrays.asList(node.getMixinTypes()));
+        if (!list.remove(mixin)) {
+            return false; // not present in node
+        }
+        String[] mixins = list.toArray(new String[list.size()]);
+        if (mixins.length == 0) {
+            mixins = null;
+        }
+        node.hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+        // remove child nodes
+        Map<String, String> childrenTypes = model.getMixinComplexChildren(mixin);
+        for (String childName: childrenTypes.keySet()) {
+            Node child = getChildNode(node, childName, true);
+            removePropertyNode(child);
+        }
+        node.clearCache();
+        return true;
+    }
+
+    @Override
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
         if (pos == null && !complexProp && parent != null) {
@@ -885,12 +937,19 @@ public class SessionImpl implements Session, XAResource {
         if (!model.isType(typeName)) {
             throw new IllegalArgumentException("Unknown type: " + typeName);
         }
-
         id = generateNewId(id);
         Serializable parentId = parent == null ? null
                 : parent.hierFragment.getId();
-
-        return addNode(id, parentId, name, pos, typeName, complexProp);
+        Node node = addNode(id, parentId, name, pos, typeName, complexProp);
+        // immediately create child nodes (for complex properties) in order
+        // to avoid concurrency issue later on
+        Map<String, String> childrenTypes = model.getTypeComplexChildren(typeName);
+        for (Entry<String, String> es : childrenTypes.entrySet()) {
+            String childName = es.getKey();
+            String childType = es.getValue();
+            addChildNode(node, childName, null, childType, true);
+        }
+        return node;
     }
 
     protected Node addNode(Serializable id, Serializable parentId, String name,
@@ -906,8 +965,6 @@ public class SessionImpl implements Session, XAResource {
         hierRow.putNew(Model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
         SimpleFragment hierFragment = context.createHierarchyFragment(hierRow);
-        // TODO if non-lazy creation of some fragments, create them here
-        // for (String tableName : model.getTypeSimpleFragments(typeName)) {
         FragmentGroup fragmentGroup = new FragmentGroup(hierFragment,
                 new FragmentsMap());
         return new Node(context, fragmentGroup, context.getPath(hierFragment));

@@ -627,7 +627,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     @Override
     public boolean addFacet(String facet) throws DocumentException {
         try {
-            boolean added = getNode().addMixinType(facet);
+            boolean added = session.addMixinType(getNode(), facet);
             if (added) {
                 mixinTypes.add(session.getTypeManager().getFacet(facet));
             }
@@ -639,7 +639,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public boolean removeFacet(String facet) throws DocumentException {
-        boolean removed = getNode().removeMixinType(facet);
+        boolean removed = session.removeMixinType(getNode(), facet);
         if (removed) {
             for (Iterator<CompositeType> it = mixinTypes.iterator(); it.hasNext();) {
                 if (it.next().getName().equals(facet)) {

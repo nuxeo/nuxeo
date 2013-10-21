@@ -116,6 +116,32 @@ public interface Session extends Connection {
     Node getNodeByPath(String path, Node node) throws StorageException;
 
     /**
+     * Adds a mixin to a node.
+     * <p>
+     * Does nothing if the mixin was already present on the node.
+     *
+     * @param node the node
+     * @param mixin the mixin name
+     * @return {@code true} if the mixin was added, or {@code false} if it is
+     *         already present
+     * @since 5.8
+     */
+    boolean addMixinType(Node node, String mixin) throws StorageException;
+
+    /**
+     * Removes a mixin from a node.
+     * <p>
+     * It's not possible to remove a mixin coming from the primary type.
+     *
+     * @param node the node
+     * @param mixin the mixin
+     * @return {@code true} if the mixin was removed, or {@code false} if it
+     *         isn't present or is present on the type or does not exist
+     * @since 5.8
+     */
+    boolean removeMixinType(Node node, String mixin) throws StorageException;
+
+    /**
      * Interface for a class that knows how to resolve a node path into a node
      * id.
      */

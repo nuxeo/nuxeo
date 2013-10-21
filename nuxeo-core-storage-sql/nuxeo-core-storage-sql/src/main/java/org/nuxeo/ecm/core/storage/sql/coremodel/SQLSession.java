@@ -823,6 +823,24 @@ public class SQLSession implements Session {
         }
     }
 
+    protected boolean addMixinType(Node node, String mixin)
+            throws DocumentException {
+        try {
+            return session.addMixinType(node, mixin);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected boolean removeMixinType(Node node, String mixin)
+            throws DocumentException {
+        try {
+            return session.removeMixinType(node, mixin);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     protected List<Node> getComplexList(Node node, String name)
             throws DocumentException {
         List<Node> nodes;
@@ -1068,12 +1086,8 @@ public class SQLSession implements Session {
                 } else {
                     Node childNode = session.getChildNode(node, name, true);
                     if (childNode == null) {
-                        // Create the needed complex property. This could also
-                        // be done lazily when an actual write is done -- this
-                        // would mean refactoring the various SQL*Property
-                        // classes to hold parent information.
-                        childNode = session.addChildNode(node, name, null,
-                                type.getName(), true);
+                        throw new DocumentException("Node: " + node
+                                + " missing complex property: " + name);
                     }
                     childNodes = Collections.singletonList(childNode);
                 }

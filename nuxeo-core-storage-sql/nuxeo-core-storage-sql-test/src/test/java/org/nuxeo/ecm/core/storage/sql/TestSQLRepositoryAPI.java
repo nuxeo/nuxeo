@@ -3818,8 +3818,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(doc.getId(), set.iterator().next());
         set = (Set<String>) event.getContext().getProperty(
                 EventConstants.INVAL_MODIFIED_PARENT_IDS);
-        assertEquals(1, set.size()); // root has a new child
-        assertEquals(root.getId(), set.iterator().next());
+        // root has a new child, which has a complex prop also
+        assertEquals(2, set.size());
+        assertTrue(set.contains(root.getId()));
 
         // change just one property
         doc.setProperty("dublincore", "title", "t1");

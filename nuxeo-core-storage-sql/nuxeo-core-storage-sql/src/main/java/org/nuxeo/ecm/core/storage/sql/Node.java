@@ -201,68 +201,11 @@ public class Node {
     }
 
     /**
-     * Adds a mixin.
+     * Clears the properties cache, used when removing mixins.
      */
-    public boolean addMixinType(String mixin) {
-        if (model.getMixinPropertyInfos(mixin) == null) {
-            throw new IllegalArgumentException("No such mixin: " + mixin);
-        }
-        if (model.getDocumentTypeFacets(getPrimaryType()).contains(mixin)) {
-            return false; // already present in type
-        }
-        List<String> list = new ArrayList<String>(Arrays.asList(getMixinTypes()));
-        if (list.contains(mixin)) {
-            return false; // already present in node
-        }
-        list.add(mixin);
-        try {
-            String[] mixins = list.toArray(new String[list.size()]);
-            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
-        } catch (StorageException e) {
-            throw new RuntimeException(e);
-        }
-        return true;
-    }
-
-    /**
-     * Removes a mixin.
-     */
-    public boolean removeMixinType(String mixin) {
-        List<String> list = new ArrayList<String>(Arrays.asList(getMixinTypes()));
-        if (!list.remove(mixin)) {
-            return false; // not present in node
-        }
-        try {
-            String[] mixins = list.toArray(new String[list.size()]);
-            if (mixins.length == 0) {
-                mixins = null;
-            }
-            hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
-            clearMixinValues(mixin);
-        } catch (StorageException e) {
-            throw new RuntimeException(e);
-        }
-        return true;
-    }
-
-    protected void clearMixinValues(String mixin) throws StorageException {
-        for (Entry<String, ModelProperty> en : model.getMixinPropertyInfos(
-                mixin).entrySet()) {
-            String name = en.getKey();
-            if (getPropertyInfo(name) != null) {
-                // don't clear if still exists in primary type or other
-                // mixins
-                continue;
-            }
-            ModelProperty propertyInfo = en.getValue();
-            if (propertyInfo.propertyType.isArray()) {
-                makeCollectionProperty(name, propertyInfo).setValue(null);
-            } else {
-                makeSimpleProperty(name, propertyInfo).setValue(null);
-            }
-        }
-        propertyCache.clear(); // some properties have now become invalid
-        // TODO optim: delete rows if all null
+    protected void clearCache() {
+        // some properties have now become invalid
+        propertyCache.clear();
     }
 
     // ----- properties -----
