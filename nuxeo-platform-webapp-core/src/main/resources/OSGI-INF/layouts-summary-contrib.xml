@@ -642,9 +642,6 @@
     </widget>
 
     <widget name="summary_current_document_custom_actions" type="summary_current_document_custom_actions">
-      <labels>
-        <label mode="any"></label>
-      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
       </controls>
@@ -658,8 +655,12 @@
     </widget>
 
     <widget name="summary_current_document_view" type="summary_current_document_view">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
 
@@ -680,8 +681,12 @@
     </widget>
 
     <widget name="summary_current_document_dublincore" type="summary_current_document_dublincore">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
 
@@ -702,14 +707,22 @@
     </widget>
 
     <widget name="summary_current_document_publications" type="summary_current_document_publications">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
 
     <widget name="summary_current_document_lc_and_version" type="summary_current_document_lc_and_version">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
 
@@ -724,7 +737,11 @@
     </widget>
 
     <widget name="summary_current_document_indicators" type="documentActions">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <properties widgetMode="view">
+        <control name="handleLabels">true</control>
         <property name="category">SUMMARY_INDICATORS</property>
         <property name="overallDisplay">horizontal_block</property>
         <property name="styleClass">indicators</property>
@@ -742,7 +759,11 @@
     </widget>
 
     <widget name="summary_current_document_contributors" type="summary_current_document_contributors">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
+        <control name="handleLabels">true</control>
         <control name="requireSurroundingForm">true</control>
       </controls>
     </widget>
