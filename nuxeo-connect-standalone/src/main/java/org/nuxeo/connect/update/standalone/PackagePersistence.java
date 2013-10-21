@@ -176,11 +176,11 @@ public class PackagePersistence {
                     Task utask = oldpkg.getUninstallTask();
                     try {
                         utask.run(new HashMap<String, String>());
-                    } catch (Throwable t) {
+                    } catch (PackageException e) {
                         utask.rollback();
                         throw new PackageException(
                                 "Failed to uninstall snapshot. Abort reloading: "
-                                        + pkg.getId(), t);
+                                        + pkg.getId(), e);
                     }
                 }
                 // 2. remove the package data
