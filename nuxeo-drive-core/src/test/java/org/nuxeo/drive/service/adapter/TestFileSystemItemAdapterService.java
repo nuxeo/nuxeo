@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -416,6 +417,18 @@ public class TestFileSystemItemAdapterService {
         assertNotNull(virtualFolderItemFactory);
         assertTrue(virtualFolderItemFactory.getClass().getName().endsWith(
                 "DummyVirtualFolderItemFactory"));
+
+        // -------------------------------------------------------------
+        // Check #getActiveFileSystemItemFactories()
+        // -------------------------------------------------------------
+        Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
+        assertEquals(6, activeFactories.size());
+        assertTrue(activeFactories.contains("defaultSyncRootFolderItemFactory"));
+        assertTrue(activeFactories.contains("defaultFileSystemItemFactory"));
+        assertTrue(activeFactories.contains("dummyDocTypeFactory"));
+        assertTrue(activeFactories.contains("dummyFacetFactory"));
+        assertTrue(activeFactories.contains("dummyVirtualFolderItemFactory"));
+        assertTrue(activeFactories.contains("nullMergeTestFactory"));
     }
 
     @Test
@@ -616,6 +629,17 @@ public class TestFileSystemItemAdapterService {
         assertTrue(topLevelFactory.getClass().getName().endsWith(
                 "DummyTopLevelFolderItemFactory"));
         assertTrue(topLevelFactory instanceof DummyTopLevelFolderItemFactory);
+
+        // -------------------------------------------------------------
+        // Check #getActiveFileSystemItemFactories()
+        // -------------------------------------------------------------
+        Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
+        assertEquals(5, activeFactories.size());
+        assertTrue(activeFactories.contains("defaultSyncRootFolderItemFactory"));
+        assertTrue(activeFactories.contains("dummyDocTypeFactory"));
+        assertTrue(activeFactories.contains("dummyFacetFactory"));
+        assertTrue(activeFactories.contains("dummyVirtualFolderItemFactory"));
+        assertTrue(activeFactories.contains("nullMergeTestFactory"));
 
         harness.undeployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");

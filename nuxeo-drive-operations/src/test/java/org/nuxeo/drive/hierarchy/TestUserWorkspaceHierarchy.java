@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -43,6 +44,7 @@ import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceSyncRootPare
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceTopLevelFolderItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetChildren;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
@@ -117,6 +119,9 @@ public class TestUserWorkspaceHierarchy {
 
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
+
+    @Inject
+    protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
     protected HttpAutomationClient automationClient;
@@ -251,6 +256,15 @@ public class TestUserWorkspaceHierarchy {
      */
     @Test
     public void testClientSideUser1() throws Exception {
+
+        // ---------------------------------------------
+        // Check active factories
+        // ---------------------------------------------
+        Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
+        assertEquals(3, activeFactories.size());
+        assertTrue(activeFactories.contains("defaultFileSystemItemFactory"));
+        assertTrue(activeFactories.contains("userWorkspaceSyncRootParentFactory"));
+        assertTrue(activeFactories.contains("userWorkspaceSyncRootFactory"));
 
         // ---------------------------------------------
         // Check top level folder: "Nuxeo Drive"

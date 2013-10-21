@@ -60,4 +60,21 @@
 
   </extension>
 
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="activeFileSystemItemFactories">
+
+    <activeFileSystemItemFactories merge="true">
+      <factories>
+        <!-- Disable the "defaultSyncRootFolderItemFactory" bound to the
+          DriveSynchronized facet -->
+        <factory enabled="false">defaultSyncRootFolderItemFactory
+        </factory>
+        <factory>userSyncRootParentFactory</factory>
+        <factory>permissionSyncRootFactory</factory>
+        <factory>sharedSyncRootParentFactory</factory>
+      </factories>
+    </activeFileSystemItemFactories>
+
+  </extension>
+
 </component>

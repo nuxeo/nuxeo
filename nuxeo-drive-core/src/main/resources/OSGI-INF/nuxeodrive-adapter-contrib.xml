@@ -37,4 +37,16 @@
 
   </extension>
 
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="activeFileSystemItemFactories">
+
+    <activeFileSystemItemFactories>
+      <factories>
+        <factory>defaultSyncRootFolderItemFactory</factory>
+        <factory>defaultFileSystemItemFactory</factory>
+      </factories>
+    </activeFileSystemItemFactories>
+
+  </extension>
+
 </component>
