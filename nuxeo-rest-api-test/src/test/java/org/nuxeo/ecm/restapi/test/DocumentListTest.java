@@ -23,6 +23,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,6 +43,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.common.base.Joiner;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
@@ -97,6 +99,21 @@ public class DocumentListTest extends BaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, getLogEntries(node).size());
 
+    }
+
+    @Test
+    public void itCanGetAdapterForRootDocument() throws Exception {
+        //Given the root document
+        DocumentModel rootDocument = session.getRootDocument();
+
+        //When i ask for an adapter
+        JsonNode node = getResponseAsJson(RequestType.GET, "path"
+                + rootDocument.getPathAsString() + "@children");
+
+        //The it return a response
+        ArrayNode jsonNode = (ArrayNode) node.get("entries");
+        assertEquals(session.getChildren(rootDocument.getRef()).size(),
+                jsonNode.size());
     }
 
     @Test

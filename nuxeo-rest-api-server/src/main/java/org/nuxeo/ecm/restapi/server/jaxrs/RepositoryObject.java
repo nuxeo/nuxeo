@@ -40,8 +40,25 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @WebObject(type = "repo")
 public class RepositoryObject extends DefaultObject {
 
+    /**
+     * The regex of getDocsByPath doesn't catch the case of the
+     * root document.
+     * @param adapterName
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.8
+     */
+    @Path("path/@{adapterName}")
+    public Object getRootPathAdapter(@PathParam("adapterName") String adapterName) throws ClientException {
+        DocumentModel rootDocument = getContext().getCoreSession().getRootDocument();
+
+        return ctx.newAdapter(newObject("Document", rootDocument), adapterName);
+    }
+
     @Path("path{docPath:(/(?:(?!/@).)*)}")
-    public Object getDocsByPath(@PathParam("docPath") String docPath) throws ClientException {
+    public Object getDocsByPath(@PathParam("docPath")
+    String docPath) throws ClientException {
         CoreSession session = getContext().getCoreSession();
         DocumentModel doc = session.getDocument(new PathRef(docPath));
         return newObject("Document", doc);
