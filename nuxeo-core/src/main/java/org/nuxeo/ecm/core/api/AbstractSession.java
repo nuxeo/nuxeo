@@ -730,10 +730,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             String comment = srcDoc.getRepository().getName() + ':'
                     + srcDoc.getParent().getUUID();
 
-            if (name == null) {
-                name = srcDoc.getName();
-            }
-            name = generateDocumentName(dstDoc, name);
+            name = srcDocModel.getName();
+
             Document doc = getSession().move(srcDoc, dstDoc, name);
 
             // notify document moved
@@ -890,7 +888,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false, true); // no lifecycle yet
             String name = docModel.getName();
-            name = generateDocumentName(folder, name);
             if (folder == null) {
                 folder = getSession().getNullDocument();
             }
@@ -976,9 +973,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 : resolveReference(parentRef);
         Map<String, Serializable> props = docModel.getContextData().getDefaultScopeValues();
 
-        if (parent != null) {
-            name = generateDocumentName(parent, name);
-        }
+        notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT,
+                docModel, null, null, null, false, true);
 
         // create the document
         Document doc = getSession().importDocument(id, parent, name, typeName,
