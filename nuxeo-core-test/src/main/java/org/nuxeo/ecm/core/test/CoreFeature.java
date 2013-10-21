@@ -179,13 +179,9 @@ public class CoreFeature extends SimpleFeature {
         CoreSession session  = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
-            try {
-                factory.populate(session);
-                session.save();
-                waitForAsyncCompletion();
-            } catch (ClientException e) {
-                log.error(e.toString(), e);
-            }
+            factory.populate(session);
+            session.save();
+            waitForAsyncCompletion();
         }
     }
 

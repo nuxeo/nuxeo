@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Stephane Lacoin 
+ *     Stephane Lacoin
  */
 package org.nuxeo.ecm.core.test;
 
@@ -145,13 +145,14 @@ public class MultiRepositoriesCoreFeature extends SimpleFeature {
     protected void initializeSession(FeaturesRunner runner, RepositorySettings repository) {
         CoreSession session = repository.get();
         RepositoryInit initializer = repository.getInitializer();
-        if (initializer != null) {
-            try {
-                initializer.populate(session);
-                session.save();
-            } catch (ClientException e) {
-                log.error(e.toString(), e);
-            }
+        if (initializer == null) {
+            return;
+        }
+        try {
+            initializer.populate(session);
+            session.save();
+        } catch (ClientException e) {
+            throw new RuntimeException("Cannot populate repository", e);
         }
     }
 
