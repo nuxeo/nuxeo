@@ -29,12 +29,17 @@ import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
 
 /**
- * Simple stateless document search suggester that propose to use the user input
- * for searching a specific field.
+ * Simple stateless document search suggester that propose to use the user
+ * input for searching a specific field.
  */
 public class DocumentSearchByPropertySuggester implements Suggester {
 
     protected String searchField = "fsd:ecm_fulltext";
+
+    /**
+     * @since 5.8
+     */
+    protected String[] searchFields;
 
     protected String label = "label.searchDocumentsByKeywords";
 
@@ -49,15 +54,20 @@ public class DocumentSearchByPropertySuggester implements Suggester {
             throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
         String i18nLabel = i18n.translate(label, userInput);
-        Suggestion suggestion = new SearchDocumentsSuggestion(i18nLabel,
-                iconURL).withSearchCriterion(searchField, userInput);
+        SearchDocumentsSuggestion suggestion = new SearchDocumentsSuggestion(
+                i18nLabel, iconURL).withSearchCriterion(searchField, userInput);
+        if (searchFields != null) {
+            for (String field : searchFields) {
+                suggestion.withSearchCriterion(field, userInput);
+            }
+        }
         if (disabled) {
             suggestion.disable();
         }
         if (description != null) {
             suggestion.withDescription(i18n.translate(description, userInput));
         }
-        return Collections.singletonList(suggestion);
+        return Collections.<Suggestion> singletonList(suggestion);
     }
 
     @Override
@@ -73,12 +83,16 @@ public class DocumentSearchByPropertySuggester implements Suggester {
         description = params.get("description");
         String disabled = params.get("disabled");
         if (disabled != null) {
-            this.disabled = Boolean.valueOf(disabled);
+            this.disabled = Boolean.parseBoolean(disabled);
         }
-        if (searchField == null || label == null) {
+        String psearchFields = params.get("searchFields");
+        if (psearchFields != null) {
+            searchFields = psearchFields.split(", *");
+        }
+        if (label == null || (searchField == null && searchFields == null)) {
             throw new ComponentInitializationException(
                     String.format("Could not initialize suggester '%s': "
-                            + "type, propertyPath and label"
+                            + "label, searchField (or searchFields)"
                             + " are mandatory parameters", descriptor.getName()));
         }
     }

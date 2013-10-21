@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.faceted.search.jsf.FacetedSearchActions;
@@ -56,7 +57,8 @@ public class FacetedSearchSuggestionHandler {
         ContentViewActions contentViewActions = (ContentViewActions) Component.getInstance(ContentViewActions.class);
 
         facetedSearchActions.clearSearch();
-        facetedSearchActions.setCurrentContentViewName(null);
+        // do not reset current faceted search: keep the current one
+        // facetedSearchActions.setCurrentContentViewName(null);
         String contentViewName = facetedSearchActions.getCurrentContentViewName();
         ContentView contentView = contentViewActions.getContentView(contentViewName);
         DocumentModel dm = contentView.getSearchDocumentModel();
@@ -64,14 +66,19 @@ public class FacetedSearchSuggestionHandler {
         for (Map.Entry<String, Serializable> searchEntry : suggestion.getSearchCriteria().entrySet()) {
             String searchField = searchEntry.getKey();
             Serializable searchValue = searchEntry.getValue();
-            Property searchProperty = dm.getProperty(searchField);
-            if (searchProperty.isList()) {
-                // list type is used for multi-valued option fields such as
-                // fsd_dc_creator.
-                dm.setPropertyValue(searchField,
-                        (Serializable) Collections.singleton(searchValue));
-            } else {
-                dm.setPropertyValue(searchField, searchValue);
+            try {
+                Property searchProperty = dm.getProperty(searchField);
+                if (searchProperty.isList()) {
+                    // list type is used for multi-valued option fields such as
+                    // fsd_dc_creator.
+                    dm.setPropertyValue(searchField,
+                            (Serializable) Collections.singleton(searchValue));
+                } else {
+                    dm.setPropertyValue(searchField, searchValue);
+                }
+            } catch (PropertyNotFoundException e) {
+                // assume property does not exist on this document model
+                continue;
             }
         }
         multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
