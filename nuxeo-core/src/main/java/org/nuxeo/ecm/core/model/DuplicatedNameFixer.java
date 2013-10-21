@@ -30,13 +30,17 @@ public class DuplicatedNameFixer implements EventListener {
     @Override
     public void handleEvent(Event event) throws ClientException {
         DocumentEventContext context = (DocumentEventContext) event.getContext();
-        DocumentModel source = context.getSourceDocument();
-        String name = source.getName();
         CoreSession session = context.getCoreSession();
-        DocumentRef parentRef;
-        parentRef = (DocumentRef) context.getProperty(
+        DocumentModel source = context.getSourceDocument();
+        DocumentRef parentRef = (DocumentRef) context.getProperty(
                 CoreEventConstants.DESTINATION_REF);
-        name = (String)context.getProperty(CoreEventConstants.DESTINATION_NAME);
+        if (parentRef == null) {
+            return;
+        }
+        String name = (String)context.getProperty(CoreEventConstants.DESTINATION_NAME);
+        if (!name.equals(source.getName())) {
+            name= source.getName();
+        }
         DocumentModel parent = session.getDocument(parentRef);
         String parentPath = parent.getPathAsString();
         PathRef path = new PathRef(parentPath, name);
