@@ -78,7 +78,7 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(className = "creator")
     public WebElement currentDocumentContributor;
 
-    @FindBy(linkText = "Document Management")
+    @FindBy(linkText = "DOCUMENT MANAGEMENT")
     public WebElement documentManagementLink;
 
     @FindBy(linkText = "Workflow")
@@ -210,7 +210,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public AdminCenterBasePage getAdminCenter() {
-        findElementWithTimeout(By.linkText("Admin Center")).click();
+        findElementWithTimeout(By.linkText("ADMIN CENTER")).click();
         return asPage(AdminCenterBasePage.class);
     }
 
@@ -218,7 +218,7 @@ public class DocumentBasePage extends AbstractPage {
      * @since 5.7
      */
     public UserHomePage getUserHome() {
-        findElementWithTimeout(By.linkText("Home")).click();
+        findElementWithTimeout(By.linkText("HOME")).click();
         UserHomePage page = asPage(UserHomePage.class);
         // make sure we're back on the dashboard tab
         return page.goToDashboard();
