@@ -34,12 +34,10 @@ import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants.EvaluationOper
 /***
  * Evaluates the condition specified by the parameters against the input
  * document. Supports only Integer and String parameters
- * 
+ *
  * @author mcedica
- * 
  */
-
-@Operation(id = EvaluateCondition.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Task Done", description = "Set the task as done.")
+@Operation(id = EvaluateCondition.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Task Done", description = "Set the task as done.", addToStudio = false)
 public class EvaluateCondition extends AbstractTaskStepOperation {
 
     public final static String ID = "Document.Routing.EvaluateCondition";

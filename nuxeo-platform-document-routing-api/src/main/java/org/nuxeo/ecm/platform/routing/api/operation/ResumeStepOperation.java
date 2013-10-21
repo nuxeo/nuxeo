@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.routing.api.helper.StepResumeRunner;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
-@Operation(id = ResumeStepOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Resume Step", description = "Resume a step that were in running step.")
+@Operation(id = ResumeStepOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Resume Step", description = "Resume a step that were in running step.", addToStudio=false)
 public class ResumeStepOperation {
     public final static String ID = "Document.Routing.Resume.Step";
 

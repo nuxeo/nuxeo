@@ -36,7 +36,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  *
  * @author mcedica
  */
-@Operation(id = UpdateCommentsInfoOnDocumentOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Update comments number on the document", description = "Update comments number on the document")
+@Operation(id = UpdateCommentsInfoOnDocumentOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Update comments number on the document", description = "Update comments number on the document", addToStudio = false)
 public class UpdateCommentsInfoOnDocumentOperation {
 
     public final static String ID = "Document.Routing.UpdateCommentsInfoOnDocument";

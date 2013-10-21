@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.task.TaskService;
  * @author mcedica
  * @since 5.6
  */
-@Operation(id = RemoveRoutingTask.ID, category = Constants.CAT_SERVICES, label = "remove task", since = "5.6", description = " This operation removes all the tasks created when a given step is run.")
+@Operation(id = RemoveRoutingTask.ID, category = Constants.CAT_SERVICES, label = "remove task", since = "5.6", description = " This operation removes all the tasks created when a given step is run.", addToStudio = false)
 public class RemoveRoutingTask {
 
     public static final String ID = "Workflow.RemoveRoutingTask";

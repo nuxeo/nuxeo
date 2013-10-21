@@ -46,9 +46,8 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
  * Returns a json representation of the graph route
  *
  * @since 5.6
- *
  */
-@Operation(id = GetGraphOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Get graph", description = "get graph nodes.")
+@Operation(id = GetGraphOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Get graph", description = "get graph nodes.", addToStudio = false)
 public class GetGraphOperation {
     public final static String ID = "Document.Routing.GetGraph";
 

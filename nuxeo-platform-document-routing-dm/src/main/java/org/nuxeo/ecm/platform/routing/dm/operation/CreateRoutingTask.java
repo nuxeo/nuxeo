@@ -64,7 +64,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
         + "you can put the operation chain ID of your choice among the one you contributed. "
         + "Those operations will be executed when the user validates the task, "
         + "depending on  whether he accepts or rejects the task. "
-        + "Extra (String) properties can be set on the taskVariables from the input document or from the step.")
+        + "Extra (String) properties can be set on the taskVariables from the input document or from the step.", addToStudio = false)
 public class CreateRoutingTask {
 
     public static final String ID = "Workflow.CreateRoutingTask";

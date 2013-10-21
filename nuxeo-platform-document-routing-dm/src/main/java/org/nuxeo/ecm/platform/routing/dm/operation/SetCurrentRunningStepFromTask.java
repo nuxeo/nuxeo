@@ -40,12 +40,11 @@ import org.nuxeo.ecm.platform.task.TaskComment;
 
 /***
  * Set the current running step as <document.routing.step> context variable.
- * 
+ *
  * @author mcedica
  * @since 5.6
- * 
  */
-@Operation(id = SetCurrentRunningStepFromTask.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Current Step from Task", description = "Set the current running step as <document.routing.step> context variable. The comments from the task can be mapped to originating step.")
+@Operation(id = SetCurrentRunningStepFromTask.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Current Step from Task", description = "Set the current running step as <document.routing.step> context variable. The comments from the task can be mapped to originating step.", addToStudio = false)
 public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
 
     public final static String ID = "Document.Routing.SetRunningStepFromTask";
