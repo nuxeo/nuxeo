@@ -28,7 +28,7 @@ import org.nuxeo.ecm.webapp.security.UserManagementActions;
 /**
  * Handle UserSuggestion using a simple navigation in the JSF UI.
  */
-@Operation(id = NavigateToUserSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to user view", description = "Handles JSF navigation given a UserSuggestion as input.")
+@Operation(id = NavigateToUserSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to user view", description = "Handles JSF navigation given a UserSuggestion as input.", addToStudio = false)
 public class NavigateToUserSuggestionHandler {
 
     public static final String ID = "Suggestion.JSF.NavigateToUser";

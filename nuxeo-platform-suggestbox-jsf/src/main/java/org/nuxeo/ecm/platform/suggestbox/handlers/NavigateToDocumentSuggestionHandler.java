@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webapp.context.NavigationContextBean;
 /**
  * Handle DocumentSuggestion using a simple navigation in the JSF UI.
  */
-@Operation(id = NavigateToDocumentSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to document view", description = "Handles JSF navigation given a DocumentSuggestion as input.")
+@Operation(id = NavigateToDocumentSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to document view", description = "Handles JSF navigation given a DocumentSuggestion as input.", addToStudio = false)
 public class NavigateToDocumentSuggestionHandler {
 
     public static final String ID = "Suggestion.JSF.NavigateToDocument";

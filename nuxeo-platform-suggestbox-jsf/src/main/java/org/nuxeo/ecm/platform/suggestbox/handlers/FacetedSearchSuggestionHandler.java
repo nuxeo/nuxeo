@@ -44,7 +44,7 @@ import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
  * matches the configuration to impact, another content view is looked up to
  * see if it can take into account the search criteria.
  */
-@Operation(id = FacetedSearchSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to faceted search view", description = "Handles JSF navigation given a SearchDocumentsSuggestion as input.")
+@Operation(id = FacetedSearchSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to faceted search view", description = "Handles JSF navigation given a SearchDocumentsSuggestion as input.", addToStudio = false)
 public class FacetedSearchSuggestionHandler {
 
     public static final String ID = "Suggestion.JSF.NavigateToFacetedSearch";

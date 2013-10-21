@@ -28,7 +28,7 @@ import org.nuxeo.ecm.webapp.security.GroupManagementActions;
 /**
  * Handle GroupSuggestion using a simple navigation in the JSF UI.
  */
-@Operation(id = NavigateToGroupSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to group view", description = "Handles JSF navigation given a GroupSuggestion as input.")
+@Operation(id = NavigateToGroupSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to group view", description = "Handles JSF navigation given a GroupSuggestion as input.", addToStudio = false)
 public class NavigateToGroupSuggestionHandler {
 
     public static final String ID = "Suggestion.JSF.NavigateToGroup";
