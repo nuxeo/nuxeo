@@ -55,6 +55,3 @@ nuxeo.plaintext_parsing_extensions=xml,properties,nx,js
 nuxeo.freemarker_parsing_extensions=nxftl
 
 session.timeout=60
-
-# Enable legacy sort NXP-12856
-java.util.Arrays.useLegacyMergeSort=true
