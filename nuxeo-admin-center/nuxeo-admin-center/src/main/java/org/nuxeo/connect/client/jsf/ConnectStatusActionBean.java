@@ -288,7 +288,8 @@ public class ConnectStatusActionBean implements Serializable {
                     messages.get("label.connect.registrationError"));
             log.error("Error while registering instance", e);
         }
-
+        // force refresh of connect status info
+        connectionStatusCache = null;
         flushContextCache();
         ConnectStatusHolder.instance().flush();
         return null;
