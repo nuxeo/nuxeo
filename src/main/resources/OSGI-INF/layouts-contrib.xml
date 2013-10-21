@@ -95,7 +95,7 @@
           </mode>
         </widgetModes>
       </widget>
-      <widget name="tenant_administrators" type="template">
+      <widget name="tenant_administrators" type="multipleUsersSuggestion">
         <labels>
           <label mode="any">label.tenant.administrators</label>
         </labels>
@@ -103,12 +103,6 @@
         <fields>
           <field>tenantconfig:administrators</field>
         </fields>
-        <properties widgetMode="any">
-          <property name="template">
-            /widgets/user_suggestion_widget_template.xhtml
-          </property>
-          <property name="userSuggestionSearchType">USER_TYPE</property>
-        </properties>
         <widgetModes>
           <mode value="create">
             hidden
@@ -117,6 +111,9 @@
             #{nxu:test(multiTenantActions.isTenantIsolationEnabled(), 'edit', 'hidden')}
           </mode>
         </widgetModes>
+        <properties widgetMode="any">
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+        </properties>
       </widget>
     </layout>
 
