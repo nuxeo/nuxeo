@@ -57,16 +57,16 @@ public class DuplicatedNameFixer implements EventListener {
         } else {
             throw new IllegalArgumentException("Unknown event " + eventName);
         }
-        if (parentRef == null) {
-            return;
+        String parentPath = null;
+        if (parentRef != null) {
+            DocumentModel parent = session.getDocument(parentRef);
+            parentPath = parent.getPathAsString();
+            PathRef path = new PathRef(parentPath, name);
+            if (session.exists(path)) {
+                name += '.' + String.valueOf(System.currentTimeMillis());
+            }
         }
-        DocumentModel parent = session.getDocument(parentRef);
-        PathRef path = new PathRef(parent.getPathAsString(), name);
-        if (session.exists(path)) {
-            name += '.' + String.valueOf(System.currentTimeMillis());
-            source.setPathInfo(
-                    source.getPath().removeLastSegments(1).toString(), name);
-        }
+        source.setPathInfo(parentPath, name);
     }
 
 }
