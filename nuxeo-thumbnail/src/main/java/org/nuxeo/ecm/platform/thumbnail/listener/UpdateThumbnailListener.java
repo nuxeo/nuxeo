@@ -38,7 +38,8 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
  */
 public class UpdateThumbnailListener implements PostCommitEventListener {
 
-    protected void processDoc(CoreSession session, DocumentModel doc) throws ClientException {
+    protected void processDoc(CoreSession session, DocumentModel doc)
+            throws ClientException {
         ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
         if (thumbnailAdapter == null) {
             return;

@@ -43,7 +43,7 @@ public class CheckBlobUpdateListener implements EventListener {
         if (!doc.hasSchema("file")) {
             return;
         }
-        BlobProperty content = (BlobProperty)doc.getProperty("file:content");
+        BlobProperty content = (BlobProperty) doc.getProperty("file:content");
         if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
             if (content.getValue() == null) {
                 return;
