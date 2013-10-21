@@ -74,8 +74,8 @@ public class AnyToThumbnailConverter implements Converter {
                 || PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches()) {
             converterName = PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME;
         } else {
-            if (conversionService.getConverterNames(mimeType, PDF_MIME_TYPE).contains(
-                    ANY_TO_PDF_CONVERTER_NAME)
+            if (conversionService.isSourceMimeTypeSupported(
+                    ANY_TO_PDF_CONVERTER_NAME, mimeType)
                     && conversionService.isConverterAvailable(
                             ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME, true).isAvailable()) {
                 converterName = ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME;
