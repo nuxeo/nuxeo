@@ -37,6 +37,18 @@
     </appender>
   -->
 
+  <!-- Automation Trace appender
+  <appender name="AUTOMATION" class="org.apache.log4j.DailyRollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler"/>
+    <param name="File" value="${nuxeo.log.dir}/automation.log"/>
+    <param name="Append" value="true"/>
+    <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] [%c] %m%n"/>
+    </layout>
+  </appender>
+  -->
+
   <!-- ============================= -->
   <!-- Gather errors in a local file -->
   <!-- ============================= -->
@@ -335,6 +347,7 @@
   <!-- Display INFO logs for automation traces when activated -->
   <category name="org.nuxeo.ecm.automation.core">
     <priority value="INFO" />
+    <appender-ref ref="AUTOMATION" />
   </category>
 
   <category name="javax.enterprise.resource.webcontainer.jsf.renderkit">
