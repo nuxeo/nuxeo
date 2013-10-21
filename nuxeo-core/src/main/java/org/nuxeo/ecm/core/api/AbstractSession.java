@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2011, 2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -717,20 +717,23 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
+            DocumentModel srcDocModel = readModel(srcDoc);
+            if (name == null) {
+                name = srcDocModel.getName();
+            }
             // add the destination name, destination and source references in
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
             options.put(CoreEventConstants.DESTINATION_NAME, name);
 
-            DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options,
                     null, null, true, true);
 
+            name = srcDocModel.getName();
+
             String comment = srcDoc.getRepository().getName() + ':'
                     + srcDoc.getParent().getUUID();
-
-            name = srcDocModel.getName();
 
             Document doc = getSession().move(srcDoc, dstDoc, name);
 

@@ -12,6 +12,9 @@
 
 package org.nuxeo.ecm.core.model;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,8 +46,12 @@ public class DuplicatedNameFixer implements EventListener {
         if (DocumentEventTypes.ABOUT_TO_CREATE.equals(eventName)) {
             parentRef = source.getParentRef();
         } else if (DocumentEventTypes.ABOUT_TO_MOVE.equals(eventName)) {
-            parentRef = (DocumentRef) context.getProperties().get(
+            Map<String, Serializable> properties = context.getProperties();
+            parentRef = (DocumentRef) properties.get(
                     CoreEventConstants.DESTINATION_REF);
+            name = (String)properties.get(CoreEventConstants.DESTINATION_NAME);
+            source.setPathInfo(
+                    source.getPath().removeLastSegments(1).toString(), name);
         } else if (DocumentEventTypes.ABOUT_TO_IMPORT.equals(eventName)) {
             parentRef = source.getParentRef();
         } else {
