@@ -12,17 +12,12 @@
 
 package org.nuxeo.ecm.core.model;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -38,35 +33,17 @@ public class DuplicatedNameFixer implements EventListener {
         DocumentModel source = context.getSourceDocument();
         String name = source.getName();
         CoreSession session = context.getCoreSession();
-        if (name == null || name.length() == 0) {
-            name = IdUtils.generateStringId();
-        }
         DocumentRef parentRef;
-        String eventName = event.getName();
-        if (DocumentEventTypes.ABOUT_TO_CREATE.equals(eventName)) {
-            parentRef = source.getParentRef();
-        } else if (DocumentEventTypes.ABOUT_TO_MOVE.equals(eventName)) {
-            Map<String, Serializable> properties = context.getProperties();
-            parentRef = (DocumentRef) properties.get(
-                    CoreEventConstants.DESTINATION_REF);
-            name = (String)properties.get(CoreEventConstants.DESTINATION_NAME);
-            source.setPathInfo(
-                    source.getPath().removeLastSegments(1).toString(), name);
-        } else if (DocumentEventTypes.ABOUT_TO_IMPORT.equals(eventName)) {
-            parentRef = source.getParentRef();
-        } else {
-            throw new IllegalArgumentException("Unknown event " + eventName);
+        parentRef = (DocumentRef) context.getProperty(
+                CoreEventConstants.DESTINATION_REF);
+        name = (String)context.getProperty(CoreEventConstants.DESTINATION_NAME);
+        DocumentModel parent = session.getDocument(parentRef);
+        String parentPath = parent.getPathAsString();
+        PathRef path = new PathRef(parentPath, name);
+        if (session.exists(path)) {
+            name += '.' + String.valueOf(System.currentTimeMillis());
         }
-        String parentPath = null;
-        if (parentRef != null) {
-            DocumentModel parent = session.getDocument(parentRef);
-            parentPath = parent.getPathAsString();
-            PathRef path = new PathRef(parentPath, name);
-            if (session.exists(path)) {
-                name += '.' + String.valueOf(System.currentTimeMillis());
-            }
-        }
-        source.setPathInfo(parentPath, name);
+        context.setProperty(CoreEventConstants.DESTINATION_NAME, name);
     }
 
 }

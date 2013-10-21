@@ -188,12 +188,20 @@
    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="duplicatedNameFixer" 
-        class="org.nuxeo.ecm.core.model.DuplicatedNameFixer" order="100">
+    <listener name="emptyNameFixer" 
+        class="org.nuxeo.ecm.core.model.EmptyNameFixer" order="1000">
       <event>aboutToImport</event>
       <event>aboutToCreate</event>
       <event>aboutToMove</event>
     </listener>
+    
+    <listener name="duplicatedNameFixer" 
+        class="org.nuxeo.ecm.core.model.DuplicatedNameFixer" order="2000">
+      <event>aboutToImport</event>
+      <event>aboutToCreate</event>
+      <event>aboutToMove</event>
+    </listener>
+    
   </extension>
 
 </component>
