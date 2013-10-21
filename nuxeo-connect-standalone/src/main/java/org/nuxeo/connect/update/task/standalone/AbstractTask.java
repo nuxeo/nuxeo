@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -150,6 +150,7 @@ public abstract class AbstractTask implements Task {
 
     public abstract boolean isInstallTask();
 
+    @Override
     @SuppressWarnings("hiding")
     public void initialize(LocalPackage pkg, boolean restart)
             throws PackageException {
@@ -179,10 +180,12 @@ public abstract class AbstractTask implements Task {
         return val == null ? null : new File(val);
     }
 
+    @Override
     public boolean isRestartRequired() {
         return restart;
     }
 
+    @Override
     public LocalPackage getPackage() {
         return pkg;
     }
@@ -224,6 +227,7 @@ public abstract class AbstractTask implements Task {
         }
     }
 
+    @Override
     public synchronized void run(Map<String, String> params)
             throws PackageException {
         if (isInstallTask()) {
@@ -270,6 +274,7 @@ public abstract class AbstractTask implements Task {
 
     protected abstract void taskDone() throws PackageException;
 
+    @Override
     public void rollback() throws PackageException {
         try {
             doRollback();
@@ -278,6 +283,7 @@ public abstract class AbstractTask implements Task {
         }
     }
 
+    @Override
     public void setRestartRequired(boolean isRestartRequired) {
         this.restart = isRestartRequired;
     }
@@ -287,6 +293,7 @@ public abstract class AbstractTask implements Task {
 
     protected abstract void doRollback() throws PackageException;
 
+    @Override
     public ValidationStatus validate() throws PackageException {
         ValidationStatus status = new ValidationStatus();
         if (isInstallTask()) {

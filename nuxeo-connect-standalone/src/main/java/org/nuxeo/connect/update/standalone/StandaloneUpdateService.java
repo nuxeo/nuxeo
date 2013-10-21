@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -97,18 +97,22 @@ public class StandaloneUpdateService implements PackageUpdateService {
         return persistence;
     }
 
+    @Override
     public LocalPackage addPackage(File file) throws PackageException {
         return persistence.addPackage(file);
     }
 
+    @Override
     public void removePackage(String id) throws PackageException {
         persistence.removePackage(id);
     }
 
+    @Override
     public LocalPackage getPackage(String id) throws PackageException {
         return persistence.getPackage(id);
     }
 
+    @Override
     public List<LocalPackage> getPackages() throws PackageException {
         return persistence.getPackages();
     }
@@ -155,6 +159,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
         return xmap;
     }
 
+    @Override
     public void initialize() throws PackageException {
         xmap = createXmap();
         addCommands();
@@ -203,6 +208,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
         pkg.setState(state);
     }
 
+    @Override
     public void shutdown() throws PackageException {
         xmap = null;
     }
@@ -238,10 +244,12 @@ public class StandaloneUpdateService implements PackageUpdateService {
         commands.remove(id);
     }
 
+    @Override
     public LocalPackage getActivePackage(String name) throws PackageException {
         return persistence.getActivePackage(name);
     }
 
+    @Override
     public PackageDefinition loadPackageFromZip(File file)
             throws PackageException {
         ZipFile zip = null;
@@ -268,6 +276,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
         }
     }
 
+    @Override
     public PackageDefinition loadPackage(File file) throws PackageException {
         FileInputStream in = null;
         try {
@@ -291,6 +300,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
         }
     }
 
+    @Override
     public PackageDefinition loadPackage(InputStream in)
             throws PackageException {
         try {
