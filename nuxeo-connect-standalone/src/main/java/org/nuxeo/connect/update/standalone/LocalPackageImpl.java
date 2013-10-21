@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +26,6 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
-import org.nuxeo.connect.update.PackageData;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
@@ -59,14 +58,42 @@ public class LocalPackageImpl implements LocalPackage {
 
     private PackageUpdateService service;
 
+    /**
+     * @deprecated Since 5.8. Use
+     *             {@link #LocalPackageImpl(File, PackageState, PackageUpdateService)}
+     *             instead.
+     */
+    @Deprecated
     public LocalPackageImpl(File file, int state, PackageUpdateService pus)
             throws PackageException {
         this(null, file, state, pus);
     }
 
+    /**
+     * @deprecated Since 5.8. Use
+     *             {@link #LocalPackageImpl(ClassLoader, File, PackageState, PackageUpdateService)}
+     *             instead.
+     */
+    @Deprecated
     public LocalPackageImpl(ClassLoader parent, File file, int state,
             PackageUpdateService pus) throws PackageException {
-        this.state = PackageState.getByValue(state);
+        this(parent, file, PackageState.getByValue(state), pus);
+    }
+
+    /**
+     * @since 5.7
+     */
+    public LocalPackageImpl(File file, PackageState state,
+            PackageUpdateService pus) throws PackageException {
+        this(null, file, state, pus);
+    }
+
+    /**
+     * @since 5.8
+     */
+    public LocalPackageImpl(ClassLoader parent, File file, PackageState state,
+            PackageUpdateService pus) throws PackageException {
+        this.state = state;
         this.service = pus;
         XMap xmap = StandaloneUpdateService.getXmap();
         if (xmap == null) { // for tests
@@ -88,14 +115,6 @@ public class LocalPackageImpl implements LocalPackage {
         id = def.getId();
     }
 
-    /**
-     * @since 5.7
-     */
-    public LocalPackageImpl(File file, PackageState state,
-            PackageUpdateService pus) throws PackageException {
-        this(file, state.getValue(), pus);
-    }
-
     @Deprecated
     @Override
     public void setState(int state) {
@@ -108,7 +127,7 @@ public class LocalPackageImpl implements LocalPackage {
     }
 
     @Override
-    public PackageData getData() {
+    public LocalPackageData getData() {
         return data;
     }
 
@@ -353,6 +372,11 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public PackageVisibility getVisibility() {
         return def.getVisibility();
+    }
+
+    @Override
+    public String toString() {
+        return getId();
     }
 
 }

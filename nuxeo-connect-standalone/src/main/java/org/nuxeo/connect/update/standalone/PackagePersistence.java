@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
@@ -32,10 +34,7 @@ import org.nuxeo.connect.update.AlreadyExistsPackageException;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
-import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
-import org.nuxeo.connect.update.task.Task;
-import org.nuxeo.connect.update.task.update.UpdateManager;
 
 /**
  * The file {@code nxserver/data/packages/.packages} stores the state of all
@@ -48,6 +47,8 @@ import org.nuxeo.connect.update.task.update.UpdateManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class PackagePersistence {
+
+    private static final Log log = LogFactory.getLog(PackagePersistence.class);
 
     private static final String FEATURES_DIR = "packages";
 
@@ -157,59 +158,50 @@ public class PackagePersistence {
         }
     }
 
+    /**
+     * Add unzipped packaged to local cache. It replaces SNAPSHOT packages if
+     * not installed
+     *
+     * @throws PackageException
+     * @throws AlreadyExistsPackageException If not replacing a SNAPSHOT or if
+     *             the existing package is installed
+     */
     protected LocalPackage addPackageFromDir(File file) throws PackageException {
         LocalPackageImpl pkg = new LocalPackageImpl(file,
                 PackageState.DOWNLOADED, service);
-        File dir = new File(store, pkg.getId());
-        if (dir.exists()) {
-            // FIXME: refactor this way of handling Studio packages to be
-            // consistent with other packages
-            if (PackageType.STUDIO.equals(pkg.getType())
-                    && pkg.getId().endsWith(
-                            "-" + UpdateManager.STUDIO_SNAPSHOT_VERSION)) {
-                // FIXME: maybe check for pkg#supportsHotReload and
-                // Framework.isDevModeSet() or Framework.isDebugModeSet()?
-                // this is a special case - reload a studio snapshot package
-                // 1. first we need to uninstall the existing package
-                LocalPackage oldpkg = getPackage(pkg.getId());
-                if (oldpkg.getState() >= PackageState.INSTALLED.getValue()) {
-                    Task utask = oldpkg.getUninstallTask();
-                    try {
-                        utask.run(new HashMap<String, String>());
-                    } catch (PackageException e) {
-                        utask.rollback();
-                        throw new PackageException(
-                                "Failed to uninstall snapshot. Abort reloading: "
-                                        + pkg.getId(), e);
-                    }
-                }
-                // 2. remove the package data
-                org.apache.commons.io.FileUtils.deleteQuietly(dir);
-            } else {
-                throw new AlreadyExistsPackageException("Package "
-                        + pkg.getId() + " already exists");
-            }
-        }
+        File dir = null;
         try {
+            dir = new File(store, pkg.getId());
+            if (dir.exists()) {
+                LocalPackage oldpkg = getPackage(pkg.getId());
+                if (!pkg.getVersion().isSnapshot()) {
+                    throw new AlreadyExistsPackageException("Package "
+                            + pkg.getId() + " already exists");
+                }
+                if (PackageState.getByValue(oldpkg.getState()).isInstalled()) {
+                    throw new AlreadyExistsPackageException("Package "
+                            + pkg.getId() + " is already installed");
+                }
+                log.info(String.format("Replacement of %s in local cache...",
+                        oldpkg));
+                org.apache.commons.io.FileUtils.deleteQuietly(dir);
+            }
             org.apache.commons.io.FileUtils.moveDirectory(file, dir);
+            pkg.getData().setRoot(dir);
+            updateState(pkg.getId(), pkg.state);
+            return pkg;
         } catch (IOException e) {
             throw new PackageException(String.format("Failed to move %s to %s",
                     file, dir), e);
         }
-        pkg.data.setRoot(dir);
-        updateState(pkg.getId(), pkg.getState());
-        return pkg;
     }
 
-    /**
-     * FIXME Should return a {@link PackageState} instead.
-     */
-    public synchronized int getState(String featureId) {
-        PackageState state = states.get(featureId);
+    public synchronized PackageState getState(String packageId) {
+        PackageState state = states.get(packageId);
         if (state == null) {
-            return 0;
+            return PackageState.REMOTE;
         }
-        return state.getValue();
+        return state;
     }
 
     /**

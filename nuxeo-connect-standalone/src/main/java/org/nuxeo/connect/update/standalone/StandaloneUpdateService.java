@@ -331,7 +331,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
 
     @Override
     public boolean isStarted(String pkgId) {
-        return persistence.getState(pkgId) == PackageState.STARTED.getValue();
+        return persistence.getState(pkgId) == PackageState.STARTED;
     }
 
     @Override
