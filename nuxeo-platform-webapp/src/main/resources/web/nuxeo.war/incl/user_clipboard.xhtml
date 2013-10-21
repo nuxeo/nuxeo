@@ -53,12 +53,14 @@
               </nxd:restDocumentLink>
             </div>
           </nxu:dataList>
-  
-          <div class="emptyResult">
-            <h:outputText
-              value="#{messages['label.clipboard.empty']}"
-              rendered="#{clipboardActions.workListEmpty}" />
-          </div>
+
+          <c:if test="#{clipboardActions.workListEmpty}">
+            <div class="emptyResult">
+              <h:outputText
+                value="#{messages['label.clipboard.empty']}"
+                rendered="#{clipboardActions.workListEmpty}" />
+            </div>
+          </c:if>
   
         </div>
 
