@@ -63,9 +63,6 @@
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties>
         <property name="include">/incl/permalink_box.xhtml</property>
-        <property name="onclick">
-          jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
-        </property>
         <property name="ajaxSupport">true</property>
       </properties>
     </action>
