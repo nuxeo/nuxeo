@@ -628,7 +628,7 @@ public class TestDocumentsSizeUpdater {
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Execption "
+                        System.out.println("raised expected Exception "
                                 + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
@@ -671,7 +671,7 @@ public class TestDocumentsSizeUpdater {
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Execption "
+                        System.out.println("raised expected Exception "
                                 + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
@@ -724,7 +724,7 @@ public class TestDocumentsSizeUpdater {
                     firstFile.checkOut();
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Execption "
+                        System.out.println("raised expected Exception "
                                 + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
@@ -747,6 +747,7 @@ public class TestDocumentsSizeUpdater {
 
         addContent();
         doCheckIn();
+        doDeleteFileContent(secondFileRef);
 
         dump();
 
@@ -777,10 +778,10 @@ public class TestDocumentsSizeUpdater {
                 dump();
 
                 assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
-                assertQuota(getSecondFile(), 200L, 200L, 0L, 0L);
-                assertQuota(getFirstSubFolder(), 0L, 400L, 0L, 100L);
-                assertQuota(getFirstFolder(), 0L, 400L, 0L, 100L);
-                assertQuota(getWorkspace(), 0L, 400L, 0L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L, 200L, 0L);
+                assertQuota(getFirstSubFolder(), 0L, 400L, 200L, 100L);
+                assertQuota(getFirstFolder(), 0L, 400L, 200L, 100L);
+                assertQuota(getWorkspace(), 0L, 400L, 200L, 100L);
 
             }
         });
@@ -807,10 +808,10 @@ public class TestDocumentsSizeUpdater {
             public void run() throws Exception {
 
                 assertQuota(getFirstFile(), 100L, 200L, 0L, 100L);
-                assertQuota(getSecondFile(), 200L, 200L, 0L, 0L);
-                assertQuota(getFirstSubFolder(), 0L, 400L, 0L, 100L);
-                assertQuota(getFirstFolder(), 0L, 400L, 0L, 100L);
-                assertQuota(getWorkspace(), 0L, 400L, 0L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L, 200L, 0L);
+                assertQuota(getFirstSubFolder(), 0L, 400L, 200L, 100L);
+                assertQuota(getFirstFolder(), 0L, 400L, 200L, 100L);
+                assertQuota(getWorkspace(), 0L, 400L, 200L, 100L);
 
             }
         });
@@ -1160,7 +1161,7 @@ public class TestDocumentsSizeUpdater {
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Execption "
+                        System.out.println("raised expected Exception "
                                 + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
@@ -1436,6 +1437,20 @@ public class TestDocumentsSizeUpdater {
             }
         });
     }
+
+    protected void doDeleteFileContent(final DocumentRef fileRef) throws Exception {
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+
+                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                docs.add(session.getDocument(fileRef));
+                Framework.getLocalService(TrashService.class).trashDocuments(
+                        docs);
+            }
+        });
+    }
+
 
     protected void doUndeleteFileContent() throws Exception {
         isr.run(new RunnableWithException() {

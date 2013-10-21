@@ -259,8 +259,14 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                         parents,
                         quotaCtx.getBlobSize()
                                 + quotaCtx.getVersionsSizeOnTotal(),
-                        quotaCtx.getTrashSize(), quotaCtx.getVersionsSize(),
-                        true, false, true);
+                        quotaCtx.getTrashSize(),
+                        quotaCtx.getVersionsSize(),
+                        true,
+                        quotaCtx.getProperties().get(
+                                SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
+                                && (Boolean) quotaCtx.getProperties().get(
+                                        SizeUpdateEventContext._UPDATE_TRASH_SIZE),
+                        true);
             } else if (DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
                 processOnParents(parents, quotaCtx.getBlobSize(), 0, true,
                         false);

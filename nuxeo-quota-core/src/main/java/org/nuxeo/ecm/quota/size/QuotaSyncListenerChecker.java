@@ -78,14 +78,25 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
         QuotaComputerProcessor processor = new QuotaComputerProcessor();
         try {
-            IterableQueryResult res = unrestrictedSession.queryAndFetch(
-                    "SELECT ecm:uuid FROM Document where ecm:isCheckedInVersion=0 and ecm:isProxy=0 order by dc:created desc",
+            String query = "SELECT ecm:uuid FROM Document where ecm:isCheckedInVersion=0 and ecm:isProxy=0 order by dc:created desc";
+            IterableQueryResult res = unrestrictedSession.queryAndFetch(query,
                     "NXQL");
             log.debug("Starting initial Quota computation");
             long total = res.size();
             log.debug("Start iteration on " + total + " items");
             try {
+                for (Map<String, Serializable> r : res) {
+                    String uuid = (String) r.get("ecm:uuid");
+                    // this will force an update if the plugin was installed and
+                    // then removed
+                    removeFacet(unrestrictedSession, uuid);
+                }
+            } finally {
+                res.close();
+            }
+            try {
                 long idx = 0;
+                res = unrestrictedSession.queryAndFetch(query, "NXQL");
                 for (Map<String, Serializable> r : res) {
                     String uuid = (String) r.get("ecm:uuid");
                     computeSizeOnDocument(unrestrictedSession, uuid, processor);
@@ -102,25 +113,27 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     }
 
+    private void removeFacet(CoreSession unrestrictedSession, String uuid)
+            throws ClientException {
+        DocumentModel target = unrestrictedSession.getDocument(new IdRef(uuid));
+        if (target.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
+            if (log.isTraceEnabled()) {
+                log.trace("doc with uuid " + uuid + " already up to date");
+            }
+            target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
+            target = unrestrictedSession.saveDocument(target);
+        }
+    }
+
     protected void computeSizeOnDocument(CoreSession unrestrictedSession,
             String uuid, QuotaComputerProcessor processor)
             throws ClientException {
-
+        DocumentModel target = unrestrictedSession.getDocument(new IdRef(uuid));
         IdRef ref = new IdRef(uuid);
         if (log.isTraceEnabled()) {
             log.trace("process Quota initial computation on uuid " + uuid);
         }
         if (unrestrictedSession.exists(ref)) {
-            DocumentModel target = unrestrictedSession.getDocument(ref);
-            if (target.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
-                if (log.isTraceEnabled()) {
-                    log.trace("doc with uuid " + uuid + " already up to date");
-                }
-                // this will force an update if the plugin was installed and
-                // then removed
-                target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
-            }
-
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " started update");
             }
@@ -133,7 +146,6 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " update completed");
             }
-
         } else {
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " does not exist");
@@ -590,9 +602,10 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         BlobSizeInfo bsi = computeSizeImpact(target, false);
         SizeUpdateEventContext quotaCtx = null;
 
-        // process versions if any
+        // process versions if any ; document is not in trash
         List<DocumentModel> versions = unrestrictedSession.getVersions(target.getRef());
-        if (versions.size() == 0) {
+        if (versions.size() == 0
+                && !DELETED_STATE.equals(target.getCurrentLifeCycleState())) {
             quotaCtx = new SizeUpdateEventContext(unrestrictedSession, bsi,
                     DOCUMENT_CREATED, target);
 
