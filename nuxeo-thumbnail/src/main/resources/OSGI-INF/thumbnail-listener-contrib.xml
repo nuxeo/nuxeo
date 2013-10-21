@@ -7,7 +7,7 @@
       postCommit="true"
       class="org.nuxeo.ecm.platform.thumbnail.listener.UpdateThumbnailListener"
       priority="999">
-      <event>afterBlobUpdateCheck</event>
+      <event>scheduleThumbnailUpdate</event>
     </listener>
     <listener name="checkBlobUpdate" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.thumbnail.listener.CheckBlobUpdateListener"

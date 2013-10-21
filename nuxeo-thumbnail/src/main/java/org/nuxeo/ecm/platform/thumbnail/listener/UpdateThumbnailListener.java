@@ -70,12 +70,12 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
 
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
-        if (!events.containsEventName(ThumbnailConstants.EventNames.afterBlobUpdateCheck.name())) {
+        if (!events.containsEventName(ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name())) {
             return;
         }
         Set<String> processedDocs = new HashSet<String>();
         for (Event event : events) {
-            if (!ThumbnailConstants.EventNames.afterBlobUpdateCheck.name().equals(
+            if (!ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name().equals(
                     event.getName())) {
                 continue;
             }

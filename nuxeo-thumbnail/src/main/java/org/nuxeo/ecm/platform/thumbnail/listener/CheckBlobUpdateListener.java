@@ -54,7 +54,7 @@ public class CheckBlobUpdateListener implements EventListener {
             }
         }
         Framework.getLocalService(EventService.class).fireEvent(
-                ThumbnailConstants.EventNames.afterBlobUpdateCheck.name(),
+                ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(),
                 context);
     }
 

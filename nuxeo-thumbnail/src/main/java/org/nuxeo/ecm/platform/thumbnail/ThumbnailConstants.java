@@ -39,7 +39,7 @@ public class ThumbnailConstants {
          * Event sent after checking before updating document if the main blob
          * has been updated
          */
-        afterBlobUpdateCheck,
+        scheduleThumbnailUpdate
     }
 
 }
