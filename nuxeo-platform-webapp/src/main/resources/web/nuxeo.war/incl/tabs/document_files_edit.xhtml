@@ -50,7 +50,6 @@
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
 
           <div class="simpleBox">
-          <h:panelGrid columns="2">
             <a4j:commandLink immediate="true"
               onclick="document.NXContextKeeper_document_files_edit.removeFromKeeper(#{model.rowIndex});if( !confirmRemoveFiles('#{currentDocument.files.files[model.rowIndex].filename}')) return false;"
               oncomplete="document.NXContextKeeper_document_files_edit.onReturnAnswer();"
@@ -64,8 +63,6 @@
             <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
               <nxh:outputText value="#{currentDocument.files.files[model.rowIndex].filename}" />
             </nxh:outputLink>
-
-          </h:panelGrid>
           </div>
 
         </nxu:inputList>

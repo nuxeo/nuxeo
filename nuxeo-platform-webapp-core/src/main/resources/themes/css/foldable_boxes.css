@@ -104,9 +104,12 @@ author: lkemen@nuxeo.com
   color: "default (__FLAVOR__ color)";
   display: inline-block;
   margin: .1em .5em .5em 0;
-  width: 350px;
+  overflow: hidden;
   padding: .5em;
-  text-align: left }
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 350px }
 
 .widgetTable .simpleBox {
   margin: .1em auto .5em }
