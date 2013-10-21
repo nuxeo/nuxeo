@@ -31,9 +31,9 @@
 <h:form enctype="multipart/form-data" id="document_files_edit" disableDoubleClickShield="true"
   rendered="#{currentDocument.hasSchema('files')}">
 
-  <h:panelGrid columns="2">
+  <h3><h:outputText value="#{messages['label.upload.files.download']}" /></h3>
 
-    <h:outputText value="#{messages['label.upload.files.download']}" />
+  <h:panelGrid columns="2" styleClass="dataTableNoBorder smallTable">
 
     <rich:fileUpload uploadData="#{FileManageActions.uploadedFiles}"
       listHeight="150" maxFilesQuantity="5"
@@ -49,6 +49,7 @@
 
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
 
+          <div class="simpleBox">
           <h:panelGrid columns="2">
             <a4j:commandLink immediate="true"
               onclick="document.NXContextKeeper_document_files_edit.removeFromKeeper(#{model.rowIndex});if( !confirmRemoveFiles('#{currentDocument.files.files[model.rowIndex].filename}')) return false;"
@@ -65,6 +66,7 @@
             </nxh:outputLink>
 
           </h:panelGrid>
+          </div>
 
         </nxu:inputList>
 
@@ -76,11 +78,11 @@
 
   </h:panelGrid>
 
-  <p class="buttonsGadget">
+  <div>
     <h:commandButton
       value="#{messages['command.add.files']}" styleClass="button"
       action="#{FileManageActions.validateMultiplesUpload}" />
-  </p>
+  </div>
 
 </h:form>
 

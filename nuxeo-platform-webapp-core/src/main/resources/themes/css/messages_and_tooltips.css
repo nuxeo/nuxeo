@@ -275,7 +275,7 @@ div.detail {
   z-index: 2000 }
 
 .dropArea {
-  border: 2px dashed; border-color: "neutral.light (__FLAVOR__ border)";
+  border: 2px dashed; border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
   box-shadow: none;
   color: "gray.light (__FLAVOR__ color)";

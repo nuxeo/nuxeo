@@ -29,7 +29,7 @@ input.button,
   font-size: .95em;
   font-weight: bold;
   margin: 0 .9em .9em 0;
-  padding: .4em .7em .5em;
+  padding: .3em .7em .4em;
   text-decoration: none;
   white-space: nowrap }
 
@@ -115,7 +115,7 @@ input.tinyButton {
   float: left;
   font-weight: bold;
   margin: 0 .9em .9em 0;
-  padding: .3em .7em .5em;
+  padding: .3em .7em .4em;
   text-decoration:none }
 
 .action_bar a img {

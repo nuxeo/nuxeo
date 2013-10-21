@@ -66,12 +66,19 @@ td.dr-tree-i-sel {
 
 /* =FileUpload */
 .rich-fileupload-list-decor {
-  margin: 1em 0 }
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  margin: 0 0 1em }
+
+.rich-fileupload-toolbar-decor {
+  border-style: none none solid;
+  border-width: 1px;
+  border-color: "neutral.lighter (__FLAVOR__ border)" }
 
 .rich-fileupload-button,
 .rich-fileupload-button-light,
 .rich-fileupload-button-press {
-  box-shadow: 0 10px 5px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px #fff inset, 0 -1px 0 rgba(0, 0, 0, 0.05) inset;
+  box-shadow: none;
   background: none 0;
   background-color: "button (__FLAVOR__ background)";
   border: none 0;
@@ -80,13 +87,14 @@ td.dr-tree-i-sel {
 .rich-fileupload-button:hover,
 .rich-fileupload-button-light:hover,
 .rich-fileupload-button-press:hover {
-  background: none "color.major.medium (__FLAVOR__ background)" }
+  border-color: "button.hover (__FLAVOR__ border)";
+  box-shadow: 0 -2px 0 #ddd inset; }
 
 .rich-fileupload-button-border {
   padding: 0;
   margin: .2em;
   border-color: "button (__FLAVOR__ border)";
-  border-radius: 2px }
+  border-radius: 3px }
 
 .rich-fileupload-button-border:hover {
   border: 1px solid;
