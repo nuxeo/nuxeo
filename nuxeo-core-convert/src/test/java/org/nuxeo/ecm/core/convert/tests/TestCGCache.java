@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.convert.tests;
 import java.io.File;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -47,6 +48,8 @@ public class TestCGCache extends NXRuntimeTestCase {
     }
 
     @Test
+    // disabled because randomly failing, see NXP-12900
+    @Ignore
     public void testCGTask() throws Exception {
         int noRuns = ConversionCacheGCManager.getGCRuns();
         Converter cv = deployConverter();
