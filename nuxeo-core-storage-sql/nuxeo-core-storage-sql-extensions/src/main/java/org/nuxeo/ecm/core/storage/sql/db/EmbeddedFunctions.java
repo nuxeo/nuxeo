@@ -75,7 +75,7 @@ public class EmbeddedFunctions {
         }
         PreparedStatement ps = null;
         try {
-            ps = conn.prepareStatement("SELECT PARENTID FROM HIERARCHY WHERE ID = ?");
+            ps = conn.prepareStatement("SELECT PARENTID, ISPROPERTY FROM HIERARCHY WHERE ID = ?");
             do {
                 ps.setObject(1, id);
                 ResultSet rs = ps.executeQuery();
@@ -91,7 +91,12 @@ public class EmbeddedFunctions {
                 if (rs.wasNull()) {
                     id = null;
                 }
+                boolean isProperty = rs.getBoolean(2);
                 rs.close();
+                if (isProperty) {
+                    // a complex property is never in-tree
+                    return false;
+                }
                 if (baseId.equals(id)) {
                     // found a match
                     return true;

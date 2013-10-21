@@ -25,6 +25,12 @@ LANGUAGE SQL
 READS SQL DATA
 BEGIN
   DECLARE curid ${idType} DEFAULT id;
+  DECLARE curisprop BOOLEAN;
+  SELECT isproperty INTO curisprop FROM hierarchy WHERE hierarchy.id = curid;
+  IF curisprop = 1 THEN
+    -- a complex property is never in-tree
+    RETURN FALSE;
+  END IF;
   IF baseid IS NULL OR id IS NULL OR baseid = id THEN
     RETURN FALSE;
   END IF;
