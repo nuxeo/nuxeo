@@ -2685,10 +2685,12 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    If set to true, the content view will be
-                    displayed in a box that can be folded if users would like to
-                    hide this content view content. Note that this state is not
-                    persisted. Available since 5.7, defaults to false.
+                    If set to true, the layout will be
+                    displayed
+                    in a box that can be folded if users would like to
+                    hide it.
+                    Note that this state is not persisted. Available since 5.7,
+                    defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
