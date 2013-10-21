@@ -51,9 +51,9 @@ public class NxFormRenderer extends FormRenderer {
                     ENABLE_DOUBLE_CLICK_ON_ELEMENT);
             if (dcDisabledOnElement != null) {
                 if (dcDisabledOnElement instanceof String) {
-                    Boolean.TRUE.equals(Boolean.valueOf((String) dcDisabledOnElement));
+                    return Boolean.TRUE.equals(Boolean.valueOf((String) dcDisabledOnElement));
                 } else if (dcDisabledOnElement instanceof Boolean) {
-                    Boolean.TRUE.equals(dcDisabledOnElement);
+                    return Boolean.TRUE.equals(dcDisabledOnElement);
                 }
             }
         } else {
