@@ -12,12 +12,17 @@
  */
 package org.nuxeo.ecm.core.convert.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -212,6 +217,20 @@ public class TestService extends NXRuntimeTestCase {
         assertEquals(12, ConversionServiceImpl.getGCIntervalInMinutes());
         assertEquals(132, ConversionServiceImpl.getMaxCacheSizeInKB());
         assertFalse(ConversionServiceImpl.isCacheEnabled());
+    }
+
+    @Test
+    public void testSupportedSourceMimeType() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib1.xml");
+
+        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1",
+                "text/plain"));
+        assertTrue(conversionService.isSourceMimeTypeSupported("dummy1",
+                "text/xml"));
+        assertFalse(conversionService.isSourceMimeTypeSupported("dummy1",
+                "application/pdf"));
     }
 
 }

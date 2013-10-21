@@ -254,4 +254,10 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return result;
     }
 
+    @Override
+    public boolean isSourceMimeTypeSupported(String converterName,
+            String sourceMimeType) {
+        return getConverterDescriptor(converterName).getSourceMimeTypes().contains(
+                sourceMimeType);
+    }
 }

@@ -81,4 +81,13 @@ public interface ConversionService {
     ConverterCheckResult isConverterAvailable(String converterName)
             throws ConversionException;
 
+    /**
+     * Returns true if the converter supports the given {@code sourceMimeType},
+     * false otherwise.
+     *
+     * @since 5.8
+     */
+    boolean isSourceMimeTypeSupported(String converterName,
+            String sourceMimeType);
+
 }
