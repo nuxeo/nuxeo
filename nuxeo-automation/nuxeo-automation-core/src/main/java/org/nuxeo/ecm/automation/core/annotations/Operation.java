@@ -68,4 +68,13 @@ public @interface Operation {
      */
     String since() default "";
 
+    /**
+     * Optional attribute (defaults to true) indicating if this operation
+     * should be exposed in Studio (convenient helper for Studio operations
+     * export)
+     *
+     * @since 5.9
+     */
+    boolean addToStudio() default true;
+
 }

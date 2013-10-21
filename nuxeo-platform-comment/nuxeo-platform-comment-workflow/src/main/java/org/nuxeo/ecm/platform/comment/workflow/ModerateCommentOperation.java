@@ -29,10 +29,9 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.FollowTransitionUnrestricte
 import org.nuxeo.ecm.platform.task.Task;
 
 /**
- *
- *@since 5.5
+ * @since 5.5
  */
-@Operation(id = ModerateCommentOperation.ID, category = Constants.CAT_DOCUMENT, label = "Follow publish or reject transition", description = "Follow publish if accept is true, reject otherwise.")
+@Operation(id = ModerateCommentOperation.ID, category = Constants.CAT_DOCUMENT, label = "Follow publish or reject transition", description = "Follow publish if accept is true, reject otherwise.", addToStudio = false)
 public class ModerateCommentOperation {
 
     public static final String ID = "Comment.Moderate";
@@ -61,7 +60,8 @@ public class ModerateCommentOperation {
     protected void moderate(DocumentRef docRef) throws ClientException {
         DocumentModel taskDoc = (DocumentModel) ctx.get(OperationTaskVariableName.taskDocument.name());
         Task task = taskDoc.getAdapter(Task.class);
-        DocumentRef targetDocRef = new IdRef(task.getVariable(CommentsConstants.COMMENT_ID));
+        DocumentRef targetDocRef = new IdRef(
+                task.getVariable(CommentsConstants.COMMENT_ID));
         FollowTransitionUnrestricted runner;
         if (accept) {
             runner = new FollowTransitionUnrestricted(session, targetDocRef,

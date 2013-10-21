@@ -49,7 +49,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-@Operation(id = UpdateDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Updates directory entries", description = "Updates directory entries. Entries to update are sent as a JSON array. Returns the updated entries ids as a JSON array of JSON objects containing all fields")
+@Operation(id = UpdateDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Updates directory entries", description = "Updates directory entries. Entries to update are sent as a JSON array. Returns the updated entries ids as a JSON array of JSON objects containing all fields", addToStudio = false)
 public class UpdateDirectoryEntries extends AbstractDirectoryOperation {
 
     public static final String ID = "Directory.UpdateEntries";

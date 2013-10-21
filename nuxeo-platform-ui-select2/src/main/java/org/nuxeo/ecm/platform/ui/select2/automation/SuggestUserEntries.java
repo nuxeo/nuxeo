@@ -56,7 +56,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  *
  * @since 5.7.3
  */
-@Operation(id = SuggestUserEntries.ID, category = Constants.CAT_SERVICES, label = "Get user/group suggestion", description = "Get the user/group list of the running instance. This is returning a blob containing a serialized JSON array..")
+@Operation(id = SuggestUserEntries.ID, category = Constants.CAT_SERVICES, label = "Get user/group suggestion", description = "Get the user/group list of the running instance. This is returning a blob containing a serialized JSON array..", addToStudio = false)
 public class SuggestUserEntries {
 
     @SuppressWarnings("unused")
@@ -153,9 +153,8 @@ public class SuggestUserEntries {
                             Select2Common.USER_TYPE);
                     obj.put(Select2Common.PREFIXED_ID_KEY_NAME,
                             NuxeoPrincipal.PREFIX + userId);
-                    Select2Common.computeUserLabel(obj,
-                            firstLabelField, secondLabelField,
-                            thirdLabelField, hideFirstLabel,
+                    Select2Common.computeUserLabel(obj, firstLabelField,
+                            secondLabelField, thirdLabelField, hideFirstLabel,
                             hideSecondLabel, hideThirdLabel,
                             displayEmailInSuggestion, userId);
                     Select2Common.computeUserGroupIcon(obj, hideIcon);
@@ -188,7 +187,8 @@ public class SuggestUserEntries {
                     String groupId = group.getId();
                     obj.put(Select2Common.ID, groupId);
                     // If the group hasn't an label, let's put the groupid
-                    Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
+                    Select2Common.computeGroupLabel(obj, groupId,
+                            userManager.getGroupLabelField(), hideFirstLabel);
                     obj.put(Select2Common.TYPE_KEY_NAME,
                             Select2Common.GROUP_TYPE);
                     obj.put(Select2Common.PREFIXED_ID_KEY_NAME,

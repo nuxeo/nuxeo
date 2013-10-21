@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @since 5.7
  */
-@Operation(id = BusinessUpdateOperation.ID, category = Constants.CAT_BUSINESS, label = "BusinessUpdateOperation", description = "This operation map pojo client side to document adapter server side and update the related NX document.")
+@Operation(id = BusinessUpdateOperation.ID, category = Constants.CAT_BUSINESS, label = "BusinessUpdateOperation", description = "This operation map pojo client side to document adapter server side and update the related NX document.", addToStudio = false)
 public class BusinessUpdateOperation {
 
     public static final String ID = "Business.BusinessUpdateOperation";

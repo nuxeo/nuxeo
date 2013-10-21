@@ -32,13 +32,13 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.8
  */
-@Operation(id=AutomationTraceGetOperation.ID, category=Constants.CAT_EXECUTION, label="Traces.getTrace", description="Retrieve trace associated to a Chain or an Operation")
+@Operation(id = AutomationTraceGetOperation.ID, category = Constants.CAT_EXECUTION, label = "Traces.getTrace", description = "Retrieve trace associated to a Chain or an Operation", addToStudio = false)
 public class AutomationTraceGetOperation {
 
     public static final String ID = "Traces.Get";
 
     @Param(name = "traceKey", required = false)
-    protected String traceKey= null;
+    protected String traceKey = null;
 
     @Param(name = "index", required = false)
     protected int index = -1;
@@ -47,8 +47,8 @@ public class AutomationTraceGetOperation {
     protected OperationContext ctx;
 
     protected boolean canManageTraces() {
-        NuxeoPrincipal principal = (NuxeoPrincipal)ctx.getPrincipal();
-        return principal !=null && (principal.isAdministrator());
+        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        return principal != null && (principal.isAdministrator());
     }
 
     @OperationMethod
@@ -60,17 +60,16 @@ public class AutomationTraceGetOperation {
 
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
 
-        if (traceKey==null) {
+        if (traceKey == null) {
             Trace trace = tracerFactory.getLastErrorTrace();
-            if (trace!=null) {
+            if (trace != null) {
                 return trace.getFormattedText();
             } else {
                 return "no previous error trace found";
             }
-        }
-        else {
+        } else {
             Trace trace = tracerFactory.getTrace(traceKey);
-            if (trace!=null) {
+            if (trace != null) {
                 return trace.getFormattedText();
             } else {
                 return "no trace found";

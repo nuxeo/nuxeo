@@ -53,7 +53,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-@Operation(id = DeleteDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Deletes directory entries", description = "Deletes directory entries. Entries ids to delete are sent through a JSON array. Returns deleted entries id as a JSON array.")
+@Operation(id = DeleteDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Deletes directory entries", description = "Deletes directory entries. Entries ids to delete are sent through a JSON array. Returns deleted entries id as a JSON array.", addToStudio = false)
 public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
 
     public static final String ID = "Directory.DeleteEntries";

@@ -47,7 +47,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-@Operation(id = CreateDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Creates directory entries", description = "Creates directory entries. Entries are sent as a JSON array. Returning the created entries ids as a JSON array.")
+@Operation(id = CreateDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Creates directory entries", description = "Creates directory entries. Entries are sent as a JSON array. Returning the created entries ids as a JSON array.", addToStudio = false)
 public class CreateDirectoryEntries extends AbstractDirectoryOperation {
 
     public static final String ID = "Directory.CreateEntries";

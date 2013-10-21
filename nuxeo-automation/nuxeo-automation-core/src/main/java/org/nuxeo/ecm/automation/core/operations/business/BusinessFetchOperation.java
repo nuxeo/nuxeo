@@ -23,12 +23,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
- * This operation map pojo client side to document adapter server side and fetch
- * the related NX document.
+ * This operation map pojo client side to document adapter server side and
+ * fetch the related NX document.
  *
  * @since 5.7
  */
-@Operation(id = BusinessFetchOperation.ID, category = Constants.CAT_BUSINESS, label = "BusinessFetchOperation", description = "This operation map pojo client side to document adapter server side and fetch the related NX document.")
+@Operation(id = BusinessFetchOperation.ID, category = Constants.CAT_BUSINESS, label = "BusinessFetchOperation", description = "This operation map pojo client side to document adapter server side and fetch the related NX document.", addToStudio = false)
 public class BusinessFetchOperation {
 
     public static final String ID = "Business.BusinessFetchOperation";

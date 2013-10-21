@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @since 5.7
  */
-@Operation(id = BusinessCreateOperation.ID, category = Constants.CAT_BUSINESS, label = "BusinessCreateOperation", description = "This operation map pojo client side to document adapter server side and create NX document assuming that pojo and adapter have both properties in common.")
+@Operation(id = BusinessCreateOperation.ID, category = Constants.CAT_BUSINESS, label = "BusinessCreateOperation", description = "This operation map pojo client side to document adapter server side and create NX document assuming that pojo and adapter have both properties in common.", addToStudio = false)
 public class BusinessCreateOperation {
 
     public static final String ID = "Business.BusinessCreateOperation";
@@ -51,14 +51,13 @@ public class BusinessCreateOperation {
     public BusinessAdapter run(BusinessAdapter input) throws ClientException,
             DocumentException {
         DocumentModel document = input.getDocument();
-        DocumentModel createDocumentModel = session.createDocumentModel(parentPath, name,input.getType());
-
+        DocumentModel createDocumentModel = session.createDocumentModel(
+                parentPath, name, input.getType());
 
         for (Entry<String, DataModel> entry : createDocumentModel.getDataModels().entrySet()) {
             DataModel dataModel = document.getDataModel(entry.getKey());
             entry.getValue().setMap(dataModel.getMap());
         }
-
 
         document = session.createDocument(document);
         return document.getAdapter(input.getClass());

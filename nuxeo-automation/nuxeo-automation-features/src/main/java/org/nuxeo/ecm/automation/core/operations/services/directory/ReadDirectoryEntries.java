@@ -56,7 +56,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-@Operation(id = ReadDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Reads directory entries", description = "Reads directory entries. Entries ids to read are sent as a JSON array. Returns the entries as a JSON array of JSON objects containing all fields.")
+@Operation(id = ReadDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Reads directory entries", description = "Reads directory entries. Entries ids to read are sent as a JSON array. Returns the entries as a JSON array of JSON objects containing all fields.", addToStudio = false)
 public class ReadDirectoryEntries extends AbstractDirectoryOperation {
 
     public static final String ID = "Directory.ReadEntries";

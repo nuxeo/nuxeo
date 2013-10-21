@@ -28,11 +28,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.8
  */
-@Operation(id=AutomationTraceToggleOperation.ID, category=Constants.CAT_EXECUTION, label="Traces.toggleRecording", description="Toggle Automation call tracing (you can set the 'enableTrace' parameter if you want to explicitly set the traceEnable value")
+@Operation(id = AutomationTraceToggleOperation.ID, category = Constants.CAT_EXECUTION, label = "Traces.toggleRecording", description = "Toggle Automation call tracing (you can set the 'enableTrace' parameter if you want to explicitly set the traceEnable value", addToStudio = false)
 public class AutomationTraceToggleOperation {
 
     public static final String ID = "Traces.ToggleRecording";
@@ -44,15 +43,15 @@ public class AutomationTraceToggleOperation {
     protected OperationContext ctx;
 
     protected boolean canManageTraces() {
-        NuxeoPrincipal principal = (NuxeoPrincipal)ctx.getPrincipal();
-        return principal !=null && (principal.isAdministrator());
+        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        return principal != null && (principal.isAdministrator());
     }
 
     @OperationMethod
     public boolean run() {
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         if (canManageTraces()) {
-            if (enableTrace==null) {
+            if (enableTrace == null) {
                 tracerFactory.toggleRecording();
             } else {
                 if (enableTrace != tracerFactory.getRecordingState()) {

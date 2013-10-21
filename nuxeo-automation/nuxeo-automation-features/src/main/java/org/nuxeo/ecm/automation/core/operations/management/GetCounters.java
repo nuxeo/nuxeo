@@ -40,14 +40,12 @@ import org.nuxeo.runtime.management.counters.CounterHistoryStack;
 import org.nuxeo.runtime.management.counters.CounterManager;
 
 /**
-* Return the data collected by one or more Counters
-*
-* For each counter 3 series are returned , bare values, delta and speed
-*
-* @author Tiry (tdelprat@nuxeo.com)
-*
-*/
-@Operation(id = GetCounters.ID, category = Constants.CAT_SERVICES, label = "Retrieve counters values", description = "Retrieve data collected by one or more Counters")
+ * Return the data collected by one or more Counters For each counter 3 series
+ * are returned , bare values, delta and speed
+ *
+ * @author Tiry (tdelprat@nuxeo.com)
+ */
+@Operation(id = GetCounters.ID, category = Constants.CAT_SERVICES, label = "Retrieve counters values", description = "Retrieve data collected by one or more Counters", addToStudio = false)
 public class GetCounters {
 
     public static final String ID = "Counters.GET";
@@ -74,7 +72,8 @@ public class GetCounters {
                     CounterHistoryStack stack = cm.getCounterHistory(counterName);
 
                     // copy and reverse the list
-                    List<long[]> valueList = new ArrayList<long[]>(stack.getAsList());
+                    List<long[]> valueList = new ArrayList<long[]>(
+                            stack.getAsList());
                     Collections.reverse(valueList);
 
                     JSONObject counter = new JSONObject();
@@ -92,8 +91,8 @@ public class GetCounters {
                     for (long[] values : valueList) {
 
                         // use seconds
-                        long ts =values[0];
-                        float t = (now - ts)/1000;
+                        long ts = values[0];
+                        float t = (now - ts) / 1000;
                         float value = values[1];
 
                         JSONArray valueArray = new JSONArray();
@@ -110,14 +109,14 @@ public class GetCounters {
                         deltaArray.add(value - lastValue);
                         deltaSerie.add(deltaArray);
 
-                        if (lastTS>0) {
+                        if (lastTS > 0) {
                             // speed values
                             speedArray.add(ts);
-                            float tdelta = lastTS-t;
-                            if (tdelta==0) {
-                                tdelta=1;
+                            float tdelta = lastTS - t;
+                            if (tdelta == 0) {
+                                tdelta = 1;
                             }
-                            speedArray.add(60*(value - lastValue) / (tdelta));
+                            speedArray.add(60 * (value - lastValue) / (tdelta));
                             speedSerie.add(speedArray);
                         }
                         lastTS = t;
@@ -133,9 +132,8 @@ public class GetCounters {
             }
         }
 
-
         return new ByteArrayBlob(collection.toString().getBytes("UTF-8"),
-        "application/json");
+                "application/json");
     }
 
 }

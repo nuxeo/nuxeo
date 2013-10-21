@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
         + "paginated. The result is returned as a RecordSet (QueryAndFetch) rather than as a List of Document"
         + "The query result will become the input for the next "
         + "operation. If no query or provider name is given, a query returning "
-        + "all the documents that the user has access to will be executed.")
+        + "all the documents that the user has access to will be executed.", addToStudio = false)
 public class ResultSetPageProviderOperation {
 
     public static final String ID = "Resultset.PageProvider";

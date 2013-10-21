@@ -51,7 +51,7 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-@Operation(id = GetActions.ID, category = Constants.CAT_SERVICES, label = "List available actions", description = "Retrieve list of available actions for a given category. Action context is built based on the Operation context (currentDocument will be fetched from Context if not provided as input). If this operation is executed in a chain that initialized the Seam context, it will be used for Action context")
+@Operation(id = GetActions.ID, category = Constants.CAT_SERVICES, label = "List available actions", description = "Retrieve list of available actions for a given category. Action context is built based on the Operation context (currentDocument will be fetched from Context if not provided as input). If this operation is executed in a chain that initialized the Seam context, it will be used for Action context", addToStudio = false)
 public class GetActions {
 
     private static final String SEAM_ACTION_CONTEXT = "seamActionContext";
