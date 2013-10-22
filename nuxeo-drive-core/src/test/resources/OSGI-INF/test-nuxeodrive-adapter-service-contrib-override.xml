@@ -36,6 +36,9 @@
   <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
     point="activeFileSystemItemFactories">
 
+    <activeTopLevelFolderItemFactory>org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory
+    </activeTopLevelFolderItemFactory>
+
     <activeFileSystemItemFactories merge="true">
       <factories>
         <!-- Disable defaultFileSystemItemFactory -->

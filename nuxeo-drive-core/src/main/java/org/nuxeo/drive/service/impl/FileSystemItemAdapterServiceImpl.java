@@ -54,9 +54,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     public static final String ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP = "activeFileSystemItemFactories";
 
+    protected TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry;
+
     protected FileSystemItemFactoryRegistry fileSystemItemFactoryRegistry;
 
-    protected TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry;
+    protected ActiveTopLevelFolderItemFactoryRegistry activeTopLevelFolderItemFactoryRegistry;
 
     protected ActiveFileSystemItemFactoryRegistry activeFileSystemItemFactoryRegistry;
 
@@ -71,7 +73,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
             topLevelFolderItemFactoryRegistry.addContribution((TopLevelFolderItemFactoryDescriptor) contribution);
         } else if (ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP.equals(extensionPoint)) {
-            activeFileSystemItemFactoryRegistry.addContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+            if (contribution instanceof ActiveTopLevelFolderItemFactoryDescriptor) {
+                activeTopLevelFolderItemFactoryRegistry.addContribution((ActiveTopLevelFolderItemFactoryDescriptor) contribution);
+            } else if (contribution instanceof ActiveFileSystemItemFactoriesDescriptor) {
+                activeFileSystemItemFactoryRegistry.addContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+            }
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -85,7 +91,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
             topLevelFolderItemFactoryRegistry.removeContribution((TopLevelFolderItemFactoryDescriptor) contribution);
         } else if (ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP.equals(extensionPoint)) {
-            activeFileSystemItemFactoryRegistry.removeContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+            if (contribution instanceof ActiveTopLevelFolderItemFactoryDescriptor) {
+                activeTopLevelFolderItemFactoryRegistry.removeContribution((ActiveTopLevelFolderItemFactoryDescriptor) contribution);
+            } else if (contribution instanceof ActiveFileSystemItemFactoriesDescriptor) {
+                activeFileSystemItemFactoryRegistry.removeContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+            }
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -95,6 +105,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     public void activate(ComponentContext context) {
         fileSystemItemFactoryRegistry = new FileSystemItemFactoryRegistry();
         topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
+        activeTopLevelFolderItemFactoryRegistry = new ActiveTopLevelFolderItemFactoryRegistry();
         activeFileSystemItemFactoryRegistry = new ActiveFileSystemItemFactoryRegistry();
         fileSystemItemFactories = new ArrayList<FileSystemItemFactoryWrapper>();
     }
@@ -104,6 +115,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         super.deactivate(context);
         fileSystemItemFactoryRegistry = null;
         topLevelFolderItemFactoryRegistry = null;
+        activeTopLevelFolderItemFactoryRegistry = null;
         activeFileSystemItemFactoryRegistry = null;
         fileSystemItemFactories = null;
     }
