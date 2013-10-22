@@ -34,6 +34,7 @@ import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -65,6 +66,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
+import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
@@ -149,6 +151,8 @@ public class SQLSession implements Session {
     public void save() throws DocumentException {
         try {
             session.save();
+        } catch (ConcurrentUpdateStorageException e) {
+            throw new ConcurrentUpdateDocumentException(e);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

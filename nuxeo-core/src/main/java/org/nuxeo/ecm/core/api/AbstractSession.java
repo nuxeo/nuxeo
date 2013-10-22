@@ -1884,6 +1884,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             getSession().save();
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null,
                     null, true, false);
+        } catch (ConcurrentUpdateDocumentException e) {
+            throw new ConcurrentUpdateException("Failed to save session", e);
         } catch (DocumentException e) {
             throw new ClientException("Failed to save session", e);
         }

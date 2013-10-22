@@ -21,6 +21,7 @@ import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
@@ -301,6 +302,24 @@ public class JDBCConnection {
             } catch (StorageException ee) {
                 // swallow, exception already thrown by caller
             }
+        }
+    }
+
+    /**
+     * Checks the SQL error we got and determine if a concurrent update
+     * happened. Throws if that's the case.
+     * <p>
+     * Called with a generic Exception and not just SQLException because the
+     * PostgreSQL JDBC driver sometimes fails to unwrap properly some
+     * InvocationTargetException / UndeclaredThrowableException.
+     *
+     * @param t the exception
+     * @since 5.8
+     */
+    protected void checkConcurrentUpdate(Throwable t)
+            throws ConcurrentUpdateStorageException {
+        if (dialect.isConcurrentUpdateException(t)) {
+            throw new ConcurrentUpdateStorageException(t);
         }
     }
 

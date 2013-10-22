@@ -79,7 +79,12 @@ public class FulltextUpdaterWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws Exception {
+    public int getRetryCount() {
+        return 1;
+    }
+
+    @Override
+    public void retryableWork() throws Exception {
         initSession();
         // if the runtime has shut down (normally because tests are finished)
         // this can happen, see NXP-4009
@@ -142,8 +147,4 @@ public class FulltextUpdaterWork extends AbstractWork {
         return name;
     }
 
-    @Override
-    public void cleanUp(boolean ok, Exception e) {
-        super.cleanUp(ok, e);
-    }
 }

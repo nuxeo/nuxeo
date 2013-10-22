@@ -150,6 +150,11 @@ public abstract class DatabaseHelper {
                 // skip nested table that is dropped by the main table
                 continue;
             }
+            if ("ACLR_MODIFIED".equals(tableName)
+                    && DATABASE instanceof DatabaseOracle) {
+                // skip temporary table on Oracle, cannot be dropped
+                continue;
+            }
             tableNames.add(tableName);
         }
         // not all databases can cascade on drop

@@ -28,6 +28,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -252,10 +253,12 @@ public abstract class AbstractWork implements Work {
      * @return the session (also available in {@code session} field)
      */
     public CoreSession initSession(String repositoryName) throws Exception {
-        try {
-            loginContext = Framework.login();
-        } catch (LoginException e) {
-            log.error("Cannot log in", e);
+        if (loginContext == null) {
+            try {
+                loginContext = Framework.login();
+            } catch (LoginException e) {
+                log.error("Cannot log in", e);
+            }
         }
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         if (repositoryManager == null) {
@@ -272,6 +275,65 @@ public abstract class AbstractWork implements Work {
         }
         session = repository.open();
         return session;
+    }
+
+    /**
+     * Closes the session that was opened by {@link #initSession}.
+     *
+     * @since 5.8
+     */
+    public void closeSession() {
+        if (session != null) {
+            CoreInstance.getInstance().close(session);
+            session = null;
+        }
+    }
+
+    @Override
+    public void work() throws Exception {
+        Exception exception = null;
+        int retryCount = getRetryCount(); // may be 0
+        for (int i = 0; i <= retryCount; i++) {
+            if (i > 0) {
+                log.debug("Retrying work due to concurrent update (" + i
+                        + "): " + this);
+                log.trace("Concurrent update", exception);
+                rollbackAndRetryTransaction();
+            }
+            try {
+                retryableWork();
+                return;
+            } catch (ConcurrentUpdateException e) {
+                exception = e;
+            }
+        }
+        if (exception == null) {
+            throw new RuntimeException("Invalid retry count: " + retryCount);
+        }
+        throw exception;
+    }
+
+    /**
+     * Gets the number of times that this Work instance can be retried in case
+     * of concurrent update exceptions.
+     *
+     * @return 0 for no retry, or more if some retries are possible
+     * @see #retryableWork
+     * @since 5.8
+     */
+    public int getRetryCount() {
+        return 0;
+    }
+
+    /**
+     * This method, along with {@link #getRetryCount}, should be implemented if
+     * the work instance can be retried in case of concurrent update exceptions.
+     *
+     * @see #getRetryCount
+     * @since 5.8
+     */
+    public void retryableWork() throws Exception {
+        throw new UnsupportedOperationException("Missing implementation");
     }
 
     /**
@@ -295,10 +357,7 @@ public abstract class AbstractWork implements Work {
             }
         }
         try {
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-                session = null;
-            }
+            closeSession();
         } finally {
             if (loginContext != null) {
                 try {
@@ -389,6 +448,19 @@ public abstract class AbstractWork implements Work {
     @Override
     public boolean isDocumentTree() {
         return isTree;
+    }
+
+    /**
+     * Rolls back the transaction and starts another one. Closes the session as
+     * well.
+     *
+     * @since 5.8
+     */
+    public void rollbackAndRetryTransaction() {
+        closeSession();
+        TransactionHelper.setTransactionRollbackOnly();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     /**

@@ -1406,6 +1406,43 @@ public abstract class Dialect {
     }
 
     /**
+     * Checks if an exception received means that a concurrent update was
+     * detected.
+     *
+     * @since 5.8
+     */
+    public boolean isConcurrentUpdateException(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        if (t instanceof SQLException) {
+            String sqlState = ((SQLException) t).getSQLState();
+            if (sqlState.startsWith("23")) {
+                // SQL
+                // - 23000 INTEGRITY_CONSTRAINT_VIOLATION_NO_SUBCLASS
+                // H2
+                // - 23002 org.h2.jdbc.JdbcSQLException: Referential integrity
+                // constraint violation
+                // PostgreSQL
+                // - 23503 org.postgresql.util.PSQLException: ERROR: insert or
+                // update on table ... violates foreign key constraint
+                // MySQL
+                // - 23000 Integrity constraint violation: 1452 Cannot add or
+                // update a child row: a foreign key constraint fails
+                // Oracle
+                // - 23000
+                // java.sql.SQLIntegrityConstraintViolationException: ORA-02291:
+                // integrity constraint ... violated - parent key not found
+                // SQL Server
+                // - 23000 Msg 547 The INSERT statement conflicted with the
+                // FOREIGN KEY constraint ...
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Let the dialect processes additional statements after tables creation and
      * conditional statements. Can be used for specific upgrade procedure.
      *

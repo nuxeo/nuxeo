@@ -601,6 +601,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     e.initCause(bue.getNextException());
                 }
             }
+            checkConcurrentUpdate(e);
             throw new StorageException("Could not insert: " + sql, e);
         }
     }
