@@ -26,8 +26,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.multi.tenant.MultiTenantHelper;
+import org.nuxeo.ecm.multi.tenant.MultiTenantService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
 import org.nuxeo.ecm.platform.userworkspace.core.service.DefaultUserWorkspaceServiceImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Multi tenant aware implementation of the
@@ -48,6 +50,12 @@ public class MultiTenantUserWorkspaceService extends
     @Override
     protected String computePathUserWorkspaceRoot(CoreSession userCoreSession,
             DocumentModel currentDocument) throws ClientException {
+        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        if (!multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
+            return super.computePathUserWorkspaceRoot(userCoreSession,
+                    currentDocument);
+        }
+
         String tenantId = MultiTenantHelper.getCurrentTenantId(userCoreSession.getPrincipal());
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
@@ -75,6 +83,12 @@ public class MultiTenantUserWorkspaceService extends
     protected String computePathForUserWorkspace(CoreSession userCoreSession,
             String userName, DocumentModel currentDocument)
             throws ClientException {
+        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        if (!multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
+            return super.computePathForUserWorkspace(userCoreSession, userName,
+                    currentDocument);
+        }
+
         String tenantId = MultiTenantHelper.getTenantId(userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
@@ -102,9 +116,14 @@ public class MultiTenantUserWorkspaceService extends
     protected DocumentModel getCurrentUserPersonalWorkspace(
             Principal principal, String username, CoreSession userCoreSession,
             DocumentModel context) throws ClientException {
+        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        if (!multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
+            return super.getCurrentUserPersonalWorkspace(principal, username,
+                    userCoreSession, context);
+        }
+
         String usedUsername = principal == null ? username
                 : principal.getName();
-
         String tenantId = MultiTenantHelper.getTenantId(usedUsername);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
