@@ -88,7 +88,7 @@ public class FacetedSearchSuggestionHandler {
      * Set search criteria on given faceted search content view, and returns a
      * boolean stating if at least one of the document properties was impacted.
      *
-     * @since 5.9
+     * @since 5.8
      */
     protected boolean impactContentView(ContentViewActions contentViewActions,
             String contentViewName, SearchDocumentsSuggestion suggestion)
