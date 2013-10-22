@@ -39,6 +39,9 @@ public final class DocumentEventTypes {
      */
     public static final String DOCUMENT_CREATED = "documentCreated";
 
+    /** @since 5.8 **/
+    public static final String ABOUT_TO_IMPORT = "aboutToImport";
+
     public static final String DOCUMENT_IMPORTED = "documentImported";
 
     public static final String ABOUT_TO_REMOVE = "aboutToRemove";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2011, 2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -55,7 +55,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
@@ -715,25 +714,26 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 checkPermission(srcDoc, REMOVE);
             }
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
 
+            DocumentModel srcDocModel = readModel(srcDoc);
+            if (name == null) {
+                name = srcDocModel.getName();
+            }
+            Map<String, Serializable> options = getContextMapEventInfo(srcDocModel);
             // add the destination name, destination and source references in
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
             options.put(CoreEventConstants.DESTINATION_NAME, name);
 
-            DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options,
                     null, null, true, true);
+
+            name = (String)options.get(CoreEventConstants.DESTINATION_NAME);
 
             String comment = srcDoc.getRepository().getName() + ':'
                     + srcDoc.getParent().getUUID();
 
-            if (name == null) {
-                name = srcDoc.getName();
-            }
-            name = generateDocumentName(dstDoc, name);
             Document doc = getSession().move(srcDoc, dstDoc, name);
 
             // notify document moved
@@ -877,6 +877,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     : resolveReference(parentRef);
             if (folder != null) {
                 checkPermission(folder, ADD_CHILDREN);
+            } else {
+                folder = getSession().getNullDocument();
             }
 
             // get initial life cycle state info
@@ -885,12 +887,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             if (lifecycleStateInfo instanceof String) {
                 initialLifecycleState = (String) lifecycleStateInfo;
             }
-
+            String name = docModel.getName();
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
+            options.put(CoreEventConstants.DESTINATION_REF, parentRef);
+            options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
             notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false, true); // no lifecycle yet
-            String name = docModel.getName();
-            name = generateDocumentName(folder, name);
+            name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
             if (folder == null) {
                 folder = getSession().getNullDocument();
             }
@@ -974,11 +977,12 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         DocumentRef parentRef = docModel.getParentRef();
         Document parent = parentRef == null || EMPTY_PATH.equals(parentRef) ? null
                 : resolveReference(parentRef);
-        Map<String, Serializable> props = docModel.getContextData().getDefaultScopeValues();
-
-        if (parent != null) {
-            name = generateDocumentName(parent, name);
-        }
+        Map<String, Serializable> props = getContextMapEventInfo(docModel);
+        props.put(CoreEventConstants.DESTINATION_REF, parentRef);
+        props.put(CoreEventConstants.DESTINATION_NAME, name);
+        notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT,
+                docModel, null, null, null, false, true);
+        name = (String)props.get(CoreEventConstants.DESTINATION_NAME);
 
         // create the document
         Document doc = getSession().importDocument(id, parent, name, typeName,
@@ -995,25 +999,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         // send an event about the import
         notifyEvent(DocumentEventTypes.DOCUMENT_IMPORTED, docModel, null, null,
                 null, true, false);
-    }
-
-    /**
-     * Generate a non-null unique name within given parent's children.
-     * <p>
-     * If name is null, a name is generated. If name is already used, a random
-     * suffix is appended to it.
-     *
-     * @return a unique name within given parent's children
-     */
-    public String generateDocumentName(Document parent, String name)
-            throws DocumentException {
-        if (name == null || name.length() == 0) {
-            name = IdUtils.generateStringId();
-        }
-        if (parent != null && parent.hasChild(name)) {
-            name += '.' + String.valueOf(System.currentTimeMillis());
-        }
-        return name;
     }
 
     @Override
@@ -1922,16 +1907,16 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
             options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL,
                     readModel(doc));
-
             // regular event, last chance to modify docModel
-            String name = docModel.getName();
+            options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                     options, null, null, true, true);
+            String name = (String)options.get(CoreEventConstants.DESTINATION_NAME);
             // did the event change the name? not applicable to Root whose
             // name is null/empty
             if (name != null && !name.equals(docModel.getName())) {
                 doc = getSession().move(doc, doc.getParent(),
-                        docModel.getName());
+                        name);
             }
 
             VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);

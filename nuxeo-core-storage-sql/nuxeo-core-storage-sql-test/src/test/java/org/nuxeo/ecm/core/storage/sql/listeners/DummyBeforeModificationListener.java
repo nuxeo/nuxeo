@@ -38,8 +38,7 @@ public class DummyBeforeModificationListener implements EventListener {
         // do the event job: rename
         DocumentModel doc = context.getSourceDocument();
         String name = doc.getTitle() + "-rename";
-        String parentPath = doc.getPath().removeLastSegments(1).toString();
-        doc.setPathInfo(parentPath, name);
+        context.setProperty(CoreEventConstants.DESTINATION_NAME, name);
     }
 
 }
