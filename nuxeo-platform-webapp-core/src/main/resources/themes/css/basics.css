@@ -32,10 +32,6 @@ a img,
 :visited img {
   border: none }
 
-a,
-img {
-  outline: medium none }
-
 em,
 strong {
   font-weight: bold }
@@ -53,6 +49,14 @@ a:visited {
 a:hover {
   color: "link.hover (__FLAVOR__ color)";
   text-decoration: none }
+
+a,
+img,
+a:focus,
+a:active,
+:link:focus,
+:link:active {
+  outline: medium none }
 
 h1, h2,
 h3, h4,

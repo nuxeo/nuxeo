@@ -45,9 +45,11 @@ table td {
   border-width: 1px;
   padding: .6em .4em }
 
+.dataRowOdd:hover,
+.dataRowEven:hover,
 .dataTable tr:hover,
 .dataTableLine tr:hover {
-  background-color: "color.major.light (__FLAVOR__ background)" }
+  background-color: "neutral.lighter (__FLAVOR__ background)" }
 
 .dataTable,
 .fieldColumn .dataTable {
@@ -149,10 +151,6 @@ table.smallTable td {
 
 .dataOutput .button {
   margin: .2em 1em .2em 0 !important }
-
-.dataRowOdd:hover,
-.dataRowEven:hover {
-  background-color: "color.major.light (__FLAVOR__ background)" }
 
 table.noHover tr:hover {
   background: none transparent }

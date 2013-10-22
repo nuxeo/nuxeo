@@ -46,7 +46,8 @@ input.button:hover,
 
 .button:focus {
   border-color: #2e9cff;
-  box-shadow: 0 0 3px #b5dcff, 0 -2px 0 #ddd inset }
+  box-shadow: 0 0 3px #b5dcff, 0 -2px 0 #ddd inset;
+  outline: none }
 
 .button[disabled],
 .button[disabled]:hover,
@@ -90,7 +91,7 @@ input.tinyButton {
 .action_bar {
   float: left;
   line-height: normal;
-  margin: 1em 1em 1em 0 }
+  margin: .5em .5em .8em 0 }
 
 .action_bar_message {
   float: right;
@@ -113,8 +114,9 @@ input.tinyButton {
 
 .action_bar a {
   float: left;
+  font-size: .9em;
   font-weight: bold;
-  margin: 0 .9em .9em 0;
+  margin: 0 .6em .7em 0;
   padding: .3em .7em .4em;
   text-decoration:none }
 
@@ -398,9 +400,9 @@ input.tinyButton {
   padding: 0 .3em;
   text-decoration: none }
 
+a.tag,
 .tag a,
-.tagLink a,
-a.tag {
+.tagLink a {
   color: "black (__FLAVOR__ color)";
   opacity: .8;
   padding: 0 0 0 .2em;

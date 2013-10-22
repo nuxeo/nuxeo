@@ -249,7 +249,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding: 0 }
 
 .compactLayout .widgetHeader.foldedDisabled {
-  background-color: "neutral.medium (__FLAVOR__ background)";
+  background-color: "neutral.light (__FLAVOR__ background)";
   border: none;
   color: "default (__FLAVOR__ color)";
   font-size: 1em;
