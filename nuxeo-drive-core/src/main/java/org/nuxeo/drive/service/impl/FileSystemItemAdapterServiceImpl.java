@@ -233,7 +233,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     /*--------------------------- Protected ---------------------------------------*/
     protected void sortFileSystemItemFactories() throws InstantiationException,
             IllegalAccessException, ClientException {
-        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedFactories();
+        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
     }
 
     /**
