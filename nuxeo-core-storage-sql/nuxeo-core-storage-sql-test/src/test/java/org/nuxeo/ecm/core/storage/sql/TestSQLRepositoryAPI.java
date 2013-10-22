@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.derby.tools.sysinfo;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -3280,6 +3281,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
         assertEquals(2, session.getChildrenRefs(folder.getRef(), null).size());
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
+
+        // publish a restored version
+        List<DocumentRef> versions = session.getVersionsRefs(doc.getRef());
+        assertEquals(2, versions.size());
+        doc = session.restoreToVersion(doc.getRef(), versions.get(0));
+        assertEquals("0.1", doc.getVersionLabel());
+        proxy = session.publishDocument(doc, folder);
+        assertEquals("0.1", proxy.getVersionLabel());
 
         // publish a version directly
         DocumentModel ver = session.getLastDocumentVersion(doc.getRef());

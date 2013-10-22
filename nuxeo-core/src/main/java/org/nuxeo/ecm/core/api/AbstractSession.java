@@ -3021,7 +3021,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                     notifyCheckedInVersion(docModel,
                             new IdRef(version.getUUID()), null, checkinComment);
                 }
-                target = doc.getLastVersion();
+                // NXP-12921: use base version because we could need to publish
+                // a previous version (after restoring for example)
+                target = doc.getBaseVersion();
                 if (overwriteExistingProxy) {
                     proxy = updateExistingProxies(doc, sec, target);
                     if (proxy == null) {
