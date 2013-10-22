@@ -99,7 +99,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
         return parameters;
     }
 
-    public String getparameter(String name) {
+    public String getParameter(String name) {
         return parameters.get(name);
     }
 

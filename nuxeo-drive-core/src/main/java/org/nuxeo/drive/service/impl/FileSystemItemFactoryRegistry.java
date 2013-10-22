@@ -124,7 +124,7 @@ public class FileSystemItemFactoryRegistry extends
         // Parameters
         if (!MapUtils.isEmpty(src.getParameters())) {
             for (String name : src.getParameters().keySet()) {
-                dst.setParameter(name, src.getparameter(name));
+                dst.setParameter(name, src.getParameter(name));
             }
         }
     }
