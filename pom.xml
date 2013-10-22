@@ -34,7 +34,6 @@
     <nuxeo.importer.version>5.8-SNAPSHOT</nuxeo.importer.version>
     <nuxeo.routing.version>5.8-SNAPSHOT</nuxeo.routing.version>
     <nuxeo.smartsearch.version>5.8-SNAPSHOT</nuxeo.smartsearch.version>
-    <nuxeo.sync.version>5.8-SNAPSHOT</nuxeo.sync.version>
     <nuxeo.audio.version>5.8-SNAPSHOT</nuxeo.audio.version>
     <nuxeo.video.version>5.8-SNAPSHOT</nuxeo.video.version>
     <nuxeo.categorization.version>5.8-SNAPSHOT</nuxeo.categorization.version>
@@ -68,6 +67,7 @@
     <!-- optional addons -->
     <nuxeo.jbpm.version>5.8-SNAPSHOT</nuxeo.jbpm.version>
     <nuxeo.semantic.entities.version>5.8-SNAPSHOT</nuxeo.semantic.entities.version>
+    <nuxeo.sync.version>5.8-SNAPSHOT</nuxeo.sync.version>
     <!-- end of optional addons -->
   </properties>
 
@@ -86,7 +86,6 @@
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
     <module>nuxeo-platform-smart-search</module>
-    <module>nuxeo-platform-sync</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
     <module>nuxeo-platform-categorization</module>
