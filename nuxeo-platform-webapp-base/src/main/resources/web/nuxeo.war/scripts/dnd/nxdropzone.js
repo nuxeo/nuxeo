@@ -300,7 +300,7 @@ DropZoneUIHandler.prototype.updateForm = function (event, value) {
       if (this.operationsDef[i].link != '') {
         jQuery("#dndFormSubmitButton").css("display", "none");
         var iframe = jQuery("<iframe></iframe>");
-        iframe.attr("width", "330px");
+        iframe.attr("width", "4000px");
         iframe.attr("height", "550px");
         iframe.attr("frameborder", "0");
         var src = this.operationsDef[i].link;
