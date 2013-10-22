@@ -36,7 +36,8 @@
       order="40" facet="DriveSynchronized"
       class="org.nuxeo.drive.hierarchy.userworkspace.factory.UserWorkspaceSyncRootFactory">
       <parameters>
-        <parameter name="syncRootParentFactory">userWorkspaceSyncRootParentFactory</parameter>
+        <parameter name="syncRootParentFactory">userWorkspaceSyncRootParentFactory
+        </parameter>
       </parameters>
     </fileSystemItemFactory>
 
@@ -47,7 +48,7 @@
 
     <activeFileSystemItemFactories>
       <factories>
-        <!-- Disable the "defaultSyncRootFolderItemFactory" bound to the
+        <!-- Disable the "defaultSyncRootFolderItemFactory" bound to the 
           DriveSynchronized facet -->
         <factory enabled="false">defaultSyncRootFolderItemFactory
         </factory>
