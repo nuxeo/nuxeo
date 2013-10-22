@@ -947,6 +947,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         log.debug("Clearing old completed work");
         for (String queueId : queuing.getCompletedQueueIds()) {
             WorkQueueDescriptor workQueueDescriptor = workQueueDescriptors.get(queueId);
+            if (workQueueDescriptor == null) {
+                // unknown queue
+                continue;
+            }
             long delay = workQueueDescriptor.clearCompletedAfterSeconds * 1000L;
             if (delay > 0) {
                 long completionTime = System.currentTimeMillis() - delay;
