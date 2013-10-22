@@ -40,7 +40,7 @@ author: lkemen@nuxeo.com
 /* =Assets list */
 .nxMainContainer .globalActionBar {
   border-bottom: 1px solid;
-  border-color: "neutral.light (__FLAVOR__ border)";
+  border-color: "neutral.lighter (__FLAVOR__ border)";
   padding: .2em }
 
 .nxDamSearchResults .dataOutput {
@@ -92,7 +92,7 @@ author: lkemen@nuxeo.com
 
 .nxDamSearchResults .bubbleBox {
   background-color: #fff;
-  border-radius: 0;
+  border-bottom: .25em solid #E7E7E7;
   cursor: pointer;
   display: inline-block;
   font-size: .9em;
@@ -105,7 +105,7 @@ author: lkemen@nuxeo.com
   width: 186px }
 
 .nxDamSearchResults .bubbleBox:hover {
-  background-color: "color.major.light (__FLAVOR__ background)";
+  border-color: "color.major.strong (__FLAVOR__ border)";
   box-shadow: 0 1px 2px 2px #fff }
 .nxDamSearchResults .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
 
@@ -133,13 +133,11 @@ author: lkemen@nuxeo.com
 /* Styles when an asset is selected */
 .nxDamSearchResults .selectedItem,
 .nxDamSearchResults .selectedItem:hover {
-  background-color: "color.major.stronger (__FLAVOR__ background)";
-  color: #fff }
-.nxDamSearchResults .selectedItem .documentTitle,
-.nxDamSearchResults .selectedItem:hover .documentTitle { color: #fff }
+  border-color: "color.major.stronger (__FLAVOR__ border)" }
 
-.nxDamSearchResults .selectedItem .fieldColumn {
-  color: "black (__FLAVOR__ color)" }
+.nxDamSearchResults .selectedItem .fieldColumn,
+.nxDamSearchResults .selectedItem .documentTitle,
+.nxDamSearchResults .selectedItem:hover .documentTitle { color: "black (__FLAVOR__ color)" }
 
 /* Pictures and video thumbnails in bubbleBoxes */
 .thumbnailContainer { text-align: center;
@@ -162,11 +160,6 @@ author: lkemen@nuxeo.com
   position: absolute;
   right: 10px;
   text-transform: lowercase }
-
-.bubbleBox.selectedItem .tag,
-.bubbleBox:hover .tag {
-  background-color: #000;
-  color: #fff }
 
 .nxMainContainer .bubbleBox .dataInput td {
 	border: none 0 }
