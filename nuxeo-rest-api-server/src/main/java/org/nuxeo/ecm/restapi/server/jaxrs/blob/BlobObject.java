@@ -12,19 +12,13 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     vpasquier <vpasquier@nuxeo.com>
+ *     dmetzler
  */
-package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+package org.nuxeo.ecm.restapi.server.jaxrs.blob;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.PUT;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Request;
@@ -41,22 +35,21 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
-import org.nuxeo.ecm.webengine.model.Resource;
-import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
+import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
 /**
- * @since 5.7.3 - REST API Blob Manager
+ *
+ *
+ * @since 5.8
  */
-@WebAdapter(name = BlobAdapter.NAME, type = "blob")
-public class BlobAdapter extends DefaultAdapter {
+@WebObject(type = "blob")
+public class BlobObject extends DefaultObject {
 
-    public final static String NAME = "blob";
 
-    protected String xpath;
-
-    protected DocumentModel doc;
+    private String xpath;
+    private DocumentModel doc;
 
     @Override
     protected void initialize(Object... args) {
@@ -67,20 +60,13 @@ public class BlobAdapter extends DefaultAdapter {
         }
     }
 
-    @Path("{xpath}")
-    public Resource doGet(@PathParam("xpath")
-    String xpath) {
-        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        return newObject("blob", xpath, doc);
-    }
-
     @Override
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter.isAssignableFrom(Blob.class)) {
             try {
                 return adapter.cast(blob(xpath));
             } catch (ClientException e) {
-                throw WebException.wrap("Could not find any uploaded blob: "
+                throw WebException.wrap("Could not find any blob: "
                         + xpath, e);
             }
         }
@@ -91,16 +77,15 @@ public class BlobAdapter extends DefaultAdapter {
         return (Blob) doc.getPropertyValue(xpath);
     }
 
+
     @GET
     public Response doGet(@Context
     Request request) throws ClientException {
-        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-        FormData form = ctx.getForm();
-        String xpath = form.getString(FormData.PROPERTY);
-        // TODO parse all blob properties to fetch all related xpath
-        if (doc.hasSchema("file")) {
-            xpath = "file:content";
+
+        if (xpath == null) {
+            xpath = getXpathFromRequest(request);
         }
+
         try {
             Property p = doc.getProperty(xpath);
             Blob blob = (Blob) p.getValue();
@@ -120,6 +105,8 @@ public class BlobAdapter extends DefaultAdapter {
                     }
                 }
             }
+
+
             EntityTag etag = null;
             if (blob instanceof SQLBlob) {
                 etag = new EntityTag(((SQLBlob) blob).getBinary().getDigest());
@@ -145,50 +132,24 @@ public class BlobAdapter extends DefaultAdapter {
         }
     }
 
-    @POST
-    public Response doPost() {
-        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+    /**
+     * @param request
+     * @return
+     *
+     * @since 5.8
+     */
+    private String getXpathFromRequest(Request request) {
         FormData form = ctx.getForm();
-        form.fillDocument(doc);
-        Blob blob = form.getFirstBlob();
-        if (blob == null) {
-            throw new IllegalArgumentException(
-                    "Could not find any uploaded file");
+        String xpath = form.getString(FormData.PROPERTY);
+        if (doc.hasSchema("file")) {
+            xpath = "file:content";
         }
-        try {
-            Property p = doc.getProperty(xpath);
-            if (p.isList()) { // add the file to the list
-                if ("files".equals(p.getSchema().getName())) {
-                    Map<String, Serializable> map = new HashMap<String, Serializable>();
-                    map.put("filename", blob.getFilename());
-                    map.put("file", (Serializable) blob);
-                    p.addValue(map);
-                } else {
-                    p.addValue(blob);
-                }
-            } else {
-                if ("file".equals(p.getSchema().getName())) {
-                    p.getParent().get("filename").setValue(blob.getFilename());
-                }
-                p.setValue(blob);
-            }
-            // make snapshot
-            doc.putContextData(VersioningService.VERSIONING_OPTION,
-                    form.getVersioningOption());
-            CoreSession session = ctx.getCoreSession();
-            session.saveDocument(doc);
-            session.save();
-            return redirect(getTarget().getPath());
-        } catch (WebException e) {
-            throw e;
-        } catch (Exception e) {
-            throw WebException.wrap("Failed to attach file", e);
-        }
+        return xpath;
     }
+
 
     @DELETE
     public Response doDelete() {
-        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         try {
             doc.getProperty(xpath).remove();
             CoreSession session = ctx.getCoreSession();
@@ -201,7 +162,50 @@ public class BlobAdapter extends DefaultAdapter {
             throw WebException.wrap(
                     "Failed to delete attached file into property: " + xpath, e);
         }
-        return redirect(getTarget().getPath());
+        return Response.noContent().build();
     }
+
+
+
+    @PUT
+    public Response doPut() {
+
+        FormData form = ctx.getForm();
+        Blob blob = form.getFirstBlob();
+        if (blob == null) {
+            throw new IllegalArgumentException(
+                    "Could not find any uploaded file");
+        }
+
+
+        try {
+            Property p = doc.getProperty(xpath);
+            if (p.isList()) { // add the file to the list
+                throw new ClientException("Can't update blob on list property");
+            } else {
+                if ("file".equals(p.getSchema().getName())) {
+                    p.getParent().get("filename").setValue(blob.getFilename());
+                }
+                p.setValue(blob);
+            }
+            // make snapshot
+            doc.putContextData(VersioningService.VERSIONING_OPTION,
+                    form.getVersioningOption());
+            CoreSession session = ctx.getCoreSession();
+            session.saveDocument(doc);
+            session.save();
+            return Response.ok("blob updated").build();
+        } catch (WebException e) {
+            throw e;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to attach file", e);
+        }
+    }
+
+
+
+
+
+
 
 }
