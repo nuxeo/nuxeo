@@ -148,40 +148,20 @@ public class ConnectBroker {
     }
 
     protected boolean isInstalledPackageName(String pkgName) {
-        List<LocalPackage> localPackages = getPkgList();
-        boolean foundName = false;
-        for (LocalPackage pkg : localPackages) {
-            if (pkg.getName().equals(pkgName)
-                    && PackageState.getByValue(pkg.getState()).isInstalled()) {
-                foundName = true;
-                break;
-            }
-        }
-        return foundName;
+        return service.getPersistence().getActivePackageId(pkgName) != null;
     }
 
     protected boolean isLocalPackageId(String pkgId) {
-        List<LocalPackage> localPackages = getPkgList();
-        boolean foundId = false;
-        for (LocalPackage pkg : localPackages) {
-            if (pkg.getId().equals(pkgId)) {
-                foundId = true;
-                break;
-            }
+        try {
+            return service.getPackage(pkgId) != null;
+        } catch (PackageException e) {
+            log.error("Error looking for local package " + pkgId, e);
+            return false;
         }
-        return foundId;
     }
 
     protected boolean isRemotePackageId(String pkgId) {
-        List<DownloadablePackage> remotePackages = NuxeoConnectClient.getPackageManager().listAllPackages();
-        boolean foundId = false;
-        for (DownloadablePackage pkg : remotePackages) {
-            if (pkg.getId().equals(pkgId)) {
-                foundId = true;
-                break;
-            }
-        }
-        return foundId;
+        return NuxeoConnectClient.getPackageManager().findPackageById(pkgId) != null;
     }
 
     protected String getBestIdForNameInList(String pkgName,
@@ -428,8 +408,8 @@ public class ConnectBroker {
     public List<LocalPackage> getPkgList() {
         try {
             return service.getPackages();
-        } catch (Exception e) {
-            log.error("Could not read package list");
+        } catch (PackageException e) {
+            log.error("Could not read package list", e);
             return null;
         }
     }
