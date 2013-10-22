@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -258,6 +259,24 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         DocumentModel proxy = session.publishDocument(doc, folder);
         session.save();
 
+        proxy.setPropertyValue("info:info", "proxyinfo");
+        proxy = session.saveDocument(proxy);
+        session.save();
+    }
+
+    @Test
+    public void testProxySchemasWithComplex() throws ClientException {
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = new DocumentModelImpl("/", "file", "File");
+        doc = session.createDocument(doc);
+        DocumentModel proxy = session.publishDocument(doc, folder);
+        session.save();
+
+        // read part of a non-initialized complex prop
+        // should not mark it dirty which would cause problems on save
+        proxy.getPropertyValue("file:filename");
+        // write a modifiable proxy schema
         proxy.setPropertyValue("info:info", "proxyinfo");
         proxy = session.saveDocument(proxy);
         session.save();
