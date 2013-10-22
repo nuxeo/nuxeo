@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -69,6 +70,10 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
             return;
         }
         DocumentModel doc = ctx.getSourceDocument();
+        if (doc.hasFacet(FacetNames.SYSTEM_DOCUMENT)) {
+            // Not interested in system documents
+            return;
+        }
         DocumentModel docForLogEntry = doc;
         if (DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
             docForLogEntry = handleBeforeDocUpdate(ctx, doc);
