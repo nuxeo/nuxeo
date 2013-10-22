@@ -1,23 +1,8 @@
 /*
 Specific styles for the Home View
-=Left Column -> specifiy tabs style
 =Main Frame -> small adjustments
 author: lkemen@nuxeo.com
 */
-
-/* =Left Column----*/
-.adminTabsColumn { background: "color.major.light (__FLAVOR__ background)"; box-shadow: -2px -1px 5px #9F9F9F inset; padding: 0;
-	width: 210px }
-.adminTabBlock { height: 100%; margin: 0 }
-
-.adminTabsColumn ul {  margin: 0; padding: 2em 0 }
-.adminTabsColumn li { box-shadow: -5px 2px 5px #b0b0b0; margin: 0 0 .15em; padding: 0 }
-.adminTabsColumn li a { color: "link (__FLAVOR__ color)"; display: block; padding: .6em 0 .6em .8em; text-decoration: none }
-.adminTabsColumn li a img { margin: 0 .4em -0.15em 0 }
-
-.adminTabsColumn li.selected, .adminTabsColumn li.selected:hover { background-color: #fff; margin: 0 0 .3em }
-.adminTabsColumn li:hover { background-color: #fff }
-.adminTabsColumn li.selected a, .adminTabsColumn li:hover a { color: "black (__FLAVOR__ color)"; font-weight: bold }
 
 /* =Main Frame */
 .adminTabsColumn { min-height: 660px; height: auto!important; height: 660px }
