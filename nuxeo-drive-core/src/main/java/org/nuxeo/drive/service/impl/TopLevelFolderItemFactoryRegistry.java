@@ -16,7 +16,11 @@
  */
 package org.nuxeo.drive.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
@@ -34,13 +38,16 @@ public class TopLevelFolderItemFactoryRegistry extends
 
     private static final Log log = LogFactory.getLog(TopLevelFolderItemFactoryRegistry.class);
 
-    protected static final String CONTRIBUTION_ID = "topLevelFolderItemFactoryContrib";
-
-    protected TopLevelFolderItemFactory factory;
+    protected Map<String, TopLevelFolderItemFactory> factories = new HashMap<String, TopLevelFolderItemFactory>();
 
     @Override
     public String getContributionId(TopLevelFolderItemFactoryDescriptor contrib) {
-        return CONTRIBUTION_ID;
+        String name = contrib.getName();
+        if (StringUtils.isEmpty(name)) {
+            throw new ClientRuntimeException(
+                    "Cannot register topLevelFolderItemFactory without a name.");
+        }
+        return name;
     }
 
     @Override
@@ -49,9 +56,9 @@ public class TopLevelFolderItemFactoryRegistry extends
             TopLevelFolderItemFactoryDescriptor newOrigContrib) {
         try {
             log.trace(String.format(
-                    "Setting top level folder item factory to class %s",
+                    "Putting contribution with class name %s in factory registry.",
                     contrib.getName()));
-            factory = contrib.getFactory();
+            factories.put(id, contrib.getFactory());
         } catch (Exception e) {
             throw new ClientRuntimeException(
                     "Cannot update topLevelFolderItemFactory contribution.", e);
@@ -61,17 +68,20 @@ public class TopLevelFolderItemFactoryRegistry extends
     @Override
     public void contributionRemoved(String id,
             TopLevelFolderItemFactoryDescriptor origContrib) {
-        log.trace("Removing top level folder item factory (setting it to null)");
-        factory = null;
+        log.trace(String.format(
+                "Removing contribution with class name %s in factory registry.",
+                id));
+        factories.remove(id);
     }
 
     @Override
     public TopLevelFolderItemFactoryDescriptor clone(
             TopLevelFolderItemFactoryDescriptor orig) {
-        log.trace(String.format("Cloning contribution with class name %s",
+        log.trace(String.format("Cloning contribution with class name %s.",
                 orig.getName()));
         TopLevelFolderItemFactoryDescriptor clone = new TopLevelFolderItemFactoryDescriptor();
         clone.factoryClass = orig.factoryClass;
+        clone.parameters = orig.parameters;
         return clone;
     }
 
@@ -94,4 +104,7 @@ public class TopLevelFolderItemFactoryRegistry extends
         }
     }
 
+    protected TopLevelFolderItemFactory getActiveFactory(String activeFactory) {
+        return factories.get(activeFactory);
+    }
 }

@@ -62,6 +62,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     protected ActiveFileSystemItemFactoryRegistry activeFileSystemItemFactoryRegistry;
 
+    protected TopLevelFolderItemFactory topLevelFolderItemFactory;
+
     protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories;
 
     /*------------------------ DefaultComponent -----------------------------*/
@@ -127,7 +129,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     public void applicationStarted(ComponentContext context)
             throws InstantiationException, IllegalAccessException,
             ClientException {
-        sortFileSystemItemFactories();
+        setActiveFactories();
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
@@ -185,11 +187,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     @Override
     public TopLevelFolderItemFactory getTopLevelFolderItemFactory()
             throws ClientException {
-        if (topLevelFolderItemFactoryRegistry.factory == null) {
+        if (topLevelFolderItemFactory == null) {
             throw new ClientException(
-                    "Found no topLevelFolderItemFactory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
+                    "Found no active top level folder item factory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\"> and to <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeTopLevelFolderItemFactory\">.");
         }
-        return topLevelFolderItemFactoryRegistry.factory;
+        return topLevelFolderItemFactory;
     }
 
     @Override
@@ -243,8 +245,9 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /*--------------------------- Protected ---------------------------------------*/
-    protected void sortFileSystemItemFactories() throws InstantiationException,
+    protected void setActiveFactories() throws InstantiationException,
             IllegalAccessException, ClientException {
+        topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(activeTopLevelFolderItemFactoryRegistry.activeFactory);
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
     }
 
