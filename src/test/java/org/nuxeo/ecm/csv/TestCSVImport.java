@@ -32,12 +32,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -47,6 +45,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -57,11 +56,15 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource" })
+@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource",
+        "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core" })
 @RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.ecm.csv:test-ui-types-contrib.xml")
 public class TestCSVImport {
 
     private static final String DOCS_OK_CSV = "docs_ok.csv";
+
+    private static final String DOCS_WITH_FOLDERS_OK_CSV = "docs_with_folders_ok.csv";
 
     private static final String DOCS_NOT_OK_CSV = "docs_not_ok.csv";
 
@@ -184,7 +187,7 @@ public class TestCSVImport {
         TransactionHelper.startTransaction();
 
         List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
-        assertEquals(4, importLogs.size());
+        assertEquals(5, importLogs.size());
 
         CSVImportLog importLog = importLogs.get(0);
         assertEquals(1, importLog.getLine());
@@ -205,11 +208,56 @@ public class TestCSVImport {
         assertEquals(4, importLog.getLine());
         assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
         assertEquals("Document created", importLog.getMessage());
+        importLog = importLogs.get(4);
+        assertEquals(5, importLog.getLine());
+        assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
+        assertEquals("'Domain' type is not allowed in 'Root'",
+                importLog.getMessage());
 
         assertFalse(session.exists(new PathRef("/myfile")));
         assertTrue(session.exists(new PathRef("/mynote")));
         assertFalse(session.exists(new PathRef("/nonexisting")));
         assertTrue(session.exists(new PathRef("/mynote2")));
+    }
+
+    @Test
+    public void shouldImportDirectoryStructure() throws InterruptedException,
+            ClientException {
+        CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(
+                false).build();
+        TransactionHelper.commitOrRollbackTransaction();
+        String importId = csvImporter.launchImport(session, "/",
+                getCSVFile(DOCS_WITH_FOLDERS_OK_CSV), DOCS_WITH_FOLDERS_OK_CSV,
+                options);
+        workManager.awaitCompletion(10, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(5, importLogs.size());
+
+        for (int i = 0; i < 4; i++) {
+            assertEquals(CSVImportLog.Status.SUCCESS,
+                    importLogs.get(i).getStatus());
+        }
+        CSVImportLog importLog = importLogs.get(4);
+        assertEquals(CSVImportLog.Status.ERROR, importLog.getStatus());
+        assertEquals("Parent document '/folder/folder' does not exist",
+                importLog.getMessage());
+
+        assertTrue(session.exists(new PathRef("/folder")));
+        assertTrue(session.exists(new PathRef("/folder/doc1")));
+        assertTrue(session.exists(new PathRef("/folder/subfolder")));
+        assertTrue(session.exists(new PathRef("/folder/subfolder/doc2")));
+        assertFalse(session.exists(new PathRef("/folder/folder/doc3")));
+
+        DocumentModel doc = session.getDocument(new PathRef("/folder"));
+        assertEquals("Folder", doc.getType());
+        doc = session.getDocument(new PathRef("/folder/doc1"));
+        assertEquals("File", doc.getType());
+        doc = session.getDocument(new PathRef("/folder/subfolder"));
+        assertEquals("Folder", doc.getType());
+        doc = session.getDocument(new PathRef("/folder/subfolder/doc2"));
+        assertEquals("File", doc.getType());
     }
 
 }

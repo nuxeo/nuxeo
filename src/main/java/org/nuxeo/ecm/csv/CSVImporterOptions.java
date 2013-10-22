@@ -39,6 +39,8 @@ public class CSVImporterOptions implements Serializable {
 
         private boolean updateExisting = true;
 
+        private boolean checkAllowedSubTypes = true;
+
         private boolean sendEmail = false;
 
         private int batchSize = 50;
@@ -63,6 +65,11 @@ public class CSVImporterOptions implements Serializable {
             return this;
         }
 
+        public Builder checkAllowedSubTypes(boolean checkAllowedSubTypes) {
+            this.checkAllowedSubTypes = checkAllowedSubTypes;
+            return this;
+        }
+
         public Builder sendEmail(boolean sendEmail) {
             this.sendEmail = sendEmail;
             return this;
@@ -74,8 +81,9 @@ public class CSVImporterOptions implements Serializable {
         }
 
         public CSVImporterOptions build() {
-            return new CSVImporterOptions(CSVImporterDocumentFactory, dateFormat,
-                    listSeparatorRegex, updateExisting, sendEmail, batchSize);
+            return new CSVImporterOptions(CSVImporterDocumentFactory,
+                    dateFormat, listSeparatorRegex, updateExisting,
+                    checkAllowedSubTypes, sendEmail, batchSize);
         }
     }
 
@@ -87,17 +95,22 @@ public class CSVImporterOptions implements Serializable {
 
     protected final boolean updateExisting;
 
+    protected final boolean checkAllowedSubTypes;
+
     protected final boolean sendEmail;
 
     protected final int batchSize;
 
-    protected CSVImporterOptions(CSVImporterDocumentFactory CSVImporterDocumentFactory,
-            String dateFormat, String listSeparatorRegex, boolean updateExisting,
+    protected CSVImporterOptions(
+            CSVImporterDocumentFactory CSVImporterDocumentFactory,
+            String dateFormat, String listSeparatorRegex,
+            boolean updateExisting, boolean checkAllowedSubTypes,
             boolean sendEmail, int batchSize) {
         this.CSVImporterDocumentFactory = CSVImporterDocumentFactory;
         this.dateFormat = dateFormat;
         this.listSeparatorRegex = listSeparatorRegex;
         this.updateExisting = updateExisting;
+        this.checkAllowedSubTypes = checkAllowedSubTypes;
         this.sendEmail = sendEmail;
         this.batchSize = batchSize;
     }
@@ -116,6 +129,10 @@ public class CSVImporterOptions implements Serializable {
 
     public boolean updateExisting() {
         return updateExisting;
+    }
+
+    public boolean checkAllowedSubTypes() {
+        return checkAllowedSubTypes;
     }
 
     public boolean sendEmail() {

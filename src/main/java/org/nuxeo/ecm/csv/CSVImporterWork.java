@@ -72,6 +72,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -374,7 +375,8 @@ public class CSVImporterWork extends AbstractWork {
                                 } else if (field.getType() instanceof BooleanType) {
                                     fieldValue = Boolean.valueOf(stringValue);
                                 } else if (field.getType() instanceof DateType) {
-                                    fieldValue = getDateFormat().parse(stringValue);
+                                    fieldValue = getDateFormat().parse(
+                                            stringValue);
                                 }
                             }
                         }
@@ -407,8 +409,10 @@ public class CSVImporterWork extends AbstractWork {
     protected boolean createOrUpdateDocument(long lineNumber,
             String parentPath, String name, String type,
             Map<String, Serializable> properties) throws ClientException {
-        String targetPath = new Path(parentPath).append(name).toString();
-        DocumentRef docRef = new PathRef(targetPath);
+        Path targetPath = new Path(parentPath).append(name);
+        name = targetPath.lastSegment();
+        parentPath = targetPath.removeLastSegments(1).toString();
+        DocumentRef docRef = new PathRef(targetPath.toString());
         if (options.getCSVImporterDocumentFactory().exists(session, parentPath,
                 name, type, properties)) {
             return updateDocument(lineNumber, docRef, properties);
@@ -421,11 +425,28 @@ public class CSVImporterWork extends AbstractWork {
     protected boolean createDocument(long lineNumber, String parentPath,
             String name, String type, Map<String, Serializable> properties) {
         try {
-            options.getCSVImporterDocumentFactory().createDocument(session,
-                    parentPath, name, type, properties);
-            importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS,
-                    "Document created", "label.csv.importer.documentCreated"));
-            return true;
+            DocumentRef parentRef = new PathRef(parentPath);
+            if (session.exists(parentRef)) {
+                DocumentModel parent = session.getDocument(parentRef);
+
+                TypeManager typeManager = Framework.getLocalService(TypeManager.class);
+                if (options.checkAllowedSubTypes()
+                        && !typeManager.isAllowedSubType(type, parent.getType())) {
+                    logError(lineNumber, "'%s' type is not allowed in '%s'",
+                            "label.csv.importer.notAllowedSubType", type,
+                            parent.getType());
+                } else {
+                    options.getCSVImporterDocumentFactory().createDocument(
+                            session, parentPath, name, type, properties);
+                    importLogs.add(new CSVImportLog(lineNumber, Status.SUCCESS,
+                            "Document created",
+                            "label.csv.importer.documentCreated"));
+                    return true;
+                }
+            } else {
+                logError(lineNumber, "Parent document '%s' does not exist",
+                        "label.csv.importer.parentDoesNotExist", parentPath);
+            }
         } catch (ClientException e) {
             Throwable unwrappedException = unwrapException(e);
             logError(lineNumber, "Unable to create document: %s",
