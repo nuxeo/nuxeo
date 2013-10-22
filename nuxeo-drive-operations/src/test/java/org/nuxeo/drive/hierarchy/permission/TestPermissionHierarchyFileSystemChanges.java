@@ -83,11 +83,13 @@ import com.google.inject.Inject;
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
 @TransactionalConfig(autoStart = false)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
+@Deploy({
+        "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
-        "org.nuxeo.drive.hierarchy.permission" })
+        "org.nuxeo.runtime.reload",
+        "org.nuxeo.drive.core",
+        "org.nuxeo.drive.operations.test:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {
 
     private static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";
@@ -271,7 +273,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Test
     public void testRootlessItems() throws Exception {
 
-        harness.deployContrib("org.nuxeo.drive.hierarchy.permission.test",
+        harness.deployContrib("org.nuxeo.drive.operations.test",
                 "OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml");
         Framework.getLocalService(ReloadService.class).reload();
 
@@ -370,7 +372,7 @@ public class TestPermissionHierarchyFileSystemChanges {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
-        harness.undeployContrib("org.nuxeo.drive.hierarchy.permission.test",
+        harness.undeployContrib("org.nuxeo.drive.operations.test",
                 "OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml");
         Framework.getLocalService(ReloadService.class).reload();
     }

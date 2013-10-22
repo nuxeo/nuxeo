@@ -49,6 +49,7 @@ import org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -85,14 +86,16 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
+@Deploy({
+        "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
-        "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
-        "org.nuxeo.drive.hierarchy.permission" })
+        "org.nuxeo.drive.core",
+        "org.nuxeo.drive.operations",
+        "org.nuxeo.drive.operations.test:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
 public class TestPermissionHierarchy {
@@ -280,6 +283,11 @@ public class TestPermissionHierarchy {
         // ---------------------------------------------
         // Check active factories
         // ---------------------------------------------
+        TopLevelFolderItemFactory topLevelFolderItemFactory = fileSystemItemAdapterService.getTopLevelFolderItemFactory();
+        assertEquals(
+                "org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFactory",
+                topLevelFolderItemFactory.getName());
+
         Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
         assertEquals(4, activeFactories.size());
         assertTrue(activeFactories.contains("defaultFileSystemItemFactory"));
