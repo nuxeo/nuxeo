@@ -1052,11 +1052,6 @@
         <artifactId>nuxeo-drive-operations</artifactId>
         <version>${nuxeo.drive.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-drive-hierarchy-permission</artifactId>
-        <version>${nuxeo.drive.version}</version>
-      </dependency>
 
       <!-- DAM PDF Export -->
       <dependency>
