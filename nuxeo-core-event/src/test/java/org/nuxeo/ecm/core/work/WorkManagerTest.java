@@ -26,7 +26,10 @@ import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -48,6 +51,11 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     protected WorkManager service;
 
     protected boolean dontClearCompletedWork;
+
+    private static void assertSetEquals(List<String> expected,
+            List<String> actual) {
+        assertEquals(new HashSet<String>(expected), new HashSet<String>(actual));
+    }
 
     @Override
     @Before
@@ -196,6 +204,13 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         // assertTrue(work1 == service.find(work1, null, false, null));
         // assertTrue(work2 == service.find(work2, null, false, null));
         // assertTrue(work3 == service.find(work3, null, false, null));
+        assertEquals(Arrays.asList("3"), service.listWorkIds(QUEUE, SCHEDULED));
+        assertSetEquals(Arrays.asList("1", "2"),
+                service.listWorkIds(QUEUE, RUNNING));
+        assertSetEquals(Arrays.asList("1", "2", "3"),
+                service.listWorkIds(QUEUE, null));
+        assertEquals(Collections.emptyList(),
+                service.listWorkIds(QUEUE, COMPLETED));
 
         SleepWork work4 = new SleepWork(duration, true, "3"); // id=3
         service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
@@ -233,6 +248,14 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         // assertTrue(work1 == service.find(work1, COMPLETED, false, null));
         // assertTrue(work2 == service.find(work2, COMPLETED, false, null));
         // assertTrue(work7 == service.find(work7, COMPLETED, false, null));
+        assertEquals(Collections.emptyList(),
+                service.listWorkIds(QUEUE, SCHEDULED));
+        assertEquals(Collections.emptyList(),
+                service.listWorkIds(QUEUE, RUNNING));
+        assertEquals(Collections.emptyList(),
+                service.listWorkIds(QUEUE, null));
+        assertSetEquals(Arrays.asList("1", "2", "3"),
+                service.listWorkIds(QUEUE, COMPLETED));
     }
 
     @Test

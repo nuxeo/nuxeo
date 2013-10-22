@@ -242,6 +242,23 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     @Override
+    public synchronized List<String> listWorkIds(String queueId, State state) {
+        if (state == null) {
+            return listNonCompletedIds(queueId);
+        }
+        switch (state) {
+        case SCHEDULED:
+            return listScheduledIds(queueId);
+        case RUNNING:
+            return listRunningIds(queueId);
+        case COMPLETED:
+            return listCompletedIds(queueId);
+        default:
+            throw new IllegalArgumentException(String.valueOf(state));
+        }
+    }
+
+    @Override
     public int getQueueSize(String queueId, State state) {
         switch (state) {
         case SCHEDULED:
@@ -322,6 +339,40 @@ public class MemoryWorkQueuing implements WorkQueuing {
     // called synchronized
     protected List<Work> listCompleted(String queueId) {
         return new ArrayList<Work>(getCompleted(queueId));
+    }
+
+    // no synchronized as scheduled queue is thread-safe
+    protected List<String> listScheduledIds(String queueId) {
+        BlockingQueue<Runnable> scheduled = getScheduledQueue(queueId);
+        List<String> list = new ArrayList<String>(scheduled.size());
+        for (Runnable r : scheduled) {
+            Work w = WorkHolder.getWork(r);
+            list.add(w.getId());
+        }
+        return list;
+    }
+
+    // called synchronized
+    protected List<String> listRunningIds(String queueId) {
+        Map<String, Work> running = getRunning(queueId);
+        return new ArrayList<String>(running.keySet());
+    }
+
+    // called synchronized
+    protected List<String> listNonCompletedIds(String queueId) {
+        List<String> list = listScheduledIds(queueId);
+        list.addAll(listRunningIds(queueId));
+        return list;
+    }
+
+    // called synchronized
+    protected List<String> listCompletedIds(String queueId) {
+        List<Work> completed = getCompleted(queueId);
+        List<String> list = new ArrayList<String>(completed.size());
+        for (Work w : completed) {
+            list.add(w.getId());
+        }
+        return list;
     }
 
     @Override

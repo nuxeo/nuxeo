@@ -846,6 +846,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
+    public List<String> listWorkIds(String queueId, State state) {
+        return queuing.listWorkIds(queueId, state);
+    }
+
+    @Override
     public int getQueueSize(String queueId, State state) {
         if (state == null) {
             return getScheduledAfterCommitSize()

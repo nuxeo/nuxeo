@@ -129,6 +129,18 @@ public interface WorkQueuing {
     List<Work> listWork(String queueId, State state);
 
     /**
+     * Lists the work ids in a given queue in a defined state.
+     *
+     * @param queueId the queue id
+     * @param state the state defining the state to look into,
+     *            {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null}
+     *            for non-completed
+     * @return the list of work ids in the given state
+     */
+    List<String> listWorkIds(String queueId, State state);
+
+    /**
      * Gets the number of work instances in the given state in a given queue.
      *
      * @param queueId the queue id

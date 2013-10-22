@@ -170,6 +170,23 @@ public class RedisWorkQueuing implements WorkQueuing {
         }
     }
 
+    @Override
+    public List<String> listWorkIds(String queueId, State state) {
+        if (state == null) {
+            return listNonCompletedIds(queueId);
+        }
+        switch (state) {
+        case SCHEDULED:
+            return listScheduledIds(queueId);
+        case RUNNING:
+            return listRunningIds(queueId);
+        case COMPLETED:
+            return listCompletedIds(queueId);
+        default:
+            throw new IllegalArgumentException(String.valueOf(state));
+        }
+    }
+
     protected List<Work> listScheduled(String queueId) {
         try {
             return listWorkList(scheduledKey(queueId));
@@ -189,6 +206,36 @@ public class RedisWorkQueuing implements WorkQueuing {
     protected List<Work> listCompleted(String queueId) {
         try {
             return listWorkSet(completedKey(queueId));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected List<String> listScheduledIds(String queueId) {
+        try {
+            return listWorkIdsList(scheduledKey(queueId));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected List<String> listRunningIds(String queueId) {
+        try {
+            return listWorkIdsSet(runningKey(queueId));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected List<String> listNonCompletedIds(String queueId) {
+        List<String> list = listScheduledIds(queueId);
+        list.addAll(listRunningIds(queueId));
+        return list;
+    }
+
+    protected List<String> listCompletedIds(String queueId) {
+        try {
+            return listWorkIdsSet(completedKey(queueId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -326,6 +373,14 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected void closeJedis(Jedis jedis) {
         getRedisService().getJedisPool().returnResource(jedis);
+    }
+
+    protected static String string(byte[] bytes) {
+        try {
+            return new String(bytes, UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected static byte[] bytes(String string) {
@@ -653,6 +708,34 @@ public class RedisWorkQueuing implements WorkQueuing {
                         + ", work: " + workId);
                 return null;
             }
+        } finally {
+            closeJedis(jedis);
+        }
+    }
+
+    protected List<String> listWorkIdsList(byte[] queueBytes) throws IOException {
+        Jedis jedis = getJedis();
+        try {
+            List<byte[]> keys = jedis.lrange(queueBytes, 0, -1);
+            List<String> list = new ArrayList<String>(keys.size());
+            for (byte[] workIdBytes : keys) {
+                list.add(string(workIdBytes));
+            }
+            return list;
+        } finally {
+            closeJedis(jedis);
+        }
+    }
+
+    protected List<String> listWorkIdsSet(byte[] queueBytes) throws IOException {
+        Jedis jedis = getJedis();
+        try {
+            Set<byte[]> keys = jedis.smembers(queueBytes);
+            List<String> list = new ArrayList<String>(keys.size());
+            for (byte[] workIdBytes : keys) {
+                list.add(string(workIdBytes));
+            }
+            return list;
         } finally {
             closeJedis(jedis);
         }
