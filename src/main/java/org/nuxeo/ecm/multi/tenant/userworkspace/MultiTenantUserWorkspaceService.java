@@ -99,16 +99,17 @@ public class MultiTenantUserWorkspaceService extends
      * {@code userCoreSession}.
      */
     @Override
-    protected DocumentModel getCurrentUserPersonalWorkspace(Principal principal, String username,
-            CoreSession userCoreSession, DocumentModel context)
-            throws ClientException {
-        String usedUsername = principal == null ? username : principal.getName();
+    protected DocumentModel getCurrentUserPersonalWorkspace(
+            Principal principal, String username, CoreSession userCoreSession,
+            DocumentModel context) throws ClientException {
+        String usedUsername = principal == null ? username
+                : principal.getName();
 
         String tenantId = MultiTenantHelper.getTenantId(usedUsername);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
-            return super.getCurrentUserPersonalWorkspace(principal, usedUsername,
-                    userCoreSession, context);
+            return super.getCurrentUserPersonalWorkspace(principal,
+                    usedUsername, userCoreSession, context);
         }
 
         PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(
