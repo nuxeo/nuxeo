@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -88,6 +89,11 @@ public class MimetypeIconUpdater implements EventListener {
 
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
+
+            // Don't update icon for immutable documents
+            if (doc.hasFacet(FacetNames.IMMUTABLE)) {
+                return;
+            }
 
             // BBB: handle old filename scheme
             updateFilename(doc);
