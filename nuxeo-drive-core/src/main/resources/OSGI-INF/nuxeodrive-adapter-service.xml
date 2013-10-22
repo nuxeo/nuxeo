@@ -3,7 +3,7 @@
   version="1.0">
 
   <documentation>
-    @author Antoine Taillefer(ataillefer@nuxeo.com)
+    @author Antoine Taillefer (ataillefer@nuxeo.com)
 
     This service allows to get a FileSystemItem from a
     DocumentModel.
@@ -36,7 +36,7 @@
   <extension-point name="fileSystemItemFactory">
 
     <documentation>
-      @author Antoine Taillefer(ataillefer@nuxeo.com)
+      @author Antoine Taillefer (ataillefer@nuxeo.com)
 
       This extension point lets you contribute custom
       FileSystemItem factories according to a document
@@ -76,7 +76,7 @@
   <extension-point name="topLevelFolderItemFactory">
 
     <documentation>
-      @author Antoine Taillefer(ataillefer@nuxeo.com)
+      @author Antoine Taillefer (ataillefer@nuxeo.com)
 
       This extension point lets you contribute the factory
       for the top level FolderItem.
@@ -93,6 +93,51 @@
     </documentation>
 
     <object class="org.nuxeo.drive.service.impl.TopLevelFolderItemFactoryDescriptor" />
+
+  </extension-point>
+
+  <extension-point name="activeFileSystemItemFactories">
+
+    <documentation>
+      @author Antoine Taillefer (ataillefer@nuxeo.com)
+
+      This extension point lets you contribute the active FileSystemItem factories.
+
+      Example of the default contribution:
+      <code>
+        <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+          point="activeFileSystemItemFactories">
+          <activeTopLevelFolderItemFactory>org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory
+          </activeTopLevelFolderItemFactory>
+          <activeFileSystemItemFactories>
+            <factories>
+              <factory>defaultSyncRootFolderItemFactory</factory>
+              <factory>defaultFileSystemItemFactory</factory>
+            </factories>
+          </activeFileSystemItemFactories>
+        </extension>
+      </code>
+
+      Example of a custom contribution:
+      <code>
+        <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+          point="activeFileSystemItemFactories">
+          <activeTopLevelFolderItemFactory>org.nuxeo.drive.hierarchy.userworkspace.factory.UserWorkspaceTopLevelFactory
+          </activeTopLevelFolderItemFactory>
+          <activeFileSystemItemFactories merge="true">
+            <factories>
+              <factory enabled="false">defaultSyncRootFolderItemFactory</factory>
+              <factory>userWorkspaceSyncRootParentFactory</factory>
+              <factory>userWorkspaceSyncRootFactory</factory>
+            </factories>
+          </activeFileSystemItemFactories>
+        </extension>
+      </code>
+
+    </documentation>
+
+    <object class="org.nuxeo.drive.service.impl.ActiveFileSystemItemFactoriesDescriptor" />
+    <object class="org.nuxeo.drive.service.impl.ActiveTopLevelFolderItemFactoryDescriptor" />
 
   </extension-point>
 

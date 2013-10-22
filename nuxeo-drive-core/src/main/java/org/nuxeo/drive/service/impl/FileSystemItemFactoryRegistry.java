@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -61,24 +62,17 @@ public class FileSystemItemFactoryRegistry extends
     public void contributionUpdated(String id,
             FileSystemItemFactoryDescriptor contrib,
             FileSystemItemFactoryDescriptor newOrigContrib) {
-        if (contrib.isEnabled()) {
-            log.trace(String.format(
-                    "Putting contribution %s with id %s in factory descriptors",
-                    contrib, id));
-            factoryDescriptors.put(id, contrib);
-        } else {
-            log.trace(String.format(
-                    "Removing disabled contribution with id %s from factory descriptors",
-                    id));
-            factoryDescriptors.remove(id);
-        }
+        log.trace(String.format(
+                "Putting contribution %s with id %s in factory registry",
+                contrib, id));
+        factoryDescriptors.put(id, contrib);
     }
 
     @Override
     public void contributionRemoved(String id,
             FileSystemItemFactoryDescriptor origContrib) {
         log.trace(String.format(
-                "Removing contribution with id %s from factory descriptors", id));
+                "Removing contribution with id %s from factory registry", id));
         factoryDescriptors.remove(id);
     }
 
@@ -107,10 +101,6 @@ public class FileSystemItemFactoryRegistry extends
         log.trace(String.format(
                 "Merging contribution with id %s to contribution with id %s",
                 src.getName(), dst.getName()));
-        // Enabled
-        if (src.isEnabled() != dst.isEnabled()) {
-            dst.setEnabled(src.isEnabled());
-        }
         // Order
         int srcOrder = src.getOrder();
         if (srcOrder > 0 && srcOrder != dst.getOrder()) {
@@ -134,23 +124,26 @@ public class FileSystemItemFactoryRegistry extends
         // Parameters
         if (!MapUtils.isEmpty(src.getParameters())) {
             for (String name : src.getParameters().keySet()) {
-                dst.setParameter(name, src.getparameter(name));
+                dst.setParameter(name, src.getParameter(name));
             }
         }
     }
 
-    protected List<FileSystemItemFactoryWrapper> getOrderedFactories()
-            throws InstantiationException, IllegalAccessException,
-            ClientException {
+    protected List<FileSystemItemFactoryWrapper> getOrderedActiveFactories(
+            Set<String> activeFactories) throws InstantiationException,
+            IllegalAccessException, ClientException {
         List<FileSystemItemFactoryWrapper> factories = new ArrayList<FileSystemItemFactoryWrapper>();
         List<FileSystemItemFactoryDescriptor> orderedFactoryDescriptors = new ArrayList<FileSystemItemFactoryDescriptor>(
                 factoryDescriptors.values());
         Collections.sort(orderedFactoryDescriptors);
         for (FileSystemItemFactoryDescriptor factoryDesc : orderedFactoryDescriptors) {
-            FileSystemItemFactoryWrapper factoryWrapper = new FileSystemItemFactoryWrapper(
-                    factoryDesc.getDocType(), factoryDesc.getFacet(),
-                    factoryDesc.getFactory());
-            factories.add(factoryWrapper);
+            // Only include active factories
+            if (activeFactories.contains(factoryDesc.getName())) {
+                FileSystemItemFactoryWrapper factoryWrapper = new FileSystemItemFactoryWrapper(
+                        factoryDesc.getDocType(), factoryDesc.getFacet(),
+                        factoryDesc.getFactory());
+                factories.add(factoryWrapper);
+            }
         }
         return factories;
     }

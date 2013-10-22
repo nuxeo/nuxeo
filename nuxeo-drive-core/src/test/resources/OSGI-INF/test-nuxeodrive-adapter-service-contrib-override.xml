@@ -9,10 +9,6 @@
   <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
     point="fileSystemItemFactory">
 
-    <!-- Disable defaultFileSystemItemFactory -->
-    <fileSystemItemFactory name="defaultFileSystemItemFactory"
-      enabled="false" />
-
     <!-- Override dummyDocTypeFactory, dummyFacetFactory and nullMergeTestFactory -->
     <fileSystemItemFactory name="dummyFacetFactory"
       order="20" facet="Folderish"
@@ -34,6 +30,21 @@
 
     <topLevelFolderItemFactory
       class="org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory" />
+
+  </extension>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="activeFileSystemItemFactories">
+
+    <activeTopLevelFolderItemFactory>org.nuxeo.drive.service.adapter.DummyTopLevelFolderItemFactory
+    </activeTopLevelFolderItemFactory>
+
+    <activeFileSystemItemFactories merge="true">
+      <factories>
+        <!-- Disable defaultFileSystemItemFactory -->
+        <factory enabled="false">defaultFileSystemItemFactory</factory>
+      </factories>
+    </activeFileSystemItemFactories>
 
   </extension>
 

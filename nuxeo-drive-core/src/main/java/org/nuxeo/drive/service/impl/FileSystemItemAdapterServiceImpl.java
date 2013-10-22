@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -51,9 +52,17 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
 
     public static final String TOP_LEVEL_FOLDER_ITEM_FACTORY_EP = "topLevelFolderItemFactory";
 
-    protected FileSystemItemFactoryRegistry fileSystemItemFactoryRegistry;
+    public static final String ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP = "activeFileSystemItemFactories";
 
     protected TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry;
+
+    protected FileSystemItemFactoryRegistry fileSystemItemFactoryRegistry;
+
+    protected ActiveTopLevelFolderItemFactoryRegistry activeTopLevelFolderItemFactoryRegistry;
+
+    protected ActiveFileSystemItemFactoryRegistry activeFileSystemItemFactoryRegistry;
+
+    protected TopLevelFolderItemFactory topLevelFolderItemFactory;
 
     protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories;
 
@@ -65,6 +74,12 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             fileSystemItemFactoryRegistry.addContribution((FileSystemItemFactoryDescriptor) contribution);
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
             topLevelFolderItemFactoryRegistry.addContribution((TopLevelFolderItemFactoryDescriptor) contribution);
+        } else if (ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP.equals(extensionPoint)) {
+            if (contribution instanceof ActiveTopLevelFolderItemFactoryDescriptor) {
+                activeTopLevelFolderItemFactoryRegistry.addContribution((ActiveTopLevelFolderItemFactoryDescriptor) contribution);
+            } else if (contribution instanceof ActiveFileSystemItemFactoriesDescriptor) {
+                activeFileSystemItemFactoryRegistry.addContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+            }
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -77,6 +92,12 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             fileSystemItemFactoryRegistry.removeContribution((FileSystemItemFactoryDescriptor) contribution);
         } else if (TOP_LEVEL_FOLDER_ITEM_FACTORY_EP.equals(extensionPoint)) {
             topLevelFolderItemFactoryRegistry.removeContribution((TopLevelFolderItemFactoryDescriptor) contribution);
+        } else if (ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP.equals(extensionPoint)) {
+            if (contribution instanceof ActiveTopLevelFolderItemFactoryDescriptor) {
+                activeTopLevelFolderItemFactoryRegistry.removeContribution((ActiveTopLevelFolderItemFactoryDescriptor) contribution);
+            } else if (contribution instanceof ActiveFileSystemItemFactoriesDescriptor) {
+                activeFileSystemItemFactoryRegistry.removeContribution((ActiveFileSystemItemFactoriesDescriptor) contribution);
+            }
         } else {
             log.error("Unknown extension point " + extensionPoint);
         }
@@ -86,6 +107,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     public void activate(ComponentContext context) {
         fileSystemItemFactoryRegistry = new FileSystemItemFactoryRegistry();
         topLevelFolderItemFactoryRegistry = new TopLevelFolderItemFactoryRegistry();
+        activeTopLevelFolderItemFactoryRegistry = new ActiveTopLevelFolderItemFactoryRegistry();
+        activeFileSystemItemFactoryRegistry = new ActiveFileSystemItemFactoryRegistry();
         fileSystemItemFactories = new ArrayList<FileSystemItemFactoryWrapper>();
     }
 
@@ -94,6 +117,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         super.deactivate(context);
         fileSystemItemFactoryRegistry = null;
         topLevelFolderItemFactoryRegistry = null;
+        activeTopLevelFolderItemFactoryRegistry = null;
+        activeFileSystemItemFactoryRegistry = null;
         fileSystemItemFactories = null;
     }
 
@@ -104,7 +129,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     public void applicationStarted(ComponentContext context)
             throws InstantiationException, IllegalAccessException,
             ClientException {
-        sortFileSystemItemFactories();
+        setActiveFactories();
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
@@ -162,11 +187,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     @Override
     public TopLevelFolderItemFactory getTopLevelFolderItemFactory()
             throws ClientException {
-        if (topLevelFolderItemFactoryRegistry.factory == null) {
+        if (topLevelFolderItemFactory == null) {
             throw new ClientException(
-                    "Found no topLevelFolderItemFactory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
+                    "Found no active top level folder item factory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\"> and to <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeTopLevelFolderItemFactory\">.");
         }
-        return topLevelFolderItemFactoryRegistry.factory;
+        return topLevelFolderItemFactory;
     }
 
     @Override
@@ -186,6 +211,16 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
                             factory.getClass().getName(), factory.getName()));
         }
         return (VirtualFolderItemFactory) factory;
+    }
+
+    @Override
+    public Set<String> getActiveFileSystemItemFactories()
+            throws ClientException {
+        if (activeFileSystemItemFactoryRegistry.activeFactories.isEmpty()) {
+            throw new ClientException(
+                    "Found no active file system item factories. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeFileSystemItemFactories\"> declaring at least one factory.");
+        }
+        return activeFileSystemItemFactoryRegistry.activeFactories;
     }
 
     /*------------------------- For test purpose ----------------------------------*/
@@ -210,9 +245,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     /*--------------------------- Protected ---------------------------------------*/
-    protected void sortFileSystemItemFactories() throws InstantiationException,
+    protected void setActiveFactories() throws InstantiationException,
             IllegalAccessException, ClientException {
-        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedFactories();
+        topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(activeTopLevelFolderItemFactoryRegistry.activeFactory);
+        fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
     }
 
     /**

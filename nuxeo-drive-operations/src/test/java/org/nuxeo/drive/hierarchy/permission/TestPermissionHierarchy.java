@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -46,7 +47,9 @@ import org.nuxeo.drive.hierarchy.permission.adapter.UserSyncRootParentFolderItem
 import org.nuxeo.drive.operations.NuxeoDriveGetChildren;
 import org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
+import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
@@ -83,14 +86,16 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
+@Deploy({
+        "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
-        "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
-        "org.nuxeo.drive.hierarchy.permission" })
+        "org.nuxeo.drive.core",
+        "org.nuxeo.drive.operations",
+        "org.nuxeo.drive.operations.test:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
 public class TestPermissionHierarchy {
@@ -121,6 +126,9 @@ public class TestPermissionHierarchy {
 
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
+
+    @Inject
+    protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
     protected HttpAutomationClient automationClient;
@@ -271,6 +279,21 @@ public class TestPermissionHierarchy {
 
     @Test
     public void testClientSideUser1() throws Exception {
+
+        // ---------------------------------------------
+        // Check active factories
+        // ---------------------------------------------
+        TopLevelFolderItemFactory topLevelFolderItemFactory = fileSystemItemAdapterService.getTopLevelFolderItemFactory();
+        assertEquals(
+                "org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFactory",
+                topLevelFolderItemFactory.getName());
+
+        Set<String> activeFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
+        assertEquals(4, activeFactories.size());
+        assertTrue(activeFactories.contains("defaultFileSystemItemFactory"));
+        assertTrue(activeFactories.contains("userSyncRootParentFactory"));
+        assertTrue(activeFactories.contains("permissionSyncRootFactory"));
+        assertTrue(activeFactories.contains("sharedSyncRootParentFactory"));
 
         // ---------------------------------------------
         // Check top level folder: "Nuxeo Drive"

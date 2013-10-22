@@ -32,4 +32,18 @@
 
   </extension>
 
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="activeFileSystemItemFactories">
+
+    <activeFileSystemItemFactories merge="true">
+      <factories>
+        <factory>dummyDocTypeFactory</factory>
+        <factory>dummyFacetFactory</factory>
+        <factory>dummyVirtualFolderItemFactory</factory>
+        <factory>nullMergeTestFactory</factory>
+      </factories>
+    </activeFileSystemItemFactories>
+
+  </extension>
+
 </component>

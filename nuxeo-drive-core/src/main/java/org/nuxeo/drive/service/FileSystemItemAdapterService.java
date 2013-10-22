@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.service;
 
+import java.util.Set;
+
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
@@ -107,5 +109,10 @@ public interface FileSystemItemAdapterService {
      */
     VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName)
             throws ClientException;
+
+    /**
+     * Gets the active {@link FileSystemItem} factory names.
+     */
+    Set<String> getActiveFileSystemItemFactories() throws ClientException;
 
 }

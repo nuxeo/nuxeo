@@ -43,9 +43,6 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
     @XNode("@name")
     protected String name;
 
-    @XNode("@enabled")
-    protected boolean enabled = true;
-
     @XNode("@order")
     protected int order = 0;
 
@@ -63,14 +60,6 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
 
     public String getName() {
         return name;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public int getOrder() {
@@ -110,7 +99,7 @@ public class FileSystemItemFactoryDescriptor implements Serializable,
         return parameters;
     }
 
-    public String getparameter(String name) {
+    public String getParameter(String name) {
         return parameters.get(name);
     }
 
