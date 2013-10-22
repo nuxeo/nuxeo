@@ -95,9 +95,7 @@
     <module>nuxeo-opensocial</module>
     <module>nuxeo-user-center</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
-    <module>nuxeo-platform-users-management-compat</module>
     <module>nuxeo-platform-rendition</module>
-    <module>nuxeo-platform-replication</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-birt</module>
     <module>nuxeo-activity</module>
@@ -607,33 +605,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-rendition-publisher</artifactId>
         <version>${nuxeo.rendition.version}</version>
-      </dependency>
-
-      <!-- Replication -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-replication-common-api</artifactId>
-        <version>${nuxeo.replication.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-replication-exporter-api</artifactId>
-        <version>${nuxeo.replication.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-replication-exporter-core</artifactId>
-        <version>${nuxeo.replication.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-replication-importer-api</artifactId>
-        <version>${nuxeo.replication.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-replication-importer-core</artifactId>
-        <version>${nuxeo.replication.version}</version>
       </dependency>
 
       <!-- Documentation server -->
