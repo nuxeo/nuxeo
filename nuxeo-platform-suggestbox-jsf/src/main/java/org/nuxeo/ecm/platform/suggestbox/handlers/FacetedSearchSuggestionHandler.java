@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.suggestbox.handlers;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.seam.Component;
@@ -37,6 +38,11 @@ import org.nuxeo.ecm.virtualnavigation.action.MultiNavTreeManager;
 
 /**
  * Handle SearchDocumentsSuggestion using the faceted search JSF UI.
+ * <p>
+ * When suggestion is chosen, the search document model attached to the current
+ * faceted search content view is impacted. If none of the document fields
+ * matches the configuration to impact, another content view is looked up to
+ * see if it can take into account the search criteria.
  */
 @Operation(id = FacetedSearchSuggestionHandler.ID, category = Constants.CAT_UI, label = "Suggestion handler for navigation to faceted search view", description = "Handles JSF navigation given a SearchDocumentsSuggestion as input.")
 public class FacetedSearchSuggestionHandler {
@@ -57,33 +63,62 @@ public class FacetedSearchSuggestionHandler {
         ContentViewActions contentViewActions = (ContentViewActions) Component.getInstance(ContentViewActions.class);
 
         facetedSearchActions.clearSearch();
-        // do not reset current faceted search: keep the current one
-        // facetedSearchActions.setCurrentContentViewName(null);
         String contentViewName = facetedSearchActions.getCurrentContentViewName();
-        ContentView contentView = contentViewActions.getContentView(contentViewName);
-        DocumentModel dm = contentView.getSearchDocumentModel();
-
-        for (Map.Entry<String, Serializable> searchEntry : suggestion.getSearchCriteria().entrySet()) {
-            String searchField = searchEntry.getKey();
-            Serializable searchValue = searchEntry.getValue();
-            try {
-                Property searchProperty = dm.getProperty(searchField);
-                if (searchProperty.isList()) {
-                    // list type is used for multi-valued option fields such as
-                    // fsd_dc_creator.
-                    dm.setPropertyValue(searchField,
-                            (Serializable) Collections.singleton(searchValue));
-                } else {
-                    dm.setPropertyValue(searchField, searchValue);
+        if (!impactContentView(contentViewActions, contentViewName, suggestion)) {
+            // reset current faceted search, and find a content view that's
+            // impacted
+            List<String> cvNames = facetedSearchActions.getContentViewNames();
+            if (cvNames != null && cvNames.size() > 1) {
+                for (String cvName : cvNames) {
+                    facetedSearchActions.setCurrentContentViewName(cvName);
+                    if (impactContentView(contentViewActions, cvName,
+                            suggestion)) {
+                        break;
+                    }
                 }
-            } catch (PropertyNotFoundException e) {
-                // assume property does not exist on this document model
-                continue;
             }
         }
+
         multiNavTreeManager.setSelectedNavigationTree("facetedSearch");
         // JSF view id for the faceted search results page
         return "faceted_search_results";
+    }
+
+    /**
+     * Set search criteria on given faceted search content view, and returns a
+     * boolean stating if at least one of the document properties was impacted.
+     *
+     * @since 5.9
+     */
+    protected boolean impactContentView(ContentViewActions contentViewActions,
+            String contentViewName, SearchDocumentsSuggestion suggestion)
+            throws ClientException {
+        boolean set = false;
+        ContentView contentView = contentViewActions.getContentView(contentViewName);
+        DocumentModel dm = contentView.getSearchDocumentModel();
+        if (dm != null) {
+            for (Map.Entry<String, Serializable> searchEntry : suggestion.getSearchCriteria().entrySet()) {
+                String searchField = searchEntry.getKey();
+                Serializable searchValue = searchEntry.getValue();
+                try {
+                    Property searchProperty = dm.getProperty(searchField);
+                    if (searchProperty.isList()) {
+                        // list type is used for multi-valued option fields
+                        // such as fsd_dc_creator.
+                        dm.setPropertyValue(
+                                searchField,
+                                (Serializable) Collections.singleton(searchValue));
+                    } else {
+                        dm.setPropertyValue(searchField, searchValue);
+                    }
+                    set = true;
+                } catch (PropertyNotFoundException e) {
+                    // assume property does not exist on this document model
+                    continue;
+                }
+            }
+        }
+        return set;
     }
 
 }
