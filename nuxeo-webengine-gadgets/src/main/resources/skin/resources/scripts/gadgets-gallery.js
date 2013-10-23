@@ -6,10 +6,10 @@ jQuery(document).ready(function() {
       parent.window.location = jQuery(this).attr("href");
     });
 
-    if (typeof parent.addGadget == 'function') {
+    if (typeof parent.nuxeo.openSocial.addGadget== 'function') {
       jQuery(".gadget").click(function() {
         var ele = jQuery(this);
-        parent.addGadget(ele.attr("gadget-name"), ele.attr("gadget-spec-url"));
+        parent.nuxeo.openSocial.addGadget(ele.attr("gadget-name"), ele.attr("gadget-spec-url"));
       });
       jQuery(".gadget").css("cursor", "pointer");
     }

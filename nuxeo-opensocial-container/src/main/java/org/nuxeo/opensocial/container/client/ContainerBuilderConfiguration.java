@@ -25,18 +25,18 @@ public class ContainerBuilderConfiguration {
     }
 
     public static native boolean isContainerSizeConfigurable() /*-{
-        try { return $wnd.nuxeo.container.builder.width; } catch(e) { return false; }
+        try { return $wnd.nuxeo.openSocial.container.builder.width; } catch(e) { return false; }
     }-*/;
 
     public static native boolean isSideBarConfigurable() /*-{
-        try { return $wnd.nuxeo.container.builder.sidebar; } catch(e) { return false; }
+        try { return $wnd.nuxeo.openSocial.container.builder.sidebar; } catch(e) { return false; }
     }-*/;
 
     public static native boolean isFooterConfigurable() /*-{
-        try { return $wnd.nuxeo.container.builder.footer; } catch(e) { return false; }
+        try { return $wnd.nuxeo.openSocial.container.builder.footer; } catch(e) { return false; }
     }-*/;
 
     public static native boolean isHeaderConfigurable() /*-{
-        try { return $wnd.nuxeo.container.builder.header; } catch(e) { return false; }
+        try { return $wnd.nuxeo.openSocial.container.builder.header; } catch(e) { return false; }
     }-*/;
 }

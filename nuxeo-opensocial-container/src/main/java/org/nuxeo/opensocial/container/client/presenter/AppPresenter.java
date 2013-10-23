@@ -153,7 +153,7 @@ public class AppPresenter extends WidgetPresenter<AppPresenter.Display> {
     }
 
     private native void registerExternalCall(AppPresenter me) /*-{
-        var container = $wnd.nuxeo.container;
+        var container = $wnd.nuxeo.openSocial.container;
 
         container.addGadget = function(type, params) {
         me.@org.nuxeo.opensocial.container.client.presenter.AppPresenter::addGadget(Ljava/lang/String;Lorg/nuxeo/opensocial/container/client/utils/JSParams;)(type, params);

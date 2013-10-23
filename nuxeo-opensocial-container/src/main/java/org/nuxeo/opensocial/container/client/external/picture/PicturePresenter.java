@@ -158,7 +158,7 @@ public class PicturePresenter extends WidgetPresenter<PicturePresenter.Display> 
     }
 
     private native String getBaseUrl() /*-{
-                                       return $wnd.nuxeo.baseURL;
+                                       return $wnd.baseURL;
                                        }-*/;
 
     @Override

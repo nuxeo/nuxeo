@@ -81,7 +81,7 @@ public class FolderPickerModel {
     }
 
     private native String getBaseUrl() /*-{
-                                       return $wnd.nuxeo.baseURL;
+                                       return $wnd.baseURL;
                                        }-*/;
 
     public String getInitialSelectedFolder() {

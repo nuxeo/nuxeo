@@ -26,50 +26,50 @@ public class ContainerConfiguration {
     }
 
     public static native String getRepositoryName() /*-{
-        return $wnd.nuxeo.container.repositoryName;
+        return $wnd.nuxeo.openSocial.container.repositoryName;
     }-*/;
 
     public static native String getSpaceId() /*-{
-        return $wnd.nuxeo.container.id;
+        return $wnd.nuxeo.openSocial.container.id;
     }-*/;
 
     public static native String getSpaceProviderName() /*-{
-        return $wnd.nuxeo.container.spaceProviderName;
+        return $wnd.nuxeo.openSocial.container.spaceProviderName;
     }-*/;
 
     public static native String getDocumentContextId() /*-{
-        return $wnd.nuxeo.container.documentContextId;
+        return $wnd.nuxeo.openSocial.container.documentContextId;
     }-*/;
 
     public static native String getSpaceName() /*-{
-        return $wnd.nuxeo.container.spaceName;
+        return $wnd.nuxeo.openSocial.container.spaceName;
     }-*/;
 
     public static native String getBaseUrl() /*-{
-        return $wnd.nuxeo.baseURL;
+        return $wnd.baseURL;
     }-*/;
 
     public static native boolean showPreferencesAfterAddingGadget() /*-{
-        return $wnd.nuxeo.container.parameters.showPreferencesAfterAddingGadget;
+        return $wnd.nuxeo.openSocial.container.parameters.showPreferencesAfterAddingGadget;
     }-*/;
 
     public static native String getUserLanguage() /*-{
-        return $wnd.nuxeo.container.parameters.userLanguage;
+        return $wnd.nuxeo.openSocial.container.parameters.userLanguage;
     }-*/;
 
     public static native boolean generateTitle() /*-{
-        return $wnd.nuxeo.container.parameters.generateTitle;
+        return $wnd.nuxeo.openSocial.container.parameters.generateTitle;
     }-*/;
 
     public static native String getDocumentLinkBuilder() /*-{
-        return $wnd.nuxeo.container.parameters.documentLinkBuilder;
+        return $wnd.nuxeo.openSocial.container.parameters.documentLinkBuilder;
     }-*/;
 
     public static native String getActivityLinkBuilder() /*-{
-        return $wnd.nuxeo.container.parameters.activityLinkBuilder;
+        return $wnd.nuxeo.openSocial.container.parameters.activityLinkBuilder;
     }-*/;
 
     public static native boolean isInDebugMode() /*-{
-        try { return $wnd.nuxeo.container.debug; } catch(e) { return false; }
+        try { return $wnd.nuxeo.openSocial.container.debug; } catch(e) { return false; }
     }-*/;
 }

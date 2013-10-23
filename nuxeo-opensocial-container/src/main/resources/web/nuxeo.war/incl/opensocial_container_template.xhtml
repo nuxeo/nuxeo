@@ -7,28 +7,28 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-<c:if test="false">
- Template rendering an OpenSocial GWT container
+  <c:if test="false">
+    Template rendering an OpenSocial GWT container
 
- Parameters:
- - repositoryName: the repository name to use, mandatory
- - spaceId: the id of the Space document to use to generate the container.
-   If set, we use it to retrieve the Space, otherwise we use the spaceProviderName
-   to generate a Space.
- - spaceProviderName: the name of the SpaceProvider to use to get the Space document
- - documentContextId: the id of the DocumentModel considered as context, if any, optional
- - spaceName: the Space name to use, optional
- - applicationContextPath: the application context path, could be a document
-   different from the documentContext.
-   This path could be use for doing query for instance.
- - documentLinkBuilder: name of the document link builder to compute
-   documents URL, usually a codec name. If not set, default to 'docid'.
- - activityLinkBuilder: name of the activity link builder to use to compute
-   document and user links in activity message. If not set, default to 'default'.
-</c:if>
+    Parameters:
+    - repositoryName: the repository name to use, mandatory
+    - spaceId: the id of the Space document to use to generate the container.
+    If set, we use it to retrieve the Space, otherwise we use the spaceProviderName
+    to generate a Space.
+    - spaceProviderName: the name of the SpaceProvider to use to get the Space document
+    - documentContextId: the id of the DocumentModel considered as context, if any, optional
+    - spaceName: the Space name to use, optional
+    - applicationContextPath: the application context path, could be a document
+    different from the documentContext.
+    This path could be use for doing query for instance.
+    - documentLinkBuilder: name of the document link builder to compute
+    documents URL, usually a codec name. If not set, default to 'docid'.
+    - activityLinkBuilder: name of the activity link builder to use to compute
+    document and user links in activity message. If not set, default to 'default'.
+  </c:if>
 
   <script type="text/javascript">
-  var opensocial_messages = {
+    var opensocial_messages = {
       unitIsNotEmpty: "#{messages['label.opensocial.container.unitIsNotEmpty']}",
       zoneIsNotEmpty: "#{messages['label.opensocial.container.zoneIsNotEmpty']}",
       noZoneCreated: "#{messages['label.opensocial.container.noZoneCreated']}",
@@ -85,22 +85,10 @@
       minimize: "#{messages['label.opensocial.container.minimize']}"
     }
 
-    jQuery(document).ready(function() {
-      jQuery("#addGadgetButton").fancybox({
-        'width'				: '75%',
-        'height'			: '75%',
-        'autoScale'			: true,
-        'transitionIn'		: 'none',
-        'transitionOut'		: 'none',
-        'type'				: 'iframe',
-        'enableEscapeButton': true,
-        'centerOnScroll': true
-      });
-    });
+    var nuxeo = (function(nuxeo) {
+      nuxeo.openSocial = nuxeo.openSocial || {};
 
-    var nuxeo = {
-      baseURL:"#{baseURL}",
-      container: {
+      nuxeo.openSocial.container = {
         repositoryName: "#{repositoryName}",
         id:"#{spaceId}",
         spaceProviderName: "#{spaceProviderName}",
@@ -115,18 +103,32 @@
           documentLinkBuilder: "#{documentLinkBuilder}",
           </c:if>
           <c:if test="#{not empty activityLinkBuilder}">
-          activityLinkBuilder: "#{activityLinkBuilder}",
+            activityLinkBuilder: "#{activityLinkBuilder}",
           </c:if>
           applicationContextPath: "#{nxu:javaScriptEscape(applicationContextPath)}"
         }
-      }
+      };
 
-    };
+      nuxeo.openSocial.addGadget = function(name, url) {
+        jQuery.fancybox.close();
+        nuxeo.openSocial.container.addGadget('wcopensocial', [{WC_GADGET_DEF_URL:url}, {WC_GADGET_NAME:name}]);
+      };
 
-    function addGadget(name, url) {
-      jQuery.fancybox.close();
-      nuxeo.container.addGadget('wcopensocial', [{WC_GADGET_DEF_URL:url}, {WC_GADGET_NAME:name}]);
-    }
+      return nuxeo;
+    })(nuxeo || {});
+
+    jQuery(document).ready(function() {
+      jQuery("#addGadgetButton").fancybox({
+        'width'       : '75%',
+        'height'      : '75%',
+        'autoScale'     : true,
+        'transitionIn'    : 'none',
+        'transitionOut'   : 'none',
+        'type'        : 'iframe',
+        'enableEscapeButton': true,
+        'centerOnScroll': true
+      });
+    });
   </script>
 
   <div class="titleBlock">

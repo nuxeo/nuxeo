@@ -23,7 +23,7 @@ public class FileUtils {
 
 
     public native static String getBaseUrl() /*-{
-        return $wnd.nuxeo.baseURL;
+        return $wnd.baseURL;
     }-*/;
 
     public static String buildFileUrl(String repoName, String id, String path) {
