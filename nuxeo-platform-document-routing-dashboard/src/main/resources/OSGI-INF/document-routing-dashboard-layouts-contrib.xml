@@ -463,7 +463,7 @@
         <row>
           <properties mode="any">
             <property name="nxl_gridStyleClass_0">gridStyle10</property>
-            <property name="nxl_gridStyleClass_1">gridStyle1</property>
+            <property name="nxl_gridStyleClass_1">gridStyle2</property>
           </properties>
           <widget>container_0</widget>
           <widget>container_01</widget>
