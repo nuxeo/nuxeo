@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.RequestDispatcher;
@@ -105,6 +106,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             request.setAttribute("stackTrace", stackTrace);
             request.setAttribute("securityError",
                     ExceptionHelper.isSecurityError(unwrappedException));
+            request.setAttribute("messageBundle", ResourceBundle.getBundle(
+                    parameters.getBundleName(), request.getLocale(),
+                    Thread.currentThread().getContextClassLoader()));
             String dumpedRequest = parameters.getRequestDumper().getDump(
                     request);
             if (!is404) {
