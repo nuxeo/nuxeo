@@ -50,7 +50,7 @@ function jsPlumbInitializeDefault() {
 			foldback : 0.9,
 			fillStyle : "#F78181",
 			width : 14
-		} ], ]
+		} ] ]
 	});
 };
 function getConnectionOverlayLabel(colour, condition) {
