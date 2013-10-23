@@ -366,7 +366,9 @@
     }
     selector = selector + widgetId + "_select2]";
 
-    initSelect2Widget(jQuery(selector));
+    jQuery(selector).each(function(idx, el) {
+      initSelect2Widget(jQuery(el));
+    });
 
   }
 
