@@ -279,26 +279,31 @@ public class RepositoryImpl implements Repository {
 
     protected Mapper createCachingMapper(Model model, Mapper mapper)
             throws StorageException {
+        try {
+            Class<? extends CachingMapper> cachingMapperClass = getCachingMapperClass();
+            if (cachingMapperClass == null) {
+                return mapper;
+            }
+            CachingMapper cachingMapper = cachingMapperClass.newInstance();
+            cachingMapper.initialize(model, mapper, cachePropagator,
+                    eventPropagator, repositoryEventQueue,
+                    repositoryDescriptor.cachingMapperProperties);
+            return cachingMapper;
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+    }
+
+    protected Class<? extends CachingMapper> getCachingMapperClass() {
         if (!repositoryDescriptor.cachingMapperEnabled) {
-            log.warn("VCS Mapper cache is disabled.");
-            return mapper;
+            return null;
         }
         Class<? extends CachingMapper> cachingMapperClass = repositoryDescriptor.cachingMapperClass;
         if (cachingMapperClass == null) {
             // default cache
             cachingMapperClass = SoftRefCachingMapper.class;
         }
-        CachingMapper cachingMapper;
-        try {
-            log.info("VCS Mapper cache using: " + cachingMapperClass.getName());
-            cachingMapper = cachingMapperClass.newInstance();
-            cachingMapper.initialize(model, mapper, cachePropagator,
-                    eventPropagator, repositoryEventQueue,
-                    repositoryDescriptor.cachingMapperProperties);
-        } catch (Exception e) {
-            throw new StorageException(e);
-        }
-        return cachingMapper;
+        return cachingMapperClass;
     }
 
     protected void createServer() {
@@ -444,39 +449,11 @@ public class RepositoryImpl implements Repository {
     @Override
     public synchronized SessionImpl getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
-        assert connectionSpec == null
-                || connectionSpec instanceof ConnectionSpecImpl;
-
+        if (model == null) {
+            initRepository();
+        }
         Credentials credentials = connectionSpec == null ? null
                 : ((ConnectionSpecImpl) connectionSpec).getCredentials();
-
-        boolean create = model == null;
-        if (create) {
-            log.debug("Initializing");
-            ModelSetup modelSetup = new ModelSetup();
-            modelSetup.repositoryDescriptor = repositoryDescriptor;
-            modelSetup.schemaManager = schemaManager;
-            backend.initializeModelSetup(modelSetup);
-            model = new Model(modelSetup);
-            backend.initializeModel(model);
-
-            // create the lock manager, which creates its own mapper
-            // creating this first, before the cluster node handler,
-            // as we don't want invalidations in the lock manager's mapper
-            Mapper lockManagerMapper = backend.newMapper(model, null,
-                    MapperKind.LOCK_MANAGER);
-            lockManager = new LockManager(lockManagerMapper,
-                    repositoryDescriptor.clusteringEnabled);
-
-            // create the mapper for the cluster node handler
-            if (repositoryDescriptor.clusteringEnabled) {
-                backend.newMapper(model, null, MapperKind.CLUSTER_NODE_HANDLER);
-                log.info("Clustering enabled with "
-                        + repositoryDescriptor.clusteringDelay
-                        + " ms delay for repository: " + getName());
-            }
-        }
-
         SessionPathResolver pathResolver = new SessionPathResolver();
         Mapper mapper = backend.newMapper(model, pathResolver, null);
         SessionImpl session = newSession(model, mapper, credentials);
@@ -484,6 +461,40 @@ public class RepositoryImpl implements Repository {
         sessions.add(session);
         sessionCount.inc();
         return session;
+    }
+
+    protected void initRepository() throws StorageException {
+        log.debug("Initializing");
+        ModelSetup modelSetup = new ModelSetup();
+        modelSetup.repositoryDescriptor = repositoryDescriptor;
+        modelSetup.schemaManager = schemaManager;
+        backend.initializeModelSetup(modelSetup);
+        model = new Model(modelSetup);
+        backend.initializeModel(model);
+
+        // create the lock manager, which creates its own mapper
+        // creating this first, before the cluster node handler,
+        // as we don't want invalidations in the lock manager's mapper
+        Mapper lockManagerMapper = backend.newMapper(model, null,
+                MapperKind.LOCK_MANAGER);
+        lockManager = new LockManager(lockManagerMapper,
+                repositoryDescriptor.clusteringEnabled);
+
+        // create the mapper for the cluster node handler
+        if (repositoryDescriptor.clusteringEnabled) {
+            backend.newMapper(model, null, MapperKind.CLUSTER_NODE_HANDLER);
+            log.info("Clustering enabled with "
+                    + repositoryDescriptor.clusteringDelay
+                    + " ms delay for repository: " + getName());
+        }
+
+        // log once which mapper cache is being used
+        Class<? extends CachingMapper> cachingMapperClass = getCachingMapperClass();
+        if (cachingMapperClass == null) {
+            log.warn("VCS Mapper cache is disabled.");
+        } else {
+            log.info("VCS Mapper cache using: " + cachingMapperClass.getName());
+        }
     }
 
     protected SessionImpl newSession(Model model, Mapper mapper,
