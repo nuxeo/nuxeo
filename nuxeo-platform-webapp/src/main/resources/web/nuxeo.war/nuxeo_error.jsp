@@ -7,25 +7,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
   String context = request.getContextPath();
-
   String user_message = (String) request.getAttribute("user_message");
   String exception_message = (String) request.getAttribute("exception_message");
   String stackTrace = (String) request.getAttribute("stackTrace");
-  Boolean securityError = (Boolean) request.getAttribute("securityError");
   String request_dump = (String) request.getAttribute("request_dump");
-
-  String pageTitle = "An error occurred";
-  if ((securityError!=null) && (securityError.booleanValue()==true))
-  {
-    pageTitle = "You don't have the necessary permission to do the requested action";
-  }
+  java.util.ResourceBundle bundle = (java.util.ResourceBundle) request.getAttribute("messageBundle");
   boolean isAnonymous = AnonymousAuthenticator.isAnonymousRequest(request);
 %>
-
 <html>
-<fmt:setBundle basename="messages" var="messages"/>
 <head>
-  <title>An error occurred</title>
+  <title><%= bundle.getString("label.errorPage.title") %></title>
   <style type="text/css">
 <!--
 body { background: url("<%=context%>/img/error_pages/page_background.gif") repeat scroll 0 0 transparent;
@@ -101,27 +92,28 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
   </script>
 </head>
 <body>
+
   <div class="container">
-    <h1><%=pageTitle%></h1>
+    <h1><%= bundle.getString("label.errorPage.title") %></h1>
 
     <% if (!isAnonymous) { %>
       <p><%=user_message%></p>
       <div class="links">
+
         <a class="block back" href="<%=context %>/">
-          <span>Back to default view</span>
+          <span><%= bundle.getString("label.errorPage.goBack") %></span>
         </a>
         <a class="block change" href="<%=context%>/logout">
-          <span>Change username</span>
-        </a>
+          <span><%= bundle.getString("label.errorPage.changeUsername") %></span>
         </a>
         <a class="block stack" href="#" onclick="javascript:toggleError('stackTrace'); return false;">
-          <span>Show stacktrace</span>
+          <span><%= bundle.getString("label.errorPage.showStackTrace") %></span>
         </a>
         <a class="block dump"href="#" onclick="javascript:toggleError('requestDump'); return false;">
-          <span>View context dump</span>
+          <span><%= bundle.getString("label.errorPage.viewContextDump") %></span>
         </a>
 
-       <div class="errorDetail" id="stackTrace" style="display: none;">
+        <div class="errorDetail" id="stackTrace" style="display: none;">
           <h2><%=exception_message %></h2>
           <inputTextarea rows="20" cols="100" readonly="true">
             <pre>
@@ -131,7 +123,7 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
         </div>
 
         <div class="errorDetail" id="requestDump" style="display: none;">
-          <h2>Context</h2>
+          <h2><%= bundle.getString("label.errorPage.context") %></h2>
           <inputTextarea rows="20" cols="100" readonly="true">
             <pre>
             <%=request_dump%>
@@ -142,14 +134,14 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
       </div>
 
     <%} else { %>
-      <p>You must be authenticated to perform this operation.</p>
+      <p><%= bundle.getString("label.errorPage.anonymous.description") %></p>
       <div class="links">
         <a class="block change" href="<%=context%>/logout">
-          <span>Sign in</span>
+          <span><%= bundle.getString("label.errorPage.anonymous.signIn") %></span>
         </a>
       </div>
     <%} %>
-  </div>
 
+  </div>
 </body>
 </html>

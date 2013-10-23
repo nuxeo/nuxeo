@@ -11,7 +11,7 @@
 <html>
 <fmt:setBundle basename="messages" var="messages"/>
 <head>
-  <title>Page not found</title>
+  <title><fmt:message bundle="${messages}" key="label.errorPage.pageNotFound.headerTitle" /></title>
   <style type="text/css">
 <!--
 body { background: url("<%=context%>/img/error_pages/page_background.gif") repeat scroll 0 0 transparent;
@@ -79,16 +79,15 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
 <body>
 
   <div class="container">
-    <h1>Sorry, the page you requested cannot be found.</h1>
-    <p>The page you are trying to reach has been moved or doesn't exist anymore.
-    Click on the following links to get back to the platform.</p>
+    <h1><fmt:message bundle="${messages}" key="label.errorPage.pageNotFound.title" /></h1>
+    <p><fmt:message bundle="${messages}" key="label.errorPage.pageNotFound.description" /></p>
 
     <div class="links">
       <a class="block back" href="<%=context %>/">
-        <span>Back to default view</span>
+        <span><fmt:message bundle="${messages}" key="label.errorPage.goBack" /></span>
       </a>
       <a class="block change" href="<%=context%>/logout">
-        <span>Change username</span>
+        <span><fmt:message bundle="${messages}" key="label.errorPage.changeUsername" /></span>
       </a>
     </div>
   </div>
