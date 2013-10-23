@@ -11,30 +11,31 @@
     }
     markup += entry.displayLabel;
     if (entry.warn_message) {
-      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
-          + entry.warn_message + "'/>"
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
     }
     return markup;
   }
 
-    function docEntryDefaultFormatter(doc) {
+  function docEntryDefaultFormatter(doc) {
     var markup = "";
     if (doc.properties && doc.properties['common:icon']) {
-      markup += "<img src='" + window.nxContextPath + doc.properties['common:icon'] + "'/>"
+      markup += "<img src='" + window.nxContextPath
+          + doc.properties['common:icon'] + "'/>"
     }
     markup += doc.title;
     if (doc.warn_message) {
-      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
-          + doc.warn_message + "'/>"
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + doc.warn_message + "'/>"
     }
     return markup;
   }
 
-    function dirEntryDefaultFormatter(entry) {
+  function dirEntryDefaultFormatter(entry) {
     var markup = entry.displayLabel;
     if (entry.warn_message) {
-      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
-          + entry.warn_message + "'/>"
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
     }
     return markup;
   }
@@ -44,12 +45,13 @@
   function docSelectionDefaultFormatter(doc) {
     var markup = "";
     if (doc.properties && doc.properties['common:icon']) {
-      markup += "<img src='" + window.nxContextPath + doc.properties['common:icon'] + "'/>"
+      markup += "<img src='" + window.nxContextPath
+          + doc.properties['common:icon'] + "'/>"
     }
     markup += getDocLinkElt(doc);
     if (doc.warn_message) {
-      markup += "<img src='" + window.nxContextPath + "/icons/warning.gif' title='"
-          + doc.warn_message + "'/>"
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + doc.warn_message + "'/>"
     }
     return markup;
   }
@@ -69,9 +71,12 @@
   }
 
   function getDocLinkElt(doc) {
-    if(doc.contextParameters) {
+    if (doc.contextParameters) {
       var url = doc.contextParameters.documentURL;
-      var markup = "<a href=" + url + " onclick='if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='" + getUrlWithConversationId(url) + "'}'>" + doc.title + "</a>"
+      var markup = "<a href="
+          + url
+          + " onclick='if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
+          + getUrlWithConversationId(url) + "'}'>" + doc.title + "</a>"
       return markup;
     } else {
       return doc.title;
@@ -84,7 +89,7 @@
 
   function configureOperationParameters(op, params, query) {
     var temp = {};
-    jQuery.extend(temp,params);
+    jQuery.extend(temp, params);
     temp.lang = currentUserLang;
     if (params.operationId == 'Directory.SuggestEntries') {
       // build default operation for Directory
@@ -106,7 +111,7 @@
     if (typeof currentConversationId != 'undefined') {
       // Give needed info to restore Seam context
       op.addParameter("id", getOperationName(params));
-      op.addParameter("conversationId",currentConversationId);
+      op.addParameter("conversationId", currentConversationId);
       op.opts.automationParams.context = temp;
     } else {
       op.addParameters(temp);
@@ -166,7 +171,7 @@
     try {
       initDoc = JSON.parse(initHolder.val());
     } catch (err) {
-      //console.log("Unable to parse initvalue", err, initHolder.val())
+      // console.log("Unable to parse initvalue", err, initHolder.val())
     }
 
     // set style on select
