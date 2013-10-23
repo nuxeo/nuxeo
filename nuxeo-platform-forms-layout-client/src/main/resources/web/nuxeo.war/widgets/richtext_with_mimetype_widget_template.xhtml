@@ -15,7 +15,7 @@
         <c:choose>
           <c:when test="#{(field_1 == 'text/html') or (empty field_1)}">
             <nxu:set var="translatedHtml"
-              value="#{widgetProperty_translatedHtml}" cache="true">
+              value="#{noteActions.translateImageLinks(field_0)}" cache="true">
               <c:if test="#{!empty translatedHtml}">
                 <h:outputText value="#{translatedHtml}" escape="false" />
               </c:if>
