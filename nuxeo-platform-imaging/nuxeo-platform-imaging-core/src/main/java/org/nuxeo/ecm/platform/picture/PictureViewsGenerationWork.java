@@ -104,7 +104,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
         int worksCount = 0;
         for (String workId : workIds) {
             if (workId.equals(getId())) {
-                if (worksCount++ > 1) {
+                if (++worksCount > 1) {
                     // another work scheduled
                     return;
                 }
