@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.suggestbox.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,8 +43,15 @@ public class DocumentSuggestion extends Suggestion {
         TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
         String description = doc.getProperty("dc:description").getValue(
                 String.class);
+        String icon = null;
+        if (doc.hasSchema("common")) {
+            icon = (String) doc.getProperty("common", "icon");
+        }
+        if (StringUtils.isEmpty(icon)) {
+            icon = typeInfo.getIcon();
+        }
         return new DocumentSuggestion(new DocumentLocationImpl(doc),
-                doc.getTitle(), typeInfo.getIcon()).withDescription(description);
+                doc.getTitle(), icon).withDescription(description);
     }
 
     public DocumentLocation getDocumentLocation() {
