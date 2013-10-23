@@ -44,15 +44,14 @@ import org.nuxeo.runtime.api.Framework;
         MediaType.APPLICATION_JSON + "+nxentity" })
 public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
 
-
     /**
      *
      */
     public static final String ENTITY_TYPE = "directoryEntry";
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, DirectoryEntry directoryEntry)
-            throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg,
+            DirectoryEntry directoryEntry) throws IOException, ClientException {
         String directoryName = directoryEntry.getDirectoryName();
 
         jg.writeStringField("directoryName", directoryName);
@@ -70,8 +69,12 @@ public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
             String key = fieldName.getLocalName();
 
             jg.writeFieldName(key);
-            JsonDocumentWriter.writePropertyValue(jg,
-                    entry.getProperty(fieldName.getPrefixedName()), "");
+            if (key.equals(directory.getPasswordField())) {
+                jg.writeString("");
+            } else {
+                JsonDocumentWriter.writePropertyValue(jg,
+                        entry.getProperty(fieldName.getPrefixedName()), "");
+            }
 
         }
         jg.writeEndObject();
@@ -82,8 +85,5 @@ public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
     protected String getEntityType() {
         return ENTITY_TYPE;
     }
-
-
-
 
 }

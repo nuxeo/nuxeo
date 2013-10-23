@@ -16,9 +16,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -245,6 +243,21 @@ public class DirectoryTest extends BaseTest {
         // Then it is unauthorized
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 response.getStatus());
+
+    }
+
+    @Test
+    public void itShouldNotWritePasswordFieldInResponse() throws Exception {
+     // Given a user directory entry
+        UserManager um = Framework.getLocalService(UserManager.class);
+        String userDirectoryName = um.getUserDirectoryName();
+
+        // When i do an update request on it
+        JsonNode node = getResponseAsJson(RequestType.GET, "/directory/"
+                + userDirectoryName + "/user1");
+
+        assertEquals("",node.get("properties").get("password").getValueAsText());
+
 
     }
 
