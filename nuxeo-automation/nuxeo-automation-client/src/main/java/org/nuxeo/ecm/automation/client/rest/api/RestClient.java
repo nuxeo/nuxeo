@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.automation.client.rest.api;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.http.impl.client.BasicCookieStore;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 
@@ -31,21 +34,32 @@ import com.sun.jersey.client.apache4.ApacheHttpClient4Handler;
  */
 public class RestClient {
 
-    protected static final String SITE_AUTOMATION_PATH = "/site/automation";
+    protected static final String SITE_AUTOMATION_PATH_PATTERN = "(\\/api\\/v1)?(\\/site)?\\/automation";
+
+    private static final Pattern SITE_AUTOMATION_PATH_PATTERN_COMPILED = Pattern.compile(
+            SITE_AUTOMATION_PATH_PATTERN, Pattern.CASE_INSENSITIVE);
 
     protected static final String API_PATH = "/api/v1";
 
-    protected WebResource service;
+    WebResource service;
 
     public RestClient(HttpAutomationClient httpAutomationClient) {
         ApacheHttpClient4Handler handler = new ApacheHttpClient4Handler(
                 httpAutomationClient.http(), new BasicCookieStore(), false);
         ApacheHttpClient4 client = new ApacheHttpClient4(handler);
-        client.addFilter(httpAutomationClient.getRequestInterceptor());
+
+        if (httpAutomationClient.getRequestInterceptor() != null) {
+            client.addFilter(httpAutomationClient.getRequestInterceptor());
+        }
 
         String apiURL = httpAutomationClient.getBaseUrl();
-        apiURL = apiURL.replace(SITE_AUTOMATION_PATH, API_PATH);
+        apiURL = replaceAutomationEndpoint(apiURL);
         service = client.resource(apiURL);
+    }
+
+    private String replaceAutomationEndpoint(String url) {
+        Matcher matcher = SITE_AUTOMATION_PATH_PATTERN_COMPILED.matcher(url);
+        return matcher.replaceAll(API_PATH);
     }
 
     public RestRequest newRequest(String path) {
