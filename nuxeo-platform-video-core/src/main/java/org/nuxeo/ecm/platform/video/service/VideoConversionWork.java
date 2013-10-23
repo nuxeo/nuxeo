@@ -54,9 +54,13 @@ public class VideoConversionWork extends AbstractWork {
 
     protected final String conversionName;
 
+    protected static String computeIdPrefix(String repositoryName, String docId) {
+        return repositoryName + ':' + docId + ":videoconv:";
+    }
+
     public VideoConversionWork(String repositoryName, String docId,
             String conversionName) {
-        super(repositoryName + ':' + docId + ":videoconv:" + conversionName);
+        super(computeIdPrefix(repositoryName, docId) + conversionName);
         setDocument(repositoryName, docId);
         this.conversionName = conversionName;
     }
@@ -140,11 +144,11 @@ public class VideoConversionWork extends AbstractWork {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         List<String> workIds = workManager.listWorkIds(
                 CATEGORY_VIDEO_CONVERSION, null);
-        String idPrefix = repositoryName + ':' + docId + ":videoconv:";
+        String idPrefix = computeIdPrefix(repositoryName, docId);
         int worksCount = 0;
         for (String workId : workIds) {
             if (workId.startsWith(idPrefix)) {
-                if (worksCount++ > 1) {
+                if (++worksCount > 1) {
                     // another work scheduled
                     return;
                 }
