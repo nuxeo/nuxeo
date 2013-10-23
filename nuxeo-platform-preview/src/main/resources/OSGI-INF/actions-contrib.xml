@@ -52,9 +52,6 @@
       <rule grant="true">
         <condition>#{previewActions.documentHasPreview(document)}</condition>
       </rule>
-      <rule grant="false">
-        <facet>Folderish</facet>
-      </rule>
     </filter>
 
   </extension>
