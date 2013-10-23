@@ -242,11 +242,11 @@
         <span class="nuxeo">nuxeo</span><span class="slash">/</span><span class="doctitle">Automation Documentation</span>
       </h1>
       <nav role="complementary">
-		    <a href="http://answers.nuxeo.com/">Answers</a>
-		    <a href="http://doc.nuxeo.com">Documentation</a>
-		    <a href="http://connect.nuxeo.com">nuxeo connect</a>
-		    <a href="http://www.nuxeo.com">nuxeo.com</a>
-		   </nav>
+        <a href="http://answers.nuxeo.com/">Answers</a>
+        <a href="http://doc.nuxeo.com">Documentation</a>
+        <a href="http://connect.nuxeo.com">nuxeo connect</a>
+        <a href="http://www.nuxeo.com">nuxeo.com</a>
+       </nav>
     </header>
     <div class="container">
       <nav role="navigation">
@@ -317,6 +317,16 @@
 
             <h3>Links</h3>
             <div><a href="${operation.id}">JSON definition</a></div>
+
+            <h3>Traces</h3>
+            <#if This.isTraceEnabled()>
+              Traces are enabled : <A href="doc/toggleTraces"> Click here to disable</A><br/>
+              <A target="traces"  href="doc/traces?opId=${operation.id}"> Get traces </A>
+            <#else>
+              Traces are disabled : <A href="doc/toggleTraces"> Click here to enable</A><br/>
+              <A target="traces"  href="doc/traces?opId=${operation.id}"> Get light traces </A>
+            </#if>
+
           <#else>
             <h2>Operations list</h2>
             <ul>
@@ -381,7 +391,7 @@
              <li>
                <a onclick="_gaq.push(['_trackEvent', 'Social', 'FaceBook', 'Go to FaceBook group page'])" href="https://www.facebook.com/Nuxeo" rel="nofollow"><span class="facebook">Facebook</span></a></li>
              <li>
-               <a onclick="_gaq.push(['_trackEvent', 'Social', 'GooglePlus', 'Go to FaceBook group page'])" href="https://plus.google.com/u/0/b/116828675873127390558/" rel="nofollow"><span class="facebook">Google+</span></a></li>  
+               <a onclick="_gaq.push(['_trackEvent', 'Social', 'GooglePlus', 'Go to FaceBook group page'])" href="https://plus.google.com/u/0/b/116828675873127390558/" rel="nofollow"><span class="facebook">Google+</span></a></li>
             </ul>
           </li>
         </ul>

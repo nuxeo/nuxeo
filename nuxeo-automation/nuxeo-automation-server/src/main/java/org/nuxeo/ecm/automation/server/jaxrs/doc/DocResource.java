@@ -11,25 +11,28 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.doc;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.automation.core.trace.Trace;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
 import org.nuxeo.runtime.api.Framework;
 
@@ -40,9 +43,6 @@ import org.nuxeo.runtime.api.Framework;
 public class DocResource {
 
     private final Log log = LogFactory.getLog(DocResource.class);
-
-    @Context
-    protected UriInfo uri;
 
     protected AutomationService service;
 
@@ -104,6 +104,35 @@ public class DocResource {
     @Produces("text/html")
     public Object doGetWiki() {
         return getTemplate("wiki.ftl");
+    }
+
+    public boolean isTraceEnabled() {
+        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        return tracerFactory.getRecordingState();
+    }
+
+    @GET
+    @Path("toggleTraces")
+    @Produces("text/html")
+    public Object toggleTraces() throws Exception {
+        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        tracerFactory.toggleRecording();
+        HttpServletRequest request = RequestContext.getActiveContext().getRequest();
+        String url = request.getHeader("Referer");
+        return Response.seeOther(new URI(url)).build();
+    }
+
+    @GET
+    @Path("traces")
+    @Produces("text/plain")
+    public String doGetTrace(@QueryParam("opId") String opId) {
+        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
+        Trace trace = tracerFactory.getTrace(opId);
+        if (trace!=null) {
+            return tracerFactory.getTrace(opId).getFormattedText();
+        } else {
+            return "no trace";
+        }
     }
 
     public String[] getInputs(OperationDocumentation op) {
