@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +38,7 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
 /**
  * Audio thumbnail factory
- * 
+ *
  * @since 5.7
  */
 public class ThumbnailAudioFactory implements ThumbnailFactory {
@@ -68,6 +69,7 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
         Blob thumbnailBlob = null;
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
@@ -77,16 +79,19 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
             fileBlob = new FileBlob(bh.getBlob().getStream());
             MP3File file = new MP3File(fileBlob.getFile());
             if (file.hasID3v2Tag()) {
-                ID3v23Frame id3v2 = (ID3v23Frame) file.getID3v2Tag().getFrameOfType(
-                        "APIC").next();
-                FrameBodyAPIC framePic = (FrameBodyAPIC) id3v2.getBody();
-                InputStream is = new ByteArrayInputStream(
-                        framePic.getImageData());
-                thumbnailBlob = new FileBlob(is);
+                Iterator it = file.getID3v2Tag().getFrameOfType("APIC");
+                if (it != null && it.hasNext()) {
+                    ID3v23Frame id3v2 = (ID3v23Frame) it.next();
+                    FrameBodyAPIC framePic = (FrameBodyAPIC) id3v2.getBody();
+                    InputStream is = new ByteArrayInputStream(
+                            framePic.getImageData());
+                    thumbnailBlob = new FileBlob(is);
+                }
             }
-        } catch (IOException | TagException | InvalidAudioFrameException |  ReadOnlyFileException | ClientException e) {
+        } catch (IOException | TagException | InvalidAudioFrameException
+                | ReadOnlyFileException | ClientException e) {
             log.warn("Unable to get the audio file cover art", e);
-        } 
+        }
         return thumbnailBlob;
     }
 }
