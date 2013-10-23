@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -115,6 +116,8 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         routeDoc = createRoute("myroute", session);
     }
 
+    // NXP-12955: disabled because failing randomly
+    @Ignore
     @Test
     public void testEscalationSingleExecution() throws Exception {
         routeDoc = session.saveDocument(routeDoc);
@@ -262,9 +265,9 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         DocumentModel r = session.getDocument(route.getDocument().getRef());
         nodeDoc = session.getDocument(new IdRef(node.getDocument().getId()));
         assertEquals("foo",
-                (String) r.getPropertyValue("fctroute1:stringfield"));
+                r.getPropertyValue("fctroute1:stringfield"));
         assertEquals("bar",
-                (String) nodeDoc.getPropertyValue("fctnd1:stringfield2"));
+                nodeDoc.getPropertyValue("fctnd1:stringfield2"));
 
     }
 
