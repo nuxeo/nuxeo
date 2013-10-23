@@ -2784,9 +2784,6 @@
                 <row>
                   <widget>cssClass</widget>
                 </row>
-                <row>
-                  <widget>translatedHtml</widget>
-                </row>
               </rows>
               <widget name="cssClass" type="text">
                 <labels>
@@ -2794,18 +2791,6 @@
                 </labels>
                 <fields>
                   <field>cssClass</field>
-                </fields>
-              </widget>
-              <widget name="translatedHtml" type="text">
-                <labels>
-                  <label mode="any">Translated HTML</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">Binding to the translated HTML content.
-                    Example: #{noteActions.translateImageLinks(field_0)}</label>
-                </helpLabels>
-                <fields>
-                  <field>translatedHtml</field>
                 </fields>
               </widget>
             </layout>
