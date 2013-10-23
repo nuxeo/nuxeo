@@ -34,8 +34,8 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base converter choosing the correct convert to generate a thumbnail according
- * to the Blob's mime type.
+ * Base converter choosing the correct convert to generate a thumbnail
+ * according to the Blob's mime type.
  *
  * @since 5.8
  */
@@ -60,6 +60,10 @@ public class AnyToThumbnailConverter implements Converter {
             sourceBlob = blobHolder.getBlob();
         } catch (ClientException e) {
             throw new ConversionException("Unable to fetch Blob", e);
+        }
+
+        if (sourceBlob == null) {
+            return null;
         }
 
         String mimeType = sourceBlob.getMimeType();
