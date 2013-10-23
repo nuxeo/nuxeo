@@ -32,6 +32,8 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
 import org.nuxeo.runtime.api.Framework;
@@ -99,6 +101,10 @@ public class DocResource {
         }
     }
 
+    protected boolean canManageTraces() {
+        return ((NuxeoPrincipal)WebEngine.getActiveContext().getPrincipal()).isAdministrator();
+    }
+
     @GET
     @Path("wiki")
     @Produces("text/html")
@@ -115,6 +121,9 @@ public class DocResource {
     @Path("toggleTraces")
     @Produces("text/html")
     public Object toggleTraces() throws Exception {
+        if (!canManageTraces()) {
+            return "You can not manage traces";
+        }
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         tracerFactory.toggleRecording();
         HttpServletRequest request = RequestContext.getActiveContext().getRequest();
@@ -126,6 +135,9 @@ public class DocResource {
     @Path("traces")
     @Produces("text/plain")
     public String doGetTrace(@QueryParam("opId") String opId) {
+        if (!canManageTraces()) {
+            return "You can not manage traces";
+        }
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         Trace trace = tracerFactory.getTrace(opId);
         if (trace!=null) {
