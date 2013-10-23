@@ -693,4 +693,18 @@ public class RoutingTaskActionsBean implements Serializable {
     public void setCurrentTask(Task currentTask) {
         this.currentTask = currentTask;
     }
+
+    /**
+     * @since 5.8 - Define if action reassign task can be displayed.
+     */
+    public boolean canBeReassign() throws ClientException {
+        DocumentModel workflowInstance = documentManager.getDocument(new IdRef(
+                currentTask.getProcessId()));
+        GraphRoute workflow = workflowInstance.getAdapter(GraphRoute.class);
+        if (workflow == null) {
+            return false;
+        }
+        GraphNode node = workflow.getNode(currentTask.getType());
+        return node.allowTaskReassignment();
+    }
 }
