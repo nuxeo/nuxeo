@@ -41,6 +41,7 @@
       locale="#{localeSelector.localeString}"
       immediateUpload="true" >
       <a4j:support  onsubmit="removeUploadedFile(event.memo.entry);" event="onclear"/>
+      <a4j:support  event="onuploadcomplete" reRender="validateMultiplesUploadDiv" />
     </rich:fileUpload>
 
     <a4j:region renderRegionOnly="true" id="files_region">
@@ -75,11 +76,12 @@
 
   </h:panelGrid>
 
-  <div>
+  <a4j:outputPanel id="validateMultiplesUploadDiv">
     <h:commandButton
+      rendered="#{not empty FileManageActions.uploadedFiles}"
       value="#{messages['command.add.files']}" styleClass="button"
       action="#{FileManageActions.validateMultiplesUpload}" />
-  </div>
+  </a4j:outputPanel>
 
 </h:form>
 
