@@ -356,7 +356,9 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         TypeDefinitionList types = repoService.getTypeChildren(repositoryId,
                 "cmis:folder", Boolean.FALSE, null, null, null);
         for (TypeDefinition type : types.getList()) {
-            assertNull(type.getPropertyDefinitions());
+            Map<String, PropertyDefinition<?>> pd = type.getPropertyDefinitions();
+            assertNotNull(pd);
+            assertEquals(0, pd.size());
         }
         List<String> ids = getTypeIds(types);
         assertTrue(ids.contains("Folder"));
