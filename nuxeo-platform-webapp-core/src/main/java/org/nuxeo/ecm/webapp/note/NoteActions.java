@@ -18,6 +18,11 @@
 package org.nuxeo.ecm.webapp.note;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
+
+import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -28,10 +33,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
-import java.io.Serializable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
@@ -41,9 +42,9 @@ public class NoteActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final Pattern PATTERN_TO_CHECK = Pattern.compile("(.*<img.*/files:files/.*/>.*)?");
+    protected static final Pattern PATTERN_TO_CHECK = Pattern.compile("(.*<img.*/files:files/.*/>.*)+", Pattern.DOTALL);
 
-    protected static final String PATTERN_TO_REPLACE = "((<img.*?)%s(/files:files/.*?/>))";
+    protected static final String PATTERN_TO_REPLACE = "(<img.*?)%s(/files:files/.*?/>)";
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -124,7 +125,7 @@ public class NoteActions implements Serializable {
         String patternToReplace = String.format(PATTERN_TO_REPLACE, fromDocRef);
         Pattern pattern = Pattern.compile(patternToReplace);
         Matcher matcher = pattern.matcher(note);
-        String replacement = "$2" + toDocRef + "$3";
+        String replacement = "$1" + toDocRef + "$2";
         return matcher.replaceAll(replacement);
     }
 
