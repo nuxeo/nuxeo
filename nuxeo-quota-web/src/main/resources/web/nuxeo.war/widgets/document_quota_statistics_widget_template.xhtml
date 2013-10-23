@@ -17,7 +17,7 @@
     <h:outputText value="var currentLang='#{restHelper.getLocaleString()}';"/>
     <h:outputText  value="var currentDocId='#{currentDocument.id}';" /> 
    jQuery(document).ready(function() {
-	displayQuotaStats(currentDocId, currentLang);
+	displayQuotaStats(currentDocId, currentLang, "#{messages['label.quota.error.display']}");
    });
    </script>  
  <div id="quota_stats" class="graph-area"/>

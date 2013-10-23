@@ -1,4 +1,4 @@
-function invokeGetQuotaStatistics(currentDocId, currentLang) {
+function invokeGetQuotaStatistics(currentDocId, currentLang, displayMessage) {
 	var ctx = {
 	};
 
@@ -10,10 +10,10 @@ function invokeGetQuotaStatistics(currentDocId, currentLang) {
      function(data, status, xhr) {
 		jQuery.plot(jQuery("#quota_stats"), data, {series: {pie: {show: true,label: {show: false}}}});
 	}, function(xhr, status, errorMessage) {
-		jQuery('<div>Can not display statistics. Please run initial computation from Admin Center/Quota</div>').appendTo('#quota_stats');
+		jQuery('<div>'+displayMessage+'</div>').appendTo('#quota_stats');
 	}, true);
 };
 
-function displayQuotaStats(currentDocId, currentLang) {
-	invokeGetQuotaStatistics(currentDocId, currentLang);
+function displayQuotaStats(currentDocId, currentLang, displayMessage) {
+	invokeGetQuotaStatistics(currentDocId, currentLang, displayMessage);
 };
