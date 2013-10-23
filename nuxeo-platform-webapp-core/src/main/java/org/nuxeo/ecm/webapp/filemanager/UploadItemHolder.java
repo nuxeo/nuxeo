@@ -38,7 +38,7 @@ import org.richfaces.model.UploadItem;
  * FileManager that can not be CONVERSATION Scoped because of Seam remoting)
  */
 @Name("fileUploadHolder")
-@Scope(ScopeType.CONVERSATION)
+@Scope(ScopeType.PAGE)
 public class UploadItemHolder implements Serializable {
 
     private static final long serialVersionUID = 1L;
