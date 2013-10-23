@@ -202,7 +202,10 @@ public class TestContentDiffAdapter {
         try {
             Blob expectedblob = new FileBlob(
                     FileUtils.getResourceFileFromContext(expectedBlobPath));
-            assertEquals(expectedblob.getString(), contentDiffBlob.getString());
+            String actual = contentDiffBlob.getString();
+            // make tests pass under windows
+            actual = actual.replace("\r", "");
+            assertEquals(expectedblob.getString(), actual);
         } catch (IOException ioe) {
             fail("Error while getting content diff blob strings");
         }
