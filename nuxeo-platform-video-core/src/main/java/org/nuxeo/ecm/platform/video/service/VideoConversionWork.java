@@ -27,8 +27,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
@@ -46,6 +49,8 @@ public class VideoConversionWork extends AbstractWork {
     private static final Log log = LogFactory.getLog(VideoConversionWork.class);
 
     public static final String CATEGORY_VIDEO_CONVERSION = "videoConversion";
+
+    public static final String VIDEO_CONVERSIONS_DONE_EVENT = "videoConversionsDone";
 
     protected final String conversionName;
 
@@ -67,65 +72,89 @@ public class VideoConversionWork extends AbstractWork {
     }
 
     @Override
-    public void work() throws ClientException {
+    public void work() throws Exception {
         setStatus("Extracting");
         setProgress(Progress.PROGRESS_INDETERMINATE);
-        Video originalVideo = getVideoToConvert();
-        if (originalVideo != null) {
-            // Release transaction resources while calling ffmpeg (which can
-            // take a long time)
+
+        Video originalVideo = null;
+        try {
+            initSession();
+            originalVideo = getVideoToConvert();
             commitOrRollbackTransaction();
-
-            // Perform the actual conversion
-            VideoService service = Framework.getLocalService(VideoService.class);
-            setStatus("Transcoding");
-            TranscodedVideo transcodedVideo = service.convert(originalVideo,
-                    conversionName);
-
-            // Reopen a new transaction to save the results back to the
-            // repository
-            startTransaction();
-            setStatus("Saving");
-            saveNewTranscodedVideo(transcodedVideo);
+        } finally {
+            cleanUp(true, null);
         }
+
+        if (originalVideo == null) {
+            setStatus("Nothing to process");
+            return;
+        }
+
+        // Perform the actual conversion
+        VideoService service = Framework.getLocalService(VideoService.class);
+        setStatus("Transcoding");
+        TranscodedVideo transcodedVideo = service.convert(originalVideo,
+                conversionName);
+
+        // Saving it to the document
+        startTransaction();
+        setStatus("Saving");
+        initSession();
+        DocumentModel doc = session.getDocument(new IdRef(docId));
+        saveNewTranscodedVideo(doc, transcodedVideo);
+        fireVideoConversionsDoneEvent(doc);
         setStatus("Done");
     }
 
     protected Video getVideoToConvert() throws ClientException {
-        final Video[] videos = new Video[1];
-        new UnrestrictedSessionRunner(repositoryName) {
-            @Override
-            public void run() throws ClientException {
-                DocumentModel doc = session.getDocument(new IdRef(docId));
-                VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
-                Video video = videoDocument.getVideo();
-                videos[0] = video;
-                if (video == null) {
-                    log.warn("No original video to transcode for: " + doc);
-                }
-            }
-        }.runUnrestricted();
-        return videos[0];
+        DocumentModel doc = session.getDocument(new IdRef(docId));
+        VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
+        Video video = videoDocument.getVideo();
+        if (video == null) {
+            log.warn("No original video to transcode for: " + doc);
+        }
+        return video;
     }
 
-    protected void saveNewTranscodedVideo(final TranscodedVideo transcodedVideo)
+    protected void saveNewTranscodedVideo(DocumentModel doc,
+            TranscodedVideo transcodedVideo) throws ClientException {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        if (transcodedVideos == null) {
+            transcodedVideos = new ArrayList<>();
+        }
+        transcodedVideos.add(transcodedVideo.toMap());
+        doc.setPropertyValue("vid:transcodedVideos",
+                (Serializable) transcodedVideos);
+        session.saveDocument(doc);
+    }
+
+    /**
+     * Fire a {@code VIDEO_CONVERSIONS_DONE_EVENT} event when no other
+     * VideoConversionWork is scheduled for this document.
+     *
+     * @since 5.8
+     */
+    protected void fireVideoConversionsDoneEvent(DocumentModel doc)
             throws ClientException {
-        new UnrestrictedSessionRunner(repositoryName) {
-            @Override
-            public void run() throws ClientException {
-                DocumentModel doc = session.getDocument(new IdRef(docId));
-                @SuppressWarnings("unchecked")
-                List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
-                if (transcodedVideos == null) {
-                    transcodedVideos = new ArrayList<Map<String, Serializable>>();
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        List<String> workIds = workManager.listWorkIds(
+                CATEGORY_VIDEO_CONVERSION, null);
+        String idPrefix = repositoryName + ':' + docId + ":videoconv:";
+        int worksCount = 0;
+        for (String workId : workIds) {
+            if (workId.startsWith(idPrefix)) {
+                if (worksCount++ > 1) {
+                    // another work scheduled
+                    return;
                 }
-                transcodedVideos.add(transcodedVideo.toMap());
-                doc.setPropertyValue("vid:transcodedVideos",
-                        (Serializable) transcodedVideos);
-                session.saveDocument(doc);
-                session.save();
             }
-        }.runUnrestricted();
+        }
+
+        DocumentEventContext ctx = new DocumentEventContext(session,
+                session.getPrincipal(), doc);
+        Event event = ctx.newEvent(VIDEO_CONVERSIONS_DONE_EVENT);
+        Framework.getLocalService(EventService.class).fireEvent(event);
     }
 
 }
