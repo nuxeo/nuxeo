@@ -316,11 +316,6 @@
         <field>note:note</field>
         <field>note:mime_type</field>
       </fields>
-      <properties mode="view">
-        <property name="translatedHtml">
-          #{noteActions.translateImageLinks(field_0)}
-        </property>
-      </properties>
     </widget>
 
     <widget name="files" type="template">
