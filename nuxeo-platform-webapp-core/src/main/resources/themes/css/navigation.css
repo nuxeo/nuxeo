@@ -9,7 +9,7 @@ author: lkemen@nuxeo.com
 
 /* =Tabs */
 .tabsBar {
-  background: none "neutral.lighter (__FLAVOR__ background)";
+  background: none #fff;
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)" "neutral.lighter (__FLAVOR__ border)" "neutral.light (__FLAVOR__ border)";
   border-radius: 3px;
@@ -25,6 +25,7 @@ author: lkemen@nuxeo.com
   padding: 0 1em 0 0 }
 
 .tabsBar li {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   border-width: 1px;
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
@@ -73,7 +74,7 @@ author: lkemen@nuxeo.com
   border-width: 1px;
   border-color: "subtabs.selected (__FLAVOR__ border)";
   border-radius: 0;
-  font-size: .85em;
+  font-size: .9em;
   margin-top: .5em }
 
 .subtabsBar li {

@@ -70,6 +70,7 @@ author: lkemen@nuxeo.com
   border-width: 2px;
   border-style: solid none none;
   border-color:"neutral.lighter (__FLAVOR__ border)";
+  margin-top: .5em;
   padding-top: .9em }
 
 .clipboardFunction {
@@ -78,7 +79,7 @@ author: lkemen@nuxeo.com
 .clipboardFunction a,
 .clipboardFunction a:link,
 .clipboardFunction a:visited {
-  color: "gray.light (__FLAVOR__ color)" }
+  color: "gray.medium (__FLAVOR__ color)" }
 
 .clipboardFunction a:hover,
 .clipboardFunction a:active {
