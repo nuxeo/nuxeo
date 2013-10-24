@@ -174,9 +174,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             }
         }
         // No fileSystemItemFactory found, try the topLevelFolderItemFactory
-        TopLevelFolderItemFactory topLevelFolderItemFactory = getTopLevelFolderItemFactory();
-        if (topLevelFolderItemFactory.canHandleFileSystemItemId(id)) {
-            return topLevelFolderItemFactory;
+        if (getTopLevelFolderItemFactory().canHandleFileSystemItemId(id)) {
+            return getTopLevelFolderItemFactory();
         }
         throw new ClientException(
                 String.format(
@@ -272,13 +271,12 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         FileSystemItem fileSystemItem = null;
 
         // Try the topLevelFolderItemFactory
-        TopLevelFolderItemFactory topLevelFolderItemFactory = getTopLevelFolderItemFactory();
         if (forceParentItem) {
-            fileSystemItem = topLevelFolderItemFactory.getFileSystemItem(doc,
-                    parentItem, includeDeleted);
+            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(
+                    doc, parentItem, includeDeleted);
         } else {
-            fileSystemItem = topLevelFolderItemFactory.getFileSystemItem(doc,
-                    includeDeleted);
+            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(
+                    doc, includeDeleted);
         }
         if (fileSystemItem != null) {
             return fileSystemItem;
