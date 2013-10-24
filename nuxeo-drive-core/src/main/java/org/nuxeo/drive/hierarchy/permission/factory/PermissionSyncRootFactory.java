@@ -88,6 +88,9 @@ public class PermissionSyncRootFactory extends
     }
 
     /**
+     * Checks if the given {@link DocumentModel} is adaptable as a
+     * {@link FileSystemItem}.
+     *
      * The permission synchronization root factory considers that a
      * {@link DocumentModel} is adaptable as a {@link FileSystemItem} if:
      * <ul>
