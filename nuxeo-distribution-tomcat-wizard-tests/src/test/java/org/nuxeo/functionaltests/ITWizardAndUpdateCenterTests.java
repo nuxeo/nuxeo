@@ -86,7 +86,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage settingsPage = welcomePage.next(true);
         assertNotNull(settingsPage);
 
-        assertEquals("General settings", settingsPage.getTitle());
+        assertEquals("General Settings", settingsPage.getTitle());
 
         welcomePage = settingsPage.previous(true);
         assertNotNull(welcomePage);
@@ -98,7 +98,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage proxyPage = welcomePage.next(true).next(true);
         assertNotNull(proxyPage);
         assertFalse(proxyPage.hasError());
-        assertEquals("HTTP proxy settings", proxyPage.getTitle());
+        assertEquals("HTTP Proxy Settings", proxyPage.getTitle());
 
         // check validation
         assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "anonymous"));
@@ -131,13 +131,13 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage dbPage = proxyPage.next(true);
         assertNotNull(dbPage);
         assertFalse(dbPage.hasError());
-        assertEquals("Database settings", dbPage.getTitle());
+        assertEquals("Database Settings", dbPage.getTitle());
 
         // **********************
         // SMTP Settings
         WizardPage smtpPage = dbPage.next(true);
         assertNotNull(smtpPage);
-        assertEquals("SMTP transport settings", smtpPage.getTitle());
+        assertEquals("SMTP Settings", smtpPage.getTitle());
         // check port validation
         assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
         smtpPage.fillInput("mail.transport.host", SMTP_SERVER_HOST);
@@ -177,7 +177,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage connectSkip = connectPage1.navByLink(WizardPage.class,
                 "Or skip and don't register", true);
         assertNotNull(connectSkip);
-        assertEquals("You have not registered your instance on Nuxeo Connect.",
+        assertEquals("You have not signed up for a free trial of Nuxeo Connect.",
                 connectSkip.getTitle2());
 
         // ok, let's register
@@ -218,7 +218,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage packageSelectiondPage = connectFinish.nav(WizardPage.class,
                 "Continue", true);
         assertNotNull(packageSelectiondPage);
-        assertEquals("Select modules", packageSelectiondPage.getTitle());
+        assertEquals("Select Modules", packageSelectiondPage.getTitle());
 
         // use specific url
         String currentUrl = driver.getCurrentUrl();
@@ -233,7 +233,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         // Package Download Screen
         WizardPage packageDownloadPage = packageSelectiondPage.next(true);
         assertNotNull(packageDownloadPage);
-        assertEquals("Modules download", packageDownloadPage.getTitle());
+        assertEquals("Download Module(s)", packageDownloadPage.getTitle());
 
         // **********************
         // Summary screen
@@ -258,14 +258,14 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage settingsPage = welcomePage.next();
         assertNotNull(settingsPage);
 
-        assertEquals("General settings", settingsPage.getTitle());
+        assertEquals("General Settings", settingsPage.getTitle());
 
         // **********************
         // proxy
         WizardPage proxyPage = settingsPage.next();
         assertNotNull(proxyPage);
         assertFalse(proxyPage.hasError());
-        assertEquals("HTTP proxy settings", proxyPage.getTitle());
+        assertEquals("HTTP Proxy Settings", proxyPage.getTitle());
 
         assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "none"));
 
@@ -274,7 +274,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         WizardPage dbPage = proxyPage.next();
         assertNotNull(dbPage);
         assertFalse(dbPage.hasError());
-        assertEquals("Database settings", dbPage.getTitle());
+        assertEquals("Database Settings", dbPage.getTitle());
 
         // **********************
         // SMTP Settings
