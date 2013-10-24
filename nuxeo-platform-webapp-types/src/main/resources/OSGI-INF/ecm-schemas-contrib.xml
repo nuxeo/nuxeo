@@ -21,18 +21,6 @@
       <schema name="advanced_search" />
     </doctype>
 
-    <doctype name="SectionRoot" extends="Folder">
-      <facet name="SuperSpace" />
-      <facet name="MasterPublishSpace" />
-    </doctype>
-
-    <doctype name="Section" extends="Folder">
-      <!-- for logo -->
-      <schema name="file" />
-      <facet name="SuperSpace" />
-      <facet name="PublishSpace" />
-    </doctype>
-
   </extension>
 
 </component>
