@@ -59,7 +59,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
@@ -493,14 +492,21 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void testRenditions() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
         List<Rendition> renditions = ob.getRenditions();
+        assertNull(renditions);
 
-        assertEquals(1, renditions.size());
-        check(renditions.get(0), true);
-
-        // get renditions directly with object
+        // no renditions by default with object
 
         session.clear();
         OperationContext oc = session.createOperationContext();
+        // oc.setRenditionFilterString("*");
+        ob = session.getObject(session.createObjectId(ob.getId()), oc);
+        renditions = ob.getRenditions();
+        assertNull(renditions);
+
+        // get renditions with object
+
+        session.clear();
+        oc = session.createOperationContext();
         oc.setRenditionFilterString("*");
         ob = session.getObject(session.createObjectId(ob.getId()), oc);
         renditions = ob.getRenditions();

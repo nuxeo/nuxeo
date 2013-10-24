@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import static org.apache.chemistry.opencmis.commons.impl.Constants.RENDITION_NONE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -295,7 +297,8 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public List<RenditionData> getRenditions() {
-        if (renditionFilter == null || renditionFilter.length() == 0) {
+        if (renditionFilter == null || renditionFilter.isEmpty()
+                || RENDITION_NONE.equals(renditionFilter)) {
             return null;
         }
         // TODO parse rendition filter; for now returns them all
