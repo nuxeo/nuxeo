@@ -17,6 +17,7 @@
 package org.nuxeo.drive.service.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -39,7 +40,7 @@ public class ActiveFileSystemItemFactoriesDescriptor implements Serializable {
     @XNode("@merge")
     protected boolean merge = false;
 
-    @XNodeList(value = "factories/factory", type = List.class, componentType = ActiveFileSystemItemFactoryDescriptor.class)
+    @XNodeList(value = "factories/factory", type = ArrayList.class, componentType = ActiveFileSystemItemFactoryDescriptor.class)
     protected List<ActiveFileSystemItemFactoryDescriptor> factories;
 
     public boolean isMerge() {
