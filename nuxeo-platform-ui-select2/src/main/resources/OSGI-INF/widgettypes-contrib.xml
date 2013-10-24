@@ -55,7 +55,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">OperationId</label>
+        <label mode="any">Operation Id</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -76,7 +76,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">InitOperationId</label>
+        <label mode="any">Init Operation Id</label>
       </labels>
       <helpLabels>
         <label mode="any">
