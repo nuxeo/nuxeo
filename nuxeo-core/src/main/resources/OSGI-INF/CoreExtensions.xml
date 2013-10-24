@@ -144,6 +144,7 @@
 
     <doctype name="SectionRoot" extends="Folder">
       <facet name="SuperSpace"/>
+      <facet name="MasterPublishSpace" />
       <subtypes>
         <type>Section</type>
       </subtypes>
@@ -153,6 +154,7 @@
       <!-- for logo -->
       <schema name="file"/>
       <facet name="SuperSpace"/>
+      <facet name="PublishSpace" />
       <subtypes>
         <type>Section</type>
       </subtypes>
