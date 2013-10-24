@@ -497,7 +497,7 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          &lt;p&gt;Name of the JavaScript function that
+            Name of the JavaScript function that
             will be
             called by select2 to do the formatting of the
             suggestedentries.
@@ -506,10 +506,8 @@
             the javascript Document as
             returned by Automation and should
             return some Html.
-          &lt;/p&gt;
-          &lt;p&gt;Use the "Inline Javascript" property field to define your own
+            Use the "Inline Javascript" property field to define your own
             formatter.
-          &lt;/p&gt;
         </label>
       </helpLabels>
       <fields>
@@ -522,11 +520,11 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Selection Formater</label>
+        <label mode="any">Selection Formatter</label>
       </labels>
       <helpLabels>
         <label mode="any">
-          &lt;p&gt;Name of the JavaScript function that
+            Name of the JavaScript function that
             will be
             called by the widget to do the formatting of the
             selected entries.
@@ -535,10 +533,8 @@
             the javascript Document as
             returned by Automation and should
             return some Html.
-          &lt;/p&gt;
-          &lt;p&gt;Use the "Inline Javascript" property field to define your own
+            Use the "Inline Javascript" property field to define your own
             formatter.
-          &lt;/p&gt;
         </label>
       </helpLabels>
       <fields>
@@ -555,19 +551,13 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          &lt;p&gt;
           Javascript to be injected in the page with
           the Widget. You can define here custom formatters
           referenced in "Selection Formatter" and
            "Suggestion Formatter" fields. Example:
-          &lt;/p&gt;
           &lt;pre&gt;
             function myFormatter(entry) {
               var markup = entry.displayLabel;
-              if (entry.warn_message) {
-                markup += "&lt;img src='" + window.nxContextPath
-                    + "/icons/warning.gif' title='" + entry.warn_message + "'/&gt;"
-              }
               return markup;
             }
           &lt;/pre&gt;
@@ -644,10 +634,12 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          &lt;p&gt;NXQL Query to fetch the suggestions. This property is ignored if a
-            Page Provider name is given&lt;/p&gt;
-          &lt;p&gt;Example: select * from Document where dc:title LIKE ?&lt;/p&gt;
-          &lt;p&gt;The widget appends a '%' wildcard to the paramater passed to query.&lt;/p&gt;
+          NXQL Query to fetch the suggestions. This property is ignored if a
+          Page Provider name is given.
+          &lt;p&gt;
+          Example: select * from Document where dc:title LIKE ?
+          &lt;/p&gt;
+          The widget appends a '%' wildcard to the parameter passed to query.
         </label>
       </helpLabels>
       <fields>
@@ -664,9 +656,11 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          &lt;p&gt;Document Schemas that should be fetched and
-          sent to the JS client side. You can enter comma separated values&lt;/p&gt;
-          &lt;p&gt;Example: dublincore,common&lt;/p&gt;
+          Document Schemas that should be fetched and
+          sent to the JS client side. You can enter comma separated values.
+          &lt;p&gt;
+          Example: dublincore,common
+          &lt;/p&gt;
         </label>
       </helpLabels>
       <fields>
@@ -679,7 +673,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">target Repository</label>
+        <label mode="any">Target Repository</label>
       </labels>
       <helpLabels>
         <label mode="any">
