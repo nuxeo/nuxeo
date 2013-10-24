@@ -344,4 +344,9 @@ public class StandaloneUpdateService implements PackageUpdateService {
         return new File(getDataDir(), "backup");
     }
 
+    @Override
+    public String getInstallDate(String id) {
+        return getPersistence().getInstallDate(id);
+    }
+
 }

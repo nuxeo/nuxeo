@@ -18,6 +18,10 @@ package org.nuxeo.connect.update.standalone;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -308,5 +312,23 @@ public class PackagePersistence {
             tmp.mkdirs();
         }
         return tmp;
+    }
+
+    /**
+     * @since 5.8
+     */
+    public String getInstallDate(String id) {
+        File file = new File(store, id);
+        if (file.isDirectory()) {
+            Path path = file.toPath();
+            try {
+                FileTime lastModifiedTime = Files.readAttributes(path,
+                        BasicFileAttributes.class).lastModifiedTime();
+                return lastModifiedTime.toString();
+            } catch (IOException e) {
+                log.error(e);
+            }
+        }
+        return null;
     }
 }
