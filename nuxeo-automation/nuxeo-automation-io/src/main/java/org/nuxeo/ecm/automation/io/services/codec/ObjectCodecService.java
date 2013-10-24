@@ -181,9 +181,11 @@ public class ObjectCodecService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void write(JsonGenerator jg, Object object) throws IOException {
         if (object == null) {
+            jg.writeStartObject();
             jg.writeStringField("entity-type", "null");
             jg.writeFieldName("value");
             jg.writeNull();
+            jg.writeEndObject();
         } else {
             Class<?> clazz = object.getClass();
             ObjectCodec<?> codec = getCodec(clazz);
