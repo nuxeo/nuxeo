@@ -46,7 +46,8 @@ public class WorkflowHomePage extends AbstractPage {
     }
 
     public void processFirstTask() {
-        userTasksPanel.findElement(By.linkText("Process")).click();
+        userTasksPanel.findElement(
+                By.xpath("//input[@type='submit' and @value='Process']")).click();
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
