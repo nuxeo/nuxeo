@@ -113,6 +113,8 @@ public class Select2Common {
 
     public static final String OPERATION_ID = "operationId";
 
+    public static final String DIRECTORY_ORDER_FIELD_NAME = "ordering";
+
     /**
      * Compute the filed name of the directory that holds the value that we want
      * to display.

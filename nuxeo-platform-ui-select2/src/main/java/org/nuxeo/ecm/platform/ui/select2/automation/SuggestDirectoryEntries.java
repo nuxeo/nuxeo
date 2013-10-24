@@ -18,11 +18,13 @@
 package org.nuxeo.ecm.platform.ui.select2.automation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import net.sf.json.JSONArray;
@@ -65,7 +67,7 @@ public class SuggestDirectoryEntries {
      *
      * @since 5.7.2
      */
-    private class JSONAdapter {
+    private class JSONAdapter implements Comparable<JSONAdapter> {
 
         private final Map<String, JSONAdapter> children;
 
@@ -82,8 +84,7 @@ public class SuggestDirectoryEntries {
         public JSONAdapter(Session session, Schema schema) {
             this.session = session;
             this.schema = schema;
-            // Use TreeMap that entries are naturally sorted
-            children = new TreeMap<String, JSONAdapter>();
+            children = new HashMap<String, JSONAdapter>();
             // We are the root node
             this.isRoot = true;
         }
@@ -118,13 +119,46 @@ public class SuggestDirectoryEntries {
             }
         }
 
-        public Map<String, JSONAdapter> getChildren() {
-            return children;
+        @Override
+        public int compareTo(JSONAdapter other) {
+            if (this != null) {
+                if (other != null) {
+                    int i = this.getOrder() - other.getOrder();
+                    if (i != 0) {
+                        return i;
+                    } else {
+                        return this.getLabel().compareTo(other.getLabel());
+                    }
+                } else {
+                    return 0;
+                }
+            } else {
+                return -1;
+            }
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            JSONAdapter other = (JSONAdapter) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (this.obj == null) {
+                if (other.obj != null)
+                    return false;
+            } else if (!this.obj.equals(other.obj))
+                return false;
+            return true;
         }
 
         public JSONArray getChildrenJSONArray() {
             JSONArray result = new JSONArray();
-            for (JSONAdapter ja : children.values()) {
+            for (JSONAdapter ja : getSortedChildren()) {
                 // When serializing in JSON, we are now able to COMPUTED_ID
                 // which is the chained path of the entry (i.e absolute path
                 // considering its ancestor)
@@ -153,8 +187,36 @@ public class SuggestDirectoryEntries {
             return obj;
         }
 
+        public int getOrder() {
+            return isRoot ? -1
+                    : obj.optInt((Select2Common.DIRECTORY_ORDER_FIELD_NAME));
+        }
+
+        private SuggestDirectoryEntries getOuterType() {
+            return SuggestDirectoryEntries.this;
+        }
+
         public String getParentId() {
             return isRoot ? null : obj.optString(Select2Common.PARENT_FIELD_ID);
+        }
+
+        public List<JSONAdapter> getSortedChildren() {
+            if (children == null) {
+                return null;
+            }
+            List<JSONAdapter> result = new ArrayList<JSONAdapter>(
+                    children.values());
+            Collections.sort(result);
+            return result;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result + ((obj == null) ? 0 : obj.hashCode());
+            return result;
         }
 
         /**
@@ -193,18 +255,18 @@ public class SuggestDirectoryEntries {
         }
 
         private void mergeJsonAdapter(JSONAdapter branch) {
-            JSONAdapter found = getChildren().get(branch.getLabel());
+            JSONAdapter found = children.get(branch.getLabel());
             if (found != null) {
                 // I already have the given the adapter as child, let's merge
                 // all its children.
-                for (JSONAdapter branchChild : branch.getChildren().values()) {
+                for (JSONAdapter branchChild : branch.children.values()) {
                     found.mergeJsonAdapter(branchChild);
                 }
             } else {
                 // First time I see this adapter, I adopt it.
                 // We use label as key, this way display will be alphabetically
                 // sorted
-                getChildren().put(branch.getLabel(), branch);
+                children.put(branch.getLabel(), branch);
             }
         }
 
