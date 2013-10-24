@@ -75,7 +75,7 @@ public class RestServerInit implements RepositoryInit {
         }
 
         // Create a file
-        DocumentModel doc = session.createDocumentModel("/folder_1",
+        DocumentModel doc = session.createDocumentModel("/folder_2",
                 "file", "File");
         doc.setPropertyValue("dc:title", "File");
         doc = session.createDocument(doc);
@@ -159,7 +159,7 @@ public class RestServerInit implements RepositoryInit {
 
     public static DocumentModel getFile(int index, CoreSession session)
             throws ClientException {
-        return session.getDocument(new PathRef("/folder_1/file"));
+        return session.getDocument(new PathRef("/folder_2/file"));
     }
 
     public static NuxeoPrincipal getPowerUser() throws ClientException {

@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,13 +26,19 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
+import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.jaxrs.DefaultJsonAdapter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableWithDelegate;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -49,11 +58,49 @@ public class BOAdapter extends DefaultAdapter {
 
     @GET
     @Path("{adapterName}")
-
     public Object doGetAdapter(@PathParam("adapterName")
     String adapterName) throws Exception {
-        BusinessAdapter adapter = getAdapter(adapterName);
-        return new DefaultJsonAdapter(adapter);
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+        if (doc != null) {
+            BusinessAdapter adapter = getAdapter(adapterName, doc);
+            return new DefaultJsonAdapter(adapter);
+        }
+
+        DocumentModelList list = getTarget().getAdapter(DocumentModelList.class);
+        if (list != null) {
+            return doGetAdapterOnList(list, adapterName);
+        }
+
+        return Response.status(Status.BAD_REQUEST).entity(
+                "Adapter can only be executed on Document or DocumentList").build();
+
+    }
+
+    /**
+     * @param list
+     * @param adapterName
+     * @return
+     *
+     * @since 5.8
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Object doGetAdapterOnList(DocumentModelList list, String adapterName) {
+
+        List<BusinessAdapter> adapters;
+        if (list instanceof Paginable) {
+            adapters = new PaginableWithDelegate(
+                    (Paginable<DocumentModel>) list);
+        } else {
+            adapters = new ArrayList<BusinessAdapter>();
+        }
+
+        for (DocumentModel docItem : list) {
+            adapters.add(getAdapter(adapterName, docItem));
+        }
+        GenericEntity<List<BusinessAdapter>> entity = new GenericEntity<List<BusinessAdapter>>(
+                adapters) {
+        };
+        return entity;
     }
 
     @PUT
@@ -63,7 +110,6 @@ public class BOAdapter extends DefaultAdapter {
     String adapterName, BusinessAdapter input) throws Exception {
         ctx.getCoreSession().saveDocument(input.getDocument());
 
-        //TODO : To be removed
         ctx.getCoreSession().save();
 
         return new DefaultJsonAdapter(input);
@@ -87,13 +133,10 @@ public class BOAdapter extends DefaultAdapter {
         return new DefaultJsonAdapter(adapter);
     }
 
-    private BusinessAdapter getAdapter(String adapterName) {
+    private BusinessAdapter getAdapter(String adapterName, DocumentModel doc) {
         ObjectCodecService cs = Framework.getLocalService(ObjectCodecService.class);
         ObjectCodec<?> codec = cs.getCodec(adapterName);
         if (codec != null) {
-            DocumentObject dobj = (DocumentObject) getTarget();
-            DocumentModel doc = dobj.getDocument();
-
             return (BusinessAdapter) doc.getAdapter(codec.getJavaType());
         } else {
             throw new WebException(String.format("Unable to find [%s] adapter",

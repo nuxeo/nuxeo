@@ -20,24 +20,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.adapter.BusinessBeanAdapter;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.BOAdapter;
-import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
  * @since 5.7.2
@@ -114,5 +116,51 @@ public class AdapterBindingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         dispose(session);
         assertFalse(session.getChildren(folder.getRef()).isEmpty());
+    }
+
+    @Test
+    public void iCanGetAdapterOnDocumentLists() throws Exception {
+        // Given a folder
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+
+        // When i adapt the children of the folder with a BusinessBeanAdapter
+        JsonNode node = getResponseAsJson(RequestType.GET,
+                "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME
+                        + "/BusinessBeanAdapter");
+
+        // Then i receive a list of businessBeanAdapter
+        assertEquals("adapters",
+                node.get("entity-type").getValueAsText());
+        ArrayNode entries = (ArrayNode) node.get("entries");
+        DocumentModelList children = session.getChildren(folder.getRef());
+        assertEquals(children.size(), entries.size());
+
+        JsonNode jsonNote = entries.get(0);
+        assertEquals("BusinessBeanAdapter",
+                jsonNote.get("entity-type").getValueAsText());
+        assertEquals("Note", jsonNote.get("value").get("type").getValueAsText());
+
+    }
+
+    @Test
+    public void adapterListArePaginated() throws Exception {
+        // Given a folder
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("currentPageIndex", "1");
+        queryParams.putSingle("pageSize", "2");
+
+        // When i adapt the children of the folder with a BusinessBeanAdapter
+        JsonNode node = getResponseAsJson(RequestType.GET,
+                "/id/" + folder.getId() + "/@children/@" + BOAdapter.NAME
+                        + "/BusinessBeanAdapter", queryParams);
+
+        // Then i receive a list of businessBeanAdapter
+        assertEquals("adapters",
+                node.get("entity-type").getValueAsText());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(2, ((ArrayNode) node.get("entries")).size());
+
     }
 }

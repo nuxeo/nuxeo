@@ -150,7 +150,8 @@ public class OperationBindingTest extends BaseTest {
         // Then the operation is called on all children documents
         Trace trace = factory.getTrace("testOp");
         assertEquals(1, trace.getCalls().size());
-        assertEquals(6, ((PaginableDocumentModelList) trace.getOutput()).size());
+        assertEquals(session.getChildren(folder.getRef()).size(),
+                ((PaginableDocumentModelList) trace.getOutput()).size());
 
     }
 
@@ -183,6 +184,5 @@ public class OperationBindingTest extends BaseTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
-
 
 }

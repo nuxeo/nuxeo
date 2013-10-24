@@ -27,6 +27,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonTreeWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.BlobsWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterReader;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.JsonAutomationInfoWriter;
@@ -96,6 +97,7 @@ public class APIModule extends WebEngineModule {
         result.add(new DirectoryEntryWriter());
         result.add(new LogEntryListWriter());
         result.add(new LogEntryWriter());
+        result.add(new BusinessAdapterListWriter());
         return result;
     }
 }
