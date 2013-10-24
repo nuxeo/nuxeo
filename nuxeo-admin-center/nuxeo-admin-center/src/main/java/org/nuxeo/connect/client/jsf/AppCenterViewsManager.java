@@ -20,16 +20,11 @@
 package org.nuxeo.connect.client.jsf;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TimeZone;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -51,6 +46,7 @@ import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageDependency;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -77,6 +73,11 @@ public class AppCenterViewsManager implements Serializable {
 
     protected static final Log log = LogFactory.getLog(AppCenterViewsManager.class);
 
+    private static final String LABEL_STUDIO_UPDATE_STATUS = "label.studio.update.status.";
+
+    /**
+     * FIXME JC: should follow or simply reuse {@link PackageState}
+     */
     protected enum SnapshotStatus {
         downloading, saving, installing, error, completed, restartNeeded;
     }
@@ -117,7 +118,7 @@ public class AppCenterViewsManager implements Serializable {
     // FIXME: this should be persisted instead of being local to the seam
     // component, as other potential users will not see the same information in
     // the admin center
-    protected Calendar lastStudioSnapshotUpdate;
+    // protected Calendar lastStudioSnapshotUpdate;
 
     protected String studioSnapshotUpdateError;
 
@@ -134,6 +135,8 @@ public class AppCenterViewsManager implements Serializable {
      * @since 5.7.1
      */
     protected ValidationStatus studioSnapshotValidationStatus;
+
+    private String lastUpdate = null;
 
     public String getSearchString() {
         if (searchString == null) {
@@ -178,12 +181,9 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     public List<SelectItem> getPackageTypes() {
-
-        List<SelectItem> types = new ArrayList<SelectItem>();
-
+        List<SelectItem> types = new ArrayList<>();
         SelectItem allItem = new SelectItem("", "label.packagetype.all");
         types.add(allItem);
-
         for (PackageType ptype : PackageType.values()) {
             // if (!ptype.equals(PackageType.STUDIO)) {
             SelectItem item = new SelectItem(ptype.getValue(),
@@ -260,9 +260,8 @@ public class AppCenterViewsManager implements Serializable {
     /**
      * Returns true if Studio snapshot module should be validated.
      * <p>
-     * Validation can be skipped by user, or can be globally disabled by
-     * setting framework property "studio.snapshot.disablePkgValidation" to
-     * true.
+     * Validation can be skipped by user, or can be globally disabled by setting
+     * framework property "studio.snapshot.disablePkgValidation" to true.
      *
      * @since 5.7.1
      */
@@ -279,18 +278,58 @@ public class AppCenterViewsManager implements Serializable {
     }
 
     protected String getLastUpdateDate() {
-        DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-                Locale.US);
-        df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return df.format(lastStudioSnapshotUpdate.getTime());
+        if (lastUpdate == null) {
+            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
+            DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
+            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            try {
+                LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
+                lastUpdate = pus.getInstallDate(pkg.getId());
+            } catch (PackageException e) {
+                log.error(e);
+            }
+            return lastUpdate != null ? lastUpdate : "Not installed";
+        } else {
+            return lastUpdate;
+        }
+
+        // } else {
+        // DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
+        // Locale.US);
+        // df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        // return df.format(lastStudioSnapshotUpdate.getTime());
+        // }
+
     }
 
     public String getStudioInstallationStatus() {
-        String prefix = "label.studio.update.status.";
         if (studioSnapshotStatus == null) {
-            // TODO: should initialize status according to Studio snapshot
-            // package installation
-            return translate(prefix + "noStatus");
+            PackageManager pm = Framework.getLocalService(PackageManager.class);
+            List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
+            DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
+            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+            LocalPackage pkg = null;
+            try {
+                pkg = pus.getPackage(snapshotPkg.getId());
+            } catch (PackageException e) {
+                log.error(e);
+            }
+            if (pkg == null) {
+                return translate(LABEL_STUDIO_UPDATE_STATUS + "noStatus");
+            }
+            PackageState studioPkgState = PackageState.getByValue(pkg.getState());
+            if (studioPkgState == PackageState.DOWNLOADING) {
+                studioSnapshotStatus = SnapshotStatus.downloading;
+            } else if (studioPkgState == PackageState.DOWNLOADED) {
+                studioSnapshotStatus = SnapshotStatus.saving;
+            } else if (studioPkgState == PackageState.INSTALLING) {
+                studioSnapshotStatus = SnapshotStatus.installing;
+            } else if (studioPkgState.isInstalled()) {
+                studioSnapshotStatus = SnapshotStatus.completed;
+            } else {
+                studioSnapshotStatus = SnapshotStatus.error;
+            }
         }
 
         Object[] params = new Object[0];
@@ -301,12 +340,13 @@ public class AppCenterViewsManager implements Serializable {
             params = new Object[] { studioSnapshotUpdateError };
         } else if (SnapshotStatus.downloading.equals(studioSnapshotStatus)) {
             params = new Object[] { String.valueOf(studioSnapshotDownloadProgress) };
-        } else if (SnapshotStatus.completed.equals(studioSnapshotStatus)
-                || SnapshotStatus.restartNeeded.equals(studioSnapshotStatus)) {
+        } else {
             params = new Object[] { getLastUpdateDate() };
         }
 
-        return translate(prefix + studioSnapshotStatus.name(), params);
+        return translate(
+                LABEL_STUDIO_UPDATE_STATUS + studioSnapshotStatus.name(),
+                params);
     }
 
     // TODO: plug a notifier for status to be shown to the user
@@ -331,70 +371,11 @@ public class AppCenterViewsManager implements Serializable {
         @Override
         public void run() {
             try {
-                setStatus(SnapshotStatus.downloading, null);
-
-                PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-                LocalPackage lpkg = pus.getPackage(packageId);
-                boolean hadPackage = lpkg != null
-                        && PackageState.getByValue(lpkg.getState()).isInstalled();
-
-                String pkgId;
-                // avoid downloading again the Studio package for debug, maybe
-                // should avoid downloading it again if validation is skipped
-                // too, in case package has changed (?)
-                boolean avoidDownload = false;
-                if (avoidDownload) {
-                    pkgId = packageId;
-                } else {
-                    DownloadingPackage pkg = pm.download(packageId);
-                    while (!pkg.isCompleted()) {
-                        try {
-                            studioSnapshotDownloadProgress = pkg.getDownloadProgress();
-                            Thread.sleep(100);
-                            log.debug("downloading studio snapshot package");
-                        } catch (InterruptedException e) {
-                            // NOP
-                        }
-                    }
-                    log.debug("studio snapshot package download completed, starting installation");
-
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        // NOP
-                    }
-
-                    setStatus(SnapshotStatus.saving, null);
-                    try {
-                        while (pus.getPackage(pkg.getId()) == null) {
-                            try {
-                                studioSnapshotDownloadProgress = pkg.getDownloadProgress();
-                                Thread.sleep(50);
-                                log.debug("downloading studio snapshot package");
-                            } catch (InterruptedException e) {
-                                // NOP
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.error(
-                                "Error while sending studio snapshot to update manager",
-                                e);
-                        setStatus(
-                                SnapshotStatus.error,
-                                translate(
-                                        "label.studio.update.downloading.error",
-                                        e.getMessage()));
-                        return;
-                    }
-
-                    pkgId = pkg.getId();
-                }
-
-                lpkg = pus.getPackage(pkgId);
-                String[] targetPlatforms = lpkg.getTargetPlatforms();
-                PackageDependency[] pkgDeps = lpkg.getDependencies();
-
                 if (validate) {
+                    DownloadablePackage remotePkg = pm.findPackageById(packageId);
+                    String[] targetPlatforms = remotePkg.getTargetPlatforms();
+                    PackageDependency[] pkgDeps = remotePkg.getDependencies();
+
                     ValidationStatus status = new ValidationStatus();
                     // TODO: replace errors by internationalized labels
                     if (!PlatformVersionHelper.isCompatible(targetPlatforms)) {
@@ -405,17 +386,17 @@ public class AppCenterViewsManager implements Serializable {
                     // check deps requirements
                     if (pkgDeps != null && pkgDeps.length > 0) {
                         DependencyResolution resolution = pm.resolveDependencies(
-                                pkgId,
+                                packageId,
                                 PlatformVersionHelper.getPlatformFilter());
                         if (resolution.isFailed()
                                 && PlatformVersionHelper.getPlatformFilter() != null) {
                             // retry without PF filter ...
-                            resolution = pm.resolveDependencies(pkgId, null);
+                            resolution = pm.resolveDependencies(packageId, null);
                         }
                         if (resolution.isFailed()) {
                             status.addError(String.format(
                                     "Dependency check has failed for package '%s'",
-                                    pkgId));
+                                    packageId));
                         } else {
                             List<String> pkgToInstall = resolution.getInstallPackageIds();
                             if (pkgToInstall != null
@@ -423,15 +404,12 @@ public class AppCenterViewsManager implements Serializable {
                                     && packageId.equals(pkgToInstall.get(0))) {
                                 // ignore
                             } else if (resolution.requireChanges()) {
+                                // FIXME JC: Why error out instead of applying
+                                // required deps?
                                 status.addError(resolution.toString().trim().replaceAll(
                                         "\n", "<br />"));
                             }
                         }
-                    }
-
-                    if (Framework.isDevModeSet() && hadPackage) {
-                        status.addWarning("Your previous installation of this Studio"
-                                + " package has already been uninstalled");
                     }
 
                     if (status.hasErrors()) {
@@ -443,14 +421,78 @@ public class AppCenterViewsManager implements Serializable {
                     }
                 }
 
+                // Effective install
                 if (Framework.isDevModeSet()) {
-                    setStatus(SnapshotStatus.installing, null);
                     try {
-                        Task installTask = lpkg.getInstallTask();
-                        installTask.run(new HashMap<String, String>());
-                        lastStudioSnapshotUpdate = Calendar.getInstance();
+                        PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+                        LocalPackage pkg = pus.getPackage(packageId);
+
+                        // Uninstall and/or remove if needed
+                        if (pkg != null) {
+                            log.info(String.format("Updating package %s...",
+                                    pkg));
+                            if (PackageState.getByValue(pkg.getState()).isInstalled()) {
+                                // First remove it to allow SNAPSHOT upgrade
+                                log.info("Uninstalling " + packageId);
+                                Task uninstallTask = pkg.getUninstallTask();
+                                try {
+                                    performTask(uninstallTask);
+                                } catch (PackageException e) {
+                                    uninstallTask.rollback();
+                                    throw e;
+                                }
+                            }
+                            pus.removePackage(packageId);
+                        }
+
+                        // Download
+                        setStatus(SnapshotStatus.downloading, null);
+                        DownloadingPackage downloadingPkg = pm.download(packageId);
+                        try {
+                            while (!downloadingPkg.isCompleted()) {
+                                studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
+                                Thread.sleep(100);
+                                log.debug("downloading studio snapshot package");
+                            }
+                            log.debug("studio snapshot package download completed, starting installation");
+                            Thread.sleep(200);
+                            setStatus(SnapshotStatus.saving, null);
+                            // FIXME JC: Is this a workaround for some issue?
+                            // downloadingPkg.isCompleted() is true!
+                            while (pus.getPackage(downloadingPkg.getId()) == null) {
+                                studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
+                                Thread.sleep(50);
+                                log.debug("downloading studio snapshot package");
+                            }
+                        } catch (PackageException | InterruptedException e) {
+                            log.error(
+                                    "Error while downloading studio snapshot",
+                                    e);
+                            setStatus(
+                                    SnapshotStatus.error,
+                                    translate(
+                                            "label.studio.update.downloading.error",
+                                            e.getMessage()));
+                            return;
+                        }
+
+                        // Install
+                        setStatus(SnapshotStatus.installing, null);
+                        log.info("Installing " + packageId);
+                        pkg = pus.getPackage(packageId);
+                        Task installTask = pkg.getInstallTask();
+                        try {
+                            performTask(installTask);
+                        } catch (PackageException e) {
+                            installTask.rollback();
+                            throw e;
+                        }
+                        // Refresh state
+                        pkg = pus.getPackage(packageId);
+                        // lastStudioSnapshotUpdate = Calendar.getInstance();
+                        lastUpdate = pus.getInstallDate(packageId);
                         setStatus(SnapshotStatus.completed, null);
-                    } catch (Exception e) {
+                    } catch (PackageException e) {
                         log.error("Error while installing studio snapshot", e);
                         setStatus(
                                 SnapshotStatus.error,
@@ -459,14 +501,29 @@ public class AppCenterViewsManager implements Serializable {
                                         e.getMessage()));
                     }
                 } else {
-                    InstallAfterRestart.addPackageForInstallation(pkgId);
-                    lastStudioSnapshotUpdate = Calendar.getInstance();
+                    InstallAfterRestart.addPackageForInstallation(packageId);
+                    // lastStudioSnapshotUpdate = Calendar.getInstance();
                     setStatus(SnapshotStatus.restartNeeded, null);
                     setupWizardAction.setNeedsRestart(true);
                 }
             } catch (Exception e) {
                 setStatus(SnapshotStatus.error, e.getMessage());
             }
+        }
+
+        protected void performTask(Task task) throws PackageException {
+            ValidationStatus validationStatus = task.validate();
+            if (validationStatus.hasErrors()) {
+                throw new PackageException("Failed to validate package "
+                        + task.getPackage().getId() + " -> "
+                        + validationStatus.getErrors());
+            }
+            if (validationStatus.hasWarnings()) {
+                log.warn("Got warnings on package validation "
+                        + task.getPackage().getId() + " -> "
+                        + validationStatus.getWarnings());
+            }
+            task.run(null);
         }
     }
 
@@ -513,7 +570,7 @@ public class AppCenterViewsManager implements Serializable {
                     translate("label.setup.nuxeo.org.nuxeo.dev.changingDevModeNotConfigurable"));
             return;
         }
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put(Framework.NUXEO_DEV_SYSTEM_PROP, Boolean.toString(value));
         try {
             conf.saveFilteredConfiguration(params);
