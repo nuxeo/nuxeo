@@ -111,7 +111,10 @@ public class ActiveFileSystemItemFactoryRegistry extends
                     bos.toByteArray());
             ObjectInputStream ois = new ObjectInputStream(bis);
             return (ActiveFileSystemItemFactoriesDescriptor) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
+            throw new ClientRuntimeException(String.format(
+                    "Cannot clone contribution %s.", orig), e);
+        } catch (ClassNotFoundException e) {
             throw new ClientRuntimeException(String.format(
                     "Cannot clone contribution %s.", orig), e);
         }
