@@ -30,7 +30,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 @WebAdapter(name = BlobAdapter.NAME, type = "blobAdapter")
 public class BlobAdapter extends DefaultAdapter {
 
-    public final static String NAME = "blob";
+    public static final String NAME = "blob";
 
     protected String xpath;
 
@@ -42,7 +42,5 @@ public class BlobAdapter extends DefaultAdapter {
         doc = getTarget().getAdapter(DocumentModel.class);
         return newObject("blob", xpath, doc);
     }
-
-
 
 }

@@ -47,8 +47,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @WebObject(type = "blob")
 public class BlobObject extends DefaultObject {
 
-
     private String xpath;
+
     private DocumentModel doc;
 
     @Override
@@ -66,8 +66,7 @@ public class BlobObject extends DefaultObject {
             try {
                 return adapter.cast(blob(xpath));
             } catch (ClientException e) {
-                throw WebException.wrap("Could not find any blob: "
-                        + xpath, e);
+                throw WebException.wrap("Could not find any blob: " + xpath, e);
             }
         }
         return super.getAdapter(adapter);
@@ -77,13 +76,12 @@ public class BlobObject extends DefaultObject {
         return (Blob) doc.getPropertyValue(xpath);
     }
 
-
     @GET
     public Response doGet(@Context
     Request request) throws ClientException {
 
         if (xpath == null) {
-            xpath = getXpathFromRequest(request);
+            xpath = getXpathFromRequest();
         }
 
         try {
@@ -106,7 +104,6 @@ public class BlobObject extends DefaultObject {
                 }
             }
 
-
             EntityTag etag = null;
             if (blob instanceof SQLBlob) {
                 etag = new EntityTag(((SQLBlob) blob).getBinary().getDigest());
@@ -127,7 +124,7 @@ public class BlobObject extends DefaultObject {
                 builder.tag(etag);
             }
             return builder.build();
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to get the attached file", e);
         }
     }
@@ -138,15 +135,14 @@ public class BlobObject extends DefaultObject {
      *
      * @since 5.8
      */
-    private String getXpathFromRequest(Request request) {
+    private String getXpathFromRequest() {
         FormData form = ctx.getForm();
-        String xpath = form.getString(FormData.PROPERTY);
-        if (doc.hasSchema("file")) {
-            xpath = "file:content";
+        String propertyXpath = form.getString(FormData.PROPERTY);
+        if (propertyXpath == null && doc.hasSchema("file")) {
+            propertyXpath = "file:content";
         }
-        return xpath;
+        return propertyXpath;
     }
-
 
     @DELETE
     public Response doDelete() {
@@ -165,8 +161,6 @@ public class BlobObject extends DefaultObject {
         return Response.noContent().build();
     }
 
-
-
     @PUT
     public Response doPut() {
 
@@ -176,7 +170,6 @@ public class BlobObject extends DefaultObject {
             throw new IllegalArgumentException(
                     "Could not find any uploaded file");
         }
-
 
         try {
             Property p = doc.getProperty(xpath);
@@ -195,17 +188,9 @@ public class BlobObject extends DefaultObject {
             session.saveDocument(doc);
             session.save();
             return Response.ok("blob updated").build();
-        } catch (WebException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (ClientException e) {
             throw WebException.wrap("Failed to attach file", e);
         }
     }
-
-
-
-
-
-
 
 }
