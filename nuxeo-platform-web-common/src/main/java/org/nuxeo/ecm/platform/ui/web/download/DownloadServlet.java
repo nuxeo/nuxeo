@@ -267,7 +267,7 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    private void downloadBlob(HttpServletRequest req, HttpServletResponse resp,
+    void downloadBlob(HttpServletRequest req, HttpServletResponse resp,
             Blob blob, String fileName) throws IOException, ServletException {
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
