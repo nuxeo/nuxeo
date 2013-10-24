@@ -776,7 +776,6 @@
         </controls>
         <properties widgetMode="any">
           <property name="contentViewName">user_open_tasks</property>
-          <property name="removeForm">true</property>
         </properties>
       </widget>
     </layout>
