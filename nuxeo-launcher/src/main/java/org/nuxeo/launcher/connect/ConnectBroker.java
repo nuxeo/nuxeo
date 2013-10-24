@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -147,41 +147,30 @@ public class ConnectBroker {
         return cset;
     }
 
-    protected boolean isInstalledPackageName(String pkgName) {
-        List<LocalPackage> localPackages = getPkgList();
-        boolean foundName = false;
-        for (LocalPackage pkg : localPackages) {
-            if (pkg.getName().equals(pkgName)
-                    && PackageState.getByValue(pkg.getState()).isInstalled()) {
-                foundName = true;
-                break;
-            }
+    protected LocalPackage getInstalledPackage(String pkgName) {
+        try {
+            return service.getPersistence().getActivePackage(pkgName);
+        } catch (PackageException e) {
+            log.error(e);
+            return null;
         }
-        return foundName;
+    }
+
+    protected boolean isInstalledPackage(String pkgName) {
+        return service.getPersistence().getActivePackageId(pkgName) != null;
     }
 
     protected boolean isLocalPackageId(String pkgId) {
-        List<LocalPackage> localPackages = getPkgList();
-        boolean foundId = false;
-        for (LocalPackage pkg : localPackages) {
-            if (pkg.getId().equals(pkgId)) {
-                foundId = true;
-                break;
-            }
+        try {
+            return service.getPackage(pkgId) != null;
+        } catch (PackageException e) {
+            log.error("Error looking for local package " + pkgId, e);
+            return false;
         }
-        return foundId;
     }
 
     protected boolean isRemotePackageId(String pkgId) {
-        List<DownloadablePackage> remotePackages = NuxeoConnectClient.getPackageManager().listAllPackages();
-        boolean foundId = false;
-        for (DownloadablePackage pkg : remotePackages) {
-            if (pkg.getId().equals(pkgId)) {
-                foundId = true;
-                break;
-            }
-        }
-        return foundId;
+        return NuxeoConnectClient.getPackageManager().findPackageById(pkgId) != null;
     }
 
     protected String getBestIdForNameInList(String pkgName,
@@ -412,7 +401,7 @@ public class ConnectBroker {
                     // - This may (will) break the server if there are
                     // dependencies/compatibility changes or it the package is
                     // in installed state.
-                    if (localPackage.getState() != PackageState.STARTED.getValue()) {
+                    if (!PackageState.getByValue(localPackage.getState()).isInstalled()) {
                         pkgRemove(localPackage.getId());
                         ret = addDistributionPackage(md5) && ret;
                     }
@@ -428,8 +417,8 @@ public class ConnectBroker {
     public List<LocalPackage> getPkgList() {
         try {
             return service.getPackages();
-        } catch (Exception e) {
-            log.error("Could not read package list");
+        } catch (PackageException e) {
+            log.error("Could not read package list", e);
             return null;
         }
     }
@@ -454,11 +443,11 @@ public class ConnectBroker {
                 StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
                     newPackageInfo(cmdInfo, pkg);
-                    String packageDescription = PackageState.getByValue(
-                            pkg.getState()).getLabel();
+                    PackageState packageState = PackageState.getByValue(pkg.getState());
+                    String packageDescription = packageState.getLabel();
                     packageDescription = String.format("%6s %11s\t",
                             pkg.getType(), packageDescription);
-                    if (pkg.getState() == PackageState.REMOTE.getValue()
+                    if (packageState == PackageState.REMOTE
                             && pkg.getType() != PackageType.STUDIO
                             && pkg.getVisibility() != PackageVisibility.PUBLIC
                             && !LogicalInstanceIdentifier.isRegistered()) {
@@ -529,7 +518,7 @@ public class ConnectBroker {
         // Remove packages in DOWNLOADED state first
         // This will avoid extending the CUDF universe needlessly
         for (LocalPackage pkg : service.getPackages()) {
-            if (pkg.getState() == PackageState.DOWNLOADED.getValue()) {
+            if (PackageState.getByValue(pkg.getState()) == PackageState.DOWNLOADED) {
                 pkgRemove(pkg.getId());
             }
         }
@@ -658,18 +647,17 @@ public class ConnectBroker {
             if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
-            if (pkg.getState() == PackageState.STARTED.getValue()
-                    || pkg.getState() == PackageState.INSTALLED.getValue()) {
+            if (PackageState.getByValue(pkg.getState()).isInstalled()) {
                 pkgUninstall(pkgId);
                 // Refresh state
                 pkg = service.getPackage(pkgId);
             }
-            if (pkg.getState() != PackageState.DOWNLOADED.getValue()) {
+            if (PackageState.getByValue(pkg.getState()) != PackageState.DOWNLOADED) {
                 throw new PackageException(
                         "Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
             }
-            log.info("Removing " + pkgId);
             service.removePackage(pkgId);
+            log.info("Removed " + pkgId);
             newPackageInfo(cmdInfo, pkg).state = PackageState.REMOTE;
             return pkg;
         } catch (Exception e) {
@@ -711,8 +699,8 @@ public class ConnectBroker {
                         pkgIdsToDownload.add(pkgId);
                     }
                 } else {
-                    log.info("Adding " + pkgToAdd);
                     LocalPackage pkg = service.addPackage(fileToAdd);
+                    log.info("Added " + pkg);
                     newPackageInfo(cmdInfo, pkg);
                 }
             } catch (PackageException e) {
@@ -756,11 +744,11 @@ public class ConnectBroker {
                                     + pkgId);
                 }
             } else {
-                log.info("Adding " + packageFileName);
                 pkg = service.addPackage(fileToAdd);
             }
+            log.info("Added " + packageFileName);
             newPackageInfo(cmdInfo, pkg);
-        } catch (Exception e) {
+        } catch (PackageException e) {
             cmdInfo.exitCode = 1;
             cmdInfo.newMessage(e);
         }
@@ -800,6 +788,19 @@ public class ConnectBroker {
         cmdInfo.param = pkgId;
         try {
             LocalPackage pkg = getLocalPackage(pkgId);
+            if (pkg != null
+                    && PackageState.getByValue(pkg.getState()).isInstalled()) {
+                if (pkg.getVersion().isSnapshot()) {
+                    log.info(String.format("Updating package %s...", pkg));
+                    // First remove it to allow SNAPSHOT upgrade
+                    pkgRemove(pkgId);
+                    pkg = null;
+                } else {
+                    log.info(String.format("Package %s is already installed.",
+                            pkg));
+                    return pkg;
+                }
+            }
             if (pkg == null) {
                 // We don't know this package, try to add it first
                 pkg = pkgAdd(pkgId);
@@ -842,7 +843,6 @@ public class ConnectBroker {
      * @param useResolver Whether to use full resolution or just execute
      *            individual actions
      */
-    @SuppressWarnings("unchecked")
     public boolean executePending(File commandsFile, boolean doExecute,
             boolean useResolver) {
         int errorValue = 0;
@@ -979,12 +979,26 @@ public class ConnectBroker {
             return true;
         }
         List<String> packagesAlreadyDownloaded = new ArrayList<String>();
+        Map<String, String> packagesToRemove = new HashMap<String, String>();
         for (String pkg : packagesToDownload) {
             try {
-                if (getLocalPackage(pkg) != null) {
-                    log.info(String.format(
-                            "Package %s is already in local cache", pkg));
-                    packagesAlreadyDownloaded.add(pkg);
+                LocalPackage localPackage = getLocalPackage(pkg);
+                if (localPackage != null) {
+                    if (PackageState.getByValue(localPackage.getState()).isInstalled()) {
+                        log.error(String.format(
+                                "Package %s is installed. Download skipped.",
+                                pkg));
+                        packagesAlreadyDownloaded.add(pkg);
+                    } else if (localPackage.getVersion().isSnapshot()) {
+                        log.info(String.format(
+                                "Download of %s will replace the one already in local cache",
+                                pkg));
+                        packagesToRemove.put(localPackage.getId(), pkg);
+                    } else {
+                        log.info(String.format(
+                                "Package %s is already in local cache", pkg));
+                        packagesAlreadyDownloaded.add(pkg);
+                    }
                 }
             } catch (PackageException e) {
                 log.error(
@@ -994,6 +1008,17 @@ public class ConnectBroker {
                 return false;
             }
         }
+
+        // First remove SNAPSHOT packages to replace
+        for (String pkgToRemove : packagesToRemove.keySet()) {
+            if (pkgRemove(pkgToRemove) == null) {
+                log.error(String.format(
+                        "Failed to remove %s. Download of %s skipped",
+                        pkgToRemove, packagesToRemove.get(pkgToRemove)));
+                packagesToDownload.remove(packagesToRemove.get(pkgToRemove));
+            }
+        }
+
         packagesToDownload.removeAll(packagesAlreadyDownloaded);
         if (packagesToDownload.isEmpty()) {
             return true;
@@ -1005,7 +1030,7 @@ public class ConnectBroker {
             try {
                 pkgs.add(getPackageManager().download(pkg));
             } catch (Exception e) {
-                log.error("Cannot download packages", e);
+                log.error("Download failed for " + pkg, e);
                 return false;
             }
         }
@@ -1026,7 +1051,7 @@ public class ConnectBroker {
                         cmdInfo.exitCode = 1;
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
                                 "Wrong digest for package " + pkg.getName());
-                    } else if (pkg.getState() == PackageState.DOWNLOADED.getValue()) {
+                    } else if (PackageState.getByValue(pkg.getState()) == PackageState.DOWNLOADED) {
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG,
                                 "Downloaded " + pkg);
                     } else {
@@ -1057,75 +1082,75 @@ public class ConnectBroker {
         return downloadOk;
     }
 
-    @SuppressWarnings("unchecked")
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
-        boolean cmdOk = true;
-        // Add local files
-        cmdOk = pkgAdd(pkgsToAdd);
-        // Build solver request
-        List<String> solverInstall = new ArrayList<String>();
-        List<String> solverRemove = new ArrayList<String>();
-        List<String> solverUpgrade = new ArrayList<String>();
-        if (pkgsToInstall != null) {
-            // If install request is a file name, add to cache and get the id
-            List<String> namesOrIdsToInstall = new ArrayList<String>();
-            for (String pkgToInstall : pkgsToInstall) {
-                if (isLocalPackageFile(pkgToInstall)) {
-                    LocalPackage addedPkg = pkgAdd(pkgToInstall);
-                    if (addedPkg != null) {
-                        namesOrIdsToInstall.add(addedPkg.getId());
+        try {
+            boolean cmdOk = true;
+            // Add local files
+            cmdOk = pkgAdd(pkgsToAdd);
+            // Build solver request
+            List<String> solverInstall = new ArrayList<String>();
+            List<String> solverRemove = new ArrayList<String>();
+            List<String> solverUpgrade = new ArrayList<String>();
+            if (pkgsToInstall != null) {
+                // If install request is a file name, add to cache and get the
+                // id
+                List<String> namesOrIdsToInstall = new ArrayList<String>();
+                for (String pkgToInstall : pkgsToInstall) {
+                    if (isLocalPackageFile(pkgToInstall)) {
+                        LocalPackage addedPkg = pkgAdd(pkgToInstall);
+                        if (addedPkg != null) {
+                            namesOrIdsToInstall.add(addedPkg.getId());
+                        } else {
+                            cmdOk = false;
+                        }
+                        // TODO: set flag to prefer local package
                     } else {
-                        cmdOk = false;
-                    }
-                    // TODO: set flag to prefer local package
-                } else {
-                    namesOrIdsToInstall.add(pkgToInstall);
-                }
-            }
-            // Check whether we have new installs or upgrades
-            for (String pkgToInstall : namesOrIdsToInstall) {
-                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
-                DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
-                if (pkg != null) {
-                    // This is a known ID
-                    if (isInstalledPackageName(pkg.getName())) {
-                        // The package is installed in another version
-                        solverUpgrade.add(pkgToInstall);
-                    } else {
-                        // The package isn't installed yet
-                        solverInstall.add(pkgToInstall);
-                    }
-                } else {
-                    // This is a name (or a non-existing ID)
-                    String id = getInstalledPackageIdFromName(pkgToInstall);
-                    if (id != null) {
-                        // The package is installed in another version
-                        solverUpgrade.add(id);
-                    } else {
-                        // The package isn't installed yet
-                        solverInstall.add(pkgToInstall);
+                        namesOrIdsToInstall.add(pkgToInstall);
                     }
                 }
+                // Check whether we have new installs or upgrades
+                for (String pkgToInstall : namesOrIdsToInstall) {
+                    Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
+                    DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
+                    if (pkg != null) {
+                        // This is a known ID
+                        if (isInstalledPackage(pkg.getName())) {
+                            // The package is installed
+                            solverUpgrade.add(pkgToInstall);
+                        } else {
+                            // The package isn't installed yet
+                            solverInstall.add(pkgToInstall);
+                        }
+                    } else {
+                        // This is a name (or a non-existing ID)
+                        String id = getInstalledPackageIdFromName(pkgToInstall);
+                        if (id != null) {
+                            // The package is installed
+                            solverUpgrade.add(pkgToInstall);
+                        } else {
+                            // The package isn't installed yet
+                            solverInstall.add(pkgToInstall);
+                        }
+                    }
+                }
             }
-        }
-        if (pkgsToUninstall != null) {
-            solverRemove.addAll(pkgsToUninstall);
-        }
-        if (pkgsToRemove != null) {
-            // Add packages to remove to uninstall list
-            solverRemove.addAll(pkgsToRemove);
-        }
-        if ((solverInstall.size() != 0) || (solverRemove.size() != 0)
-                || (solverUpgrade.size() != 0)) {
-            // Check whether we need to relax restriction to targetPlatform
-            String requestPlatform = targetPlatform;
-            List<String> requestPackages = new ArrayList<String>();
-            requestPackages.addAll(solverInstall);
-            requestPackages.addAll(solverRemove);
-            requestPackages.addAll(solverUpgrade);
-            try {
+            if (pkgsToUninstall != null) {
+                solverRemove.addAll(pkgsToUninstall);
+            }
+            if (pkgsToRemove != null) {
+                // Add packages to remove to uninstall list
+                solverRemove.addAll(pkgsToRemove);
+            }
+            if ((solverInstall.size() != 0) || (solverRemove.size() != 0)
+                    || (solverUpgrade.size() != 0)) {
+                // Check whether we need to relax restriction to targetPlatform
+                String requestPlatform = targetPlatform;
+                List<String> requestPackages = new ArrayList<String>();
+                requestPackages.addAll(solverInstall);
+                requestPackages.addAll(solverRemove);
+                requestPackages.addAll(solverUpgrade);
                 String nonCompliantPkg = getPackageManager().getNonCompliant(
                         requestPackages, targetPlatform);
                 if (nonCompliantPkg != null) {
@@ -1148,84 +1173,86 @@ public class ConnectBroker {
                                         nonCompliantPkg, targetPlatform));
                     }
                 }
-            } catch (PackageException e) {
-                log.error(e);
-                return false;
-            }
 
-            log.debug("solverInstall: " + solverInstall);
-            log.debug("solverRemove: " + solverRemove);
-            log.debug("solverUpgrade: " + solverUpgrade);
-            DependencyResolution resolution = getPackageManager().resolveDependencies(
-                    solverInstall, solverRemove, solverUpgrade, requestPlatform);
-            log.info(resolution);
-            if (resolution.isFailed()) {
-                return false;
-            }
-            if (resolution.isEmpty()) {
+                log.debug("solverInstall: " + solverInstall);
+                log.debug("solverRemove: " + solverRemove);
+                log.debug("solverUpgrade: " + solverUpgrade);
+                DependencyResolution resolution = getPackageManager().resolveDependencies(
+                        solverInstall, solverRemove, solverUpgrade,
+                        requestPlatform);
+                log.info(resolution);
+                if (resolution.isFailed()) {
+                    return false;
+                }
+                if (resolution.isEmpty()) {
+                    pkgRemove(pkgsToRemove);
+                    return cmdOk;
+                }
+                if ("ask".equalsIgnoreCase(accept)) {
+                    accept = readConsole(
+                            "Do you want to continue (yes/no)? [yes] ", "yes");
+                }
+                if (!Boolean.parseBoolean(accept)) {
+                    log.warn("Exit");
+                    return false;
+                }
+
+                List<String> packageIdsToRemove = resolution.getOrderedPackageIdsToRemove();
+                List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
+                List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
+                List<String> packagesIdsToReInstall = new ArrayList<String>();
+
+                // Download remote packages
+                if (!downloadPackages(resolution.getDownloadPackageIds())) {
+                    log.error("Aborting packages change request");
+                    return false;
+                }
+
+                // Uninstall
+                if (!packageIdsToUpgrade.isEmpty()) {
+                    // Add packages to upgrade to uninstall list
+                    // Don't use IDs to avoid downgrade instead of uninstall
+                    packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
+                    DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
+                            null, packageIdsToRemove, null, requestPlatform);
+                    log.debug("Sub-resolution (uninstall) "
+                            + uninstallResolution);
+                    if (uninstallResolution.isFailed()) {
+                        return false;
+                    }
+                    List<String> newPackageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
+                    packagesIdsToReInstall = ListUtils.subtract(
+                            newPackageIdsToRemove, packageIdsToRemove);
+                    packagesIdsToReInstall.removeAll(packageIdsToUpgrade);
+                    packageIdsToRemove = newPackageIdsToRemove;
+                }
+                if (!pkgUninstall(packageIdsToRemove)) {
+                    return false;
+                }
+
+                // Install
+                if (!packagesIdsToReInstall.isEmpty()) {
+                    // Add list of packages uninstalled because of upgrade
+                    packageIdsToInstall.addAll(packagesIdsToReInstall);
+                    DependencyResolution installResolution = getPackageManager().resolveDependencies(
+                            packageIdsToInstall, null, null, requestPlatform);
+                    log.debug("Sub-resolution (install) " + installResolution);
+                    if (installResolution.isFailed()) {
+                        return false;
+                    }
+                    packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
+                }
+                if (!pkgInstall(packageIdsToInstall)) {
+                    return false;
+                }
+
                 pkgRemove(pkgsToRemove);
-                return cmdOk;
             }
-            if ("ask".equalsIgnoreCase(accept)) {
-                accept = readConsole(
-                        "Do you want to continue (yes/no)? [yes] ", "yes");
-            }
-            if (!Boolean.parseBoolean(accept)) {
-                log.warn("Exit");
-                return false;
-            }
-
-            List<String> packageIdsToRemove = resolution.getOrderedPackageIdsToRemove();
-            List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
-            List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
-            List<String> packagesIdsToReInstall = new ArrayList<String>();
-
-            // Download remote packages
-            if (!downloadPackages(resolution.getDownloadPackageIds())) {
-                log.error("Aborting packages change request");
-                return false;
-            }
-
-            // Uninstall
-            if (!packageIdsToUpgrade.isEmpty()) {
-                // Add packages to upgrade to uninstall list
-                // Don't use IDs to avoid downgrade instead of uninstall
-                packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
-                DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
-                        null, packageIdsToRemove, null, requestPlatform);
-                log.debug("Sub-resolution (uninstall) " + uninstallResolution);
-                if (uninstallResolution.isFailed()) {
-                    return false;
-                }
-                List<String> newPackageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
-                packagesIdsToReInstall = ListUtils.subtract(
-                        newPackageIdsToRemove, packageIdsToRemove);
-                packagesIdsToReInstall.removeAll(packageIdsToUpgrade);
-                packageIdsToRemove = newPackageIdsToRemove;
-            }
-            if (!pkgUninstall(packageIdsToRemove)) {
-                return false;
-            }
-
-            // Install
-            if (!packagesIdsToReInstall.isEmpty()) {
-                // Add list of packages uninstalled because of upgrade
-                packageIdsToInstall.addAll(packagesIdsToReInstall);
-                DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                        packageIdsToInstall, null, null, requestPlatform);
-                log.debug("Sub-resolution (install) " + installResolution);
-                if (installResolution.isFailed()) {
-                    return false;
-                }
-                packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
-            }
-            if (!pkgInstall(packageIdsToInstall)) {
-                return false;
-            }
-
-            pkgRemove(pkgsToRemove);
+            return cmdOk;
+        } catch (PackageException e) {
+            log.error(e);
+            return false;
         }
-        return cmdOk;
     }
 
     /**
