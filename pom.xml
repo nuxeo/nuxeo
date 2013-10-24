@@ -3734,6 +3734,10 @@
             <groupId>org.eclipse.core.runtime</groupId>
             <artifactId>eclipse-core-runtime</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.cyberneko</groupId>
+            <artifactId>html</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
