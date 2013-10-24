@@ -151,7 +151,7 @@ h3 {
   color: red;
 }
 
-.packageListing .download, .packageListing .install {
+.packageListing .download {
   color: #00bc66; font-weight: bold
 }
 
@@ -161,6 +161,10 @@ h3 {
 
 .packageListing .remove, .packageListing .cancel {
   color: #e04f00; font-weight: bold
+}
+
+.packageListing .upgrade, .packageListing .install {
+  color: #0089c9; font-weight: bold
 }
 
 .row_odd {

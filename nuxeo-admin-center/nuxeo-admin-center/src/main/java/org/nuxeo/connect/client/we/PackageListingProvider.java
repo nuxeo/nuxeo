@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +19,6 @@
 package org.nuxeo.connect.client.we;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -48,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Provides REST binding for {@link Package} listings.
- * 
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @WebObject(type = "packageListingProvider")
@@ -90,9 +89,8 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "list")
-    public Object doList(@QueryParam("type")
-    String pkgType, @QueryParam("filterOnPlatform")
-    Boolean filterOnPlatform) {
+    public Object doList(@QueryParam("type") String pkgType,
+            @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         String targetPlatform = getTargetPlatform(filterOnPlatform);
         List<DownloadablePackage> pkgs;
@@ -110,9 +108,8 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "updates")
-    public Object getUpdates(@QueryParam("type")
-    String pkgType, @QueryParam("filterOnPlatform")
-    Boolean filterOnPlatform) {
+    public Object getUpdates(@QueryParam("type") String pkgType,
+            @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("updates").getPackageTypeFilter();
@@ -137,9 +134,8 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "private")
-    public Object getPrivate(@QueryParam("type")
-    String pkgType, @QueryParam("filterOnPlatform")
-    Boolean filterOnPlatform) {
+    public Object getPrivate(@QueryParam("type") String pkgType,
+            @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("private").getPackageTypeFilter();
@@ -164,8 +160,7 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "local")
-    public Object getLocal(@QueryParam("type")
-    String pkgType) {
+    public Object getLocal(@QueryParam("type") String pkgType) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("local").getPackageTypeFilter();
@@ -183,11 +178,10 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "remote")
-    public Object getRemote(@QueryParam("type")
-    String pkgType, @QueryParam("onlyRemote")
-    Boolean onlyRemote, @QueryParam("searchString")
-    String searchString, @QueryParam("filterOnPlatform")
-    Boolean filterOnPlatform) {
+    public Object getRemote(@QueryParam("type") String pkgType,
+            @QueryParam("onlyRemote") Boolean onlyRemote,
+            @QueryParam("searchString") String searchString,
+            @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         if (pkgType == null) {
             pkgType = SharedPackageListingsSettings.instance().get("remote").getPackageTypeFilter();
@@ -268,19 +262,27 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public boolean canInstall(Package pkg) {
-        return PackageState.DOWNLOADED.getValue() == pkg.getState()
+        return PackageState.DOWNLOADED == PackageState.getByValue(pkg.getState())
                 && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
     }
 
     public boolean needsRestart(Package pkg) {
         return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId())
-                || PackageState.INSTALLED.getValue() == pkg.getState()
+                || PackageState.INSTALLED == PackageState.getByValue(pkg.getState())
                 || InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
     }
 
     public boolean canUnInstall(Package pkg) {
         return (PackageState.getByValue(pkg.getState()).isInstalled())
                 && !InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
+    }
+
+    /**
+     * @since 5.8
+     */
+    public boolean canUpgrade(Package pkg) {
+        return (PackageState.getByValue(pkg.getState()).isInstalled()
+                && pkg.getVersion().isSnapshot() && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getName()));
     }
 
     public boolean canRemove(Package pkg) {
@@ -291,11 +293,11 @@ public class PackageListingProvider extends DefaultObject {
      * @since 5.6
      */
     public boolean canCancel(Package pkg) {
-        return PackageState.DOWNLOADING.getValue() == pkg.getState();
+        return PackageState.DOWNLOADING == PackageState.getByValue(pkg.getState());
     }
 
     public boolean canDownload(Package pkg) {
-        return pkg.getState() == PackageState.REMOTE.getValue()
+        return PackageState.getByValue(pkg.getState()) == PackageState.REMOTE
                 && (pkg.getType() == PackageType.STUDIO
                         || pkg.getVisibility() == PackageVisibility.PUBLIC //
                 || (ConnectStatusHolder.instance().isRegistred() //
@@ -305,8 +307,7 @@ public class PackageListingProvider extends DefaultObject {
     @GET
     @Produces("text/html")
     @Path(value = "details/{pkgId}")
-    public Object getDetails(@PathParam("pkgId")
-    String pkgId) {
+    public Object getDetails(@PathParam("pkgId") String pkgId) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         DownloadablePackage pkg = pm.getPackage(pkgId);
         if (pkg != null) {
@@ -321,7 +322,7 @@ public class PackageListingProvider extends DefaultObject {
      * @return true if registration is required for download
      */
     public boolean registrationRequired(Package pkg) {
-        return pkg.getState() == PackageState.REMOTE.getValue()
+        return PackageState.getByValue(pkg.getState()) == PackageState.REMOTE
                 && pkg.getType() != PackageType.STUDIO
                 && pkg.getVisibility() != PackageVisibility.PUBLIC
                 && (!ConnectStatusHolder.instance().isRegistred() //

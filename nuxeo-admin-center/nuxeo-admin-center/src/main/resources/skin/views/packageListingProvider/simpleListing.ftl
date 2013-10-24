@@ -116,6 +116,9 @@
          </#if>
          <#if This.canUnInstall(pkg)>
            <a class="button uninstall" href="${Root.path}/uninstall/start/${pkg.id}?source=${source}&amp;filterOnPlatform=${filterOnPlatform}">${Context.getMessage('label.simpleListing.links.uninstall')}</a>
+           <#if This.canUpgrade(pkg)>
+             <a class="button upgrade" href="${Root.path}/install/start/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.upgrade')}</a>
+           </#if>
          </#if>
          <#if This.needsRestart(pkg)>
            <#if pkg.getState() == 5 >
