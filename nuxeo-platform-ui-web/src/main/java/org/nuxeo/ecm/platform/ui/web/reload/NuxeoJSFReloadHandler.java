@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadEventNames;
 import org.nuxeo.runtime.services.event.Event;
@@ -59,6 +60,8 @@ public class NuxeoJSFReloadHandler implements EventListener {
         if (ReloadEventNames.FLUSH_EVENT_ID.equals(id)) {
             // force i18n messages reload at the bundle level
             ResourceBundle.clearCache(Thread.currentThread().getContextClassLoader());
+            // force reload of document default views.
+            DocumentModelFunctions.resetDefaultViewCache();
         }
     }
 

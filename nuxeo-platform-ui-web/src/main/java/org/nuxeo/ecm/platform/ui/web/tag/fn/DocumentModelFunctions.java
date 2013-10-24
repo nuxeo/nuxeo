@@ -1040,4 +1040,13 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return lf.getAllowedStateTransitionsFrom(currentState);
     }
 
+    /**
+     * Reset default view cache.
+     *
+     * @since 5.8
+     */
+    public static void resetDefaultViewCache() {
+        defaultViewCache.clear();
+    }
+
 }
