@@ -13,8 +13,7 @@
       <filter id="can_unpublish">
         <rule grant="true">
           <permission>AddChildren</permission>
-          <type>SectionRoot</type>
-          <type>Section</type>
+          <facet>PublishSpace</facet>
           <condition>#{documentActions.canUnpublish}</condition>
         </rule>
       </filter>
@@ -28,7 +27,7 @@
           <condition>#{clipboardActions.workListEmpty}</condition>
         </rule>
         <rule grant="true">
-          <type>Section</type>
+          <facet>PublishSpace</facet>
         </rule>
       </filter>
     </action>
