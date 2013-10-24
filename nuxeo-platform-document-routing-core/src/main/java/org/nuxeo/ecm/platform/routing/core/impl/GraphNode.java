@@ -197,6 +197,12 @@ public interface GraphNode {
     // @since 5.7.3
     String PROP_ALLOW_TASK_REASSIGNMENT = "rnode:allowTaskReassignment";
 
+    // @since 5.6
+    // if present as the node variable, acts as a built-in variable:
+    // is passed to the task comment and logged in by audit;
+    // internally rested when set on node having multiple tasks.
+    String NODE_VARIABLE_COMMENT = "comment";
+
     /**
      * The internal state of a node.
      */
@@ -882,4 +888,11 @@ public interface GraphNode {
      * @since 5.7.3
      */
     boolean allowTaskReassignment();
+
+    /**
+     * Sets the variable on this node if it exists as a Node Variable.
+     *
+     * @since 5.8
+     */
+    public void setVariable(String name, String value);
 }

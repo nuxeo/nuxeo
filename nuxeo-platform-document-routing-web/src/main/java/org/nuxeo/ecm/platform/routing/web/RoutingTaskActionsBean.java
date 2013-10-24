@@ -226,8 +226,9 @@ public class RoutingTaskActionsBean implements Serializable {
             // if there is a comment on the submitted form, pass it to be
             // logged
             // by audit
-            if (formVariables.containsKey("comment")) {
-                data.put("comment", formVariables.get("comment"));
+            if (formVariables.containsKey(GraphNode.NODE_VARIABLE_COMMENT)) {
+                data.put(GraphNode.NODE_VARIABLE_COMMENT,
+                        formVariables.get(GraphNode.NODE_VARIABLE_COMMENT));
             }
         }
         // add the button name that was clicked

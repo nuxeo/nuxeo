@@ -888,7 +888,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
     @Override
     public void endTask(CoreSession session, Task task,
             Map<String, Object> data, String status) throws ClientException {
-        String comment = (String) data.get("comment");
+        String comment = (String) data.get(GraphNode.NODE_VARIABLE_COMMENT);
         TaskService taskService = Framework.getLocalService(TaskService.class);
         taskService.endTask(session, (NuxeoPrincipal) session.getPrincipal(),
                 task, comment, TaskEventNames.WORKFLOW_TASK_COMPLETED, false);

@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -83,6 +84,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
         run(session, element, null);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void resume(CoreSession session, DocumentRouteElement element,
             String nodeId, String taskId, Map<String, Object> varData,
@@ -127,8 +129,8 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 throw new DocumentRouteException(
                         "Cannot resume on non-suspended node: " + node);
             }
-
             node.setAllVariables(varData);
+
             if (StringUtils.isNotEmpty(status)) {
                 node.setButton(status);
             }
@@ -146,6 +148,13 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 // do nothing, the workflow is resumed only when all the tasks
                 // created from
                 // this node are processed
+                // as this is a multi-task node, reset comment if it was
+                // previously set
+                if (varData != null
+                        && varData.get(Constants.VAR_WORKFLOW_NODE) != null
+                        && ((Map<String, Serializable>) varData.get(Constants.VAR_WORKFLOW_NODE)).containsKey(GraphNode.NODE_VARIABLE_COMMENT)) {
+                    node.setVariable(GraphNode.NODE_VARIABLE_COMMENT, "");
+                }
                 return;
             }
             runGraph(session, element, node);

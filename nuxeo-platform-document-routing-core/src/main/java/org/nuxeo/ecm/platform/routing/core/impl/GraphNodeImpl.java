@@ -1117,4 +1117,13 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             throw new DocumentRouteException("Cannot cancel task", e);
         }
     }
+
+    @Override
+    public void setVariable(String name, String value) {
+        Map<String, Serializable> nodeVariables = getVariables();
+        if (nodeVariables.containsKey(name)) {
+            nodeVariables.put(name, value);
+            setVariables(nodeVariables);
+        }
+    }
 }
