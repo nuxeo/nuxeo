@@ -199,10 +199,9 @@ public class TestDownloadServlet {
         final byte[] bytes = stringValue.getBytes();
         InputStream in = new ByteArrayInputStream(bytes);
         SQLBlob blob = new SQLBlob(binary, "myFile.txt", "text/plain", "UTF-8",
-                digest);
+                digest, bytes.length);
         when(binary.getStream()).thenReturn(in);
         when(binary.getDigest()).thenReturn(digest);
-        when(binary.getLength()).thenReturn((long) bytes.length);
         return blob;
     }
 }
