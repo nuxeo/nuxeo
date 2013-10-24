@@ -55,7 +55,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">operationId</label>
+        <label mode="any">OperationId</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -76,7 +76,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">initOperationId</label>
+        <label mode="any">InitOperationId</label>
       </labels>
       <helpLabels>
         <label mode="any">
@@ -121,8 +121,8 @@
           </supportedTypes>
         </fields>
         <properties>
-          <layouts mode="any">
-            <layout name="select2_widget_type_properties_any">
+          <layouts mode="view">
+            <layout name="select2_widget_type_properties_view">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">suggestion_width</widget>
@@ -148,13 +148,13 @@
                   <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -169,10 +169,7 @@
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
@@ -181,22 +178,51 @@
                   <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">
-                    documentSuggestion_pageProviderName
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_suggestionFormatter
-                  </widget>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -264,13 +290,13 @@
                   <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
               </rows>
             </layout>
@@ -278,17 +304,17 @@
           <layouts mode="edit">
             <layout name="select2Multiple_widget_type_properties_edit">
               <rows>
-                <row>
+              <row>
                   <widget category="widgetTypeConf">required</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">placeholder</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                  <widget category="widgetTypeConf">suggestion_orderable</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
@@ -297,26 +323,51 @@
                   <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">
-                    documentSuggestion_pageProviderName
+                  <widget category="widgetTypeConf">documentSuggestion_pageProviderName
                   </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">suggestion_orderable</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_repository</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
+                  <widget category="widgetTypeConf">documentSuggestion_documentSchemas
+                  </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_helpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_hideHelpLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_operationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_initOperationId</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">ajaxReRender</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_containerCssClass</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_dropdownCssClass</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">
-                    select2_suggestionFormatter
-                  </widget>
+                  <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_selectionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
                 </row>
               </rows>
             </layout>
