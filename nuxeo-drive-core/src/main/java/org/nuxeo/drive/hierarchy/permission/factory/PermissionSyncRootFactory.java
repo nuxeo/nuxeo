@@ -88,6 +88,9 @@ public class PermissionSyncRootFactory extends
     }
 
     /**
+     * Checks if the given {@link DocumentModel} is adaptable as a
+     * {@link FileSystemItem}.
+     *
      * The permission synchronization root factory considers that a
      * {@link DocumentModel} is adaptable as a {@link FileSystemItem} if:
      * <ul>
@@ -121,13 +124,15 @@ public class PermissionSyncRootFactory extends
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentId, FolderItem parentItem) throws ClientException {
+            boolean forceParentId, FolderItem parentItem)
+            throws ClientException {
         return new DefaultSyncRootFolderItem(name, parentItem, doc);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
-    protected FolderItem getParentItem(DocumentModel doc) throws ClientException {
+    protected FolderItem getParentItem(DocumentModel doc)
+            throws ClientException {
         Principal principal = doc.getCoreSession().getPrincipal();
         String docCreator = (String) doc.getPropertyValue("dc:creator");
         if (principal.getName().equals(docCreator)) {

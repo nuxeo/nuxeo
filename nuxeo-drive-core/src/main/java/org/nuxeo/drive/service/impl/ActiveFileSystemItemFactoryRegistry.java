@@ -18,6 +18,7 @@ package org.nuxeo.drive.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
@@ -110,7 +111,7 @@ public class ActiveFileSystemItemFactoryRegistry extends
                     bos.toByteArray());
             ObjectInputStream ois = new ObjectInputStream(bis);
             return (ActiveFileSystemItemFactoriesDescriptor) ois.readObject();
-        } catch (Exception e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new ClientRuntimeException(String.format(
                     "Cannot clone contribution %s.", orig), e);
         }
