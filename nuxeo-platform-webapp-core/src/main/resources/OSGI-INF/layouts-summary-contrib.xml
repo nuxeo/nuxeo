@@ -648,10 +648,13 @@
     </widget>
 
     <widget name="summary_current_document_files" type="summary_current_document_files">
+      <labels>
+        <label mode="any"></label>
+      </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="handleLabels">true</control>
       </controls>
-
     </widget>
 
     <widget name="summary_current_document_view" type="summary_current_document_view">
