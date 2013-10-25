@@ -281,27 +281,19 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     @Override
     public Work find(String workId, State state) {
-        State s = getWorkState(workId);
-        if (s == null) {
-            return null;
-        }
-        byte[] workIdBytes = bytes(workId);
-        if (state == null || state == State.SCHEDULED) {
-            if (s == State.SCHEDULED) {
-                return getWork(workIdBytes);
-            }
-        }
-        if (state == null || state == State.RUNNING) {
-            if (s == State.RUNNING) {
-                return getWork(workIdBytes);
-            }
-        }
-        if (state == State.COMPLETED) {
-            if (s == State.COMPLETED) {
-                return getWork(workIdBytes);
-            }
+        if (isWorkInState(workId, state)) {
+            return getWork(bytes(workId));
         }
         return null;
+    }
+
+    @Override
+    public boolean isWorkInState(String workId, State state) {
+        State s = getWorkState(workId);
+        if (state == null) {
+            return s == State.SCHEDULED || s == State.RUNNING;
+        }
+        return s == state;
     }
 
     @Override

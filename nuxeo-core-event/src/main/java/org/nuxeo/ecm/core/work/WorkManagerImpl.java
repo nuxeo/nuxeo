@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +93,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     protected Map<String, WorkThreadPoolExecutor> executors;
 
     // @GuardedBy("itself")
-    protected List<WorkAndScheduling> scheduledAfterCommit = new LinkedList<WorkAndScheduling>();
+    protected Map<String, WorkAndScheduling> scheduledAfterCommit = new LinkedHashMap<String, WorkAndScheduling>();
 
     protected WorkQueuing queuing;
 
@@ -341,7 +341,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             this.scheduling = scheduling;
         }
 
-        public static List<Work> getWorkList(List<WorkAndScheduling> lws) {
+        public static List<Work> getWorkList(Collection<WorkAndScheduling> lws) {
             List<Work> list = new LinkedList<Work>();
             for (WorkAndScheduling ws : lws) {
                 list.add(ws.work);
@@ -360,12 +360,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     public static class WorkSchedulingSynchronization implements
             Synchronization {
 
-        protected final List<WorkAndScheduling> scheduledAfterCommit;
+        protected final Map<String, WorkAndScheduling> scheduledAfterCommit;
 
         protected final WorkManager workManager;
 
         public WorkSchedulingSynchronization(
-                List<WorkAndScheduling> scheduledAfterCommit,
+                Map<String, WorkAndScheduling> scheduledAfterCommit,
                 WorkManager workManager) {
             this.scheduledAfterCommit = scheduledAfterCommit;
             this.workManager = workManager;
@@ -381,7 +381,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             synchronized (scheduledAfterCommit) {
                 // use a copy and clear asap, as scheduling may check
                 // already scheduled work to avoid duplicates
-                copy = scheduledAfterCommit.toArray(new WorkAndScheduling[0]);
+                copy = scheduledAfterCommit.values().toArray(
+                        new WorkAndScheduling[0]);
                 scheduledAfterCommit.clear();
             }
             for (WorkAndScheduling ws : copy) {
@@ -464,10 +465,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          * List of running Work instances, in order to be able to interrupt them
          * if requested.
          */
-        // @GuardedBy("monitor")
+        // @GuardedBy("itself")
         protected final List<Work> running;
-
-        protected final Object monitor = new Object();
 
         // metrics
 
@@ -541,7 +540,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Work work = WorkHolder.getWork(r);
             work.setWorkInstanceState(State.RUNNING);
             queuing.workRunning(queueId, work);
-            synchronized (monitor) {
+            synchronized (running) {
                 running.add(work);
             }
             // metrics
@@ -553,7 +552,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         protected void afterExecute(Runnable r, Throwable t) {
             scheduledOrRunning.decrementAndGet();
             Work work = WorkHolder.getWork(r);
-            synchronized (monitor) {
+            synchronized (running) {
                 running.remove(work);
             }
             State state;
@@ -599,7 +598,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             int n = queuing.setSuspending(queueId);
             scheduledOrRunning.addAndGet(-n);
             // request all running work instances to suspend (stop)
-            synchronized (monitor) {
+            synchronized (running) {
                 for (Work work : running) {
                     work.setWorkInstanceSuspending();
                 }
@@ -642,26 +641,16 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected Work findScheduledAfterCommit(String workId) {
         synchronized (scheduledAfterCommit) {
-            for (WorkAndScheduling ws : scheduledAfterCommit) {
-                if (ws.work.getId().equals(workId)) {
-                    return ws.work;
-                }
-            }
+            WorkAndScheduling ws = scheduledAfterCommit.get(workId);
+            return ws == null ? null : ws.work;
         }
-        return null;
     }
 
     protected Work removeScheduledAfterCommit(String workId) {
         synchronized (scheduledAfterCommit) {
-            for (Iterator<WorkAndScheduling> it = scheduledAfterCommit.iterator(); it.hasNext();) {
-                WorkAndScheduling ws = it.next();
-                if (ws.work.getId().equals(workId)) {
-                    it.remove();
-                    return ws.work;
-                }
-            }
+            WorkAndScheduling ws = scheduledAfterCommit.remove(workId);
+            return ws == null ? null : ws.work;
         }
-        return null;
     }
 
     /**
@@ -669,13 +658,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
      */
     protected List<Work> getScheduledAfterCommit() {
         synchronized (scheduledAfterCommit) {
-            return WorkAndScheduling.getWorkList(scheduledAfterCommit);
+            return WorkAndScheduling.getWorkList(scheduledAfterCommit.values());
         }
     }
 
     protected void executeAfterCommit(Work work, Scheduling scheduling) {
         synchronized (scheduledAfterCommit) {
-            scheduledAfterCommit.add(new WorkAndScheduling(work, scheduling));
+            WorkAndScheduling ws = new WorkAndScheduling(work, scheduling);
+            scheduledAfterCommit.put(work.getId(), ws);
         }
     }
 
@@ -811,24 +801,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     /** @param state SCHEDULED, RUNNING or null for both */
     protected boolean hasWorkInState(String workId, State state) {
-        // check scheduled after commit
+                // check scheduled after commit
         if (state == null || state == State.SCHEDULED) {
             if (findScheduledAfterCommit(workId) != null) {
                 return true;
             }
         }
-        State s = queuing.getWorkState(workId);
-        if (s == null) {
-            return false;
-        }
-        if (state == null) {
-            return s == State.SCHEDULED || s == State.RUNNING;
-        }
-        if (state == State.COMPLETED) {
-            return s == State.COMPLETED || s == State.FAILED
-                    || s == State.CANCELED;
-        }
-        return state == s;
+        return queuing.isWorkInState(workId, state);
     }
 
     @Override

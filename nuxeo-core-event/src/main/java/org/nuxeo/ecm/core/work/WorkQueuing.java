@@ -100,13 +100,25 @@ public interface WorkQueuing {
     Work removeScheduled(String queueId, String workId);
 
     /**
+     * Checks if a work instance with the given id is in the given state.
+     *
+     * @param workId the work id
+     * @param state the state, {@link State#SCHEDULED SCHEDULED},
+     *            {@link State#RUNNING RUNNING}, {@link State#COMPLETED
+     *            COMPLETED}, or {@code null} for non-completed
+     * @return {@code true} if a work instance with the given id is in the given
+     *         state
+     * @since 5.8
+     */
+    boolean isWorkInState(String workId, State state);
+
+    /**
      * Gets the state in which a work instance is.
      * <p>
      * This can be {@link State#SCHEDULED}, {@link State#RUNNING},
      * {@link State#COMPLETED}, {@link State#FAILED}, or {@link State#CANCELED}.
      *
-     * @param work the id of the work to find
-     *
+     * @param workId the id of the work to find
      * @return the work state, or {@code null} if not found
      *
      * @since 5.8

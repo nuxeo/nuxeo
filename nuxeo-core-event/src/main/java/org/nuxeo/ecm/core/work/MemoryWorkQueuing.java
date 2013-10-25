@@ -16,19 +16,15 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,10 +48,12 @@ public class MemoryWorkQueuing implements WorkQueuing {
     protected Map<String, BlockingQueue<Runnable>> allScheduled = new HashMap<String, BlockingQueue<Runnable>>();
 
     // @GuardedBy("this")
+    // queueId -> workId -> work
     protected Map<String, Map<String, Work>> allRunning = new HashMap<String, Map<String, Work>>();
 
     // @GuardedBy("this")
-    protected Map<String, List<Work>> allCompleted = new HashMap<String, List<Work>>();
+    // queueId -> workId -> work
+    protected Map<String, Map<String, Work>> allCompleted = new HashMap<String, Map<String, Work>>();
 
     public MemoryWorkQueuing(WorkQueueDescriptorRegistry workQueueDescriptors) {
         this.workQueueDescriptors = workQueueDescriptors;
@@ -97,34 +95,32 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     // called synchronized
-    protected List<Work> getCompleted(String queueId) {
-        List<Work> completed = allCompleted.get(queueId);
+    protected Map<String, Work> getCompleted(String queueId) {
+        Map<String, Work> completed = allCompleted.get(queueId);
         if (completed == null) {
-            allCompleted.put(queueId, completed = newCompletedList());
+            allCompleted.put(queueId, completed = newCompletedMap());
         }
         return completed;
     }
 
     protected BlockingQueue<Runnable> newBlockingQueue(
             WorkQueueDescriptor workQueueDescriptor) {
-        int capacity = workQueueDescriptor.capacity;
         if (workQueueDescriptor.usePriority) {
             log.warn("Priority queues are now deprecated and function as regular queues");
         }
-        if (capacity > 0) {
-            return new NuxeoLinkedBlockingQueue<Runnable>(
-                    workQueueDescriptor.capacity);
+        int capacity = workQueueDescriptor.capacity;
+        if (capacity <= 0) {
+            capacity = -1; // unbounded
         }
-        // default unbounded queue
-        return new LinkedBlockingQueue<Runnable>();
+        return new NuxeoBlockingQueue<Runnable>(capacity);
     }
 
-    protected HashMap<String, Work> newRunningMap() {
+    protected Map<String, Work> newRunningMap() {
         return new HashMap<String, Work>();
     }
 
-    protected List<Work> newCompletedList() {
-        return new LinkedList<Work>();
+    protected Map<String, Work> newCompletedMap() {
+        return new LinkedHashMap<String, Work>();
     }
 
     @Override
@@ -137,94 +133,59 @@ public class MemoryWorkQueuing implements WorkQueuing {
     @Override
     public synchronized void workCompleted(String queueId, Work work) {
         getRunning(queueId).remove(work.getId());
-        getCompleted(queueId).add(work);
-    }
-
-    /**
-     * A LinkedBlockingQueue that blocks on "offer" and prevent starvation
-     * deadlock on reentrant call.
-     *
-     */
-    public class NuxeoLinkedBlockingQueue<T> extends LinkedBlockingQueue<T> {
-
-        private static final long serialVersionUID = 1L;
-
-        private final ReentrantLock limitedPutLock = new ReentrantLock();
-
-        private final int limitedCapacity;
-
-        public NuxeoLinkedBlockingQueue(int capacity) {
-            // Allocate more space to prevent starvation dead lock
-            // because a worker can add a new job to the queue.
-            super(2 * capacity);
-            limitedCapacity = capacity;
-        }
-
-        /**
-         * Block until there are enough remaining capacity to put the entry.
-         */
-        public void limitedPut(T e) throws InterruptedException {
-            limitedPutLock.lockInterruptibly();
-            try {
-                while (remainingCapacity() < limitedCapacity) {
-                    Thread.sleep(100);
-                }
-                put(e);
-            } finally {
-                limitedPutLock.unlock();
-            }
-
-        }
-
-        @Override
-        public boolean offer(T e) {
-            // Patch to turn non blocking offer into a blocking put
-            try {
-                if (Thread.currentThread().getName().startsWith(
-                        WorkManagerImpl.THREAD_PREFIX)) {
-                    // use the full queue capacity for reentrant call
-                    put(e);
-                } else {
-                    // put only if there are enough remaining capacity
-                    limitedPut(e);
-                }
-                return true;
-            } catch (InterruptedException e1) {
-                Thread.currentThread().interrupt();
-            }
-            return false;
-        }
-
+        getCompleted(queueId).put(work.getId(), work);
     }
 
     @Override
     public Work find(String workId, State state) {
-        if (state == null || state == State.SCHEDULED) {
+        if (state == null) {
             Work w = findScheduled(workId);
-            if (w != null) {
-                return w;
+            if (w == null) {
+                w = findRunning(workId);
             }
+            return w;
         }
-        if (state == null || state == State.RUNNING) {
+        switch (state) {
+        case SCHEDULED:
+            return findScheduled(workId);
+        case RUNNING:
             return findRunning(workId);
-        }
-        if (state == State.COMPLETED) {
+        case COMPLETED:
             return findCompleted(workId);
+        default:
+            return null;
         }
-        throw new IllegalArgumentException(String.valueOf(state));
+    }
+
+    @Override
+    public boolean isWorkInState(String workId, State state) {
+        if (state == null) {
+            return isScheduled(workId) || isRunning(workId);
+        }
+        switch (state) {
+        case SCHEDULED:
+            return isScheduled(workId);
+        case RUNNING:
+            return isRunning(workId);
+        case COMPLETED:
+            return isCompleted(workId);
+        default:
+            return false;
+        }
     }
 
     @Override
     public State getWorkState(String workId) {
-        if (findScheduled(workId) != null) {
+        if (isScheduled(workId)) {
             return State.SCHEDULED;
         }
-        if (findRunning(workId) != null) {
+        if (isRunning(workId)) {
             return State.RUNNING;
         }
-        Work w = findCompleted(workId);
-        // COMPLETED / FAILED / CANCELED
-        return w == null ? null : w.getWorkInstanceState();
+        if (isCompleted(workId)) {
+            return State.COMPLETED;
+        }
+        return null;
     }
 
     @Override
@@ -283,8 +244,36 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     protected synchronized int getCompletedSize(String queueId) {
-        List<Work> completed = allCompleted.get(queueId);
+        Map<String, Work> completed = allCompleted.get(queueId);
         return completed == null ? 0 : completed.size();
+    }
+
+    protected synchronized boolean isScheduled(String workId) {
+        for (BlockingQueue<Runnable> scheduled : allScheduled.values()) {
+            NuxeoBlockingQueue<Runnable> q = (NuxeoBlockingQueue<Runnable>) scheduled;
+            if (q.containsWorkId(workId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected synchronized boolean isRunning(String workId) {
+        for (Map<String, Work> running : allRunning.values()) {
+            if (running.containsKey(workId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected synchronized boolean isCompleted(String workId) {
+        for (Map<String, Work> completed : allCompleted.values()) {
+            if (completed.containsKey(workId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected synchronized Work findScheduled(String workId) {
@@ -310,11 +299,10 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     protected synchronized Work findCompleted(String workId) {
-        for (List<Work> completed : allCompleted.values()) {
-            for (Work w : completed) {
-                if (w.getId().equals(workId)) {
-                    return w;
-                }
+        for (Map<String, Work> completed : allCompleted.values()) {
+            Work w = completed.get(workId);
+            if (w != null) {
+                return w;
             }
         }
         return null;
@@ -338,7 +326,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
 
     // called synchronized
     protected List<Work> listCompleted(String queueId) {
-        return new ArrayList<Work>(getCompleted(queueId));
+        return new ArrayList<Work>(getCompleted(queueId).values());
     }
 
     // no synchronized as scheduled queue is thread-safe
@@ -354,8 +342,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
 
     // called synchronized
     protected List<String> listRunningIds(String queueId) {
-        Map<String, Work> running = getRunning(queueId);
-        return new ArrayList<String>(running.keySet());
+        return new ArrayList<String>(getRunning(queueId).keySet());
     }
 
     // called synchronized
@@ -367,12 +354,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
 
     // called synchronized
     protected List<String> listCompletedIds(String queueId) {
-        List<Work> completed = getCompleted(queueId);
-        List<String> list = new ArrayList<String>(completed.size());
-        for (Work w : completed) {
-            list.add(w.getId());
-        }
-        return list;
+        return new ArrayList<String>(getCompleted(queueId).keySet());
     }
 
     @Override
@@ -409,11 +391,11 @@ public class MemoryWorkQueuing implements WorkQueuing {
     @Override
     public synchronized void clearCompletedWork(String queueId,
             long completionTime) {
-        List<Work> completed = getCompleted(queueId);
+        Map<String, Work> completed = getCompleted(queueId);
         if (completionTime <= 0) {
             completed.clear();
         } else {
-            for (Iterator<Work> it = completed.iterator(); it.hasNext();) {
+            for (Iterator<Work> it = completed.values().iterator(); it.hasNext();) {
                 Work w = it.next();
                 if (w.getCompletionTime() < completionTime) {
                     it.remove();
