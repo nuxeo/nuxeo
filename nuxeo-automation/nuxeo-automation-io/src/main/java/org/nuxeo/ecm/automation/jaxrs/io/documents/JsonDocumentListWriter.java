@@ -139,26 +139,29 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
             jg.writeNumberField("pageCount", provider.getNumberOfPages());
 
             DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
+            String codecName = null;
             if (documentViewCodecManager == null) {
-                throw new RuntimeException(
-                        "Service 'DocumentViewCodecManager' not available");
+                log.warn("Service 'DocumentViewCodecManager' not available : documentUrl won't be generated");
             }
-            String documentLinkBuilder = provider.getDocumentLinkBuilder();
-            String codecName = isBlank(documentLinkBuilder) ? documentViewCodecManager.getDefaultCodecName()
-                    : documentLinkBuilder;
+            else {
+                String documentLinkBuilder = provider.getDocumentLinkBuilder();
+                codecName = isBlank(documentLinkBuilder) ? documentViewCodecManager.getDefaultCodecName()
+                        : documentLinkBuilder;
+            }
 
             jg.writeArrayFieldStart("entries");
             for (DocumentModel doc : docs) {
                 DocumentLocation docLoc = new DocumentLocationImpl(doc);
-                DocumentView docView = new DocumentViewImpl(docLoc,
-                        doc.getAdapter(TypeInfo.class).getDefaultView());
-                String documentURL = VirtualHostHelper.getContextPathProperty()
+                Map<String, String> contextParameters = new HashMap<String, String>();
+                if (documentViewCodecManager!=null) {
+                    DocumentView docView = new DocumentViewImpl(docLoc,
+                            doc.getAdapter(TypeInfo.class).getDefaultView());
+                    String documentURL = VirtualHostHelper.getContextPathProperty()
                         + "/"
                         + documentViewCodecManager.getUrlFromDocumentView(
                                 codecName, docView, false, null);
-
-                Map<String, String> contextParameters = new HashMap<String, String>();
-                contextParameters.put("documentURL", documentURL);
+                    contextParameters.put("documentURL", documentURL);
+                }
                 JsonDocumentWriter.writeDocument(jg, doc, schemas,
                         contextParameters);
             }
