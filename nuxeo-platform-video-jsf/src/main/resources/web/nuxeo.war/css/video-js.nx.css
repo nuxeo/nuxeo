@@ -7,21 +7,10 @@ Version 4.1.0
 /* DEFAULT SKIN Overridden by Nuxeo to fix font urls.
 ==============================================================
 */
-@font-face{
-  font-family: 'VideoJS';
-  src: url('../font/vjs.eot');
-  src: url('../font/vjs.eot?#iefix') format('embedded-opentype'),
-  url('../font/vjs.woff') format('woff'),
-  url('../font/vjs.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-/* Big Play Button (at start)
----------------------------------------------------------*/
-.vjs-default-skin .vjs-big-play-button {
-  top: 50%;
-  left: 50%;
-  margin-top: -4.0em;
-  margin-left: -6.0em;
+@font-face {
+    font-family: 'VideoJS';
+    src: url('../font/vjs.eot');
+    src: url('../font/vjs.eot?#iefix') format('embedded-opentype'), url('../font/vjs.woff') format('woff'), url('../font/vjs.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
