@@ -856,11 +856,12 @@ public class Select2ActionsBean implements Serializable {
             } else {
                 AutomationService as = Framework.getLocalService(AutomationService.class);
                 OperationContext ctx = new OperationContext(session);
+                Map<String, Object> params = new HashMap<String, Object>();
 
-                ctx.put("value", storedReference);
-                ctx.put("xpath", idProperty);
+                params.put("value", storedReference);
+                params.put("xpath", idProperty);
 
-                Object result = as.run(ctx, operationName, null);
+                Object result = as.run(ctx, operationName, params);
 
                 if (result == null) {
                     log.warn("Unable to resolve reference " + storedReference
