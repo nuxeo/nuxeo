@@ -41,7 +41,7 @@
             layout="block"
             ajaxRendered="true">
             <c:if test="#{setupRequiresRestart}">
-              <div class="warningMessage">
+              <div class="warningFeedback">
                 <h:form id="restartRequiredForm">
                   <h:outputText value="#{messages['label.setup.restartNeeded']} " />
                   <h:commandButton onclick="return confirmRestart();"
