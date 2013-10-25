@@ -176,7 +176,7 @@
     }
 
     // set style on select
-    el.css("width", params.width + "px");
+    el.css("width", params.width);
 
     // determine operation name
     var opName = getOperationName(params);
