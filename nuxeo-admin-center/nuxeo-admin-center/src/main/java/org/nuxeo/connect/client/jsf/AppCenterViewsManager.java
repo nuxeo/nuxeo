@@ -115,11 +115,6 @@ public class AppCenterViewsManager implements Serializable {
 
     protected boolean isStudioSnapshopUpdateInProgress = false;
 
-    // FIXME: this should be persisted instead of being local to the seam
-    // component, as other potential users will not see the same information in
-    // the admin center
-    // protected Calendar lastStudioSnapshotUpdate;
-
     protected String studioSnapshotUpdateError;
 
     /**
@@ -260,8 +255,9 @@ public class AppCenterViewsManager implements Serializable {
     /**
      * Returns true if Studio snapshot module should be validated.
      * <p>
-     * Validation can be skipped by user, or can be globally disabled by setting
-     * framework property "studio.snapshot.disablePkgValidation" to true.
+     * Validation can be skipped by user, or can be globally disabled by
+     * setting framework property "studio.snapshot.disablePkgValidation" to
+     * true.
      *
      * @since 5.7.1
      */
@@ -285,7 +281,9 @@ public class AppCenterViewsManager implements Serializable {
             PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             try {
                 LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
-                lastUpdate = pus.getInstallDate(pkg.getId());
+                if (pus != null) {
+                    lastUpdate = pus.getInstallDate(pkg.getId());
+                }
             } catch (PackageException e) {
                 log.error(e);
             }
@@ -293,14 +291,6 @@ public class AppCenterViewsManager implements Serializable {
         } else {
             return lastUpdate;
         }
-
-        // } else {
-        // DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z",
-        // Locale.US);
-        // df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        // return df.format(lastStudioSnapshotUpdate.getTime());
-        // }
-
     }
 
     public String getStudioInstallationStatus() {
@@ -377,7 +367,8 @@ public class AppCenterViewsManager implements Serializable {
                     PackageDependency[] pkgDeps = remotePkg.getDependencies();
 
                     ValidationStatus status = new ValidationStatus();
-                    // TODO: replace errors by internationalized labels
+                    // TODO NXP-9523: replace errors by internationalized
+                    // labels
                     if (!PlatformVersionHelper.isCompatible(targetPlatforms)) {
                         status.addError(String.format(
                                 "This package is not validated for your current platform: %s",
@@ -404,8 +395,9 @@ public class AppCenterViewsManager implements Serializable {
                                     && packageId.equals(pkgToInstall.get(0))) {
                                 // ignore
                             } else if (resolution.requireChanges()) {
-                                // FIXME JC: Why error out instead of applying
-                                // required deps?
+                                // do not install needed deps: they may not be
+                                // hot-reloadable and that's not what the
+                                // "update snapshot" button is for.
                                 status.addError(resolution.toString().trim().replaceAll(
                                         "\n", "<br />"));
                             }
@@ -489,7 +481,6 @@ public class AppCenterViewsManager implements Serializable {
                         }
                         // Refresh state
                         pkg = pus.getPackage(packageId);
-                        // lastStudioSnapshotUpdate = Calendar.getInstance();
                         lastUpdate = pus.getInstallDate(packageId);
                         setStatus(SnapshotStatus.completed, null);
                     } catch (PackageException e) {
@@ -502,7 +493,6 @@ public class AppCenterViewsManager implements Serializable {
                     }
                 } else {
                     InstallAfterRestart.addPackageForInstallation(packageId);
-                    // lastStudioSnapshotUpdate = Calendar.getInstance();
                     setStatus(SnapshotStatus.restartNeeded, null);
                     setupWizardAction.setNeedsRestart(true);
                 }
