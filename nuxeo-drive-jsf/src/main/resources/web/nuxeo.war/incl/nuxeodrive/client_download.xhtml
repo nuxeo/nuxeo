@@ -10,6 +10,29 @@
     </c:when>
 
     <c:otherwise>
+      <div class="warningFeedback">
+        <p>
+          <h:outputText
+            value="#{messages['user.center.nuxeoDrive.upgradeWarning']}" />
+        </p>
+        <div style="padding-left: 0.8em;">
+          <h:outputText
+            value="1. #{messages['user.center.nuxeoDrive.upgradeWarning.step1']}" />
+          <br/>
+          <h:outputText
+            value="2. #{messages['user.center.nuxeoDrive.upgradeWarning.step2']}" />
+          <ul class="visibleList">
+            <li>
+              <h:outputText
+                value="#{messages['user.center.nuxeoDrive.upgradeWarning.windows']}" />
+            </li>
+            <li>
+              <h:outputText
+                value="#{messages['user.center.nuxeoDrive.upgradeWarning.osx']}" />
+            </li>
+          </ul>
+        </div>
+      </div>
       <p>
         <h:outputText
           value="#{messages['user.center.nuxeoDrive.helpDesktopInstall']}" />
