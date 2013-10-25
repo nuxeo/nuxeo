@@ -38,14 +38,14 @@
 
     For the second possibility (metadata given a list of documents), you just have to contribute:
     <code>
-      <documentMetadataGroupComuter xpath="dc:title" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
+      <documentMetadataGroupComputer xpath="dc:title" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
     </code>
 
     Here, we select documents created by the user. For each document found, we affect the group creator_xxx where xxx
     is the title of the document. But you can also try this:
 
     <code>
-      <documentMetadataGroupComuter xpath="ecm:uuid" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
+      <documentMetadataGroupComputer xpath="ecm:uuid" whereClause="dc:creator = '%s'" groupPattern="creator_%s" name="creator_cg"/>
     </code>
 
     Here, xxx is replaced by the id of the document. XPath value is based on NXQL query and fetch selector. See the NXQL documentation

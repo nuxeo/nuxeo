@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 /**
  * @since 5.7.3
  */
-@XObject("documentMetadataGroupComuter")
+@XObject("documentMetadataGroupComputer")
 public class DocumentMetadataGroupComputerDescriptor extends
         GroupComputerDescriptor {
 
