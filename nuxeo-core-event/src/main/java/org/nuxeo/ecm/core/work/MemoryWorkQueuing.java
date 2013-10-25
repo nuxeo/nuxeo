@@ -176,7 +176,8 @@ public class MemoryWorkQueuing implements WorkQueuing {
 
     @Override
     public State getWorkState(String workId) {
-        if (isScheduled(workId)) {
+        // TODO this is linear, but isScheduled is buggy
+        if (findScheduled(workId) != null) {
             return State.SCHEDULED;
         }
         if (isRunning(workId)) {
@@ -248,6 +249,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
         return completed == null ? 0 : completed.size();
     }
 
+    // TODO fix this, q.containsWorkId is not actually properly thread-safe
     protected synchronized boolean isScheduled(String workId) {
         for (BlockingQueue<Runnable> scheduled : allScheduled.values()) {
             NuxeoBlockingQueue<Runnable> q = (NuxeoBlockingQueue<Runnable>) scheduled;
