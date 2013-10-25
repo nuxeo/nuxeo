@@ -65,6 +65,7 @@
         <event>documentChanged</event>
         <event>documentCreated</event>
         <event>workflowTaskCompleted</event>
+        <event>workflowNewProcessStarted</event>
       </refresh>
       <cacheSize>10</cacheSize>
       <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}
