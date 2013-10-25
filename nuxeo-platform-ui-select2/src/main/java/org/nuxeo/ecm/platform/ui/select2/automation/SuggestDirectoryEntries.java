@@ -139,20 +139,26 @@ public class SuggestDirectoryEntries {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             JSONAdapter other = (JSONAdapter) obj;
-            if (!getOuterType().equals(other.getOuterType()))
+            if (!getOuterType().equals(other.getOuterType())) {
                 return false;
+            }
             if (this.obj == null) {
-                if (other.obj != null)
+                if (other.obj != null) {
                     return false;
-            } else if (!this.obj.equals(other.obj))
+                }
+            } else if (!this.obj.equals(other.obj)) {
                 return false;
+            }
             return true;
         }
 
@@ -189,7 +195,7 @@ public class SuggestDirectoryEntries {
 
         public int getOrder() {
             return isRoot ? -1
-                    : obj.optInt((Select2Common.DIRECTORY_ORDER_FIELD_NAME));
+                    : obj.optInt(Select2Common.DIRECTORY_ORDER_FIELD_NAME);
         }
 
         private SuggestDirectoryEntries getOuterType() {
@@ -462,8 +468,9 @@ public class SuggestDirectoryEntries {
             for (DocumentModel entry : entries) {
                 JSONAdapter adapter = new JSONAdapter(session, schema, entry);
                 if (!filterParent && isChained && parentDirectory == null) {
-                    if (!adapter.isLeaf())
+                    if (!adapter.isLeaf()) {
                         continue;
+                    }
                 }
 
                 if (prefix != null && !prefix.isEmpty() && postFilter) {
