@@ -119,19 +119,20 @@
   }
 
   function fillResult(results, data, params) {
-    if ((params.directoryName && params.directoryName.length > 0)
-        || params.operationId == 'UserGroup.Suggestion') {
+    if (typeof(data.length) != "undefined") {
       // default result parsing for Directory entries
       for (i = 0; i < data.length; i++) {
         var entry = data[i];
         results.push(entry);
       }
-    } else {
+    } else if (typeof(data.entries) != "undefined") {
       // default result parsing for Documents
       for (i = 0; i < data.entries.length; i++) {
         var doc = data.entries[i];
         results.push(doc);
       }
+    } else {
+      alert("Error with suggestion widget");
     }
   }
 
