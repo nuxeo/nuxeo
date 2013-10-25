@@ -55,6 +55,9 @@ public class NXRadioRenderer extends RadioRenderer {
         Object curValue = selectOne.getSubmittedValue();
         if (curValue == null) {
             curValue = selectOne.getValue();
+            if (converter != null) {
+                curValue = converter.getAsString(context, component, curValue);
+            }
         }
 
         if (alignVertical) {
