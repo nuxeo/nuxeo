@@ -7,5 +7,6 @@ Bundle-Localization: bundle
 Require-Bundle: org.nuxeo.ecm.automation.core
 Export-Package: org.nuxeo.ecm.automation.core
 Eclipse-LazyStart: true
-Nuxeo-Component: OSGI-INF/operations-contrib.xml
+Nuxeo-Component: OSGI-INF/operations-contrib.xml,
+ OSGI-INF/pageprovider-contrib.xml
 Bundle-Activator: org.nuxeo.ecm.automation.features.Activator

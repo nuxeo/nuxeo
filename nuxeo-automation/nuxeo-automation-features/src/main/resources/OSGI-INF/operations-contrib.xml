@@ -11,6 +11,8 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.AuditQuery" />
     <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.AuditPageProviderOperation" />
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.services.CreateRelation" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.GetRelations" />
@@ -139,4 +141,14 @@
     </chain>
   </extension>
 
+  <extension target="org.nuxeo.ecm.automation.server.AutomationServer"
+    point="bindings">
+    <!-- don't allow direct access to Audit log -->
+    <binding name="Audit.Query">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="Audit.PageProvider">
+      <administrator>true</administrator>
+    </binding>
+  </extension>
 </component>

@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.core.util.BlobList;
+import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
 import org.nuxeo.ecm.automation.jaxrs.DefaultJsonAdapter;
 import org.nuxeo.ecm.automation.jaxrs.JsonAdapter;
@@ -92,6 +93,8 @@ public class ResponseHelper {
                 || (result instanceof JsonAdapter)) {
             return result;
         } else if (result instanceof RecordSet) {
+            return result;
+        } else if (result instanceof Paginable<?>) {
             return result;
         } else { // try to adapt to JSON
             return new DefaultJsonAdapter(result);
