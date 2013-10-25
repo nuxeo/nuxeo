@@ -15,7 +15,7 @@
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="DamSearch">
           <fixedPart>
-            ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation'
+            ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0
             AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
@@ -100,6 +100,7 @@
           </predicate>
           <fixedPart>
             ecm:mixinType = 'DamSearch'
+            AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
             AND ecm:parentId = ?
           </fixedPart>
