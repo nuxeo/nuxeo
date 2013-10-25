@@ -67,7 +67,7 @@ public class JsonMarshalling {
     protected static final Log log = LogFactory.getLog(JsonMarshalling.class);
 
     /**
-     * 
+     *
      * @author matic
      * @since 5.5
      */
@@ -290,7 +290,8 @@ public class JsonMarshalling {
                 return mapper.readValue(jp, loadClass);
             } catch (ClassNotFoundException e) {
                 log.warn("No marshaller for " + etype
-                        + " and not a valid Java class name either.", e);
+                        + " and not a valid Java class name either.");
+                jp = factory.createJsonParser(content);
                 return jp.readValueAsTree();
             }
         }
