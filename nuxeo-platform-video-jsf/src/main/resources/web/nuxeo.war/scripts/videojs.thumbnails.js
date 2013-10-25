@@ -28,8 +28,8 @@
    */
   videojs.plugin('thumbnails', function(options) {
     var div, settings, img, player, progressControl, duration;
-    settings = extend({}, defaults, options);
-    player = this;
+    var settings = extend({}, defaults, options);
+    var player = this;
 
     // create the thumbnail
     div = document.createElement('div');
@@ -42,7 +42,7 @@
     // center the thumbnail over the cursor if an offset wasn't provided
     if (!img.style.left && !img.style.right) {
       img.onload = function() {
-        img.style.left = -(img.naturalWidth / 2) + 'px';
+        img.style.left = -((img.naturalWidth || img.width) / 2) + 'px';
       }
     };
 
@@ -57,15 +57,14 @@
     progressControl.el().appendChild(div);
 
     // update the thumbnail while hovering
-    progressControl.el().addEventListener('mousemove', function(event) {
-
+    function updateThumbnail(event) {
       var mouseTime, time, active, left, setting;
       active = 0;
 
       // find the page offset of the mouse
       left = event.pageX || (event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft);
       // subtract the page offset of the progress control
-      left -= progressControl.el().getBoundingClientRect().left +  (window.scrollX || window.pageXOffset);
+      left -= progressControl.el().getBoundingClientRect().left +  (window.scrollX || window.pageXOffset || document.body.scrollLeft);
       div.style.left = left + 'px';
 
       var x = event.offsetX==undefined?event.layerX:event.offsetX;
@@ -86,6 +85,12 @@
       if (setting.style && img.style != setting.style) {
         extend(img.style, setting.style);
       }
-    }, false);
+    }
+
+    if (document.addEventListener) {
+      progressControl.el().addEventListener('mousemove', updateThumbnail, false);
+    } else if (document.attachEvent) {
+      progressControl.el().attachEvent('onmousemove', updateThumbnail);
+    }
   });
 })();
