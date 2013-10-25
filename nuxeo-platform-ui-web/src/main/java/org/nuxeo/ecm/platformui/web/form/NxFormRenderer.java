@@ -42,7 +42,7 @@ public class NxFormRenderer extends FormRenderer {
     public static final String DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG = "doubleClickShielded";
 
     protected static boolean isDoubleShieldEnabled() {
-        return Framework.isBooleanPropertyTrue(ENABLE_DOUBLE_CLICK_SHIELD);
+        return !Framework.isBooleanPropertyFalse(ENABLE_DOUBLE_CLICK_SHIELD);
     }
 
     protected static boolean dcDisabledOnElement(UIComponent component) {
