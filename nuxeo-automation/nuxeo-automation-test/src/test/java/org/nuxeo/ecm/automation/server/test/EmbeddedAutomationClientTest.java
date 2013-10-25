@@ -31,6 +31,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
@@ -62,6 +63,8 @@ import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
+import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
+import org.nuxeo.ecm.automation.core.operations.services.AuditPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.AutomationServerComponent;
@@ -73,6 +76,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -98,7 +102,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.automation.test" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml",
         "org.nuxeo.ecm.automation.test:test-mvalues.xml" })
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({EmbeddedAutomationServerFeature.class, AuditFeature.class})
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
@@ -836,4 +840,29 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals("Update", note.getTitle());
     }
 
+    @Test
+    public void logAndThenQueryNoMapping() throws Exception {
+
+        org.junit.Assert.assertNotNull(session);
+
+        OperationRequest logRequest = session.newRequest(AuditLog.ID, new HashMap<String, Object>());
+
+        logRequest.getParameters().put("event", "testing");
+        logRequest.setInput(new PathRef("/"));
+        logRequest.execute();
+
+        OperationRequest  queryRequest = session.newRequest(AuditPageProviderOperation.ID, new HashMap<String, Object>());
+
+        queryRequest.getParameters().put("providerName", "AUDIT_BROWSER");
+        Object result = queryRequest.execute();
+        JsonNode node = (JsonNode)result;
+
+        //System.out.println(result.toString());
+        int count = node.get("currentPageSize").getValueAsInt();
+        JsonNode entries = node.get("entries");
+        for (int i = 0 ; i < count; i++) {
+            org.junit.Assert.assertEquals("logEntry", entries.get(i).get("entity-type").getValueAsText());
+        }
+
+    }
 }
