@@ -42,12 +42,7 @@ empty:
           styleClass="langSelect"
           onchange="Element.next(this).firstChild.click();">
           <f:convertNumber />
-          <f:selectItem itemValue="5" itemLabel="5" />
-          <f:selectItem itemValue="10" itemLabel="10" />
-          <f:selectItem itemValue="20" itemLabel="20" />
-          <f:selectItem itemValue="30" itemLabel="30" />
-          <f:selectItem itemValue="40" itemLabel="40" />
-          <f:selectItem itemValue="50" itemLabel="50" />
+          <f:selectItems value="#{contentViewActions.getPageSizeOptions(contentView)}" />
         </h:selectOneMenu>
         <span style="display: none;">
           <a4j:commandButton value="submit"

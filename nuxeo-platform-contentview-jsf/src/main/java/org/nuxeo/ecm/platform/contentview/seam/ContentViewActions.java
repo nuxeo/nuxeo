@@ -20,9 +20,13 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -34,6 +38,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewCache;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
 
 /**
  * Handles cache and refresh for named content views.
@@ -64,14 +69,20 @@ public class ContentViewActions implements Serializable {
     protected ContentView currentContentView;
 
     /**
-     * Returns the current global content view
+     * Returns the current global content view.
+     * <p>
+     * Current content view is usually the last one displayed on the page, but
+     * this may change depending on calls to
+     * {@link #setCurrentContentView(ContentView)}.
      */
     public ContentView getCurrentContentView() {
         return currentContentView;
     }
 
     /**
-     * Sets the current global content view
+     * Sets the current global content view.
+     *
+     * @see #getCurrentGlobalPageSize()
      */
     public void setCurrentContentView(ContentView cv) {
         currentContentView = cv;
@@ -82,7 +93,8 @@ public class ContentViewActions implements Serializable {
      * content view if set.
      */
     public Long getCurrentGlobalPageSize() {
-        if (globalPageSize == null && currentContentView != null) {
+        if (currentContentView != null
+                && currentContentView.getUseGlobalPageSize()) {
             return currentContentView.getCurrentPageSize();
         }
         return globalPageSize;
@@ -101,6 +113,61 @@ public class ContentViewActions implements Serializable {
      */
     public Long getGlobalPageSize() {
         return globalPageSize;
+    }
+
+    /**
+     * Returns the list of available options for page size selections, for
+     * given content view.
+     * <p>
+     * This method relies on a hard-coded set of available values, and adapts
+     * it to the current content view page size and max page size information
+     * to present more or less items from this list.
+     *
+     * @since 5.8
+     */
+    @SuppressWarnings("boxing")
+    public List<SelectItem> getPageSizeOptions(ContentView cv) {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        if (cv == null) {
+            return items;
+        }
+        List<Long> values = new ArrayList<Long>(Arrays.asList(5L, 10L, 20L,
+                30L, 40L, 50L));
+        if (cv.getUseGlobalPageSize()) {
+            // add the global page size if not present
+            Long globalSize = getGlobalPageSize();
+            if (globalSize != null && globalSize > 0
+                    && !values.contains(globalSize)) {
+                values.add(globalSize);
+            }
+        }
+        long maxPageSize = 0;
+        PageProvider<?> pp = cv.getCurrentPageProvider();
+        if (pp != null) {
+            // include the actual page size of page provider if not present
+            long ppsize = pp.getPageSize();
+            if (ppsize > 0 && !values.contains(ppsize)) {
+                values.add(Long.valueOf(ppsize));
+            }
+            maxPageSize = pp.getMaxPageSize();
+        }
+        Collections.sort(values);
+        for (Long value : values) {
+            // remove every element that would be larger than max page size
+            if (maxPageSize > 0 && maxPageSize < value) {
+                break;
+            }
+            items.add(new SelectItem(value));
+        }
+        // make sure the list is not empty
+        if (items.isEmpty()) {
+            if (maxPageSize > 0) {
+                items.add(new SelectItem(maxPageSize));
+            } else {
+                items.add(new SelectItem(1));
+            }
+        }
+        return items;
     }
 
     /**

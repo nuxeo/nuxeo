@@ -395,11 +395,18 @@ public class ContentViewImpl implements ContentView,
     }
 
     public Long getCurrentPageSize() {
+        // take actual value on page provider first in case it's reached its
+        // max page size
+        if (pageProvider != null) {
+            long pageSize = pageProvider.getPageSize();
+            long maxPageSize = pageProvider.getMaxPageSize();
+            if (pageSize > 0 && maxPageSize > 0 && maxPageSize < pageSize) {
+                return Long.valueOf(maxPageSize);
+            }
+            return Long.valueOf(pageSize);
+        }
         if (currentPageSize != null && currentPageSize.longValue() >= 0) {
             return currentPageSize;
-        }
-        if (pageProvider != null) {
-            return Long.valueOf(pageProvider.getPageSize());
         }
         return null;
     }
