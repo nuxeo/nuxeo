@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="SerialDocumentReview">
+  <system>
+    <type>DocumentRoute</type>
+    <path>SerialDocumentReview</path>
+    <lifecycle-state>validated</lifecycle-state>
+    <lifecycle-policy>documentRouteElement</lifecycle-policy>
+    <facet>DocumentRoute</facet>
+    <facet>Orderable</facet>
+    <facet>StepFolder</facet>
+    <facet>facet-var_SerialDocumentReview</facet>
+    <access-control/>
+  </system>
+  <schema xmlns:var_SerialDocumentReview="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_SerialDocumentReview" name="var_SerialDocumentReview">
+    <var_SerialDocumentReview:initiatorComment/>
+    <var_SerialDocumentReview:participants/>
+    <var_SerialDocumentReview:validationOrReview/>
+    <var_SerialDocumentReview:index/>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator/>
+    <dc:source/>
+    <dc:nature/>
+    <dc:contributors/>
+    <dc:created/>
+    <dc:description/>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified/>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor/>
+    <dc:title><![CDATA[wf.serialDocumentReview.SerialDocumentReview]]></dc:title>
+  </schema>
+  <schema xmlns:docri="http://www.nuxeo.org/ecm/schemas/document_route_instance/" name="document_route_instance">
+    <docri:initiator/>
+    <docri:variablesFacet><![CDATA[facet-var_SerialDocumentReview]]></docri:variablesFacet>
+    <docri:participatingDocuments/>
+    <docri:availabilityFilter><![CDATA[filter@SerialDocumentReview]]></docri:availabilityFilter>
+  </schema>
+  <schema xmlns:stepf="http://www.nuxeo.org/ecm/schemas/step_folder" name="step_folder">
+    <stepf:execution><![CDATA[graph]]></stepf:execution>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon/>
+    <common:icon-expanded/>
+    <common:size/>
+  </schema>
+  <schema xmlns:docrm="http://www.nuxeo.org/ecm/schemas/document_route_model" name="document_route_model"></schema>
+</document>

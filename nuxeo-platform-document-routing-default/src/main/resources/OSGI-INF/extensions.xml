@@ -2,7 +2,95 @@
 
 <component name="studio.extensions.nuxeo-routing-default" version="1.0.0">
 
+  <extension target="org.nuxeo.runtime.services.resource.ResourceService" point="resources">
+    <resource name="NRD-PR-TasksInfo">data/templates/NRD-PR-TasksInfo</resource>
+  </extension>
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
+    <chain id="NRD-AC-PR-ChooseParticipants-Output">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.RunOperation">
+        <param type="string" name="id">NRD-AC-PR-LockDocument</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">initiatorComment</param>
+        <param type="object" name="value">expr:NodeVariables["comment"]</param>
+      </operation>
+    </chain>
+    <chain id="NRD-AC-PR-LockDocument">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Auth.LoginAs">
+        <param type="string" name="name">expr:workflowInitiator</param>
+      </operation>
+      <operation id="Document.Lock"/>
+    </chain>
+    <chain id="NRD-AC-PR-UnlockDocument">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Document.Unlock"/>
+    </chain>
+    <chain id="NRD-AC-PR-ValidateNode-Output">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.RunOperation">
+        <param type="string" name="id">NRD-AC-PR-UnlockDocument</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+      <operation id="Context.RunOperation">
+        <param type="string" name="id">logInAudit</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+    </chain>
+    <chain id="NRD-AC-PR-force-validate">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Auth.LoginAs">
+        <param type="string" name="name">expr:Context["workflowInitiator"]</param>
+      </operation>
+      <operation id="Audit.Log">
+        <param type="string" name="event">Consultation time excedeed</param>
+        <param type="string" name="category">Review workflow</param>
+        <param type="string" name="comment">Some consultation tasks were aborted by the system as they received no feedback message.</param>
+      </operation>
+      <operation id="Workflow.ResumeNodeOperation"/>
+    </chain>
+    <chain id="NRD-AC-PR-storeTaskInfo">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.RunScript">
+        <param type="string" name="script">This[0]</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">tasksInfo</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"]</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberNA</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"].getNumberEndedWithStatus("NA")</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberRejected</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"].getNumberEndedWithStatus("reject")</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberApproved</param>
+        <param type="object" name="value">expr:NodeVariables["tasks"].getNumberEndedWithStatus("approve")</param>
+      </operation>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">numberOfTasks</param>
+        <param type="object" name="value">expr:NodeVariables["numberOfTasks"]</param>
+      </operation>
+      <operation id="Render.Document">
+        <param type="string" name="template">template:NRD-PR-TasksInfo</param>
+        <param type="string" name="filename">output.ftl</param>
+        <param type="string" name="mimetype">text/xml</param>
+        <param type="string" name="type">ftl</param>
+      </operation>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">review_result_file</param>
+        <param type="object" name="value">expr:This.get(0)</param>
+      </operation>
+      <operation id="Context.SetWorkflowVar">
+        <param type="string" name="name">review_result</param>
+        <param type="object" name="value">expr:This.get(0).getString()</param>
+      </operation>
+    </chain>
     <chain id="initInitiatorComment">
       <operation id="Context.RunScript">
         <param type="string" name="script">if((NodeVariables["comment"] != "") AND (NodeVariables["comment"] != null)){
@@ -37,6 +125,7 @@ else if (NodeVariables["button"] == "submit") {
         <param type="string" name="subject">expr:@{Env["nuxeo.notification.eMailSubjectPrefix"]} Document approved</param>
         <param type="stringlist" name="to">expr:Fn.getEmail(workflowInitiator)</param>
         <param type="boolean" name="HTML">false</param>
+        <param type="boolean" name="rollbackOnError">true</param>
         <param type="string" name="viewId">view_documents</param>
       </operation>
     </chain>
@@ -97,35 +186,164 @@ NodeVariables["comment"]= null;}</param>
   <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">
     <directory name="WorkflowType" layout="vocabulary" sortField="label"/>
   </extension>
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="var_Task375f" prefix="var_Task375f" src="data/schemas/var_Task375f.xsd"/>
-    <schema name="var_Task38e" prefix="var_Task38e" src="data/schemas/var_Task38e.xsd"/>
-    <schema name="var_Task542" prefix="var_Task542" src="data/schemas/var_Task542.xsd"/>
-    <schema name="var_Task5c1" prefix="var_Task5c1" src="data/schemas/var_Task5c1.xsd"/>
-    <schema name="var_Task6d8" prefix="var_Task6d8" src="data/schemas/var_Task6d8.xsd"/>
-    <schema name="var_SerialDocumentReview" prefix="var_SerialDocumentReview" src="data/schemas/var_SerialDocumentReview.xsd"/>
-  </extension>
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-    <facet name="facet-var_Task375f">
-      <schema name="var_Task375f"/>
-    </facet>
-    <facet name="facet-var_Task38e">
-      <schema name="var_Task38e"/>
-    </facet>
-    <facet name="facet-var_Task542">
-      <schema name="var_Task542"/>
-    </facet>
-    <facet name="facet-var_Task5c1">
-      <schema name="var_Task5c1"/>
-    </facet>
-    <facet name="facet-var_Task6d8">
-      <schema name="var_Task6d8"/>
-    </facet>
-    <facet name="facet-var_SerialDocumentReview">
-      <schema name="var_SerialDocumentReview"/>
-    </facet>
-  </extension>
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
+    <layout name="Task2169@taskLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>review_result</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>comment</widget>
+        </row>
+      </rows>
+      <widget name="review_result" type="htmltext">
+        <labels>
+          <label mode="any">wf.parallelDocumentReview.validate.form.review_brief</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['review_result']</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="comment" type="textarea">
+        <labels>
+          <label mode="any">wf.parallelDocumentReview.comment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['comment']</field>
+        </fields>
+      </widget>
+    </layout>
+    <layout name="Task2556@taskLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>participants</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>comment</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>end_date</widget>
+        </row>
+      </rows>
+      <widget name="participants" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">wf.parallelDocumentReview.ParticipantsOnTheReview</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['participants']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="orderable">true</property>
+          <property name="placeholder">label.security.search</property>
+          <property name="width">300</property>
+          <property name="prefixed">true</property>
+          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
+        </properties>
+      </widget>
+      <widget name="comment" type="textarea">
+        <labels>
+          <label mode="any">wf.parallelDocumentReview.comment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['comment']</field>
+        </fields>
+      </widget>
+      <widget name="end_date" type="datetime">
+        <labels>
+          <label mode="any">wf.parallelDocumentReview.endDate</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">wf.parallelDocumentReview.endDate.help</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>['end_date']</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">#{request.getParameter('button') == 'start_review'}</property>
+        </properties>
+      </widget>
+    </layout>
+    <layout name="Task328d@taskLayout">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>initiatorComment</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget>comment</widget>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+        <row>
+          <properties mode="any">
+            <property name="nxl_colspan_0">1</property>
+          </properties>
+          <widget/>
+        </row>
+      </rows>
+      <widget name="initiatorComment" type="textarea">
+        <labels>
+          <label mode="any">wf.parallelDocumentReview.initiatorComment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['initiatorComment']</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="comment" type="textarea">
+        <labels>
+          <label mode="any">wf.parallelDocumentReview.reviewerComment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>['comment']</field>
+        </fields>
+      </widget>
+    </layout>
     <layout name="Task38e@taskLayout">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -282,15 +500,93 @@ NodeVariables["comment"]= null;}</param>
       </widget>
     </layout>
   </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="var_Task2169" prefix="var_Task2169" src="data/schemas/var_Task2169.xsd"/>
+    <schema name="var_Task21a0" prefix="var_Task21a0" src="data/schemas/var_Task21a0.xsd"/>
+    <schema name="var_Task2225" prefix="var_Task2225" src="data/schemas/var_Task2225.xsd"/>
+    <schema name="var_Task22b4" prefix="var_Task22b4" src="data/schemas/var_Task22b4.xsd"/>
+    <schema name="var_Task232e" prefix="var_Task232e" src="data/schemas/var_Task232e.xsd"/>
+    <schema name="var_Task2556" prefix="var_Task2556" src="data/schemas/var_Task2556.xsd"/>
+    <schema name="var_Task328d" prefix="var_Task328d" src="data/schemas/var_Task328d.xsd"/>
+    <schema name="var_ParallelDocumentReview" prefix="var_ParallelDocumentReview" src="data/schemas/var_ParallelDocumentReview.xsd"/>
+    <schema name="var_Task375f" prefix="var_Task375f" src="data/schemas/var_Task375f.xsd"/>
+    <schema name="var_Task38e" prefix="var_Task38e" src="data/schemas/var_Task38e.xsd"/>
+    <schema name="var_Task542" prefix="var_Task542" src="data/schemas/var_Task542.xsd"/>
+    <schema name="var_Task5c1" prefix="var_Task5c1" src="data/schemas/var_Task5c1.xsd"/>
+    <schema name="var_Task6d8" prefix="var_Task6d8" src="data/schemas/var_Task6d8.xsd"/>
+    <schema name="var_SerialDocumentReview" prefix="var_SerialDocumentReview" src="data/schemas/var_SerialDocumentReview.xsd"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="facet-var_Task2169">
+      <schema name="var_Task2169"/>
+    </facet>
+    <facet name="facet-var_Task21a0">
+      <schema name="var_Task21a0"/>
+    </facet>
+    <facet name="facet-var_Task2225">
+      <schema name="var_Task2225"/>
+    </facet>
+    <facet name="facet-var_Task22b4">
+      <schema name="var_Task22b4"/>
+    </facet>
+    <facet name="facet-var_Task232e">
+      <schema name="var_Task232e"/>
+    </facet>
+    <facet name="facet-var_Task2556">
+      <schema name="var_Task2556"/>
+    </facet>
+    <facet name="facet-var_Task328d">
+      <schema name="var_Task328d"/>
+    </facet>
+    <facet name="facet-var_ParallelDocumentReview">
+      <schema name="var_ParallelDocumentReview"/>
+    </facet>
+    <facet name="facet-var_Task375f">
+      <schema name="var_Task375f"/>
+    </facet>
+    <facet name="facet-var_Task38e">
+      <schema name="var_Task38e"/>
+    </facet>
+    <facet name="facet-var_Task542">
+      <schema name="var_Task542"/>
+    </facet>
+    <facet name="facet-var_Task5c1">
+      <schema name="var_Task5c1"/>
+    </facet>
+    <facet name="facet-var_Task6d8">
+      <schema name="var_Task6d8"/>
+    </facet>
+    <facet name="facet-var_SerialDocumentReview">
+      <schema name="var_SerialDocumentReview"/>
+    </facet>
+  </extension>
   <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
+    <template-resource id="ParallelDocumentReview" path="data/ParallelDocumentReview.zip"/>
     <template-resource id="SerialDocumentReview" path="data/SerialDocumentReview.zip"/>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="filter@wf@ParallelDocumentReview">
+      <rule grant="true">
+        <permission>ReadWrite</permission>
+        <type>Audio</type>
+        <type>File</type>
+        <type>Note</type>
+        <type>Picture</type>
+        <type>Video</type>
+        <condition>#{!currentDocument.locked}</condition>
+      </rule>
+      <rule grant="false">
+        <condition>document.isImmutable()</condition>
+      </rule>
+    </filter>
     <filter id="filter@SerialDocumentReview">
       <rule grant="true">
         <permission>ReadWrite</permission>
+        <type>Audio</type>
         <type>File</type>
         <type>Note</type>
+        <type>Picture</type>
+        <type>Video</type>
       </rule>
       <rule grant="false">
         <condition>document.isImmutable()</condition>
