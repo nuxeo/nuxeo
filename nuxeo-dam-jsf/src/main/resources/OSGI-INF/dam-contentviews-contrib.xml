@@ -290,7 +290,6 @@
           </fields>
           <properties widgetMode="edit">
             <property name="searchType">USER_TYPE</property>
-            <property name="width">200</property>
             <property name="minChars">3</property>
             <property name="hideHelpLabel">true</property>
           </properties>
@@ -326,7 +325,6 @@
           </fields>
           <properties widgetMode="any">
             <property name="directoryName">l10nsubjects</property>
-            <property name="width">200</property>
             <property name="dbl10n">true</property>
             <property name="minChars">0</property>
             <property name="hideHelpLabel">true</property>
@@ -344,7 +342,6 @@
           </fields>
           <properties widgetMode="any">
             <property name="directoryName">l10ncoverage</property>
-            <property name="width">200</property>
             <property name="dbl10n">true</property>
             <property name="minChars">0</property>
             <property name="hideHelpLabel">true</property>
