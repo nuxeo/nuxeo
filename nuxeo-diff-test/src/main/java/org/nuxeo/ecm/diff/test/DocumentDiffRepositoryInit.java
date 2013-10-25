@@ -139,7 +139,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
                 getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 28, 23, 00, 00));
         doc.setPropertyValue(
                 "st:htmlText",
-                "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;");
+                "&lt;p&gt;html text with &lt;strong&gt;&lt;span style=\"text-decoration: underline;\"&gt;styles&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;and&lt;/li&gt;\n&lt;li&gt;nice&lt;/li&gt;\n&lt;li&gt;bullets&lt;/li&gt;\n&lt;/ul&gt;");
         doc.setPropertyValue("st:multivalued", new String[] { "monday",
                 "tuesday", "wednesday", "thursday" });
 
