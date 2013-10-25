@@ -17,6 +17,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
@@ -61,6 +63,8 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JsonMarshalling {
+
+    protected static final Log log = LogFactory.getLog(JsonMarshalling.class);
 
     /**
      * 
@@ -285,8 +289,9 @@ public class JsonMarshalling {
                 jp.nextToken(); // value field content
                 return mapper.readValue(jp, loadClass);
             } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException("No marshaller for " + etype
+                log.warn("No marshaller for " + etype
                         + " and not a valid Java class name either.", e);
+                return jp.readValueAsTree();
             }
         }
         return jm.read(jp);
