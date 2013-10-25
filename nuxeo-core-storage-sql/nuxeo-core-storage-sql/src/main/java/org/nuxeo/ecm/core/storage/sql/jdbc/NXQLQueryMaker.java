@@ -167,7 +167,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
     /**
      * These mixins never match an instance mixin when used in a clause
-     * ecm:mixinType = 'foo'
+     * ecm:mixinType = 'foo'. This is in addition to those configured in the
+     * repository descriptor.
      */
     protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(
             Arrays.asList(FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
@@ -183,6 +184,8 @@ public class NXQLQueryMaker implements QueryMaker {
     protected Dialect dialect;
 
     protected Model model;
+
+    protected Set<String> neverPerInstanceMixins;
 
     protected PathResolver pathResolver;
 
@@ -253,6 +256,12 @@ public class NXQLQueryMaker implements QueryMaker {
         dialect = sqlInfo.dialect;
         this.model = model;
         this.pathResolver = pathResolver;
+        neverPerInstanceMixins = new HashSet<String>(MIXINS_NOT_PER_INSTANCE);
+        Set<String> npim = model.getRepositoryDescriptor().neverPerInstanceMixins;
+        if (npim != null) {
+            neverPerInstanceMixins.addAll(npim);
+        }
+
         // transform the query according to the transformers defined by the
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
@@ -1065,7 +1074,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         continue;
                     }
                     String mixin = ((StringLiteral) rvalue).value;
-                    if (!MIXINS_NOT_PER_INSTANCE.contains(mixin)) {
+                    if (!neverPerInstanceMixins.contains(mixin)) {
                         // mixin per instance -> primary type checks not enough
                         continue;
                     }
@@ -1919,7 +1928,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             Set<String> instanceMixins = new HashSet<String>();
             for (String mixin : mixins) {
-                if (!MIXINS_NOT_PER_INSTANCE.contains(mixin)) {
+                if (!neverPerInstanceMixins.contains(mixin)) {
                     instanceMixins.add(mixin);
                 }
             }

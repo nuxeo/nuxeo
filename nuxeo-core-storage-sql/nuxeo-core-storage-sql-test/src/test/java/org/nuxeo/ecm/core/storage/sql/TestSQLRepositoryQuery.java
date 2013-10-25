@@ -1390,7 +1390,21 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         // empty
         session.query("SELECT * FROM Note WHERE ecm:mixinType = 'Folderish'");
+    }
 
+    @Test
+    public void testQueryMixinTypeNotPerDocument() throws Exception {
+        createDocs();
+        DocumentModel file1 = session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        file1.addFacet("NotPerDocFacet");
+        file1 = session.saveDocument(file1);
+        session.save();
+
+        // doc has facet but not found by search
+        // because of repository config
+        DocumentModelList dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet'");
+        assertEquals(0, dml.size());
     }
 
     @Test

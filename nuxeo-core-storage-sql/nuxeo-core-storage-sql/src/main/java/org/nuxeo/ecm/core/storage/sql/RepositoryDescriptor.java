@@ -197,6 +197,9 @@ public class RepositoryDescriptor {
     @XNodeList(value = "indexing/includedTypes/type", type =  HashSet.class, componentType = String.class)
     public Set<String> fulltextIncludedTypes;
 
+    @XNodeList(value = "indexing/neverPerDocumentFacets/facet", type = HashSet.class, componentType = String.class)
+    public Set<String> neverPerInstanceMixins;
+
     @XNode("pathOptimizations@enabled")
     public boolean pathOptimizationsEnabled = true;
 
@@ -251,6 +254,7 @@ public class RepositoryDescriptor {
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
         fulltextIndexes = other.fulltextIndexes;
+        neverPerInstanceMixins = other.neverPerInstanceMixins;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
         aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
