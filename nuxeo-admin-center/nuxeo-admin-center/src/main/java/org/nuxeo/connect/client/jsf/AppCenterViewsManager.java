@@ -29,6 +29,7 @@ import java.util.Properties;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -255,9 +256,8 @@ public class AppCenterViewsManager implements Serializable {
     /**
      * Returns true if Studio snapshot module should be validated.
      * <p>
-     * Validation can be skipped by user, or can be globally disabled by
-     * setting framework property "studio.snapshot.disablePkgValidation" to
-     * true.
+     * Validation can be skipped by user, or can be globally disabled by setting
+     * framework property "studio.snapshot.disablePkgValidation" to true.
      *
      * @since 5.7.1
      */
@@ -282,7 +282,7 @@ public class AppCenterViewsManager implements Serializable {
                 try {
                     PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
                     LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
-                    if (pus != null) {
+                    if (pkg != null) {
                         lastUpdate = pus.getInstallDate(pkg.getId());
                     }
                 } catch (PackageException e) {
@@ -366,8 +366,11 @@ public class AppCenterViewsManager implements Serializable {
         public void run() {
             try {
                 if (validate) {
-                    DownloadablePackage remotePkg = pm.findPackageById(packageId);
+                    pm.flushCache();
+                    DownloadablePackage remotePkg = pm.findRemotePackageById(packageId);
                     String[] targetPlatforms = remotePkg.getTargetPlatforms();
+                    log.debug(String.format("%s target platforms: %s",
+                            remotePkg, ArrayUtils.toString(targetPlatforms)));
                     PackageDependency[] pkgDeps = remotePkg.getDependencies();
 
                     ValidationStatus status = new ValidationStatus();
