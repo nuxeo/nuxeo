@@ -749,7 +749,7 @@
           <widget>mail.transport.auth</widget>
         </row>
         <row>
-          <widget>mail.transport.user</widget>
+          <widget>mail.transport.username</widget>
         </row>
         <row>
           <widget>mail.transport.password</widget>
@@ -909,13 +909,13 @@
           <property name="ajaxSingle">true</property>
         </properties>
       </widget>
-      <widget name="mail.transport.user" type="text">
+      <widget name="mail.transport.username" type="text">
         <labels>
           <label mode="any">label.setup.mail.transport.user</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.transport.user']</field>
+          <field>['mail.transport.username']</field>
         </fields>
         <properties widgetMode="any">
           <property name="rendered">
