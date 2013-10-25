@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
@@ -44,6 +46,8 @@ import com.google.common.collect.Maps;
  */
 public class VideoDocumentAdapter implements VideoDocument {
 
+    private static final Log log = LogFactory.getLog(VideoDocumentAdapter.class);
+
     private final DocumentModel doc;
 
     private final Video video;
@@ -63,8 +67,15 @@ public class VideoDocumentAdapter implements VideoDocument {
             Map<String, Serializable> videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue("vid:info");
             if (videoInfoMap == null || videoInfoMap.get("duration") == null) {
                 // Lazy extraction of video info if missing.
-                VideoHelper.updateVideoInfo(doc, blob);
-                videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue("vid:info");
+                try {
+                    VideoHelper.updateVideoInfo(doc, blob);
+                    videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue("vid:info");
+                } catch (ClientException e) {
+                    // may happen if ffmpeg is not installed
+                    log.error(String.format(
+                            "Unable to retrieve video info: %s", e.getMessage()));
+                    log.debug(e, e);
+                }
             }
             VideoInfo videoInfo = VideoInfo.fromMap(videoInfoMap);
             video = Video.fromBlobAndInfo(blob, videoInfo);
