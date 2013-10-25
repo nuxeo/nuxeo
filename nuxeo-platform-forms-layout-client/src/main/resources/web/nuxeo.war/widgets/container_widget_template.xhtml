@@ -54,7 +54,7 @@
   <a4j:outputPanel id="#{ajaxPanelId}" layout="block">
 
   <ui:decorate template="/widgets/incl/foldable_box_template.xhtml">
-    <ui:param name="hideHeader" value="#{not showHeader or empty widget.label}" />
+    <ui:param name="hideHeader" value="#{not showHeader}" />
     <ui:param name="foldable" value="#{widgetProperty_foldable}" />
     <ui:param name="foldedByDefault" value="#{widgetProperty_foldedByDefault}" />
     <ui:param name="foldableStyleClass" value="widgetPanel containerWidgetPanel #{widgetProperty_styleClass}" />
