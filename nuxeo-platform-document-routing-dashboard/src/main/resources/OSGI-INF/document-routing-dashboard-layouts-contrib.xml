@@ -395,7 +395,7 @@
           <widget>task_dueDate_max</widget>
         </row>
       </rows>
-      <widget name="task_name" type="text">
+      <widget name="task_name" type="select2Widget">
         <labels>
           <label mode="any">label.workflow.task.name</label>
         </labels>
@@ -403,6 +403,14 @@
         <fields>
           <field>user_open_tasks_cv:task_name</field>
         </fields>
+        <properties mode="any">
+          <property name="operationId">Context.GetTaskNames</property>
+          <property name="minChars">0</property>
+          <property name="idProperty">nt:name</property>
+          <property name="initOperationId">Context.GetTaskNames</property>
+          <property name="labelProperty">dc:title</property>
+          <property name="documentSchemas">task,dublincore</property>
+        </properties>
       </widget>
       <widget name="task_dueDate_min" type="datetime">
         <labels>
