@@ -2891,6 +2891,10 @@ vjs.Player.prototype.duration = function(seconds){
     return this;
   }
 
+  // force duration update
+  if (typeof this.cache_.duration !== 'number') {
+    this.cache_.duration = parseFloat(this.techGet('duration'));
+  }
   return this.cache_.duration;
 };
 
