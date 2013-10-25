@@ -44,7 +44,7 @@
       </labels>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
-        <control name="handlingLabels">true</control>
+        <control name="handleLabels">true</control>
       </controls>
     </widget>
 
