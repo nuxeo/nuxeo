@@ -47,7 +47,7 @@ boolean useExternalProviders = providers!=null && providers.size()>0;
 boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
 
-String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') repeat scroll bottom left #cadfc0");
+String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') no-repeat scroll bottom left #333");
 String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0 #fff");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
@@ -82,15 +82,14 @@ body {
   background: <%=bodyBackgroundStyle%>;
   color: #343434;
   margin: 0;
-  text-align: center;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover; }
+  text-align: center }
 
 .leftColumn {
   width: 400px
 }
+
+.container {
+  min-height: 670px }
 
 /* Header */
 .topBar {
@@ -137,18 +136,18 @@ body {
 /* Login block */
 .login {
   background: <%=loginBoxBackgroundStyle%>;
-  border-radius: 8px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-  margin-left: 10em;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border-radius: 3px;
   filter: alpha(opacity = 90);
+  margin-top: 80px;
   opacity: 0.9;
-  padding: 1.5em 0 1em;
-  width: 22em
-}
+  padding: 1.5em 1em 1em;
+  width: 300px }
 
 .login_label {
   color: #454545;
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: bold;
   padding: 0 0.5em 0 0
 }
@@ -159,7 +158,7 @@ body {
   box-shadow: 1px 1px 2px #e0e0e0 inset;
   padding: .3em;
   margin: 0 0 .4em;
-  width: 14.5em
+  width: 160px
 }
 
 .login_button {
@@ -169,7 +168,7 @@ body {
   box-shadow: 0 10px 8px #fff inset;
   color: #000;
   cursor: pointer;
-  font-size: .8em;
+  font-size: 12px;
   font-weight: bold;
   margin: 0 .9em .9em 0;
   padding: .2em .6em;
@@ -297,10 +296,10 @@ body {
 
 <body>
 <!-- Locale: <%= selectedLanguage %> -->
-<table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%" class="container">
   <tbody>
     <tr class="topBar">
-      <td>
+      <td align="left">
         <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
       </td>
       <td align="right" class="leftColumn">
@@ -407,7 +406,7 @@ body {
               </tr>
               <tr>
                 <td></td>
-                <td>
+                <td align="left">
                   <% // label.login.logIn %>
                   <% if (selectedLanguage != null) { %>
                   <input type="hidden" name="language"
