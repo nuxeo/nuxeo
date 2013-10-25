@@ -81,6 +81,3 @@ nuxeo.freemarker_parsing_extensions=nxftl
 
 session.timeout=60
 
-# Enable double click shield. Might be disabled for 5.8 release
-nuxeo.jsf.enableDoubleClickShield=true
-
