@@ -278,14 +278,16 @@ public class AppCenterViewsManager implements Serializable {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
             DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
-            try {
-                LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
-                if (pus != null) {
-                    lastUpdate = pus.getInstallDate(pkg.getId());
+            if (snapshotPkg != null) {
+                try {
+                    PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+                    LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
+                    if (pus != null) {
+                        lastUpdate = pus.getInstallDate(pkg.getId());
+                    }
+                } catch (PackageException e) {
+                    log.error(e);
                 }
-            } catch (PackageException e) {
-                log.error(e);
             }
             return lastUpdate != null ? lastUpdate : "Not installed";
         } else {
@@ -297,13 +299,15 @@ public class AppCenterViewsManager implements Serializable {
         if (studioSnapshotStatus == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
-            DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
-            PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
             LocalPackage pkg = null;
-            try {
-                pkg = pus.getPackage(snapshotPkg.getId());
-            } catch (PackageException e) {
-                log.error(e);
+            DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
+            if (snapshotPkg != null) {
+                try {
+                    PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
+                    pkg = pus.getPackage(snapshotPkg.getId());
+                } catch (PackageException e) {
+                    log.error(e);
+                }
             }
             if (pkg == null) {
                 return translate(LABEL_STUDIO_UPDATE_STATUS + "noStatus");
