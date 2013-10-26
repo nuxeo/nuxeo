@@ -353,7 +353,7 @@ public class AppCenterViewsManager implements Serializable {
                     Calendar date = toCalendar(update);
                     DateFormat df = new SimpleDateFormat(
                             "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-                    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    df.setTimeZone(TimeZone.getDefault());
                     params = new Object[] { df.format(date.getTime()) };
                 } catch (ParseException e) {
                     params = new Object[] { String.format(
