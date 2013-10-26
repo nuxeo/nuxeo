@@ -14,11 +14,14 @@
 <nxu:set var="onclick"
   value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
   cache="true">
+<nxu:set var="tabIds"
+  value="#{parentTabActionCategory}:#{action.id}"
+  cache="true">
 
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
-    tabs="#{fullCategory}:#{action.id}"
+    tabs="#{tabIds}"
     addTabInfo="false"
     accesskey="#{action.accessKey}"
     id="#{widget.id}"
@@ -40,7 +43,7 @@
 
     <nxd:restDocumentLink
       document="#{fieldOrValue}"
-      tabs="#{fullCategory}:#{action.id}"
+      tabs="#{tabIds}"
       addTabInfo="false"
       accesskey="#{action.accessKey}"
       id="#{widget.id}_restLink"
@@ -50,9 +53,9 @@
       <c:if test="#{empty elementsToReRender}">
         <a4j:commandLink
           id="#{widget.id}"
-          action="#{webActions.setCurrentTabAction(action.id)}"
+          action="#{webActions.setCurrentTabIds(tabIds)}"
           accesskey="#{action.accessKey}"
-          onbeforedomupdate="history.pushState(null, '#{action.id}', '#{nxu:javaScriptEscape(docUrl)}');"
+          onbeforedomupdate="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');"
           onclick="#{onclick}"
           ignoreDupResponses="true"
           accessKey="#{action.accessKey}">
@@ -64,10 +67,10 @@
       <c:if test="#{not empty elementsToReRender}">
         <a4j:commandLink
           id="#{widget.id}"
-          action="#{webActions.setCurrentTabAction(action.id)}"
+          action="#{webActions.setCurrentTabIds(tabIds)}"
           accesskey="#{action.accessKey}"
           reRender="#{elementsToReRender}"
-          onbeforedomupdate="history.pushState(null, '#{action.id}', '#{nxu:javaScriptEscape(docUrl)}');"
+          onbeforedomupdate="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');"
           onclick="#{onclick}"
           ignoreDupResponses="true"
           accessKey="#{action.accessKey}">
@@ -83,6 +86,7 @@
 
 </c:if>
 
+</nxu:set>
 </nxu:set>
 
 </c:if>

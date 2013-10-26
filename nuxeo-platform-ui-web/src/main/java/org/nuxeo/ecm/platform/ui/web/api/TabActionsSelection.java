@@ -168,8 +168,13 @@ public class TabActionsSelection implements Serializable {
             subTabToCategories.put(getSubTabCategory(action.getId()), category);
             if (subTabToCategories.containsKey(category)) {
                 // this is a sub action, parent already added
-                actionsToEncode.get(subTabToCategories.get(category)).add(
-                        action);
+                String cat = subTabToCategories.get(category);
+                List<Action> subActions = actionsToEncode.get(cat);
+                if (subActions == null) {
+                    subActions = new ArrayList<Action>();
+                    actionsToEncode.put(cat, subActions);
+                }
+                subActions.add(action);
             } else {
                 List<Action> actionsList = new ArrayList<Action>();
                 actionsList.add(action);

@@ -55,9 +55,17 @@
     <ui:insert name="tab_content">
       <c:if test="#{not empty widgetProperty_currentTabAction.link}">
         <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
+        <nxu:set var="parentTabActionCategoryPrefix"
+          value="#{nxu:test(empty parentTabActionCategoryPrefix, nxu:test(empty parentTabActionCategory, widgetProperty_tabActionCategory, parentTabActionCategory), parenTabActionCategoryPrefix)}"
+          cache="true">
+        <nxu:set var="parentTabActionCategory"
+          value="#{parentTabActionCategoryPrefix}:#{action.id}"
+          cache="true">
           <ui:include src="/incl/action/generic_mode_action_template.xhtml">
             <ui:param name="mode" value="tab_content" />
           </ui:include>
+        </nxu:set>
+        </nxu:set>
         </nxu:set>
       </c:if>
     </ui:insert>
