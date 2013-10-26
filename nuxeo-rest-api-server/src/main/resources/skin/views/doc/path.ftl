@@ -8,7 +8,6 @@
         {
           "method":"GET",
           "nickname":"getDocumentByPath",
-          "responseClass":"Document",
           "type":"Document",
           <@params names = ["docpath","propheader"]/>,
           "summary":"Find a document by its path",
@@ -18,7 +17,7 @@
         {
           "method":"PUT",
           "nickname":"updateDocumentByPath",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["docpath","docbody","propheader"]/>,
           "summary":"Updates a document by its path",
           "notes": "Only documents which you have permission can be updated. Only the properties part of the document object is taken into account for update",
@@ -27,7 +26,6 @@
         {
           "method":"DELETE",
           "nickname":"deleteDocumentByPath",
-          "responseClass":"Document",
           <@params names = ["docpath"]/>,
           "summary":"Deletes a document by its path",
           "notes": "Only documents which you have permission can be deleted",
@@ -36,7 +34,7 @@
         {
           "method":"POST",
           "nickname":"createDocumentByPath",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["docpath","docbody","propheader"]/>,
           "summary":"Creates a document by its parent path",
           "notes": "",
@@ -53,7 +51,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentByPath",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["repoid","docpath","propheader"]/>,
           "summary":"Find a document by its path",
           "notes": "Only documents which you have permission to see will be returned",
@@ -62,7 +60,7 @@
         {
           "method":"PUT",
           "nickname":"updateDocumentByPath",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["repoid","docpath","docbody","propheader"]/>,
           "summary":"Updates a document by its path",
           "notes": "Only documents which you have permission can be updated. Only the properties part of the document object is taken into account for update",
@@ -71,7 +69,6 @@
         {
           "method":"DELETE",
           "nickname":"deleteDocumentByPath",
-          "responseClass":"Document",
           <@params names = ["repoid","docpath"]/>,
           "summary":"Deletes a document by its path",
           "notes": "Only documents which you have permission to see will be returned",
@@ -80,7 +77,7 @@
         {
           "method":"POST",
           "nickname":"createDocumentByPath",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["repoid","docpath","docbody","propheader"]/>,
           "summary":"Creates a document by its parent path",
           "notes": "",

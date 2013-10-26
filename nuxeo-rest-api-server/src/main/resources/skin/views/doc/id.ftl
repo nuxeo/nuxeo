@@ -9,7 +9,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentById",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["docid","propheader"]/>,
           "summary":"Find a document by its id",
           "notes": "Only documents which you have permission to see will be returned",
@@ -18,25 +18,15 @@
         {
           "method":"PUT",
           "nickname":"updateDocumentById",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["docid","docbody","propheader"]/>,
           "summary":"Updates a document by its id",
           "notes": "Only documents which you have permission can be updated. Only the properties part of the document object is taken into account for update",
-          "errorResponses": [
-              {
-                  "reason": "Not Authorized to update document",
-                  "code": 401
-              },
-              {
-                  "reason": "Document not found",
-                  "code": 404
-              }
-          ]
+          <#include "views/doc/errorresponses.ftl"/>
         },
         {
           "method":"DELETE",
           "nickname":"deleteDocumentById",
-          "responseClass":"Document",
           <@params names = ["docid","propheader"]/>,
           "summary":"Deletes a document by its id",
           "notes": "Only documents which you have permission to see will be returned",
@@ -45,6 +35,7 @@
         {
           "method":"POST",
           "nickname":"createDocumentById",
+          "type":"Document",
           <@params names = ["repoid","docbody"]/>,
           "summary":"Creates a document by its parent id",
           "notes": "",
@@ -61,6 +52,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentById",
+          "type":"Document",
           <@params names = ["repoid","docid","propheader"]/>,
           "summary":"Find a document by its id",
           "notes": "Only documents which you have permission to see will be returned",
@@ -69,7 +61,7 @@
         {
           "method":"PUT",
           "nickname":"updateDocumentById",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["repoid","docid","docbody","propheader"]/>,
           "summary":"Updates a document by its id",
           "notes": "Only documents which you have permission can be updated. Only the properties part of the document object is taken into account for update",
@@ -86,7 +78,7 @@
         {
           "method":"POST",
           "nickname":"createDocumentById",
-          "responseClass":"Document",
+          "type":"Document",
           <@params names = ["repoid","docid","docbody","propheader"]/>,
           "summary":"Creates a document by its parent id",
           "notes": "",

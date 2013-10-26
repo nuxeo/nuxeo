@@ -1,44 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Nuxeo automation documentation</title>
-    <!--link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700"-->
-    <link href='${skinPath}/css/hightlight.default.css' media='screen' rel='stylesheet' type='text/css'/>
-    <link href='${skinPath}/css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
-    <script src='${skinPath}/lib/jquery-1.8.0.min.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/jquery.slideto.min.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/jquery.wiggle.min.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/jquery.ba-bbq.min.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/handlebars-1.0.rc.1.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/underscore-min.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/backbone-min.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/swagger.js' type='text/javascript'></script>
-    <script src='${skinPath}/swagger-ui.js' type='text/javascript'></script>
-    <script src='${skinPath}/lib/highlight.7.3.pack.js' type='text/javascript'></script>
+  <title>Nuxeo API documentation</title>
+  <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700">
+
+
+  <link href="${skinPath}/css/highlight.default.css" media="screen" rel="stylesheet" type="text/css"/>
+  <link href="${skinPath}/css/screen.css" media="screen" rel="stylesheet" type="text/css"/>
+  <script type="text/javascript" src="${skinPath}/lib/shred.bundle.js"></script>
+  <script src="${skinPath}/lib/jquery-1.8.0.min.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/jquery.slideto.min.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/jquery.wiggle.min.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/jquery.ba-bbq.min.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/handlebars-1.0.0.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/underscore-min.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/backbone-min.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/swagger.js" type="text/javascript"></script>
+  <script src="${skinPath}/swagger-ui.js" type="text/javascript"></script>
+  <script src="${skinPath}/lib/highlight.7.3.pack.js" type="text/javascript"></script>
 
     <script type="text/javascript">
   $(function () {
-      window.swaggerUi = new SwaggerUi({
-                discoveryUrl:"${Context.serverURL}${This.path}/resources.json",
-                dom_id:"swagger-ui-container",
-                supportHeaderParams: true,
-                supportedSubmitMethods: ['get', 'post', 'put','delete'],
-                onComplete: function(swaggerApi, swaggerUi){
-                        if(console) {
-                        console.log("Loaded SwaggerUI")
-                        console.log(swaggerApi);
-                        console.log(swaggerUi);
-                    }
-                  $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
-                },
-                onFailure: function(data) {
-                        if(console) {
-                        console.log("Unable to Load SwaggerUI");
-                        console.log(data);
-                    }
-                },
-                docExpansion: "none"
 
+
+
+
+            window.swaggerUi = new SwaggerUi({
+              url: "${Context.serverURL}${This.path}/resources.json",
+              dom_id: "swagger-ui-container",
+              supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
+              onComplete: function(swaggerApi, swaggerUi){
+                if(console) {
+                  console.log("Loaded SwaggerUI")
+                }
+                $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
+              },
+              onFailure: function(data) {
+                if(console) {
+                  console.log("Unable to Load SwaggerUI");
+                  console.log(data);
+                }
+              },
+              docExpansion: "none"
             });
 
 
@@ -61,6 +64,12 @@
         <a href="http://www.nuxeo.com">nuxeo.com</a>
        </nav>
     </header>
+
+
+<div id="message-bar" class="swagger-ui-wrap">
+  &nbsp;
+</div>
+
 
 <div id="swagger-ui-container" class="swagger-ui-wrap">
 

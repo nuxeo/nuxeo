@@ -8,8 +8,7 @@
     {
       "method":"GET",
       "nickname":"getGroupByName",
-      "responseClass":"NuxeoGroup",
-      "type":"Document",
+      "type":"NuxeoGroup",
       <@params names = ["groupname"]/>,
       "summary":"Get a group by its name",
       "notes": "",
@@ -18,8 +17,7 @@
     {
       "method":"PUT",
       "nickname":"updateGroupByName",
-      "responseClass":"NuxeoGroup",
-      "type":"Document",
+      "type":"NuxeoGroup",
       <@params names = ["groupname","groupbody"]/>,
       "summary":"Update a group by its name",
       "notes": "",
@@ -28,7 +26,6 @@
     {
       "method":"DELETE",
       "nickname":"deleteGroupByName",
-      "type":"Document",
       <@params names = ["groupname"]/>,
       "summary":"Delete a group by its name",
       "notes": "",
@@ -43,8 +40,7 @@
     {
       "method":"GET",
       "nickname":"searchGroup",
-      "responseClass":"NuxeoGroupList",
-      "type":"Document",
+      "type":"NuxeoGroupList",
       <@params names = ["groupquery"]/>,
       "summary":"Search a group",
       "notes": "",
@@ -64,8 +60,7 @@
     {
       "method":"POST",
       "nickname":"createGroup",
-      "responseClass":"NuxeoGroup",
-      "type":"Document",
+      "type":"NuxeoGroup",
       <@params names = ["groupbody"]/>,
       "summary":"Create a group",
       "notes": "",
@@ -84,8 +79,7 @@
     {
       "method":"POST",
       "nickname":"addAUserToGroup",
-      "responseClass":"NuxeoPrincipal",
-      "type":"Document",
+      "type":"NuxeoPrincipal",
       <@params names = ["groupname","username"]/>,
       "summary":"Add a user to a group",
       "notes": "",

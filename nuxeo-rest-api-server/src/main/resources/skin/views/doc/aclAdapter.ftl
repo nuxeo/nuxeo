@@ -25,7 +25,7 @@
       "nickname":"getACLByPath",
       "responseClass":"Acp",
       <@params names = ["docid"]/>,
-      "summary":"View the ACL of a document given its path",
+      "summary":"View the ACL of a document given its id",
       "notes": "",
       <#include "views/doc/errorresponses.ftl"/>
     }

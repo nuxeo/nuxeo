@@ -1,4 +1,6 @@
 {
+    "apiVersion": "1.0.0",
+    "swaggerVersion": "1.2",
     "apis": [
         {
             "path": "/path.{format}",
@@ -10,46 +12,50 @@
         },
         {
             "path": "/automation.{format}",
-            "description": "Business object adapter on a document"
+            "description": "Run automation operations"
         },
         {
             "path": "/user.{format}",
-            "description": "Business object adapter on a document"
+            "description": "Access users"
         },
         {
             "path": "/group.{format}",
-            "description": "Business object adapter on a document"
+            "description": "Access groups"
         },
         {
             "path": "/directory.{format}",
-            "description": "Business object adapter on a document"
+            "description": "Access directories"
         },
         {
-            "path": "/@children.{format}",
-            "description": "Access the children of a document"
+            "path": "/childrenAdapter.{format}",
+            "description": "Get the children of a document"
         },
         {
-            "path": "/@search.{format}",
-            "description": "Access the children of a document"
+            "path": "/searchAdapter.{format}",
+            "description": "Search for documents"
         },
         {
-            "path": "/@pp.{format}",
-            "description": "Access the children of a document"
+            "path": "/ppAdapter.{format}",
+            "description": "Execute a page provider"
         },
         {
-            "path": "/@acl.{format}",
+            "path": "/aclAdapter.{format}",
             "description": "View the acl of a document"
         },
         {
-            "path": "/@audit.{format}",
+            "path": "/auditAdapter.{format}",
             "description": "View the audit of a document"
         },
         {
-            "path": "/@bo.{format}",
+            "path": "/boAdapter.{format}",
             "description": "Business object adapter on a document"
         }
     ],
-    "basePath": "${Context.serverURL}${This.path}/",
-    "apiVersion": "1.0",
-    "swaggerVersion": "1.0"
+    "authorizations": {
+        "basicAuth": {
+            "type": "basicAuth"
+        }
+    },
+    "basePath": "${Context.serverURL}${This.path}"
+
 }

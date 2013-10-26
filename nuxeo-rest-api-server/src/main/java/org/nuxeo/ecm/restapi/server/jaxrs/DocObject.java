@@ -41,7 +41,7 @@ public class DocObject extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("{resource}.json")
     public Object doGetResource(@PathParam("resource") String resource) {
-        return getView(resource);
+        return getView(resource).arg("resource", resource);
     }
 
 

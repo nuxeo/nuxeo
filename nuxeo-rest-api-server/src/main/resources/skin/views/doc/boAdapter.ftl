@@ -88,6 +88,23 @@
   ]},
 
 
+  {
+    "path": "/path/{docId}/@children/@bo/{adapterName}",
+    "description": "Get the list of business object of the children of a document by its id",
+    "operations" : [
+    {
+      "method":"GET",
+      "nickname":"getBOByPath",
+      "responseClass":"BusinessObjectList",
+      <@params names = ["docid","adaptername"]/>,
+      "summary":"Get the list of business object of the children of a document by its id",
+      "notes": "<ul><li>If a document can't be adapted, the resulting item will be null</li><li> This type of call works for every API endpoint that responds DocumentList (@search, @pp ...)</li></ul>",
+      <#include "views/doc/errorresponses.ftl"/>
+    }
+    ]
+  },
+
+
 
   {
     "path": "/id/{docId}/@bo/{adapterName}/{docName}",

@@ -3,7 +3,7 @@
 <@block name="apis">
   {
     "path": "/automation",
-    "description": "Execute an operation or a chain on a document",
+    "description": "Automation base",
     "operations" : [
     {
       "method":"GET",

@@ -9,7 +9,7 @@
         {
           "method":"GET",
           "nickname":"getChildrenByPath",
-          "responseClass":"DocumentList",
+          "type":"DocumentList",
           <@params names = ["docpath","pageprovidername","paging","propheader"]/>,
           "summary":"Execute a page provider on document by its path",
           "notes": "Only documents which you have permission to see will be returned",
@@ -27,7 +27,7 @@
         {
           "method":"GET",
           "nickname":"getChildrenById",
-          "type":"Document",
+          "type":"DocumentList",
           <@params names = ["docid","pageprovidername","paging","propheader"]/>,
           "summary":"Execute a page provider on document by its id",
           "notes": "Only documents which you have permission to see will be returned",
