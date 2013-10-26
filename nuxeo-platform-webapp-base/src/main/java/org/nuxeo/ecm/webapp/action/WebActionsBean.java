@@ -481,13 +481,18 @@ public class WebActionsBean implements WebActions, Serializable {
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTabs() {
         if (Framework.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
-            FacesContext context = FacesContext.getCurrentInstance();
-            ExternalContext econtext = context.getExternalContext();
-            HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
-            String ua = request.getHeader("User-Agent");
-            return UserAgentMatcher.isHistoryPushStateSupported(ua);
+            return canUseAjaxTabs();
         }
         return false;
+    }
+
+    @Factory(value = "canUseAjaxTabs", scope = ScopeType.SESSION)
+    public boolean canUseAjaxTabs() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext econtext = context.getExternalContext();
+        HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
+        String ua = request.getHeader("User-Agent");
+        return UserAgentMatcher.isHistoryPushStateSupported(ua);
     }
 
 }
