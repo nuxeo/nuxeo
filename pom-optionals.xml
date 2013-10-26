@@ -22,7 +22,6 @@
   </properties>
 
   <modules>
-    <module>nuxeo-platform-importer</module>
     <module>nuxeo-platform-jbpm</module>
     <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-platform-splitpane</module>
