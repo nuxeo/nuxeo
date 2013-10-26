@@ -405,14 +405,25 @@ public class AppCenterViewsManager implements Serializable {
         public void run() {
             try {
                 if (validate) {
+                    ValidationStatus status = new ValidationStatus();
+
                     pm.flushCache();
                     DownloadablePackage remotePkg = pm.findRemotePackageById(packageId);
+                    if (remotePkg == null) {
+                        status.addError(String.format(
+                                "Cannot perform validation: remote package '%s' not found",
+                                packageId));
+                        return;
+                    }
                     String[] targetPlatforms = remotePkg.getTargetPlatforms();
-                    log.debug(String.format("%s target platforms: %s",
-                            remotePkg, ArrayUtils.toString(targetPlatforms)));
                     PackageDependency[] pkgDeps = remotePkg.getDependencies();
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("%s target platforms: %s",
+                                remotePkg, ArrayUtils.toString(targetPlatforms)));
+                        log.debug(String.format("%s dependencies: %s",
+                                remotePkg, ArrayUtils.toString(pkgDeps)));
+                    }
 
-                    ValidationStatus status = new ValidationStatus();
                     // TODO NXP-11776: replace errors by internationalized
                     // labels
                     if (!PlatformVersionHelper.isCompatible(targetPlatforms)) {
@@ -422,14 +433,23 @@ public class AppCenterViewsManager implements Serializable {
                     }
                     // check deps requirements
                     if (pkgDeps != null && pkgDeps.length > 0) {
+                        // FIXME: this is checking deps against the last
+                        // downloaded version of the package, not the
+                        // descriptor that was just downloaded
                         DependencyResolution resolution = pm.resolveDependencies(
                                 packageId,
                                 PlatformVersionHelper.getPlatformFilter());
                         if (resolution.isFailed()
                                 && PlatformVersionHelper.getPlatformFilter() != null) {
-                            // retry without PF filter ...
+                            // retry without PF filter in case it gives more
+                            // information
                             resolution = pm.resolveDependencies(packageId, null);
                         }
+                        // FIXME: the resolution may be marked as failed
+                        // because of error "[DependencyResolution] Couldn't
+                        // order [atchertchian-SANDBOX-0.0.0-SNAPSHOT] missing
+                        // [nuxeo-dm:5.8.0-SNAPSHOT, nuxeo-dm:5.8.0]", in which
+                        // case information must be shown to the user.
                         if (resolution.isFailed()) {
                             status.addError(String.format(
                                     "Dependency check has failed for package '%s'",
