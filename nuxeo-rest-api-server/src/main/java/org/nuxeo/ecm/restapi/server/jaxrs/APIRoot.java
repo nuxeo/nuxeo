@@ -77,6 +77,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("directory");
     }
 
+    @Path("/doc")
+    public Object doGetDocumentation() {
+        return newObject("doc");
+    }
+
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
