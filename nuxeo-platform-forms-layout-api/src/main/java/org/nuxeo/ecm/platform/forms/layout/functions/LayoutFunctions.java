@@ -204,6 +204,7 @@ public class LayoutFunctions {
         StringBuffer builder = new StringBuffer();
         builder.append(widgetDef.getName()).append(";");
         builder.append(widgetDef.getType()).append(";");
+        builder.append(widgetDef.getTypeCategory()).append(";");
 
         FieldDefinition[] fieldDefinitions = widgetDef.getFieldDefinitions();
         if (fieldDefinitions != null) {
