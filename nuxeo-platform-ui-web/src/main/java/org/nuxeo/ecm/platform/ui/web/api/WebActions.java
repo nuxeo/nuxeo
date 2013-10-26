@@ -408,8 +408,17 @@ public interface WebActions {
      *
      * @since 5.8
      * @see #AJAX_TAB_PROPERTY
+     * @see #canUseAjaxTabs()
      */
     boolean useAjaxTabs();
+
+    /**
+     * Returns true if history push state is supported by browser.
+     *
+     * @since 5.8
+     * @see #useAjaxTabs()
+     */
+    boolean canUseAjaxTabs();
 
     @Deprecated
     List<Action> getSubViewActionsList();
