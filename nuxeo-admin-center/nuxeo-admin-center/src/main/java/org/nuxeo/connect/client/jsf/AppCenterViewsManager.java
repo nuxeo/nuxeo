@@ -20,11 +20,19 @@
 package org.nuxeo.connect.client.jsf;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -256,8 +264,9 @@ public class AppCenterViewsManager implements Serializable {
     /**
      * Returns true if Studio snapshot module should be validated.
      * <p>
-     * Validation can be skipped by user, or can be globally disabled by setting
-     * framework property "studio.snapshot.disablePkgValidation" to true.
+     * Validation can be skipped by user, or can be globally disabled by
+     * setting framework property "studio.snapshot.disablePkgValidation" to
+     * true.
      *
      * @since 5.7.1
      */
@@ -283,6 +292,9 @@ public class AppCenterViewsManager implements Serializable {
                     PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
                     LocalPackage pkg = pus.getPackage(snapshotPkg.getId());
                     if (pkg != null) {
+                        // it would have been easier if this API returned a
+                        // date or FileTime instance, as parsing the date to
+                        // format it differently is always a pain
                         lastUpdate = pus.getInstallDate(pkg.getId());
                     }
                 } catch (PackageException e) {
@@ -335,12 +347,39 @@ public class AppCenterViewsManager implements Serializable {
         } else if (SnapshotStatus.downloading.equals(studioSnapshotStatus)) {
             params = new Object[] { String.valueOf(studioSnapshotDownloadProgress) };
         } else {
-            params = new Object[] { getLastUpdateDate() };
+            String update = getLastUpdateDate();
+            if (update != null) {
+                try {
+                    Calendar date = toCalendar(update);
+                    DateFormat df = new SimpleDateFormat(
+                            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+                    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    params = new Object[] { df.format(date.getTime()) };
+                } catch (ParseException e) {
+                    params = new Object[] { String.format(
+                            "%s (could not be parsed as a valid date: %s)",
+                            update, e.getLocalizedMessage()) };
+                }
+            }
         }
 
         return translate(
                 LABEL_STUDIO_UPDATE_STATUS + studioSnapshotStatus.name(),
                 params);
+    }
+
+    protected Calendar toCalendar(final String iso8601string)
+            throws ParseException {
+        Calendar calendar = GregorianCalendar.getInstance();
+        String s = iso8601string.replace("Z", "+00:00");
+        try {
+            s = s.substring(0, 22) + s.substring(23);
+        } catch (IndexOutOfBoundsException e) {
+            throw new ParseException("Invalid length", 0);
+        }
+        Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s);
+        calendar.setTime(date);
+        return calendar;
     }
 
     // TODO: plug a notifier for status to be shown to the user
@@ -374,7 +413,7 @@ public class AppCenterViewsManager implements Serializable {
                     PackageDependency[] pkgDeps = remotePkg.getDependencies();
 
                     ValidationStatus status = new ValidationStatus();
-                    // TODO NXP-9523: replace errors by internationalized
+                    // TODO NXP-11776: replace errors by internationalized
                     // labels
                     if (!PlatformVersionHelper.isCompatible(targetPlatforms)) {
                         status.addError(String.format(
