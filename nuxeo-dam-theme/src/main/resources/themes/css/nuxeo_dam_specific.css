@@ -194,6 +194,9 @@ author: lkemen@nuxeo.com
 .nxMainContainer .foldableBox .dataInput {
 	font-size: .9em }
 
+.nxMainContainer .foldableBox .dataInput .dataInput {
+  font-size: 1em }
+
 .nxMainContainer .widgetPanel .labelColumn {
   text-align: left;
   width: 28% }
@@ -213,6 +216,12 @@ author: lkemen@nuxeo.com
   font-size: .8em;
   margin: .2em 0 0 .3em;
   padding: .1em .4em }
+
+/* Remove border of simpleBox when in foldableBox */
+.nxDamAssetView .foldableBox .simpleBox {
+  border: medium none;
+  margin: 0;
+  padding: 0 }
 
 /* Picture View -> TODO: move it to imaging styles ? */
 .assetViewContainer {
