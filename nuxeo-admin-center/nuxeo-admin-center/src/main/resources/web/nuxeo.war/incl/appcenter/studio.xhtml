@@ -188,7 +188,7 @@
             <h:message
               for="changeDevModeForm"
               id="changeDevModeForm_message"
-              styleClass="infoMessage" errorClass="errorMessage" />
+              styleClass="infoFeedback" errorClass="errorFeedback" />
           </a4j:form>
         </c:if>
       </div>
@@ -252,13 +252,13 @@
     </c:if>
 
     <c:if test="#{not connectServerReachable}">
-      <div class="infoMessage">
+      <div class="infoFeedback">
         <h:outputText value="#{messages['adminsubtab.servernotreachable']}" />
       </div>
     </c:if>
 
     <c:if test="#{not registredConnectInstance}">
-      <div class="infoMessage">
+      <div class="infoFeedback">
        <h:outputText value="#{messages['adminsubtab.registrationRequired']}" />
       </div>
     </c:if>
