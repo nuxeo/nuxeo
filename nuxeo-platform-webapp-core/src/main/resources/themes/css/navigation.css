@@ -88,7 +88,7 @@ author: lkemen@nuxeo.com
   border-style: solid solid none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 2px 2px 0 0;
-  color: "link (__FLAVOR__ color)";
+  color: "gray.medium (__FLAVOR__ color)";
   padding: .22em .4em }
 
 .subtabsBar li a:hover,

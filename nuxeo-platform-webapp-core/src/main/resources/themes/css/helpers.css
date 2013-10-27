@@ -35,7 +35,11 @@ author: lkemen@nuxeo.com
 .positionS { position: static }
 
 /* width for divs */
-.fullWidth { width:100% }
+.fullWidth {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width:100% }
+
 .fullMaxWidth { max-width: 100% }
 .threeQuarterWidth{ margin: 0 auto; width: 70% }
 .halfWidth { width:45% }
