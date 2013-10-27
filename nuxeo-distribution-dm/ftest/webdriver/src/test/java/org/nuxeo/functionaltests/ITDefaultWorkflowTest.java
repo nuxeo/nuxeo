@@ -98,7 +98,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Document validation"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Validate the document"));
         workflowHomePage.processFirstTask();
         SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
         // check that the open task is displayed on the summary page
@@ -117,7 +117,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
                 By.className("user")).getText();
 
         assertEquals("jdoe lastname1", participantsOnTheReview);
-        workflowTab.endTask("Validation");
+        workflowTab.endTask("Validate");
 
         // check that the workflow was ended but jdoe doesn't have the right to
         // start another workflow
