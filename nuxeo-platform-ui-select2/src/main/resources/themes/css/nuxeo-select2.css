@@ -16,7 +16,10 @@ author: lkemen@nuxeo.com
 .select2-container a:link,
 .select2-container a:hover {
  color: "default (__FLAVOR__ color)";
- text-decoration: none }
+ text-decoration: none;
+ -moz-transition: none;
+ -webkit-transition: none;
+ transition: none }
 
 .select2-container-multi .select2-search-field {
   margin: 0 0 0 .5em }
@@ -30,6 +33,9 @@ author: lkemen@nuxeo.com
   -ms-user-select: text;
   cursor: text;
   margin: 0 0.3em 0 0 }
+
+.select2-choices .select2-search-choice img {
+  margin: 0 .2em -0.3em -0.4em }
 
 .select2-container-active .select2-focused,
 .select2-container-active .select2-focused:focus {
