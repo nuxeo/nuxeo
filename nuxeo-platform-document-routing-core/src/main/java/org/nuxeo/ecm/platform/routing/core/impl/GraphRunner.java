@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 import org.nuxeo.ecm.platform.task.Task;
+import org.nuxeo.ecm.platform.task.TaskComment;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.runtime.api.Framework;
@@ -422,8 +423,11 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
             if (delete) {
                 session.removeDocument(new IdRef(task.getId()));
             }
-            String comment = task.getComments().size() > 0 ? task.getComments().get(
-                    0).getText()
+            // get the last comment on the task, if there are several:
+            // task might have been previously reassigned or delegated
+            List<TaskComment> comments = task.getComments();
+            String comment = comments.size() > 0 ? comments.get(
+                    comments.size() -1 ).getText()
                     : "";
             // actor
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
