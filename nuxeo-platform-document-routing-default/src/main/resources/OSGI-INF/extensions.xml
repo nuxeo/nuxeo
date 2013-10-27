@@ -207,7 +207,7 @@ NodeVariables["comment"]= null;}</param>
       </rows>
       <widget name="review_result" type="htmltext">
         <labels>
-          <label mode="any">wf.parallelDocumentReview.validate.form.review_brief</label>
+          <label mode="any">wf.parallelDocumentReview.consolidate.form.review_brief</label>
         </labels>
         <translated>true</translated>
         <fields>

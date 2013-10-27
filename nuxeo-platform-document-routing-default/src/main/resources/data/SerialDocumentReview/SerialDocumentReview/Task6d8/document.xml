@@ -64,30 +64,30 @@
       <transition>
         <chain><![CDATA[terminateWorkflow]]></chain>
         <condition><![CDATA[NodeVariables["button"] == "validate" && WorkflowVariables["index"] == WorkflowVariables["participants"].length]]></condition>
-        <name><![CDATA[finishTask6d8]]></name>
+        <name><![CDATA[sdr_finishTask6d8]]></name>
         <targetId><![CDATA[Task5c1]]></targetId>
-        <label><![CDATA[finish]]></label>
+        <label><![CDATA[sdr_finish]]></label>
       </transition>
       <transition>
         <chain><![CDATA[logInAudit]]></chain>
         <condition><![CDATA[NodeVariables["button"] =="reject" && WorkflowVariables["index"] >= 0]]></condition>
-        <name><![CDATA[rejectTask6d8]]></name>
+        <name><![CDATA[sdr_rejectionTask6d8]]></name>
         <targetId><![CDATA[Task6d8]]></targetId>
-        <label><![CDATA[reject]]></label>
+        <label><![CDATA[sdr_rejection]]></label>
       </transition>
       <transition>
         <chain><![CDATA[logInAudit]]></chain>
         <condition><![CDATA[NodeVariables["button"] =="reject" && WorkflowVariables["index"] ==-1]]></condition>
-        <name><![CDATA[request_updateTask6d8]]></name>
+        <name><![CDATA[sdr_update_requestTask6d8]]></name>
         <targetId><![CDATA[Task542]]></targetId>
-        <label><![CDATA[request_update]]></label>
+        <label><![CDATA[sdr_update_request]]></label>
       </transition>
       <transition>
         <chain><![CDATA[logInAudit]]></chain>
         <condition><![CDATA[NodeVariables["button"] == "validate" && WorkflowVariables["index"] < WorkflowVariables["participants"].length]]></condition>
-        <name><![CDATA[validateTask6d8]]></name>
+        <name><![CDATA[sdr_validationTask6d8]]></name>
         <targetId><![CDATA[Task6d8]]></targetId>
-        <label><![CDATA[validate]]></label>
+        <label><![CDATA[sdr_validation]]></label>
       </transition>
     </rnode:transitions>
     <rnode:nodeId><![CDATA[Task6d8]]></rnode:nodeId>

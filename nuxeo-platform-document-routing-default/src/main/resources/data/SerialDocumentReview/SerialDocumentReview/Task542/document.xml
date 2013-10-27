@@ -62,16 +62,16 @@
       <transition>
         <chain><![CDATA[]]></chain>
         <condition><![CDATA[NodeVariables["button"] =="cancel"]]></condition>
-        <name><![CDATA[cancelTask542]]></name>
+        <name><![CDATA[sdr_cancelationTask542]]></name>
         <targetId><![CDATA[Task5c1]]></targetId>
-        <label><![CDATA[cancel]]></label>
+        <label><![CDATA[sdr_cancelation]]></label>
       </transition>
       <transition>
         <chain><![CDATA[]]></chain>
         <condition><![CDATA[NodeVariables["button"] =="submit"]]></condition>
-        <name><![CDATA[submitTask542]]></name>
+        <name><![CDATA[sdr_submissionTask542]]></name>
         <targetId><![CDATA[Task6d8]]></targetId>
-        <label><![CDATA[submit]]></label>
+        <label><![CDATA[sdr_submission]]></label>
       </transition>
     </rnode:transitions>
     <rnode:nodeId><![CDATA[Task542]]></rnode:nodeId>
