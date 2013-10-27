@@ -233,7 +233,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   display: inline-block;
   font-weight: bold;
   margin: 0 0 .2em .2em;
-  padding: .3em .7em }
+  padding: .2em .5em }
 
 .compactLayout .searchFilterActions {
   border-color: "neutral.light (__FLAVOR__ border)";

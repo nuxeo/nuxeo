@@ -330,24 +330,14 @@ input.tinyButton {
 /* =Foldablebox Action for Local Configuration*/
 .foldableBox h3 a.action,
 .foldableBox h3 a.action:visited {
-  box-shadow: 0 8px 8px #fff inset;
-  background-color: "neutral.medium (__FLAVOR__ background)";
-  border-radius: 3px;
-  border: 1px solid;  border-color: "neutral.light (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
   float: right !important;
   font-size: .8em;
-  font-weight: bold;
   margin: 0 .5em;
-  padding: 0 .7em;
-  text-decoration: none;
-  text-shadow: 1px 1px 0 #fff }
+  padding: 0 .7em }
 
 .foldableBox h3 a.action:hover,
 .foldableBox h3 a.action:visited:hover {
-  background: none "color.major.medium (__FLAVOR__ background)";
-  border: 1px solid;
-  border-color: "neutral.medium (__FLAVOR__ border)";
   float: right !important; }
 
 /* =RightClick menu */

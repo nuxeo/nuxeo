@@ -103,7 +103,7 @@ author: lkemen@nuxeo.com
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "default (__FLAVOR__ color)";
   display: inline-block;
-  margin: .1em .5em .5em 0;
+  margin: 0 .5em .5em 0;
   overflow: hidden;
   padding: .5em;
   text-align: left;
