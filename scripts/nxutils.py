@@ -29,6 +29,8 @@ import sys
 import time
 import shutil
 
+SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
+
 
 class ExitException(Exception):
     def __init__(self, return_code, message=None):
@@ -53,7 +55,7 @@ class Repository(object):
             if alias == remote_alias:
                 break
 
-        self.is_online = remote_url.endswith("/nuxeo.git")
+        self.is_online = remote_url.startswith(SUPPORTED_GIT_ONLINE_URLS)
         if self.is_online:
             self.url_pattern = re.sub("(.*)nuxeo", r"\1module", remote_url)
         else:
