@@ -178,8 +178,17 @@ public class DocumentRoutingActionsBean implements Serializable {
     public String startRoute() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
-        getDocumentRoutingService().createNewInstance(currentDocument.getId(),
-                currentRoute.getAttachedDocuments(), documentManager, true);
+        if (currentRoute == null) {
+            log.warn("Current document is not a workflow model");
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.document.routing.no.workflow"));
+            return null;
+        }
+        getDocumentRoutingService().createNewInstance(
+                currentDocument.getName(), currentRoute.getAttachedDocuments(),
+                documentManager, true);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                 currentDocument);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
@@ -231,7 +240,8 @@ public class DocumentRoutingActionsBean implements Serializable {
      */
     public List<DocumentRoute> getRelatedRoutes() {
         queryForRelatedRoutes();
-        List<DocumentRoute> routes = new ArrayList<DocumentRoute>(relatedRoutes.size());
+        List<DocumentRoute> routes = new ArrayList<DocumentRoute>(
+                relatedRoutes.size());
         for (DocumentModel doc : relatedRoutes) {
             routes.add(doc.getAdapter(DocumentRoute.class));
         }
@@ -684,10 +694,10 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     /**
-     * Moves the step in the parent container in the specified direction. If
-     * the step is in a parallel container, it can't be moved. A step can't be
-     * moved before a step already done or running. Assumed that the route is
-     * already locked to have this action availabe , so no check is done
+     * Moves the step in the parent container in the specified direction. If the
+     * step is in a parallel container, it can't be moved. A step can't be moved
+     * before a step already done or running. Assumed that the route is already
+     * locked to have this action availabe , so no check is done
      */
     public String moveRouteElement(String direction) throws ClientException {
         if (StringUtils.isEmpty(stepId)) {

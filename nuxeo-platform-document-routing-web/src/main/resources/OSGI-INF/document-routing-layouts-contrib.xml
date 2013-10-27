@@ -210,7 +210,6 @@
         <row>
           <widget>summary_current_document_lc_and_version</widget>
           <widget>summary_current_route_actions_lock</widget>
-          <widget>summary_current_route_action</widget>
         </row>
       </rows>
     </layout>
