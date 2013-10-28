@@ -317,14 +317,14 @@ public class PackagePersistence {
     /**
      * @since 5.8
      */
-    public String getInstallDate(String id) {
+    public FileTime getInstallDate(String id) {
         File file = new File(store, id);
         if (file.isDirectory()) {
             Path path = file.toPath();
             try {
                 FileTime lastModifiedTime = Files.readAttributes(path,
                         BasicFileAttributes.class).lastModifiedTime();
-                return lastModifiedTime.toString();
+                return lastModifiedTime;
             } catch (IOException e) {
                 log.error(e);
             }

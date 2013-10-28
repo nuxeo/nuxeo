@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -345,7 +346,7 @@ public class StandaloneUpdateService implements PackageUpdateService {
     }
 
     @Override
-    public String getInstallDate(String id) {
+    public FileTime getInstallDate(String id) {
         return getPersistence().getInstallDate(id);
     }
 
