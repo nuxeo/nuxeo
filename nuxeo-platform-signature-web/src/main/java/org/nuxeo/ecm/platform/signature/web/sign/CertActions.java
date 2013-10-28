@@ -111,7 +111,6 @@ public class CertActions implements Serializable {
      * Retrieves a user certificate and returns a certificate's document model
      * object
      *
-     * @param user
      * @return
      * @throws ClientException
      */
@@ -213,6 +212,25 @@ public class CertActions implements Serializable {
                         resourcesAccessor.getMessages().get(
                                 "label.cert.generate.problem"));
             }
+        }
+    }
+
+    /**
+     * @since 5.8 - action to remove certificate.
+     */
+    public void deleteCertificate() throws ClientException {
+        try {
+            cUserService.deleteCertificate((String) getCurrentUserModel().getPropertyValue(
+                    "user:username"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("label.cert.deleted"));
+        } catch (ClientException e) {
+            LOG.error("Digital signature certificate deletion issue", e);
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "label.cert.delete.problem")
+                            + e.getMessage());
         }
     }
 
