@@ -27,12 +27,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -60,7 +60,7 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             CoreSession session = docCtx.getCoreSession();
             DocumentModel doc = docCtx.getSourceDocument();
-            if (doc == null || doc instanceof ShallowDocumentModel) {
+            if (doc == null || doc instanceof DeletedDocumentModel) {
                 return;
             }
             String docId = doc.getId();
