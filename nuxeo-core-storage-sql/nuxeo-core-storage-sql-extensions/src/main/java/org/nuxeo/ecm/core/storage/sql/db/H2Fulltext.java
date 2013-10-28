@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -518,9 +520,17 @@ public class H2Fulltext {
      */
     public static class Trigger implements org.h2.api.Trigger, CloseListener {
 
+        private static final Log log = LogFactory.getLog(Trigger.class);
+
         private String indexPath;
 
         private IndexWriter indexWriter;
+
+        // DEBUG
+        private Exception lastIndexWriterClose;
+
+        // DEBUG
+        private String lastIndexWriterCloseThread;
 
         /** Starting at 0. */
         private int primaryKeyIndex;
@@ -661,6 +671,15 @@ public class H2Fulltext {
                 indexWriter.addDocument(doc);
             } catch (IOException e) {
                 throw convertException(e);
+            } catch (org.apache.lucene.store.AlreadyClosedException e) {
+                // DEBUG
+                log.error(
+                        "org.apache.lucene.store.AlreadyClosedException in thread "
+                                + Thread.currentThread().getName()
+                                + ", last close was in thread "
+                                + lastIndexWriterCloseThread,
+                        lastIndexWriterClose);
+                throw e;
             }
         }
 
@@ -678,6 +697,9 @@ public class H2Fulltext {
             if (indexWriter != null) {
                 try {
                     indexWriter.flush();
+                    // DEBUG
+                    lastIndexWriterClose = new Exception("debug stack trace");
+                    lastIndexWriterCloseThread = Thread.currentThread().getName();
                     indexWriter.close();
                     indexWriter = null;
                     indexWriters.remove(indexPath);
