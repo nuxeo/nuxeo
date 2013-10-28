@@ -31,6 +31,7 @@
         <indexing>
           <neverPerDocumentFacets>
             <facet>Asset</facet>
+            <facet>DamSearch</facet>
           </neverPerDocumentFacets>
 <#if "${nuxeo.db.type}" == "postgresql">
           <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" analyzer="english">
