@@ -4,11 +4,11 @@
     "apis": [
         {
             "path": "/path.{format}",
-            "description": "Access document by their path"
+            "description": "Access documents by their path"
         },
         {
             "path": "/id.{format}",
-            "description": "Access document by their id"
+            "description": "Access documents by their id"
         },
         {
             "path": "/automation.{format}",
@@ -44,7 +44,7 @@
         },
         {
             "path": "/auditAdapter.{format}",
-            "description": "View the audit of a document"
+            "description": "View the audit trail of a document"
         },
         {
             "path": "/boAdapter.{format}",
