@@ -8,7 +8,8 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'DamSearch'
-        AND dc:creator = ?
+        AND dc:creator = ? AND ecm:isProxy = 0
+        AND ecm:isCheckedInVersion = 0
         AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
       <sort column="dc:title" ascending="true" />
@@ -18,7 +19,8 @@
       <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
       <pattern>
         SELECT * FROM Document WHERE ecm:mixinType = 'DamSearch'
-        AND dc:creator != ?
+        AND dc:creator != ? AND ecm:isProxy = 0
+        AND ecm:isCheckedInVersion = 0
         AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
       <sort column="dc:title" ascending="true" />
