@@ -50,12 +50,12 @@ function showAccessKeys() {
 }
 
 function bindShortCuts() {
-    // bind access keys to Ctrl+
+    // bind access keys to Ctrl+Shift+
     jQuery("[accesskey]").each(function() {
         var item = jQuery(this);
         var key = item.attr("accesskey");
         if (key !=null && key !="") {
-              var newKeyCode = "Ctrl+" + key;
+              var newKeyCode = "Ctrl+Shift+" + key;
               var clickHandler = function(event) {event.preventDefault();item[0].click();return false;};
               // Document wide binding
               jQuery(document).bind('keydown', newKeyCode, clickHandler);
