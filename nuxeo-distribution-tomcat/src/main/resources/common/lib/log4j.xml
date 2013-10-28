@@ -304,9 +304,11 @@
   </category>
   -->
   <!-- Uncomment to debug concurrent session execution errors on thread -->
+  <!--
   <category name="org.nuxeo.ecm.core.storage.sql.SessionImpl">
     <priority value="DEBUG" />
   </category>
+  -->
 
   <!-- Uncomment to debug fragments pre-processing -->
   <!--
