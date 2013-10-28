@@ -47,7 +47,7 @@ boolean useExternalProviders = providers!=null && providers.size()>0;
 boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
 
-String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') no-repeat scroll bottom left #333");
+String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') no-repeat center center fixed #333");
 String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0 #fff");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
@@ -88,7 +88,11 @@ body {
   background: <%=bodyBackgroundStyle%>;
   color: #343434;
   margin: 0;
-  text-align: center }
+  text-align: center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover; }
 
 .leftColumn {
   width: 400px
@@ -146,7 +150,7 @@ body {
   -moz-box-sizing: border-box;
   border-radius: 3px;
   filter: alpha(opacity = 90);
-  margin-top: 80px;
+  margin-top: -160px;
   opacity: 0.9;
   padding: 1.5em 1em 1em;
   width: 300px }
