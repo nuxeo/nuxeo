@@ -2389,6 +2389,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
         // cancel check out
 
+        waitForAsyncCompletion();
         verService.cancelCheckOut(repositoryId, coid, null);
         checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE,
                 ver2);
@@ -2434,6 +2435,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void testCancelCheckout() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
+        waitForAsyncCompletion();
         verService.cancelCheckOut(repositoryId, id, null);
         try {
             getObject(id);

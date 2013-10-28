@@ -134,6 +134,10 @@ public class NuxeoBindingTestCase {
         nuxeotc.waitForFulltextIndexing();
     }
 
+    public void waitForAsyncCompletion() {
+        nuxeotc.waitForAsyncCompletion();
+    }
+
     public void tearDown() throws Exception {
         if (nuxeotc != null) {
             nuxeotc.closeSession();
