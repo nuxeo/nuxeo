@@ -84,7 +84,8 @@ public class DatabaseMySQL extends DatabaseHelper {
         // "Cascading operations may not be nested more than 15 levels deep."
         // "Currently, triggers are not activated by cascaded foreign key
         // actions."
-        return 15;
+        // Use a bit less that 15 to cater for complex properties
+        return 13;
     }
 
     @Override
