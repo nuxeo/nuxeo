@@ -313,12 +313,14 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertNotNull(newDoc.getRef());
         assertEquals("second name", newDoc.getProperty("file", "filename"));
 
+        waitForFulltextIndexing();
         DocumentModel restoredDoc = session.restoreToVersion(docRef, v1Ref);
 
         assertNotNull(restoredDoc);
         assertNotNull(restoredDoc.getRef());
         assertNull(restoredDoc.getProperty("file", "filename"));
 
+        waitForFulltextIndexing();
         restoredDoc = session.restoreToVersion(docRef, v2Ref);
 
         assertNotNull(restoredDoc);
@@ -349,6 +351,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("t2", doc2.getPropertyValue("dc:title"));
 
         // restore v1
+        waitForFulltextIndexing();
         DocumentModel restored = session.restoreToVersion(docRef, v1);
         assertEquals("t1", restored.getPropertyValue("dc:title"));
         session.save();
@@ -357,6 +360,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("t1", restored2.getPropertyValue("dc:title"));
 
         // restore v2
+        waitForFulltextIndexing();
         restored = session.restoreToVersion(docRef, v2);
         assertEquals("t2", restored.getPropertyValue("dc:title"));
         session.save();
@@ -389,6 +393,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("second name", newDoc.getProperty("file", "filename"));
 
         // restore, no snapshot as already pristine
+        waitForFulltextIndexing();
         DocumentModel restoredDoc = session.restoreToVersion(
                 childFile.getRef(), v1Ref);
 
@@ -851,6 +856,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.checkOut(co);
         DocumentRef ci2 = session.checkIn(co, VersioningOption.MAJOR,
                 "second check-in");
+        waitForFulltextIndexing();
         session.restoreToVersion(co, ci1);
 
         // save document with auto-increment should produce version 3.0
