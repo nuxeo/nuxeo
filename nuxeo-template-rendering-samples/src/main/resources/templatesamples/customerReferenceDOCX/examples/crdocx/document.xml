@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<document repository="default" id="8de47c44-54fc-4734-8a81-4a0ec56ccbf3">
+<document repository="default" id="ee70538b-1bef-470d-9d0a-239c67b920f2">
   <system>
     <type>CustomerReference</type>
-    <path>Builing the highest buil</path>
+    <path>default-domain/workspaces/templatesamples/crdocx</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>
     <facet>TemplateBased</facet>
     <facet>Commentable</facet>
+    <facet>Asset</facet>
     <facet>Versionable</facet>
     <facet>Publishable</facet>
     <facet>HasRelatedText</facet>
+    <facet>Thumbnail</facet>
     <access-control>
       <acl name="inherited">
         <entry principal="Administrator" permission="Everything" grant="true"/>
@@ -19,46 +21,65 @@
       </acl>
     </access-control>
   </system>
+  <schema xmlns:ipr="http://www.nuxeo.org/dam/schemas/ipRights/" name="ip_rights">
+    <ipr:licence/>
+    <ipr:embargo_date/>
+    <ipr:expiration_date/>
+    <ipr:copyright_holder/>
+    <ipr:media_type/>
+    <ipr:geo_broadcast/>
+  </schema>
   <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
-    <uid:uid/>
+    <uid:uid><![CDATA[]]></uid:uid>
     <uid:minor_version><![CDATA[0]]></uid:minor_version>
     <uid:major_version><![CDATA[0]]></uid:major_version>
   </schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
     <dc:creator><![CDATA[Administrator]]></dc:creator>
-    <dc:source/>
+    <dc:source><![CDATA[]]></dc:source>
+    <dc:nature><![CDATA[]]></dc:nature>
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>
+      <item><![CDATA[system]]></item>
     </dc:contributors>
-    <dc:nature/>
-    <dc:created><![CDATA[2012-06-21T15:38:18.68Z]]></dc:created>
+    <dc:created><![CDATA[2013-10-28T15:56:50.73Z]]></dc:created>
     <dc:description><![CDATA[The building reached its total height of 492 m (1,614 ft) on 14 September 2007 after the installation of the final steel girder.[15] The final cladding panels were installed in mid-June 2008, and elevator installation was finished in mid-July.]]></dc:description>
-    <dc:rights/>
+    <dc:rights><![CDATA[]]></dc:rights>
     <dc:subjects/>
-    <dc:publisher/>
+    <dc:publisher><![CDATA[]]></dc:publisher>
     <dc:valid/>
-    <dc:format/>
+    <dc:format><![CDATA[]]></dc:format>
     <dc:issued/>
-    <dc:modified><![CDATA[2012-06-21T15:59:29.00Z]]></dc:modified>
-    <dc:language/>
-    <dc:coverage/>
+    <dc:modified><![CDATA[2013-10-28T16:09:25.00Z]]></dc:modified>
+    <dc:language><![CDATA[]]></dc:language>
+    <dc:coverage><![CDATA[]]></dc:coverage>
     <dc:expired/>
     <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
-    <dc:title><![CDATA[Builing the &  highest building of the world in three months]]></dc:title>
+    <dc:title><![CDATA[Building the &  highest building of the world in three months]]></dc:title>
   </schema>
   <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
     <files:files/>
   </schema>
+  <schema xmlns:thumb="http://www.nuxeo.org/ecm/schemas/thumbnail" name="thumbnail">
+    <thumb:thumbnail>
+      <encoding></encoding>
+      <mime-type>application/octet-stream</mime-type>
+      <filename>nuxeoImageTarget1905081991846200476.png</filename>
+      <data>d0da5b9a.blob</data>
+      <digest>8907c6d57e5b16b71120c3717250b5f6</digest>
+    </thumb:thumbnail>
+  </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/icons/image.gif]]></common:icon>
-    <common:icon-expanded/>
-    <common:size><![CDATA[34828]]></common:size>
+    <common:icon-expanded><![CDATA[]]></common:icon-expanded>
+    <common:size><![CDATA[56770]]></common:size>
   </schema>
   <schema xmlns:cr="http://www.nuxeo.org/ecm/project/schemas/template-module-demo/customer_reference" name="customer_reference">
     <cr:industry><![CDATA[Energy]]></cr:industry>
     <cr:project_duration><![CDATA[2 years]]></cr:project_duration>
     <cr:abstract><![CDATA[<p class="p1">On 14 September 2007, the skyscraper was topped out at 492.0 meters (1,614.2 ft),[6][2][7] making it, at the time, the second-tallest building in the world and the tallest structure in Mainland China. It also had the highest occupied floor and the highest height to roof, two categories used to determine the title of "worlds tallest building". The SWFC opened on 28 August 2008, with its observation deck opening on 30 August. This observation deck, the worlds &amp; tallest at the time of its completion, offers views from 474 m (1,555 ft) above ground level.[8]</p>
-<p class="p1">Designed by American architectural firm Kohn Pedersen Fox, the 101-story tower was originally planned for construction ...</p>]]></cr:abstract>
+<p class="p1">Designed by American architectural firm Kohn Pedersen Fox, the 101-story tower was originally planned for construction ...</p>
+<p class="p1">Note: the picture in this sample comes from&nbsp;http://en.wikipedia.org/wiki/Shanghai_World_Financial_Center</p>]]></cr:abstract>
     <cr:quote><![CDATA[It was an incredible challenge and we did it !]]></cr:quote>
     <cr:resources><![CDATA[1 billion dollars]]></cr:resources>
     <cr:date_of_delivery><![CDATA[2013-06-12T22:00:00.00Z]]></cr:date_of_delivery>
@@ -69,11 +90,11 @@
     <file:content>
       <encoding></encoding>
       <mime-type>image/jpeg</mime-type>
-      <filename>File-SWFC3600ppx4.jpg</filename>
-      <data>55f68ac1.blob</data>
-      <digest>ae67c142d92f257ff0db4b9719e4e86c</digest>
+      <filename>450px-SWFC3600ppx4.jpg</filename>
+      <data>45ae8242.blob</data>
+      <digest>816946925963010b79fcd875037c537b</digest>
     </file:content>
-    <file:filename><![CDATA[File-SWFC3600ppx4.jpg]]></file:filename>
+    <file:filename><![CDATA[450px-SWFC3600ppx4.jpg]]></file:filename>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
     <relatedtext:relatedtextresources/>
@@ -81,11 +102,15 @@
   <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/" name="templatesupport">
     <nxts:bindings>
       <templateEntry>
-        <templateId><![CDATA[c7d2740b-2c6c-41de-b39a-a824f0cc4cde]]></templateId>
+        <templateId><![CDATA[9796dacf-a9bf-40ce-ac48-e4123a58e6ac]]></templateId>
         <templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="abstract" type="content" readonly="true" source="cr:abstract"></nxdt:field><nxdt:field name="main_picture" type="picture" readonly="true" source="file:content"></nxdt:field></nxdt:templateParams>]]></templateData>
         <templateName><![CDATA[Customer reference using Word template]]></templateName>
         <useMainContentAsTemplate><![CDATA[false]]></useMainContentAsTemplate>
       </templateEntry>
     </nxts:bindings>
+  </schema>
+  <schema xmlns:damc="http://www.nuxeo.org/dam/schemas/common/" name="dam_common">
+    <damc:authoringDate/>
+    <damc:author/>
   </schema>
 </document>
