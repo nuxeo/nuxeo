@@ -7,6 +7,7 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink"%>
+<%@ page import="java.lang.Boolean"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Locale"%>
 
@@ -51,6 +52,7 @@ String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.
 String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0 #fff");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
+boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
 
 String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "92");
 String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "36");
@@ -79,8 +81,8 @@ if (selectedLanguage != null) { %>
 <!--
 
 html, body {
-	height: 100%;
-	overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -89,10 +91,13 @@ body {
   color: #343434;
   margin: 0;
   text-align: center;
+  <% if (!disableBackgroundSizeCover) { %>
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
-  background-size: cover; }
+  background-size: cover;
+  <%} %>
+}
 
 .leftColumn {
   width: 400px
@@ -150,7 +155,7 @@ body {
   -moz-box-sizing: border-box;
   border-radius: 3px;
   filter: alpha(opacity = 90);
-  margin-top: -160px;
+  margin-top: -110px;
   opacity: 0.9;
   padding: 1.5em 1em 1em;
   width: 300px }
