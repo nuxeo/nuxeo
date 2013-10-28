@@ -34,8 +34,8 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Base converter choosing the correct convert to generate a thumbnail
- * according to the Blob's mime type.
+ * Base converter choosing the correct convert to generate a thumbnail according
+ * to the Blob's mime type.
  *
  * @since 5.8
  */
@@ -74,16 +74,16 @@ public class AnyToThumbnailConverter implements Converter {
         ConversionService conversionService = Framework.getLocalService(ConversionService.class);
 
         String converterName = null;
-        if (mimeType.startsWith("image/")
-                || PDF_MIME_TYPE_PATTERN.matcher(mimeType).matches()) {
+        if ((mimeType.startsWith("image/") || PDF_MIME_TYPE_PATTERN.matcher(
+                mimeType).matches())
+                && conversionService.isConverterAvailable(
+                        PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME, true).isAvailable()) {
             converterName = PDF_AND_IMAGE_TO_THUMBNAIL_CONVERTER_NAME;
-        } else {
-            if (conversionService.isSourceMimeTypeSupported(
-                    ANY_TO_PDF_CONVERTER_NAME, mimeType)
-                    && conversionService.isConverterAvailable(
-                            ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME, true).isAvailable()) {
-                converterName = ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME;
-            }
+        } else if (conversionService.isSourceMimeTypeSupported(
+                ANY_TO_PDF_CONVERTER_NAME, mimeType)
+                && conversionService.isConverterAvailable(
+                        ANY_TO_PDF_CONVERTER_NAME, true).isAvailable()) {
+            converterName = ANY_TO_PDF_TO_THUMBNAIL_CONVERTER_NAME;
         }
         return converterName == null ? null : conversionService.convert(
                 converterName, blobHolder, parameters);
