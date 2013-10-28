@@ -19,14 +19,6 @@
       </acl>
     </access-control>
   </system>
-  <schema xmlns:ipr="http://www.nuxeo.org/dam/schemas/ipRights/" name="ip_rights">
-    <ipr:licence/>
-    <ipr:embargo_date/>
-    <ipr:expiration_date/>
-    <ipr:copyright_holder/>
-    <ipr:media_type/>
-    <ipr:geo_broadcast/>
-  </schema>
   <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
     <uid:uid><![CDATA[]]></uid:uid>
     <uid:minor_version><![CDATA[0]]></uid:minor_version>
@@ -97,9 +89,5 @@
         <useMainContentAsTemplate><![CDATA[false]]></useMainContentAsTemplate>
       </templateEntry>
     </nxts:bindings>
-  </schema>
-  <schema xmlns:damc="http://www.nuxeo.org/dam/schemas/common/" name="dam_common">
-    <damc:authoringDate/>
-    <damc:author/>
   </schema>
 </document>
