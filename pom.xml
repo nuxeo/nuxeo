@@ -101,7 +101,6 @@
     <module>nuxeo-social-collaboration</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
-    <module>nuxeo-cmf</module>
     <module>nuxeo-poll</module>
     <module>nuxeo-rss-reader</module>
     <module>nuxeo-flavors</module>
