@@ -15,6 +15,9 @@
           <field type="largetext">relatedtext</field>
         </schema>
         <indexing>
+          <neverPerDocumentFacets>
+            <facet>NotPerDocFacet</facet>
+          </neverPerDocumentFacets>
           <fulltext analyzer="french">
             <index> <!-- name="default" implied -->
               <!-- all props implied -->

@@ -15,6 +15,9 @@
           <field type="largetext">relatedtext</field>
         </schema>
         <indexing>
+          <neverPerDocumentFacets>
+            <facet>NotPerDocFacet</facet>
+          </neverPerDocumentFacets>
           <fulltext catalog="nuxeo" analyzer="French"/>
         </indexing>
         <xa-datasource>${nuxeo.test.vcs.xadatasource}</xa-datasource>
