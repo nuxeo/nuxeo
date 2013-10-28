@@ -107,11 +107,18 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             DocumentModel newRootContainer, CoreSession session)
             throws ClientException {
 
+        // If new root is child of a sync root, ignore registration
+        Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
+        SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
+        for (String existingRootPath : synchronizationRoots.getPaths()) {
+            if (newRootContainer.getPathAsString().startsWith(existingRootPath)) {
+                return;
+            }
+        }
+
         checkCanUpdateSynchronizationRoot(newRootContainer, session);
 
         // Unregister any sub-folder of the new root
-        Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
-        SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
         for (String existingRootPath : synchronizationRoots.getPaths()) {
             String prefixPath = newRootContainer.getPathAsString() + "/";
             if (existingRootPath.startsWith(prefixPath)) {

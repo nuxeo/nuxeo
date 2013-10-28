@@ -17,11 +17,13 @@
 package org.nuxeo.drive.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -100,6 +103,14 @@ public class TestNuxeoDriveManager {
 
     protected DocumentRef user2Workspace;
 
+    protected DocumentModel workspace_1;
+
+    protected DocumentModel workspace_2;
+
+    protected DocumentModel folder_1_1;
+
+    protected DocumentModel folder_2_1;
+
     @Before
     public void createUserSessionsAndFolders() throws Exception {
         Session userDir = directoryService.getDirectory("userDirectory").getSession();
@@ -115,14 +126,14 @@ public class TestNuxeoDriveManager {
         } finally {
             userDir.close();
         }
-        session.createDocument(session.createDocumentModel(
+        workspace_1 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces", "workspace-1", "Workspace"));
-        session.createDocument(session.createDocumentModel(
+        folder_1_1 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces/workspace-1", "folder-1-1",
                 "Folder"));
-        DocumentModel workspace_2 = session.createDocument(session.createDocumentModel(
+        workspace_2 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces", "workspace-2", "Workspace"));
-        session.createDocument(session.createDocumentModel(
+        folder_2_1 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces/workspace-2", "folder-2-1",
                 "Folder"));
         ACP acp = session.getACP(workspace_2.getRef());
@@ -336,6 +347,50 @@ public class TestNuxeoDriveManager {
         session.save();
         checkRootsCount(user1, 0);
         checkRootsCount(user2, 0);
+    }
+
+    @Test
+    public void testSyncRootChild() throws ClientException {
+
+        // Make user1 register child of workspace-2: folder-2-1
+        assertFalse(isUserSubscribed("user1", folder_2_1));
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user1Session.getPrincipal(), folder_2_1, user1Session);
+        assertTrue(isUserSubscribed("user1", folder_2_1));
+
+        // Make user1 register workspace-2, should unregister child folder-2-1
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user1Session.getPrincipal(), workspace_2, user1Session);
+        folder_2_1 = user1Session.getDocument(new PathRef(
+                "/default-domain/workspaces/workspace-2/folder-2-1"));
+        assertTrue(isUserSubscribed("user1", workspace_2));
+        assertFalse(isUserSubscribed("user1", folder_2_1));
+
+        // Make user1 register folder-2-1, should have no effect
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user1Session.getPrincipal(), folder_2_1, user1Session);
+        folder_2_1 = user1Session.getDocument(new PathRef(
+                "/default-domain/workspaces/workspace-2/folder-2-1"));
+        assertFalse(isUserSubscribed("user1", folder_2_1));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected boolean isUserSubscribed(String userName, DocumentModel container)
+            throws ClientException {
+        if (!container.hasFacet(NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET)) {
+            return false;
+        }
+        List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) container.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
+        if (subscriptions == null) {
+            return false;
+        }
+        for (Map<String, Object> subscription : subscriptions) {
+            if (userName.equals(subscription.get("username"))
+                    && (Boolean) subscription.get("enabled")) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
