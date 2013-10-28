@@ -44,7 +44,11 @@ public class LogEntryListWriter extends EntityListWriter<LogEntry> {
     @Override
     public boolean isWriteable(Class<?> arg0, Type arg1, Annotation[] arg2,
             MediaType arg3) {
-        return LogEntryList.class.isAssignableFrom(arg0);
+        if (LogEntryList.class.isAssignableFrom(arg0)) {
+            return true;
+        } else {
+            return super.isWriteable(arg0, arg1, arg2, arg3);
+        }
     }
 
     @Override
