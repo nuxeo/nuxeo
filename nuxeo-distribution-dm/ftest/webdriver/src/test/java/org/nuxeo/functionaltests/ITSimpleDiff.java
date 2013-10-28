@@ -30,8 +30,8 @@ import org.openqa.selenium.WebElement;
 /**
  * Simple Diff tests
  *
- * WARNING: Class copied from https://github.com/nuxeo/marketplace-diff/
- * Keep in sync with it.
+ * WARNING: Class copied from https://github.com/nuxeo/marketplace-diff/ Keep in
+ * sync with it.
  *
  * @since 5.7.2
  */
@@ -56,7 +56,6 @@ public class ITSimpleDiff extends AbstractTest {
     @Test
     public void testDiffDescription() throws Exception {
         DocumentBasePage documentBasePage = login();
-
 
         documentBasePage = documentBasePage.getNavigationSubPage().goToDocument(
                 "Workspaces");
@@ -95,12 +94,14 @@ public class ITSimpleDiff extends AbstractTest {
 
         WebElement description1 = findElementWithTimeout(By.xpath(LEFT_DESCRIPTION_XPATH));
         String description1Text = description1.getText();
-        assertTrue(description1Text != null && description1Text.equals(DESCRIPTION_1));
+        assertTrue(description1Text != null
+                && description1Text.equals(DESCRIPTION_1));
 
         WebElement description2 = findElementWithTimeout(By.xpath(RIGHT_DESCRIPTION_XPATH));
 
         String description2Text = description2.getText();
-        assertTrue(description2Text != null && description2Text.equals(DESCRIPTION_2));
+        assertTrue(description2Text != null
+                && description2Text.equals(DESCRIPTION_2));
 
         deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
 
