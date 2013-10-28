@@ -28,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link XMap} object to manage configuration of the login screen (login.jsp)
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
@@ -65,8 +65,17 @@ public class LoginScreenConfig implements Serializable {
     @XNode("logoHeight")
     protected String logoHeight;
 
+    /**
+     * Boolean to disable background-cover CSS behavior on login page
+     * background, as it may not be compliant with all browsers (see
+     * NXP-12972/NXP-12978).
+     *
+     * @since 5.8
+     */
+    @XNode("disableBackgroundSizeCover")
+    protected Boolean disableBackgroundSizeCover;
+
     public LoginScreenConfig() {
-        //
     }
 
     public List<LoginProviderLink> getProviders() {
@@ -107,6 +116,9 @@ public class LoginScreenConfig implements Serializable {
         }
         if (newConfig.loginBoxWidth != null) {
             this.loginBoxWidth = newConfig.loginBoxWidth;
+        }
+        if (newConfig.disableBackgroundSizeCover != null) {
+            this.disableBackgroundSizeCover = newConfig.disableBackgroundSizeCover;
         }
         if (newConfig.logoAlt != null) {
             this.logoAlt = newConfig.logoAlt;
@@ -235,6 +247,14 @@ public class LoginScreenConfig implements Serializable {
 
     public String getNewsIframeUrl() {
         return newsIframeUrl;
+    }
+
+    /**
+     * @since 5.8
+     * @see #disableBackgroundSizeCover
+     */
+    public Boolean getDisableBackgroundSizeCover() {
+        return disableBackgroundSizeCover;
     }
 
 }

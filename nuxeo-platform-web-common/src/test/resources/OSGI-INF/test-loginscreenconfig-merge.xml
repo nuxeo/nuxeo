@@ -9,6 +9,7 @@
 
       <headerStyle>#DDDDDD</headerStyle>
       <newsIframeUrl></newsIframeUrl>
+      <disableBackgroundSizeCover>true</disableBackgroundSizeCover>
 
       <loginProviders>
         <loginProvider name="google">

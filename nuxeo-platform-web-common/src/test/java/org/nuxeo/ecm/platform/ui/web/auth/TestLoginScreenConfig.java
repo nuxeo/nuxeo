@@ -18,10 +18,11 @@
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
@@ -61,6 +62,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config);
 
         assertEquals("#CCCCCC", config.getHeaderStyle());
+        assertNull(config.getDisableBackgroundSizeCover());
         assertEquals(3, config.getProviders().size());
 
     }
@@ -92,6 +94,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("facebook"));
         assertNotNull(config.getProvider("linkedin"));
         assertTrue(config.getDisplayNews());
+        assertNull(config.getDisableBackgroundSizeCover());
 
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
         deployContrib(WEB_BUNDLE_TEST,
@@ -105,7 +108,7 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("linkedin"));
         assertNull(config.getProvider("facebook"));
         assertEquals("News", config.getProvider("google").getLink(null, null));
-
+        assertEquals(Boolean.TRUE, config.getDisableBackgroundSizeCover());
     }
 
     @Test
