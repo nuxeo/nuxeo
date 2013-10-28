@@ -106,8 +106,6 @@
         <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
-        <module>nuxeo-distribution-cmf</module>
-        <module>nuxeo-marketplace-cmf</module>
         <module>nuxeo-distribution-jboss</module>
       </modules>
     </profile>
@@ -123,8 +121,6 @@
         <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
-        <module>nuxeo-distribution-cmf</module>
-        <module>nuxeo-marketplace-cmf</module>
         <module>nuxeo-distribution-tomcat</module>
       </modules>
     </profile>
@@ -143,8 +139,6 @@
         <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
-        <module>nuxeo-distribution-cmf</module>
-        <module>nuxeo-marketplace-cmf</module>
         <module>nuxeo-distribution-jboss</module>
         <module>nuxeo-distribution-tomcat</module>
         <module>nuxeo-functional-tests</module>
@@ -158,8 +152,6 @@
         <module>nuxeo-distribution-dm/ftest/webdriver</module>
         <module>nuxeo-distribution-dm/ftest/selenium</module>
         <module>nuxeo-distribution-dm/ftest/funkload</module>
-        <!-- temporarily DEACTIVATE CMF Selenium tests -->
-        <!-- <module>nuxeo-distribution-cmf/ftest/selenium</module> -->
         <module>nuxeo-distribution-social-collaboration/ftest/selenium</module>
         <module>nuxeo-marketplace-dam/ftest/webdriver</module>
       </modules>
