@@ -299,12 +299,15 @@ public class DialectH2 extends Dialect {
         if (t instanceof SQLException) {
             String sqlState = ((SQLException) t).getSQLState();
             if ("23002".equals(sqlState)) {
-                // org.h2.jdbc.JdbcSQLException: Referential integrity
-                // constraint violation
+                // Referential integrity constraint violation
                 return true;
             }
             if ("40001".equals(sqlState)) {
-                // org.h2.jdbc.JdbcSQLException: Deadlock detected
+                // Deadlock detected
+                return true;
+            }
+            if ("HYT00".equals(sqlState)) {
+                // Timeout trying to lock table
                 return true;
             }
         }
