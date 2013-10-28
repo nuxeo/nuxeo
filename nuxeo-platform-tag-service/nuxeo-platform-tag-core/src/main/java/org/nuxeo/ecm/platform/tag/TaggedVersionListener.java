@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -59,7 +60,7 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             CoreSession session = docCtx.getCoreSession();
             DocumentModel doc = docCtx.getSourceDocument();
-            if (doc == null) {
+            if (doc == null || doc instanceof ShallowDocumentModel) {
                 return;
             }
             String docId = doc.getId();
