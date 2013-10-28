@@ -7,7 +7,7 @@
 
   <link href="${skinPath}/css/highlight.default.css" media="screen" rel="stylesheet" type="text/css"/>
   <link href="${skinPath}/css/screen.css" media="screen" rel="stylesheet" type="text/css"/>
-  <script type="text/javascript" src="${skinPath}/lib/shred.bundle.js"></script>
+  <script type="text/javascript" src="${skinPath}/lib/shred.bundle.nx.js"></script>
   <script src="${skinPath}/lib/jquery-1.8.0.min.js" type="text/javascript"></script>
   <script src="${skinPath}/lib/jquery.slideto.min.js" type="text/javascript"></script>
   <script src="${skinPath}/lib/jquery.wiggle.min.js" type="text/javascript"></script>
