@@ -69,6 +69,7 @@
       "type": "string",
       "required": true
     },
+    <#include "views/doc/datatypes/paginable.ftl"/>,
     "entries": {
       "uniqueItems": false,
       "type": "array",
