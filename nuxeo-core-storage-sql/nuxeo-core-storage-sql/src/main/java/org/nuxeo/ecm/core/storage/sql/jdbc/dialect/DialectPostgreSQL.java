@@ -1124,6 +1124,25 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public boolean isConcurrentUpdateException(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        if (t instanceof SQLException) {
+            String sqlState = ((SQLException) t).getSQLState();
+            if ("23503".equals(sqlState)) {
+                // insert or update on table ... violates foreign key constraint
+                return true;
+            }
+            if ("40P01".equals(sqlState)) {
+                // deadlock detected
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean supportsPaging() {
         return true;
     }

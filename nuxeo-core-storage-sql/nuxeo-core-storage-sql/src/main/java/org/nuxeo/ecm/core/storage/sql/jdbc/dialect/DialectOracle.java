@@ -599,6 +599,25 @@ public class DialectOracle extends Dialect {
         return properties;
     }
 
+    protected int getOracleErrorCode(Throwable t) {
+        try {
+            Method m = t.getClass().getMethod("getOracleError");
+            Integer oracleError = (Integer) m.invoke(t);
+            if (oracleError != null) {
+                int errorCode = oracleError.intValue();
+                if (errorCode != 0) {
+                    return errorCode;
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        if (t instanceof SQLException) {
+            return ((SQLException) t).getErrorCode();
+        }
+        return 0;
+    }
+
     @Override
     public boolean isConnectionClosedException(Throwable t) {
         while (t.getCause() != null) {
@@ -607,26 +626,23 @@ public class DialectOracle extends Dialect {
         if (t instanceof SocketException) {
             return true;
         }
-        // XAResource.start:
-        // oracle.jdbc.xa.OracleXAException
-        Integer err = Integer.valueOf(0);
-        try {
-            Method m = t.getClass().getMethod("getOracleError");
-            err = (Integer) m.invoke(t);
-        } catch (Exception e) {
-            // ignore
-        }
-        if (Integer.valueOf(0).equals(err)) {
-            try {
-                err = ((SQLException) t).getErrorCode();
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-        switch (err.intValue()) {
+        switch (getOracleErrorCode(t)) {
         case 17002: // ORA-17002 IO Exception
         case 17008: // ORA-17008 Closed Connection
         case 17410: // ORA-17410 No more data to read from socket
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isConcurrentUpdateException(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        switch (getOracleErrorCode(t)) {
+        case 60: // ORA-00060: deadlock detected while waiting for resource
+        case 2291: // ORA-02291: integrity constraint ... violated - parent key not found
             return true;
         }
         return false;

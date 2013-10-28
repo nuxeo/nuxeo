@@ -242,18 +242,6 @@ public class DialectDB2 extends Dialect {
     }
 
     @Override
-    public boolean isConnectionClosedException(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
-        }
-        if (t instanceof SocketException) {
-            return true;
-        }
-        // TODO
-        return false;
-    }
-
-    @Override
     public String getValidationQuery() {
         return "VALUES 1";
     }

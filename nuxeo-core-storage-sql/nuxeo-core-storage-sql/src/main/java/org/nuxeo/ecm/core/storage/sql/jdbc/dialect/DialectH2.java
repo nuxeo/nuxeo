@@ -292,6 +292,26 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
+    public boolean isConcurrentUpdateException(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        if (t instanceof SQLException) {
+            String sqlState = ((SQLException) t).getSQLState();
+            if ("23002".equals(sqlState)) {
+                // org.h2.jdbc.JdbcSQLException: Referential integrity
+                // constraint violation
+                return true;
+            }
+            if ("40001".equals(sqlState)) {
+                // org.h2.jdbc.JdbcSQLException: Deadlock detected
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String getSQLStatementsFilename() {
         return "nuxeovcs/h2.sql.txt";
     }

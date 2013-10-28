@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
@@ -872,6 +873,118 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root4 = session4.getRootNode();
         Node foo4 = session4.getChildNode(root4, "foo", false);
         assertEquals(foo3.getId(), foo4.getId());
+    }
+
+    protected static Xid begin(Session session) throws XAException {
+        XAResource xaresource = ((SessionImpl) session).getXAResource();
+        Xid xid = new XidImpl(UUID.randomUUID().toString());
+        xaresource.start(xid, XAResource.TMNOFLAGS);
+        return xid;
+    }
+
+    protected static void commit(Session session, Xid xid) throws XAException {
+        XAResource xaresource = ((SessionImpl) session).getXAResource();
+        xaresource.end(xid, XAResource.TMSUCCESS);
+        xaresource.commit(xid, true);
+    }
+
+    protected static void rollback(Session session, Xid xid) throws XAException {
+        XAResource xaresource = ((SessionImpl) session).getXAResource();
+        xaresource.end(xid, XAResource.TMFAIL);
+        xaresource.rollback(xid);
+    }
+
+    @Test
+    // unfortunately on H2 there's nothing much we can do about this
+    @Ignore
+    public void testTimeoutLockingTableWithH2() throws Exception {
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node node1 = session1.addChildNode(root1, "foo1", null, "TestDoc",
+                false);
+        session1.save();
+
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node foo2 = session2.addChildNode(root2, "foo2", null, "TestDoc", false);
+        session2.save();
+
+        Xid xid1 = begin(session1);
+        node1.setSimpleProperty("tst:title", "t1");
+        session1.save();
+
+        Xid xid2 = begin(session2);
+        // timeout trying to lock table TESTSCHEMA (h2):
+        foo2.getSimpleProperty("tst:title");
+        session2.save();
+
+        commit(session1, xid1);
+        commit(session2, xid2);
+
+        session1.close();
+        session2.close();
+    }
+
+    @Test
+    public void testDeadlockDetection() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        session.addChildNode(root, "doc", null, "TestDoc", false);
+        session.save();
+        DeadlockTestJob r1 = new DeadlockTestJob("foo1");
+        DeadlockTestJob r2 = new DeadlockTestJob("foo2");
+        try {
+            DeadlockTestJob.run(r1, r2);
+            fail("Expected ConcurrentUpdateStorageException");
+        } catch (ConcurrentUpdateStorageException e) {
+            // ok, detected
+        }
+    }
+
+    protected class DeadlockTestJob extends LockStepJob {
+
+        protected String string;
+
+        public DeadlockTestJob(String string) {
+            this.string = string;
+        }
+
+        @Override
+        public void job() throws Exception {
+            Session session = repository.getConnection();
+            Node root = session.getRootNode();
+            Node node = session.getChildNode(root, "doc", false);
+            Xid xid = null;
+            xid = begin(session);
+            try {
+                if (thread(1)) {
+                    node.setSimpleProperty("tst:title", "t1"); // TESTSCHEMA
+                    session.save();
+                }
+                if (thread(2)) {
+                    node.setSimpleProperty("ecm:lifeCycleState", "s2"); // MISC
+                    session.save();
+                }
+                if (thread(1)) {
+                    node.setSimpleProperty("ecm:lifeCycleState", "s1"); // MISC
+                } else {
+                    node.setSimpleProperty("tst:title", "t2"); // TESTSCHEMA
+                }
+                session.save();
+            } finally {
+                try {
+                    if (!(DatabaseHelper.DATABASE instanceof DatabaseMySQL)) {
+                        // ignore stupid MySQL failing on end():
+                        // com.mysql.jdbc.jdbc2.optional.MysqlXAException:
+                        // XA_RBDEADLOCK: Transaction branch was rolled back:
+                        // deadlock was detected
+                        rollback(session, xid);
+                    }
+                } finally {
+                    session.close();
+                }
+            }
+        }
     }
 
     public void TODOtestConcurrentUpdate() throws Exception {

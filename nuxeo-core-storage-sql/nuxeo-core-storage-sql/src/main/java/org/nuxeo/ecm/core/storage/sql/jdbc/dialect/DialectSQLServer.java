@@ -634,6 +634,24 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public boolean isConcurrentUpdateException(Throwable t) {
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        if (t instanceof SQLException) {
+            switch (((SQLException) t).getErrorCode()) {
+            case 547: // The INSERT statement conflicted with the FOREIGN KEY
+                      // constraint ...
+            case 1205: // Transaction (Process ID ...) was deadlocked on ...
+                       // resources with another process and has been chosen as
+                       // the deadlock victim. Rerun the transaction
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String getBlobLengthFunction() {
         return "DATALENGTH";
     }

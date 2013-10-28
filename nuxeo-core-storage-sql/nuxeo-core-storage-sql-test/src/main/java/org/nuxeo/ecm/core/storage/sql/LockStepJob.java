@@ -56,8 +56,9 @@ public abstract class LockStepJob implements Runnable {
         try {
             job();
         } catch (Throwable t) {
-            System.err.println("Exception in thread " + Thread.currentThread());
-            t.printStackTrace();
+            // System.err.println("Exception in thread " +
+            // Thread.currentThread());
+            // t.printStackTrace();
             throwable = t;
         }
     }

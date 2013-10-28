@@ -453,6 +453,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return list;
         } catch (Exception e) {
             checkConnectionReset(e, true);
+            checkConcurrentUpdate(e);
             throw new StorageException("Could not select: " + select.sql, e);
         } finally {
             if (ps != null) {
