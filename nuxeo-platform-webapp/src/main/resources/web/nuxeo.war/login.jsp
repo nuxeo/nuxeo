@@ -77,6 +77,12 @@ if (selectedLanguage != null) { %>
 </script>
 <style type="text/css">
 <!--
+
+html, body {
+	height: 100%;
+	overflow: hidden;
+}
+
 body {
   font: normal 12px/18pt "Lucida Grande", Arial, sans-serif;
   background: <%=bodyBackgroundStyle%>;
