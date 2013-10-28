@@ -37,8 +37,7 @@
 
     <!-- Contextual tools buttons contrib NXP-9039 -->
     <action id="documentLock" link="#{lockActions.lockCurrentDocument}"
-      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png"
-      accessKey="l">
+      order="10" label="command.lock" type="link" icon="/icons/contextual_menu/unlocked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_lock</filter-id>
