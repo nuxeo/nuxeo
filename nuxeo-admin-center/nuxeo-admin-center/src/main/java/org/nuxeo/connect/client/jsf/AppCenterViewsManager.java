@@ -22,12 +22,9 @@ package org.nuxeo.connect.client.jsf;
 import java.io.Serializable;
 import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -349,37 +346,16 @@ public class AppCenterViewsManager implements Serializable {
         } else {
             FileTime update = getLastUpdateDate();
             if (update != null) {
-                try {
-                    Calendar date = toCalendar(update.toString());
-                    DateFormat df = new SimpleDateFormat(
-                            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-                    df.setTimeZone(TimeZone.getDefault());
-                    params = new Object[] { df.format(date.getTime()) };
-                } catch (ParseException e) {
-                    params = new Object[] { String.format(
-                            "%s (could not be parsed as a valid date: %s)",
-                            update, e.getLocalizedMessage()) };
-                }
+                DateFormat df = new SimpleDateFormat(
+                        "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+                df.setTimeZone(TimeZone.getDefault());
+                params = new Object[] { df.format(new Date(update.toMillis())) };
             }
         }
 
         return translate(
                 LABEL_STUDIO_UPDATE_STATUS + studioSnapshotStatus.name(),
                 params);
-    }
-
-    protected Calendar toCalendar(final String iso8601string)
-            throws ParseException {
-        Calendar calendar = GregorianCalendar.getInstance();
-        String s = iso8601string.replace("Z", "+00:00");
-        try {
-            s = s.substring(0, 22) + s.substring(23);
-        } catch (IndexOutOfBoundsException e) {
-            throw new ParseException("Invalid length", 0);
-        }
-        Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s);
-        calendar.setTime(date);
-        return calendar;
     }
 
     // TODO: plug a notifier for status to be shown to the user
