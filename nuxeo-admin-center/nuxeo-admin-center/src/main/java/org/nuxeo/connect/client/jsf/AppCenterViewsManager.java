@@ -264,9 +264,8 @@ public class AppCenterViewsManager implements Serializable {
     /**
      * Returns true if Studio snapshot module should be validated.
      * <p>
-     * Validation can be skipped by user, or can be globally disabled by
-     * setting framework property "studio.snapshot.disablePkgValidation" to
-     * true.
+     * Validation can be skipped by user, or can be globally disabled by setting
+     * framework property "studio.snapshot.disablePkgValidation" to true.
      *
      * @since 5.7.1
      */
@@ -433,9 +432,6 @@ public class AppCenterViewsManager implements Serializable {
                     }
                     // check deps requirements
                     if (pkgDeps != null && pkgDeps.length > 0) {
-                        // FIXME: this is checking deps against the last
-                        // downloaded version of the package, not the
-                        // descriptor that was just downloaded
                         DependencyResolution resolution = pm.resolveDependencies(
                                 packageId,
                                 PlatformVersionHelper.getPlatformFilter());
@@ -445,15 +441,10 @@ public class AppCenterViewsManager implements Serializable {
                             // information
                             resolution = pm.resolveDependencies(packageId, null);
                         }
-                        // FIXME: the resolution may be marked as failed
-                        // because of error "[DependencyResolution] Couldn't
-                        // order [atchertchian-SANDBOX-0.0.0-SNAPSHOT] missing
-                        // [nuxeo-dm:5.8.0-SNAPSHOT, nuxeo-dm:5.8.0]", in which
-                        // case information must be shown to the user.
                         if (resolution.isFailed()) {
                             status.addError(String.format(
-                                    "Dependency check has failed for package '%s'",
-                                    packageId));
+                                    "Dependency check has failed for package '%s' (%s)",
+                                    packageId, resolution));
                         } else {
                             List<String> pkgToInstall = resolution.getInstallPackageIds();
                             if (pkgToInstall != null
