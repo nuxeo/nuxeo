@@ -124,9 +124,9 @@
     <nuxeo.webengine.version>5.8-SNAPSHOT</nuxeo.webengine.version>
     <nuxeo.features.version>5.8-SNAPSHOT</nuxeo.features.version>
 
-    <nuxeo.connect.client.version>1.4.11-SNAPSHOT</nuxeo.connect.client.version>
+    <nuxeo.connect.client.version>1.4.11</nuxeo.connect.client.version>
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
-    <nuxeo.ftest.version>1.7.10-SNAPSHOT</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.7.10</nuxeo.ftest.version>
     <nuxeo.richfaces.version>3.3.1.GA-NX9</nuxeo.richfaces.version>
 
     <tomcat.version>7.0.42</tomcat.version>
@@ -4546,8 +4546,8 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
-                  <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
+                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                  <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
               </requireReleaseDeps>
