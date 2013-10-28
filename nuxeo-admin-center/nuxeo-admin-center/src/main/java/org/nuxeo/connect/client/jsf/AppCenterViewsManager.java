@@ -20,6 +20,7 @@
 package org.nuxeo.connect.client.jsf;
 
 import java.io.Serializable;
+import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -140,7 +141,7 @@ public class AppCenterViewsManager implements Serializable {
      */
     protected ValidationStatus studioSnapshotValidationStatus;
 
-    private String lastUpdate = null;
+    private FileTime lastUpdate = null;
 
     public String getSearchString() {
         if (searchString == null) {
@@ -281,7 +282,7 @@ public class AppCenterViewsManager implements Serializable {
                 label, params);
     }
 
-    protected String getLastUpdateDate() {
+    protected FileTime getLastUpdateDate() {
         if (lastUpdate == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             List<DownloadablePackage> pkgs = pm.listAllStudioRemotePackages();
@@ -300,7 +301,7 @@ public class AppCenterViewsManager implements Serializable {
                     log.error(e);
                 }
             }
-            return lastUpdate != null ? lastUpdate : "Not installed";
+            return lastUpdate;
         } else {
             return lastUpdate;
         }
@@ -346,10 +347,10 @@ public class AppCenterViewsManager implements Serializable {
         } else if (SnapshotStatus.downloading.equals(studioSnapshotStatus)) {
             params = new Object[] { String.valueOf(studioSnapshotDownloadProgress) };
         } else {
-            String update = getLastUpdateDate();
+            FileTime update = getLastUpdateDate();
             if (update != null) {
                 try {
-                    Calendar date = toCalendar(update);
+                    Calendar date = toCalendar(update.toString());
                     DateFormat df = new SimpleDateFormat(
                             "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
                     df.setTimeZone(TimeZone.getDefault());
