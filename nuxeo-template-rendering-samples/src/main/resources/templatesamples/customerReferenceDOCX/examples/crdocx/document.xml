@@ -9,11 +9,9 @@
     <facet>Downloadable</facet>
     <facet>TemplateBased</facet>
     <facet>Commentable</facet>
-    <facet>Asset</facet>
     <facet>Versionable</facet>
     <facet>Publishable</facet>
     <facet>HasRelatedText</facet>
-    <facet>Thumbnail</facet>
     <access-control>
       <acl name="inherited">
         <entry principal="Administrator" permission="Everything" grant="true"/>
@@ -59,15 +57,6 @@
   </schema>
   <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
     <files:files/>
-  </schema>
-  <schema xmlns:thumb="http://www.nuxeo.org/ecm/schemas/thumbnail" name="thumbnail">
-    <thumb:thumbnail>
-      <encoding></encoding>
-      <mime-type>application/octet-stream</mime-type>
-      <filename>nuxeoImageTarget1905081991846200476.png</filename>
-      <data>d0da5b9a.blob</data>
-      <digest>8907c6d57e5b16b71120c3717250b5f6</digest>
-    </thumb:thumbnail>
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/icons/image.gif]]></common:icon>
