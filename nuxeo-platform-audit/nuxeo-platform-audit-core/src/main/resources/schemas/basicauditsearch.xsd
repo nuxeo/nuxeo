@@ -35,6 +35,10 @@
   <xs:element name="targetDocumentPath" type="xs:string"/>
   <xs:element name="targetRepository" type="xs:string"/>
 
+  <xs:element name="logId" type="xs:integer"/>
+
+
+
 </xs:schema>
 
 

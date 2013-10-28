@@ -286,4 +286,29 @@ public class TestDocumentAuditPageProviderOperation {
         //dump(entries);
     }
 
+    @Test
+    public void testPageProviderQueryViaId() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("providerName", "AUDIT_BROWSER");
+        params.put("pageSize", 10);
+        params.put("maxResults", 10);
+        params.put("currentPageIndex", 0);
+
+        List<LogEntry> entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
+        //dump(entries);
+
+        long lastId = entries.get(entries.size()-1).getId();
+
+        Properties namedParams = new Properties();
+        namedParams.put("bas:logId", ""+lastId);
+        params.put("namedQueryParams", namedParams);
+
+        entries = (List<LogEntry>) service.run(ctx, AuditPageProviderOperation.ID, params);
+
+        Assert.assertEquals(lastId+1, entries.get(0).getId());
+        //dump(entries);
+    }
+
 }

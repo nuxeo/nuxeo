@@ -9,6 +9,9 @@
     <genericPageProvider name="AUDIT_BROWSER"
       class="org.nuxeo.ecm.platform.audit.api.AuditPageProvider">
       <whereClause docType="BasicAuditSearch">
+        <predicate parameter="log.id" operator="&gt;">
+          <field schema="basicauditsearch" name="logId" />
+        </predicate>
         <predicate parameter="log.eventDate" operator="BETWEEN">
           <field schema="basicauditsearch" name="startDate" />
           <field schema="basicauditsearch" name="endDate" />
