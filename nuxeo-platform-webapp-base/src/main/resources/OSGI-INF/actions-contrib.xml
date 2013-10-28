@@ -47,8 +47,7 @@
     </action>
 
     <action id="documentUnlock" link="#{lockActions.unlockCurrentDocument}"
-      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png"
-      accessKey="l">
+      order="10" label="command.unlock" type="link" icon="/icons/contextual_menu/locked.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
