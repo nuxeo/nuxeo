@@ -12,11 +12,19 @@
 package org.nuxeo.ecm.webengine.app.jersey;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.ApplicationServlet;
@@ -29,12 +37,108 @@ import org.nuxeo.ecm.webengine.jaxrs.servlet.ApplicationServlet;
  */
 public class WebEngineServlet extends ApplicationServlet {
 
+    private final class DefaultContentTypeRequestWrapper extends
+            HttpServletRequestWrapper {
+
+        protected final Hashtable<String,String[]> headers;
+
+        protected final String lCONTENT_TYPE = HttpHeaders.CONTENT_TYPE.toLowerCase();
+
+        protected final String lFILE_TYPE = "X-File-Type".toLowerCase();
+
+
+        protected DefaultContentTypeRequestWrapper(HttpServletRequest request) {
+            super(request);
+            headers = patchHeaders(request);
+        }
+
+
+        protected Hashtable<String,String[]> patchHeaders(HttpServletRequest request) {
+            Hashtable<String, String[]> headers = new Hashtable<String,String[]>();
+            // collect headers from request
+            Enumeration<String> eachNames = request.getHeaderNames();
+            while (eachNames.hasMoreElements()) {
+                String name = eachNames.nextElement().toLowerCase();
+                List<String> values = new LinkedList<String>();
+                Enumeration<String> eachValues = request.getHeaders(name);
+                while (eachValues.hasMoreElements()) {
+                    values.add(eachValues.nextElement());
+                }
+                headers.put(name, values.toArray(new String[values.size()]));
+            }
+            // patch content type
+            String ctype = request.getContentType();
+            if (ctype == null || ctype.isEmpty()) {
+                headers.put(lCONTENT_TYPE, new String[] { "application/octet-stream" } );
+            } else {
+                patchContentType(request, headers, lCONTENT_TYPE);
+                patchContentType(request, headers, lFILE_TYPE);
+            }
+            return headers;
+        }
+
+
+        protected void patchContentType(HttpServletRequest request,
+                Hashtable<String, String[]> headers, String name) {
+            String[] ctypes = headers.get(name);
+            int index = 0;
+            Enumeration<String> eachCtypes = request.getHeaders(name);
+            while (eachCtypes.hasMoreElements()) {
+                String value = eachCtypes.nextElement();
+                if (value.isEmpty()) {
+                    ctypes[index++] = "application/octet-stream";
+                } else if (!value.contains("/")) {
+                    ctypes[index++] = "application/".concat(value);
+                }
+            }
+        }
+
+        @Override
+        public Enumeration<String> getHeaderNames() {
+            return headers.keys();
+        }
+
+        @Override
+        public String getHeader(String name) {
+            String lname = name.toLowerCase();
+            if (!headers.containsKey(lname)) {
+                return null;
+            }
+            return headers.get(lname)[0];
+        }
+
+        @Override
+        public Enumeration<String> getHeaders(final String name) {
+            final String lname = name.toLowerCase();
+            if (!headers.containsKey(lname)) {
+                return Collections.emptyEnumeration();
+            }
+            return new Enumeration<String>() {
+                String[] values = headers.get(lname);
+                int index = 0;
+                @Override
+                public boolean hasMoreElements() {
+                    return index < values.length;
+                }
+
+                @Override
+                public String nextElement() {
+                    if (index >= values.length) {
+                        throw new NoSuchElementException(index + " is higher than " + values.length);
+                    }
+                    return values[index++];
+                }
+            };
+        }
+
+    }
+
     private static final long serialVersionUID = 1L;
 
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        this.bundle = Activator.getInstance().getContext().getBundle();
+        bundle = Activator.getInstance().getContext().getBundle();
         super.init(config);
     }
 
@@ -56,6 +160,10 @@ public class WebEngineServlet extends ApplicationServlet {
             // character
             // from the input stream - see WebComponent.isEntityPresent.
             request.getParameterMap();
+        }
+        final String ctype = request.getHeader(HttpHeaders.CONTENT_TYPE);
+        if (ctype == null || ctype.length() == 0 || !ctype.contains("/")) {
+            request = new DefaultContentTypeRequestWrapper(request);
         }
         container.service(request, response);
     }
