@@ -21,10 +21,12 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.operations.NuxeoDriveOperationHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
@@ -48,7 +50,7 @@ public class NuxeoDriveSetActiveFactories {
     protected boolean enable = true;
 
     @OperationMethod
-    public boolean run() throws Exception {
+    public Blob run() throws Exception {
         String contrib = null;
         if ("userworkspace".equals(profile)) {
             contrib = "/OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml";
@@ -58,7 +60,7 @@ public class NuxeoDriveSetActiveFactories {
             log.warn(String.format(
                     "No active file system item factory contribution for profile '%s'.",
                     profile));
-            return false;
+            return NuxeoDriveOperationHelper.asJSONBlob(false);
         }
         URL url = NuxeoDriveSetActiveFactories.class.getResource(contrib);
         if (enable) {
@@ -67,7 +69,8 @@ public class NuxeoDriveSetActiveFactories {
             Framework.getRuntime().getContext().undeploy(url);
         }
         Framework.getLocalService(ReloadService.class).reload();
-        return true;
+        return NuxeoDriveOperationHelper.asJSONBlob(true);
+
     }
 
 }
