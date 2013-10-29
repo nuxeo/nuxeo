@@ -33,9 +33,16 @@ ${nxItem.documentationHtml}
 <span id="searchMatchResult"></span>
 <script>
 function searchContrib(text) {
+
   $('#highlight-plugin').removeHighlight();
   $('div.searchableText').addClass('hiddenResource');
   $('#searchMatchResult').html("");
+
+  if (text.trim().length==0) {
+    $('#searchMatchResult').html("empty search string!");
+    return;
+  }
+
   var elems = $('div.searchableText:contains("' + text +'")');
   for (var i = 0; i < elems.size(); i++) {
     var elem = $(elems[i]);
