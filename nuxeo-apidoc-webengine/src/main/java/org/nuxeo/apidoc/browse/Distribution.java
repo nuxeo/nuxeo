@@ -19,6 +19,8 @@ package org.nuxeo.apidoc.browse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +112,28 @@ public class Distribution extends ModuleRoot {
     @Produces("text/html")
     public Object doGet() {
         return getView("index").arg("hideNav", Boolean.TRUE);
+    }
+
+    @Path("latest")
+    public Resource getLatest() {
+        List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots(
+                (ctx.getCoreSession()));
+
+        List<String> keys = new ArrayList<String>();
+        for (DistributionSnapshot snap : snaps) {
+            if (snap.getName().equalsIgnoreCase("Nuxeo Platform")) {
+                keys.add(snap.getKey());
+            }
+            Collections.sort(keys);
+            Collections.reverse(keys);
+        }
+
+        String latest = "current";
+        if (keys.size()>0) {
+            latest = keys.get(0);
+        }
+        return ctx.newObject("redirectWO", "latest",
+                latest);
     }
 
     @Path("{distributionId}")
