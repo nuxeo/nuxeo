@@ -86,16 +86,14 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({
-        "org.nuxeo.ecm.platform.userworkspace.types",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
-        "org.nuxeo.drive.core",
-        "org.nuxeo.drive.operations",
-        "org.nuxeo.drive.operations.test:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
+        "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
+        "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
 public class TestPermissionHierarchy {
