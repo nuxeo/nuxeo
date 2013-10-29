@@ -152,9 +152,13 @@ public class DeploymentPreprocessor {
 
         // init JSF configuration variables
         ctx.put(ConfigurationGenerator.JSF_NUMBER_OF_LOGICAL_VIEWS,
-                ConfigurationGenerator.JSF_DEFAULT_NUMBER_VIEWS);
+                props.getProperty(
+                        ConfigurationGenerator.JSF_NUMBER_OF_LOGICAL_VIEWS,
+                        ConfigurationGenerator.JSF_DEFAULT_NUMBER_VIEWS));
         ctx.put(ConfigurationGenerator.JSF_NUMBER_OF_VIEWS_IN_SESSION,
-                ConfigurationGenerator.JSF_DEFAULT_NUMBER_VIEWS);
+                props.getProperty(
+                        ConfigurationGenerator.JSF_NUMBER_OF_VIEWS_IN_SESSION,
+                        ConfigurationGenerator.JSF_DEFAULT_NUMBER_VIEWS));
     }
 
     protected void processFile(ContainerDescriptor cd, File file)
