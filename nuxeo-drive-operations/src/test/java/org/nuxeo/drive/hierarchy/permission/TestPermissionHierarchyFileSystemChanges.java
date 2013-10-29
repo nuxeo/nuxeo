@@ -83,13 +83,11 @@ import com.google.inject.Inject;
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
 @TransactionalConfig(autoStart = false)
-@Deploy({
-        "org.nuxeo.ecm.platform.userworkspace.types",
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.runtime.reload",
-        "org.nuxeo.drive.core",
-        "org.nuxeo.drive.operations.test:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
+        "org.nuxeo.runtime.reload", "org.nuxeo.drive.core",
+        "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {
 
     private static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";

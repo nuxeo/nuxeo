@@ -17,6 +17,9 @@
     <binding name="NuxeoDrive.SetVersioningOptions">
       <administrator>true</administrator>
     </binding>
+    <binding name="NuxeoDrive.SetActiveFactories">
+      <administrator>true</administrator>
+    </binding>
   </extension>
 
 </component>
