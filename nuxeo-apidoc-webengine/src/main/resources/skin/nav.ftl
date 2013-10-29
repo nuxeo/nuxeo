@@ -25,6 +25,15 @@
         <ul><li class="selected">view Operation</li></ul>
       </#if>
   </li>
+
+ <#if Root.currentDistribution.isLive()>
+  <li>
+    <a href="/nuxeo/api/v1/doc" target="NuxeoREST">
+      REST API
+    </a>
+  </li>
+ </#if>
+
   <li <#if navPoint=="listSeamComponents">class="selected"</#if> >
     <a href="${Root.path}/${distId}/listSeamComponents">
        Seam components
