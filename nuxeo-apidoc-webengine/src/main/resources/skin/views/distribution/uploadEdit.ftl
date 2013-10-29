@@ -32,7 +32,7 @@
    </tr>
    <tr>
      <td> Title : </td>
-     <td> <input type="text" name="title" value="${tmpSnap.dc.title}"/> </td>
+     <td> <input type="text" name="title" value="${tmpSnap.title}"/> </td>
    </tr>
    <tr><td colspan="2">
     <input type="submit" value="Import bundles"/>

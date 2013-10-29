@@ -356,6 +356,9 @@ public class Distribution extends ModuleRoot {
         }
         DocumentModel snap = getSnapshotManager().importTmpSnapshot(
                 getContext().getCoreSession(), blob.getStream());
+        if (snap==null) {
+            log.error("Unable to import archive");
+        }
         DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
         return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject",
                 snapObject);
