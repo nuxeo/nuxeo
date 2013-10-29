@@ -81,12 +81,8 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
       var style = document.getElementById(id).style;
       if ("block" == style.display) {
         style.display = "none";
-        document.getElementById(id + "Off").style.display = "inline";
-        document.getElementById(id + "On").style.display = "none";
       } else {
         style.display = "block";
-        document.getElementById(id + "Off").style.display = "none";
-        document.getElementById(id + "On").style.display = "inline";
       }
     }
   </script>
