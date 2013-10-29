@@ -35,6 +35,8 @@
       class="org.nuxeo.drive.operations.test.NuxeoDriveSetVersioningOptions" />
     <operation
       class="org.nuxeo.drive.operations.test.NuxeoDriveCreateTestDocuments" />
+    <operation
+      class="org.nuxeo.drive.operations.test.NuxeoDriveSetActiveFactories" />
   </extension>
 
 </component>
