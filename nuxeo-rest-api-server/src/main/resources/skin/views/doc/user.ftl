@@ -9,7 +9,7 @@
       "method":"GET",
       "nickname":"getUserByName",
       "type":"NuxeoPrincipal",
-      <@params names = ["userName"]/>,
+      <@params names = ["username"]/>,
       "summary":"Get a user by its name",
       "notes": "",
       <#include "views/doc/errorresponses.ftl"/>

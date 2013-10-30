@@ -50,7 +50,7 @@
       "method":"POST",
       "nickname":"createBOByPath",
       "responseClass":"BusinessObject",
-      <@params names = ["docPath","adaptername","docname"]/>,
+      <@params names = ["docpath","adaptername","docname"]/>,
       "summary":"Creates a document based on its business object",
       "notes": "",
       <#include "views/doc/errorresponses.ftl"/>
