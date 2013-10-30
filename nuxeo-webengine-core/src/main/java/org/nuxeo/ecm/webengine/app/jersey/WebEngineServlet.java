@@ -69,26 +69,24 @@ public class WebEngineServlet extends ApplicationServlet {
             // patch content type
             String ctype = request.getContentType();
             if (ctype == null || ctype.isEmpty()) {
-                headers.put(lCONTENT_TYPE, new String[] { "application/octet-stream" } );
+                String[] ctypes = new String[] { "application/octet-stream" };
+                headers.put(lCONTENT_TYPE, ctypes );
+                headers.put(lFILE_TYPE, ctypes );
             } else {
-                patchContentType(request, headers, lCONTENT_TYPE);
-                patchContentType(request, headers, lFILE_TYPE);
+                patchContentTypes(headers.get(lCONTENT_TYPE));
+                patchContentTypes(headers.get(lFILE_TYPE));
             }
             return headers;
         }
 
 
-        protected void patchContentType(HttpServletRequest request,
-                Hashtable<String, String[]> headers, String name) {
-            String[] ctypes = headers.get(name);
-            int index = 0;
-            Enumeration<String> eachCtypes = request.getHeaders(name);
-            while (eachCtypes.hasMoreElements()) {
-                String value = eachCtypes.nextElement();
+        protected void patchContentTypes(String[] ctypes) {
+            for (int index = 0; index < ctypes.length; ++index) {
+                String value = ctypes[index];
                 if (value.isEmpty()) {
-                    ctypes[index++] = "application/octet-stream";
+                    ctypes[index] = "application/octet-stream";
                 } else if (!value.contains("/")) {
-                    ctypes[index++] = "application/".concat(value);
+                    ctypes[index] = "application/".concat(value);
                 }
             }
         }
