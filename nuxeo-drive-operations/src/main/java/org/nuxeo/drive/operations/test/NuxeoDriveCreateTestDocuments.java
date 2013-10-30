@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Olivier Grisel
  */
-@Operation(id = NuxeoDriveCreateTestDocuments.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Setup integration tests")
+@Operation(id = NuxeoDriveCreateTestDocuments.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Create test documents")
 public class NuxeoDriveCreateTestDocuments {
 
     public static final String ID = "NuxeoDrive.CreateTestDocuments";
