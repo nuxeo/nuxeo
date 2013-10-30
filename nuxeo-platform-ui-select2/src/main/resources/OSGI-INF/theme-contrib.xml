@@ -6,10 +6,6 @@
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <themePage name="*">
-      <defaultFlavor>default</defaultFlavor>
-      <flavors>
-        <flavor>default</flavor>
-      </flavors>
       <styles append="true">
         <style>nuxeo-select2</style>
       </styles>
