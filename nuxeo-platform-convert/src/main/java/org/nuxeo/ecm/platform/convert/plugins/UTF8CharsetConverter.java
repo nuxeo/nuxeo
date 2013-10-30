@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
 import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 
 public class UTF8CharsetConverter implements Converter {
 
@@ -63,7 +64,7 @@ public class UTF8CharsetConverter implements Converter {
         return new SimpleBlobHolder(transcodedBlob);
     }
 
-    protected Blob convert(Blob blob) throws IOException {
+    protected Blob convert(Blob blob) throws IOException, ConversionException {
         String mimetype = blob.getMimeType();
         if (mimetype == null || !mimetype.startsWith("text/")) {
             return blob;
@@ -90,10 +91,15 @@ public class UTF8CharsetConverter implements Converter {
         return newBlob;
     }
 
-    protected String detectEncoding(InputStream in) throws IOException {
+    protected String detectEncoding(InputStream in) throws IOException,
+            ConversionException {
         CharsetDetector detector = new CharsetDetector();
         detector.setText(in);
-        return detector.detect().getName();
+        CharsetMatch charsetMatch = detector.detect();
+        if (charsetMatch == null) {
+            throw new ConversionException("Cannot detect source charset.");
+        }
+        return charsetMatch.getName();
     }
 
 }
