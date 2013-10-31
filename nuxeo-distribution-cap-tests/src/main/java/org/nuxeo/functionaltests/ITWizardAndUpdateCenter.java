@@ -54,7 +54,7 @@ public class ITWizardAndUpdateCenter extends AbstractTest {
     protected static final String CONNECT_PROJECT_SELECTOR = "junit4tester";
     protected static final String CONNECT_PROJECT_SELECTOR_UUID = "575954be-6027-45b7-8cd1-77a6bcb0832d";
 
-    public static final String CONNECT_FORM_TITLE = "Enable Nuxeo Connect & Nuxeo Studio for your installation";
+    public static final String CONNECT_FORM_TITLE = "Nuxeo Connect & Nuxeo Studio";
 
     protected String getTestPassword() {
         return "XXX";
