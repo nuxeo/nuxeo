@@ -71,7 +71,18 @@ public class UITypesConfigurationActions implements Serializable {
 
     };
 
-    protected final Comparator<? super Type> typeLabelAlphabeticalOrder = new Comparator<Type>() {
+    /**
+     * @since 5.9.1
+     */
+    protected static class TypeLabelAlphabeticalOrder implements
+            Comparator<Type> {
+
+        private final Map<String, String> messages;
+
+        public TypeLabelAlphabeticalOrder(Map<String, String> messages) {
+            super();
+            this.messages = messages;
+        }
 
         @Override
         public int compare(Type type1, Type type2) {
@@ -79,8 +90,7 @@ public class UITypesConfigurationActions implements Serializable {
             String label2 = messages.get(type2.getLabel());
             return label1.compareTo(label2);
         }
-
-    };
+    }
 
     @In(create = true)
     protected transient TypeManager typeManager;
@@ -124,7 +134,7 @@ public class UITypesConfigurationActions implements Serializable {
             }
         }
 
-        Collections.sort(notSelectedTypes, typeLabelAlphabeticalOrder);
+        Collections.sort(notSelectedTypes, new TypeLabelAlphabeticalOrder(messages));
 
         return notSelectedTypes;
     }
@@ -166,10 +176,13 @@ public class UITypesConfigurationActions implements Serializable {
 
         List<Type> selectedTypes = new ArrayList<Type>();
         for (String type : allowedTypes) {
-            selectedTypes.add(typeManager.getType(type));
+            Type existingType = typeManager.getType(type);
+            if (existingType != null) {
+                selectedTypes.add(typeManager.getType(type));
+            }
         }
 
-        Collections.sort(selectedTypes, typeLabelAlphabeticalOrder);
+        Collections.sort(selectedTypes, new TypeLabelAlphabeticalOrder(messages));
         return selectedTypes;
     }
 
@@ -218,7 +231,7 @@ public class UITypesConfigurationActions implements Serializable {
                 types.add(typeManager.getType(type));
             }
         }
-        Collections.sort(types, typeLabelAlphabeticalOrder);
+        Collections.sort(types, new TypeLabelAlphabeticalOrder(messages));
         return Collections.unmodifiableList(types);
     }
 
