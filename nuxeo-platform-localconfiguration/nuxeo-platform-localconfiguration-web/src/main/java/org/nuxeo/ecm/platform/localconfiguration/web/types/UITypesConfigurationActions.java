@@ -178,7 +178,7 @@ public class UITypesConfigurationActions implements Serializable {
         for (String type : allowedTypes) {
             Type existingType = typeManager.getType(type);
             if (existingType != null) {
-                selectedTypes.add(typeManager.getType(type));
+                selectedTypes.add(existingType);
             }
         }
 
