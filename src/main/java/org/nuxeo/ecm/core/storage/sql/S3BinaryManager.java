@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -40,7 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
@@ -52,6 +53,7 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
@@ -109,7 +111,7 @@ public class S3BinaryManager extends BinaryCachingManager {
 
     protected String bucketName;
 
-    protected BasicAWSCredentials awsCredentials;
+    protected AWSCredentialsProvider awsCredentialsProvider;
 
     protected ClientConfiguration clientConfiguration;
 
@@ -167,15 +169,18 @@ public class S3BinaryManager extends BinaryCachingManager {
         if (isBlank(bucketName)) {
             throw new RuntimeException("Missing conf: " + BUCKET_NAME_KEY);
         }
-        if (isBlank(awsID)) {
-            throw new RuntimeException("Missing conf: " + AWS_ID_KEY);
-        }
-        if (isBlank(awsSecret)) {
-            throw new RuntimeException("Missing conf: " + AWS_SECRET_KEY);
-        }
 
         // set up credentials
-        awsCredentials = new BasicAWSCredentials(awsID, awsSecret);
+        if (isBlank(awsID) || isBlank(awsSecret)) {
+            awsCredentialsProvider = new InstanceProfileCredentialsProvider();
+            try {
+                awsCredentialsProvider.getCredentials();
+            } catch (AmazonClientException e) {
+                throw new RuntimeException("Missing AWS credentials and no instance role found");
+            }
+        } else {
+            awsCredentialsProvider = new BasicAWSCredentialsProvider(awsID, awsSecret);
+        }
 
         // set up client configuration
         clientConfiguration = new ClientConfiguration();
@@ -239,11 +244,11 @@ public class S3BinaryManager extends BinaryCachingManager {
 
         // Try to create bucket if it doesn't exist
         if (encryptionMaterials == null) {
-            amazonS3 = new AmazonS3Client(awsCredentials, clientConfiguration);
+            amazonS3 = new AmazonS3Client(awsCredentialsProvider, clientConfiguration);
         } else {
-            amazonS3 = new AmazonS3EncryptionClient(awsCredentials,
-                    encryptionMaterials, clientConfiguration,
-                    cryptoConfiguration);
+            amazonS3 = new AmazonS3EncryptionClient(awsCredentialsProvider,
+                    new StaticEncryptionMaterialsProvider(encryptionMaterials),
+                    clientConfiguration, cryptoConfiguration);
         }
         try {
             if (!amazonS3.doesBucketExist(bucketName)) {
@@ -340,7 +345,8 @@ public class S3BinaryManager extends BinaryCachingManager {
     protected static boolean isMissingKey(AmazonClientException e) {
         if (e instanceof AmazonServiceException) {
             AmazonServiceException ase = (AmazonServiceException) e;
-            return "NoSuchKey".equals(ase.getErrorCode())
+            return (ase.getStatusCode() == 404)
+                    ||"NoSuchKey".equals(ase.getErrorCode())
                     || "Not Found".equals(e.getMessage());
         }
         return false;

@@ -2,7 +2,7 @@ This addon implements a BinaryManager that stores binaries in a S3 bucket.
 For efficiency, a local disk cache (with limited size) is also used.
 
 Be sure to protect your nuxeo.conf (readable only by the nuxeo user) as the
-file will have your AWS identifiers.
+file will have your AWS identifiers (unless you are using instance roles).
 
 # Mandatory parameters
 
@@ -14,6 +14,9 @@ file will have your AWS identifiers.
 - nuxeo.s3storage.awsid : your AWS_ACCESS_KEY_ID
 
 - nuxeo.s3storage.awssecret : your AWS_SECRET_ACCESS_KEY
+
+If the awsid and/or awssecret are not set, the addon will try to use
+temporary credentials from the instance role (if any).
 
 
 # Optional parameters
