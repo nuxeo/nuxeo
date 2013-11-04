@@ -128,8 +128,8 @@ public class Select2ActionsBean implements Serializable {
     private static Map<String, String> getDefaultFormattersMap(
             final String suggestionFormatterName, String selectionFormatterName) {
         Map<String, String> result = new HashMap<String, String>();
-        result.put(Select2Common.SELECTION_FORMATTER, suggestionFormatterName);
-        result.put(Select2Common.SUGGESTION_FORMATTER, selectionFormatterName);
+        result.put(Select2Common.SUGGESTION_FORMATTER, suggestionFormatterName);
+        result.put(Select2Common.SELECTION_FORMATTER, selectionFormatterName);
         return result;
     }
 
