@@ -4055,7 +4055,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx512M -Dfile.encoding=UTF-8 ${it.failsafe.argLine}</argLine>
+          <argLine>-Xmx1g -Dfile.encoding=UTF-8 ${it.failsafe.argLine}</argLine>
           <systemPropertyVariables>
             <net.sourceforge.cobertura.datafile>
               ${project.build.directory}/cobertura/cobertura.ser
