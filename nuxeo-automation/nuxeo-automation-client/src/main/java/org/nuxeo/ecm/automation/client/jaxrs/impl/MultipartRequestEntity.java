@@ -68,6 +68,7 @@ public class MultipartRequestEntity extends AbstractHttpEntity {
             part.attachFile(((HasFile) blob).getFile());
         } else {
             part.setDataHandler(new DataHandler(new BlobDataSource(blob)));
+            part.setFileName(blob.getFileName());
         }
         part.setHeader("Content-Type", blob.getMimeType());
         part.setHeader("Content-Transfer-Encoding", "binary");
