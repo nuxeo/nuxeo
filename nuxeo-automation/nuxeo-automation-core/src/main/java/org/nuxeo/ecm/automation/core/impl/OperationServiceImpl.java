@@ -54,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * The operation registry is thread safe and optimized for modifications at
  * startup and lookups at runtime.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class OperationServiceImpl implements AutomationService {
@@ -134,9 +134,10 @@ public class OperationServiceImpl implements AutomationService {
         if (params != null && !params.isEmpty()) {
             ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
         }
-        OperationCallback tracer = null;
+        OperationCallback tracer;
+        TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         if (ctx.getChainCallback() == null) {
-            tracer = Framework.getLocalService(TracerFactory.class).newTracer(
+            tracer = tracerFactory.newTracer(
                     operationType.getId());
             ctx.addChainCallback(tracer);
         } else {
@@ -172,7 +173,8 @@ public class OperationServiceImpl implements AutomationService {
                 ctx.getCoreSession().save();
             }
             // Log at the end of the main chain execution.
-            if (mainChain && tracer.getTrace() != null) {
+            if (mainChain && tracer.getTrace() != null
+                    && tracerFactory.getRecordingState()) {
                 log.info(tracer.getFormattedText());
             }
             return ret;

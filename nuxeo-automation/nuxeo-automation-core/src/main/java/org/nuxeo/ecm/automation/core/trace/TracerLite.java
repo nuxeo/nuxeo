@@ -17,13 +17,9 @@
 
 package org.nuxeo.ecm.automation.core.trace;
 
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Stack;
 
-import org.nuxeo.ecm.automation.OperationCallback;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
 import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
@@ -34,68 +30,10 @@ import org.nuxeo.ecm.automation.core.impl.InvokableMethod;
  *
  * @since 5.7.3
  */
-public class TracerLite implements OperationCallback {
-
-    protected final TracerFactory factory;
-
-    protected final LinkedList<Call> calls = new LinkedList<Call>();
-
-    protected Stack<Trace> callingStacks = new Stack<Trace>();
-
-    protected Call parent;
-
-    protected OperationType chain;
-
-    protected Trace trace;
-
-    protected String factoryIndex;
+public class TracerLite extends Tracer {
 
     protected TracerLite(TracerFactory factory) {
-        this.factory = factory;
-    }
-
-    protected void pushContext(OperationType newChain) {
-        if (chain != null) {
-            callingStacks.push(new Trace(parent, chain, calls));
-            parent = calls.isEmpty() ? null : calls.getLast();
-            calls.clear();
-        }
-        chain = newChain;
-    }
-
-    protected void popContext() {
-        calls.clear();
-        if (callingStacks.isEmpty()) {
-            parent = null;
-            chain = null;
-            return;
-        }
-        Trace stack = callingStacks.pop();
-        parent = stack.parent;
-        chain = stack.chain;
-        calls.addAll(stack.operations);
-
-    }
-
-    protected void saveTrace(Trace popped) {
-        if (parent == null) {
-            trace = popped;
-            chain = null;
-            calls.clear();
-            factory.onTrace(popped);
-        } else {
-            parent.nested.add(popped);
-            popContext();
-        }
-    }
-
-    public String getFactoryIndex() {
-        return factoryIndex;
-    }
-
-    @Override
-    public void onChain(OperationType chain) {
-        pushContext(chain);
+        super(factory, true);
     }
 
     @Override
@@ -109,24 +47,4 @@ public class TracerLite implements OperationCallback {
         calls.add(call);
     }
 
-    @Override
-    public void onOutput(Object output) {
-        // In case of lightweight tracer, doesn't record anything onOutput
-        return;
-    }
-
-    @Override
-    public void onError(OperationException error) {
-        saveTrace(new Trace(parent, chain, calls, error));
-    }
-
-    @Override
-    public Trace getTrace() {
-        return trace;
-    }
-
-    @Override
-    public String getFormattedText() {
-        return trace != null ? trace.getFormattedText() : "";
-    }
 }
