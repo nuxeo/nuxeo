@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -20,6 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -151,9 +153,7 @@ public class LockManager {
             try {
                 return setLockInternal(id, lock);
             } catch (StorageException e) {
-                Throwable c = e.getCause();
-                if (c != null && c instanceof SQLException
-                        && shouldRetry((SQLException) c)) {
+                if (shouldRetry(e)) {
                     // cluster: two simultaneous inserts
                     // retry
                     try {
@@ -174,6 +174,17 @@ public class LockManager {
     /**
      * Does the exception mean that we should retry the transaction?
      */
+    protected boolean shouldRetry(StorageException e) {
+        if (e instanceof ConcurrentUpdateStorageException) {
+            return true;
+        }
+        Throwable t = e.getCause();
+        if (t instanceof BatchUpdateException) {
+            t = t.getCause();
+        }
+        return t instanceof SQLException && shouldRetry((SQLException) t);
+    }
+
     protected boolean shouldRetry(SQLException e) {
         String sqlState = e.getSQLState();
         if ("23000".equals(sqlState)) {
