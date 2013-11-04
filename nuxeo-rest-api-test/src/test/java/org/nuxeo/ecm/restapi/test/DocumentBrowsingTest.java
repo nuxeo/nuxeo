@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
@@ -166,8 +165,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // When I do a DELETE request
         ClientResponse response = getResponse(RequestType.DELETE,
                 "path" + doc.getPathAsString());
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
+                response.getStatus());
 
         dispose(session);
         // Then the doc is deleted
@@ -214,8 +213,36 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(ACPWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(ACPWriter.ENTITY_TYPE,
+                node.get("entity-type").getValueAsText());
 
+    }
+
+    @Test
+    public void itCanBrowseDocumentWithSpacesInPath() throws Exception {
+        DocumentModel folder = RestServerInit.getFolder(0, session);
+        DocumentModel note = session.createDocumentModel(
+                folder.getPathAsString(), "doc with space", "Note");
+        note = session.createDocument(note);
+        session.save();
+        dispose(session);
+
+        // When i do a GET Request on the note repository
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path"
+                        + note.getPathAsString().replace(" ", "%20"));
+
+        // Then i get a the ACL
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // When i do a GET Request on the note repository
+        response = getResponse(
+                RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path"
+                        + note.getPathAsString());
+
+        // Then i get a the ACL
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
     }
 
