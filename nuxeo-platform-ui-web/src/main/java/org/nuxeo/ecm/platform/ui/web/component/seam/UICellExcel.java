@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Interpolator;
 import org.jboss.seam.excel.ExcelWorkbookException;
 import org.jboss.seam.ui.util.JSF;
+import org.nuxeo.ecm.platform.ui.web.util.CSVResponseWriter;
 
 import com.sun.faces.config.WebConfiguration;
 import com.sun.faces.renderkit.html_basic.HtmlResponseWriter;
@@ -169,7 +170,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
         Boolean scriptInAttributes = Boolean.TRUE;
         // force escaping to true
         WebConfiguration.DisableUnicodeEscaping escaping = WebConfiguration.DisableUnicodeEscaping.True;
-        ResponseWriter newResponseWriter = new HtmlResponseWriter(
+        ResponseWriter newResponseWriter = new CSVResponseWriter(
                 cacheingWriter, contentType, characterEncoding, scriptHiding,
                 scriptInAttributes, escaping);
         // ResponseWriter newResponseWriter = renderKit.createResponseWriter(

@@ -24,6 +24,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.context.ResponseWriter;
+
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
@@ -127,14 +129,4 @@ public class TestFunctions {
         assertEquals("blah_blah", Functions.jsfTagIdEscape("blah-blah"));
         assertEquals("blah_blahe", Functions.jsfTagIdEscape("blah_blahé"));
     }
-
-    @Test
-    public void testHtmlRendering() throws IOException {
-        StringWriter sw = new StringWriter();
-        HtmlResponseWriter writer = new HtmlResponseWriter(sw, "text/plain", "UTF-8");
-        writer.writeText("Something with & and é".toCharArray());
-        sw.flush();
-        assertEquals("Something with & and é", sw.toString());
-    }
-
 }

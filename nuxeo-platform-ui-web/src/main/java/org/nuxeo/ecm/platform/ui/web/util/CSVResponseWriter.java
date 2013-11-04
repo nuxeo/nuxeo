@@ -711,14 +711,7 @@ public class CSVResponseWriter extends ResponseWriter {
     public void writeText(char text) throws IOException {
 
         closeStartIfNecessary();
-        if (dontEscape) {
-            writer.write(text);
-        } else {
-            charHolder[0] = text;
-            HtmlUtils.writeText(writer, escapeUnicode, escapeIso, buffer,
-                    charHolder);
-        }
-
+        writer.write(text);
     }
 
     /**
@@ -750,11 +743,7 @@ public class CSVResponseWriter extends ResponseWriter {
                             "text"));
         }
         closeStartIfNecessary();
-        if (dontEscape) {
-            writer.write(text);
-        } else {
-            HtmlUtils.writeText(writer, escapeUnicode, escapeIso, buffer, text);
-        }
+        writer.write(text);
 
     }
 
@@ -783,15 +772,7 @@ public class CSVResponseWriter extends ResponseWriter {
                             "text"));
         }
         closeStartIfNecessary();
-        if (dontEscape) {
-            writer.write(text.toString());
-        } else {
-            String val = text.toString();
-            ensureTextBufferCapacity(val);
-            HtmlUtils.writeText(writer, escapeUnicode, escapeIso, buffer, val,
-                    textBuffer);
-        }
-
+        writer.write(text.toString());
     }
 
     /**
@@ -827,13 +808,7 @@ public class CSVResponseWriter extends ResponseWriter {
             throw new IndexOutOfBoundsException();
         }
         closeStartIfNecessary();
-        if (dontEscape) {
-            writer.write(text, off, len);
-        } else {
-            HtmlUtils.writeText(writer, escapeUnicode, escapeIso, buffer, text,
-                    off, len);
-        }
-
+        writer.write(text, off, len);
     }
 
     /**
