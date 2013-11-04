@@ -19,11 +19,16 @@ package org.nuxeo.ecm.platform.ui.web.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
+
+import com.sun.faces.config.WebConfiguration;
+import com.sun.faces.renderkit.html_basic.HtmlResponseWriter;
 
 /**
  * @author arussel
@@ -121,6 +126,15 @@ public class TestFunctions {
         assertEquals("blah_blah", Functions.jsfTagIdEscape("blah blah"));
         assertEquals("blah_blah", Functions.jsfTagIdEscape("blah-blah"));
         assertEquals("blah_blahe", Functions.jsfTagIdEscape("blah_blahé"));
+    }
+
+    @Test
+    public void testHtmlRendering() throws IOException {
+        StringWriter sw = new StringWriter();
+        HtmlResponseWriter writer = new HtmlResponseWriter(sw, "text/plain", "UTF-8");
+        writer.writeText("Something with & and é".toCharArray());
+        sw.flush();
+        assertEquals("Something with & and é", sw.toString());
     }
 
 }
