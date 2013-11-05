@@ -39,7 +39,7 @@ Here are the currently available distributions:
 <td>${rtSnap.name}</td>
 <td>${rtSnap.version}</td>
 <td>${rtSnap.creationDate?datetime}</td>
-<td style="color:green">Current deployed distribution (live) </td>
+<td><span class="sticker current">Current deployed distribution (live)</span></td>
 
 <td>
 <#if Root.isEditor()>
@@ -89,7 +89,7 @@ Here are the currently available distributions:
 </td>
 
 <td>
-  <p class="explore"><a href="${Root.path}/current/"> Explore </a></p>
+  <p class="explore"><a class="button" href="${Root.path}/current/"> Explore </a></p>
 </td>
 
 </tr>
@@ -102,10 +102,10 @@ Here are the currently available distributions:
   <td>${distrib.creationDate?datetime}</td>
   <td>&nbsp;</td>
   <td>
-    <p class="explore"><a href="${Root.path}/${distrib.key}/"> Explore </a></p>
+    <p class="explore"><a class="button" href="${Root.path}/${distrib.key}/"> Explore </a></p>
   </td>
   <td>
-    <p class="explore export"><A href="${Root.path}/download/${distrib.key}">Export</A> as zip.</p>
+    <p class="explore export"><a class="button" href="${Root.path}/download/${distrib.key}">Export as zip.</a></p>
   </td>
 </tr>
 </#list>
@@ -149,9 +149,8 @@ Documentation packs can be downloaded or uploaded here.
 Documentation contains currently ${Root.documentationInfo}
 </p>
 
-<a href="${Root.path}/downloadDoc">Export</a> all documentation as a zip.<br/><br/> <br/>
+<p><a href="${Root.path}/downloadDoc" class="button">Export all documentation as a zip.</a></p>
 
-<br/>
 <#if Root.isEditor()>
 You can use the form below to upload a documentation pack (zip):<br/>
 <form method="POST" action="${Root.path}/uploadDoc" enctype="multipart/form-data" >
