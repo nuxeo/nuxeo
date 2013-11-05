@@ -50,13 +50,13 @@ public class RemovePermission {
     String aclName = ACL.LOCAL_ACL;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws ClientException {
         removePermission(doc);
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef docRef) throws Exception {
+    public DocumentModel run(DocumentRef docRef) throws ClientException {
         DocumentModel doc = session.getDocument(docRef);
         removePermission(doc);
         return doc;

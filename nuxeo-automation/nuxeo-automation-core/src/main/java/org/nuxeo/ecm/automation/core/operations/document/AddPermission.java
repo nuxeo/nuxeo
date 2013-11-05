@@ -56,13 +56,13 @@ public class AddPermission {
     boolean blockInheritance = false;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws Exception {
+    public DocumentModel run(DocumentModel doc) throws ClientException {
         addPermission(doc);
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef docRef) throws Exception {
+    public DocumentModel run(DocumentRef docRef) throws ClientException {
         DocumentModel doc = session.getDocument(docRef);
         addPermission(doc);
         return doc;

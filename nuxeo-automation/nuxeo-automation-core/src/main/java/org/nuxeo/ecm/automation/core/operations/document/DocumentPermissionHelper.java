@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.8
  */
-public class DocumentPermissionHelper {
+public final class DocumentPermissionHelper {
 
     private DocumentPermissionHelper() {
 
@@ -51,7 +51,7 @@ public class DocumentPermissionHelper {
      */
     public static boolean addPermission(ACP acp, String aclName,
             String userName, String permission, boolean blockInheritance,
-            String currentPrincipal) {
+            String currentPrincipalName) {
         boolean securityHasChanged = false;
 
         ACL acl = acp.getOrCreateACL(aclName);
@@ -60,7 +60,7 @@ public class DocumentPermissionHelper {
         ACE aceToAdd = new ACE(userName, permission, true);
 
         if (blockInheritance) {
-            if (StringUtils.isEmpty(currentPrincipal)) {
+            if (StringUtils.isEmpty(currentPrincipalName)) {
                 throw new IllegalArgumentException(
                         "Can't block inheritance without a current principal");
             }
@@ -68,8 +68,8 @@ public class DocumentPermissionHelper {
             aceList.clear();
             aceList.add(aceToAdd);
 
-            if (userName != currentPrincipal) {
-                aceList.add(new ACE(currentPrincipal,
+            if (!userName.equals(currentPrincipalName)) {
+                aceList.add(new ACE(currentPrincipalName,
                         SecurityConstants.EVERYTHING, true));
             }
 
