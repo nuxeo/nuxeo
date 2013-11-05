@@ -290,6 +290,16 @@ public abstract class AbstractDocumentModelWriter extends
         doc.setProperties(schemaName, data);
     }
 
+    protected static Class getFieldClass(Type fieldType ) {
+        Class klass = JavaTypes.getClass(fieldType);
+        // for enumerated SimpleTypes we may need to lookup on the supertype
+        // we do the recursion here and not in JavaTypes to avoid potential impacts
+        if (klass==null && fieldType.getSuperType()!=null) {
+            return getFieldClass(fieldType.getSuperType());
+        }
+        return klass;
+    }
+
     @SuppressWarnings("unchecked")
     private static Object getElementData(ExportedDocument xdoc,
             Element element, Type type) {
@@ -305,7 +315,7 @@ public abstract class AbstractDocumentModelWriter extends
             }
             Type ftype = ltype.getFieldType();
             if (ftype.isSimpleType()) { // these are stored as arrays
-                Class klass = JavaTypes.getClass(ftype);
+                Class klass = getFieldClass(ftype);
                 if (klass.isPrimitive()) {
                     return PrimitiveArrays.toPrimitiveArray(list, klass);
                 } else {
