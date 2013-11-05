@@ -9,11 +9,11 @@
 
 <span style="float:right">
 <form method="GET" action="${Root.path}/${distId}/doc/filter" >
-  <input type="text" name="fulltext" value="${searchFilter}">
+  <input name="fulltext" value="${searchFilter}" placeholder="What are you looking for ?" type="search">
   <input type="submit" value="filter">
 </form>
 <#if searchFilter??>
-  <A href="${Root.path}/${distId}/doc"> [ Reset ] </A>
+  <a href="${Root.path}/${distId}/doc"> [ Reset ] </a>
 </#if>
 </span>
 
@@ -23,7 +23,7 @@
  <h3>${category}</h3>
  <ul>
  <#list docsByCat[category] as docItem>
-    <li><A href="${Root.path}/${distId}/doc/view/${docItem.getUUID()}">${docItem.title}</A> </li>
+    <li><a href="${Root.path}/${distId}/doc/view/${docItem.getUUID()}">${docItem.title}</a> </li>
  </#list>
  </ul>
 </#list>
