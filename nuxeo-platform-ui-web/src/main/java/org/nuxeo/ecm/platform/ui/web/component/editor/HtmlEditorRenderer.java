@@ -78,20 +78,6 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
         String clientId = editorComp.getClientId(context);
         boolean disableHtmlInit = Boolean.TRUE.equals(editorComp.getDisableHtmlInit());
-        if (!disableHtmlInit) {
-            // Since 5.7.3, tiny mce editors are initialized individually, no need
-            // anymore to specify a class to know which one should or should
-            // not be initialized
-            writer.startElement("script", editorComp);
-            writer.writeAttribute("type", "text/javascript", null);
-            String scriptContent = String.format(
-                    "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
-                    editorComp.getWidth(), editorComp.getHeight(), clientId,
-                    pluginsOptions.get("plugins"), locale.getLanguage(),
-                    toolbarPluginsOptions.get("toolbar"));
-            writer.writeText(scriptContent, null);
-            writer.endElement("script");
-        }
 
         // input text area
         writer.startElement("textarea", editorComp);
@@ -112,6 +98,21 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             writer.writeText("", null);
         }
         writer.endElement("textarea");
+
+        if (!disableHtmlInit) {
+            // Since 5.7.3, tiny mce editors are initialized individually, no need
+            // anymore to specify a class to know which one should or should
+            // not be initialized
+            writer.startElement("script", editorComp);
+            writer.writeAttribute("type", "text/javascript", null);
+            String scriptContent = String.format(
+                    "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
+                    editorComp.getWidth(), editorComp.getHeight(), clientId,
+                    pluginsOptions.get("plugins"), locale.getLanguage(),
+                    toolbarPluginsOptions.get("toolbar"));
+            writer.writeText(scriptContent, null);
+            writer.endElement("script");
+        }
 
         writer.flush();
     }
