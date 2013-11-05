@@ -28,8 +28,8 @@ ${nxItem.documentationHtml}
 
 <#if nxItem.extensions?size gt 0>
 <h2>Contributions (${nxItem.extensions?size}) </h2>
-<input type="text" id="searchField"/>
-<input type="button" value="search text in contributions" onclick="searchContrib($('#searchField').val());"/>
+<input type="search" id="searchField" placeholder="Text in contributions"/>
+<input type="button" value="search" onclick="searchContrib($('#searchField').val());"/>
 <span id="searchMatchResult"></span>
 <script>
 function searchContrib(text) {
