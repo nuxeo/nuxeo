@@ -8,7 +8,7 @@
 <#assign docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
 <#if Root.isEditor()>
-<p>[ <a href="${This.path}/createForm"> Add new documentation </a> ]</p>
+<p><a href="${This.path}/createForm" class="button"> Add new documentation </a></p>
 </#if>
 
 <#--
@@ -34,10 +34,10 @@
  <h2>${category}</h2>
 
  <#list docsByCat[category] as docItem>
-  <div style="border: 1px solid #CCC; margin-bottom:1em; padding:3px">
+  <div class="docContent">
     <h3><a name="${docItem.id}"> </a>${docItem.title}</h3>
     <#if Root.isEditor()>
-      [ <a href="${This.path}/editForm/${docItem.getUUID()}">Edit</a> ]
+      <a href="${This.path}/editForm/${docItem.getUUID()}" class="button">Edit</a>
       <div style="float:right">
         <form method="POST" action="${This.path}/deleteDocumentation">
           <input type="hidden" name="uuid" value="${docItem.getUUID()}" />
