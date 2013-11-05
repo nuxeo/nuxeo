@@ -5,7 +5,7 @@
         <div class="docVersionDisplay">
           <ul>
           <#list docItem.applicableVersion as version>
-            <li>${version}</li>
+            <li class="sticker">${version}</li>
           </#list>
           </ul>
         </div>
@@ -69,7 +69,7 @@
        <td>
        <ul>
        <#list docsByCat[category] as docItem>
-          <li><A href="javascript:showAddDoc('${docItem.id}')">${docItem.title}</A> </li>
+          <li><a href="javascript:showAddDoc('${docItem.id}')">${docItem.title}</a> </li>
        </#list>
        </ul>
        </td>
@@ -83,7 +83,7 @@
     <#list categories as category>
      <#list docsByCat[category] as docItem>
         <div class="additionalDocPanel hiddenDocPanel" id="${docItem.id}">
-        <A name="${docItem.id}"> ${docItem.title} </A>
+        <a name="${docItem.id}"> ${docItem.title} </a>
           <@docContent docItem/>
         </div>
      </#list>
@@ -107,8 +107,7 @@
 
 <#macro tableFilterArea>
 <p>
-Filter:
-  <input name="filter" id="filter-box" value="" maxlength="30" size="30" type="text">
+  <input name="filter" id="filter-box" value="" maxlength="30" size="30" type="search" placeholder="Which bundle are you looking for ?">
   <input id="filter-clear-button" type="submit" value="Clear"/>
 </p>
 </#macro>
