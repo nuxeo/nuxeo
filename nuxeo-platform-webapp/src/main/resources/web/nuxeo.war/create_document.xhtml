@@ -39,7 +39,7 @@
       </h:form>
       <script>
       jQuery(document).ready(function() {
-         initSafeEditOnForm("document_create", "create-#{currentDocument.id}-#{changeableDocument.type}", "#{messages['safeedit.page.has.unsaved.changes']}");
+         jQuery('#document_create').initSafeEditOnForm("create-#{currentDocument.id}-#{changeableDocument.type}", "#{messages['safeedit.page.has.unsaved.changes']}");
       });
      </script>
     </div>

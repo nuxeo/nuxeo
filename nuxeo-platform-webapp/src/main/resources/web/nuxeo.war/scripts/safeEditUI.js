@@ -1,3 +1,5 @@
+(function($) {
+
 function formSavedCallback() {
   jQuery.ambiance({
     title: nuxeo.safeEdit.feedbackMessage,
@@ -6,7 +8,7 @@ function formSavedCallback() {
   });
 }
 
-function restoreDataCallbackPrompt(doLoadCB, formId, key) {
+$.fn.restoreDataCallbackPrompt = function(doLoadCB, key) {
   var confirm = jQuery('<a class="button smallButton" href="#">'
     + nuxeo.safeEdit.restorePrompt.confirmMessage + '</a>');
   confirm.click(function() {
@@ -21,7 +23,7 @@ function restoreDataCallbackPrompt(doLoadCB, formId, key) {
     doLoadCB(false), jQuery("#confirmRestore").css({
       "display" : "none"
     });
-    initSafeEditOnForm(formId, key);
+    jQuery(this).initSafeEditOnForm(key);
     jQuery(this).parent(".ambiance").remove();
     return false;
   });
@@ -34,22 +36,20 @@ function restoreDataCallbackPrompt(doLoadCB, formId, key) {
   });
 }
 
-function initSafeEditOnForm(formId, key, message) {
-  if (!formId.startsWith('#')) {
-    formId = "#" + formId;
-  }
-
-  if (jQuery(formId).size() > 0) {
+$.fn.initSafeEditOnForm = function(key, message) {
+  if (jQuery(this).size() > 0) {
     if (localStorage) {
       // leverage localStorage if available
-      initSafeEdit(key, formId, 10 * 1000, formSavedCallback,
+      jQuery(this).initSafeEdit(key, 10 * 1000, formSavedCallback,
           function(doLoadCB) {
-            return restoreDataCallbackPrompt(doLoadCB, formId, key);
+            return jQuery(this).restoreDataCallbackPrompt(doLoadCB, key);
           }, message);
     } else {
       // limit to simple warn
-      detectDirtyPage(formId, message);
+      jQuery(this).detectDirtyPage(message);
     }
   }
 
 }
+
+})(jQuery);
