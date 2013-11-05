@@ -27,12 +27,12 @@
 <tbody>
 <#list operations as operation>
 <#assign rowCss = (operation_index % 2 == 0)?string("even","odd")/>
-  <tr class="${rowCss}" style="vertical-align: top">
-    <td>${operation.category?html}</td>
+  <tr class="${rowCss}">
+    <td><span class="sticker">${operation.category?html}</span></td>
     <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.label?html}</a></td>
     <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.name?html}</a></td>
-    <td>${operation.requires}</td>
-    <td>${operation.since}</td>
+    <td><span class="sticker">${operation.requires}</span></td>
+    <td><span class="sticker">${operation.since}</span></td>
   </tr>
 </#list>
 </tbody>
