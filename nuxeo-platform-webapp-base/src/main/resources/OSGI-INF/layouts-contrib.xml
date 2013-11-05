@@ -421,7 +421,7 @@
       </fields>
     </widget>
 
-    <widget name="suggestion_width" type="int">
+    <widget name="suggestion_width" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
