@@ -2,7 +2,7 @@
  ${seamComponent.className}
 
 <h2> Scope </h2>
- ${seamComponent.scope}
+ <span class="sticker">${seamComponent.scope}</span>
 
 <h2> Implemented interfaces </h2>
 
