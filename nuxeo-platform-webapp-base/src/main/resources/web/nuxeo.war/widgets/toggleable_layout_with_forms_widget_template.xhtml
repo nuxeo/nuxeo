@@ -157,7 +157,6 @@
                 reRender="#{widget.id}_regionPanel"
                 selfRendered="true"
                 onsubmit="removeAllTinyMCEEditors(); return true;">
-                dasfargev
 
                 <ui:insert name="toggled_mode_content" />
 
@@ -231,10 +230,12 @@
                 </p>
 
               </a4j:form>
+
               <script>
-                   var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
-                   initSafeEditOnForm(#{widget.id}_formId, 'toggled-#{fieldOrValue}', '#{messages[safeEdit_message]}');
+                var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
+                jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
                </script>
+
             </c:if>
 
             <c:if test="#{not useAjaxForm}">
@@ -295,10 +296,12 @@
                 </p>
 
               </h:form>
+
                <script>
-                   var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
-                   initSafeEditOnForm(#{widget.id}_formId, 'toggled-#{fieldOrValue}', '#{messages[safeEdit_message]}');
+                var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
+                jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
                </script>
+
             </c:if>
 
           </c:if>
