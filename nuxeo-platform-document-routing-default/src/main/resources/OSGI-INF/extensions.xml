@@ -262,7 +262,7 @@ NodeVariables["comment"]= null;}</param>
         <properties widgetMode="edit">
           <property name="orderable">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="width">300</property>
+          <property name="width">70%</property>
           <property name="prefixed">true</property>
           <property name="required">#{request.getParameter('button') == 'start_review'}</property>
         </properties>
@@ -379,7 +379,7 @@ NodeVariables["comment"]= null;}</param>
         <properties widgetMode="edit">
           <property name="orderable">true</property>
           <property name="placeholder">label.security.search</property>
-          <property name="width">300</property>
+          <property name="width">70%</property>
           <property name="helpLabel">wf.serialDocumentReview.ParticipantsOnTheReview.order</property>
           <property name="prefixed">true</property>
           <property name="required">#{request.getParameter('button') == 'start_review'}</property>
