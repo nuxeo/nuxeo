@@ -95,6 +95,7 @@ author: lkemen@nuxeo.com
   margin-right: 1.4em }
 
 /* =Simple boxes */
+.grayBox,
 .simpleBox {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -102,15 +103,22 @@ author: lkemen@nuxeo.com
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "default (__FLAVOR__ color)";
-  display: inline-block;
   margin: 0 .5em .5em 0;
-  overflow: hidden;
   padding: .5em;
-  text-align: left;
+  text-align: left }
+
+.simpleBox {
+  display: inline-block;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 350px }
 
+.grayBox {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  width: 100% }
+
+.widgetTable .grayBox,
 .widgetTable .simpleBox {
   margin: .1em auto .5em }
 
