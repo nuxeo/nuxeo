@@ -30,7 +30,7 @@
       </c:if>
 
       <c:forEach var="task" items="#{tasks}" varStatus="status">
-        <div class="simpleBox fullWidth">
+        <div class="grayBox">
           <h:outputFormat styleClass="boldLabel" value="#{messages['label.route.task.type']} ">
             <f:param value="#{messages[task.name]}" />
           </h:outputFormat>

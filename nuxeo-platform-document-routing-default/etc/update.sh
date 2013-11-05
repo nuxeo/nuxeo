@@ -46,6 +46,10 @@ sed -e 's#  <require>org.nuxeo.runtime.started</require>##' \
 sed -e '/<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes"/,/<.extension>/d' \
     -i '~' $RES/OSGI-INF/extensions.xml
 
+#temporary fix, waiting for NXS-1827 to be done    
+sed -e 's,\<property name=\"width\"\>300\<\/property\>,\<property name=\"width\"\>70%\<\/property\>,g' \
+      -i '~' $RES/OSGI-INF/extensions.xml
+
 # in zip, replace studio name in schema namespaces, as well as workflow filter id
 ZIP=$RES/data/SerialDocumentReview.zip
 mkdir $ZIP.dir
