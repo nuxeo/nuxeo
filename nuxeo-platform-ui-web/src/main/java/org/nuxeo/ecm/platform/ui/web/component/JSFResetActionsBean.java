@@ -22,8 +22,13 @@ import javax.el.ValueExpression;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import org.ajax4jsf.renderkit.AjaxRendererUtils;
+import org.ajax4jsf.renderkit.RendererUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -49,6 +54,64 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 @Name("jsfResetActions")
 @Scope(ScopeType.EVENT)
 public class JSFResetActionsBean {
+
+    private static final Log log = LogFactory.getLog(JSFResetActionsBean.class);
+
+    /**
+     * Base component id for reset actions.
+     *
+     * @since 5.9.1
+     */
+    protected String baseComponentId;
+
+    /**
+     * Returns the base component id, if {@link #setBaseComponentId(String)}
+     * was previously called in the same request, or null.
+     *
+     * @since 5.9.1
+     */
+    public String getBaseComponentId() {
+        return baseComponentId;
+    }
+
+    /**
+     * Sets the base component id so that
+     * {@link #resetComponentsFor(ActionEvent)} can look it up in the hierarchy
+     * of components, and reset component states recursively from it.
+     *
+     * @since 5.9.1
+     * @see #resetComponentsFor(ActionEvent)
+     */
+    public void setBaseComponentId(String baseComponentId) {
+        this.baseComponentId = baseComponentId;
+    }
+
+    /**
+     * Looks up the parent naming container for the component source of the
+     * action event, and reset components recursively within this container.
+     *
+     * @since 5.9.1
+     */
+    public void resetComponentsFor(ActionEvent event) {
+        UIComponent component = event.getComponent();
+        if (component == null) {
+            return;
+        }
+        String baseCompId = getBaseComponentId();
+        if (baseCompId != null) {
+            FacesContext ctx = FacesContext.getCurrentInstance();
+            UIComponent target = RendererUtils.getInstance().findComponentFor(
+                    component, baseCompId);
+            if (target != null) {
+                baseCompId = AjaxRendererUtils.getAbsoluteId(target);
+            }
+            UIComponent anchor = ctx.getViewRoot().findComponent(baseCompId);
+            resetComponentResursive(anchor);
+        } else {
+            log.error("No base component id given => cannot reset "
+                    + "components state.");
+        }
+    }
 
     /**
      * Looks up the parent naming container for the component source of the
