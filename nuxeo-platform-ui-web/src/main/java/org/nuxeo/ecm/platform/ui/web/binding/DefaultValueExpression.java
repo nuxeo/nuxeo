@@ -132,10 +132,7 @@ public class DefaultValueExpression extends ValueExpression {
 
     @Override
     public boolean isLiteralText() {
-        if (originalExpression != null) {
-            return originalExpression.isLiteralText();
-        }
-        return true;
+        return (originalExpression != null && originalExpression.isLiteralText())
+                || (defaultExpression != null && defaultExpression.isLiteralText());
     }
-
 }
