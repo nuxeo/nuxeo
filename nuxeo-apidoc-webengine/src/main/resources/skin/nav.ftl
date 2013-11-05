@@ -4,9 +4,9 @@
 
 <#if !Root.isEmbeddedMode()>
 
-<p class="explore"><a href="${Root.path}"> See all available distributions </A></p>
+<p class="explore"><a class="button" href="${Root.path}"> See all available distributions </A></p>
 
-<p class="explored"><a href="${Root.path}/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
+<p class="explored"><a class="button" href="${Root.path}/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
 <#if Root.currentDistribution.isLive()>
  (Live)
 </#if>
