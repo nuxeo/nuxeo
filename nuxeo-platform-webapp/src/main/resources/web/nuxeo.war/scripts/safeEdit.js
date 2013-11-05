@@ -133,10 +133,11 @@
       jQuery(window).unload(function() {
         // XXX
       });
-      // block auto save until use choose to restore or not
-      jQuery(this).data('blockAutoSave',  true);
-      // build load callback that UI will call if user wants to restore
+
       var $form = jQuery(this);
+      // block auto save until use choose to restore or not
+      $form.data('blockAutoSave',  true);
+      // build load callback that UI will call if user wants to restore
       var doLoad = function(confirmLoad) {
         if (confirmLoad) {
           // restore !
@@ -147,7 +148,7 @@
           $form.processPostRestore(data);
         } else {
           // drop saved data !
-          jQuery(this).cleanupSavedData();
+          $form.cleanupSavedData();
         }
         $form.data('blockAutoSave', false);
         if (savePeriod > 0) {
@@ -206,62 +207,6 @@
     }
   }
 
-  $.fn.doInitSafeEdit = function(savePeriod, saveCB, loadCB,
-      message) {
-    var loaded = jQuery(this).restoreDraftFormData(loadCB, savePeriod,
-        saveCB);
-    var $form = jQuery(this);
-    jQuery(this).bindOnChange(function(event) {
-      if (!$form.data('dirtyPage')) {
-        // first time we detect a dirty page, we start force save
-        $form.saveForm(savePeriod, saveCB);
-        jQuery(window).bind('beforeunload', function() {
-          // return message
-          return message;
-        });
-        // if the user really wanna leave the page, then we clear the
-        // localstorage
-        jQuery(window).bind('unload', function() {
-          $form.cleanupSavedData();
-        });
-      }
-      $form.data('dirtyPage', true);
-    });
-    jQuery(this).submit(function() {
-      jQuery(this).data('dirtyPage', false);
-      jQuery(window).unbind('beforeunload');
-      $form.cleanupSavedData();
-      return true;
-    })
-  }
-
-  $.fn.initWhenPageReady = function(savePeriod, saveCB, loadCB,
-      message, waitFunctionIndex) {
-    var $form = jQuery(this);
-    var waitFunctions = $form.data('waitFunctions');
-    var currentWaitingIteration = $form.data('currentWaitingIteration');
-    if (waitFunctions === undefined || waitFunctionIndex > waitFunctions.length - 1 || currentWaitingIteration > maxWaitingIteration) {
-      // Nothing to wait, lets' go!
-      $form.doInitSafeEdit(savePeriod, saveCB, loadCB, message);
-    } else {
-      var stillWaiting = !(waitFunctions[waitFunctionIndex]());
-      if (stillWaiting) {
-        // Something is still loading, let's give it more time (i.e. waitPeriod)
-        //console.debug('waiting ... ');
-        currentWaitingIteration++;
-        $form.data('currentWaitingIteration', currentWaitingIteration);
-        window.setTimeout(function() {
-          $form.initWhenPageReady(savePeriod, saveCB, loadCB,
-              message, waitFunctionIndex);
-        }, waitPeriod);
-      } else {
-        // The thing we were waiting for has finished to load, let's wait for the next one
-        $form.initWhenPageReady(savePeriod, saveCB, loadCB,
-            message, waitFunctionIndex + 1);
-      }
-    }
-  }
-
   $.fn.registerSafeEditWait = function (waitFct) {
     var $form = jQuery(this);
     if ($form.data('waitFunctions') === undefined) {
@@ -278,14 +223,70 @@
     $form.data('postRestoreFunctions').push(postRestoreFct);
   }
 
-  $.fn.initSafeEdit = function(key, savePeriod,
-      saveCB, loadCB, message) {
-    jQuery(this).data('blockAutoSave', false);
-    jQuery(this).data('dirtyPage', false);
-    jQuery(this).data('lastSavedJSONData', null);
-    jQuery(this).data('currentWaitingIteration', 0);
-    jQuery(this).data('key', key);
-    jQuery(this).initWhenPageReady(savePeriod, saveCB, loadCB, message, 0);
+  $.fn.initSafeEdit = function(key, savePeriod, saveCB, loadCB, message) {
+
+    var $form = jQuery(this);
+
+    $form.data('blockAutoSave', false);
+    $form.data('dirtyPage', false);
+    $form.data('lastSavedJSONData', null);
+    $form.data('currentWaitingIteration', 0);
+    $form.data('key', key);
+
+    doInitSafeEdit = function(savePeriod, saveCB, loadCB, message) {
+      var loaded = $form.restoreDraftFormData(loadCB, savePeriod,
+          saveCB);
+      $form.bindOnChange(function(event) {
+        if (!$form.data('dirtyPage')) {
+          // first time we detect a dirty page, we start force save
+          $form.saveForm(savePeriod, saveCB);
+          jQuery(window).bind('beforeunload', function() {
+            // return message
+            return message;
+          });
+          // if the user really wanna leave the page, then we clear the
+          // localstorage
+          jQuery(window).bind('unload', function() {
+            $form.cleanupSavedData();
+          });
+        }
+        $form.data('dirtyPage', true);
+      });
+      $form.submit(function() {
+        $form.data('dirtyPage', false);
+        jQuery(window).unbind('beforeunload');
+        $form.cleanupSavedData();
+        return true;
+      })
+    }
+
+    initWhenPageReady = function(savePeriod, saveCB, loadCB, message, waitFunctionIndex) {
+      var waitFunctions = $form.data('waitFunctions');
+      var currentWaitingIteration = $form.data('currentWaitingIteration');
+      if (waitFunctions === undefined || waitFunctionIndex > waitFunctions.length - 1 || currentWaitingIteration > maxWaitingIteration) {
+        // Nothing to wait, lets' go!
+        doInitSafeEdit(savePeriod, saveCB, loadCB, message);
+      } else {
+        var stillWaiting = !(waitFunctions[waitFunctionIndex]());
+        if (stillWaiting) {
+          // Something is still loading, let's give it more time (i.e. waitPeriod)
+          //console.debug('waiting ... ');
+          currentWaitingIteration++;
+          $form.data('currentWaitingIteration', currentWaitingIteration);
+          window.setTimeout(function() {
+            initWhenPageReady(savePeriod, saveCB, loadCB,
+                message, waitFunctionIndex);
+          }, waitPeriod);
+        } else {
+          // The thing we were waiting for has finished to load, let's wait for the next one
+          initWhenPageReady(savePeriod, saveCB, loadCB,
+              message, waitFunctionIndex + 1);
+        }
+      }
+    }
+
+    initWhenPageReady(savePeriod, saveCB, loadCB, message, 0);
+
     return this;
   }
 
