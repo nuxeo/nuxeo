@@ -25,8 +25,8 @@
 <tbody>
 <#list seamComponents as component>
 <#assign rowCss = (component_index % 2 == 0)?string("even","odd")/>
-  <tr class="${rowCss}" style="vertical-align: top">
-    <td>${component.scope}</td>
+  <tr class="${rowCss}">
+    <td><span class="sticker">${component.scope}</span></td>
     <td>
       <a href="${Root.path}/${distId}/viewSeamComponent/${component.id}">${component.name}</a>
     </td>
