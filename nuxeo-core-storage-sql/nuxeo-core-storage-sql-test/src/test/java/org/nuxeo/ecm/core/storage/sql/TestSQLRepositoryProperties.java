@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.sql.reload.RepositoryReloader;
 import org.nuxeo.runtime.api.Framework;
 
 @SuppressWarnings("unchecked")
@@ -504,6 +505,29 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("tp:complex/string", "test");
         doc = session.saveDocument(doc);
         assertEquals("test", doc.getPropertyValue("tp:complex/string"));
+    }
+
+    @Test
+    public void testComplexPropertySchemaUpdate() throws Exception {
+        // create a doc
+        doc.setPropertyValue("tp:complex/string", "test");
+        doc = session.saveDocument(doc);
+        session.save();
+        closeSession();
+        waitForAsyncCompletion();
+
+        // add complexschema to TestDocument
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-schema-update.xml");
+
+        // reload repo with new doctype
+        RepositoryReloader.reloadRepositories();
+        openSession();
+        doc = session.getDocument(new IdRef(doc.getId()));
+
+        // this property did not exist on document creation, after updating the
+        // doctype it should not fail
+        doc.getProperty("cmpf:attachedFile");
     }
 
     // NXP-2318: i don't get what's supposed to be answered to these questions
