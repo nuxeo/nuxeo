@@ -1090,8 +1090,12 @@ public class SQLSession implements Session {
                 } else {
                     Node childNode = session.getChildNode(node, name, true);
                     if (childNode == null) {
-                        throw new DocumentException("Node: " + node
-                                + " missing complex property: " + name);
+                        // Create the needed complex property. This could also
+                        // be done lazily when an actual write is done -- this
+                        // would mean refactoring the various SQL*Property
+                        // classes to hold parent information.
+                        childNode = session.addChildNode(node, name, null,
+                                type.getName(), true);
                     }
                     childNodes = Collections.singletonList(childNode);
                 }
