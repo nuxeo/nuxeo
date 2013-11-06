@@ -179,7 +179,7 @@ public class LockManager {
             return true;
         }
         Throwable t = e.getCause();
-        if (t instanceof BatchUpdateException) {
+        if (t instanceof BatchUpdateException && t.getCause() != null) {
             t = t.getCause();
         }
         return t instanceof SQLException && shouldRetry((SQLException) t);
