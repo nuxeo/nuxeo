@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -116,8 +115,6 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         routeDoc = createRoute("myroute", session);
     }
 
-    // NXP-12955: disabled because failing randomly
-    @Ignore
     @Test
     public void testEscalationSingleExecution() throws Exception {
         routeDoc = session.saveDocument(routeDoc);
