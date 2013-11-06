@@ -34,10 +34,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Interpolator;
 import org.jboss.seam.excel.ExcelWorkbookException;
 import org.jboss.seam.ui.util.JSF;
-import org.nuxeo.ecm.platform.ui.web.util.CSVResponseWriter;
+import org.nuxeo.ecm.platform.ui.web.util.NXHtmlResponseWriter;
 
 import com.sun.faces.config.WebConfiguration;
-import com.sun.faces.renderkit.html_basic.HtmlResponseWriter;
 
 /**
  * Override of Seam cell component to control HTML encoding of accents in
@@ -170,7 +169,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
         Boolean scriptInAttributes = Boolean.TRUE;
         // force escaping to true
         WebConfiguration.DisableUnicodeEscaping escaping = WebConfiguration.DisableUnicodeEscaping.True;
-        ResponseWriter newResponseWriter = new CSVResponseWriter(
+        ResponseWriter newResponseWriter = new NXHtmlResponseWriter(
                 cacheingWriter, contentType, characterEncoding, scriptHiding,
                 scriptInAttributes, escaping);
         // ResponseWriter newResponseWriter = renderKit.createResponseWriter(
