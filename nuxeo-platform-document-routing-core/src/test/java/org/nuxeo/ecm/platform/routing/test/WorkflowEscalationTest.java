@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEscalationService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.EscalationRule;
@@ -90,6 +91,9 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     @Inject
     protected DocumentRoutingService routing;
 
+    @Inject
+    protected DocumentRoutingEngineService routingService;
+
     // init userManager now for early user tables creation (cleaner debug)
     @Inject
     protected UserManager userManager;
@@ -135,7 +139,8 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node2 = session.saveDocument(node2);
-        instantiateAndRun(session);
+        DocumentRoute routeInstance = instantiateAndRun(session);
+        String routeInstanceId = routeInstance.getDocument().getId();
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
@@ -164,6 +169,12 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         // check that no nodes with execution rules are found
         nodes = escalationService.queryForSuspendedNodesWithEscalation(session);
         assertEquals(0, nodes.size());
+
+        // cancel the route
+        routingService.cancel(routeInstance, session);
+        routeInstance = session.getDocument(new IdRef(routeInstanceId)).getAdapter(
+                DocumentRoute.class);
+        assertTrue(routeInstance.isCanceled());
     }
 
     @Test
@@ -201,6 +212,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
         node2 = session.saveDocument(node2);
         DocumentRoute route = instantiateAndRun(session);
+        String routeInstanceId = route.getDocument().getId();
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
@@ -261,11 +273,13 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         DocumentModel r = session.getDocument(route.getDocument().getRef());
         nodeDoc = session.getDocument(new IdRef(node.getDocument().getId()));
-        assertEquals("foo",
-                r.getPropertyValue("fctroute1:stringfield"));
-        assertEquals("bar",
-                nodeDoc.getPropertyValue("fctnd1:stringfield2"));
-
+        assertEquals("foo", r.getPropertyValue("fctroute1:stringfield"));
+        assertEquals("bar", nodeDoc.getPropertyValue("fctnd1:stringfield2"));
+        // cancel the route
+        routingService.cancel(route, session);
+        DocumentRoute routeInstance = session.getDocument(
+                new IdRef(routeInstanceId)).getAdapter(DocumentRoute.class);
+        assertTrue(routeInstance.isCanceled());
     }
 
     protected void setEscalationRules(DocumentModel node,
