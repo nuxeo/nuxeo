@@ -54,6 +54,9 @@ public class SummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//span[@class[starts-with(.,'nxw_contributors_')]]")
     public List<WebElement> contributors;
 
+    @FindBy(xpath = "//form[@id='nxl_grid_summary_layout:nxw_summary_current_document_states_form']")
+    public WebElement lifeCycleState;
+
     public SummaryTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -63,16 +66,30 @@ public class SummaryTabSubPage extends AbstractPage {
         startWorkflowBtn.click();
     }
 
+    public void startDefaultParallelWorkflow() {
+        selectItemInDropDownMenu(workflowSelector, "Parallel document review");
+        startWorkflowBtn.click();
+    }
+
     public boolean workflowAlreadyStarted() {
         return findElementWithTimeout(
                 By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_document_route_form')]")).getText().contains(
-                "Serial document review has been started by");
+                "document review has been started by");
     }
 
     public boolean openTaskForCurrentUser() {
         return findElementWithTimeout(
                 By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks_form')]")).getText().contains(
                 "Please accept or reject the document");
+    }
+
+    /**
+     * @since 5.8
+     */
+    public boolean parallelOpenTaskForCurrentUser() {
+        return findElementWithTimeout(
+                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks_form')]")).getText().contains(
+                "Please give your opinion. Click on N/A if you have no advice.");
     }
 
     public WorkflowTabSubPage getWorkflow() {
@@ -117,4 +134,10 @@ public class SummaryTabSubPage extends AbstractPage {
         return result;
     }
 
+    /**
+     * @since 5.8
+     */
+    public String getCurrentLifeCycleState() {
+        return lifeCycleState.findElement(By.className("sticker")).getText();
+    }
 }

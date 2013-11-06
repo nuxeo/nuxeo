@@ -19,6 +19,9 @@ package org.nuxeo.functionaltests.pages.tabs;
 /**
  * @since 5.7
  */
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
@@ -38,12 +41,31 @@ public class WorkflowTabSubPage extends DocumentBasePage {
         super(driver);
     }
 
+    /**
+     * Add reviewer in default serial workflow
+     */
     public void addWorkflowReviewer() {
         Select2WidgetElement particpants = new Select2WidgetElement(driver,
                 By.xpath("//div[contains(@id, 'nxw_participants_select2')]"),
                 true);
         particpants.selectValue("jdoe");
         selectItemInDropDownMenu(reviewSelector, "Simple review");
+    }
+
+    /**
+     * Add reviewer in default parallel workflow
+     */
+    public void addParallelWorkflowReviewer(String user) {
+        Select2WidgetElement particpants = new Select2WidgetElement(driver,
+                By.xpath("//div[contains(@id, 'nxw_participants_select2')]"),
+                true);
+        particpants.selectValue(user);
+    }
+
+    public void addParallelWorkflowEndDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+        WebElement endDate = driver.findElement((By.xpath("//input[contains(@id, 'nxw_end_dateInputDate')]")));
+        endDate.sendKeys(sdf.format(new Date()));
     }
 
     public void showGraphView() {
@@ -68,7 +90,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      * @since 5.8
      */
     public WebElement getTaskLayoutNode() {
-        return findElementWithTimeout(By.xpath("//div[starts-with(@id, 'task_')]"));
+        return findElementWithTimeout(By.xpath("//div[starts-with(@id, 'nxl_current_route_layout:nxw_current_route_user_tasks_panel')]"));
     }
 
     @Override
