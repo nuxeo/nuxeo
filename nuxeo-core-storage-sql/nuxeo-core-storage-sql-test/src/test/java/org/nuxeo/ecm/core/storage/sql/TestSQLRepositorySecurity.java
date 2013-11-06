@@ -241,7 +241,8 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             removePermissionToAnonymous();
             anonSession.save(); // process invalidations
 
-            setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN, REMOVE_CHILDREN, READ);
+            setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN,
+                    REMOVE_CHILDREN, READ);
             root = anonSession.getRootDocument();
 
             DocumentModel folder3 = new DocumentModelImpl(
@@ -354,7 +355,8 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         DocumentModel root = new DocumentModelImpl("/", "testACPInheritance",
                 "Folder");
         root = session.createDocument(root);
-        DocumentModel doc = new DocumentModelImpl("/testACPInheritance", "folder", "Folder");
+        DocumentModel doc = new DocumentModelImpl("/testACPInheritance",
+                "folder", "Folder");
         doc = session.createDocument(doc);
 
         ACP rootAcp = root.getACP();
@@ -376,7 +378,9 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         assertEquals("joe_reader", acl.getACEs()[0].getUsername());
 
         // block inheritance
-        acp.getOrCreateACL().add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
+        acp.getOrCreateACL().add(
+                new ACE(SecurityConstants.EVERYONE,
+                        SecurityConstants.EVERYTHING, false));
         doc.setACP(acp, true);
         session.save();
 
@@ -531,8 +535,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         // add the permission to remove children on the root
         ACP rootACP = root.getACP();
         ACL rootACL = rootACP.getOrCreateACL();
-        rootACL.add(new ACE("joe_localmanager",
-                REMOVE_CHILDREN, true));
+        rootACL.add(new ACE("joe_localmanager", REMOVE_CHILDREN, true));
         rootACP.addACL(rootACL);
         root.setACP(rootACP, true);
 
@@ -616,6 +619,56 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             closeSession(joeSession);
         }
 
+    }
 
+    @Test
+    public void testReadAclSecurityUpdate() throws ClientException {
+        // check that aclOptimization update the user aclr cache
+        // NXP-13109
+        DocumentModel root = session.getRootDocument();
+        // Create a doc and set a new ACLR on it
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "foo", "Folder");
+        doc = session.createDocument(doc);
+        ACP acp = doc.getACP();
+        assertNotNull(acp);
+        acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Everyone", "Read", true));
+        acp.addACL(acl);
+        doc.setACP(acp, true);
+        session.save();
+
+        CoreSession joeSession = openSessionAs("joe");
+        try {
+            DocumentModelList list;
+            list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(1, list.size());
+            // Remove the document, so the ACLR created is not anymore assigned
+            session.removeDocument(doc.getRef());
+            session.save();
+            list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(0, list.size());
+        } finally {
+            closeSession(joeSession);
+        }
+
+        CoreSession bobSession = openSessionAs("bob");
+        try {
+            DocumentModelList list;
+            // Perform a query to init the ACLR cache
+            list = bobSession.query("SELECT * FROM Folder");
+            assertEquals(0, list.size());
+            // Create a new doc with the same ACLR
+            doc = new DocumentModelImpl(root.getPathAsString(), "bar", "Folder");
+            doc = session.createDocument(doc);
+            doc.setACP(acp, true);
+            session.save();
+            // Check that the ACLR has been added to the user cache
+            list = bobSession.query("SELECT * FROM Folder");
+            assertEquals(1, list.size());
+        } finally {
+            closeSession(bobSession);
+        }
     }
 }

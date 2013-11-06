@@ -825,7 +825,7 @@ BEGIN
   INSERT INTO aclr_user_map
     SELECT u.user_id, NEW.acl_id
     FROM aclr_user AS u, inserted AS NEW
-    LEFT JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
+    JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
     GROUP BY u.user_id, u.principals, NEW.acl_id
     HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
 END;
@@ -927,9 +927,14 @@ BEGIN
   INSERT INTO aclr_modified VALUES (NULL, 2);
   SET @top = @@IDENTITY
   --
+  -- 0/ Clean aclr
+  DELETE FROM aclr WHERE acl_id IN (SELECT r.acl_id FROM aclr r
+    LEFT JOIN hierarchy_read_acl h ON r.acl_id=h.acl_id
+    WHERE h.acl_id IS NULL);
+  --
   -- 1/ New documents, no new ACL
   INSERT INTO hierarchy_read_acl
-    SELECT id, dbo.nx_get_read_acl_id(id)
+    SELECT id, NULL
     FROM (SELECT DISTINCT(hierarchy_id) AS id
         FROM aclr_modified
         WHERE is_new = 1 AND id BETWEEN @last AND @top AND
