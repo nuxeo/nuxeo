@@ -3,7 +3,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <div style="display: none;" class="contextMenu" id="popupMenu">
+  <div style="display: none;" class="contextMenu" id="#{widget.id}_popupMenu">
     <ul>
       <nxu:dataList var="action" layout="simple"
         value="#{popupHelper.unfiltredPopupActions}">

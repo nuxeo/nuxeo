@@ -39,7 +39,7 @@
                 <rich:treeNode
                   highlightedClass="treeNodeHighlightedClass"
                   selectedClass="treeNodeSelectedClass"
-                  oncomplete="jQuery('span.popupTarget').contextMenu('popupMenu');">
+                  oncomplete="jQuery('span.popupTarget').contextMenu('#{widget.id}_popupMenu');">
                   <div id="nodeRefTarget:#{node.document.id}"
                     class="nxDropTarget#{node.isSelected(currentDocument) ? ' selected' : ''}">
                     <span class="popupTarget" docRef="#{node.document.ref}">
@@ -76,7 +76,7 @@
   } else if (window.attachEvent) {
     window.attachEvent("onload", function (e) {window.loaded = true});
   }
-  setupContextMenu("span.popupTarget");
+  setupContextMenu("span.popupTarget", "#{widget.id}_popupMenu");
 </script>
 
 </div>
