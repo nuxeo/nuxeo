@@ -106,7 +106,7 @@
     <rnode:variablesFacet><![CDATA[facet-var_Task6d8]]></rnode:variablesFacet>
     <rnode:tasksInfo/>
     <rnode:endDate/>
-    <rnode:allowTaskReassignment><![CDATA[false]]></rnode:allowTaskReassignment>
+    <rnode:allowTaskReassignment><![CDATA[true]]></rnode:allowTaskReassignment>
     <rnode:taskDueDate/>
     <rnode:inputChain><![CDATA[reinitAssigneeComment]]></rnode:inputChain>
     <rnode:taskDescription/>
