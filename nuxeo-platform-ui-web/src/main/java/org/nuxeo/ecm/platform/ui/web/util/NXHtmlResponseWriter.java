@@ -98,11 +98,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     //
     private boolean escapeIso;
 
-    // True when we shouldn't be escaping output (basically,
-    // inside of <script> and <style> elements).
-    //
-    private boolean dontEscape;
-
     // flag to indicate we're writing a CDATA section
     private boolean writingCdata;
 
@@ -150,8 +145,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     // of String.charAt(). This buffer will be grown, if necessary, to
     // accomodate larger values.
     private char[] textBuffer = new char[128];
-
-    private char[] charHolder = new char[1];
 
     static final Pattern CDATA_START_SLASH_SLASH;
 
@@ -397,11 +390,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
                             "name"));
         }
 
-        if (!writingCdata) {
-            // always turn escaping back on once an element ends unless we're
-            // still writing cdata content
-            dontEscape = false;
-        }
         isXhtml = getContentType().equals(RIConstants.XHTML_CONTENT_TYPE);
 
         if (isScriptOrStyle(name) && !scriptOrStyleSrc
@@ -491,7 +479,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
             writer.write("]]>");
             writingCdata = false;
             isCdata = false;
-            dontEscape = false;
             return;
         }
         // See if we need to close the start of the last element
@@ -572,7 +559,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
         if ("cdata".equalsIgnoreCase(name)) {
             isCdata = true;
             writingCdata = true;
-            dontEscape = true;
             writer.write("<![CDATA[");
             closeStart = false;
             return;
@@ -581,7 +567,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
             // keep escaping disabled
             isCdata = false;
             writingCdata = true;
-            dontEscape = true;
         }
 
         writer.write('<');
@@ -996,14 +981,11 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     private boolean isScriptOrStyle(String name) {
         if ("script".equalsIgnoreCase(name)) {
             isScript = true;
-            dontEscape = true;
         } else if ("style".equalsIgnoreCase(name)) {
             isStyle = true;
-            dontEscape = true;
         } else {
             isScript = false;
             isStyle = false;
-            dontEscape = false;
         }
 
         return (isScript || isStyle);
