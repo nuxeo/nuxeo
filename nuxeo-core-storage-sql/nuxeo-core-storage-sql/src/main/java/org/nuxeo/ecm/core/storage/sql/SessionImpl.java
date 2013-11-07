@@ -91,6 +91,10 @@ public class SessionImpl implements Session, XAResource {
 
     private String threadName;
 
+    private static boolean captureThreadStartEnabled = Boolean.parseBoolean(Framework.getProperty("nuxeo.vcs.captureStartThread", "false"));
+
+    private Throwable threadStart;
+
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
             Credentials credentials) throws StorageException {
         this.repository = repository;
@@ -115,6 +119,7 @@ public class SessionImpl implements Session, XAResource {
         if (!live) {
             throw new IllegalStateException("Session is not live");
         }
+        checkThread();
     }
 
     // called by NetServlet when forwarding remote NetMapper calls.
@@ -139,7 +144,6 @@ public class SessionImpl implements Session, XAResource {
             // avoid potential multi-threaded access to active session
             return 0;
         }
-        checkThreadEnd();
         return context.clearCaches();
     }
 
@@ -160,16 +164,23 @@ public class SessionImpl implements Session, XAResource {
                 "Concurrency Error: Session was started in thread %s (%s)"
                         + " but is being used in thread %s (%s)", threadId,
                 threadName, currentThreadId, currentThreadName);
-        log.debug(msg, new Exception(msg));
+        throw new IllegalStateException(msg, threadStart);
     }
 
     protected void checkThreadStart() {
+	checkThread();
         threadId = Thread.currentThread().getId();
         threadName = Thread.currentThread().getName();
+        if (captureThreadStartEnabled) {
+	    threadStart = new Throwable("thread start");
+	}
     }
 
     protected void checkThreadEnd() {
+	checkThread();
         threadId = 0;
+        threadName = null;
+        threadStart = null;
     }
 
     /**
@@ -245,7 +256,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getRootNode() {
-        checkThread();
         checkLive();
         return rootNode;
     }
@@ -272,7 +282,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected void flush() throws StorageException {
-        checkThread();
+        checkLive();
         if (!repository.getRepositoryDescriptor().fulltextDisabled) {
             updateFulltext();
         }
@@ -589,7 +599,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getNodeById(Serializable id) throws StorageException {
-        checkThread();
         checkLive();
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
@@ -752,7 +761,6 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public List<Node> getNodesByIds(List<Serializable> ids)
             throws StorageException {
-        checkThread();
         checkLive();
         return getNodesByIds(ids, true);
     }
