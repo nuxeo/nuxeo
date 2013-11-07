@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
@@ -275,4 +276,25 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
             // expected
         }
     }
+
+    @Test
+    public void testAsyncListenerRetry() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+                "OSGI-INF/test-listeners-async-retry-contrib.xml");
+
+        DummyAsyncRetryListener.clear();
+
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setProperty("dublincore", "title", "title1");
+        doc = session.createDocument(doc);
+        session.save();
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        waitForAsyncCompletion();
+
+        assertEquals(2, DummyAsyncRetryListener.getCountHandled());
+        assertEquals(1, DummyAsyncRetryListener.getCountOk());
+    }
+
 }
