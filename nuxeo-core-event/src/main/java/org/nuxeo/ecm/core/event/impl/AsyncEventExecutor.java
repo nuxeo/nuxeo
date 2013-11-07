@@ -99,11 +99,15 @@ public class AsyncEventExecutor {
 
         private static final long serialVersionUID = 1L;
 
+        private static final int DEFAULT_RETRY_COUNT = 1;
+
         protected final String title;
 
         protected ReconnectedEventBundle bundle;
 
         protected String listenerName;
+
+        protected int retryCount;
 
         protected transient EventListenerDescriptor listener;
 
@@ -135,6 +139,11 @@ public class AsyncEventExecutor {
             if (!docIds.isEmpty()) {
                 setDocuments(repositoryName, docIds);
             }
+            Integer count = listener.getRetryCount();
+            retryCount = count == null ? DEFAULT_RETRY_COUNT : count.intValue();
+            if (retryCount < 0) {
+                retryCount = DEFAULT_RETRY_COUNT;
+            }
         }
 
         @Override
@@ -148,13 +157,24 @@ public class AsyncEventExecutor {
         }
 
         @Override
-        public void work() throws Exception {
+        public int getRetryCount() {
+            return retryCount;
+        }
+
+        @Override
+        public void retryableWork() throws Exception {
             EventService eventService = Framework.getLocalService(EventService.class);
             listener = eventService.getEventListener(listenerName);
             if (listener == null) {
                 throw new RuntimeException("Cannot find listener: " + listenerName);
             }
             listener.asPostCommitListener().handleEvent(bundle);
+        }
+
+        @Override
+        public void rollbackAndRetryTransaction() {
+            bundle.disconnect();
+            super.rollbackAndRetryTransaction();
         }
 
         @Override

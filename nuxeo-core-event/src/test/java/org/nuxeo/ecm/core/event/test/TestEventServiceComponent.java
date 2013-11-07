@@ -115,6 +115,24 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testAsyncRetry() throws Exception {
+        URL url = getClass().getClassLoader().getResource(
+                "test-async-listeners.xml");
+        deployTestContrib("org.nuxeo.ecm.core.event", url);
+        EventService service = Framework.getLocalService(EventService.class);
+
+        // send two events, only one of which is recognized by the listener
+        // (the other is filtered out of the bundle passed to this listener)
+        EventContextImpl context = new EventContextImpl();
+        context.setProperty("concurrentexception", Boolean.TRUE);
+        Event test1 = new EventImpl("testasync", context);
+        test1.setIsCommitEvent(true);
+        service.fireEvent(test1);
+        service.waitForAsyncCompletion();
+        assertEquals(2, DummyPostCommitEventListener.handledCount());
+    }
+
+    @Test
     public void testSyncPostCommit() throws Exception {
         doTestSyncPostCommit(false, false, false, 2, 4);
     }

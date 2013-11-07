@@ -79,6 +79,9 @@ public class EventListenerDescriptor {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
+    @XNode("@retryCount")
+    protected Integer retryCount;
+
     @XNode("@singlethread")
     protected boolean singleThreaded = false;
 
@@ -106,6 +109,10 @@ public class EventListenerDescriptor {
         return isEnabled;
     }
 
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
     public Set<String> getEvents() {
         return events;
     }
@@ -117,6 +124,10 @@ public class EventListenerDescriptor {
 
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
     }
 
     public void initListener() throws Exception {
@@ -207,6 +218,10 @@ public class EventListenerDescriptor {
 
         if (other.priority != null) {
             this.priority = other.priority;
+        }
+
+        if (other.retryCount != null) {
+            this.retryCount = other.retryCount;
         }
     }
 

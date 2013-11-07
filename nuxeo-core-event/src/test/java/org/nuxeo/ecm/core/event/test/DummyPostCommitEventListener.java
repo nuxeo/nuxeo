@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
@@ -49,6 +50,10 @@ public class DummyPostCommitEventListener implements PostCommitEventListener {
                 Thread.currentThread().interrupt();
                 interruptCount.incrementAndGet();
             }
+        }
+        if (properties.get("concurrentexception") != null
+                && handledCount() == 1) {
+            throw new ConcurrentUpdateException();
         }
     }
 
