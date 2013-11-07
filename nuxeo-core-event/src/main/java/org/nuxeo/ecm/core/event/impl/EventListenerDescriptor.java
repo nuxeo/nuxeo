@@ -206,7 +206,7 @@ public class EventListenerDescriptor {
         }
 
         if (other.priority != null) {
-            other.priority = this.priority;
+            this.priority = other.priority;
         }
     }
 
