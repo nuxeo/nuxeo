@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  *
- * Generic importer
+ * Generic MultiThreaded importer that is designed for importing trees.
  *
  * @author Thierry Delprat
  *

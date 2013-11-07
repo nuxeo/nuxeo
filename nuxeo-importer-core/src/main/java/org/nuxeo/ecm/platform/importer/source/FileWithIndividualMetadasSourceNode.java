@@ -30,14 +30,14 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.importer.properties.IndividualMetadataCollector;
 
 /**
- * 
+ *
  * {@link SourceNode} implementation that manages Meta-data from properties
  * files per document
  * <p>
  * The properties are mapped by the collector using as key the path of the
  * file/folder to import.
- * 
- * 
+ *
+ *
  */
 public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
 
@@ -111,12 +111,4 @@ public class FileWithIndividualMetadasSourceNode extends FileSourceNode {
         return null;
     }
 
-    public static String getFileNameNoExt(File file) {
-        String name = file.getName();
-        int p = name.lastIndexOf('.');
-        if (p == -1) {
-            return name;
-        }
-        return name.substring(0, p);
-    }
 }

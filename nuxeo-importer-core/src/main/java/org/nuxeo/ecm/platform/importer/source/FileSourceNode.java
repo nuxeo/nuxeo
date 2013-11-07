@@ -67,13 +67,22 @@ public class FileSourceNode implements SourceNode {
     public String getName() {
         return file.getName();
     }
-    
+
     public String getSourcePath(){
        return file.getAbsolutePath();
     }
 
     public File getFile() {
         return file;
+    }
+
+    public static String getFileNameNoExt(File file) {
+        String name = file.getName();
+        int p = name.lastIndexOf('.');
+        if (p == -1) {
+            return name;
+        }
+        return name.substring(0, p);
     }
 
 }

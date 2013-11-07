@@ -21,8 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
-import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.executor.DefaultImporterExecutor;
+import org.nuxeo.ecm.platform.importer.executor.ImporterExecutor;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -73,7 +73,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     @Override
-    public String importDocuments(AbstractImporterExecutor executor,
+    public String importDocuments(ImporterExecutor executor,
             String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException {
@@ -111,7 +111,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     @Override
-    public String importDocuments(AbstractImporterExecutor executor,
+    public String importDocuments(ImporterExecutor executor,
             String leafType, String folderishType, String destinationPath,
             String sourcePath, boolean skipRootContainerCreation,
             int batchSize, int noImportingThreads, boolean interactive)

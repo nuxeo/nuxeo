@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
  * @author Thierry Delprat
  *
  */
-public abstract class AbstractImporterExecutor {
+public abstract class AbstractImporterExecutor implements ImporterExecutor {
 
     protected abstract Log getJavaLogger();
 
@@ -49,6 +49,10 @@ public abstract class AbstractImporterExecutor {
 
     protected ImporterDocumentModelFactory factory;
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#getLogger()
+     */
+    @Override
     public ImporterLogger getLogger() {
         if (log == null) {
             log = new BasicLogger(getJavaLogger());
@@ -56,6 +60,10 @@ public abstract class AbstractImporterExecutor {
         return log;
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#getStatus()
+     */
+    @Override
     public String getStatus() {
         if (isRunning()) {
             return "Running";
@@ -64,6 +72,10 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#isRunning()
+     */
+    @Override
     public Boolean isRunning() {
         if (executorMainThread == null) {
             return false;
@@ -72,6 +84,10 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#kill()
+     */
+    @Override
     public String kill() {
         if (executorMainThread != null) {
             runner.stopImportProcrocess();
@@ -108,6 +124,10 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#getThreadPolicy()
+     */
+    @Override
     public ImporterThreadingPolicy getThreadPolicy() {
         if (threadPolicy == null) {
             threadPolicy = new DefaultMultiThreadingPolicy();
@@ -115,10 +135,18 @@ public abstract class AbstractImporterExecutor {
         return threadPolicy;
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#setThreadPolicy(org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy)
+     */
+    @Override
     public void setThreadPolicy(ImporterThreadingPolicy threadPolicy) {
         this.threadPolicy = threadPolicy;
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#getFactory()
+     */
+    @Override
     public ImporterDocumentModelFactory getFactory() {
         if (factory == null) {
             factory = new DefaultDocumentModelFactory();
@@ -126,20 +154,18 @@ public abstract class AbstractImporterExecutor {
         return factory;
     }
 
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#setFactory(org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory)
+     */
+    @Override
     public void setFactory(ImporterDocumentModelFactory factory) {
         this.factory = factory;
     }
 
-    /***
-     * since 5.5 this method is invoked when using the
-     * <code>DefaultImporterService</code> and passing the executor to the
-     * importDocuments method
-     *
-     * @param runner
-     * @param interactive
-     * @return
-     * @throws Exception
+    /* (non-Javadoc)
+     * @see org.nuxeo.ecm.platform.importer.executor.ImporterExecutor#run(org.nuxeo.ecm.platform.importer.base.ImporterRunner, java.lang.Boolean)
      */
+    @Override
     public String run(ImporterRunner runner, Boolean interactive)
             throws Exception {
         return doRun(runner, interactive);

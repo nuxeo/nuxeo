@@ -17,7 +17,7 @@
 package org.nuxeo.ecm.platform.importer.service;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
+import org.nuxeo.ecm.platform.importer.executor.ImporterExecutor;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
@@ -75,7 +75,7 @@ public interface DefaultImporterService {
      * @param interactive
      * @throws ClientException
      */
-    String importDocuments(AbstractImporterExecutor executor,
+    String importDocuments(ImporterExecutor executor,
             String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException;
@@ -102,7 +102,7 @@ public interface DefaultImporterService {
      * @param interactive
      * @throws ClientException
      */
-    String importDocuments(AbstractImporterExecutor executor, String leafType,
+    String importDocuments(ImporterExecutor executor, String leafType,
             String folderishType, String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
             int noImportingThreads, boolean interactive) throws ClientException;
