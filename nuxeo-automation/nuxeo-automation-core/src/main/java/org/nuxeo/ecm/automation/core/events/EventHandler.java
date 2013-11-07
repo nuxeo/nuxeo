@@ -118,7 +118,7 @@ public class EventHandler {
     }
 
     public EventHandler(Set<String> eventId, String chainId) {
-        this.events = eventId;
+        events = eventId;
         this.chainId = chainId;
     }
 
@@ -147,13 +147,17 @@ public class EventHandler {
     }
 
     public void setMemberOf(List<String> groups) {
-        this.memberOf = groups;
+        memberOf = groups;
     }
 
     public void setPathStartsWith(String pathStartsWith) {
         this.pathStartsWith = pathStartsWith;
     }
 
+    /**
+     * @deprecated since 5.7.1 use {@link #setCondition(String)} instead
+     */
+    @Deprecated
     public void setExpression(String expression) {
         this.expression = expression;
     }
@@ -189,6 +193,14 @@ public class EventHandler {
      */
     public String getCondition() {
         return condition;
+    }
+
+    /**
+     *
+     * @since 5.9.1
+     */
+    public void setCondition(String condition) {
+        this.condition = condition;
     }
 
     public String getFacet() {
