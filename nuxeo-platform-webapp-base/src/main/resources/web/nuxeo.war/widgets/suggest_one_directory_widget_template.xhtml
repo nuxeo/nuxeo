@@ -54,6 +54,13 @@
 
       <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
         value="#{select2Actions.encodeParametersForDirectory(widget, widgetProperties)}" />
+      <c:if test="#{nxu:test(empty widgetProperty_canAddNewEntry, directoryUIActions.checkContextualDirectoryFilter('canAddEntryFromSuggestDirectoryWidget', widgetProperty_directoryName), widgetProperty_canAddNewEntry)}">
+        <nxu:set var="directoryNameForPopup" value="#{widgetProperty_directoryName}"
+          cache="true">
+          <nxl:widgetType name="documentAction" value="null"
+            mode="view" actionId="addEntryFromSuggestDirectoryWidget" />
+        </nxu:set>
+      </c:if>
       <h:message for="#{widget.id}_select2" styleClass="errorMessage" />
 
     </nxu:set>

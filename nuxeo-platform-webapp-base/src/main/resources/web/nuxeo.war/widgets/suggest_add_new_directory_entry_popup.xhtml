@@ -1,0 +1,35 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3><h:outputText value="#{messages['title.create.vocabulary.entry']}" /></h3>
+
+  <a4j:region renderRegionOnly="false" id="#{fancyboxFormId}">
+
+    <div class="content">
+      <nxl:layout name="#{select2DirectoryActions.getCreationDirectoryEntryLayout(directoryNameForPopup)}"
+        mode="create"
+        value="#{select2DirectoryActions.getCreationDirectoryEntry(directoryNameForPopup)}" />
+    </div>
+
+    <p class="buttonsGadget">
+      <a4j:commandButton value="#{messages['command.create']}"
+        styleClass="button"
+        action="#{select2DirectoryActions.createDirectoryEntry}"
+        oncomplete="jQuery.fancybox.close();" />
+      <a4j:commandButton value="#{messages['command.cancel']}"
+        styleClass="button"
+        action="#{select2DirectoryActions.cancelCreateDirectoryEntry}"
+        immediate="true"
+        oncomplete="jQuery.fancybox.close();" />
+    </p>
+
+  </a4j:region>
+
+</div>
