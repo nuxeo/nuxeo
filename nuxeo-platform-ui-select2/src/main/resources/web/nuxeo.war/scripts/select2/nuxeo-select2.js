@@ -356,6 +356,14 @@
 
       });
     }
+
+    var $parentForm = jQuery(el).closest("form");
+    if ($parentForm.hasClass("safeEditEnabled")) {
+        // Register postRestore function for safeEdit
+        jQuery(el).closest("form").registerPostRestoreCallBacks(function(data) {
+          initSelect2Widget(jQuery(el));
+        });
+      }
   }
 
   window.initSelect2AjaxWidget = function initSelect2AjaxWidget(widgetId, index) {
@@ -376,12 +384,6 @@
   window.initSelect2Widgets = function initSelect2Widgets() {
     jQuery("input[type='hidden'][id$=select2]").each(function(idx, el) {
       initSelect2Widget(jQuery(el));
-      if (jQuery().initSafeEdit) {
-        // Register postRestore function for safeEdit
-        jQuery(el).closest("form").registerPostRestoreCallBacks(function(data) {
-          initSelect2Widget(jQuery(el));
-        });
-      }
     });
   }
 
