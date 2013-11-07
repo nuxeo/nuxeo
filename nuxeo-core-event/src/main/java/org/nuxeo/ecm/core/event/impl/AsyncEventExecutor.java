@@ -159,6 +159,7 @@ public class AsyncEventExecutor {
 
         @Override
         public void cleanUp(boolean ok, Exception e) {
+            super.cleanUp(ok, e);
             bundle.disconnect();
             if (e != null && !(e instanceof InterruptedException)) {
                 log.error("Failed to execute async event " + bundle.getName()
