@@ -732,7 +732,7 @@
           <widget>task_reassignment_comment</widget>
         </row>
       </rows>
-      <widget name="task_reassignment_actors" type="multiplePrefixedUsersSuggestion">
+      <widget name="task_reassignment_actors" type="multipleUsersSuggestion">
         <labels>
           <label mode="any">label.workflow.task.actors</label>
         </labels>
@@ -742,6 +742,7 @@
         </fields>
         <properties mode="any">
           <property name="required">true</property>
+          <property name="prefixed">true</property>
         </properties>
       </widget>
       <widget name="task_reassignment_comment" type="textarea">
