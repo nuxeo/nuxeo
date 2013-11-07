@@ -102,8 +102,8 @@ public class LocalSession extends AbstractSession {
             supportsTags = Boolean.valueOf(repo.supportsTags());
             return repo.getSession(sessionContext);
         } catch (Exception e) {
-            throw new ClientException("Failed to load repository " + repoName,
-                    e);
+            throw new ClientException("Failed to load repository " + repoName
+                    + ": " + e.getMessage(), e);
         }
     }
 

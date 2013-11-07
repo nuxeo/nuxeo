@@ -42,6 +42,8 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSecurityManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
+import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 
 /**
  * The connection factory delegates connection requests to the application
@@ -131,6 +133,21 @@ public class ConnectionFactoryImpl implements Repository,
         } catch (StorageException e) {
             throw e;
         } catch (ResourceException e) {
+            String msg = e.getMessage();
+            if (msg != null
+                    && msg.startsWith("No ManagedConnections available")) {
+                String err = "Connection pool is fully used";
+                if (connectionManager instanceof ConnectionManagerWrapper) {
+                    ConnectionManagerWrapper cmw = (ConnectionManagerWrapper) connectionManager;
+                    NuxeoConnectionManagerConfiguration config = cmw.getConfiguration();
+                    err = err + ", consider increasing "
+                            + "nuxeo.vcs.blocking-timeout-millis (currently "
+                            + config.blockingTimeoutMillis + ") or "
+                            + "nuxeo.vcs.max-pool-size (currently "
+                            + config.maxPoolSize + ")";
+                }
+                throw new StorageException(err, e);
+            }
             throw new StorageException(e);
         }
     }
@@ -195,7 +212,7 @@ public class ConnectionFactoryImpl implements Repository,
         try {
             session = getConnection(connectionSpec);
         } catch (StorageException e) {
-            throw new DocumentException(e);
+            throw new DocumentException(e.getMessage(), e);
         }
         return new SQLSession(session, this, context);
     }
