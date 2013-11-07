@@ -14,7 +14,8 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
   }
 
   // if SafeEdit present
-  if (jQuery().initSafeEdit) {
+  var $parentForm = jQuery($el).closest("form");
+  if ($parentForm.hasClass("safeEditEnabled")) {
     // register wait for this editor
     var $parentForm = $el.closest('form');
     $parentForm.registerSafeEditWait(function() {
