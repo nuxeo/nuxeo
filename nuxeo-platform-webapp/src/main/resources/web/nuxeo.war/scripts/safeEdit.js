@@ -136,7 +136,7 @@
 
       var $form = jQuery(this);
       // block auto save until use choose to restore or not
-      $form.data('blockAutoSave',  true);
+      $form.data('blockAutoSave', true);
       // build load callback that UI will call if user wants to restore
       var doLoad = function(confirmLoad) {
         if (confirmLoad) {
@@ -207,7 +207,7 @@
     }
   }
 
-  $.fn.registerSafeEditWait = function (waitFct) {
+  $.fn.registerSafeEditWait = function(waitFct) {
     var $form = jQuery(this);
     if ($form.data('waitFunctions') === undefined) {
       $form.data('waitFunctions', []);
@@ -226,16 +226,10 @@
   $.fn.initSafeEdit = function(key, savePeriod, saveCB, loadCB, message) {
 
     var $form = jQuery(this);
-
-    $form.data('blockAutoSave', false);
-    $form.data('dirtyPage', false);
-    $form.data('lastSavedJSONData', null);
-    $form.data('currentWaitingIteration', 0);
-    $form.data('key', key);
+    var $safeEditInitDone = $form.data('safeEditInitDone');
 
     doInitSafeEdit = function(savePeriod, saveCB, loadCB, message) {
-      var loaded = $form.restoreDraftFormData(loadCB, savePeriod,
-          saveCB);
+      var loaded = $form.restoreDraftFormData(loadCB, savePeriod, saveCB);
       $form.bindOnChange(function(event) {
         if (!$form.data('dirtyPage')) {
           // first time we detect a dirty page, we start force save
@@ -260,32 +254,52 @@
       })
     }
 
-    initWhenPageReady = function(savePeriod, saveCB, loadCB, message, waitFunctionIndex) {
+    initWhenPageReady = function(savePeriod, saveCB, loadCB, message,
+        waitFunctionIndex) {
       var waitFunctions = $form.data('waitFunctions');
       var currentWaitingIteration = $form.data('currentWaitingIteration');
-      if (waitFunctions === undefined || waitFunctionIndex > waitFunctions.length - 1 || currentWaitingIteration > maxWaitingIteration) {
+      if (waitFunctions === undefined
+          || waitFunctionIndex > waitFunctions.length - 1
+          || currentWaitingIteration > maxWaitingIteration) {
         // Nothing to wait, lets' go!
         doInitSafeEdit(savePeriod, saveCB, loadCB, message);
       } else {
         var stillWaiting = !(waitFunctions[waitFunctionIndex]());
         if (stillWaiting) {
-          // Something is still loading, let's give it more time (i.e. waitPeriod)
-          //console.debug('waiting ... ');
+          // Something is still loading, let's give it more time (i.e.
+          // waitPeriod)
+          // console.debug('waiting ... ');
           currentWaitingIteration++;
           $form.data('currentWaitingIteration', currentWaitingIteration);
           window.setTimeout(function() {
-            initWhenPageReady(savePeriod, saveCB, loadCB,
-                message, waitFunctionIndex);
+            initWhenPageReady(savePeriod, saveCB, loadCB, message,
+                waitFunctionIndex);
           }, waitPeriod);
         } else {
-          // The thing we were waiting for has finished to load, let's wait for the next one
-          initWhenPageReady(savePeriod, saveCB, loadCB,
-              message, waitFunctionIndex + 1);
+          // The thing we were waiting for has finished to load, let's wait for
+          // the next one
+          initWhenPageReady(savePeriod, saveCB, loadCB, message,
+              waitFunctionIndex + 1);
         }
       }
     }
 
-    initWhenPageReady(savePeriod, saveCB, loadCB, message, 0);
+    if (!$safeEditInitDone) {
+
+      $form.data('safeEditInitDone', true);
+
+      // Set control data in the form
+      $form.data('blockAutoSave', false);
+      $form.data('dirtyPage', false);
+      $form.data('lastSavedJSONData', null);
+      $form.data('currentWaitingIteration', 0);
+      $form.data('key', key);
+
+      // Perform init
+      initWhenPageReady(savePeriod, saveCB, loadCB, message, 0);
+    } else {
+      // Do nothing: do not init twice the same form
+    }
 
     return this;
   }
