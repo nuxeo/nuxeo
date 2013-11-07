@@ -70,14 +70,16 @@
       </f:subview>
     </c:if>
 
+    <ui:include src="/incl/popupMenu.xhtml">
+      <ui:param name="popupMenuId" value="#{formId}" />
+    </ui:include>
+    <script>
+      setupContextMenu("table td div div.popupTarget", "#{formId}_popupMenu");
+    </script>
+
   </nxu:set>
   </nxu:set>
 
 </c:if>
-
-<ui:include src="/incl/popupMenu.xhtml" />
-<script>
-  setupContextMenu("table td div div.popupTarget", "#{widget.id}_popupMenu");
-</script>
 
 </div>
