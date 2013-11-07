@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -314,10 +313,7 @@ public interface CoreSession {
     /**
      * Gets an iterator to the children of the given parent filtered according
      * to the given document type.
-     *
-     * @deprecated since 5.6, use {@link #getChildren} instead
      */
-    @Deprecated
     DocumentModelIterator getChildrenIterator(DocumentRef parent, String type)
             throws ClientException;
 
@@ -368,22 +364,6 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Method used internally to retrieve frames of a long result.
-     *
-     * @param def
-     * @param type
-     * @param perm
-     * @param filter
-     * @param start
-     * @param count
-     * @return
-     * @throws ClientException
-     */
-    DocumentModelsChunk getDocsResultChunk(DocsQueryProviderDef def,
-            String type, String perm, Filter filter, int start, int count)
-            throws ClientException;
-
-    /**
      * Gets the children of the given parent filtered according to the given
      * document type and permission. Long result sets are loaded frame by frame
      * transparently by the DocumentModelIterator.
@@ -425,20 +405,6 @@ public interface CoreSession {
     DocumentModelList getFolders(DocumentRef parent) throws ClientException;
 
     /**
-     * Same as {@link CoreSession#getFolders(DocumentRef)} but returns a lazy
-     * loading iterator over the list of children.
-     *
-     * @param parent the parent reference
-     * @return a list of children if any, an empty one if none or null if the
-     *         given parent is not a folder
-     * @throws ClientException
-     * @deprecated unused since 5.6, use {@link #getFolders} instead
-     */
-    @Deprecated
-    DocumentModelIterator getFoldersIterator(DocumentRef parent)
-            throws ClientException;
-
-    /**
      * Same as {@link CoreSession#getFolders(DocumentRef)} but uses an optional
      * filter and sorter on the result.
      *
@@ -462,19 +428,6 @@ public interface CoreSession {
      * @throws ClientException
      */
     DocumentModelList getFiles(DocumentRef parent) throws ClientException;
-
-    /**
-     * Same as {@link CoreSession#getFiles(DocumentRef)} but returns an
-     * iterator.
-     *
-     * @param parent
-     * @return
-     * @throws ClientException
-     * @deprecated unused since 5.6, use {@link #getFiles} instead
-     */
-    @Deprecated
-    DocumentModelIterator getFilesIterator(DocumentRef parent)
-            throws ClientException;
 
     /**
      * Same as {@link #getFiles} but uses an optional filter and sorter on the
@@ -1359,20 +1312,6 @@ public interface CoreSession {
      */
     IterableQueryResult queryAndFetch(String query, String queryType,
             Object... params) throws ClientException;
-
-    /**
-     * Executes the given NXQL query and returns an iterators of results.
-     *
-     * @param query the query to execute
-     * @param filter the filter to apply to result
-     * @param max number of document to retrieve
-     * @return the query result iterator
-     * @throws ClientException
-     * @deprecated unused since 5.6
-     */
-    @Deprecated
-    DocumentModelIterator queryIt(String query, Filter filter, int max)
-            throws ClientException;
 
     /** -------------------------- Security API --------------------------- * */
 

@@ -14,7 +14,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 /**
@@ -24,7 +23,8 @@ import java.util.Iterator;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
-public interface DocumentModelIterator extends Iterator<DocumentModel>, Serializable, Iterable<DocumentModel>  {
+public interface DocumentModelIterator extends Iterator<DocumentModel>,
+        Iterable<DocumentModel> {
 
     int UNKNOWN_SIZE = -1;
 

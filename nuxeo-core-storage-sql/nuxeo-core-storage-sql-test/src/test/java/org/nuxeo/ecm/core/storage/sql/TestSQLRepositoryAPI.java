@@ -12,6 +12,14 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,14 +38,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.derby.tools.sysinfo;
-import org.junit.Before;
 import org.junit.After;
-import org.junit.Test;
+import org.junit.Before;
 import org.junit.Ignore;
-
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
@@ -707,7 +711,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenDocumentRef2() throws ClientException {
+    public void testGetChildrenIteratorRoot() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         DocumentModelIterator docs = session.getChildrenIterator(root.getRef());
@@ -753,7 +757,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testGetFileChildrenDocumentRefString2() throws ClientException {
+    public void testGetChildrenIteratorFile() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -774,7 +778,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         // get file childs
         DocumentModelIterator retrievedChilds = session.getChildrenIterator(
-                root.getRef(), "File");
+                root.getRef(), "File", null, null);
 
         assertNotNull(retrievedChilds);
 
@@ -792,6 +796,70 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("File", doc.getType());
     }
 
+    @Test
+    public void testGetChildrenIterator() throws ClientException {
+        int n = 200;
+        Set<String> names = new HashSet<String>();
+        for (int i = 0; i < n; i++) {
+            String name = "doc" + i;
+            names.add(name);
+            DocumentModel doc = session.createDocumentModel("/", name, "File");
+            doc = session.createDocument(doc);
+        }
+        session.save();
+
+        DocumentModelIterator it = session.getChildrenIterator(
+                new PathRef("/"), "File", null, null);
+        for (DocumentModel doc : it) {
+            String name = doc.getName();
+            if (!names.remove(name)) {
+                fail("Unknown or duplicate name" + name);
+            }
+        }
+        if (!names.isEmpty()) {
+            fail("Remaining names " + names);
+        }
+    }
+
+    @Test
+    public void testGetChildrenIteratorFilter() throws ClientException {
+        int n = 200;
+        Set<String> names = new HashSet<String>();
+        for (int i = 0; i < n; i++) {
+            String name = "doc" + i;
+            names.add(name);
+            DocumentModel doc = session.createDocumentModel("/", name, "File");
+            doc = session.createDocument(doc);
+            // create spurious docs in the middle
+            DocumentModel doc2 = session.createDocumentModel("/", "foo" + i,
+                    "File");
+            doc2 = session.createDocument(doc2);
+            DocumentModel doc3 = session.createDocumentModel("/",
+                    "docNote" + i, "Note");
+            doc3 = session.createDocument(doc3);
+        }
+        session.save();
+
+        Filter filter = new Filter() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public boolean accept(DocumentModel docModel) {
+                return docModel.getName().startsWith("doc");
+            }
+        };
+        DocumentModelIterator it = session.getChildrenIterator(
+                new PathRef("/"), "File", null, filter );
+        for (DocumentModel doc : it) {
+            String name = doc.getName();
+            if (!names.remove(name)) {
+                fail("Unknown or duplicate name " + name);
+            }
+        }
+        if (!names.isEmpty()) {
+            fail("Remaining names " + names);
+        }
+    }
     @Test
     public void testGetFolderChildrenDocumentRefString() throws ClientException {
         DocumentModel root = session.getRootDocument();
@@ -830,8 +898,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testGetFolderChildrenDocumentRefString2()
-            throws ClientException {
+    public void testGetChildrenIteratorFolder() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -852,7 +919,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         // get folder childs
         DocumentModelIterator retrievedChilds = session.getChildrenIterator(
-                root.getRef(), "Folder");
+                root.getRef(), "Folder", null, null);
 
         assertNotNull(retrievedChilds);
 
@@ -905,46 +972,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
          * assertNotNull(retrievedChilds.get(0).getRef());
          *
          * assertEquals(name2, retrievedChilds.get(0).getName());
-         */
-    }
-
-    // FIXME: same as testGetChildrenDocumentRefStringFilter. Remove?
-    @Test
-    public void testGetChildrenDocumentRefStringFilter2()
-            throws ClientException {
-        DocumentModel root = session.getRootDocument();
-
-        String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
-        String name2 = "folder#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "Folder");
-
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
-        childDocs.add(childFolder);
-        childDocs.add(childFile);
-
-        List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
-
-        assertEquals(name, returnedChildDocs.get(0).getName());
-        assertEquals(name2, returnedChildDocs.get(1).getName());
-
-        /*
-         * Filter filter = new NameFilter(name2); // get folder childs
-         * DocumentModelIterator retrievedChilds = session.getChildrenIterator(
-         * root.getRef(), null, null, filter);
-         *
-         * assertNotNull(retrievedChilds);
-         *
-         * assertTrue(retrievedChilds.hasNext()); DocumentModel doc =
-         * retrievedChilds.next(); assertFalse(retrievedChilds.hasNext());
-         *
-         * assertNotNull(doc); assertNotNull(doc.getId());
-         * assertNotNull(doc.getName()); assertNotNull(doc.getPathAsString());
-         * assertNotNull(doc.getRef());
-         *
-         * assertEquals(name2, doc.getName());
          */
     }
 
@@ -1116,45 +1143,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testGetFilesDocumentRef2() throws ClientException {
-        DocumentModel root = session.getRootDocument();
-
-        String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
-        childDocs.add(childFolder);
-        childDocs.add(childFile);
-
-        List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
-
-        assertEquals(name, returnedChildDocs.get(0).getName());
-        assertEquals(name2, returnedChildDocs.get(1).getName());
-
-        // get file childs
-        DocumentModelIterator retrievedChilds = session.getFilesIterator(root.getRef());
-
-        assertNotNull(retrievedChilds);
-
-        assertTrue(retrievedChilds.hasNext());
-        DocumentModel doc = retrievedChilds.next();
-        assertFalse(retrievedChilds.hasNext());
-
-        assertNotNull(doc);
-        assertNotNull(doc.getId());
-        assertNotNull(doc.getPathAsString());
-        assertNotNull(doc.getName());
-        assertNotNull(doc.getRef());
-
-        assertEquals(name2, doc.getName());
-        assertEquals("File", doc.getType());
-    }
-
-    @Test
     @Ignore
     public void testGetFilesDocumentRefFilterSorter() {
     // not used at the moment
@@ -1194,45 +1182,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
         assertEquals(name, retrievedChilds.get(0).getName());
         assertEquals("Folder", retrievedChilds.get(0).getType());
-    }
-
-    @Test
-    public void testGetFoldersDocumentRef2() throws ClientException {
-        DocumentModel root = session.getRootDocument();
-
-        String name = "folder#" + generateUnique();
-        DocumentModel childFolder = new DocumentModelImpl(
-                root.getPathAsString(), name, "Folder");
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
-        childDocs.add(childFolder);
-        childDocs.add(childFile);
-
-        List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
-
-        assertEquals(name, returnedChildDocs.get(0).getName());
-        assertEquals(name2, returnedChildDocs.get(1).getName());
-
-        // get folder childs
-        DocumentModelIterator retrievedChilds = session.getFoldersIterator(root.getRef());
-
-        assertNotNull(retrievedChilds);
-
-        assertTrue(retrievedChilds.hasNext());
-        DocumentModel doc = retrievedChilds.next();
-        assertFalse(retrievedChilds.hasNext());
-
-        assertNotNull(doc);
-        assertNotNull(doc.getId());
-        assertNotNull(doc.getPathAsString());
-        assertNotNull(doc.getName());
-        assertNotNull(doc.getRef());
-
-        assertEquals(name, doc.getName());
-        assertEquals("Folder", doc.getType());
     }
 
     @Test

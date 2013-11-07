@@ -62,8 +62,7 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelChildrenIterator;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -84,7 +83,6 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.DocumentProxy;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
@@ -1157,82 +1155,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         }
     }
 
-    /**
-     * Method used internally to retrieve frames of a long result.
-     */
     @Override
-    public DocumentModelsChunk getDocsResultChunk(DocsQueryProviderDef def,
-            String type, String perm, Filter filter, final int start,
-            final int max) throws ClientException {
-        // convention: if count == 0 return all results to the end
-        if (max < 0) {
-            throw new IllegalArgumentException("invalid count=" + max);
-        }
-        int count = max;
-
-        DocsQueryProviderFactory dqpFactory = new DocsQueryProviderFactory(this);
-        try {
-            if (perm == null) {
-                perm = READ;
-            }
-
-            DocsQueryProvider dqp = dqpFactory.getDQLbyType(def);
-            // Document doc = resolveReference(parent);
-            // checkPermission(doc, READ_CHILDREN);
-            // Iterator<Document> children = doc.getChildren(start);
-            final DocumentIterator children = dqp.getDocs(start);
-            DocumentModelList docs = new DocumentModelListImpl();
-            int lastIndex = start;
-            boolean hasMore = false;
-            while (children.hasNext()) {
-                lastIndex++;
-                Document child = children.next();
-
-                // 1st filter:
-                if (!dqp.accept(child)) {
-                    continue;
-                }
-
-                if (hasPermission(child, perm)) {
-                    if (child.getType() != null
-                            && (type == null || type.equals(child.getType().getName()))) {
-                        DocumentModel childModel = readModel(child);
-                        if (filter == null || filter.accept(childModel)) {
-                            if (count == 0) {
-                                // end of page
-                                hasMore = true;
-                                break;
-                            }
-                            count--;
-                            docs.add(childModel);
-                        }
-                    }
-                }
-            }
-
-            final long total = children.getSize();
-
-            return new DocumentModelsChunk(docs, lastIndex - 1, hasMore, total);
-        } catch (DocumentException e) {
-            if (def.getParent() != null) {
-                throw new ClientException("Failed to get children for "
-                        + def.getParent().toString(), e);
-            } else {
-                throw new ClientException("Failed to get documents for query: "
-                        + def.getQuery(), e);
-            }
-        }
-    }
-
-    @Override
-    @Deprecated
     public DocumentModelIterator getChildrenIterator(DocumentRef parent)
             throws ClientException {
         return getChildrenIterator(parent, null, null, null);
     }
 
     @Override
-    @Deprecated
     public DocumentModelIterator getChildrenIterator(DocumentRef parent,
             String type) throws ClientException {
         return getChildrenIterator(parent, type, null, null);
@@ -1241,10 +1170,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent,
             String type, String perm, Filter filter) throws ClientException {
-        DocsQueryProviderDef def = new DocsQueryProviderDef(
-                DocsQueryProviderDef.DefType.TYPE_CHILDREN);
-        def.setParent(parent);
-        return new DocumentModelIteratorImpl(this, 15, def, type, perm, filter);
+        // perm unused, kept for API compat
+        return new DocumentModelChildrenIterator(this, parent, type, filter);
     }
 
     @Override
@@ -1299,17 +1226,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    @Deprecated
-    public DocumentModelIterator getFilesIterator(DocumentRef parent)
-            throws ClientException {
-
-        DocsQueryProviderDef def = new DocsQueryProviderDef(
-                DocsQueryProviderDef.DefType.TYPE_CHILDREN_NON_FOLDER);
-        def.setParent(parent);
-        return new DocumentModelIteratorImpl(this, 15, def, null, null, null);
-    }
-
-    @Override
     public DocumentModelList getFiles(DocumentRef parent, Filter filter,
             Sorter sorter) throws ClientException {
         try {
@@ -1354,16 +1270,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         } catch (DocumentException e) {
             throw new ClientException("Failed to get folders " + parent, e);
         }
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModelIterator getFoldersIterator(DocumentRef parent)
-            throws ClientException {
-        DocsQueryProviderDef def = new DocsQueryProviderDef(
-                DocsQueryProviderDef.DefType.TYPE_CHILDREN_FOLDERS);
-        def.setParent(parent);
-        return new DocumentModelIteratorImpl(this, 15, def, null, null, null);
     }
 
     @Override
@@ -1702,17 +1608,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
 
         }
-    }
-
-    @Override
-    @Deprecated
-    public DocumentModelIterator queryIt(String query, Filter filter, int max)
-            throws ClientException {
-        DocsQueryProviderDef def = new DocsQueryProviderDef(
-                DocsQueryProviderDef.DefType.TYPE_QUERY);
-        def.setQuery(query);
-        return new DocumentModelIteratorImpl(this, 15, def, null, BROWSE,
-                filter);
     }
 
     private String tryToExtractMeaningfulErrMsg(Throwable t) {
