@@ -226,28 +226,29 @@ public class Select2Common {
             if (StringUtils.isBlank(result)) {
                 // At this point, if returned label is empty, we use user id
                 result += StringUtils.isNotBlank(userId) ? userId : "";
-            } else {
-                if (displayEmailInSuggestion && !hideThirdLabel) {
-                    if (StringUtils.isNotBlank(thirdLabelField)) {
-                        final String thirdLabel = obj.optString(thirdLabelField);
-                        if (StringUtils.isNotBlank(thirdLabel)) {
-                            if (StringUtils.isNotBlank(result)) {
-                                result += " ";
-                            }
-                            result += thirdLabel;
+            }
+
+            if (displayEmailInSuggestion && !hideThirdLabel) {
+                if (StringUtils.isNotBlank(thirdLabelField)) {
+                    final String thirdLabel = obj.optString(thirdLabelField);
+                    if (StringUtils.isNotBlank(thirdLabel)) {
+                        if (StringUtils.isNotBlank(result)) {
+                            result += " ";
                         }
-                    } else {
-                        // Else we use email
-                        String email = obj.optString(UserConfig.EMAIL_COLUMN);
-                        if (StringUtils.isNotBlank(email)) {
-                            if (StringUtils.isNotBlank(result)) {
-                                result += " ";
-                            }
-                            result += email;
+                        result += thirdLabel;
+                    }
+                } else {
+                    // Else we use email
+                    String email = obj.optString(UserConfig.EMAIL_COLUMN);
+                    if (StringUtils.isNotBlank(email)) {
+                        if (StringUtils.isNotBlank(result)) {
+                            result += " ";
                         }
+                        result += email;
                     }
                 }
             }
+
             obj.put(LABEL, result);
         }
     }
