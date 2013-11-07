@@ -54,7 +54,6 @@ import org.nuxeo.ecm.platform.actions.jsf.JSFActionContext;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.util.SeamContextHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
  * Manages directories editable by administrators.
@@ -79,7 +78,7 @@ public class DirectoryUIActionsBean implements Serializable {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected transient ResourcesAccessor resourcesAccessor;
+    protected Map<String, String> messages;
 
     @In(create = true, required = false)
     protected transient ActionManager actionManager;
@@ -232,8 +231,7 @@ public class DirectoryUIActionsBean implements Serializable {
             if (id instanceof String && dirSession.hasEntry((String) id)) {
                 facesMessages.add(
                         StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get(
-                                "vocabulary.entry.identifier.already.exists"));
+                        messages.get("vocabulary.entry.identifier.already.exists"));
                 return;
             }
             dirSession.createEntry(creationDirectoryEntry);
@@ -243,10 +241,8 @@ public class DirectoryUIActionsBean implements Serializable {
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "vocabulary.entry.added"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get("vocabulary.entry.added"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
         } finally {
@@ -295,10 +291,8 @@ public class DirectoryUIActionsBean implements Serializable {
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "vocabulary.entry.edited"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get("vocabulary.entry.edited"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
         } finally {
@@ -316,8 +310,7 @@ public class DirectoryUIActionsBean implements Serializable {
                 if (!deleteConstraint.canDelete(dirService, entryId)) {
                     facesMessages.add(
                             StatusMessage.Severity.ERROR,
-                            resourcesAccessor.getMessages().get(
-                                    "feedback.directory.deleteEntry.constraintError"));
+                            messages.get("feedback.directory.deleteEntry.constraintError"));
                     return;
                 }
             }
@@ -329,10 +322,8 @@ public class DirectoryUIActionsBean implements Serializable {
             // invalidate directory entries list
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "vocabulary.entry.deleted"));
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    messages.get("vocabulary.entry.deleted"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
         } finally {
@@ -348,15 +339,20 @@ public class DirectoryUIActionsBean implements Serializable {
         boolean isReadOnly = false;
 
         try {
-            String dirName = currentDirectoryInfo.getName();
-            dirSession = dirService.open(dirName);
+            dirSession = dirService.open(directoryName);
 
             // Check Directory ReadOnly Status
             boolean dirReadOnly = dirSession.isReadOnly();
 
             // Check DirectoryUI ReadOnly Status
-            boolean dirUIReadOnly = currentDirectoryInfo.isReadOnly() == null ? false
-                    : currentDirectoryInfo.isReadOnly();
+            boolean dirUIReadOnly;
+            DirectoryUI currentDirectoryInfo = directoryUIManager.getDirectoryInfo(directoryName);
+            if (currentDirectoryInfo == null) {
+                // assume read-only
+                dirUIReadOnly = true;
+            } else {
+                dirUIReadOnly = Boolean.TRUE.equals(currentDirectoryInfo.isReadOnly());
+            }
 
             isReadOnly = dirReadOnly || dirUIReadOnly;
         } catch (DirectoryException e) {
@@ -372,13 +368,17 @@ public class DirectoryUIActionsBean implements Serializable {
     }
 
     protected ActionContext createDirectoryActionContext() {
+        return createDirectoryActionContext(selectedDirectoryName);
+    }
+
+    protected ActionContext createDirectoryActionContext(String directoryName) {
         FacesContext faces = FacesContext.getCurrentInstance();
         if (faces == null) {
             throw new IllegalArgumentException("Faces context is null");
         }
         ActionContext ctx = new JSFActionContext(faces);
         ctx.putLocalVariable("SeamContext", new SeamContextHelper());
-        ctx.putLocalVariable("directoryName", selectedDirectoryName);
+        ctx.putLocalVariable("directoryName", directoryName);
         ctx.setCurrentPrincipal(currentNuxeoPrincipal);
         return ctx;
     }
@@ -387,4 +387,14 @@ public class DirectoryUIActionsBean implements Serializable {
         return actionManager.checkFilter(filterName,
                 createDirectoryActionContext());
     }
+
+    /**
+     * @since 5.9.1
+     */
+    public boolean checkContextualDirectoryFilter(String filterName,
+            String directoryName) {
+        return actionManager.checkFilter(filterName,
+                createDirectoryActionContext(directoryName));
+    }
+
 }
