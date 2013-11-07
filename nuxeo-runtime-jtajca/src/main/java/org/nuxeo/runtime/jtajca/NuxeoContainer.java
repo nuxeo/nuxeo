@@ -806,6 +806,10 @@ public class NuxeoContainer {
             cm.doStop();
             cm = createConnectionManager(config);
         }
+
+        public NuxeoConnectionManagerConfiguration getConfiguration() {
+            return config;
+        }
     }
 
 }
