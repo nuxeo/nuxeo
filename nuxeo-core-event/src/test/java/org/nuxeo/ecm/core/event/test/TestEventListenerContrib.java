@@ -69,6 +69,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         List<EventListenerDescriptor> apcDescs = serviceImpl.getEventListenerList().getAsyncPostCommitListenersDescriptors();
         assertEquals(1, apcDescs.size());
         assertEquals(1, serviceImpl.getEventListenerList().getAsyncPostCommitListeners().size());
+        desc = serviceImpl.getEventListener("testPostCommit");
+        assertEquals(0, desc.getPriority());
 
         url = EventListenerTest.class.getClassLoader().getResource("test-PostCommitListeners2.xml");
         deployTestContrib("org.nuxeo.ecm.core.event", url);
@@ -81,6 +83,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
             isScriptListener=true;
         }
         assertTrue(isScriptListener);
+        desc = serviceImpl.getEventListener("testPostCommit");
+        assertEquals(10, desc.getPriority());
 
         url = EventListenerTest.class.getClassLoader().getResource("test-PostCommitListeners3.xml");
         deployTestContrib("org.nuxeo.ecm.core.event", url);
@@ -90,6 +94,8 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
         listener = serviceImpl.getEventListenerList().getAsyncPostCommitListeners().get(0);
         isScriptListener = listener instanceof ScriptingPostCommitEventListener;
         assertFalse(isScriptListener);
+        desc = serviceImpl.getEventListener("testPostCommit");
+        assertEquals(20, desc.getPriority());
     }
 
 }
