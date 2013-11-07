@@ -5,15 +5,15 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<h:form enctype="multipart/form-data" id="document_edit">
+<ui:include src="/incl/safeEdit.xhtml"/>
+
+<h:form enctype="multipart/form-data" id="document_edit" styleClass="safeEditEnabled" >
 
   <script>
     jQuery(document).ready(function() {
       jQuery('#document_edit').focusFirst();
     });
   </script>
-
-  <ui:include src="/incl/safeEdit.xhtml"/>
 
   <nxl:documentLayout mode="edit" value="#{currentDocument}" />
 

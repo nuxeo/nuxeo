@@ -23,8 +23,10 @@
           value="#{messages['title.create.document']} #{messages[nxd:typeInfo(changeableDocument).label]}" />
       </h3>
       <ui:include src="/incl/message_banner.xhtml" />
+
       <ui:include src="/incl/safeEdit.xhtml"/>
-      <h:form enctype="multipart/form-data" id="document_create">
+
+      <h:form enctype="multipart/form-data" id="document_create" styleClass="safeEditEnabled" >
         <script>
         jQuery(document).ready(function() {
           jQuery('#document_create').focusFirst();
@@ -38,9 +40,9 @@
         </div>
       </h:form>
       <script>
-      jQuery(document).ready(function() {
-         jQuery('#document_create').initSafeEditOnForm("create-#{currentDocument.id}-#{changeableDocument.type}", "#{messages['safeedit.page.has.unsaved.changes']}");
-      });
+        jQuery(document).ready(function() {
+           jQuery('#document_create').initSafeEditOnForm("create-#{currentDocument.id}-#{changeableDocument.type}", "#{messages['safeedit.page.has.unsaved.changes']}");
+        });
      </script>
     </div>
   </ui:define>
