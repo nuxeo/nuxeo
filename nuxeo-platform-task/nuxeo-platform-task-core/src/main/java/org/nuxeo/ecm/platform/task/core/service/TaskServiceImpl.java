@@ -494,6 +494,16 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     throw new ClientException("Invalid taskId: " + taskId);
                 }
                 List<String> currentAssignees = task.getActors();
+                List<String> currentActors = new ArrayList<String>();
+                for (String currentAssignee : currentAssignees) {
+                    if (currentAssignee.startsWith(NotificationConstants.GROUP_PREFIX)
+                            || currentAssignee.startsWith(NotificationConstants.USER_PREFIX)) {
+                        // prefixed assignees with "user:" or "group:"
+                        currentActors.add(currentAssignee.substring(currentAssignee.indexOf(":") + 1));
+                    } else {
+                        currentActors.add(currentAssignee);
+                    }
+                }
                 String taskInitator = task.getInitiator();
 
                 // remove ACLs set for current assignees
@@ -502,7 +512,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 List<ACE> toRemove = new ArrayList<ACE>();
 
                 for (ACE ace : acl.getACEs()) {
-                    if (currentAssignees.contains(ace.getUsername())
+                    if (currentActors.contains(ace.getUsername())
                             || taskInitator.equals(ace.getUsername())) {
                         toRemove.add(ace);
                     }
