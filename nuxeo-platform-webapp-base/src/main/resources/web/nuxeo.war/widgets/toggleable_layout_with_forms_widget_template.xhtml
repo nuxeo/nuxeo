@@ -156,7 +156,8 @@
                 ignoreDupResponses="true"
                 reRender="#{widget.id}_regionPanel"
                 selfRendered="true"
-                onsubmit="removeAllTinyMCEEditors(); return true;">
+                onsubmit="removeAllTinyMCEEditors(); return true;"
+                styleClass="safeEditEnabled">
 
                 <ui:insert name="toggled_mode_content" />
 
@@ -232,8 +233,10 @@
               </a4j:form>
 
               <script>
-                var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
-                jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
+                jQuery(document).ready(function(){
+                  var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
+                  jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
+                });
                </script>
 
             </c:if>
@@ -242,7 +245,8 @@
 
              <ui:include src="/incl/safeEdit.xhtml"/>
               <h:form id="#{widget.id}_toggledForm"
-                enctype="multipart/form-data">
+                enctype="multipart/form-data"
+                styleClass="safeEditEnabled">
 
                 <ui:insert name="toggled_mode_content" />
 
@@ -298,8 +302,10 @@
               </h:form>
 
                <script>
-                var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
-                jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
+                 jQuery(document).ready(function(){
+                    var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
+                    jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
+                  });
                </script>
 
             </c:if>
