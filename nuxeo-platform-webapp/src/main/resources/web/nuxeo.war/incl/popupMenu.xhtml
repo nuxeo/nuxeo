@@ -1,9 +1,13 @@
 <div xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
+<c:if test="false">
+  Since 5.9.1, accepts a parameter popupMenuId to set the div id.
+</c:if>
 
-  <div style="display: none;" class="contextMenu" id="#{widget.id}_popupMenu">
+  <div style="display: none;" class="contextMenu" id="#{popupMenuId}_popupMenu">
     <ul>
       <nxu:dataList var="action" layout="simple"
         value="#{popupHelper.unfiltredPopupActions}">
