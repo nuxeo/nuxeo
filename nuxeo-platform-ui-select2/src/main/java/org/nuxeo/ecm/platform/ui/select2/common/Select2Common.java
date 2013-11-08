@@ -23,6 +23,8 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -34,6 +36,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 public class Select2Common {
+
+    private static final Log log = LogFactory.getLog(Select2Common.class);
 
     private static final String FORCE_DISPLAY_EMAIL_IN_SUGGESTION = "nuxeo.ui.displayEmailInUserSuggestion";
 
@@ -134,7 +138,8 @@ public class Select2Common {
      * @since 5.7.3
      */
     public static String getLabelFieldName(final Schema schema, boolean dbl10n,
-            String labelFieldName, final String lang) {
+            String labelFieldName, final String lang)
+            throws IllegalArgumentException {
         if (labelFieldName == null || labelFieldName.isEmpty()) {
             // No labelFieldName provided, we assume it is 'label'
             labelFieldName = DIRECTORY_DEFAULT_LABEL_COL_NAME;
@@ -162,12 +167,47 @@ public class Select2Common {
                     return buf.toString();
                 }
             } else {
-                // No pattern, we assume that fields are named like 'xxx_en',
-                // 'xxx_fr', etc.
-                return labelFieldName + "_" + lang;
+                // No pattern
+                String result = labelFieldName + "_" + lang;
+                if (schema.getField(result) != null) {
+                    // we assume that fields are named like 'xxx_en',
+                    // 'xxx_fr', etc.
+                    return result;
+                }
+
+                log.warn(String.format(
+                        "Unable to find field %s in directory schema %s. Trying to fallback on default one.",
+                        labelFieldName, schema.getName()));
+
+                result = DIRECTORY_DEFAULT_LABEL_COL_NAME + "_" + DEFAULT_LANG;
+                if (schema.getField(result) != null) {
+                    // no available locale, fallback to english by default
+                    return result;
+                }
+                result = DIRECTORY_DEFAULT_LABEL_COL_NAME;
+                if (schema.getField(result) != null) {
+                    // no available default locale, fallback to label
+                    return result;
+                }
+
+                if (schema.getField(labelFieldName) != null) {
+                    // let's pretend this is not dbl10n
+                    return labelFieldName;
+                }
+
+                throw new IllegalArgumentException(String.format(
+                        "Unable to find field %s in directory schema %s",
+                        labelFieldName, schema.getName()));
+            }
+        } else {
+            if (schema.getField(labelFieldName) != null) {
+                return labelFieldName;
+            } else {
+                throw new IllegalArgumentException(String.format(
+                        "Unable to find field %s in directory schema %s",
+                        labelFieldName, schema.getName()));
             }
         }
-        return labelFieldName;
     }
 
     /**
