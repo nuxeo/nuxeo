@@ -160,14 +160,6 @@ public class Repository implements Serializable {
         CoreInstance.getInstance().close(session);
     }
 
-    public static RepositoryInstance newRepositoryInstance(Repository repository) {
-        return new RepositoryInstanceHandler(repository).getProxy();
-    }
-
-    public RepositoryInstance newInstance() {
-        return newRepositoryInstance(this);
-    }
-
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
