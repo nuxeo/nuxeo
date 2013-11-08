@@ -19,6 +19,7 @@ package org.nuxeo.drive.hierarchy.permission;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
@@ -94,6 +95,8 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     private static final String SYNC_ROOT_ID_PREFIX = "permissionSyncRootFactory#test#";
 
+    private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
+
     private static final String CONTENT_PREFIX = "The content of file ";
 
     @Inject
@@ -134,27 +137,32 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Before
     public void init() throws Exception {
 
-        // Enable deletion listener because the tear down disables it
-        eventServiceAdmin.setListenerEnabledFlag(
-                "nuxeoDriveFileSystemDeletionListener", true);
+        TransactionHelper.startTransaction();
+        try {
+            // Enable deletion listener because the tear down disables it
+            eventServiceAdmin.setListenerEnabledFlag(
+                    "nuxeoDriveFileSystemDeletionListener", true);
 
-        // Create test users
-        createUser("user1", "user1");
-        createUser("user2", "user2");
+            // Create test users
+            createUser("user1", "user1");
+            createUser("user2", "user2");
 
-        // Open a core session for each user
-        session1 = repository.openSessionAs("user1");
-        session2 = repository.openSessionAs("user2");
-        principal1 = session1.getPrincipal();
-        principal2 = session2.getPrincipal();
+            // Open a core session for each user
+            session1 = repository.openSessionAs("user1");
+            session2 = repository.openSessionAs("user2");
+            principal1 = session1.getPrincipal();
+            principal2 = session2.getPrincipal();
 
-        // Create personal workspace for user1
-        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session1, null);
-        // Wait for creation event to be logged in the audit
+            // Create personal workspace for user1
+            userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                    session1, null);
+            userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
+                    + userWorkspace1.getId();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+        // Wait for personal workspace creation event to be logged in the audit
         eventService.waitForAsyncCompletion();
-        userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
-                + userWorkspace1.getId();
     }
 
     @After
@@ -271,20 +279,29 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Test
     public void testRootlessItems() throws Exception {
 
+        DocumentModel user1Folder1;
+        DocumentModel user1Folder2;
+        DocumentModel user1File2;
+
         harness.deployContrib("org.nuxeo.drive.operations.test",
                 "OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml");
         Framework.getLocalService(ReloadService.class).reload();
 
-        // Populate user1's personal workspace
-        DocumentModel user1Folder1 = createFolder(session1,
-                userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
-        DocumentModel user1Folder2 = createFolder(session1,
-                userWorkspace1.getPathAsString(), "user1Folder2", "Folder");
-        session1.save();
-        setPermission(session1, user1Folder1, "user2",
-                SecurityConstants.EVERYTHING, true);
-        setPermission(session1, user1Folder2, "user2",
-                SecurityConstants.READ_WRITE, true);
+        TransactionHelper.startTransaction();
+        try {
+            // Populate user1's personal workspace
+            user1Folder1 = createFolder(session1,
+                    userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
+            user1Folder2 = createFolder(session1,
+                    userWorkspace1.getPathAsString(), "user1Folder2", "Folder");
+            session1.save();
+            setPermission(session1, user1Folder1, "user2",
+                    SecurityConstants.EVERYTHING, true);
+            setPermission(session1, user1Folder2, "user2",
+                    SecurityConstants.READ_WRITE, true);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
         // Wait for creation events to be logged in the audit
         eventService.waitForAsyncCompletion();
 
@@ -353,19 +370,41 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Check file creation in a sync root without Read permission:
         // user1File2 => non accessible parent user1Folder2 so doesn't appear in
         // the file system changes
-        resetPermissions(session1, user1Folder2.getRef(), "user2");
-        DocumentModel user1File2 = createFile(session1,
-                user1Folder2.getPathAsString(), "user1File2", "File",
-                "user1File2.txt", CONTENT_PREFIX + "user1File2");
-        setPermission(session1, user1File2, "user2", SecurityConstants.READ,
-                true);
-        session1.save();
+        TransactionHelper.startTransaction();
+        try {
+            resetPermissions(session1, user1Folder2.getRef(), "user2");
+            user1File2 = createFile(session1, user1Folder2.getPathAsString(),
+                    "user1File2", "File", "user1File2.txt", CONTENT_PREFIX
+                            + "user1File2");
+            setPermission(session1, user1File2, "user2",
+                    SecurityConstants.READ, true);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
         // Wait for creation events to be logged in the audit
         eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         try {
+            // Security updates
             List<FileSystemItemChange> changes = getChanges(principal2);
-            assertTrue(changes.isEmpty());
+            assertEquals(2, changes.size());
+
+            FileSystemItemChange change = changes.get(0);
+            assertEquals("securityUpdated", change.getEventId());
+            assertEquals(
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + user1File2.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("user1File2.txt", change.getFileSystemItemName());
+            // Not adaptable as a FileSystemItem since parent is not
+            assertNull(change.getFileSystemItem());
+
+            change = changes.get(1);
+            assertEquals("securityUpdated", change.getEventId());
+            assertEquals(SYNC_ROOT_ID_PREFIX + user1Folder2.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("user1Folder2", change.getFileSystemItemName());
+            // Not adaptable as a FileSystemItem since no Read permission
+            assertNull(change.getFileSystemItem());
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
