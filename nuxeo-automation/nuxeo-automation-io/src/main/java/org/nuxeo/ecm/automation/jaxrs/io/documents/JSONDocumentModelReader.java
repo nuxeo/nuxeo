@@ -159,7 +159,7 @@ public class JSONDocumentModelReader implements
             if ("uid".equals(key)) {
                 id = jp.readValueAs(String.class);
             } else if ("properties".equals(key)) {
-                Properties props = readProperties(jp, tmp);
+                Properties props = readProperties(jp);
                 // Put null for CoreSession, only needed for ecm:acl... Won't be
                 // supported for rest API
                 DocumentHelper.setProperties(null, tmp, props);
@@ -238,7 +238,7 @@ public class JSONDocumentModelReader implements
         return doc;
     }
 
-    protected static Properties readProperties(JsonParser jp, DocumentModel doc)
+    static Properties readProperties(JsonParser jp)
             throws Exception {
         JsonNode node = jp.readValueAsTree();
         return new Properties(node);
