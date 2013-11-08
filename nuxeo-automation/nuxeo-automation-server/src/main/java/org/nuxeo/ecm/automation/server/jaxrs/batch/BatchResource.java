@@ -187,18 +187,29 @@ public class BatchResource {
 
                 });
 
-        OperationContext ctx = xreq.createContext(request,
-                getCoreSession(request));
+        try {
+            OperationContext ctx = xreq.createContext(request,
+                    getCoreSession(request));
 
-        Object result;
-        if (StringUtils.isEmpty(fileIdx)) {
-            result = bm.execute(batchId, operationId, getCoreSession(request),
-                    ctx, params);
-        } else {
-            result = bm.execute(batchId, fileIdx, operationId,
-                    getCoreSession(request), ctx, params);
+            Object result;
+            if (StringUtils.isEmpty(fileIdx)) {
+                result = bm.execute(batchId, operationId,
+                        getCoreSession(request), ctx, params);
+            } else {
+                result = bm.execute(batchId, fileIdx, operationId,
+                        getCoreSession(request), ctx, params);
+            }
+            return ResponseHelper.getResponse(result, request);
+        } catch (Exception e) {
+            log.error("Error while executing automation batch ", e);
+            if (ExceptionHandler.isSecurityError(e)) {
+                return Response.status(Status.FORBIDDEN).entity(
+                        "{\"error\" : \"" + e.getMessage() + "\"}").build();
+            } else {
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
+                        "{\"error\" : \"" + e.getMessage() + "\"}").build();
+            }
         }
-        return ResponseHelper.getResponse(result, request);
     }
 
     @GET
