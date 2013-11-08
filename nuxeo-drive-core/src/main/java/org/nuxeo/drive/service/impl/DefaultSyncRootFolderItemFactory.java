@@ -39,13 +39,15 @@ public class DefaultSyncRootFolderItemFactory extends
     /*------------------- AbstractFileSystemItemFactory ---------------------*/
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem) throws ClientException {
+            boolean forceParentItem, FolderItem parentItem,
+            boolean relaxSyncRootConstraint) throws ClientException {
         return new DefaultSyncRootFolderItem(name, parentItem, doc);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
-    protected FolderItem getParentItem(DocumentModel doc) throws ClientException {
+    protected FolderItem getParentItem(DocumentModel doc)
+            throws ClientException {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         Principal principal = doc.getCoreSession().getPrincipal();
         return fileSystemItemManager.getTopLevelFolder(principal);

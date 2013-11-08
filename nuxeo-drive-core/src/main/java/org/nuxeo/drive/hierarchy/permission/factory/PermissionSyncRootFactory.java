@@ -99,14 +99,15 @@ public class PermissionSyncRootFactory extends
      * <li>AND it is not HiddenInNavigation</li>
      * <li>AND it is not in the "deleted" life cycle state, unless
      * {@code includeDeleted} is true</li>
-     * <li>AND it is a synchronization root registered for the current user</li>
+     * <li>AND it is a synchronization root registered for the current user,
+     * unless {@code relaxSyncRootConstraint} is true</li>
      * <li>AND the current user has the {@link #getRequiredPermission()}
      * permission on the document</li>
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
-            throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
         // Check required permission
         CoreSession session = doc.getCoreSession();
         boolean hasRequiredPermission = session.hasPermission(doc.getRef(),
@@ -118,14 +119,14 @@ public class PermissionSyncRootFactory extends
                     session.getPrincipal().getName()));
             return false;
         }
-        return super.isFileSystemItem(doc, includeDeleted)
-                && hasRequiredPermission;
+        return super.isFileSystemItem(doc, includeDeleted,
+                relaxSyncRootConstraint) && hasRequiredPermission;
     }
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentId, FolderItem parentItem)
-            throws ClientException {
+            boolean forceParentId, FolderItem parentItem,
+            boolean relaxSyncRootConstraint) throws ClientException {
         return new DefaultSyncRootFolderItem(name, parentItem, doc);
     }
 

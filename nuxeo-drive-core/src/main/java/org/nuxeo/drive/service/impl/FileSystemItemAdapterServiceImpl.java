@@ -136,26 +136,42 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
-        return getFileSystemItem(doc, false, null, false);
+        return getFileSystemItem(doc, false, null, false, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, false, null, includeDeleted);
+        return getFileSystemItem(doc, false, null, includeDeleted, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
+        return getFileSystemItem(doc, false, null, includeDeleted,
+                relaxSyncRootConstraint);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             FolderItem parentItem) throws ClientException {
-        return getFileSystemItem(doc, true, parentItem, false);
+        return getFileSystemItem(doc, true, parentItem, false, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             FolderItem parentItem, boolean includeDeleted)
             throws ClientException {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
+        return getFileSystemItem(doc, true, parentItem, includeDeleted,
+                relaxSyncRootConstraint);
     }
 
     /**
@@ -266,7 +282,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
      */
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean forceParentItem, FolderItem parentItem,
-            boolean includeDeleted) throws ClientException {
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
 
         FileSystemItem fileSystemItem = null;
 
@@ -293,15 +310,17 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             FileSystemItemFactoryWrapper factory = factoriesIt.next();
             if (generalFactoryMatches(factory)
                     || docTypeFactoryMatches(factory, doc)
-                    || facetFactoryMatches(factory, doc)) {
+                    || facetFactoryMatches(factory, doc,
+                            relaxSyncRootConstraint)) {
                 matchingFactory = factory;
                 try {
                     if (forceParentItem) {
                         fileSystemItem = factory.getFactory().getFileSystemItem(
-                                doc, parentItem, includeDeleted);
+                                doc, parentItem, includeDeleted,
+                                relaxSyncRootConstraint);
                     } else {
                         fileSystemItem = factory.getFactory().getFileSystemItem(
-                                doc, includeDeleted);
+                                doc, includeDeleted, relaxSyncRootConstraint);
                     }
                 } catch (RootlessItemException e) {
                     // Give more information in the exception message on the
@@ -349,13 +368,15 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory,
-            DocumentModel doc) throws ClientException {
+            DocumentModel doc, boolean relaxSyncRootConstraint)
+            throws ClientException {
         if (!StringUtils.isEmpty(factory.getFacet())) {
             for (String docFacet : doc.getFacets()) {
                 if (factory.getFacet().equals(docFacet)) {
                     // Handle synchronization root case
                     if (NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET.equals(docFacet)) {
-                        return syncRootFactoryMatches(doc);
+                        return syncRootFactoryMatches(doc,
+                                relaxSyncRootConstraint);
                     } else {
                         return true;
                     }
@@ -366,13 +387,13 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean syncRootFactoryMatches(DocumentModel doc)
-            throws ClientException {
+    protected boolean syncRootFactoryMatches(DocumentModel doc,
+            boolean relaxSyncRootConstraint) throws ClientException {
         String userName = doc.getCoreSession().getPrincipal().getName();
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {
-            if (userName.equals(subscription.get("username"))
-                    && Boolean.TRUE.equals(subscription.get("enabled"))) {
+            if (Boolean.TRUE.equals(subscription.get("enabled"))
+                    && (userName.equals(subscription.get("username")) || relaxSyncRootConstraint)) {
                 return true;
             }
         }

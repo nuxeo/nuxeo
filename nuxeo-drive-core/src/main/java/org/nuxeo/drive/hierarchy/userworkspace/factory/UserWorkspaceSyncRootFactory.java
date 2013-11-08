@@ -59,8 +59,8 @@ public class UserWorkspaceSyncRootFactory extends
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem)
-            throws ClientException {
+            boolean forceParentItem, FolderItem parentItem,
+            boolean relaxSyncRootConstraint) throws ClientException {
         return new DefaultSyncRootFolderItem(name, parentItem, doc);
     }
 
