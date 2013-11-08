@@ -45,4 +45,6 @@ public final class NuxeoDriveEvents {
 
     public static final String DELETED_EVENT = "deleted";
 
+    public static final String SECURITY_UPDATED_EVENT = "securityUpdated";
+
 }
