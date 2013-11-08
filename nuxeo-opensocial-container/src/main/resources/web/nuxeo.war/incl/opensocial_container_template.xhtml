@@ -141,7 +141,7 @@
       <div class="contextActions">
         <ui:insert name="opensocial_container_actions">
           <c:if test="#{not currentUser.anonymous}">
-            <a onclick="nuxeo.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}" class="button">#{messages['label.opensocial.container.change.layout']}</a>
+            <a onclick="nuxeo.openSocial.container.openContainerBuilder();" id="openContainerBuilder" title="#{messages['label.opensocial.container.change.layout']}" class="button">#{messages['label.opensocial.container.change.layout']}</a>
             <a id="addGadgetButton" href="#{baseURL}site/gadgets?language=#{localeSelector.language}" class="button">#{messages['label.opensocial.container.add.gadget']}</a>
           </c:if>
         </ui:insert>
