@@ -23,7 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.adapter.NuxeoDriveContribException;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
@@ -59,6 +62,8 @@ import org.nuxeo.runtime.api.Framework;
  * <li>Simple document or root physical removal from the directory.</li>
  */
 public class NuxeoDriveFileSystemDeletionListener implements EventListener {
+
+    private static final Log log = LogFactory.getLog(NuxeoDriveFileSystemDeletionListener.class);
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -178,6 +183,12 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         } catch (RootlessItemException e) {
             // can happen when deleting a folder under and unregistered root:
             // nothing to do
+            return;
+        } catch (NuxeoDriveContribException e) {
+            // Nuxeo Drive contributions missing or component not ready
+            log.debug(String.format(
+                    "Either Nuxeo Drive contributions are missing or the FileSystemItemAdapterService component is not ready (application has nor started yet) => ignoring event '%s'.",
+                    eventName));
             return;
         }
         if (fsItem == null) {
