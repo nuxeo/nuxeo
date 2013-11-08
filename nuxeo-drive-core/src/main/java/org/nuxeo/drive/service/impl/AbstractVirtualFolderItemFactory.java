@@ -84,6 +84,12 @@ public abstract class AbstractVirtualFolderItemFactory implements
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
             throws ClientException {
+        return isFileSystemItem(doc, false, false);
+    }
+
+    @Override
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
         return false;
     }
 
@@ -96,18 +102,33 @@ public abstract class AbstractVirtualFolderItemFactory implements
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
+        return getFileSystemItem(doc, false, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
         return null;
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
-            throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem) throws ClientException {
         return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
-            boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem, boolean includeDeleted)
+            throws ClientException {
+        return getFileSystemItem(doc, parentItem, false, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
         return null;
     }
 

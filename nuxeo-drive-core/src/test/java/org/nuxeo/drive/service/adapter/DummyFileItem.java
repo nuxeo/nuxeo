@@ -34,7 +34,7 @@ public class DummyFileItem extends DocumentBackedFileItem {
 
     public DummyFileItem(VersioningFileSystemItemFactory factory,
             DocumentModel doc) throws ClientException {
-        super(factory, doc);
+        super(factory, doc, false);
     }
 
     public DummyFileItem(VersioningFileSystemItemFactory factory,

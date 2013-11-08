@@ -71,12 +71,13 @@ public abstract class AbstractSyncRootFolderItemFactory extends
      * <li>AND it is not HiddenInNavigation</li>
      * <li>AND it is not in the "deleted" life cycle state, unless
      * {@code includeDeleted} is true</li>
-     * <li>AND it is a synchronization root registered for the current user</li>
+     * <li>AND it is a synchronization root registered for the current user,
+     * unless {@code relaxSyncRootConstraint} is true</li>
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
-            throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
 
         // Check Folderish
         if (!doc.isFolder()) {
@@ -114,16 +115,18 @@ public abstract class AbstractSyncRootFolderItemFactory extends
                     doc.getId(), LifeCycleConstants.DELETED_STATE));
             return false;
         }
-        // Check synchronization root registered for the current user
-        NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        Principal principal = doc.getCoreSession().getPrincipal();
-        boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal,
-                doc);
-        if (!isSyncRoot) {
-            log.debug(String.format(
-                    "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
-                    doc.getId(), principal.getName()));
-            return false;
+        if (!relaxSyncRootConstraint) {
+            // Check synchronization root registered for the current user
+            NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
+            Principal principal = doc.getCoreSession().getPrincipal();
+            boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(
+                    principal, doc);
+            if (!isSyncRoot) {
+                log.debug(String.format(
+                        "Document %s is not a registered synchronization root for user %s, it cannot be adapted as a FileSystemItem.",
+                        doc.getId(), principal.getName()));
+                return false;
+            }
         }
         return true;
     }
@@ -135,6 +138,17 @@ public abstract class AbstractSyncRootFolderItemFactory extends
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
         return getFileSystemItem(doc, getParentItem(doc), includeDeleted);
+    }
+
+    /**
+     * Force parent id using {@link #getParentId(String)}.
+     */
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
+        return getFileSystemItem(doc, getParentItem(doc), includeDeleted,
+                relaxSyncRootConstraint);
     }
 
 }

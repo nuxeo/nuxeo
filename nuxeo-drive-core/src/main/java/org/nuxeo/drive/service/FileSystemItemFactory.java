@@ -77,6 +77,21 @@ public interface FileSystemItemFactory {
             throws ClientException;
 
     /**
+     * Returns true if the given {@link DocumentModel} is adaptable as a
+     * {@link FileSystemItem}.
+     * <p>
+     * If {@code includeDeleted} is true no filter is applied on the "deleted"
+     * life cycle state, else if the document is in this state it is not
+     * considered as adaptable as a {@link FileSystemItem}, thus the method
+     * returns false.
+     * <p>
+     * If {@code relaxSyncRootConstraint} is true no filter is applied on the
+     * synchronization root aspect for the current user.
+     */
+    boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException;
+
+    /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
@@ -98,6 +113,24 @@ public interface FileSystemItemFactory {
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted)
             throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
+     * <p>
+     * If {@code includeDeleted} is true no filter is applied on the "deleted"
+     * life cycle state, else if the document is in this state it is not
+     * considered as adaptable as a {@link FileSystemItem}, thus the method
+     * returns null.
+     * <p>
+     * If {@code relaxSyncRootConstraint} is true no filter is applied on the
+     * synchronization root aspect for the current user.
+     *
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
+     *         is not adaptable as a {@link FileSystemItem}
+     * @see #isFileSystemItem(DocumentModel, boolean, boolean))
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException;
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
@@ -124,6 +157,26 @@ public interface FileSystemItemFactory {
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
             boolean includeDeleted) throws ClientException;
+
+    /**
+     * TODO Gets the {@link FileSystemItem} for the given {@link DocumentModel}
+     * forcing its parent id with the given id.
+     * <p>
+     * If {@code includeDeleted} is true no filter is applied on the "deleted"
+     * life cycle state, else if the document is in this state it is not
+     * considered as adaptable as a {@link FileSystemItem}, thus the method
+     * returns null.
+     * <p>
+     * If {@code relaxSyncRootConstraint} is true no filter is applied on the
+     * synchronization root aspect for the current user.
+     *
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel}
+     *         is not adaptable as a {@link FileSystemItem}
+     * @see #isFileSystemItem(DocumentModel, boolean, boolean)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException;
 
     /**
      * Returns true if the given {@link FileSystemItem} id can be handled by

@@ -60,7 +60,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     protected String docTitle;
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
-            DocumentModel doc) throws ClientException {
+            DocumentModel doc, boolean relaxSyncRootConstraint)
+            throws ClientException {
         this(factoryName, null, doc);
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = null;
@@ -81,7 +82,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
             throw new RootlessItemException();
         } else {
             FileSystemItem parent = getFileSystemItemAdapterService().getFileSystemItem(
-                    parentDoc, true);
+                    parentDoc, true, relaxSyncRootConstraint);
             if (parent == null) {
                 // We reached a document for which the parent document cannot be
                 // adapted to a (possibly virtual) descendant of the top level

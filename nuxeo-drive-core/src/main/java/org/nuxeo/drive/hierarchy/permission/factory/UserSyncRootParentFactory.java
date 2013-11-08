@@ -68,8 +68,8 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
-            throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
@@ -91,8 +91,8 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem)
-            throws ClientException {
+            boolean forceParentItem, FolderItem parentItem,
+            boolean relaxSyncRootConstraint) throws ClientException {
         return new UserSyncRootParentFolderItem(getName(), doc, parentItem,
                 folderName);
     }
@@ -107,6 +107,15 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory
         Principal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal),
                 includeDeleted);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException {
+        Principal principal = doc.getCoreSession().getPrincipal();
+        return getFileSystemItem(doc, getTopLevelFolderItem(principal),
+                includeDeleted, relaxSyncRootConstraint);
     }
 
     /*------------------- VirtualFolderItemFactory ------------------- */
