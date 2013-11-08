@@ -90,25 +90,70 @@
   <div class="gridRow">
     <div class="gridBox gridStyle6">
       <div class="widgetPanel">
+      <h3>Gray boxes</h3>
+      <p class="specification">
+      A <span class="code">.grayBox</span> div class displays the content in a gray container with a border and a 100% width behavior.</p>
+      <div class="grayBox">
+        <p>Hello, i'm in a gray box.</p>
+        <p>But i'm feeling blue.</p>
+      </div>
+      </div>
+    </div>
+    <div class="gridBox gridStyle6">
+    <div class="widgetPanel">
+      <h3>Simple boxes</h3>
+      <p class="specification">
+      A <span class="code">.simpleBox</span> div is a specific case of the <span class="code">.grayBox</span> container: in addition of the background color and border the width is fixed to 350px. The text have an ellipsis behavior if needed.</p>
+      <div class="simpleBox">
+        <p>Just a title and some content in a paragraph.</p>
+        <a onclick="return toggleBox(this)" href="#">averyveryveryveryverylonglonglonglongtitleforalinkdontyouthink</a>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div class="gridRow">
+    <h3>HTML text block</h3>
+    <p class="specification">
+    A <span class="code">.textBlock</span> div displays the text as a note, in accordance with default html formattages. The width will depend of its container.</p>
+    <div class="gridBox gridStyle12">
+      <div class="textBlock">
+        <p>Hooray ! A text block !</p>
+        <ol>
+          <li>I can write lists</li>
+        </ol>
+        <ul>
+          <li>All types of lists,</li>
+          <ul>
+            <li>even nested ones \o/</li>
+          </ul>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="gridRow">
+    <div class="gridBox gridStyle6">
+      <div class="widgetPanel">
         <h3>Default foldable boxes</h3>
         <p class="specification">
-        A <span class="code">.foldableBox</span> div class contains a <span class="code">.unfolded</span> or <span class="code">.folded</span> <span class="code">h3</span> title class with a link in it, and a <span class="code">.boxBody</span> div class for the content.
+        A <span class="code">.foldableBox</span> div class contains a <span class="code">.unfolded</span> or <span class="code">.folded</span> <span class="code">h3</span> title class with a link class <span class="code">.foldableHeaderLink</span> in it to display the foldable icon. A <span class="code">.boxBody</span> div class is used for the content.
         </p>
         <div class="foldableBox">
           <h3 class="unfolded">
-            <a onclick="return toggleBox(this)" href="#nologo"><span class="code">.unfolded</span> h3 title</a>
+            <a class="foldableHeaderLink" onclick="return toggleBox(this)" href="#nologo"><span class="code">.unfolded</span> h3 title</a>
           </h3>
           <div class="boxBody">The foldable box content is in a <span class="code">.boxBody</span> div. The h3 title class automatically switches from <span class="code">.folded</span> to <span class="code">.unfolded</span> and vice versa.</div>
         </div>
         <div class="foldableBox">
           <h3 class="folded">
-            <a onclick="return toggleBox(this)" href="#nologo">A box folded by default</a>
+            <a  class="foldableHeaderLink" onclick="return toggleBox(this)" href="#nologo">A box folded by default</a>
           </h3>
           <div class="boxBody" style="display:none;">Some awesome content</div>
         </div>
         <div class="foldableBox">
           <h3 class="unfolded">
-            <a onclick="return false" href="#nologo">Foldable box with button</a>
+            <a  class="foldableHeaderLink" onclick="return false" href="#nologo">Foldable box with button</a>
             <img src="/nuxeo/icons/lightbulb.png" title="Write in the title of your helper a text that helps" class="layoutHelpLabel" />
             <a onclick="return false" href="#" class="button smallButton action">Enable</a>
           </h3>
@@ -129,7 +174,7 @@
         </div>
         <div class="foldableLightBox">
           <div class="unfolded">
-            <a onclick="return toggleBox(this)" href="#nologo"><span class="code">.unfolded</span> foldable box div title class</a>
+            <a  class="foldableHeaderLink" onclick="return toggleBox(this)" href="#nologo"><span class="code">.unfolded</span> foldable box div title class</a>
           </div>
           <div class="boxBody">
             <p class="specification">

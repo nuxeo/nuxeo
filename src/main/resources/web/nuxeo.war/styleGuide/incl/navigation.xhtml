@@ -185,6 +185,7 @@
       <div class="widgetPanel">
         <h3>Breadcrumb</h3>
         <p class="specification">The breadcrumb is useful when users need to navigate in a multi-level tree. Add it on top of your page, usually below the header, to be visible on each page. In a <span class="code">.breadcrumb</span> div class that styles the position, a <span class="code">.breadcrumbs</span>  div class will style the links.</p>
+        <p class="specification">Add a <span class="code">.grayBox</span> secundary class to display it in a box.</p>
         <div class="breadcrumb">
           <div class="breadcrumbs">
             <form id="breadcrumbForm">
@@ -201,6 +202,19 @@
           </div>
           <div class="clear" />
         </div>
+        <div class="breadcrumb grayBox">
+          <div class="breadcrumbs">
+            <form id="breadcrumbForm">
+              <a id="#" href="#" onclick="return false">
+                <img src="/nuxeo/icons/UpFolder_icon.gif" />
+              </a>
+              &gt; <a href="#" onclick="return false">Intranet</a>
+              &gt; <a href="#" onclick="return false">Workspace</a>
+              &gt; <a href="#" onclick="return false">Developer Team</a>
+            </form>
+          </div>
+          <div class="clear" />
+        </div>
       </div>
     </div>
     <div class="gridBox gridStyle6">
@@ -208,11 +222,11 @@
         <h3>Page navigation</h3>
         <p class="specification">The page navigation controls are available in content views, to paginate your results when there is a lot of items. In a <span class="code">.pageNavigationControls</span> div class, list your icons and display the pages numbers in a <span class="code">span.currentPageStatus</span> class.</p>
         <div id="pageNavigationControls" class="pageNavigationControls">
-          <input id="navFirstPage" type="image" onclick="return false" disabled="disabled" src="/nuxeo/icons/action_page_rewind.gif" />
-          <input id="navPrevPage" type="image" onclick="return false" disabled="disabled" src="/nuxeo/icons/action_page_previous.gif" />
+          <input id="navFirstPage" type="image" onclick="return false" disabled="disabled" src="/nuxeo/icons/navigation_first.png" />
+          <input id="navPrevPage" type="image" onclick="return false" disabled="disabled" src="/nuxeo/icons/navigation_previous.png" />
           <span id="nxDocumentListPage" class="currentPageStatus">1/7</span>
-          <input type="image" src="/nuxeo/icons/action_page_next.gif" id="navNextPage" onclick="return false" />
-          <input type="image" src="/nuxeo/icons/action_page_fastforward.gif" id="navLastPage" onclick="return false" />
+          <input type="image" src="/nuxeo/icons/navigation_next.png" id="navNextPage" onclick="return false" />
+          <input type="image" src="/nuxeo/icons/navigation_last.png" id="navLastPage" onclick="return false" />
         </div>
       </div>
     </div>
