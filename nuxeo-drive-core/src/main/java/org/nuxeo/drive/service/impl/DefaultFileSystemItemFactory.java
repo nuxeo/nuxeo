@@ -83,11 +83,13 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
      * {@code includeDeleted} is true</li>
      * <li>AND it is Folderish or it can be adapted as a {@link BlobHolder} with
      * a blob</li>
+     * <li>AND it is not a synchronization root registered for the current user,
+     * unless {@code relaxSyncRootConstraint} is true</li>
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
-            throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
         // Check version
         if (doc.isVersion()) {
             log.debug(String.format(
@@ -124,30 +126,33 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
                     doc.getId()));
             return false;
         }
-        // Check not a synchronization root registered for the current user
-        NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
-        Principal principal = doc.getCoreSession().getPrincipal();
-        boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal,
-                doc);
-        if (isSyncRoot) {
-            log.debug(String.format(
-                    "Document %s is a registered synchronization root for user %s, it cannot be adapted as a DefaultFileSystemItem.",
-                    doc.getId(), principal.getName()));
-            return false;
+        if (!relaxSyncRootConstraint) {
+            // Check not a synchronization root registered for the current user
+            NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
+            Principal principal = doc.getCoreSession().getPrincipal();
+            boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(
+                    principal, doc);
+            if (isSyncRoot) {
+                log.debug(String.format(
+                        "Document %s is a registered synchronization root for user %s, it cannot be adapted as a DefaultFileSystemItem.",
+                        doc.getId(), principal.getName()));
+                return false;
+            }
         }
         return true;
     }
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem)
-            throws ClientException {
+            boolean forceParentItem, FolderItem parentItem,
+            boolean relaxSyncRootConstraint) throws ClientException {
         // Doc is either Folderish
         if (doc.isFolder()) {
             if (forceParentItem) {
                 return new DocumentBackedFolderItem(name, parentItem, doc);
             } else {
-                return new DocumentBackedFolderItem(name, doc);
+                return new DocumentBackedFolderItem(name, doc,
+                        relaxSyncRootConstraint);
             }
         }
         // or a BlobHolder with a blob
@@ -155,7 +160,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
             if (forceParentItem) {
                 return new DocumentBackedFileItem(this, parentItem, doc);
             } else {
-                return new DocumentBackedFileItem(this, doc);
+                return new DocumentBackedFileItem(this, doc,
+                        relaxSyncRootConstraint);
             }
         }
     }

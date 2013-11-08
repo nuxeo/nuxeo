@@ -52,7 +52,8 @@ public abstract class AbstractFileSystemItemFactory implements
             throws ClientException;
 
     public abstract boolean isFileSystemItem(DocumentModel doc,
-            boolean includeDeleted) throws ClientException;
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
+            throws ClientException;
 
     /**
      * Adapts the given {@link DocumentModel} to a {@link FileSystemItem}.
@@ -60,7 +61,8 @@ public abstract class AbstractFileSystemItemFactory implements
      * @see #getFileSystemItem(DocumentModel, boolean, String, boolean)
      */
     protected abstract FileSystemItem adaptDocument(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem) throws ClientException;
+            boolean forceParentItem, FolderItem parentItem,
+            boolean relaxSyncRootConstraint) throws ClientException;
 
     @Override
     public String getName() {
@@ -76,6 +78,11 @@ public abstract class AbstractFileSystemItemFactory implements
         return isFileSystemItem(doc, false);
     }
 
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
+            throws ClientException {
+        return isFileSystemItem(doc, includeDeleted, false);
+    }
+
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc)
             throws ClientException {
@@ -85,19 +92,36 @@ public abstract class AbstractFileSystemItemFactory implements
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, false, null, includeDeleted);
+        return getFileSystemItem(doc, false, null, includeDeleted, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem)
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
+        return getFileSystemItem(doc, false, null, includeDeleted,
+                relaxSyncRootConstraint);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem) throws ClientException {
         return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem,
-            boolean includeDeleted) throws ClientException {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted);
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem, boolean includeDeleted)
+            throws ClientException {
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc,
+            FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint) throws ClientException {
+        return getFileSystemItem(doc, true, parentItem, includeDeleted,
+                relaxSyncRootConstraint);
     }
 
     @Override
@@ -155,17 +179,19 @@ public abstract class AbstractFileSystemItemFactory implements
 
     /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
-            boolean forceParentItem, FolderItem parentItem, boolean includeDeleted)
+            boolean forceParentItem, FolderItem parentItem,
+            boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
 
         // If the doc is not adaptable as a FileSystemItem return null
-        if (!isFileSystemItem(doc, includeDeleted)) {
+        if (!isFileSystemItem(doc, includeDeleted, relaxSyncRootConstraint)) {
             log.trace(String.format(
                     "Document %s cannot be adapted as a FileSystemItem => returning null.",
                     doc.getId()));
             return null;
         }
-        return adaptDocument(doc, forceParentItem, parentItem);
+        return adaptDocument(doc, forceParentItem, parentItem,
+                relaxSyncRootConstraint);
     }
 
     protected String[] parseFileSystemId(String id) throws ClientException {
