@@ -17,6 +17,10 @@
 
 package com.nuxeo.functionaltests;
 
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nuxeo.functionaltests.dam.AssetViewFragment;
 import org.nuxeo.functionaltests.dam.DAMPage;
@@ -25,12 +29,23 @@ import org.nuxeo.functionaltests.dam.SearchResultsFragment;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * @since 5.7.3
  */
 public class ITAssetViewTest extends AbstractDAMTest {
+
+    private static final Log log = LogFactory.getLog(ITAssetViewTest.class);
+
+    protected static final String FILE_MODIFIED_NOTIFICATION_LABEL = "File modified";
 
     @Test
     public void testAssetSelection() throws Exception {
@@ -123,6 +138,23 @@ public class ITAssetViewTest extends AbstractDAMTest {
         copyrightHolderInput.clear();
         copyrightHolderInput.sendKeys("New holder");
         ipBox.save();
+
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
+                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
+
+        try {
+            wait.until(new Function<WebDriver, WebElement>() {
+                public WebElement apply(WebDriver driver) {
+                    return driver.findElement(By.xpath("//div[contains(.,'"
+                            + FILE_MODIFIED_NOTIFICATION_LABEL + "')]"));
+                }
+            });
+        } catch (TimeoutException e) {
+            log.warn("Could not see saved message, maybe I was too slow and it "
+                    + "has already disappeared. Let's see if I can restore.");
+        }
+
         ipBox.open();
         ipBox.waitForTextToBePresent("New holder");
 
