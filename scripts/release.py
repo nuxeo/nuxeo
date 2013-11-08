@@ -485,6 +485,43 @@ class Release(object):
         # TODO NXP-8571 package sources
         os.chdir(cwd)
 
+    def maintenance(self):
+        """ Create the maintenance branch starting from a release tag."""
+        log("Tag:".ljust(25) + "release-" + self.tag)
+        log("Current version:".ljust(25) + self.snapshot)
+        log("Maintenance branch:".ljust(25) + self.branch)
+        log("Maintenance version:".ljust(25) + self.maintenance_version)
+        if self.custom_patterns.files:
+            log("Custom files pattern: ".ljust(25) +
+                self.custom_patterns.files)
+        if self.custom_patterns.props:
+            log("Custom props pattern: ".ljust(25) +
+                self.custom_patterns.props[35:])
+        if self.other_versions:
+            for other_version in self.other_versions:
+                log("Also replace version:".ljust(25) + '/'.join(other_version))
+        log("")
+
+        cwd = os.getcwd()
+        os.chdir(self.repo.basedir)
+        self.repo.system_recurse("git checkout release-%s" % self.tag)
+
+        log("[INFO] Check release-ability...")
+        self.check()
+
+        log("\n[INFO] Creating maintenance branch {0} from {1}, update versions "
+            "and commit...".format(self.branch, self.tag))
+        self.repo.system_recurse("git checkout -b %s" % self.branch)
+        msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
+        self.update_versions(self.tag, self.maintenance_version)
+        for other_version in self.other_versions:
+            if len(other_version) > 0:
+                self.update_versions(other_version[0], other_version[1])
+                msg_commit += ", update %s to %s" % (other_version[0],
+                                                     other_version[1])
+        self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
+        os.chdir(cwd)
+
     def perform(self):
         """ Perform the release: push source, deploy artifacts and upload
         packages."""
@@ -524,10 +561,12 @@ def main():
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
        %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] [-m maintenance]
        %prog package [--skipTests] [-p profiles]
+       %prog maintenance [-r alias] [-b branch] [-t tag] [-m maintenance] [--arv versions_replacements]
 \nCommands:
   prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
   perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release.log file.
-  package: Package distributions and source code in the archives directory.""")
+  package: Package distributions and source code in the archives directory.
+  maintenance: Create a maintenance branch from an existing tag.""")
         description = """Release Nuxeo from a given branch, tag the release, then
 set the next SNAPSHOT version. If a maintenance version was provided, then a
 maintenance branch is kept, else it is deleted after release."""
@@ -652,20 +691,37 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
                 options.other_versions = None
 
         repo = Repository(os.getcwd(), options.remote_alias)
-        if options.branch == "auto":
-            options.branch = repo.get_current_version()
         system("git fetch %s" % (options.remote_alias))
-        repo.git_update(options.branch)
+        if "command" in locals() and command == "maintenance":
+            if options.tag == "auto":
+                options.tag = repo.get_current_version()[8:]
+            if options.tag == "":
+                raise ExitException(1, "Couldn't guess tag name from %s" %
+                                    repo.get_current_version())
+            if options.branch == "auto":
+                options.branch = options.tag
+            repo.git_update("release-%s" % options.tag)
+            options.is_final = True
+            if options.maintenance_version == "auto":
+                options.maintenance_version = options.tag + ".1-SNAPSHOT"
+            options.next_snapshot = None
+        else:
+            if options.branch == "auto":
+                options.branch = repo.get_current_version()
+            repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance_version,
                           options.is_final, options.skipTests,
                           options.other_versions, options.profiles,
                           options.msg_commit, options.msg_tag)
-        release.log_summary("command" in locals() and command != "perform")
+        if "command" not in locals() or command != "maintenance":
+            release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "prepare":
             release.prepare(options.deploy)
+        elif command == "maintenance":
+            release.maintenance()
         elif command == "perform":
             release.perform()
         elif command == "package":
