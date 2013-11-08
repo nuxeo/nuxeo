@@ -19,13 +19,17 @@ package org.nuxeo.drive.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +41,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -44,10 +49,17 @@ import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.local.LocalSession;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -75,6 +87,12 @@ public class TestAuditFileSystemChangeFinder {
     protected CoreSession session;
 
     @Inject
+    protected RepositorySettings repository;
+
+    @Inject
+    protected DirectoryService directoryService;
+
+    @Inject
     protected EventService eventService;
 
     @Inject
@@ -93,6 +111,8 @@ public class TestAuditFileSystemChangeFinder {
 
     protected DocumentModel folder3;
 
+    protected CoreSession user1Session;
+
     @Before
     public void init() throws Exception {
         // Enable deletion listener because the tear down disables it
@@ -104,7 +124,20 @@ public class TestAuditFileSystemChangeFinder {
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "10");
 
+        // Create test users
+        Session userDir = directoryService.getDirectory("userDirectory").getSession();
+        try {
+            Map<String, Object> user1 = new HashMap<String, Object>();
+            user1.put("username", "user1");
+            user1.put("groups", Arrays.asList(new String[] { "members" }));
+            userDir.createEntry(user1);
+        } finally {
+            userDir.close();
+        }
+        user1Session = repository.openSessionAs("user1");
+
         dispose(session);
+        dispose(user1Session);
         TransactionHelper.startTransaction();
         try {
             folder1 = session.createDocument(session.createDocumentModel("/",
@@ -113,13 +146,27 @@ public class TestAuditFileSystemChangeFinder {
                     "folder2", "Folder"));
             folder3 = session.createDocument(session.createDocumentModel("/",
                     "folder3", "Folder"));
+            Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+            permissions.put(SecurityConstants.READ_WRITE, true);
+            setPermissions(folder1, "user1", permissions);
+            setPermissions(folder2, "user1", permissions);
         } finally {
             commitAndWaitForAsyncCompletion();
         }
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws ClientException {
+        if (user1Session != null) {
+            CoreInstance.getInstance().close(user1Session);
+        }
+        Session usersDir = directoryService.getDirectory("userDirectory").getSession();
+        try {
+            usersDir.deleteEntry("user1");
+        } finally {
+            usersDir.close();
+        }
+
         // Disable deletion listener for the repository cleanup phase done in
         // CoreFeature#afterTeardown to avoid exception due to no active
         // transaction in FileSystemItemManagerImpl#getSession
@@ -145,7 +192,7 @@ public class TestAuditFileSystemChangeFinder {
             assertNotNull(changes);
             assertTrue(changes.isEmpty());
 
-            // Sync roots
+            // Sync roots for Administrator
             nuxeoDriveManager.registerSynchronizationRoot(
                     session.getPrincipal(), folder1, session);
             nuxeoDriveManager.registerSynchronizationRoot(
@@ -156,6 +203,7 @@ public class TestAuditFileSystemChangeFinder {
 
         TransactionHelper.startTransaction();
         try {
+            // Get changes for Administrator
             changes = getChanges();
             // Root registration events
             assertEquals(2, changes.size());
@@ -415,6 +463,116 @@ public class TestAuditFileSystemChangeFinder {
                     "org.nuxeo.drive.document.change.limit", "1");
             FileSystemChangeSummary changeSummary = getChangeSummary(session.getPrincipal());
             assertEquals(true, changeSummary.getHasTooManyChanges());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+    }
+
+    @Test
+    public void testFindSecurityChanges() throws Exception {
+        List<FileSystemItemChange> changes;
+        FileSystemItemChange change;
+        DocumentModel subFolder;
+
+        TransactionHelper.startTransaction();
+        try {
+            // No sync roots
+            changes = getChanges();
+            assertTrue(changes.isEmpty());
+
+            // Create a folder in a sync root
+            subFolder = user1Session.createDocumentModel("/folder1",
+                    "subFolder", "Folder");
+            subFolder = user1Session.createDocument(subFolder);
+
+            // Sync roots for user1
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    user1Session.getPrincipal(), folder1, user1Session);
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    user1Session.getPrincipal(), folder2, user1Session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            // Get changes for user1
+            changes = getChanges(user1Session.getPrincipal());
+            // Folder creation and sync root registration events
+            assertEquals(3, changes.size());
+
+            // Permission changes: deny Read
+            // Deny Read to user1 on a regular doc
+            Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+            permissions.put(SecurityConstants.READ_WRITE, false);
+            permissions.put(SecurityConstants.READ, false);
+            setPermissions(subFolder, "user1", permissions);
+            // Deny Read to user1 on a sync root
+            setPermissions(folder2, "user1", permissions);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(2, changes.size());
+
+            change = changes.get(0);
+            assertEquals("securityUpdated", change.getEventId());
+            assertEquals(folder2.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("folder2", change.getFileSystemItemName());
+            // Not adaptable as a FileSystemItem since no Read permission
+            assertNull(change.getFileSystemItem());
+
+            change = changes.get(1);
+            assertEquals("securityUpdated", change.getEventId());
+            assertEquals(subFolder.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultFileSystemItemFactory#test#" + subFolder.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("subFolder", change.getFileSystemItemName());
+            // Not adaptable as a FileSystemItem since no Read permission
+            assertNull(change.getFileSystemItem());
+
+            // Permission changes: grant Read
+            // Grant Read to user1 on a regular doc
+            Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+            permissions.put(SecurityConstants.READ, true);
+            setPermissions(subFolder, "user1", permissions);
+            // Grant Read to user1 on a sync root
+            setPermissions(folder2, "user1", permissions);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(2, changes.size());
+
+            change = changes.get(0);
+            assertEquals("securityUpdated", change.getEventId());
+            assertEquals(folder2.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("folder2", change.getFileSystemItemName());
+            // Adaptable as a FileSystemItem since Read permission
+            assertNotNull(change.getFileSystemItem());
+
+            change = changes.get(1);
+            assertEquals("securityUpdated", change.getEventId());
+            assertEquals(subFolder.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultFileSystemItemFactory#test#" + subFolder.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("subFolder", change.getFileSystemItemName());
+            // Adaptable as a FileSystemItem since Read permission
+            assertNotNull(change.getFileSystemItem());
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -714,61 +872,24 @@ public class TestAuditFileSystemChangeFinder {
         }
     }
 
-    @Test
-    public void testGetChangeSummaryOnRootDocumentsNullChange()
-            throws Exception {
-        Principal someUser = new NuxeoPrincipalImpl("some-user");
-        FileSystemChangeSummary changeSummary;
-
-        // check that consecutive root registration + unregistration do not lead
-        // to a visible change for the client.
-        TransactionHelper.startTransaction();
-        try {
-            nuxeoDriveManager.registerSynchronizationRoot(someUser, folder1,
-                    session);
-            nuxeoDriveManager.unregisterSynchronizationRoot(someUser, folder1,
-                    session);
-        } finally {
-            commitAndWaitForAsyncCompletion();
-        }
-
-        TransactionHelper.startTransaction();
-        try {
-            changeSummary = getChangeSummary(someUser);
-            assertNotNull(changeSummary);
-            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-            assertFalse(changeSummary.getHasTooManyChanges());
-
-            // Do it a second time to check that the client did not receive bad
-            // active root markers
-            nuxeoDriveManager.registerSynchronizationRoot(someUser, folder1,
-                    session);
-            nuxeoDriveManager.unregisterSynchronizationRoot(someUser, folder1,
-                    session);
-        } finally {
-            commitAndWaitForAsyncCompletion();
-        }
-
-        TransactionHelper.startTransaction();
-        try {
-            changeSummary = getChangeSummary(someUser);
-            assertNotNull(changeSummary);
-            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-            assertFalse(changeSummary.getHasTooManyChanges());
-        } finally {
-            commitAndWaitForAsyncCompletion();
-        }
-    }
-
     /**
-     * Gets the document changes using the {@link AuditChangeFinder} and updates
-     * the {@link #lastSuccessfulSync} date.
+     * Gets the document changes for the given user's synchronization roots
+     * using the {@link AuditChangeFinder} and updates the
+     * {@link #lastSuccessfulSync} date.
      *
      * @throws ClientException
      */
+    protected List<FileSystemItemChange> getChanges(Principal principal)
+            throws InterruptedException, ClientException {
+        return getChangeSummary(principal).getFileSystemChanges();
+    }
+
+    /**
+     * Gets the document changes for the Administrator user.
+     */
     protected List<FileSystemItemChange> getChanges()
             throws InterruptedException, ClientException {
-        return getChangeSummary(session.getPrincipal()).getFileSystemChanges();
+        return getChanges(session.getPrincipal());
     }
 
     /**
@@ -810,4 +931,32 @@ public class TestAuditFileSystemChangeFinder {
         }
         ((LocalSession) session).getSession().dispose();
     }
+
+    protected void setPermissions(DocumentModel doc, String userName,
+            Map<String, Boolean> permissions) throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        for (String permission : permissions.keySet()) {
+            localACL.add(0,
+                    new ACE(userName, permission, permissions.get(permission)));
+        }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
+    protected void resetPermissions(DocumentModel doc, String userName)
+            throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        Iterator<ACE> localACLIt = localACL.iterator();
+        while (localACLIt.hasNext()) {
+            ACE ace = localACLIt.next();
+            if (userName.equals(ace.getUsername())) {
+                localACLIt.remove();
+            }
+        }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
+    }
+
 }

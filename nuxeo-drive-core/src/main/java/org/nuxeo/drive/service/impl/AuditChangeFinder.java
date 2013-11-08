@@ -109,8 +109,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             ExtendedInfo fsIdInfo = entry.getExtendedInfos().get(
                     "fileSystemItemId");
             if (fsIdInfo != null) {
-                // This document has been deleted or is an unregistered
-                // synchronization root, we just know the FileSystemItem id and
+                // This document has been deleted, is an unregistered
+                // synchronization root or its security has been updated, we
+                // just know the FileSystemItem id and
                 // name.
                 log.debug(String.format(
                         "Found extended info in audit log entry, document %s has been deleted or is an unregistered synchronization root.",
@@ -121,7 +122,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 // This can succeed for an unregistered synchronization root
                 // that can still be adapted as a FileSystemItem, for example in
                 // the case of the "My Docs" virtual folder in the permission
-                // based hierarchy implementation.
+                // based hierarchy implementation. It can also happen if this is
+                // a security update after which the current user still has
+                // access to the document.
                 if (session.exists(docRef)) {
                     change = getFileSystemItemChange(session, docRef, entry,
                             fsIdInfo.getValue(String.class));
@@ -131,10 +134,11 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 }
                 if (!isChangeSet) {
                     // If the document is not adaptable as a FileSystemItem,
-                    // typically if it has been deleted or if it is a regular
-                    // unregistered synchronization root, only provide the
-                    // FileSystemItem id and name to the FileSystemItemChange
-                    // entry.
+                    // typically if it has been deleted, if it is a regular
+                    // unregistered synchronization root or if its security has
+                    // been updated denying access to the current user, only
+                    // provide the FileSystemItem id and name to the
+                    // FileSystemItemChange entry.
                     log.debug(String.format(
                             "Document %s doesn't exist or is not adaptable as a FileSystemItem, only providing the FileSystemItem id and name to the FileSystemItemChange entry.",
                             docRef));
@@ -152,7 +156,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 changes.add(change);
             } else {
                 // No extended info in the audit log entry, this should not be a
-                // deleted document nor an unregistered synchronization root.
+                // deleted document, nor an unregistered synchronization root
+                // nor a security update denying access to the current user.
                 log.debug(String.format(
                         "No extended info found in audit log entry, document %s has not been deleted nor is an unregistered synchronization root.",
                         docRef));
@@ -160,12 +165,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     log.debug(String.format(
                             "Document %s doesn't exist, not adding any entry to the change summary.",
                             docRef));
-                    // deleted documents are mapped to deleted file
-                    // system items in a separate event: no need to try
-                    // to propagate this event.
-                    // TODO: find a consistent way to map ACL removals as
-                    // file system deletion change
-                    // See https://jira.nuxeo.com/browse/NXP-11159
+                    // Deleted or non accessible documents are mapped to
+                    // deleted file system items in a separate event: no need to
+                    // try to propagate this event.
                     continue;
                 }
                 // Let's try to adapt the document as a FileSystemItem to
