@@ -54,6 +54,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
 
     /**
      * Add reviewer in default parallel workflow
+     *
+     * @since 5.9.1
      */
     public void addParallelWorkflowReviewer(String user) {
         Select2WidgetElement particpants = new Select2WidgetElement(driver,
@@ -62,6 +64,9 @@ public class WorkflowTabSubPage extends DocumentBasePage {
         particpants.selectValue(user);
     }
 
+    /**
+     * @since 5.9.1
+     */
     public void addParallelWorkflowEndDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
         WebElement endDate = driver.findElement((By.xpath("//input[contains(@id, 'nxw_end_dateInputDate')]")));
@@ -79,6 +84,17 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     public void startWorkflow() {
         findElementAndWaitUntilEnabled(
                 By.xpath("//input[@value='Start the review']")).click();
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public void endTask(String taskName, String comment) {
+        findElementAndWaitUntilEnabled(
+                By.tagName("textarea")).sendKeys(
+                comment);
+        findElementAndWaitUntilEnabled(
+                By.xpath(String.format("//input[@value='%s']", taskName))).click();
     }
 
     public void endTask(String taskName) {

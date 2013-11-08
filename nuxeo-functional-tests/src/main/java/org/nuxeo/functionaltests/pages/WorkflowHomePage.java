@@ -16,12 +16,17 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
+import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * @since 5.8
@@ -57,5 +62,79 @@ public class WorkflowHomePage extends AbstractPage {
 
     public boolean isTasksDashboardEmpty() {
         return !userTasksPanel.getText().contains("Task Name");
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public void reassignTask(String taskDirective, String user) {
+        TaskFancyBoxFragment taskBox = showTaskFancyBox("Reassign task");
+        taskBox.waitForTextToBePresent(taskDirective);
+        Select2WidgetElement particpants = new Select2WidgetElement(
+                driver,
+                By.xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout:nxw_task_reassignment_actors_select2')]"),
+                true);
+        particpants.selectValue(user);
+        taskBox.submit();
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public void delegateTask(String taskDirective, String user) {
+        TaskFancyBoxFragment taskBox = showTaskFancyBox("Delegate task");
+        taskBox.waitForTextToBePresent(taskDirective);
+        Select2WidgetElement particpants = new Select2WidgetElement(
+                driver,
+                By.xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout:nxw_task_reassignment_actors_select2')]"),
+                true);
+        particpants.selectValue(user);
+        taskBox.submit();
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public TaskFancyBoxFragment showTaskFancyBox(String taskAction) {
+        WebElement relatedTasksActions = findElementWithTimeout(By.xpath("//div[contains(@id, 'nxw_doc_task_related_actions_panel')]"));
+        // click on More
+        relatedTasksActions.findElement(
+                By.cssSelector("ul.actionList li:nth-of-type(1)")).click();
+        relatedTasksActions.findElement(By.linkText(taskAction)).click();
+        WebElement element = this.getFancyBoxContent();
+        return getWebFragment(element,
+                WorkflowHomePage.TaskFancyBoxFragment.class);
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public static class TaskFancyBoxFragment extends WebFragmentImpl {
+
+        @FindBy(xpath = "//div[@id='fancybox-content']//input[@value='Cancel']")
+        public WebElement cancelButton;
+
+        @FindBy(xpath = "//div[@id='fancybox-content']//input[@type='submit']")
+        public WebElement sumbitButton;
+
+        public TaskFancyBoxFragment(WebDriver driver, WebElement element) {
+            super(driver, element);
+        }
+
+        public void cancel() {
+            cancelButton.click();
+            // make sure the fancybox content is not loaded anymore
+            WebDriverWait wait = new WebDriverWait(driver,
+                    AbstractTest.LOAD_TIMEOUT_SECONDS);
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("fancybox-content")));
+        }
+
+        public void submit() {
+            sumbitButton.click();
+            // make sure the fancybox content is not loaded anymore
+            WebDriverWait wait = new WebDriverWait(driver,
+                    AbstractTest.LOAD_TIMEOUT_SECONDS);
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("fancybox-content")));
+        }
     }
 }

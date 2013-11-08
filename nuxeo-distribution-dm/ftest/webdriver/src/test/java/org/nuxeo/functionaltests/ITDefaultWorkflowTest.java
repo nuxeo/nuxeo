@@ -83,7 +83,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     @Test
     public void testDefaultSerialWorkflow() throws Exception {
-        createTestUser("jdoe", "test");
+        createTestUser("jdoe", "jdoe");
         // create a file doc
         DocumentBasePage defaultDomainPage = login();
         DocumentBasePage filePage = initRepository(defaultDomainPage);
@@ -91,9 +91,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         filePage = startDefaultSerialWorkflow(filePage);
 
         logout();
-        filePage = login("jdoe", "test");
+        filePage = login("jdoe", "jdoe");
 
-        // check that jdoe has an open task on his dashboard
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
@@ -118,14 +117,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         assertEquals("jdoe lastname1", participantsOnTheReview);
         workflowTab.endTask("Validate");
 
-        // check that the workflow was ended but jdoe doesn't have the right to
-        // start another workflow
         summaryTabPage = workflowTab.getSummaryTab();
-        assertTrue(summaryTabPage.cantStartWorkflow());
-
-        // check that jdoe doesn't have any tasks on his dashboard
         homePage = filePage.getUserHome();
-
         // check that jdoe doesn't have the task on his workflow tasks dashboard
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.isTasksDashboardEmpty());
@@ -140,8 +133,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     @Test
     public void testDefaultParallelWorkflow() throws Exception {
-        createTestUser("jdoe", "test");
-        createTestUser("jsmith", "test");
+        createTestUser("jdoe", "jdoe");
+        createTestUser("jsmith", "jsmith");
 
         // create a file doc
         DocumentBasePage defaultDomainPage = login();
@@ -151,9 +144,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         filePage = startDefaultParallelWorkflow(filePage);
 
         logout();
-        filePage = login("jdoe", "test");
+        filePage = login("jdoe", "jdoe");
 
-        // check that jdoe has an open task on his dashboard
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
@@ -171,7 +163,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowTab.endTask("Approve");
 
         // check that jsmith has an open task on his dashboard
-        filePage = login("jsmith", "test");
+        filePage = login("jsmith", "jsmith");
 
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
@@ -212,9 +204,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         assertEquals("Approved", summaryTabPage.getCurrentLifeCycleState());
 
-        // check that Administrator doesn't have any tasks on his dashboard
         homePage = filePage.getUserHome();
-
         // check that Administrator doesn't have the task on his workflow tasks
         // dashboard
         workflowHomePage = homePage.getWorkflowHomePage();
@@ -227,6 +217,127 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         logout();
         deleteTestUser("jdoe");
         deleteTestUser("jsmith");
+    }
+
+    @Test
+    public void testTaskReassignmentAndDelegation() throws Exception {
+        createTestUser("jdoe", "jdoe");
+        createTestUser("bree", "bree");
+        createTestUser("jsmith", "jsmith");
+        createTestUser("linnet", "linnet");
+
+        // create a file doc
+        DocumentBasePage defaultDomainPage = login();
+        DocumentBasePage filePage = initRepository(defaultDomainPage);
+        // start the default parallel workflow and choose jdoe and jsmith as
+        // reviewers
+        filePage = startDefaultParallelWorkflow(filePage);
+
+        logout();
+        filePage = login("jdoe", "jdoe");
+
+        UserHomePage homePage = filePage.getUserHome();
+        // check that jdoe has an open task on his tasks dashboard
+        WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        workflowHomePage.processFirstTask();
+
+        // reassign task to Bree
+        workflowHomePage.reassignTask("Give your opinion", "bree");
+        // check that jdoe has no longer the task
+        assertTrue(workflowHomePage.isTasksDashboardEmpty());
+
+        // login with bree to process this task
+        filePage = login("bree", "bree");
+
+        homePage = filePage.getUserHome();
+        workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        workflowHomePage.processFirstTask();
+
+        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        // check that the open task is displayed on the summary page
+
+        assertTrue(summaryTabPage.workflowAlreadyStarted());
+        assertTrue(summaryTabPage.parallelOpenTaskForCurrentUser());
+
+        WorkflowTabSubPage workflowTab = summaryTabPage.getWorkflow();
+
+        workflowTab.endTask("Approve", "Approve comment");
+
+        // check that jsmith has an open task on his dashboard
+        filePage = login("jsmith", "jsmith");
+
+        homePage = filePage.getUserHome();
+        workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        workflowHomePage.processFirstTask();
+        // delegate his task to linnet
+        workflowHomePage.delegateTask("Give your opinion", "linnet");
+        // test that jsmith can still see the task
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+
+        // login with linnet to process the task
+        filePage = login("linnet", "linnet");
+
+        homePage = filePage.getUserHome();
+        workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        workflowHomePage.processFirstTask();
+        summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        // check that the open task is displayed on the summary page
+
+        assertTrue(summaryTabPage.workflowAlreadyStarted());
+        assertTrue(summaryTabPage.parallelOpenTaskForCurrentUser());
+
+        // switch to workflow tab and validate task
+        workflowTab = summaryTabPage.getWorkflow();
+
+        workflowTab.endTask("Reject", "Reject comment");
+
+        // login with Administrator. the workflow initiator to check the final
+        // task
+
+        filePage = login();
+
+        homePage = filePage.getUserHome();
+        workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the review"));
+        workflowHomePage.processFirstTask();
+        summaryTabPage = workflowHomePage.redirectToTask("Test file");
+
+        assertTrue(summaryTabPage.workflowAlreadyStarted());
+
+        // check the consultation wrap-up
+        workflowTab = summaryTabPage.getWorkflow();
+        WebElement taskLayoutDiv = workflowTab.getTaskLayoutNode();
+        String parallelConsultationWrapUp = taskLayoutDiv.findElement(
+                By.xpath("//span[contains(@id, 'nxw_review_result')]")).getText();
+
+        assertTrue(parallelConsultationWrapUp.contains("bree lastname1 bree OK Approve comment"));
+        assertTrue(parallelConsultationWrapUp.contains("linnet lastname1 linnet KO Reject comment"));
+        // end the last task
+        workflowTab.endTask("Approve");
+
+        summaryTabPage = workflowTab.getSummaryTab();
+
+        assertEquals("Approved", summaryTabPage.getCurrentLifeCycleState());
+
+        homePage = filePage.getUserHome();
+        // check that Administrator doesn't have the task on his workflow tasks
+        // dashboard
+        workflowHomePage = homePage.getWorkflowHomePage();
+        assertTrue(workflowHomePage.isTasksDashboardEmpty());
+
+        // cleanup file doc and user
+        logout();
+        login();
+        cleanRepository(filePage);
+        logout();
+        deleteTestUser("jdoe");
+        deleteTestUser("jsmith");
+        deleteTestUser("bree");
+        deleteTestUser("linnet");
     }
 
     protected DocumentBasePage startDefaultSerialWorkflow(
