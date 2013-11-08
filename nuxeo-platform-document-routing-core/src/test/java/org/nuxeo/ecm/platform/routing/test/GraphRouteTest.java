@@ -71,6 +71,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -1238,6 +1239,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         automationService.run(ctx, chain);
         // process invalidations from automation context
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
         // query for all the workflows
         DocumentModelList workflows = session.query(String.format(
                 "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
@@ -1251,6 +1253,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         automationService.run(ctx, chain);
         // process invalidations from automation context
         session.save();
+        TransactionHelper.commitOrRollbackTransaction();
         // query for all the workflows
         workflows = session.query(String.format(
                 "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
