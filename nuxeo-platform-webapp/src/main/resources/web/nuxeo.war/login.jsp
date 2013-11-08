@@ -259,14 +259,14 @@ body {
   color: #f40000 }
 
 .welcome {
-  background: #fff;
+  background: none repeat scroll 0 0 #fff;
+  bottom: 3%;
+  margin: 10px;
   opacity: 0.8;
-  filter: alpha(opacity = 80);
-  width: 400px;
   padding: 20px;
-  margin: 10px
+  position: absolute;
+  width: 60%;
 }
-
 .welcomeText {
   font: 12px "Lucida Grande", sans-serif;
   text-align: left;
