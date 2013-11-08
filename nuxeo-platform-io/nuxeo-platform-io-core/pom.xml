@@ -55,19 +55,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/*ATest*.java</exclude>
-            <!-- the following test needs a particular conf; it's not intended to be autorun -->
-            <exclude>**/TestIORemoteCopy*.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
