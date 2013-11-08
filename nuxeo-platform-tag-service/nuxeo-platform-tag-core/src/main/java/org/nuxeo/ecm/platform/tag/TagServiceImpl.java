@@ -28,10 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.security.auth.login.LoginContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -39,9 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -49,39 +43,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class TagServiceImpl extends DefaultComponent implements TagService {
 
-    private static final Log log = LogFactory.getLog(TagServiceImpl.class);
-
     public static final String NXTAG = TagQueryMaker.NXTAG;
 
-    private Boolean enabled;
-
+    @Override
     public boolean isEnabled() {
-        if (enabled == null) {
-            enabled = Boolean.FALSE;
-            LoginContext lc = null;
-            try {
-                lc = Framework.login();
-                RepositoryManager rm = Framework.getService(RepositoryManager.class);
-                if (rm.getDefaultRepository().supportsTags()) {
-                    log.debug("Activating TagService");
-                    enabled = Boolean.TRUE;
-                } else {
-                    log.warn("Default repository does not support Tag feature: "
-                            + "Tag service won't be available.");
-                }
-            } catch (Exception e) {
-                log.error("Unable to test repository for Tag feature.", e);
-            } finally {
-                if (lc != null) {
-                    try {
-                        lc.logout();
-                    } catch (Exception e) {
-                        log.error(e, e);
-                    }
-                }
-            }
-        }
-        return enabled.booleanValue();
+        return true;
     }
 
     protected static String getUsername(CoreSession session)
