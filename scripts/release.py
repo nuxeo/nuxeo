@@ -109,6 +109,16 @@ PKG_RENAMINGS_OPTIONALS = {
 }
 
 
+def etree_parse(file):
+    """XML parsing with context error logging"""
+    try:
+        tree = etree.parse(file)
+    except etree.XMLSyntaxError as e:
+        raise ExitException(1, "XML syntax error on '%s'\n%s" %
+                            (file, e.message))
+    return tree
+
+
 class Release(object):
     """Nuxeo release manager.
 
@@ -133,7 +143,7 @@ class Release(object):
         self.set_tag(tag)
         self.set_next_snapshot(next_snapshot)
         # Detect if working on Nuxeo main sources
-        tree = etree.parse(os.path.join(self.repo.basedir, "pom.xml"))
+        tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
         artifact_id = tree.getroot().find("pom:artifactId", namespaces)
         self.repo.is_nuxeoecm = "nuxeo-ecm" == artifact_id.text
         if self.repo.is_nuxeoecm:
@@ -195,7 +205,7 @@ class Release(object):
 
     def set_snapshot(self):
         """Set current version from root POM."""
-        tree = etree.parse(os.path.join(self.repo.basedir, "pom.xml"))
+        tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
         version_elem = tree.getroot().find("pom:version", namespaces)
         if version_elem is None:
             version_elem = tree.getroot().find("pom:parent/pom:version",
@@ -291,7 +301,7 @@ class Release(object):
             for name in files:
                 replaced = False
                 if fnmatch.fnmatch(name, "pom*.xml"):
-                    tree = etree.parse(os.path.join(root, name))
+                    tree = etree_parse(os.path.join(root, name))
                     # Parent POM version
                     parent = tree.getroot().find("pom:parent", namespaces)
                     if parent is not None:
@@ -323,7 +333,7 @@ class Release(object):
                     with open(os.path.join(root, name), "wb") as f:
                         f.write(content)
                 if replaced:
-                    log(os.path.join(root, name))
+                    log("Edited '%s'" % os.path.join(root, name))
                     changed = True
         return changed
 
