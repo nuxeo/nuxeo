@@ -17,15 +17,12 @@ package org.nuxeo.ecm.core.api;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
@@ -214,10 +211,6 @@ public class CoreInstance implements Serializable {
      * @return the client
      */
     public CoreSession getSession(String sid) {
-        HashMap<String, CoreSession> reentrantSession = DocumentModelImpl.reentrantCoreSession.get();
-        if (reentrantSession != null && reentrantSession.containsKey(sid)) {
-            return reentrantSession.get(sid);
-        }
         return sessions.get(sid).session;
     }
 
