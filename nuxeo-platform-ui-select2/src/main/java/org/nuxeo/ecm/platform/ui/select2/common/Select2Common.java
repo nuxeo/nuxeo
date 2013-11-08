@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Group fields and methods used at initialization and runtime for select2
@@ -37,6 +38,8 @@ import org.nuxeo.ecm.platform.usermanager.UserConfig;
 public class Select2Common {
 
     private static final Log log = LogFactory.getLog(Select2Common.class);
+
+    private static final String FORCE_DISPLAY_EMAIL_IN_SUGGESTION = "nuxeo.ui.displayEmailInUserSuggestion";
 
     public static final String LANG_TOKEN = "{lang}";
 
@@ -118,6 +121,10 @@ public class Select2Common {
     public static final String OPERATION_ID = "operationId";
 
     public static final String DIRECTORY_ORDER_FIELD_NAME = "ordering";
+
+    private static boolean isForceDisplayEmailInSuggestion() {
+        return Framework.isBooleanPropertyTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
+    }
 
     /**
      * Compute the field name of the directory that holds the value that we want
@@ -230,7 +237,7 @@ public class Select2Common {
             final String firstLabelField, final String secondLabelField,
             final String thirdLabelField, final boolean hideFirstLabel,
             final boolean hideSecondLabel, final boolean hideThirdLabel,
-            final boolean displayEmailInSuggestion, final String userId) {
+            boolean displayEmailInSuggestion, final String userId) {
         String result = "";
         if (obj != null) {
 
@@ -268,6 +275,7 @@ public class Select2Common {
                 result += StringUtils.isNotBlank(userId) ? userId : "";
             }
 
+            displayEmailInSuggestion = isForceDisplayEmailInSuggestion();
             if (displayEmailInSuggestion && !hideThirdLabel) {
                 if (StringUtils.isNotBlank(thirdLabelField)) {
                     final String thirdLabel = obj.optString(thirdLabelField);
