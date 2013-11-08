@@ -28,6 +28,7 @@ import subprocess
 import sys
 import time
 import shutil
+import errno
 
 SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
 
@@ -280,9 +281,17 @@ def log(message, out=sys.stdout):
 def check_output(cmd):
     """Return Shell command output."""
     args = shlex.split(cmd)
-    p = subprocess.Popen(args, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                         shell=platform.system() == "Windows")
+    try:
+        p = subprocess.Popen(args, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             shell=platform.system() == "Windows")
+    except OSError, e:
+        log("$> " + cmd)
+        if e.errno == errno.ENOENT:
+            raise ExitException(1, "Command not found: '%s'" % args[0])
+        else:
+            # re-raise unexpected exception
+            raise
     out, err = p.communicate()
     retcode = p.returncode
     if retcode != 0:
@@ -308,22 +317,29 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
     available if 'delay_stdout'"""
     log("$> " + cmd)
     args = shlex.split(cmd)
-    if delay_stdout:
-        if logOutput:
-            # Merge stderr with stdout
-            stderr = subprocess.STDOUT
-        p = subprocess.Popen(args, stdin=stdin, stdout=stdout, stderr=stderr,
-                             shell=platform.system() == "Windows")
-        if run:
-            out, err = p.communicate()
+    try:
+        if delay_stdout:
             if logOutput:
-                sys.stdout.write(out)
-                sys.stdout.flush()
-    else:
-        logOutput = True
-        p = subprocess.Popen(args, shell=platform.system() == "Windows")
-        if run:
-            p.wait()
+                # Merge stderr with stdout
+                stderr = subprocess.STDOUT
+            p = subprocess.Popen(args, stdin=stdin, stdout=stdout, stderr=stderr,
+                                 shell=platform.system() == "Windows")
+            if run:
+                out, err = p.communicate()
+                if logOutput:
+                    sys.stdout.write(out)
+                    sys.stdout.flush()
+        else:
+            logOutput = True
+            p = subprocess.Popen(args, shell=platform.system() == "Windows")
+            if run:
+                p.wait()
+    except OSError, e:
+        if e.errno == errno.ENOENT:
+            raise ExitException(1, "Command not found: '%s'" % args[0])
+        else:
+            # re-raise unexpected exception
+            raise
     if not run:
         return p
     retcode = p.returncode
