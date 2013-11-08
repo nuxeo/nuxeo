@@ -49,6 +49,10 @@ input.button:hover,
   box-shadow: 0 0 3px #b5dcff, 0 -2px 0 #ddd inset;
   outline: none }
 
+button.disabled,
+input.disabled,
+button.disabled:hover,
+input.disabled:hover,
 .button[disabled],
 .button[disabled]:hover,
 .button[disabled=disabled],
