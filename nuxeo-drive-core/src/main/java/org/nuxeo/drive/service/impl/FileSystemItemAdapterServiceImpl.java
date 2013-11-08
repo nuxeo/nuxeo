@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.NuxeoDriveContribException;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
@@ -193,7 +194,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
         if (getTopLevelFolderItemFactory().canHandleFileSystemItemId(id)) {
             return getTopLevelFolderItemFactory();
         }
-        throw new ClientException(
+        throw new NuxeoDriveContribException(
                 String.format(
                         "No fileSystemItemFactory found for FileSystemItem with id %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                         id));
@@ -203,7 +204,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     public TopLevelFolderItemFactory getTopLevelFolderItemFactory()
             throws ClientException {
         if (topLevelFolderItemFactory == null) {
-            throw new ClientException(
+            throw new NuxeoDriveContribException(
                     "Found no active top level folder item factory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\"> and to <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeTopLevelFolderItemFactory\">.");
         }
         return topLevelFolderItemFactory;
@@ -214,13 +215,13 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
             String factoryName) throws ClientException {
         FileSystemItemFactory factory = getFileSystemItemFactory(factoryName);
         if (factory == null) {
-            throw new ClientException(
+            throw new NuxeoDriveContribException(
                     String.format(
                             "No factory named %s. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
                             factoryName));
         }
         if (!(factory instanceof VirtualFolderItemFactory)) {
-            throw new ClientException(
+            throw new NuxeoDriveContribException(
                     String.format(
                             "Factory class %s for factory %s is not a VirtualFolderItemFactory.",
                             factory.getClass().getName(), factory.getName()));
@@ -232,7 +233,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent
     public Set<String> getActiveFileSystemItemFactories()
             throws ClientException {
         if (activeFileSystemItemFactoryRegistry.activeFactories.isEmpty()) {
-            throw new ClientException(
+            throw new NuxeoDriveContribException(
                     "Found no active file system item factories. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeFileSystemItemFactories\"> declaring at least one factory.");
         }
         return activeFileSystemItemFactoryRegistry.activeFactories;
