@@ -1,13 +1,13 @@
 <div xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:rich="http://richfaces.org/rich"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:c="http://java.sun.com/jstl/core"
+    xmlns:nxh="http://nuxeo.org/nxweb/html"
+    xmlns:nxl="http://nuxeo.org/nxforms/layout"
+    xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <h3><h:outputText value="#{messages['label.dam.bulk.import.assets']}" /></h3>
 
@@ -23,32 +23,32 @@
           </td>
           <td class="fieldColumn">
             <nxl:widgetType name="singleDocumentSuggestion" mode="edit"
-              value="#{damImportActions}"
-              field="selectedImportFolderId"
-              required="true"
-              width="300"
-              translated="true"
-              minChars="3"
-              placeholder="label.dam.bulk.import.assets.select.location.placeholder"
-              ajaxReRender="#{fancyboxFormId}_importPanel"
-              pageProviderName="damImportFolders"
-              documentSchemas = "dublincore,common">
+                value="#{damImportActions}"
+                field="selectedImportFolderId"
+                required="true"
+                width="300"
+                translated="true"
+                minChars="3"
+                placeholder="label.dam.bulk.import.assets.select.location.placeholder"
+                ajaxReRender="#{fancyboxFormId}_typeDescriptionsPanel, #{fancyboxFormId}_buttons"
+                pageProviderName="damImportFolders"
+                documentSchemas = "dublincore,common">
             </nxl:widgetType>
           </td>
         </tr>
         </tbody>
       </table>
 
-      <a4j:outputPanel id="#{fancyboxFormId}_importPanel">
-        <c:if test="#{not empty damImportActions.selectedImportFolderId}">
-          <nxu:set var="importOptions" value="#{damImportActions.getImportOptions(action.properties.dropContext)}" cache="true">
-            <table class="dataInput fullWidth">
-              <tbody>
-              <tr>
-                <td class="labelColumn">
-                  #{messages['label.files.files']}
-                </td>
-                <td class="fieldColumn">
+      <nxu:set var="importOptions" value="#{damImportActions.getImportOptions(action.properties.dropContext)}" cache="true">
+        <table class="dataInput fullWidth">
+          <tbody>
+          <tr>
+            <td class="labelColumn required">
+              #{messages['label.files.files']}
+            </td>
+            <td class="fieldColumn">
+              <a4j:outputPanel id="#{fancyboxFormId}_typeDescriptionsPanel">
+                <c:if test="#{not empty damImportActions.selectedImportFolderId}">
                   <p class="specification">
                     <nxu:set var="types" value="#{damImportActions.allowedImportFolderSubTypes}" cache="true">
                       <c:forEach var="type" items="#{types}">
@@ -57,101 +57,111 @@
                     </nxu:set>
                     #{messages['label.dam.bulk.import.assets.select.location.types.imported']}
                   </p>
+                </c:if>
+              </a4j:outputPanel>
 
-                  <c:if test="#{useHtml5DragAndDrop}">
-                    <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}"
-                      data-loadalreadyuploadedfiles="#{damImportActions.hasUploadedFiles()}">
-                      <div class="dropZoneLabel jsTips">
-                        #{messages['label.dam.bulk.import.assets.tips']}
-                      </div>
-                    </div>
-                  </c:if>
-
-                  <c:if test="#{!useHtml5DragAndDrop}">
-                    <rich:fileUpload id="fileUploadForm" uploadData="#{damImportActions.uploadedFiles}"
-                      maxFilesQuantity="10" immediateUpload="true"
-                      locale="#{localeSelector.localeString}"
-                      ajaxSingle="true"
-                      onadd="nuxeo.dam.disableBulkImportButton();"
-                      onuploadcomplete="nuxeo.dam.enableBulkImportButton();"
-                      listWidth="60%" listHeight="150px">
-                    </rich:fileUpload>
-                  </c:if>
-                </td>
-              </tr>
-              <c:if test="#{importOptions.size() > 1}">
-                <tr>
-                  <td class="labelColumn">
-                    #{messages['label.dam.bulk.import.assets.select.option']}
-                  </td>
-                  <td class="fieldColumn">
-                    <h:selectOneMenu
-                      value="#{damImportActions.selectedImportOptionId}"
-                      id="#{widget.id}" styleClass="langSelect">
-                      <a4j:support event="onchange"
-                        reRender="importLayout_panel" />
-                      <nxu:selectItems
-                        var="importOption" value="#{importOptions}"
-                        itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
-                    </h:selectOneMenu>
-                  </td>
-                </tr>
+              <c:if test="#{useHtml5DragAndDrop}">
+                <div class="damAssetImportZone dropArea" id="#{action.id}_dropzone" context="#{action.properties.dropContext}"
+                    data-loadalreadyuploadedfiles="#{damImportActions.hasUploadedFiles()}">
+                  <div class="dropZoneLabel jsTips">
+                    #{messages['label.dam.bulk.import.assets.tips']}
+                  </div>
+                </div>
               </c:if>
-              </tbody>
-            </table>
 
-          </nxu:set>
-
-          <a4j:outputPanel id="importLayout_panel">
-
-            <nxl:layout name="#{damImportActions.selectedImportOption.properties.layout}" mode="create"
-              value="#{damImportActions.importDocumentModel}"/>
-
-            <!-- <nxl:widgetType name="layout" mode="create"
-              value="#{damImportActions.importDocumentModel}"
-              widgetProperty_name="#{damImportActions.selectedImportOption.properties.layout}"/> -->
-
-          </a4j:outputPanel>
-
-          <c:if test="#{useHtml5DragAndDrop}">
-            <script type="text/javascript">
-              if (jQuery('#fancybox-content').html() !== '') {
-                jQuery(".damAssetImportZone").nxDropZone({
-                  url : "#{contextPath}/site/automation/",
-                  uploadRateRefreshTime : 500,
-                  numConcurrentUploads : 3,
-                  dropContext : ctx,
-                  uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
-                  execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
-                  extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
-                  handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
-                });
-              }
-            </script>
+              <c:if test="#{!useHtml5DragAndDrop}">
+                <rich:fileUpload id="fileUploadForm" uploadData="#{damImportActions.uploadedFiles}"
+                    maxFilesQuantity="10" immediateUpload="true"
+                    locale="#{localeSelector.localeString}"
+                    ajaxSingle="true"
+                    onadd="nuxeo.dam.disableBulkImportButton();"
+                    onuploadcomplete="nuxeo.dam.enableBulkImportButton();"
+                    listWidth="60%" listHeight="150px">
+                </rich:fileUpload>
+              </c:if>
+            </td>
+          </tr>
+          <c:if test="#{importOptions.size() > 1}">
+            <tr>
+              <td class="labelColumn">
+                #{messages['label.dam.bulk.import.assets.select.option']}
+              </td>
+              <td class="fieldColumn">
+                <h:selectOneMenu
+                    value="#{damImportActions.selectedImportOptionId}"
+                    id="#{widget.id}" styleClass="langSelect">
+                  <a4j:support event="onchange"
+                      reRender="importLayout_panel" />
+                  <nxu:selectItems
+                      var="importOption" value="#{importOptions}"
+                      itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
+                </h:selectOneMenu>
+              </td>
+            </tr>
           </c:if>
+          </tbody>
+        </table>
 
+      </nxu:set>
 
-        </c:if>
+      <a4j:outputPanel id="importLayout_panel">
+
+        <nxl:layout name="#{damImportActions.selectedImportOption.properties.layout}" mode="create"
+            value="#{damImportActions.importDocumentModel}"/>
+
       </a4j:outputPanel>
 
+      <c:if test="#{useHtml5DragAndDrop}">
+        <script type="text/javascript">
+          if (jQuery('#fancybox-content').html() !== '') {
+            jQuery(".damAssetImportZone").nxDropZone({
+              url : "#{contextPath}/site/automation/",
+              uploadRateRefreshTime : 500,
+              numConcurrentUploads : 3,
+              dropContext : ctx,
+              uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+              execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+              extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
+              handler : nuxeo.dam.createDamImportAssetHandler("#{damImportActions.generateBatchId()}")
+            });
+          }
+        </script>
+      </c:if>
+
     </div>
 
-    <div class="buttonsGadget">
-      <nxh:commandButton value="#{messages['command.import']}"
-        action="#{damImportActions.importAssets()}"
-        styleClass="button jsDamImportButton" />
-      <nxh:commandButton value="#{messages['command.cancel']}"
-        immediate="true"
-        action="#{damImportActions.cancel()}"
-        styleClass="button" />
-    </div>
+    <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
+      <div class="buttonsGadget jsDamImportButtons" data-selectedimportfolder="#{!empty damImportActions.selectedImportFolderId}">
+        <nxu:set var="importButtonDisabled"
+            value="#{empty damImportActions.selectedImportFolderId or !damImportActions.hasUploadedFiles()}"
+            cache="true">
+          <nxu:set var="disabledButtonStyleClass"
+              value="#{nxu:test(importButtonDisabled, 'disabled', '')}">
 
-    <c:if test="#{!damImportActions.hasUploadedFiles()}">
-      <script type="text/javascript">
-        nuxeo.dam.disableBulkImportButton();
-      </script>
-    </c:if>
+            <nxh:commandButton value="#{messages['command.import']}"
+                action="#{damImportActions.importAssets()}"
+                styleClass="button jsDamImportButton #{disabledButtonStyleClass}"
+                data-selectedimportfolder="#{!empty damImportActions.selectedImportFolderId}"/>
+            <nxh:commandButton value="#{messages['command.cancel']}"
+                immediate="true"
+                action="#{damImportActions.cancel()}"
+                styleClass="button" />
 
+            <c:if test="#{importButtonDisabled}">
+              <script type="text/javascript">
+                nuxeo.dam.disableBulkImportButton();
+              </script>
+            </c:if>
+            <c:if test="#{!importButtonDisabled}">
+              <script type="text/javascript">
+                nuxeo.dam.enableBulkImportButton();
+              </script>
+            </c:if>
+
+          </nxu:set>
+        </nxu:set>
+      </div>
+    </a4j:outputPanel>
   </h:form>
 
 </div>

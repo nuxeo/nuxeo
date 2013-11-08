@@ -134,7 +134,11 @@ nuxeo.dam = (function(m) {
   };
 
   m.enableBulkImportButton = function() {
-    jQuery(".jsDamImportButton").removeAttr("disabled");
+    var ele = jQuery(".jsDamImportButton");
+    if (jQuery("[data-selectedimportfolder='true']").length > 0) {
+      ele.removeAttr("disabled");
+      ele.removeClass("disabled");
+    }
   };
 
   return m
