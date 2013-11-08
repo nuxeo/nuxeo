@@ -123,13 +123,13 @@ class Release(object):
     """Nuxeo release manager.
 
     See 'self.perpare()', 'self.perform()'."""
-    def __init__(self, repo, branch, tag, next_snapshot, maintenance="auto",
+    def __init__(self, repo, branch, tag, next_snapshot, maintenance_version="auto",
                  is_final=False, skipTests=False, other_versions=None,
                  profiles='', msg_commit='', msg_tag=''):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
-        self.maintenance = maintenance
+        self.maintenance_version = maintenance_version
         self.skipTests = skipTests
         if profiles:
             self.profiles = ',' + profiles
@@ -147,9 +147,9 @@ class Release(object):
         artifact_id = tree.getroot().find("pom:artifactId", namespaces)
         self.repo.is_nuxeoecm = "nuxeo-ecm" == artifact_id.text
         if self.repo.is_nuxeoecm:
-            log("Releasing Nuxeo main repository...")
+            log("Working on Nuxeo main repository...")
         else:
-            log("Releasing custom repository...")
+            log("Working on custom repository...")
 
     def set_other_versions_and_patterns(self, other_versions=None):
         """Set other versions and replacement patterns"""
@@ -241,10 +241,10 @@ class Release(object):
         log("Current version:".ljust(25) + self.snapshot)
         log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
-        if self.maintenance == "auto":
+        if self.maintenance_version == "auto":
             log("No maintenance branch".ljust(25))
         else:
-            log("Maintenance version:".ljust(25) + self.maintenance)
+            log("Maintenance version:".ljust(25) + self.maintenance_version)
         if self.skipTests:
             log("Tests execution is skipped")
         if self.custom_patterns.files:
@@ -266,7 +266,7 @@ class Release(object):
                         "PROFILES=%s\nOTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
                         "PROPS_PATTERN=%s\nMSG_COMMIT=%s\nMSG_TAG=%s\n" %
                         (self.repo.alias, self.branch, self.tag,
-                         self.next_snapshot, self.maintenance, self.is_final,
+                         self.next_snapshot, self.maintenance_version, self.is_final,
                          self.skipTests, self.profiles,
                          (','.join('/'.join(other_version)
                                    for other_version in self.other_versions)),
@@ -443,11 +443,11 @@ class Release(object):
                                                         self.msg_tag, msg_tag))
 
         # TODO NXP-8569 Optionally merge maintenance branch on source
-        if self.maintenance != "auto":
+        if self.maintenance_version != "auto":
             # Maintenance branches are kept, so update their versions
             log("\n[INFO] Maintenance branch (update version and commit)...")
-            msg_commit = "Update %s to %s" % (self.tag, self.maintenance)
-            self.update_versions(self.tag, self.maintenance)
+            msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
+            self.update_versions(self.tag, self.maintenance_version)
             self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
 
         log("\n[INFO] Released branch %s (update version and commit)..." %
@@ -467,7 +467,7 @@ class Release(object):
         if post_release_change:
             self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
 
-        if self.maintenance == "auto":
+        if self.maintenance_version == "auto":
             log("\n[INFO] Delete maintenance branch %s..." % self.tag)
             self.repo.system_recurse("git branch -D %s" % self.tag)
 
@@ -493,7 +493,7 @@ class Release(object):
         self.repo.clone(self.branch)
         self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                      self.branch))
-        if self.maintenance != "auto":
+        if self.maintenance_version != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                          self.tag))
         self.repo.system_recurse("git push --tags")
@@ -584,7 +584,7 @@ version minus '-SNAPSHOT', else the 'SNAPSHOT' keyword is replaced with a date
 In mode 'auto', if final option is True, then the next snapshot is the current
 one increased, else it is equal to the current.""")
         versioning_options.add_option('-m', '--maintenance', action="store",
-            dest='maintenance', default="auto",
+            dest='maintenance_version', default="auto",
             help="""Maintenance version. Default: '%default'\n
 The maintenance branch is always named like the tag without the 'release-'
 prefix. If set, the version will be used on the maintenance branch, else, in
@@ -637,7 +637,7 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
                 options.branch = f.readline().split("=")[1].strip()
                 options.tag = f.readline().split("=")[1].strip()
                 options.next_snapshot = f.readline().split("=")[1].strip()
-                options.maintenance = f.readline().split("=")[1].strip()
+                options.maintenance_version = f.readline().split("=")[1].strip()
                 options.is_final = f.readline().split("=")[1].strip() == "True"
                 options.skipTests = f.readline().split("=")[1].strip() == "True"
                 options.profiles = f.readline().split("=")[1].strip()
@@ -657,7 +657,7 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
         system("git fetch %s" % (options.remote_alias))
         repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
-                          options.next_snapshot, options.maintenance,
+                          options.next_snapshot, options.maintenance_version,
                           options.is_final, options.skipTests,
                           options.other_versions, options.profiles,
                           options.msg_commit, options.msg_tag)
