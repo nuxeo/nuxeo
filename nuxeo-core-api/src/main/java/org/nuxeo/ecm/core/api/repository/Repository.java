@@ -56,9 +56,6 @@ public class Repository implements Serializable {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     private Map<String, String> properties;
 
-    @XNode("@supportsTags")
-    protected Boolean supportsTags=null;
-
     public Repository() {
     }
 
@@ -127,16 +124,6 @@ public class Repository implements Serializable {
             session = Framework.getService(CoreSession.class, name);
         }
         return session;
-    }
-
-    public boolean supportsTags() throws Exception {
-        if (supportsTags==null) {
-            CoreSession unconnectedSession =lookupSession();
-            supportsTags =  unconnectedSession.supportsTags(name);
-            // avoid leaking DocumentManagerBean
-            unconnectedSession.destroy();
-        }
-        return supportsTags;
     }
 
     public boolean isDefault() {

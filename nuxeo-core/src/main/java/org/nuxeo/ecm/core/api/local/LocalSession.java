@@ -45,8 +45,6 @@ public class LocalSession extends AbstractSession {
 
     private Session session;
 
-    private Boolean supportsTags;
-
     public static CoreSession createInstance() {
         CoreSession session = new LocalSession();
         return TransactionalCoreSessionWrapper.wrap(session);
@@ -99,31 +97,11 @@ public class LocalSession extends AbstractSession {
             sessionContext.put("principal", principal);
 
             Repository repo = lookupRepository(repoName);
-            supportsTags = Boolean.valueOf(repo.supportsTags());
             return repo.getSession(sessionContext);
         } catch (Exception e) {
             throw new ClientException("Failed to load repository " + repoName
                     + ": " + e.getMessage(), e);
         }
-    }
-
-    @Override
-    public boolean supportsTags(String repositoryName) throws ClientException {
-        try {
-            Repository repo = lookupRepository(repositoryName);
-            return repo.supportsTags();
-        } catch (Exception e) {
-            throw new ClientException("Failed to load repository "
-                    + repositoryName, e);
-        }
-    }
-
-    @Override
-    public boolean supportsTags() throws ClientException {
-        if (supportsTags != null) {
-            return supportsTags.booleanValue();
-        }
-        throw new ClientException("Can not query on a closed repository");
     }
 
     protected Repository lookupRepository(String name) throws Exception {

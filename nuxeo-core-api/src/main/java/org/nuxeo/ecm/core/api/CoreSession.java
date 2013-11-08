@@ -1740,24 +1740,6 @@ public interface CoreSession {
     String[] getPermissionsToCheck(String permission);
 
     /**
-     * Indicates if implementation of the given repositoryName supports Tags
-     * feature
-     *
-     * @param repositoryName the name of the repository to test
-     * @return
-     * @throws ClientException
-     */
-    boolean supportsTags(String repositoryName) throws ClientException;
-
-    /**
-     * Indicates if the current repository implementation supports tags.
-     *
-     * @return true if tags are supported
-     * @throws ClientException
-     */
-    boolean supportsTags() throws ClientException;
-
-    /**
      * Find the first parent with the given {@code facet} and adapt it on the
      * {@code adapterClass}.
      * <p>

@@ -327,11 +327,6 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     @Override
-    public boolean supportsTags() {
-        return true;
-    }
-
-    @Override
     public void activateServer() {
         managedConnectionFactory.activateServer();
 

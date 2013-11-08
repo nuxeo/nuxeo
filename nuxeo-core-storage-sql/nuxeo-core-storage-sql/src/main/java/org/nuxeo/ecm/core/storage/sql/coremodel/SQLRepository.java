@@ -151,13 +151,4 @@ public class SQLRepository implements Repository {
         return 0;
     }
 
-    @Override
-    public boolean supportsTags() {
-        return true;
-    }
-
-    /*
-     * ----- -----
-     */
-
 }
