@@ -150,13 +150,21 @@
 
             <c:if test="#{useAjaxForm}">
             <ui:include src="/incl/safeEdit.xhtml"/>
+               <script>
+                 function onSubmitToggledForm() {
+                   removeAllTinyMCEEditors();
+                   jQuery(this).data('dirtyPage', false);
+                   jQuery(window).unbind('beforeunload');
+                   jQuery(this).cleanupSavedData();
+                 }
+               </script>
               <a4j:form
                 id="#{widget.id}_toggledForm"
                 ajaxSubmit="true"
                 ignoreDupResponses="true"
                 reRender="#{widget.id}_regionPanel"
                 selfRendered="true"
-                onsubmit="removeAllTinyMCEEditors(); return true;"
+                onsubmit="onSubmitToggledForm(); return true;"
                 styleClass="safeEditEnabled">
 
                 <ui:insert name="toggled_mode_content" />
