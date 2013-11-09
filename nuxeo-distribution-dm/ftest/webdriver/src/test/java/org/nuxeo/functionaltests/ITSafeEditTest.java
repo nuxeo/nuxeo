@@ -355,20 +355,7 @@ public class ITSafeEditTest extends AbstractTest {
                 By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']"));
         coverageWidget.selectValue(COVERAGE);
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
-                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
-
-        try {
-            wait.until(new Function<WebDriver, WebElement>() {
-                public WebElement apply(WebDriver driver) {
-                    return driver.findElement(By.xpath("//div[contains(.,'" + DRAFT_SAVE_TEXT_NOTIFICATION + "')]"));
-                }
-            });
-        } catch (TimeoutException e) {
-            log.warn("Could not see saved message, maybe I was too slow and it "
-                    + "has already disappeared. Let's see if I can restore.");
-        }
+        waitForSavedNotification();
 
         // We leave the page without saving, the safeEdit mechanism should be
         // triggered ...
@@ -380,6 +367,8 @@ public class ITSafeEditTest extends AbstractTest {
 
         triggerSafeEditResotre();
 
+        waitForSavedNotification();
+
         WebElement savedCoverage = driver.findElement(By.xpath(ITSelect2Test.S2_COVERAGE_FIELD_XPATH));
         assertTrue(savedCoverage.getText() != null);
         assertTrue(savedCoverage.getText().equals(ITSelect2Test.COVERAGE));
@@ -388,6 +377,22 @@ public class ITSafeEditTest extends AbstractTest {
         logout();
 
         restoreSate();
+    }
+
+    private void waitForSavedNotification() {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
+                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
+        try {
+            wait.until(new Function<WebDriver, WebElement>() {
+                public WebElement apply(WebDriver driver) {
+                    return driver.findElement(By.xpath("//div[contains(.,'" + DRAFT_SAVE_TEXT_NOTIFICATION + "')]"));
+                }
+            });
+        } catch (TimeoutException e) {
+            log.warn("Could not see saved message, maybe I was too slow and it "
+                    + "has already disappeared. Let's see if I can restore.");
+        }
     }
 
     private void triggerSafeEditResotre() {
