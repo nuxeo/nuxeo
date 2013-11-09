@@ -1209,6 +1209,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    @Ignore
     public void testRestartWorkflowOperation() throws Exception {
         assertEquals("file", doc.getTitle());
         DocumentModel node1 = createNode(routeDoc, "node1", session);
