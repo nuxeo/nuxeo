@@ -122,8 +122,13 @@ public class Select2Common {
 
     public static final String DIRECTORY_ORDER_FIELD_NAME = "ordering";
 
+    private static Boolean forceDisplayEmailInSuggestion = null;
+
     private static boolean isForceDisplayEmailInSuggestion() {
-        return Framework.isBooleanPropertyTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
+        if (forceDisplayEmailInSuggestion == null) {
+            forceDisplayEmailInSuggestion = Framework.isBooleanPropertyTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
+        }
+        return forceDisplayEmailInSuggestion;
     }
 
     /**
@@ -275,8 +280,8 @@ public class Select2Common {
                 result += StringUtils.isNotBlank(userId) ? userId : "";
             }
 
-            displayEmailInSuggestion = isForceDisplayEmailInSuggestion();
-            if (displayEmailInSuggestion && !hideThirdLabel) {
+            if (isForceDisplayEmailInSuggestion()
+                    || (displayEmailInSuggestion && !hideThirdLabel)) {
                 if (StringUtils.isNotBlank(thirdLabelField)) {
                     final String thirdLabel = obj.optString(thirdLabelField);
                     if (StringUtils.isNotBlank(thirdLabel)) {
