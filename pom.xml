@@ -96,6 +96,7 @@
     <module>nuxeo-user-center</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-platform-rendition</module>
+    <module>nuxeo-apidoc-server</module>
     <module>nuxeo-birt</module>
     <module>nuxeo-activity</module>
     <module>nuxeo-social-collaboration</module>
