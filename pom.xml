@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -62,6 +63,7 @@
     <nuxeo.dmk.version>5.9.1-SNAPSHOT</nuxeo.dmk.version>
     <nuxeo.rest-api.version>5.9.1-SNAPSHOT</nuxeo.rest-api.version>
     <nuxeo.webengine.sites.version>5.9.1-SNAPSHOT</nuxeo.webengine.sites.version>
+    <nuxeo.style.guide.version>5.9.1-SNAPSHOT</nuxeo.style.guide.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>5.9.1-SNAPSHOT</nuxeo.jbpm.version>
@@ -123,6 +125,7 @@
     <module>nuxeo-dmk-adaptor</module>
     <module>nuxeo-webengine-sites</module>
     <module>nuxeo-rest-api</module>
+    <module>nuxeo-style-guide</module>
   </modules>
 
   <dependencyManagement>
@@ -1124,8 +1127,14 @@
         <artifactId>nuxeo-platform-jbpm-gadgets</artifactId>
         <version>${nuxeo.jbpm.version}</version>
       </dependency>
-    </dependencies>
 
+      <!-- Style guide -->
+      <dependency>
+        <groupId>org.nuxeo.style</groupId>
+        <artifactId>nuxeo-style-guide</artifactId>
+        <version>${nuxeo.style.guide.version}</version>
+      </dependency>
+    </dependencies>
   </dependencyManagement>
 
   <repositories>
