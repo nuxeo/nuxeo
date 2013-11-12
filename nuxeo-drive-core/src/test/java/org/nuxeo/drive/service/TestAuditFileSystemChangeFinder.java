@@ -491,7 +491,7 @@ public class TestAuditFileSystemChangeFinder {
             nuxeoDriveManager.registerSynchronizationRoot(
                     user1Session.getPrincipal(), folder2, user1Session);
         } finally {
-            commitAndWaitForAsyncCompletion();
+            commitAndWaitForAsyncCompletion(user1Session);
         }
 
         TransactionHelper.startTransaction();
@@ -910,10 +910,15 @@ public class TestAuditFileSystemChangeFinder {
         return changeSummary;
     }
 
-    protected void commitAndWaitForAsyncCompletion() throws Exception {
+    protected void commitAndWaitForAsyncCompletion(CoreSession session)
+            throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
         dispose(session);
         eventService.waitForAsyncCompletion();
+    }
+
+    protected void commitAndWaitForAsyncCompletion() throws Exception {
+        commitAndWaitForAsyncCompletion(session);
     }
 
     protected void dispose(CoreSession session) throws Exception {
