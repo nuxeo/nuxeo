@@ -142,6 +142,9 @@ class Release(object):
         self.set_snapshot()
         self.set_tag(tag)
         self.set_next_snapshot(next_snapshot)
+        self.maintenance_branch = self.tag
+        if self.branch == self.maintenance_branch:
+            self.maintenance_branch += ".0"
         # Detect if working on Nuxeo main sources
         tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
         artifact_id = tree.getroot().find("pom:artifactId", namespaces)
@@ -242,8 +245,9 @@ class Release(object):
         log("Tag:".ljust(25) + "release-" + self.tag)
         log("Next version:".ljust(25) + self.next_snapshot)
         if self.maintenance_version == "auto":
-            log("No maintenance branch".ljust(25))
+            log("Maintenance branch deleted".ljust(25))
         else:
+            log("Maintenance branch:".ljust(25) + self.maintenance_branch)
             log("Maintenance version:".ljust(25) + self.maintenance_version)
         if self.skipTests:
             log("Tests execution is skipped")
@@ -424,11 +428,12 @@ class Release(object):
         log("[INFO] Check release-ability...")
         self.check()
 
-        log("\n[INFO] Releasing branch {0}, create branch {1}, update versions, "
-            "commit and tag as release-{1}...".format(self.branch, self.tag))
+        log("\n[INFO] Releasing branch {0}, create maintenance branch {1}, "
+            "update versions, commit and tag as release-{2}..."
+            .format(self.branch, self.maintenance_branch, self.tag))
         msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot,
                                                       self.tag)
-        self.repo.system_recurse("git checkout -b %s" % self.tag)
+        self.repo.system_recurse("git checkout -b %s" % self.maintenance_branch)
         self.update_versions(self.snapshot, self.tag)
         for other_version in self.other_versions:
             if len(other_version) > 0:
@@ -468,8 +473,10 @@ class Release(object):
             self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
 
         if self.maintenance_version == "auto":
-            log("\n[INFO] Delete maintenance branch %s..." % self.tag)
-            self.repo.system_recurse("git branch -D %s" % self.tag)
+            log("\n[INFO] Delete maintenance branch %s..." %
+                self.maintenance_branch)
+            self.repo.system_recurse("git branch -D %s" %
+                                     self.maintenance_branch)
 
         log("\n[INFO] Build and package release-%s..." % self.tag)
         self.repo.system_recurse("git checkout release-%s" % self.tag)
@@ -495,7 +502,7 @@ class Release(object):
                                                      self.branch))
         if self.maintenance_version != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
-                                                         self.tag))
+                                                         self.maintenance_branch))
         self.repo.system_recurse("git push --tags")
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
