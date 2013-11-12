@@ -120,19 +120,19 @@ public class Select2Common {
     public static final String DIRECTORY_ORDER_FIELD_NAME = "ordering";
 
     /**
-     * Compute the filed name of the directory that holds the value that we want
+     * Compute the field name of the directory that holds the value that we want
      * to display.
      *
      * @param schema the directory schema
      * @param dbl10n are translations carried by directory fields
      * @param labelFieldName the name or pattern of the fields that held values
      * @param lang the current language
+     * @throws IllegalArgumentException when cannot compute label field name
      * @return the final field name where we pick up the value
      * @since 5.7.3
      */
     public static String getLabelFieldName(final Schema schema, boolean dbl10n,
-            String labelFieldName, final String lang)
-            throws IllegalArgumentException {
+            String labelFieldName, final String lang) {
         if (labelFieldName == null || labelFieldName.isEmpty()) {
             // No labelFieldName provided, we assume it is 'label'
             labelFieldName = DIRECTORY_DEFAULT_LABEL_COL_NAME;
