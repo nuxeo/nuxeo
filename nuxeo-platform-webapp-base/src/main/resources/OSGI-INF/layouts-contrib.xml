@@ -3460,9 +3460,6 @@
                   <widget category="widgetTypeConf">actions_styleClass</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_addForm</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
                 </row>
                 <row>
@@ -3588,9 +3585,6 @@
                   <widget category="widgetTypeConf">actions_styleClass</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">actions_addForm</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
                 </row>
                 <row>
@@ -3646,9 +3640,6 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">actions_addForm</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_useAjaxForm</widget>
