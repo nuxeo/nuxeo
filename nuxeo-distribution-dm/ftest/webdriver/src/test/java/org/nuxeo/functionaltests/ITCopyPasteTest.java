@@ -44,7 +44,7 @@ public class ITCopyPasteTest extends AbstractTest {
 
     private final static String USERNAME = "jdoe";
 
-    private final static String PASSWORD = "jdoe";
+    private final static String PASSWORD = "test";
 
     private final static String WORKSPACE1_TITLE = "WorkspaceTitle_"
             + new Date().getTime();
