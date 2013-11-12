@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.7-SNAPSHOT</version>
+    <version>5.8.0-HF02-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.styleguide</groupId>
-  <artifactId>nuxeo-styleguide</artifactId>
+  <groupId>org.nuxeo.style</groupId>
+  <artifactId>nuxeo-style-guide</artifactId>
   <name>Nuxeo Style Guide</name>
   <description>Nuxeo Style Guide</description>
 
