@@ -24,7 +24,7 @@
 
     <action id="TAB_EVENTS" link="/incl/tabs/document_events_cv.xhtml"
       enabled="true" label="action.view.events" icon="/icons/file.gif" order="50"
-      type="rest_document_link" type="rest_document_link">
+      type="rest_document_link">
       <category>TAB_CONTENT_HISTORY_sub_tab</category>
       <filter-id>view_content_history</filter-id>
     </action>
