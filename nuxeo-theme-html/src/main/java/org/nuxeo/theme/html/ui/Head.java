@@ -50,7 +50,7 @@ public class Head {
                     charset));
 
             // Site icon
-            final String icon = properties.getProperty("icon", "/favicon.ico");
+            String icon = properties.getProperty("icon", "/favicon.ico");
             sb.append(String.format(
                     "<link rel=\"icon\" href=\"%s\" type=\"image/x-icon\"/>",
                     icon));
