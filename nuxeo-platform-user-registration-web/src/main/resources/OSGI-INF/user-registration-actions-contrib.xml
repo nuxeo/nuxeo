@@ -2,47 +2,44 @@
 <component name="org.nuxeo.ecm.user.registration.actions.contrib">
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-             point="actions">
+    point="actions">
 
     <action id="UserRegistration" link="view_admin-fragment.xhtml" label="admcommand.userregistration"
-            order="55">
+      order="55">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="UserRegistrationRequests" link="/incl/userregistration/requests_listing_all.xhtml"
-            label="tab.userregistration.requests" order="10">
+      label="tab.userregistration.requests" order="10">
       <category>UserRegistration_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="UserRegistrationConfiguration" link="/incl/userregistration/requests_configuration.xhtml"
-            label="tab.userregistration.configuration" order="20">
+      label="tab.userregistration.configuration" order="20">
       <category>UserRegistration_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="UserRegistrationRequestsCreate"
-            link="/incl/userregistration/default_requests_create.xhtml"
-            order="220" label="tab.userregistration.requests.create">
+    <action id="UserRegistrationRequestsCreate" link="/incl/userregistration/default_requests_create.xhtml"
+      order="220" label="tab.userregistration.requests.create" type="rest_document_link">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>manage</filter-id>
       <filter-id>mutable_document</filter-id>
       <filter-id>view_content</filter-id>
     </action>
 
-    <action id="UserRegistrationRequestsMultipleCreate"
-            link="/incl/userregistration/multiple_requests_create.xhtml"
-            order="230" label="tab.userregistration.requests.multiple.create">
+    <action id="UserRegistrationRequestsMultipleCreate" link="/incl/userregistration/multiple_requests_create.xhtml"
+      order="230" label="tab.userregistration.requests.multiple.create" type="rest_document_link">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>manage</filter-id>
       <filter-id>mutable_document</filter-id>
       <filter-id>view_content</filter-id>
     </action>
 
-    <action id="UserRegistrationRequestsListingLocal"
-            link="/incl/userregistration/requests_listing_local.xhtml"
-            order="240" label="tab.userregistration.requests">
+    <action id="UserRegistrationRequestsListingLocal" link="/incl/userregistration/requests_listing_local.xhtml"
+      order="240" label="tab.userregistration.requests" type="rest_document_link">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>manage</filter-id>
       <filter-id>mutable_document</filter-id>
@@ -55,9 +52,8 @@
       </filter>
     </action>
 
-    <action id="UserRegistrationDelete"
-            link="${userRegistrationActions.deleteUserRegistration}"
-            order="20" label="tab.userregistration.delete">
+    <action id="UserRegistrationDelete" link="${userRegistrationActions.deleteUserRegistration}"
+      order="20" label="tab.userregistration.delete">
       <category>CURRENT_USER_REQUESTS_GLOBAL</category>
       <category>CURRENT_USER_REQUESTS_LOCAL</category>
       <filter id="canDeleteRegistration">
@@ -67,9 +63,8 @@
       </filter>
     </action>
 
-    <action id="UserRegistrationRevive"
-            link="${userRegistrationActions.reviveUserRegistration}"
-            order="30" label="tab.userregistration.revive">
+    <action id="UserRegistrationRevive" link="${userRegistrationActions.reviveUserRegistration}"
+      order="30" label="tab.userregistration.revive">
       <category>CURRENT_USER_REQUESTS_GLOBAL</category>
       <category>CURRENT_USER_REQUESTS_LOCAL</category>
       <filter id="canReviveRegistration">
@@ -79,9 +74,8 @@
       </filter>
     </action>
 
-    <action id="UserRegistrationValidate"
-            link="${userRegistrationActions.validateUserRegistration}"
-            order="25" label="tab.userregistration.validate">
+    <action id="UserRegistrationValidate" link="${userRegistrationActions.validateUserRegistration}"
+      order="25" label="tab.userregistration.validate">
       <category>CURRENT_USER_REQUESTS_GLOBAL</category>
       <category>CURRENT_USER_REQUESTS_LOCAL</category>
       <filter-id>only_for_manager</filter-id>
