@@ -8,7 +8,7 @@
     point="actions">
 
     <action id="dam" link="assets" label="label.main.tab.dam" order="50"
-      type="template">
+      type="template" type="main_tab">
       <category>MAIN_TABS</category>
       <properties>
         <property name="template">/dam/incl/action/dam_main_tab_action_template.xhtml</property>
@@ -91,8 +91,8 @@
       <filter-id>documentHasBlobs</filter-id>
     </action>
 
-    <action id="damPermalinkAction" order="20" label="label.permalink" type="fancybox"
-      icon="/icons/contextual_menu/share.png">
+    <action id="damPermalinkAction" order="20" label="label.permalink"
+      type="fancybox" icon="/icons/contextual_menu/share.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
       <properties>
         <property name="include">/dam/incl/permalink_box.xhtml</property>
@@ -143,8 +143,8 @@
     </action>
 
     <action id="damDocumentLike" order="5" type="link"
-      link="#{likeActions.like(currentUser, currentDocument)}"
-      icon="/icons/like.png" label="command.like">
+      link="#{likeActions.like(currentUser, currentDocument)}" icon="/icons/like.png"
+      label="command.like">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>not_folder</filter-id>
@@ -155,8 +155,8 @@
     </action>
 
     <action id="damDocumentUnlike" order="5" type="link"
-      link="#{likeActions.cancelLike(currentUser, currentDocument)}"
-      icon="/icons/unlike.png" label="command.unlike">
+      link="#{likeActions.cancelLike(currentUser, currentDocument)}" icon="/icons/unlike.png"
+      label="command.unlike">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>not_folder</filter-id>
@@ -166,26 +166,20 @@
       </properties>
     </action>
 
-    <action id="damViewInDM"
-      link="#{damActions.viewInDM()}"
-      label="label.dam.action.viewInDM"
-      icon="/icons/switch.png"
-      order="65">
+    <action id="damViewInDM" link="#{damActions.viewInDM()}" label="label.dam.action.viewInDM"
+      icon="/icons/switch.png" order="65">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
-    <action id="damViewInDAM"
-      link="#{damActions.viewInDAM()}"
-      label="label.dam.action.viewInDAM"
-      icon="/icons/switch.png"
-      order="65">
+    <action id="damViewInDAM" link="#{damActions.viewInDAM()}" label="label.dam.action.viewInDAM"
+      icon="/icons/switch.png" order="65">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasAssetFacet</filter-id>
     </action>
 
     <action id="damSingleAssetBackToDam" order="50" type="bare_link"
-      link="#{damSearchActions.getSearchPermanentLinkUrl()}"
-      icon="/icons/unlike.png" label="label.dam.backToDam">
+      link="#{damSearchActions.getSearchPermanentLinkUrl()}" icon="/icons/unlike.png"
+      label="label.dam.backToDam">
       <category>DAM_SINGLE_ASSET_ACTIONS</category>
     </action>
 
@@ -224,8 +218,8 @@
     </action>
 
     <!-- Current selection actions -->
-    <action id="damBulkEdit" type="fancybox"
-      label="command.bulk.edit" icon="" order="0">
+    <action id="damBulkEdit" type="fancybox" label="command.bulk.edit"
+      icon="" order="0">
       <category>DAM_CURRENT_SELECTION_LIST</category>
       <filter-id>canEditCurrentSelection</filter-id>
       <properties>
@@ -255,7 +249,8 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="damCurrentSelectionDelete" link="#{deleteActions.purgeSelection('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}"
+    <action id="damCurrentSelectionDelete"
+      link="#{deleteActions.purgeSelection('DAM_SAVED_SEARCHES_CURRENT_SELECTION')}"
       label="command.trashDocs" icon="" help="comand.deleteDocs.help"
       confirm="if( !confirmDeleteDocumentsForever() ) return false;">
       <category>DAM_SAVED_SEARCHES_CURRENT_SELECTION_LIST</category>
