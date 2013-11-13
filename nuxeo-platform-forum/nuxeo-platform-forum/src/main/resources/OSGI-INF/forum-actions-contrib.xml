@@ -9,8 +9,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="forumView" link="/incl/tabs/document_content.xhtml" enabled="true"
-      label="action.forum.content" icon="/icons/file.gif">
+    <action id="forumView" link="/incl/tabs/document_content.xhtml"
+      enabled="true" label="action.forum.content" icon="/icons/file.gif" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter id="isForum">
         <rule grant="true">
@@ -27,10 +27,9 @@
       </filter>
     </action>
 
-    <!--  add the thread creation button -->
-    <action id="newForumThread"
-      link="#{documentActions.createDocument('Thread')}" enabled="true"
-      label="command.create.thread" icon="/icons/action_add.gif">
+    <!-- add the thread creation button -->
+    <action id="newForumThread" link="#{documentActions.createDocument('Thread')}"
+      enabled="true" label="command.create.thread" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="newThread">
         <rule grant="true">
@@ -90,8 +89,8 @@
     </action>
 
     <action id="thread_rights" link="/incl/tabs/document_rights.xhtml"
-      order="50" enabled="true" label="action.view.rights"
-      icon="/icons/file.gif">
+      order="50" enabled="true" label="action.view.rights" icon="/icons/file.gif"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter id="on_thread_rights">
         <rule grant="true">
@@ -102,7 +101,7 @@
     </action>
 
     <action id="TAB_THREAD" link="/incl/tabs/document_thread.xhtml"
-      enabled="true" label="action.view.thread">
+      enabled="true" label="action.view.thread" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter id="on_thread_view">
         <rule grant="true">

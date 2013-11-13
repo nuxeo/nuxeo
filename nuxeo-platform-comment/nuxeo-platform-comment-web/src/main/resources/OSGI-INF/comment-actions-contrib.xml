@@ -4,14 +4,14 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
     <action id="view_comments" link="/incl/tabs/document_comments.xhtml"
-      enabled="true" order="80" label="action.view.comments">
+      enabled="true" order="80" label="action.view.comments" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>commentable</filter-id>
       <filter-id>mutable_document</filter-id>
       <filter-id>not_anonymous</filter-id>
     </action>
 
-    <!--  add the comment creation button -->
+    <!-- add the comment creation button -->
     <action id="newComment" link="#{commentManagerActions.addComment}"
       enabled="true" label="command.add" order="10">
       <category>COMMENT_ACTIONS</category>

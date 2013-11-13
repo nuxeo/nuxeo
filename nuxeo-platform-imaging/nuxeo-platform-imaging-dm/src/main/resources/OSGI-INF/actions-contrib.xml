@@ -4,29 +4,29 @@
   <require>org.nuxeo.ecm.platform.actions</require>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
-             point="actions">
+    point="actions">
 
-    <action id="tab_bookview" link="/incl/tabs/book_view.xhtml"
-            enabled="true" label="action.view.book" order="1">
+    <action id="tab_bookview" link="/incl/tabs/book_view.xhtml" enabled="true"
+      label="action.view.book" order="1" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>grantpicturebook</filter-id>
     </action>
 
     <action id="tab_slideshow" link="/incl/tabs/slide_view.xhtml"
-            enabled="true" label="action.view.slideshow" order="2">
+      enabled="true" label="action.view.slideshow" order="2" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>grantpicturebook</filter-id>
     </action>
 
     <action id="tab_imageview" link="/incl/tabs/picture_view.xhtml"
-            enabled="true" label="action.view.picture" order="22">
+      enabled="true" label="action.view.picture" order="22" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>hasPictureFacet</filter-id>
     </action>
 
-    <action id="tab_metadata_picture"
-            link="/incl/tabs/metadata_picture.xhtml" enabled="true"
-            label="action.view.metadata_picture" order="24">
+    <action id="tab_metadata_picture" link="/incl/tabs/metadata_picture.xhtml"
+      enabled="true" label="action.view.metadata_picture" order="24"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>hasPictureFacet</filter-id>
     </action>

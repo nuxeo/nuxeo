@@ -5,26 +5,31 @@
     NXNotifications action contributions.
 
     @version 1.0
-    @author Narcis Paslaru
+    @author Narcis
+    Paslaru
   </documentation>
 
   <require>org.nuxeo.ecm.platform.actions</require>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
 
     <documentation>
-      Contribute a new tab where a user can subscribe to notifications.
+      Contribute a new tab where a user can subscribe to
+      notifications.
     </documentation>
 
     <action id="TAB_MY_SUBSCRIPTIONS" link="/incl/tabs/document_subscriptions.xhtml"
-        order="70" enabled="false" label="action.subscriptions.tab" icon="/icons/file.gif">
+      order="70" enabled="false" label="action.subscriptions.tab" icon="/icons/file.gif"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>general_documents</filter-id>
       <filter-id>not_anonymous</filter-id>
     </action>
 
     <action id="TAB_MANAGE_SUBSCRIPTIONS" link="/incl/tabs/document_group_subscriptions.xhtml"
-        order="80" enabled="true" label="action.groups.subscriptions.tab" icon="/icons/file.gif">
+      order="80" enabled="true" label="action.groups.subscriptions.tab" icon="/icons/file.gif"
+      type="rest_document_link">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>general_documents</filter-id>
       <filter-id>manage_subscriptions</filter-id>
@@ -32,7 +37,8 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
 
     <filter id="general_documents">
       <rule grant="false">
