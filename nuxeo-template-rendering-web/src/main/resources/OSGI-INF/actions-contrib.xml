@@ -14,7 +14,7 @@
     </action>
 
     <action id="TAB_TEMPLATE_PARAMS" link="/incl/tabs/template_tab.xhtml"
-      enabled="true" label="tab.template.parameters" order="55">
+      enabled="true" label="tab.template.parameters" order="55" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter id="view_template_params">
         <rule grant="true">
@@ -25,7 +25,7 @@
     </action>
 
     <action id="TAB_TEMPLATEBASED_PARAMS" link="/incl/tabs/templatebased_tab.xhtml"
-      enabled="true" label="tab.template.associated" order="55">
+      enabled="true" label="tab.template.associated" order="55" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter id="view_templatebased_params">
         <rule grant="true">
