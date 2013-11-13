@@ -80,6 +80,7 @@
     <widget element="">
       <view>theme view</view>
       <icon>${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
+      <iconIco>${org.nuxeo.ecm.contextPath}/icons/favicon.ico</iconIco>
       <charset>utf-8</charset>
     </widget>
     <widget element="page[1]|page[2]|page[3]">
