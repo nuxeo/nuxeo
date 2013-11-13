@@ -5,48 +5,48 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="QuotaStatistics" link="view_admin-fragment.xhtml"
-      label="adm.quota.statistics" order="45">
+    <action id="QuotaStatistics" link="view_admin-fragment.xhtml" label="adm.quota.statistics"
+      order="45">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
-    
+
     <action id="QuotaStatistics_computeInitialStas" link="/incl/quota/adminQuotaInitialComputation.xhtml"
       label="adm.quota.compute.initial.statistics" order="55">
       <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
-    
-   <action id="QuotaStatistics_activate" link="/incl/quota/adminActivateQuota.xhtml"
+
+    <action id="QuotaStatistics_activate" link="/incl/quota/adminActivateQuota.xhtml"
       label="adm.quota.activate" order="50">
       <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
-    
+
     <action id="QuotaStatistics_stats" link="/incl/quota/adminQuotaStats.xhtml"
       label="action.view.quota" order="45">
       <category>QuotaStatistics_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="TAB_QUOTA" link="/incl/tabs/document_quota.xhtml"
-      order="400" label="action.view.quota" icon="/icons/file.gif"
-      accessKey="q">
+    <action id="TAB_QUOTA" link="/incl/tabs/document_quota.xhtml" order="400"
+      label="action.view.quota" icon="/icons/file.gif" accessKey="q"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>QUOTA_MANAGABLE_DOCTYPES</filter-id>
     </action>
 
     <action id="TAB_SET_QUOTA" link="/incl/tabs/document_set_quota.xhtml"
-      order="300" label="action.activate.quota" icon="/icons/file.gif">
+      order="300" label="action.activate.quota" icon="/icons/file.gif" type="rest_document_link">
       <category>TAB_QUOTA_sub_tab</category>
       <filter-id>setQuota</filter-id>
     </action>
-    
+
     <action id="TAB_QUOTA_STATS" link="/incl/tabs/document_quota_statistics.xhtml"
       order="200" label="action.view.quota.statistics" icon="/icons/file.gif">
       <category>TAB_QUOTA_sub_tab</category>
     </action>
-    
+
     <action id="CURRENT_SELECTION_ADDTOLIST">
       <category>CURRENT_QUOTA_SELECTION_LIST</category>
     </action>
@@ -73,7 +73,7 @@
         <permission>Write</permission>
       </rule>
     </filter>
-    
+
     <filter id="setQuota">
       <rule grant="true">
         <permission>Manage everything</permission>
