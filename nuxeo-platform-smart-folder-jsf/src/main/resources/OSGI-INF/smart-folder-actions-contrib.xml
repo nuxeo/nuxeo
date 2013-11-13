@@ -13,7 +13,7 @@
     </documentation>
 
     <action id="TAB_SMART_FOLDER_VIEW" link="/incl/tabs/smart_folder_view.xhtml"
-      order="10" label="action.view.content">
+      order="10" label="action.view.content" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_smart_folder</filter-id>
     </action>
