@@ -254,7 +254,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
             VersioningOption option) throws DocumentException {
         List<VersioningOption> options = getSaveOptions(doc);
         if (!options.contains(option)) {
-            option = /*options.isEmpty() ? NONE :*/ options.get(0);
+            option = options.isEmpty() ? NONE : options.get(0);
         }
         return option;
     }
