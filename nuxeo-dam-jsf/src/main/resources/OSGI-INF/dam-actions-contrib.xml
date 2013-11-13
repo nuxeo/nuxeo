@@ -8,7 +8,7 @@
     point="actions">
 
     <action id="dam" link="assets" label="label.main.tab.dam" order="50"
-      type="template" type="main_tab">
+      type="template">
       <category>MAIN_TABS</category>
       <properties>
         <property name="template">/dam/incl/action/dam_main_tab_action_template.xhtml</property>
