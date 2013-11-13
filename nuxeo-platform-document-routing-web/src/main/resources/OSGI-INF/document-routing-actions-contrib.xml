@@ -11,13 +11,14 @@
     </action>
 
     <action id="TAB_DOCUMENT_ROUTE_CONTENT" link="/incl/tabs/document_route_content.xhtml"
-      order="10" label="action.view.content" icon="/icons/file.gif">
+      order="10" label="action.view.content" icon="/icons/file.gif" type="rest_document_link">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>isRoute</filter-id>
     </action>
 
     <action id="TAB_DOCUMENT_ROUTE_ELEMENTS" link="/incl/tabs/document_route_content_elements.xhtml"
-      order="10" label="action.view.document.routing.elements" icon="/icons/file.gif">
+      order="10" label="action.view.document.routing.elements" icon="/icons/file.gif"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>isRoute</filter-id>
     </action>
@@ -36,26 +37,26 @@
     </action>
 
     <!-- TODO this action should not be seen globally
-    <action id="SAVE_SELECTED_ROUTE_AS_NEW_INSTANCE"
+      <action id="SAVE_SELECTED_ROUTE_AS_NEW_INSTANCE"
       link="#{routingActions.saveSelectedRouteAsNewInstance()}" order="50"
       label="label.document.routing.saveAsNew">
       <category>CURRENT_SELECTION_LIST</category>
       <filter id="canDuplicateRouteInstance">
-        <rule grant="true">
-          <condition>#{routingActions.getCanDuplicateRouteInstance()}
-          </condition>
-        </rule>
+      <rule grant="true">
+      <condition>#{routingActions.getCanDuplicateRouteInstance()}
+      </condition>
+      </rule>
       </filter>
-    </action>
+      </action>
     -->
 
     <!-- TODO this action should not be seen globally
-    <action id="SAVE_ROUTE_AS_NEW_INSTANCE" link="#{routingActions.saveRouteAsNewInstance()}"
+      <action id="SAVE_ROUTE_AS_NEW_INSTANCE" link="#{routingActions.saveRouteAsNewInstance()}"
       order="20" label="label.document.routing.saveAsNew">
       <category>SUBVIEW_UPPER_LIST</category>
       <category>ROUTE_LIST</category>
       <filter-id>isRoute</filter-id>
-    </action>
+      </action>
     -->
 
     <action id="VALIDATE_ROUTE" link="#{routingActions.validateRouteModel()}"
@@ -133,29 +134,29 @@
 
     <!-- 'Workflow' tab when a document route is running -->
     <!--
-    <action id="TAB_ROUTE_WORKFLOW" enabled="true"
+      <action id="TAB_ROUTE_WORKFLOW" enabled="true"
       link="/incl/tabs/route_workflow.xhtml" label="action.view.review"
       icon="/icons/file.gif" order="60">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>isRoutable</filter-id>
       <filter id="TAB_ROUTE_WORKFLOW_has_subtabs">
-        <rule grant="false">
-          <condition>
-            #{webActions.getActionsList('TAB_ROUTE_WORKFLOW_sub_tab').isEmpty()}
-          </condition>
-        </rule>
+      <rule grant="false">
+      <condition>
+      #{webActions.getActionsList('TAB_ROUTE_WORKFLOW_sub_tab').isEmpty()}
+      </condition>
+      </rule>
       </filter>
-    </action> -->
+      </action> -->
 
     <!-- 'Workflow' sub tab: current route -->
     <action id="TAB_ROUTE_WORKFLOW" enabled="true"
-      link="/incl/tabs/current_route.xhtml" order="60"
-      label="action.view.review">
+      link="/incl/tabs/current_route.xhtml" order="60" label="action.view.review"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>hasRelatedRouteStarted</filter-id>
     </action>
-    
-   <action id="reassignTask" order="100" label="label.workflow.task.reassign"
+
+    <action id="reassignTask" order="100" label="label.workflow.task.reassign"
       type="fancybox">
       <category>TASK_ADDITIONAL_ACTIONS</category>
       <filter-id>canBeReassign</filter-id>
@@ -167,7 +168,7 @@
         <property name="ajaxSupport">true</property>
       </properties>
     </action>
-    
+
     <action id="delegateTask" order="110" label="label.workflow.task.delegation"
       type="fancybox">
       <category>TASK_ADDITIONAL_ACTIONS</category>
@@ -282,10 +283,10 @@
 
     <filter id="currentUserIsWorkflowInitatior">
       <rule grant="true">
-       <condition>currentUser.administrator</condition>
-       <condition>
-        #{routingActions.getCurrentWorkflowInitiator().equals(currentUser.getName())}
-       </condition>
+        <condition>currentUser.administrator</condition>
+        <condition>
+          #{routingActions.getCurrentWorkflowInitiator().equals(currentUser.getName())}
+        </condition>
       </rule>
     </filter>
 

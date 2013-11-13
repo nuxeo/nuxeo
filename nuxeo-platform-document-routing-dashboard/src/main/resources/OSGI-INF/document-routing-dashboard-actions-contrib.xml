@@ -20,8 +20,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="workflow_dashboard" link="view_workflow"
-      label="label.main.tab.workflow" order="30" enabled="false">
+    <action id="workflow_dashboard" link="view_workflow" label="label.main.tab.workflow"
+      order="30" enabled="false" type="main_tab">
       <category>MAIN_TABS</category>
     </action>
 
@@ -41,8 +41,8 @@
     </action>
 
     <!--since 5.7.3 -->
-    <action id="UsersTasks" label="title.dashboard.userTasks"
-      link="/incl/home/user_open_tasks.xhtml" order="40">
+    <action id="UsersTasks" label="title.dashboard.userTasks" link="/incl/home/user_open_tasks.xhtml"
+      order="40">
       <category>WorkflowHome_sub_tab</category>
       <filter-id>not_readonly</filter-id>
     </action>
