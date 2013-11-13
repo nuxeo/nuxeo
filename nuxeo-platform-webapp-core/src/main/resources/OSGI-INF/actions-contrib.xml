@@ -101,8 +101,7 @@
       template to include in the tab content
     -->
     <action id="TAB_MANAGE" type="rest_document_link" order="240"
-      label="action.view.manage" icon="/icons/file.gif" accessKey="m"
-      type="rest_document_link">
+      label="action.view.manage" icon="/icons/file.gif" accessKey="m">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
       <filter id="TAB_MANAGE_has_subtabs">
