@@ -17,6 +17,7 @@ package org.nuxeo.theme.html.ui;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
@@ -53,6 +54,12 @@ public class Head {
             sb.append(String.format(
                     "<link rel=\"icon\" href=\"%s\" type=\"image/x-icon\"/>",
                     icon));
+
+            // If specified use a real .ico file for IE
+            final String iconIco = properties.getProperty("iconIco", null);
+            if (StringUtils.isNotEmpty(iconIco)) {
+                icon = iconIco;
+            }
             sb.append(String.format(
                     "<link rel=\"shortcut icon\" href=\"%s\" type=\"image/x-icon\"/>",
                     icon));
