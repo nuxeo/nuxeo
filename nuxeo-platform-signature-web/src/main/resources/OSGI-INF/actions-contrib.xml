@@ -14,7 +14,7 @@
     point="actions">
     <action id="sign_view" link="/incl/tabs/sign_view.xhtml"
       enabled="true" label="action.signature" icon="/icons/certificates.png"
-      order="60">
+      order="60" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>signature_filter</filter-id>
     </action>
