@@ -250,6 +250,7 @@
     <typeCompatibility type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <category>TAB_MANAGE_sub_tab</category>
+      <category>TAB_CONTENT_HISTORY_sub_tab</category>
     </typeCompatibility>
 
     <typeCompatibility type="main_tab">
