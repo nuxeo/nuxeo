@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.version.test;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -290,6 +292,25 @@ public class TestVersioningService extends SQLRepositoryTestCase {
         assertVersion("3.2", doc);
         assertVersionLabel("3.2", doc);
         assertLatestVersion("3.1", doc);
+    }
+
+    @Test
+    public void testNoOptions() throws Exception {
+        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
+                "test-versioning-nooptions.xml");
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // no options according to config
+        List<VersioningOption> opts = service.getSaveOptions(doc);
+        assertEquals(0, opts.size());
+
+        doc.setPropertyValue("dc:title", "A");
+        doc = session.saveDocument(doc);
+
+        assertVersion("0.0", doc);
+        assertVersionLabel("0.0", doc);
+        assertLatestVersion(null, doc);
     }
 
 }
