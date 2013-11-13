@@ -101,7 +101,8 @@
       template to include in the tab content
     -->
     <action id="TAB_MANAGE" type="rest_document_link" order="240"
-      label="action.view.manage" icon="/icons/file.gif" accessKey="m">
+      label="action.view.manage" icon="/icons/file.gif" accessKey="m"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>manage</filter-id>
       <filter id="TAB_MANAGE_has_subtabs">
@@ -118,7 +119,8 @@
     </action>
 
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" order="0"
-      label="action.view.summary" icon="/icons/file.gif" accessKey="v">
+      label="action.view.summary" icon="/icons/file.gif" accessKey="v"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view</filter-id>
       <properties>
@@ -127,7 +129,8 @@
     </action>
 
     <action id="TAB_CONTENT" link="/incl/tabs/document_content.xhtml"
-      order="10" label="action.view.content" icon="/icons/file.gif" accessKey="c">
+      order="10" label="action.view.content" icon="/icons/file.gif" accessKey="c"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <!--
         NXP-12715: use same tab on workspaces and sections
@@ -146,7 +149,8 @@
       by default
     -->
     <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml"
-      order="10" label="action.view.content" icon="/icons/file.gif" enabled="false">
+      order="10" label="action.view.content" icon="/icons/file.gif" enabled="false"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view_content</filter-id>
       <filter-id>inSection</filter-id>
@@ -176,7 +180,8 @@
     </action>
 
     <action id="TAB_EDIT" link="/incl/tabs/document_edit.xhtml" order="20"
-      label="action.view.modification" icon="/icons/file.gif" accessKey="e">
+      label="action.view.modification" icon="/icons/file.gif" accessKey="e"
+      type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
@@ -187,7 +192,7 @@
 
     <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml"
       order="22" label="action.view.modification" icon="/icons/file.gif"
-      accessKey="e">
+      accessKey="e" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>workspace_edit</filter-id>
       <filter-id>mutable_document</filter-id>
@@ -197,7 +202,7 @@
     </action>
 
     <action id="TAB_FILES_EDIT" link="/incl/tabs/document_files_edit.xhtml"
-      order="43" label="action.view.files" accessKey="f">
+      order="43" label="action.view.files" accessKey="f" type="rest_document_link">
       <category>VIEW_ACTION_LIST</category>
       <filter-id>edit</filter-id>
       <filter-id>mutable_document</filter-id>
