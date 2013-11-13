@@ -109,7 +109,6 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage.processFirstTask();
         SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
         // check that the open task is displayed on the summary page
-
         assertTrue(summaryTabPage.workflowAlreadyStarted());
         assertTrue(summaryTabPage.openTaskForCurrentUser());
 
@@ -366,6 +365,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowTab.closeGraphView();
         workflowTab.addWorkflowReviewer();
         workflowTab.startWorkflow();
+        summaryTabPage = filePage.getSummaryTab();
+        assertTrue(summaryTabPage.workflowAlreadyStarted());
         return filePage;
     }
 
@@ -384,6 +385,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowTab.addParallelWorkflowReviewer(USER_JSMITH);
         workflowTab.addParallelWorkflowEndDate();
         workflowTab.startWorkflow();
+        summaryTabPage = filePage.getSummaryTab();
+        assertTrue(summaryTabPage.workflowAlreadyStarted());
         return filePage;
     }
 }
