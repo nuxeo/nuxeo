@@ -41,7 +41,7 @@ a.ambiance-close {
 .ambiance-warn,
 .ambiance-error,
 .ambiance-fatal {
-  background-color: "info (__FLAVOR__ background)";
+  background-color: "neutral (__FLAVOR__ background)";
   border-radius: 5px 0 0 5px;
   color: "black (__FLAVOR__ color)";
   margin: 0 0 .2em;
@@ -49,15 +49,12 @@ a.ambiance-close {
 
 .neutralFeedback,
 .ambiance-neutral {
-  background-color: "neutral (__FLAVOR__ background)";
+  border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
-  border-width: 1px;
-  border-style: solid;
   color: "default (__FLAVOR__ color)" }
 
 .infoFeedback,
-.ambiance-info,
-.ambiance-default {
+.ambiance-info {
   background-color:"info (__FLAVOR__ background)";
   color: "info.status (__FLAVOR__ color)" }
 
