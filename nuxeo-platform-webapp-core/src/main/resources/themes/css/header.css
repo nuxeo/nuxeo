@@ -180,11 +180,9 @@ author: lkemen@nuxeo.com
 .userMenuActions .dropDownMenu .widget {
   font-weight: normal }
 
-.userMenuActions ul:hover a,
-.userMenuActions ul:hover li,
-.userMenuActions ul li:hover {
-  background-color: #fff;
-  color: "black (__FLAVOR__ color)" }
+.nxHeader .userMenuActions ul:hover .dropDownMenu {
+  background-color: "header.tabs.selected (__FLAVOR__ background)";
+  color: "link.header (__FLAVOR__ color)" }
 
 .nxHeader .actionList .actionSubList li a {
   color: "black (__FLAVOR__ color)" }
@@ -196,5 +194,5 @@ author: lkemen@nuxeo.com
 /* =Connect header links */
 .updateNotificationArea {
   float: right;
-  vertical-align: middle;
-  padding: 10px }
+  line-height: normal;
+  vertical-align: middle }
