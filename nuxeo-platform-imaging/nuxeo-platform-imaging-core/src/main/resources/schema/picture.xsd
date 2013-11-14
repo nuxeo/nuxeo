@@ -9,6 +9,11 @@
       <xs:maxLength value="2000" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:element name="headline" type="nxs:longString"/>
   <xs:element name="subheadline" type="nxs:longString"/>
@@ -20,7 +25,7 @@
   <xs:element name="source" type="xs:string"/>
   <xs:element name="origin" type="xs:string"/>
   <xs:element name="genre" type="xs:string"/>
-  <xs:element name="caption" type="nxs:longString"/>
+  <xs:element name="caption" type="nxs:clob"/>
   <xs:element name="typage" type="xs:string"/>
   <xs:element name="cropCoords" type="xs:string"/>
 

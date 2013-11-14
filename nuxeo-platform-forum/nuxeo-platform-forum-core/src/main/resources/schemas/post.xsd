@@ -5,9 +5,15 @@
 
   <xs:include schemaLocation="core-types.xsd"/>
 
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:element name="title" type="xs:string"/>
   <xs:element name="author" type="xs:string"/>
-  <xs:element name="text" type="xs:string"/>
+  <xs:element name="text" type="nxs:clob"/>
   <xs:element name="creationDate" type="xs:date"/>
 
   <xs:element name="filename" type="xs:string"/>

@@ -7,11 +7,16 @@
       <xs:maxLength value="2000" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <!-- IPTC info -->
   <xs:element name="by_line" type="xs:string" />
   <xs:element name="by_line_title" type="xs:string" />
-  <xs:element name="caption" type="nxs:longString" />
+  <xs:element name="caption" type="nxs:clob" />
   <xs:element name="category" type="xs:string" />
   <xs:element name="city" type="xs:string" />
   <xs:element name="copyright_notice" type="xs:string" />
