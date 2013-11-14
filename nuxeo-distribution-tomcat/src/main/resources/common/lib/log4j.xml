@@ -260,6 +260,9 @@
   <category name="org.ajax4jsf">
     <priority value="INFO" />
   </category>
+  <category name="org.nuxeo.ecm.rating">
+    <priority value="INFO" />
+  </category>
   <category name="org.ajax4jsf.cache.LRUMapCacheFactory">
     <priority value="ERROR" />
   </category>
