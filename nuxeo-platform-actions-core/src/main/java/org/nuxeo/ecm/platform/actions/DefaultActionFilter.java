@@ -87,9 +87,14 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
     // FIXME: the parameter 'action' is not used!
     public boolean accept(Action action, ActionContext context) {
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "#accept: checking filter '%s' for action '%s'", getId(),
-                    action.getId()));
+            if (action == null) {
+                log.debug(String.format("#accept: checking filter '%s'",
+                        getId()));
+            } else {
+                log.debug(String.format(
+                        "#accept: checking filter '%s' for action '%s'",
+                        getId(), action.getId()));
+            }
         }
         // no context: reject
         if (context == null) {
