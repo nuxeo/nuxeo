@@ -331,7 +331,7 @@
           String pattern for the date and time, as described by
           the java.text.SimpleDateFormat class, and as used in the standard
           DateTimeConverter. Default value is "dd/MM/yyyy HH:mm". Sample value:
-          "#{nxu:basicDateFormater()}" or "#{nxu:basicDateAndTimeFormater()}".
+          "#{nxu:basicDateFormatter()}" or "#{nxu:basicDateAndTimeFormatter()}".
         </label>
       </helpLabels>
       <fields>
@@ -370,7 +370,7 @@
           String format for the date and time, as described by
           the java.text.SimpleDateFormat class, and as used in the standard
           DateTimeConverter. Default value is "dd/MM/yyyy HH:mm". Sample value:
-          "#{nxu:basicDateFormater()}" or "#{nxu:basicDateAndTimeFormater()}".
+          "#{nxu:basicDateFormatter()}" or "#{nxu:basicDateAndTimeFormatter()}".
         </label>
       </helpLabels>
       <fields>

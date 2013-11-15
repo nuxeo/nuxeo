@@ -1080,10 +1080,10 @@
         <field>data.dc.modified</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateFormater()}</property>
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
       </properties>
       <properties mode="csv">
-        <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
         <property name="csv_forceType">date</property>
       </properties>
     </widget>
@@ -1214,10 +1214,10 @@
         <field>data.dc.created</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateFormater()}</property>
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
       </properties>
       <properties mode="csv">
-        <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
         <property name="csv_forceType">date</property>
       </properties>
     </widget>
@@ -1251,10 +1251,10 @@
         <field>data.dc.expired</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateFormater()}</property>
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
       </properties>
       <properties mode="csv">
-        <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
         <property name="csv_forceType">date</property>
       </properties>
     </widget>

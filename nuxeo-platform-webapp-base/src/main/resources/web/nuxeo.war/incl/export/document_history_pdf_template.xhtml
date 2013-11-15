@@ -36,7 +36,7 @@
     <nxp:cell>
       <nxl:widgetType name="datetime" mode="pdf"
         value="#{logEntry.eventDate}"
-        pattern="#{nxu:basicDateAndTimeFormater()}" />
+        pattern="#{nxu:basicDateAndTimeFormatter()}" />
     </nxp:cell>
     <nxp:cell>#{nxu:userFullName(logEntry.principalName)}</nxp:cell>
     <nxp:cell>#{messages[logEntry.category]}</nxp:cell>

@@ -64,7 +64,7 @@
         <field>data.dc.modified</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
     </widget>
 

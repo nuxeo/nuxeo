@@ -129,10 +129,10 @@
         <field>search:created_min</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">00:00</property>
       </properties>
     </widget>
@@ -146,10 +146,10 @@
         <field>search:created_max</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">23:59</property>
       </properties>
     </widget>
@@ -163,10 +163,10 @@
         <field>search:modified_min</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">00:00</property>
       </properties>
     </widget>
@@ -180,10 +180,10 @@
         <field>search:modified_max</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">23:59</property>
       </properties>
     </widget>
@@ -197,10 +197,10 @@
         <field>search:issued_min</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">00:00</property>
       </properties>
     </widget>
@@ -214,10 +214,10 @@
         <field>search:issued_max</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">23:59</property>
       </properties>
     </widget>
@@ -231,10 +231,10 @@
         <field>search:valid_min</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">00:00</property>
       </properties>
     </widget>
@@ -248,10 +248,10 @@
         <field>search:valid_max</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">23:59</property>
       </properties>
     </widget>
@@ -265,10 +265,10 @@
       </fields>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">00:00</property>
       </properties>
     </widget>
@@ -282,10 +282,10 @@
       </fields>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         <property name="defaultTime">23:59</property>
       </properties>
     </widget>

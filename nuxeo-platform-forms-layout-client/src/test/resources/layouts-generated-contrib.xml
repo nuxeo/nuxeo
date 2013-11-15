@@ -64,8 +64,8 @@
           <field>dc:created</field>
         </fields>
         <properties mode="any">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
         </properties>
       </widget>
       <widget name="creator" type="text">
@@ -89,8 +89,8 @@
           <field>dc:expired</field>
         </fields>
         <properties mode="any">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
         </properties>
       </widget>
       <widget name="format" type="text">
@@ -106,8 +106,8 @@
           <field>dc:issued</field>
         </fields>
         <properties mode="any">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
         </properties>
       </widget>
       <widget name="language" type="text">
@@ -123,8 +123,8 @@
           <field>dc:modified</field>
         </fields>
         <properties mode="any">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
         </properties>
       </widget>
       <widget name="rights" type="text">
@@ -157,8 +157,8 @@
           <field>dc:valid</field>
         </fields>
         <properties mode="any">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
         </properties>
       </widget>
     </layout>
