@@ -50,7 +50,7 @@ public class Select2WidgetElement {
     /**
      * Select2 loading timeout in seconds.
      */
-    private static final int SELECT2_LOADING_TIMEOUT = 5;
+    private static final int SELECT2_LOADING_TIMEOUT = 20;
 
     private Function<WebDriver, Boolean> s2SingleWaitFunction;
 
