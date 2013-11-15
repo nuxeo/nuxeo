@@ -111,7 +111,7 @@
         <mode value="edit">view</mode>
       </widgetModes>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}
         </property>
       </properties>
     </widget>
