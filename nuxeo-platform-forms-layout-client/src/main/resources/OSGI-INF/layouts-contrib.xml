@@ -12,7 +12,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
-    <widget name="escape" type="checkbox">
+    <widget name="escape" type="selectOneListbox">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -31,6 +31,10 @@
       <fields>
         <field>escape</field>
       </fields>
+      <selectOptions>
+        <option itemLabel="Yes (default value)" itemValue="true" />
+        <option itemLabel="No" itemValue="false" />
+      </selectOptions>
     </widget>
 
     <widget name="style" type="text">
