@@ -74,7 +74,7 @@
             <f:facet name="header">Started</f:facet>
             <h:outputText value="#{work.startTime}" title="#{work.startTime}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                pattern="#{nxu:dateAndTimeFormatter('medium')}"
                 timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
@@ -109,7 +109,7 @@
             <f:facet name="header">Scheduled</f:facet>
             <h:outputText value="#{work.schedulingTime}" title="#{work.schedulingTime}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                pattern="#{nxu:dateAndTimeFormatter('medium')}"
                 timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
@@ -133,7 +133,7 @@
             <f:facet name="header">Started</f:facet>
             <h:outputText value="#{work.startTime}" title="#{work.startTime}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                pattern="#{nxu:dateAndTimeFormatter('medium')}"
                 timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>
@@ -141,7 +141,7 @@
             <f:facet name="header">Completed</f:facet>
             <h:outputText value="#{work.completionTime}" title="#{work.completionTime}">
               <f:convertDateTime
-                pattern="#{nxu:dateAndTimeFormater('medium')}"
+                pattern="#{nxu:dateAndTimeFormatter('medium')}"
                 timeZone="#{timeZone}" />
             </h:outputText>
           </h:column>

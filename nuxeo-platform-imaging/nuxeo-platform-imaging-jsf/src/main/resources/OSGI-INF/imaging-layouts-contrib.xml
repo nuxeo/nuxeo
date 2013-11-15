@@ -256,10 +256,10 @@
           <field>imd:date_time_original</field>
         </fields>
         <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
         </properties>
         <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
           <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
@@ -454,10 +454,10 @@
           <field>iptc:date_created</field>
         </fields>
         <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
         </properties>
         <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
           <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>

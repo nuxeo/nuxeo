@@ -327,7 +327,7 @@
           <field>mail:sending_date</field>
         </fields>
         <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+          <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
         </properties>
       </widget>
       <widget name="recipients" type="template">

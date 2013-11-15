@@ -172,7 +172,7 @@
         </fields>
         <properties widgetMode="any">
           <property name="pattern">
-            #{nxu:basicDateAndTimeFormater()}
+            #{nxu:basicDateAndTimeFormatter()}
           </property>
           <!-- need to check if this is needed -->
           <property name="timezone">
@@ -180,7 +180,7 @@
           </property>
         </properties>
         <properties mode="csv">
-          <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+          <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
           <property name="csv_forceType">date</property>
         </properties>
       </widget>
@@ -231,7 +231,7 @@
         </fields>
         <properties widgetMode="any">
           <property name="pattern">
-            #{nxu:basicDateAndTimeFormater()}
+            #{nxu:basicDateAndTimeFormatter()}
           </property>
           <!-- need to check if this is needed -->
           <property name="timezone">

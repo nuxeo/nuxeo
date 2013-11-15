@@ -174,11 +174,11 @@
           <field>data.eventDate</field>
         </fields>
         <properties widgetMode="any">
-          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+          <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
           <property name="timezone">#{timeZone}</property>
         </properties>
         <properties mode="csv">
-          <property name="csv_formatMask">#{nxu:basicDateFormater()}</property>
+          <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
           <property name="csv_forceType">date</property>
         </properties>
       </widget>

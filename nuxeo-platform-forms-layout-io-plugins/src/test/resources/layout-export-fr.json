@@ -1793,7 +1793,7 @@
         "fieldName": "dc:created",
         "propertyName": "dc:created"
       }],
-      "propertiesByWidgetMode": {"any": {"pattern": "#{nxu:basicDateAndTimeFormater()}"}}
+      "propertiesByWidgetMode": {"any": {"pattern": "#{nxu:basicDateAndTimeFormatter()}"}}
     },
         {
       "name": "modified",
@@ -1809,7 +1809,7 @@
         "fieldName": "dc:modified",
         "propertyName": "dc:modified"
       }],
-      "propertiesByWidgetMode": {"any": {"pattern": "#{nxu:basicDateAndTimeFormater()}"}}
+      "propertiesByWidgetMode": {"any": {"pattern": "#{nxu:basicDateAndTimeFormatter()}"}}
     },
         {
       "name": "format",
@@ -1846,8 +1846,8 @@
         "propertyName": "dc:expired"
       }],
       "propertiesByWidgetMode":       {
-        "any": {"pattern": "#{nxu:basicDateFormater()}"},
-        "edit": {"format": "#{nxu:basicDateFormater()}"}
+        "any": {"pattern": "#{nxu:basicDateFormatter()}"},
+        "edit": {"format": "#{nxu:basicDateFormatter()}"}
       }
     },
         {

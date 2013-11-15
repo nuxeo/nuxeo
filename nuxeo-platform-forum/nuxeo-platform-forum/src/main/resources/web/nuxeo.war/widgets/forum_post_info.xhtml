@@ -4,7 +4,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <h:outputText value="#{fieldOrValue.post.creationDate}" rendered="#{fieldOrValue != null}">
-    <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}"
+    <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormatter()}"
       timeZone="#{timeZone}" />
   </h:outputText>
   <h:outputText value=" #{messages['label.forum.post.by']} " rendered="#{fieldOrValue != null}"/>
