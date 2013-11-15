@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.csv;
 
-import static org.nuxeo.ecm.csv.CSVImportLog.Status;
 import static org.nuxeo.ecm.csv.CSVImportLog.Status.ERROR;
 import static org.nuxeo.ecm.csv.Constants.CSV_NAME_COL;
 import static org.nuxeo.ecm.csv.Constants.CSV_TYPE_COL;
@@ -62,6 +61,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -70,6 +70,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.csv.CSVImportLog.Status;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -363,18 +364,22 @@ public class CSVImporterWork extends AbstractWork {
                             /*
                              * Primitive type.
                              */
-                            if (field.getType().isSimpleType()) {
-                                if (field.getType() instanceof StringType) {
+                            Type type = field.getType();
+                            if (type instanceof SimpleTypeImpl) {
+                                type = type.getSuperType();
+                            }
+                            if (type.isSimpleType()) {
+                                if (type instanceof StringType) {
                                     fieldValue = stringValue;
-                                } else if (field.getType() instanceof IntegerType) {
+                                } else if (type instanceof IntegerType) {
                                     fieldValue = Integer.valueOf(stringValue);
-                                } else if (field.getType() instanceof LongType) {
+                                } else if (type instanceof LongType) {
                                     fieldValue = Long.valueOf(stringValue);
-                                } else if (field.getType() instanceof DoubleType) {
+                                } else if (type instanceof DoubleType) {
                                     fieldValue = Double.valueOf(stringValue);
-                                } else if (field.getType() instanceof BooleanType) {
+                                } else if (type instanceof BooleanType) {
                                     fieldValue = Boolean.valueOf(stringValue);
-                                } else if (field.getType() instanceof DateType) {
+                                } else if (type instanceof DateType) {
                                     fieldValue = getDateFormat().parse(
                                             stringValue);
                                 }
