@@ -134,7 +134,7 @@
         <mode value="any">view</mode>
       </widgetModes>
       <properties mode="any">
-        <property name="format">#{nxu:dateAndTimeFormater('medium')}
+        <property name="format">#{nxu:dateAndTimeFormatter('medium')}
         </property>
         <property name="timeZone">#{timeZone}</property>
       </properties>

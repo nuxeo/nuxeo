@@ -11,14 +11,14 @@
   <c:if test="#{widget.mode != 'edit'}">
     <h:outputText value="#{field}">
       <f:convertDateTime
-        pattern="#{nxu:dateAndTimeFormater('medium')}"
+        pattern="#{nxu:dateAndTimeFormatter('medium')}"
         timeZone="#{timeZone}" />
     </h:outputText>
   </c:if>
 
   <c:if test="#{widget.mode == 'edit'}">
     <nxu:inputDateTime value="#{field}" id="#{widget.id}" showsTime="true"
-      format="#{nxu:basicDateAndTimeFormater()}"
+      format="#{nxu:basicDateAndTimeFormatter()}"
       validator="#{routingTaskActions.validateTaskDueDate}" />
     <h:message for="#{widget.id}" class="errorMessage" />
   </c:if>
