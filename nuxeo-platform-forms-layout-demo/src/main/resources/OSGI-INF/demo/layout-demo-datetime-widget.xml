@@ -24,11 +24,11 @@
           <field>lds:dateField</field>
         </fields>
         <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
-          <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+          <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
         </properties>
       </widget>
     </layout>
