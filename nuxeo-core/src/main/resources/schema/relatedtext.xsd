@@ -3,6 +3,12 @@
 <xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/relatedtext/"
   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/relatedtext/">
 
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- schema to be used for full-text indexing of related annotations, tags
     and comments -->
 
@@ -19,7 +25,7 @@
     <xs:sequence>
       <xs:element name="relatedtextid" type="xs:string" minOccurs="0"
         maxOccurs="1" />
-      <xs:element name="relatedtext" type="xs:string" minOccurs="0"
+      <xs:element name="relatedtext" type="nxs:clob" minOccurs="0"
         maxOccurs="1" />
     </xs:sequence>
   </xs:complexType>
