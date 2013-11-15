@@ -43,8 +43,10 @@ author: lkemen@nuxeo.com
   padding: 0 0 1em }
 
 /* Override default size from the page */
-#fancybox-content .nxMainContainer {
-  height: auto }
+.nxPopUp.nxMainContainer {
+  height: auto;
+  min-height: inherit;
+  width: 99% }
 
 #fancybox-content #permalinkAction_box input {
   display: block;

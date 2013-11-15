@@ -264,6 +264,7 @@
         <style>navigation</style>
         <style>tables</style>
         <style>forms</style>
+        <style>popups</style>
         <style>messages_and_tooltips</style>
         <style>foldable_boxes</style>
         <style>richfaces_components</style>

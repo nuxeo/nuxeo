@@ -39,7 +39,7 @@
       </section>
     </page>
     <page name="popup">
-      <section class="nxMainContainer">
+      <section class="nxPopUp nxMainContainer">
         <cell class="content">
           <!-- Include -->
           <fragment type="generic fragment"/>
