@@ -17,15 +17,6 @@
 </#if>
         <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
         <binaryStore path="${repository.binary.store}" />
-        <schema>
-          <field type="largetext">note</field>
-          <field type="largetext">relatedtext</field>
-          <field type="largetext">webp:content</field>
-          <field type="largetext">webc:welcomeText</field>
-          <field type="largetext">comment:text</field>
-          <field type="largetext">post</field>
-          <field type="largetext">mail:mail</field>
-        </schema>
         <noDDL>${nuxeo.vcs.noddl}</noDDL>
         <idType>${nuxeo.vcs.idtype}</idType>
         <indexing>
