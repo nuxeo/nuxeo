@@ -39,6 +39,8 @@ public class InputFileInfo {
 
     public static final String INVALID_FILE_MESSAGE = "error.inputFile.invalidFile";
 
+    public static final String INVALID_WITH_AJAX_MESSAGE = "error.inputFile.ajax";
+
     protected Object choice;
 
     protected Object blob;

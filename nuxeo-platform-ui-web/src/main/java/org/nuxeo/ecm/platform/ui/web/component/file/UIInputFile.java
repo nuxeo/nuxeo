@@ -397,8 +397,10 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 return;
             }
             if (blob == null) {
-                ComponentUtils.addErrorMessage(context, this,
-                        InputFileInfo.INVALID_FILE_MESSAGE);
+                Map<String, String> requestParameters = context.getExternalContext().getRequestParameterMap();
+                String message = requestParameters.containsKey("AJAXREQUEST") ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
+                        : InputFileInfo.INVALID_FILE_MESSAGE;
+                ComponentUtils.addErrorMessage(context, this, message);
                 setValid(false);
                 return;
             }
