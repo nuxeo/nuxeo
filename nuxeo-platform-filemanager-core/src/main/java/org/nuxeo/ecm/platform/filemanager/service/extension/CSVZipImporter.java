@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
@@ -218,6 +219,10 @@ public class CSVZipImporter extends AbstractFileImporter {
         Serializable fieldValue = null;
         Type type = field.getType();
         if (type.isSimpleType()) {
+            if (type instanceof SimpleTypeImpl) {
+                // consider super type instead
+                type = type.getSuperType();
+            }
             if (type instanceof StringType) {
                 fieldValue = stringValue;
             } else if (type instanceof IntegerType) {
