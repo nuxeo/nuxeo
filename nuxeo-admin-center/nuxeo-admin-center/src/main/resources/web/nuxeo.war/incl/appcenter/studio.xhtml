@@ -55,7 +55,7 @@
                       value="#{appsViews.setValidateStudioSnapshot(true)}" />
                   </h:commandButton>
                   <div style="display:none">
-                    <div id="studioBigUpdateWaiter">
+                    <div id="studioBigUpdateWaiter" class="textAlignC">
                       <img src="#{contextPath}/img/100px_loading.gif" />
                     </div>
                   </div>
@@ -234,7 +234,7 @@
     //jQuery('#updateStudioSnapshotForm\\:updateStudioButton').attr("disabled", true);
     //jQuery('#updateStudioSnapshotForm\\:updateStudioButton').css("color", "#CCCCCC");
     //jQuery('#studioUpdateWaiter').css('display', 'inline');
-    openFancyBox('#studioBigUpdateWaiter', { modal: true, width: 560, height: 340 });
+    openFancyBox('#studioBigUpdateWaiter', { modal: true, autoDimensions: false, width: "120", height:"105" });
   }
   -->
 </script>
