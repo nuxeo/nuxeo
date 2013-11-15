@@ -291,6 +291,7 @@
 
     <filter id="create" append="true">
       <rule grant="true">
+        <permission>AddChildren</permission>
         <type>AssetLibrary</type>
         <type>ImportRoot</type> <!-- for backward compatibility -->
       </rule>
@@ -298,6 +299,7 @@
 
     <filter id="importFile" append="true">
       <rule grant="true">
+        <permission>AddChildren</permission>
         <type>AssetLibrary</type>
         <type>ImportRoot</type> <!-- for backward compatibility -->
       </rule>
