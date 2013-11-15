@@ -443,6 +443,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 getACP();
             }
             detachedVersionLabel = getVersionLabel();
+            // load some system info
+            isCheckedOut();
+            getCurrentLifeCycleState();
+            getLockInfo();
         }
         sid = null;
     }
@@ -744,10 +748,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public boolean isCheckedOut() throws ClientException {
         if (!isStateLoaded) {
-            // quick fix to avoid crash when core session is null, see
-            // NXP-12584 for a proper fix
-            CoreSession session = getCoreSession();
-            if (session == null) {
+            if (getCoreSession() == null) {
                 return true;
             }
             refresh(REFRESH_STATE, null);

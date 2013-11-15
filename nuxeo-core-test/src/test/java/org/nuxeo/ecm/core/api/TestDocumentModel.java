@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.core.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -86,6 +87,41 @@ public class TestDocumentModel extends SQLRepositoryTestCase {
         } catch (ClientException e) {
             // ok
         }
+    }
+
+    /**
+     * Verifies that checked out state, lifecycle state and lock info are stored
+     * on a detached document.
+     */
+    @Test
+    public void testDetachedSystemInfo() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        doc.setLock();
+
+        // refetch to clear lock info
+        doc = session.getDocument(new IdRef(doc.getId()));
+        // check in
+        doc.checkIn(VersioningOption.MAJOR, null);
+        // clear lifecycle info
+        doc.prefetchCurrentLifecycleState(null);
+
+        doc.detach(true);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("project", doc.getCurrentLifeCycleState());
+        assertNotNull(doc.getLockInfo());
+
+        // refetch to clear lock info
+        doc = session.getDocument(new IdRef(doc.getId()));
+        // checkout
+        doc.checkOut();
+        // clear lifecycle info
+        doc.prefetchCurrentLifecycleState(null);
+
+        doc.detach(true);
+        assertTrue(doc.isCheckedOut());
+        assertEquals("project", doc.getCurrentLifeCycleState());
+        assertNotNull(doc.getLockInfo());
     }
 
 }
