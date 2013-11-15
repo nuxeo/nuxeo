@@ -8,6 +8,12 @@
 
   <xs:include schemaLocation="core-types.xsd" />
 
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:element name="isWebContainer" type="xs:boolean"/>
 
   <xs:element name="name" type="xs:string"/>
@@ -18,7 +24,7 @@
   <xs:element name="themePerspective" type="xs:string"/>
   <xs:element name="email" type="xs:string"/>
 
-  <xs:element name="welcomeText" type="xs:string"/>
+  <xs:element name="welcomeText" type="nxs:clob"/>
   <xs:element name="baseline" type="xs:string" />
   <xs:element name="welcomeMedia" type="nxs:content"/>
   <xs:element name="logo" type="nxs:content"/>
