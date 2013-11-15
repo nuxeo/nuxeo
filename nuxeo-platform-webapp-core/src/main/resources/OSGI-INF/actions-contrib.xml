@@ -704,10 +704,10 @@
         <type>Section</type>
         <type>Folder</type>
         <type>OrderedFolder</type>
+      </rule>
+      <rule grant="false">
         <condition>
-          #{typeManager.getAllowedSubTypes(document.getType(),
-          document).size()
-          > 0}
+          #{typeManager.getAllowedSubTypes(document.getType(),document).size()==0}
         </condition>
       </rule>
     </filter>
