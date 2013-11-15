@@ -159,7 +159,7 @@ public interface FileSystemItemFactory {
             boolean includeDeleted) throws ClientException;
 
     /**
-     * TODO Gets the {@link FileSystemItem} for the given {@link DocumentModel}
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}
      * forcing its parent id with the given id.
      * <p>
      * If {@code includeDeleted} is true no filter is applied on the "deleted"
