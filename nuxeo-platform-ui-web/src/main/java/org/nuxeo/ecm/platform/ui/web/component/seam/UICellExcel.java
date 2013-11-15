@@ -188,7 +188,7 @@ public class UICellExcel extends org.jboss.seam.excel.ui.UICell {
     /**
      * Returns the style attribute, used to format cells with a specific
      * {@link #forceType}. Sample value for dates formatting: "xls-format-mask:
-     * #{nxu:basicDateFormater()};".
+     * #{nxu:basicDateFormatter()};".
      *
      * @since 5.6
      */

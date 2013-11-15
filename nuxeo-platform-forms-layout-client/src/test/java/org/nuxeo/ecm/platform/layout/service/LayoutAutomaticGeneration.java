@@ -135,7 +135,7 @@ public class LayoutAutomaticGeneration {
                     Element properties = widget.addElement("properties");
                     if (needsDateFormat) {
                         properties.addAttribute("mode", BuiltinModes.ANY);
-                        String defaultDatePattern = "#{nxu:basicDateFormater()}";
+                        String defaultDatePattern = "#{nxu:basicDateFormatter()}";
                         Element patternProp = properties.addElement("property");
                         patternProp.addAttribute("name", "pattern");
                         patternProp.setText(defaultDatePattern);
