@@ -39,6 +39,14 @@
       </a4j:region>
     </ui:define>
 
+    <ui:define name="empty_content_view_label">
+            <c:set var="emptySentence"
+              value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
+              <a4j:outputPanel>
+            <h:outputText value="#{emptySentence}"
+              rendered="#{not empty userManagementActions.searchString and not empty emptySentence and documents.rowCount == 0 and not provider.hasError()}" styleClass="emptyResult emptyResultBig" /></a4j:outputPanel>
+    </ui:define>
+
   </ui:composition>
 
 </div>
