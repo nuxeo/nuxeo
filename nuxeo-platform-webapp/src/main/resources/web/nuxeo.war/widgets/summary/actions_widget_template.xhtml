@@ -24,7 +24,7 @@
       </script>
       <h:outputText value="#{messages['label.summary.the']} "/>
         <h:outputText value="#{currentDocumentLockDetails['document.lock.created'].time}">
-          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" timeZone="#{timeZone}" />
+          <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormatter()}" timeZone="#{timeZone}" />
         </h:outputText>
     </div>
   </c:if>

@@ -116,7 +116,7 @@
         <mode value="pdf">pdf</mode>
       </widgetModes>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
     </widget>
 
@@ -134,7 +134,7 @@
         <mode value="pdf">pdf</mode>
       </widgetModes>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}</property>
       </properties>
     </widget>
 
@@ -182,10 +182,10 @@
         <mode value="view_summary">#{empty layoutValue.dc.expired?'hidden':'view'}</mode>
       </widgetModes>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateFormater()}</property>
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateFormater()}</property>
+        <property name="format">#{nxu:basicDateFormatter()}</property>
       </properties>
     </widget>
 
