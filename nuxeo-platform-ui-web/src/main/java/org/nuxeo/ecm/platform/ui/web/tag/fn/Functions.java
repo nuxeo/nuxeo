@@ -202,7 +202,7 @@ public final class Functions {
     }
 
     public static String formatDateUsingBasicFormatter(Date date) {
-        return formatDate(date, basicDateFormater());
+        return formatDate(date, basicDateFormatter());
     }
 
     public static String formatDate(Date date, String format) {
@@ -363,10 +363,20 @@ public final class Functions {
     }
 
     /**
+     * @deprecated since 5.9.1, use {@link #dateFormatter()} instead.
+     */
+    @Deprecated
+    public static String dateFormater(String formatLength) {
+        return dateFormatter(formatLength);
+    }
+
+    /**
      * Return the date format to handle date taking the user's locale into
      * account.
+     *
+     * @since 5.9.1
      */
-    public static String dateFormater(String formatLength) {
+    public static String dateFormatter(String formatLength) {
         // A map to store temporary available date format
         FacesContext context = FacesContext.getCurrentInstance();
         Locale locale = context.getViewRoot().getLocale();
@@ -396,18 +406,39 @@ public final class Functions {
     }
 
     /**
+     * @deprecated since 5.9.1, use {@link #basicDateFormatter()} instead.
+     */
+    @Deprecated
+    public static String basicDateFormater() {
+        return basicDateFormatter();
+    }
+
+    /**
      * Return the date format to handle date taking the user's locale into
      * account. Uses the pseudo "shortWithCentury" format.
+     *
+     * @since 5.9.1
      */
-    public static String basicDateFormater() {
-        return dateFormater("shortWithCentury");
+    public static String basicDateFormatter() {
+        return dateFormatter("shortWithCentury");
+    }
+
+    /**
+     * @deprecated since 5.9.1, use {@link #dateAndTimeFormatter(String)}
+     *             instead.
+     */
+    @Deprecated
+    public static String dateAndTimeFormater(String formatLength) {
+        return dateAndTimeFormatter(formatLength);
     }
 
     /**
      * Return the date format to handle date and time taking the user's locale
      * into account.
+     *
+     * @since 5.9.1
      */
-    public static String dateAndTimeFormater(String formatLength) {
+    public static String dateAndTimeFormatter(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -440,11 +471,22 @@ public final class Functions {
     }
 
     /**
+     * @deprecated since 5.9.1, use {@link #basicDateAndTimeFormatter()}
+     *             instead.
+     */
+    @Deprecated
+    public static String basicDateAndTimeFormater() {
+        return basicDateAndTimeFormatter();
+    }
+
+    /**
      * Return the date format to handle date and time taking the user's locale
      * into account. Uses the pseudo "shortWithCentury" format.
+     *
+     * @since 5.9.1
      */
-    public static String basicDateAndTimeFormater() {
-        return dateAndTimeFormater("shortWithCentury");
+    public static String basicDateAndTimeFormatter() {
+        return dateAndTimeFormatter("shortWithCentury");
     }
 
     public static String printFileSize(String size) {

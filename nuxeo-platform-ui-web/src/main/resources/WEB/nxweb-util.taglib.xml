@@ -104,24 +104,45 @@
     </function-signature>
   </function>
 
-
+  <!-- @deprecated since 5.9.1, use dateFormatter instead -->
   <function>
     <function-name>dateFormater</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
     </function-class>
     <function-signature>
-      java.lang.String dateFormater(java.lang.String)
+      java.lang.String dateFormatter(java.lang.String)
     </function-signature>
   </function>
 
+  <function>
+    <function-name>dateFormatter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String dateFormatter(java.lang.String)
+    </function-signature>
+  </function>
+
+  <!-- @deprecated since 5.9.1, use basicDateFormatter instead -->
   <function>
     <function-name>basicDateFormater</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
     </function-class>
     <function-signature>
-      java.lang.String basicDateFormater()
+      java.lang.String basicDateFormatter()
+    </function-signature>
+  </function>
+
+  <function>
+    <function-name>basicDateFormatter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String basicDateFormatter()
     </function-signature>
   </function>
 
@@ -135,25 +156,48 @@
     </function-signature>
   </function>
 
+  <!-- @deprecated since 5.9.1, use dateAndTimeFormatter instead -->
   <function>
     <function-name>dateAndTimeFormater</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
     </function-class>
     <function-signature>
-      java.lang.String dateAndTimeFormater(java.lang.String)
+      java.lang.String dateAndTimeFormatter(java.lang.String)
     </function-signature>
   </function>
 
+  <function>
+    <function-name>dateAndTimeFormatter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String dateAndTimeFormatter(java.lang.String)
+    </function-signature>
+  </function>
+
+  <!-- @deprecated since 5.9.1, use dateAndTimeFormatter instead -->
   <function>
     <function-name>basicDateAndTimeFormater</function-name>
     <function-class>
       org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
     </function-class>
     <function-signature>
-      java.lang.String basicDateAndTimeFormater()
+      java.lang.String basicDateAndTimeFormatter()
     </function-signature>
   </function>
+
+  <function>
+    <function-name>basicDateAndTimeFormatter</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String basicDateAndTimeFormatter()
+    </function-signature>
+  </function>
+
   <function>
     <function-name>integerDivision</function-name>
     <function-class>
