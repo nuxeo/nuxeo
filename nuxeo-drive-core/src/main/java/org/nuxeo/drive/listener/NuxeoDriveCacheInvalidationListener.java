@@ -42,7 +42,7 @@ public class NuxeoDriveCacheInvalidationListener implements EventListener {
         }
         String transition = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
         if (transition != null
-                && !LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
+                && !(LifeCycleConstants.DELETE_TRANSITION.equals(transition) || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition))) {
             // not interested in lifecycle transitions that are not related to
             // document deletion
             return;
