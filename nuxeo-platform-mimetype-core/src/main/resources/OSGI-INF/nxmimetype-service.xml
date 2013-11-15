@@ -202,10 +202,17 @@
       </mimetypes>
       <extensions>
         <extension>eml</extension>
-        <!-- include also msg? -->
       </extensions>
     </mimetype>
 
+    <mimetype normalized="application/vnd.ms-outlook" binary="true" iconPath="email.png">
+      <mimetypes>
+        <mimetype>application/vnd.ms-outlook</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>msg</extension>
+      </extensions>
+    </mimetype>
 
     <!--  Microsoft Office document -->
 
