@@ -606,10 +606,10 @@
         <field>damc:authoringDate</field>
       </fields>
       <properties widgetMode="view">
-        <property name="pattern">#{nxu:basicDateFormater()}</property>
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
       </properties>
       <properties widgetMode="edit">
-        <property name="format">#{nxu:basicDateFormater()}</property>
+        <property name="format">#{nxu:basicDateFormatter()}</property>
         <property name="styleClass">dataInputTextDate</property>
       </properties>
     </widget>
@@ -1176,10 +1176,10 @@
           <field>ipr:embargo_date</field>
         </fields>
         <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
         </properties>
         <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
           <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
@@ -1189,10 +1189,10 @@
           <field>ipr:expiration_date</field>
         </fields>
         <properties widgetMode="view">
-          <property name="pattern">#{nxu:basicDateFormater()}</property>
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
         </properties>
         <properties widgetMode="edit">
-          <property name="format">#{nxu:basicDateFormater()}</property>
+          <property name="format">#{nxu:basicDateFormatter()}</property>
           <property name="styleClass">dataInputTextDate</property>
         </properties>
       </widget>
